@@ -759,7 +759,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="closeExpense">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveExpense"
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveExpense"
                     t-att-disabled="state.busy">Add it</button>
           </div>
         </div>

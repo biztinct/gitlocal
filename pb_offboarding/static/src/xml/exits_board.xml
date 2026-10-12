@@ -524,7 +524,7 @@
                  placeholder="A link to the document or the folder"/>
           <div class="exb-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelKt">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveKt">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveKt">
               Add it
             </button>
           </div>
@@ -541,7 +541,7 @@
                     t-on-input="onFarewellText"/>
           <div class="exb-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelFarewell">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveFarewell">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveFarewell">
               Save the wording
             </button>
           </div>

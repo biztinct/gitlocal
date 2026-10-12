@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   No amount is ever stored converted: every figure keeps the currency it was
   paid in and is converted when somebody looks at it.
 """,
-    'version': '19.0.2.1.1',
+    'version': '19.0.2.1.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -294,7 +294,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="closeShare">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.shareSheet.busy" t-on-click="saveShare"><t t-out="ic('share2',14)"/> Share</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.shareSheet.busy" t-on-click="saveShare"><t t-out="ic('share2',14)"/> Share</button>
         </div>
       </div>
     </div>
@@ -311,7 +311,7 @@
         </div>
         <div class="pbim-modal__body pbhr-form">
           <div class="pbhr-p4-find"><t t-out="ic('search',13)"/><input type="text" t-model="state.bankAdd.q" placeholder="Find a role…"/></div>
-          <div class="pbhr-movelist pbhr-p4-roles">
+          <div class="pbhr-movelist pbhr-p4-roles" data-biz-required="Role" t-att-data-biz-missing="state.bankAdd.requisition_id ? 'false' : 'true'" tabindex="-1">
             <div t-if="!bankAddRoles.length" class="pbhr-p4-empty">No open role matches. Open a role first, then add them.</div>
             <button t-foreach="bankAddRoles" t-as="rl" t-key="rl.id" type="button" class="pbhr-moveto" t-att-class="{ on: state.bankAdd.requisition_id === rl.id }" t-on-click="() =&gt; { state.bankAdd.requisition_id = rl.id; }">
               <span class="pbhr-moveto-dot"/><b t-esc="rl.title"/><small><t t-esc="rl.department"/><t t-if="rl.country"> · <t t-esc="rl.country"/></t></small>
@@ -320,7 +320,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankAdd = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="!state.bankAdd.requisition_id or state.bankAdd.busy" t-on-click="saveBankAdd"><t t-out="ic('userPlus',14)"/> Add to the role</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.bankAdd.busy" t-on-click="saveBankAdd"><t t-out="ic('userPlus',14)"/> Add to the role</button>
         </div>
       </div>
     </div>
@@ -348,7 +348,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.bankTag = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.bankTag.busy" t-on-click="saveBankTag"><t t-out="ic('tag',14)"/> Tag them</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.bankTag.busy" t-on-click="saveBankTag"><t t-out="ic('tag',14)"/> Tag them</button>
         </div>
       </div>
     </div>

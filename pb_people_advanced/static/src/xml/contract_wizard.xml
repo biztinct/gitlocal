@@ -38,7 +38,7 @@
               <div class="pplw-sec">
                 <h4>Structure &amp; wage</h4>
                 <label class="pplw-label">Salary structure *</label>
-                <select class="pplw-in" t-on-change="(ev) => this.onField('struct_id', ev)">
+                <select class="pplw-in" t-on-change="(ev) => this.onField('struct_id', ev)" t-att-data-biz-missing="state.form.struct_id ? 'false' : 'true'">
                   <option t-foreach="state.defaults.structures" t-as="s" t-key="s.id" t-att-value="s.id"
                           t-att-selected="('' + s.id) === state.form.struct_id" t-esc="s.name"/>
                 </select>
@@ -73,7 +73,7 @@
           <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
           <div class="pplw-sp"/>
           <button t-if="state.result and state.result.applied" class="pbim-btn primary" t-on-click="openContract"><t t-out="ic('arrow',15)"/> Open contract</button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create contract</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="!empId || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create contract</button>
         </div>
       </div>
     </div>

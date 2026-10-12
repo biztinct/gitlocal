@@ -212,7 +212,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="closeProxy">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.proxy.busy" t-on-click="saveProxy"><t t-out="ic('check',14)"/> <t t-esc="proxySaveLabel()"/></button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.proxy.busy" t-on-click="saveProxy"><t t-out="ic('check',14)"/> <t t-esc="proxySaveLabel()"/></button>
         </div>
       </div>
     </div>

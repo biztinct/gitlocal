@@ -2,7 +2,7 @@
 {
     'name': 'Payobook People Advanced',
     'summary': 'Guided People workflows — onboarding + contract wizards (light-teal)',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

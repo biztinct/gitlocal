@@ -309,7 +309,7 @@
             </div>
 
             <div class="pbsc-tmplgrid">
-              <button t-foreach="templates" t-as="tm" t-key="tm.id"
+              <button data-biz-validate="true" t-foreach="templates" t-as="tm" t-key="tm.id"
                       t-attf-class="pbsc-tmpl pbsc-tmpl--t{{ tone(tm.color) }} {{ templateTone(tm.id) ? 'has-' + templateTone(tm.id) : '' }}"
                       t-att-disabled="state.creating"
                       t-attf-title="{{ warningsFor(tm.id).length ? warningsFor(tm.id)[0].text : '' }}"
@@ -437,7 +437,7 @@
                       t-att-disabled="state.budgetSaving"
                       t-on-click="() => this.clearBudget()">Remove</button>
               <button class="pbsc-btn ghost" t-on-click="() => this.closeBudget()">Cancel</button>
-              <button class="pbsc-btn primary" t-att-disabled="state.budgetSaving"
+              <button data-biz-validate="true" class="pbsc-btn primary" t-att-disabled="state.budgetSaving"
                       t-on-click="() => this.saveBudget()">
                 <span t-out="ic('check', 14)"/><span>Save</span>
               </button>

@@ -168,7 +168,7 @@
           <span class="pbbp-hint">⌘/Ctrl + Enter saves</span>
           <div class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="hasBad or props.busy" t-on-click="save">
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="hasBad or props.busy" t-on-click="save">
             <t t-if="props.busy">Saving…</t>
             <t t-else="">Save and recalculate</t>
           </button>

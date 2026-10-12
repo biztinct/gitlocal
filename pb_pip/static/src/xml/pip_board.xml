@@ -495,12 +495,12 @@
              it is obvious to both of you whether it happened.</p>
 
           <label class="pip-lbl">What has to change</label>
-          <input type="text" class="pip-in"
+          <input required="required" data-biz-required-label="What has to change" type="text" class="pip-in"
                  t-att-value="state.objecting.name" t-on-input="onObjName"
                  placeholder="Picking up tickets when they land"/>
 
           <label class="pip-lbl">What good looks like</label>
-          <textarea class="pip-ta" rows="3"
+          <textarea required="required" data-biz-required-label="What good looks like" class="pip-ta" rows="3"
                     t-att-value="state.objecting.metric"
                     t-on-input="onObjMetric"
                     placeholder="Every ticket assigned to them is picked up within one working day, or handed back with a reason."/>
@@ -513,7 +513,7 @@
           <p class="pip-hint" t-esc="objectiveHint"/>
           <div class="pip-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelObjective">Cancel</button>
-            <button class="pbim-btn primary" t-att-disabled="!canSaveObjective"
+            <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.objecting.busy"
                     t-on-click="saveObjective">
               <t t-out="ic('plus',15)"/> Add it
             </button>
@@ -688,7 +688,7 @@
               <button class="pbim-btn ghost" t-on-click="() => this.decideStep(2)">
                 Back
               </button>
-              <button class="pbim-btn primary" t-on-click="saveDecision">
+              <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveDecision">
                 <t t-out="ic('stamp',15)"/>
                 <t t-esc="state.deciding.preview ? state.deciding.preview.label : 'Confirm'"/>
               </button>

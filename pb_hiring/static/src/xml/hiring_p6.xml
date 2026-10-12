@@ -192,7 +192,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Not yet</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Confirm.joined_on" t-on-click="() =&gt; this.p6SaveConfirm()"><t t-out="ic('check',14)"/> Yes, they started</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Confirm.joined_on" t-on-click="() =&gt; this.p6SaveConfirm()"><t t-out="ic('check',14)"/> Yes, they started</button>
         </div>
       </div>
     </div>
@@ -222,7 +222,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
-          <button class="pbim-btn primary pbhr-p6-danger" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveDrop()"><t t-out="ic('userX',14)"/> Record that they did not join</button>
+          <button data-biz-validate="true" class="pbim-btn primary pbhr-p6-danger" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveDrop()"><t t-out="ic('userX',14)"/> Record that they did not join</button>
         </div>
       </div>
     </div>
@@ -240,7 +240,7 @@
         <div class="pbim-modal__body pbhr-form">
           <label class="pbhr-f">
             <span>New joining date</span>
-            <input class="pbhr-in" type="date" t-model="state.p6Date.date"/>
+            <input required="required" data-biz-required-label="New joining date" class="pbhr-in" type="date" t-model="state.p6Date.date"/>
           </label>
           <label class="pbhr-f pbhr-f--wide">
             <span>Why (optional)</span>
@@ -249,7 +249,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Date.date" t-on-click="() =&gt; this.p6SaveDate()"><t t-out="ic('check',14)"/> Move the date</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveDate()"><t t-out="ic('check',14)"/> Move the date</button>
         </div>
       </div>
     </div>
@@ -301,7 +301,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveChat()"><t t-out="ic('calendar',14)"/> Put it in the diary</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p6Busy" t-on-click="() =&gt; this.p6SaveChat()"><t t-out="ic('calendar',14)"/> Put it in the diary</button>
         </div>
       </div>
     </div>
@@ -338,7 +338,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; this.p6Close()">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Doc.data" t-on-click="() =&gt; this.p6SaveDoc()"><t t-out="ic('check',14)"/> Add it</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p6Busy or !state.p6Doc.data" t-on-click="() =&gt; this.p6SaveDoc()"><t t-out="ic('check',14)"/> Add it</button>
         </div>
       </div>
     </div>

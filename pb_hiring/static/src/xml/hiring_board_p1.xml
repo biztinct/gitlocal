@@ -441,7 +441,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.outcome = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-on-click="saveOutcome"><t t-out="ic('check',14)"/> <t t-esc="closeAsLabel"/></button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveOutcome"><t t-out="ic('check',14)"/> <t t-esc="closeAsLabel"/></button>
         </div>
       </div>
     </div>
@@ -488,7 +488,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.showStages = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="!state.showStages.picked.length" t-on-click="saveShowStages"><t t-out="ic('eye',14)"/> Show on this role</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="!state.showStages.picked.length" t-on-click="saveShowStages"><t t-out="ic('eye',14)"/> Show on this role</button>
         </div>
       </div>
     </div>
@@ -511,7 +511,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.noteForm = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-on-click="saveNote2"><t t-out="ic('check',14)"/> Add the note</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveNote2"><t t-out="ic('check',14)"/> Add the note</button>
         </div>
       </div>
     </div>

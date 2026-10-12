@@ -45,7 +45,7 @@
           <button class="pbim-btn ghost" t-on-click="close"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
           <div class="pplw-sp"/>
           <button t-if="state.result" class="pbim-btn primary" t-on-click="openStructure"><t t-out="ic('arrow',15)"/> Open structure</button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create structure</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create structure</button>
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
           <button class="pbim-btn ghost" t-on-click="backToStructure"><t t-esc="state.result ? 'Done' : 'Cancel'"/></button>
           <div class="pplw-sp"/>
           <button t-if="state.result" class="pbim-btn primary" t-on-click="backToStructure"><t t-out="ic('arrow',15)"/> Back to structure</button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Add rule</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Add rule</button>
         </div>
       </div>
     </div>

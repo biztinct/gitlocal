@@ -1100,12 +1100,12 @@
               <span>They start with basic access only. After they appear in the list, open their name and choose <b>Give a role</b>.</span>
             </div>
             <label class="pbva-lbl" for="pbva-new-person-name">Their name</label>
-            <input id="pbva-new-person-name" class="pbva-in" autofocus="autofocus"
+            <input required="required" id="pbva-new-person-name" class="pbva-in" autofocus="autofocus"
                    t-att-value="state.addingPerson.name"
                    t-on-input="(ev) => this.onAddPersonField('name', ev)"
                    placeholder="For example, Mai Nguyen"/>
             <label class="pbva-lbl" for="pbva-new-person-email">Work email</label>
-            <input id="pbva-new-person-email" class="pbva-in" type="email"
+            <input required="required" id="pbva-new-person-email" class="pbva-in" type="email"
                    t-att-value="state.addingPerson.email"
                    t-on-input="(ev) => this.onAddPersonField('email', ev)"
                    placeholder="mai@company.com"/>
@@ -1114,8 +1114,8 @@
           <div class="pbva-modal-f">
             <button class="pbim-btn ghost" t-on-click="closeAddPerson"
                     t-att-disabled="state.addingPersonBusy">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="createPerson"
-                    t-att-disabled="state.addingPersonBusy or !canAddPerson">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="createPerson"
+                    t-att-disabled="state.addingPersonBusy or (state.addingPerson.email.trim() and !state.addingPerson.email.includes('@'))">
               <t t-out="ic('userPlus',15)"/> Add person
             </button>
           </div>
@@ -1291,7 +1291,7 @@
             <p t-if="state.editorImpact.more" class="pbva-col-note" t-esc="state.editorImpact.more + ' more users are included in the same update.'"/>
             <label class="pbva-lbl" for="pbva-role-reason">Why this role is changing <span class="pbva-field-required">Required</span></label>
             <textarea id="pbva-role-reason" class="pbva-in pbva-area" rows="2" t-model="state.editorReason" placeholder="Explain the reason for this change" required="required" aria-required="true" aria-describedby="pbva-role-reason-help"/>
-            <p id="pbva-role-reason-help" class="pbva-field-hint" aria-live="polite"><t t-if="!state.editorReason.trim()">Enter a reason to enable Save and update users.</t></p>
+            <p id="pbva-role-reason-help" class="pbva-field-hint" aria-live="polite"><t t-if="!state.editorReason.trim()">Required. Explain why this role is changing.</t></p>
           </div>
           <div t-elif="state.editorHistory" class="pbva-edit-review">
             <h4>Role history</h4><p t-if="!state.editorHistory.length" class="pbva-col-empty">No published changes yet.</p>
@@ -1302,7 +1302,7 @@
             <!-- ============================== the left ============================== -->
             <div class="pbva-comp-l">
               <label class="pbva-lbl">What it is called</label>
-              <input class="pbva-in" t-att-value="state.composer.name"
+              <input required="required" data-biz-required-label="Role name" class="pbva-in" t-att-value="state.composer.name"
                      t-on-input="(ev) => this.onComposerField('name', ev)"
                      placeholder="Payroll auditor"/>
 
@@ -1337,7 +1337,7 @@
                 <button t-attf-class="pbva-chip {{ state.composerTab === 'abilities' ? 'is-on' : '' }}" t-on-click="() => state.composerTab = 'abilities'">All abilities</button>
               </div>
               <input class="pbva-in" type="search" placeholder="Search a screen or ability" t-model="state.abilitySearch" aria-label="Search a screen or ability"/>
-              <div t-if="state.composerTab === 'screens'" class="pbva-caps">
+              <div t-if="state.composerTab === 'screens'" class="pbva-caps" data-biz-required="Abilities" t-att-data-biz-missing="state.composer.abilities.length ? 'false' : 'true'" tabindex="-1">
                 <details t-foreach="composerSurfaces" t-as="surface" t-key="surface.key" class="pbva-cap-area pbva-screen-choice" t-att-open="!surface.key.startsWith('sidebar.') or !!state.abilitySearch">
                   <summary><span t-esc="surface.parent + ' / ' + surface.label"/></summary>
                   <p class="pbva-col-note" t-esc="surface.reason"/>
@@ -1348,7 +1348,7 @@
                   <p t-elif="!surface.abilities.length" class="pbva-col-empty">Use All abilities to review the permissions inside this screen.</p>
                 </details>
               </div>
-              <div t-else="" class="pbva-caps">
+              <div t-else="" class="pbva-caps" data-biz-required="Abilities" t-att-data-biz-missing="state.composer.abilities.length ? 'false' : 'true'" tabindex="-1">
                 <div t-foreach="abilityAreas" t-as="aa" t-key="aa.key"
                      class="pbva-cap-area">
                   <h5 t-esc="aa.label"/>
@@ -1457,10 +1457,10 @@
               </button>
               <button t-if="state.editorHistory" class="pbim-btn ghost" t-on-click="() => state.editorHistory = null">Back to editing</button>
               <button t-if="state.editorReview" class="pbim-btn ghost" t-on-click="() => state.editorReview = false">Back to editing</button>
-              <button t-if="state.composer.id and state.editorReview" class="pbim-btn primary" t-on-click="saveRoleChange" t-att-disabled="state.creating or !state.editorReason.trim()"><t t-out="ic('check',15)"/><t t-if="state.creating">Updating access…</t><t t-else="">Save and update users</t></button>
-              <button t-elif="state.composer.id" class="pbim-btn primary" t-on-click="reviewRoleChange" t-att-disabled="state.creating or !state.composer.abilities.length"><t t-out="ic('check',15)"/> Review changes</button>
-              <button t-else="" class="pbim-btn primary" t-on-click="createRole"
-                      t-att-disabled="state.creating or !state.composer.abilities.length">
+              <button data-biz-validate="true" t-if="state.composer.id and state.editorReview" class="pbim-btn primary" t-on-click="saveRoleChange" t-att-disabled="state.creating"><t t-out="ic('check',15)"/><t t-if="state.creating">Updating access…</t><t t-else="">Save and update users</t></button>
+              <button t-elif="state.composer.id" class="pbim-btn primary" data-biz-validate="true" t-on-click="reviewRoleChange" t-att-disabled="state.creating"><t t-out="ic('check',15)"/> Review changes</button>
+              <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-on-click="createRole"
+                      t-att-disabled="state.creating">
                 <t t-out="ic('check',15)"/> Create role
               </button>
             </div>

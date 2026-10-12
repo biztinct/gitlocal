@@ -188,8 +188,8 @@
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.openingRole = null; }" title="Close"><t t-out="ic('x',16)"/></button>
         </div>
         <div class="pbim-modal__body pbhr-form">
-          <label class="pbhr-f pbhr-f--wide"><span>What is the role called?</span><input class="pbhr-in" t-model="state.openingRole.title" placeholder="Territory Manager" autofocus="autofocus"/></label>
-          <label class="pbhr-f"><span>Department</span><select class="pbhr-in" t-model="state.openingRole.department_id"><option value="">Choose…</option><option t-foreach="state.departments" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
+          <label class="pbhr-f pbhr-f--wide"><span>What is the role called?</span><input required="required" data-biz-required-label="Role title" class="pbhr-in" t-model="state.openingRole.title" placeholder="Territory Manager" autofocus="autofocus"/></label>
+          <label class="pbhr-f"><span>Department</span><select required="required" data-biz-required-label="Department" class="pbhr-in" t-model="state.openingRole.department_id"><option value="">Choose…</option><option t-foreach="state.departments" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
           <label class="pbhr-f"><span>Country</span><select class="pbhr-in" t-model="state.openingRole.country_id"><option value="">Choose…</option><option t-foreach="state.journey.countries or []" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
           <label class="pbhr-f"><span>How many seats?</span><input class="pbhr-in" type="number" min="1" max="500" t-model.number="state.openingRole.headcount"/></label>
           <label class="pbhr-f"><span>Who recruits it?</span><select class="pbhr-in" t-model="state.openingRole.recruiter_id"><option value="">The hiring rule for the country decides</option><option t-foreach="state.journey.recruiters or []" t-as="ap" t-key="ap.id" t-att-value="ap.id" t-esc="ap.name"/></select></label>
@@ -197,7 +197,7 @@
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.openingRole = null; }">Cancel</button>
           <span class="pbhr-foot-gap"/>
-          <button class="pbim-btn primary" t-att-disabled="state.openingRole.busy or !state.openingRole.title or !state.openingRole.department_id" t-on-click="() =&gt; this.saveOpenRole()"><t t-out="ic('plus',14)"/> Open the role</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.openingRole.busy" t-on-click="() =&gt; this.saveOpenRole()"><t t-out="ic('plus',14)"/> Open the role</button>
         </div>
       </div>
     </div>
@@ -257,7 +257,7 @@
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.asking = null; }"><t t-if="state.asking.link">Done</t><t t-else="">Cancel</t></button>
           <span class="pbhr-foot-gap"/>
-          <button t-if="!state.asking.link" class="pbim-btn primary" t-att-disabled="state.asking.busy or !askReady" t-on-click="() =&gt; this.saveAsk()"><t t-out="ic('send',14)"/> Send the request</button>
+          <button data-biz-validate="true" t-if="!state.asking.link" class="pbim-btn primary" t-att-disabled="state.asking.busy or !askReady" t-on-click="() =&gt; this.saveAsk()"><t t-out="ic('send',14)"/> Send the request</button>
         </div>
       </div>
     </div>
@@ -268,7 +268,7 @@
         <div class="pbim-modal__head"><div><div class="pbhr-drawer-title">Not approved</div><div class="pbhr-drawer-sub">The role itself carries on; only the offer waits. The recruiter gets a to-do.</div></div>
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.declining = null; }" title="Close"><t t-out="ic('x',16)"/></button></div>
         <div class="pbim-modal__body pbhr-form"><label class="pbhr-f pbhr-f--wide"><span>Why? (optional)</span><textarea class="pbhr-in" rows="3" t-model="state.declining.note" placeholder="Not this quarter — ask again in January."/></label></div>
-        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.declining = null; }">Cancel</button><span class="pbhr-foot-gap"/><button class="pbim-btn primary" t-on-click="() =&gt; this.saveDecline()">Not approved</button></div>
+        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.declining = null; }">Cancel</button><span class="pbhr-foot-gap"/><button data-biz-validate="true" class="pbim-btn primary" t-on-click="() =&gt; this.saveDecline()">Not approved</button></div>
       </div>
     </div>
 
@@ -278,7 +278,7 @@
         <div class="pbim-modal__head"><div><div class="pbhr-drawer-title">The confirmed budget</div><div class="pbhr-drawer-sub">What Finance confirmed for this role for a year. If the manager's figure is higher, the people who watch the budget are told. Nothing is blocked.</div></div>
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.budgetEdit = null; }" title="Close"><t t-out="ic('x',16)"/></button></div>
         <div class="pbim-modal__body pbhr-form"><label class="pbhr-f pbhr-f--wide"><span>Confirmed a year (<t t-esc="req.figures and req.figures.currency"/>)</span><input class="pbhr-in" inputmode="decimal" t-model="state.budgetEdit.confirmed" placeholder="0"/></label></div>
-        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.budgetEdit = null; }">Cancel</button><span class="pbhr-foot-gap"/><button class="pbim-btn primary" t-on-click="() =&gt; this.saveBudgetEdit()">Save</button></div>
+        <div class="pbim-modal__foot"><button class="pbim-btn ghost" t-on-click="() =&gt; { state.budgetEdit = null; }">Cancel</button><span class="pbhr-foot-gap"/><button data-biz-validate="true" class="pbim-btn primary" t-on-click="() =&gt; this.saveBudgetEdit()">Save</button></div>
       </div>
     </div>
   </t>

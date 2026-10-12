@@ -436,7 +436,7 @@
 <label class="pbhr-f"><span>Annual budget for this request</span><input type="number" min="1" class="pbhr-in" t-model.number="state.raising.budget_cost"/></label>
 <label class="pbhr-f"><span>Budget currency</span><select class="pbhr-in" t-model="state.raising.currency_id"><option t-foreach="state.journey.currencies" t-as="option" t-key="option.id" t-att-value="option.id" t-esc="option.name"/></select></label>
 <label class="pbhr-f pbhr-f--wide"><span>When should the position be closed?</span><input type="date" class="pbhr-in" t-model="state.raising.target_close_date"/></label></t>
-</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count" t-esc="stepOf(state.raising.step + 1, 4)"/><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? tr('Saving…') : tr('Create hiring request')"/></button></div></div></div><!-- ==================================================================
+</div><div class="pbim-modal__foot"><button t-if="state.raising.step &gt; 0" class="pbim-btn ghost" t-on-click="() =&gt; state.raising.step--">← Back</button><button t-else="" class="pbim-btn ghost" t-on-click="cancelRaise">Cancel</button><span class="pbhr-step-count" t-esc="stepOf(state.raising.step + 1, 4)"/><button t-if="state.raising.step &lt; 3" class="pbim-btn primary" t-on-click="nextRequestStep">Continue →</button><button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.savingRequest" t-on-click="saveRaise"><t t-esc="state.savingRequest ? tr('Saving…') : tr('Create hiring request')"/></button></div></div></div><!-- ==================================================================
            WRITE AN ADVERT
            ================================================================== -->
       <div t-if="state.writingJd" class="pbim-modal-scrim pbhr-scrim" t-on-click="cancelJd">
@@ -465,7 +465,7 @@
             <div class="pbhr-f--wide"><details class="pbhr-company-story"><summary>Company story · included automatically</summary><section t-foreach="state.journey.company_sections" t-as="story" t-key="story.key"><b t-esc="story.title"/><p t-esc="story.body or tr('Add this section in Company story settings.')"/></section></details><label t-foreach="[{key:'role',label:'What the role is about'},{key:'duties',label:'What you will be doing'},{key:'must',label:'Must-have skills and characteristics'},{key:'nice',label:'Nice-to-have skills and characteristics'},{key:'process',label:'Interview process (optional)'}]" t-as="section" t-key="section.key" class="pbhr-f pbhr-jd-section"><span t-esc="section.label"/><textarea class="pbhr-in" rows="4" t-model="state.writingJd.sections[section.key]"/></label></div></div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelJd">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveJd">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveJd">
               <t t-out="ic('check',15)"/> Save this version
             </button>
           </div>
@@ -503,7 +503,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelMove">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveMove">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveMove">
               <t t-out="ic('arrowLeftRight',15)"/> Move them
             </button>
           </div>
@@ -585,7 +585,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelSchedule">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveSchedule">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveSchedule">
               <t t-out="ic('send',15)"/> Arrange it and invite everybody
             </button>
           </div>
@@ -641,7 +641,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelReschedule">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveReschedule">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveReschedule">
               <t t-out="ic('rotate',15)"/> Move it and tell everybody
             </button>
           </div>
@@ -680,7 +680,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelNoShow">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveNoShow">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveNoShow">
               <t t-out="ic('userX',15)"/> Write it down
             </button>
           </div>
@@ -720,7 +720,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelDebrief">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveDebrief">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveDebrief">
               <t t-out="ic('flag',15)"/> Record the decision
             </button>
           </div>
@@ -755,7 +755,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelReject">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveReject">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveReject">
               <t t-out="ic('send',15)"/> Tell them
             </button>
           </div>
@@ -796,7 +796,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelNote">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveNote">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveNote">
               <t t-out="ic('check',15)"/> Write it down
             </button>
           </div>
@@ -827,7 +827,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelOverride">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveOverride">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveOverride">
               <t t-out="ic('shield',15)"/> Go ahead
             </button>
           </div>
@@ -881,7 +881,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelLine">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveLine">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveLine">
               <t t-out="ic('check',15)"/> Save the line
             </button>
           </div>
@@ -959,7 +959,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelSigning">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveSigning">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveSigning">
               <t t-out="ic('stamp',15)"/> Record it
             </button>
           </div>
@@ -1005,7 +1005,7 @@
           </div>
           <div class="pbim-modal__foot">
             <button class="pbim-btn ghost" t-on-click="cancelCover">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveCover">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveCover">
               <t t-out="ic('send',15)"/> Send it to be agreed
             </button>
           </div>

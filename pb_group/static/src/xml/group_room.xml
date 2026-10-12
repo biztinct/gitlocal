@@ -535,7 +535,7 @@
         </div>
         <footer class="grp-drawer-f">
           <button class="pbim-btn ghost" t-on-click="closeEdit">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.busy"
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.busy"
                   t-on-click="saveGroup">
             <t t-out="ic('check',15)"/> Save the group
           </button>
@@ -617,7 +617,7 @@
                   t-on-click="() => this.openAttach(openDivisionRow.id)">
             <t t-out="ic('link',15)"/> Attach a department
           </button>
-          <button t-if="canEdit" class="pbim-btn primary"
+          <button data-biz-validate="true" t-if="canEdit" class="pbim-btn primary"
                   t-att-disabled="state.busy" t-on-click="saveDivision">
             <t t-out="ic('check',15)"/> Save
           </button>
@@ -751,7 +751,7 @@
         </div>
         <footer class="grp-drawer-f">
           <button class="pbim-btn ghost" t-on-click="closeVisibility">Cancel</button>
-          <button class="pbim-btn primary"
+          <button data-biz-validate="true" class="pbim-btn primary"
                   t-att-disabled="state.busy or !visDraftReady"
                   t-on-click="saveVisibility">
             <t t-out="ic('check',15)"/> Save what they see
@@ -893,7 +893,7 @@
            t-esc="state.dialogError"/>
         <div class="grp-dialog-f">
           <button class="pbim-btn ghost" t-on-click="closeAdd">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.busy"
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.busy"
                   t-on-click="createDivision">Add it</button>
         </div>
       </div>

@@ -193,7 +193,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Mark = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7Mark.posted_on" t-on-click="p7SaveMark"><t t-out="ic('check',14)"/> Mark as posted</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7Mark.posted_on" t-on-click="p7SaveMark"><t t-out="ic('check',14)"/> Mark as posted</button>
         </div>
       </div>
     </div>
@@ -219,7 +219,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Invite = null; }">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.p7Busy" t-on-click="p7SaveInvite"><t t-out="ic('send',14)"/> Send the invitation</button>
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.p7Busy" t-on-click="p7SaveInvite"><t t-out="ic('send',14)"/> Send the invitation</button>
         </div>
       </div>
     </div>
@@ -236,12 +236,12 @@
       </div>
       <p class="pbhr-su-lede">Where a role can go. Each channel gives every role its own link, so an application through it is counted there. Tick the countries each one is used in: a role's Publish panel shows only the channels for its country. No job board is connected to this system — a recruiter pastes the advert and marks it as posted, or emails it to the board's contact below.</p>
 
-      <div t-if="state.p7Add" class="pbhr-su-add">
-        <input class="pbhr-in" t-model="state.p7Add.name" placeholder="Glints, TopCV, a university board…" maxlength="80"/>
+      <div t-if="state.p7Add" class="pbhr-su-add" data-biz-validation-scope="true">
+        <input required="required" data-biz-required-label="Channel name" class="pbhr-in" t-model="state.p7Add.name" placeholder="Glints, TopCV, a university board…" maxlength="80"/>
         <select class="pbhr-in" t-model="state.p7Add.kind">
           <option t-foreach="p7Ch.kinds" t-as="kd7" t-key="kd7.key" t-att-value="kd7.key" t-esc="kd7.label"/>
         </select>
-        <button class="pbim-btn primary" t-att-disabled="!state.p7Add.name.trim()" t-on-click="p7SaveAdd"><t t-out="ic('check',14)"/> Add it</button>
+        <button class="pbim-btn primary" data-biz-validate="true" t-on-click="p7SaveAdd"><t t-out="ic('check',14)"/> Add it</button>
         <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p7Add = null; }">Cancel</button>
       </div>
 
@@ -331,7 +331,7 @@
               <button t-if="state.data.agencies.can_invite" type="button" class="pbhr-p7-login-x" title="Take this sign-in away" t-on-click="() =&gt; this.p7Unlink(ag7, lg7)"><t t-out="ic('x',11)"/></button>
             </span>
           </div>
-          <div t-if="state.p7Invite and state.p7Invite.vendor_id === ag7.id" class="pbhr-su-add">
+          <div t-if="state.p7Invite and state.p7Invite.vendor_id === ag7.id" class="pbhr-su-add" data-biz-validation-scope="true">
             <input class="pbhr-in" type="email" t-model="state.p7Invite.email" placeholder="name@agency.com"/>
             <input class="pbhr-in" t-model="state.p7Invite.name" placeholder="Their name (optional)"/>
             <button class="pbim-btn primary" t-on-click="p7SaveInvite"><t t-out="ic('send',14)"/> Send the invitation</button>

@@ -214,7 +214,7 @@
             <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p8Ed = null; }">Close without saving</button>
           </span>
           <button class="pbim-btn ghost" t-on-click="p8Test" title="Sends this language, with sample details, to your own email"><t t-out="ic('send',13)"/> Send me a test</button>
-          <button t-if="p8Em.can_edit" class="pbim-btn primary" t-att-disabled="!p8Dirty or state.p8Ed.busy" t-on-click="p8SaveEmail" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> Save</button>
+          <button data-biz-validate="true" t-if="p8Em.can_edit" class="pbim-btn primary" t-att-disabled="!p8Dirty or state.p8Ed.busy" t-on-click="p8SaveEmail" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> Save</button>
         </div>
       </div>
     </div>
@@ -361,7 +361,7 @@
         </div>
         <div class="pbim-modal__foot">
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.p8Rule = null; }">Cancel</button>
-          <button t-if="p8Au.can_edit" class="pbim-btn primary" t-att-disabled="state.p8Rule.busy" t-on-click="p8SaveRule" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> <t t-if="state.p8Rule.id">Save</t><t t-else="">Save and switch on</t></button>
+          <button data-biz-validate="true" t-if="p8Au.can_edit" class="pbim-btn primary" t-att-disabled="state.p8Rule.busy" t-on-click="p8SaveRule" title="Save (Ctrl+S)"><t t-out="ic('check',14)"/> <t t-if="state.p8Rule.id">Save</t><t t-else="">Save and switch on</t></button>
         </div>
       </div>
     </div>

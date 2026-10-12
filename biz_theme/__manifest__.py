@@ -26,7 +26,7 @@
         - Developer-mode rail: `?debug=` is honoured for system administrators
           only (kill-switch: biz_theme.debug_rail = off)
     ''',
-    'version': '19.0.2.0.3',
+    'version': '19.0.2.1.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -77,6 +77,11 @@
             'biz_theme/static/src/js/biz_sidebar_state.js',
             'biz_theme/static/src/js/biz_sidebar_menu.js',
             'biz_theme/static/src/xml/biz_sidebar_menu.xml',
+            # Shared mandatory-field feedback for standard and custom forms
+            'biz_theme/static/src/js/required_fields.js',
+            'biz_theme/static/src/js/native_required_fields.js',
+            'biz_theme/static/src/xml/required_fields.xml',
+            'biz_theme/static/src/scss/required_fields.scss',
             # Friendly error dialogs
             'biz_theme/static/src/scss/biz_error_dialogs.scss',
             'biz_theme/static/src/js/biz_error_dialogs.js',
@@ -104,6 +109,9 @@
         # web/static/src/core/**, which web.assets_frontend already carries, so
         # nothing backend-only is dragged along.
         'web.assets_frontend': [
+            'biz_theme/static/src/js/required_fields.js',
+            'biz_theme/static/src/xml/required_fields.xml',
+            'biz_theme/static/src/scss/required_fields.scss',
             'biz_theme/static/src/scss/biz_error_dialogs.scss',
             'biz_theme/static/src/js/biz_error_dialogs.js',
             'biz_theme/static/src/xml/biz_error_dialogs.xml',

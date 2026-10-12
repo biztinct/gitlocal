@@ -136,7 +136,7 @@
           <div class="pplw-sp"/>
           <button t-if="state.result and state.result.applied" class="pbim-btn primary" t-on-click="openEmployee"><t t-out="ic('arrow',15)"/> Open employee</button>
           <button t-elif="state.step &lt; 3" class="pbim-btn primary" t-att-disabled="!canNext" t-on-click="next">Next <t t-out="ic('arrow',15)"/></button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create employee</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create employee</button>
         </div>
       </div>
     </div>

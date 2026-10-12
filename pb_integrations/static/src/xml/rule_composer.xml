@@ -456,7 +456,7 @@
             <span t-if="footSummary" class="itgrc-foot__sum" t-esc="footSummary"/>
             <span class="pbim-modal__sp"/>
             <button class="pbim-btn ghost" t-on-click="requestClose">Close</button>
-            <button t-if="state.draft and !readOnly" class="pbim-btn primary"
+            <button data-biz-validate="true" t-if="state.draft and !readOnly" class="pbim-btn primary"
                     t-att-disabled="!canSave" t-on-click="save">
               <t t-out="ic('check', 15)"/> Save rule
             </button>

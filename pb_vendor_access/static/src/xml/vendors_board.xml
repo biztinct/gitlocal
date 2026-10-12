@@ -381,7 +381,7 @@
         </div>
         <div class="pbva-modal-f">
           <button class="pbim-btn ghost" t-on-click="closeEdit">Cancel</button>
-          <button class="pbim-btn primary" t-on-click="saveVendor"
+          <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveVendor"
                   t-att-disabled="state.busy">Save</button>
         </div>
       </div>
@@ -445,7 +445,7 @@
         </div>
         <div class="pbva-modal-f">
           <button class="pbim-btn ghost" t-on-click="closeAgreement">Cancel</button>
-          <button class="pbim-btn primary" t-on-click="saveAgreement"
+          <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveAgreement"
                   t-att-disabled="state.busy">Save</button>
         </div>
       </div>
@@ -498,7 +498,7 @@
         </div>
         <div class="pbva-modal-f">
           <button class="pbim-btn ghost" t-on-click="closeRenew">Cancel</button>
-          <button class="pbim-btn primary" t-on-click="saveRenewal"
+          <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveRenewal"
                   t-att-disabled="state.busy">Renew it</button>
         </div>
       </div>

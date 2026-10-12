@@ -462,7 +462,7 @@
           <textarea class="prb-ta" rows="5" t-att-value="state.talking.notes" t-on-input="onTalkNotes" placeholder="What you talked about, and what you agreed…"/>
           <div class="prb-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelTalk">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveTalk">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveTalk">
               <t t-out="ic('check',15)"/> Save it
             </button>
           </div>
@@ -575,7 +575,7 @@
               <button class="pbim-btn ghost" t-on-click="() =&gt; this.verdictStep(2)">
                 Back
               </button>
-              <button class="pbim-btn primary" t-att-disabled="verdictBlocked" t-on-click="saveVerdict">
+              <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="verdictBlocked" t-on-click="saveVerdict">
                 <t t-out="ic('stamp',15)"/>
                 <t t-esc="state.verdicting.preview ? state.verdicting.preview.label : 'Confirm'"/>
               </button>

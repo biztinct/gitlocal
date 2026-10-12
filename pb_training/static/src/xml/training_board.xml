@@ -775,7 +775,7 @@
             </button>
           </div>
           <div class="pbtn-modal-body">
-            <textarea class="pbtn-in" rows="4" t-model="state.refuseNote"
+            <textarea required="required" data-biz-required-label="Reason for turning down the claim" class="pbtn-in" rows="4" t-model="state.refuseNote"
                       placeholder="Say why. One line is enough — for example, the receipt is for a conference rather than a course."/>
           </div>
           <div class="pbtn-modal-foot">
@@ -783,8 +783,8 @@
               Leave it
             </button>
             <button class="pbim-btn primary"
-                    t-att-disabled="!state.refuseNote.trim() or state.cBusy"
-                    t-on-click="confirmRefuse">
+                    t-att-disabled="state.cBusy"
+                    data-biz-validate="true" t-on-click="confirmRefuse">
               Turn it down
             </button>
           </div>

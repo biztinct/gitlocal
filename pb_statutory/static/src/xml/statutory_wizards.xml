@@ -53,7 +53,7 @@
           <div class="pplw-sp"/>
           <button t-if="state.result and state.result.applied" class="pbim-btn primary" t-on-click="openPolicy"><t t-out="ic('arrow',15)"/> Open policy</button>
           <button t-if="state.result and !state.result.applied and state.result.request_id" class="pbim-btn primary" t-on-click="seeRequest"><t t-out="ic('inbox',15)"/> See the request</button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create policy</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create policy</button>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
                 <h4>Identity</h4>
                 <label class="pplw-label">Name *</label><input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
                 <label class="pplw-label">Code *</label><input class="pplw-in" t-on-input="(ev) => this.onField('code', ev)"/>
-                <label class="pplw-label">Tax year *</label><input type="number" class="pplw-in" t-att-value="state.form.tax_year" t-on-change="(ev) => this.onField('tax_year', ev)"/>
+                <label class="pplw-label">Tax year *</label><input type="number" class="pplw-in" t-att-value="state.form.tax_year" t-att-data-biz-missing="state.form.tax_year ? 'false' : 'true'" t-on-change="(ev) => this.onField('tax_year', ev)"/>
               </div>
               <div class="pplw-sec">
                 <h4>Deductions (<t t-esc="cur"/>/month)</h4>
@@ -103,7 +103,7 @@
           <div class="pplw-sp"/>
           <button t-if="state.result and state.result.applied" class="pbim-btn primary" t-on-click="openTax"><t t-out="ic('arrow',15)"/> Open tax table</button>
           <button t-if="state.result and !state.result.applied and state.result.request_id" class="pbim-btn primary" t-on-click="seeRequest"><t t-out="ic('inbox',15)"/> See the request</button>
-          <button t-else="" class="pbim-btn primary" t-att-disabled="!canCreate || state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create tax table</button>
+          <button data-biz-validate="true" t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create tax table</button>
         </div>
       </div>
     </div>

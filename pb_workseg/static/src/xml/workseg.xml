@@ -441,7 +441,7 @@
                      t-on-change="(ev) => this.setMakeWage(ev.target.value)"/>
             </div>
             <div class="wsg-make-acts">
-              <button class="pbim-btn primary sm" t-att-disabled="state.busy"
+              <button data-biz-validate="true" class="pbim-btn primary sm" t-att-disabled="state.busy"
                       t-on-click="createHostEmployment">
                 <t t-out="ic('check',14)"/> Create it
               </button>

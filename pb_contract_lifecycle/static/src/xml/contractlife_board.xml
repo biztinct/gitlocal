@@ -604,7 +604,7 @@
           </div>
           <div class="ctl-modal-act">
             <button class="pbim-btn ghost" t-on-click="cancelType">Cancel</button>
-            <button class="pbim-btn primary" t-on-click="saveType">
+            <button data-biz-validate="true" class="pbim-btn primary" t-on-click="saveType">
               <t t-out="ic('check',15)"/> Save it
             </button>
           </div>

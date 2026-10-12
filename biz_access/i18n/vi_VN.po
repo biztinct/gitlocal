@@ -2885,5 +2885,5 @@ msgstr "Bắt buộc"
 
 #. module: biz_access
 #: code:addons/biz_access/static/src/xml/access_board.xml:0
-msgid "Enter a reason to enable Save and update users."
-msgstr "Nhập lý do để bật nút Lưu và cập nhật người dùng."
+msgid "Required. Explain why this role is changing."
+msgstr "Bắt buộc. Giải thích lý do thay đổi vai trò này."

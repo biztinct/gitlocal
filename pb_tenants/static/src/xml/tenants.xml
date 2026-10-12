@@ -2586,7 +2586,7 @@
           </button>
           <span class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="closeFeatMenu">Close</button>
-          <button class="pbim-btn primary" t-att-disabled="!!state.feat.busy"
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="!!state.feat.busy"
                   t-on-click="saveFeatReason">Save the reason</button>
         </div>
       </div>
@@ -2774,7 +2774,7 @@
           <span t-if="state.mailTest" t-attf-class="tnx-check-res {{ state.mailTest.ok ? 'ok' : 'bad' }}" t-esc="state.mailTest.message"/>
           <span class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="closeSettings">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.settings.busy || !state.settings.d" t-on-click="saveSettings">
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.settings.busy || !state.settings.d" t-on-click="saveSettings">
             <t t-if="state.settings.busy"><span class="pbim-spin tnx-minispin"/> Saving…</t>
             <t t-else="">Save</t>
           </button>
@@ -3071,15 +3071,15 @@
         </div>
         <div class="pbim-modal__body">
           <label class="pbim-label">Why is it being cancelled?</label>
-          <input class="pbim-input" t-model="state.bill.voidReason"
+          <input required="required" data-biz-required-label="Reason for cancelling the invoice" class="pbim-input" t-model="state.bill.voidReason"
                  placeholder="Raised against the wrong month"/>
         </div>
         <div class="pbim-modal__foot">
           <span class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="() => state.bill.voidFor = null">Keep it</button>
           <button class="pbim-btn danger"
-                  t-att-disabled="state.bill.busy or !state.bill.voidReason.trim()"
-                  t-on-click="confirmVoid">Cancel the invoice</button>
+                  t-att-disabled="state.bill.busy"
+                  data-biz-validate="true" t-on-click="confirmVoid">Cancel the invoice</button>
         </div>
       </div>
     </div>
@@ -3200,7 +3200,7 @@
         <div class="pbim-modal__foot">
           <span class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="cancelPlanEdit">Cancel</button>
-          <button class="pbim-btn primary"
+          <button data-biz-validate="true" class="pbim-btn primary"
                   t-att-disabled="!planEditValid or state.bill.busy === 'plan'"
                   t-on-click="savePlan">
             <t t-out="ic('save',15)"/> Save the plan
@@ -3320,7 +3320,7 @@
         <div class="pbim-modal__foot">
           <span class="pbim-modal__sp"/>
           <button class="pbim-btn ghost" t-on-click="closeBillSettings">Cancel</button>
-          <button class="pbim-btn primary" t-att-disabled="state.bill.busy === 'settings'"
+          <button data-biz-validate="true" class="pbim-btn primary" t-att-disabled="state.bill.busy === 'settings'"
                   t-on-click="saveBillSettings">
             <t t-if="state.bill.busy === 'settings'"><span class="pbim-spin tnx-minispin"/> Saving…</t>
             <t t-else=""><t t-out="ic('save',15)"/> Save</t>
