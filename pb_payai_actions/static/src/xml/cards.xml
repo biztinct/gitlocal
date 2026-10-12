@@ -33,7 +33,13 @@
             <span class="payai-card__k" t-esc="slot.label"/>
             <span class="payai-card__v">
               <span t-esc="slot.value_label"/>
-              <span t-attf-class="payai-src payai-src--{{ slot.origin }}" t-esc="this.payaiOrigin(slot.origin)"/>
+              <span t-attf-class="payai-src payai-src--{{ slot.origin }}" t-esc="slot.origin_label or this.payaiOrigin(slot.origin)"/>
+              <button type="button" class="payai-card__edit"
+                      t-if="slot.editable and card.state === 'planned' and (card.actions or []).length"
+                      t-att-aria-label="this.payaiEditLabel(slot)" t-att-title="this.payaiEditLabel(slot)"
+                      t-on-click="() => this.payaiEdit(msg, slot)">
+                <t t-out="this.payaiSvg('pencil')"/>
+              </button>
             </span>
           </t>
         </div>
@@ -114,7 +120,7 @@
           <span class="payai-card__undotext">
             <t t-esc="card.undo.note"/>
             <t t-if="card.undo.can and card.undo.until_iso">
-              <b class="payai-card__clock"><PayaiCountdown until="card.undo.until_iso"/></b>
+              <b class="payai-card__clock"><PayaiCountdown until="card.undo.until_iso" onExpire="() => this.payaiUndoExpired(msg)"/></b>
             </t>
           </span>
           <button type="button" class="payai-btn payai-btn--ghost" t-if="card.undo.can"

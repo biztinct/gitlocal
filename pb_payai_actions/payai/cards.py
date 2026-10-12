@@ -5,7 +5,7 @@ Contract (P1_HANDOVER §Card JSON contract):
 
     {kind: 'plan'|'done'|'blocked'|'refused'|'clarify',
      task_id, tier, title, subtitle,
-     slots: [{key, label, value_label, origin, editable}],
+     slots: [{key, label, value_label, origin, editable, origin_label?}],
      notes: [{tone, text}],
      actions: [{id, label, style, door_id?, hub?, url?, auto?, text?}],
      chips: [{label, sublabel, value}],
@@ -16,6 +16,8 @@ Contract (P1_HANDOVER §Card JSON contract):
 The client never decides a tier or a right: it draws what it is given and
 calls back by `task_id`. Every string here is already plain English.
 """
+import json
+
 from odoo.tools.translate import LazyTranslate
 
 from .i18n import T
@@ -40,6 +42,17 @@ def card(kind, task=None, tier='look', title='', subtitle='', **kw):
     }
     out.update(kw)
     return out
+
+
+def plan_slots(task):
+    """The slots of the plan the person confirmed (kept on the task row), for
+    the done / failed card: what was run stays on the card. Never editable."""
+    try:
+        plan = json.loads((task and task.plan_json) or '{}')
+    except (TypeError, ValueError):
+        plan = {}
+    slots = plan.get('slots') if isinstance(plan, dict) else None
+    return [dict(s, editable=False) for s in (slots or []) if isinstance(s, dict)]
 
 
 def note(tone, text):

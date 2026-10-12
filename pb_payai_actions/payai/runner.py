@@ -52,10 +52,12 @@ TOOLS_PROMPT = (
 )
 
 #: Spoken (or typed) words that mean "do the plan you just showed me".
+#: An explicit verb phrase is required: a bare "yes" / "ok" / "sure" answers
+#: too many other things (a later card, a question) to confirm a plan.
 GO_AHEAD = re.compile(
     r'^(?:(?:yes|yeah|yep|ok|okay|sure)[,!. ]*)?(?:please\s+)?'
     r'(?:go\s+ahead|do\s+it|go\s+for\s+it|proceed|confirm(?:ed)?|carry\s+on|'
-    r'run\s+it|send\s+it|yes(?:\s+please)?)(?:\s+please)?[.!]*$', re.I)
+    r'run\s+it|send\s+it)(?:\s+please)?[.!]*$', re.I)
 
 #: P2 latency: the last sentences the model routed, per person (process-local).
 _LRU = OrderedDict()
@@ -223,9 +225,10 @@ def _now():
 
 def _new_task(ctx, action, utterance, texts):
     Task = ctx.env['payai.task'].sudo()
-    # One open question per person: a new request closes the old one.
-    Task.search([('user_id', '=', ctx.user.id), ('state', '=', 'clarify')]).write(
-        {'state': 'expired'})
+    # One open question or plan per person: a new request closes the old one,
+    # so an unconfirmed plan never stays confirmable behind later cards.
+    Task.search([('user_id', '=', ctx.user.id),
+                 ('state', 'in', ('clarify', 'planned'))]).write({'state': 'expired'})
     safe, _mapping = _redact(ctx, utterance or '')
     task = Task.create({
         'user_id': ctx.user.id,
@@ -512,6 +515,8 @@ def on_resolve(ctx, message, resolve):
             task.write({'state': 'expired'})
         return expired_card(ctx)
 
+    if follow == 'reask':
+        return _reask(ctx, task, slot_key)
     data = _params(task)
     if follow:
         try:
@@ -550,6 +555,106 @@ def on_resolve(ctx, message, resolve):
                 'state': 'planned'})
     return run(ctx, task.action_key, data.get('texts') or {}, task.utterance,
                task=task, pinned=pinned)
+
+
+def _reask(ctx, task, slot_key):
+    """The pencil on a plan card: drop that slot's choice and ask it again.
+
+    Only a slot the server drew with a pencil on this person's live plan
+    (PA-R3: the browser names the slot, never a value). The answer is a chip
+    (back through `on_resolve`) or typed words (`typed_answer`); either way
+    the plan is made again and shown before anything is done.
+    """
+    if task.state != 'planned':
+        return expired_card(ctx)
+    plan = _card_of(task)
+    row = next((s for s in plan.get('slots') or []
+                if s.get('key') == slot_key and s.get('editable')), None)
+    if row is None:
+        raise AccessError(T(_lt('That choice was not offered here.')))
+    action = ACTIONS[task.action_key]
+    if slot_key == 'pay_data':
+        # Not a slot of the Action: files never travel through chat.
+        return _note_card(ctx, task, _lt('Pay data is changed in the screen'), _lt(
+            'Files are not sent through chat. To load this month\'s file or change '
+            'where the values come from, tap Open in the screen instead.'), tone='info')
+    slot = next((s for s in action.slots if s.key == slot_key), None)
+    if slot is None:
+        raise AccessError(T(_lt('That choice was not offered here.')))
+    data = _params(task)
+    ctx.params = dict(data.get('params') or {})
+    try:
+        with ctx.env.cr.savepoint():
+            res = action.reask_slot(ctx, slot)
+    except (UserError, AccessError):
+        res = {'status': 'missing'}
+    pinned = dict(data.get('pinned') or {})
+    pinned.pop(slot_key, None)
+    data['pinned'] = pinned
+    for key in ('vals', 'fingerprint', 'extra'):
+        data.pop(key, None)
+    ask = {'slot': slot_key, 'typed': True, 'candidates': []}
+    if res.get('status') == 'ambiguous' and res.get('candidates'):
+        ask['candidates'] = [{'value': T(c['value']), 'label': c['label'],
+                              'sublabel': c.get('sublabel') or ''}
+                             for c in res['candidates']]
+        card = _clarify_card(ctx, action, slot, res)
+        card['notes'] = [cards.note('info', _lt(
+            'Tap one, or type it below. I will show you the plan again before '
+            'anything is done.'))]
+    else:
+        card = cards.card(
+            'clarify', task, action.tier, title=_lt('What should it be instead?'),
+            subtitle=action.title, slots=[dict(row, editable=False)],
+            notes=[cards.note('info', _lt(
+                'Type it below. I will show you the plan again before anything '
+                'is done.'))])
+    data['ask'] = ask
+    task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
+                       'expires_at': _now() + task._ttl()})
+    return _finish(ctx, task, 'clarify', card)
+
+
+def typed_answer(ctx, message):
+    """Words typed after a pencil's question: the new value for that slot.
+    None when no such question is waiting — then they are just words."""
+    text = ' '.join((message or '').split())[:200]
+    if not text or GO_AHEAD.match(text):
+        return None
+    Task = ctx.env['payai.task'].sudo()
+    domain = [('user_id', '=', ctx.user.id), ('state', '=', 'clarify')]
+    if ctx.conversation:
+        domain.append(('session_id', '=', ctx.conversation.id))
+    task = Task.search(domain, order='id desc', limit=1)
+    if not task or task.is_expired():
+        return None
+    data = _params(task)
+    ask = data.get('ask') or {}
+    action = ACTIONS.get(task.action_key)
+    slot = action and next((s for s in action.slots if s.key == ask.get('slot')), None)
+    if not ask.get('typed') or slot is None or not _is_latest(ctx, task):
+        return None
+    ctx.task = task
+    ctx.params = dict(data.get('params') or {})
+    try:
+        with ctx.env.cr.savepoint():
+            res = action.resolve_slot(ctx, slot, text)
+    except (UserError, AccessError) as exc:
+        res = {'status': 'missing', 'note': _exc_text(exc)}
+    if res.get('status') == 'missing':
+        # The question stays open: the note is added below it.
+        return _note_card(ctx, task, _lt('I could not read that'), '%s %s' % (
+            res.get('note') or T(_lt('I could not work out the new %s.')) % T(slot.label).lower(),
+            T(_lt('Type it again.'))))
+    texts = dict(data.get('texts') or {})
+    texts[slot.key] = text
+    pinned = dict(data.get('pinned') or {})
+    pinned.pop(slot.key, None)
+    data.update({'texts': texts, 'pinned': pinned})
+    data.pop('ask', None)
+    task.write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
+                'state': 'planned'})
+    return run(ctx, task.action_key, texts, task.utterance, task=task, pinned=pinned)
 
 
 def _pin(ctx, slot, value, label=''):
@@ -695,6 +800,8 @@ def confirm(ctx, task_id, how='tap'):
             return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
                 'A spoken go-ahead is switched off here, so I did nothing. Tap Do it '
                 'on the plan card if it is right.'))
+        if not _is_latest(ctx, task):
+            return _not_latest_card(ctx)
     if task.state != 'planned':
         if task.state in ('confirmed', 'running', 'done', 'undone', 'cancelled'):
             return _card_of(task)
@@ -744,9 +851,9 @@ def confirm(ctx, task_id, how='tap'):
             'progress': {'done': 0, 'total': int((data.get('extra') or {}).get('total') or 0),
                          'label': T(_lt('Preparing the run…'))},
             'drive': {'vals': data.get('vals') or {}},
-            'audit_line': T(_lt('Confirmed by %(who)s (%(how)s), %(when)s.')) % {
-                'who': ctx.user.name, 'how': T(_lt('spoken') if how == 'voice' else _lt('tap')),
-                'when': _stamp(ctx)},
+            'audit_line': T(_lt('Confirmed by %(who)s by voice, %(when)s.') if how == 'voice'
+                            else _lt('Confirmed by %(who)s with a tap, %(when)s.')) % {
+                'who': ctx.user.name, 'when': _stamp(ctx)},
         })
         card.pop('speak', None)
         stored = dict(card)
@@ -860,6 +967,36 @@ def cancel(ctx, task_id):
     return _finish(ctx, task, 'cancelled', card)
 
 
+def _is_latest(ctx, task):
+    """A spoken go-ahead counts only for the plan the person saw LAST: the
+    newest task in the conversation, and the card on the newest answer."""
+    Task = ctx.env['payai.task'].sudo()
+    domain = [('user_id', '=', ctx.user.id)]
+    if task.session_id:
+        domain.append(('session_id', '=', task.session_id.id))
+    if Task.search(domain, order='id desc', limit=1) != task:
+        return False
+    conv = ctx.conversation
+    if not conv or (task.session_id and conv != task.session_id):
+        return not task.session_id
+    try:
+        last = ctx.env['payroll.ai.message'].search(
+            [('conversation_id', '=', conv.id), ('role', '=', 'assistant')],
+            order='id desc', limit=1)
+        card = json.loads(last.card or '{}') if last else {}
+    except (AccessError, TypeError, ValueError):
+        return False
+    return isinstance(card, dict) and card.get('task_id') == task.id
+
+
+def _not_latest_card(ctx):
+    """Carries no task id on purpose: saying go ahead again must not turn
+    this note into "the latest card" for the old plan."""
+    return _note_card(ctx, None, _lt('Tap Do it to go ahead'), _lt(
+        'That plan is not the last thing I showed you, so I did nothing. Tap Do '
+        'it on the plan card if it is still right.'), tone='info')
+
+
 def go_ahead(ctx, message):
     """"Go ahead" said (or typed) after a plan card: the Do-it tap, when it
     may count. None when there is no plan waiting — then it is just words."""
@@ -892,6 +1029,9 @@ def handle(engine, message, context):
             return envelope(said)
         hit = registry.match(message)
         if hit is None:
+            said = typed_answer(ctx, message)
+            if said is not None:
+                return envelope(said)
             hit = ask_model(ctx, message)
         if hit is None:
             return None

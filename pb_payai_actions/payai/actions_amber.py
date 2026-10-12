@@ -65,9 +65,12 @@ def fingerprint(*parts):
     return json.dumps(parts, sort_keys=True, default=str)
 
 
-def slot_row(key, label, value_label, origin, editable=False):
+def slot_row(key, label, value_label, origin, editable=False, origin_label=''):
+    """origin_label: optional words that replace the origin chip text, so a
+    'default' chip can say WHY (e.g. "current company")."""
     return {'key': key, 'label': T(label), 'value_label': T(value_label or ''),
-            'origin': origin or 'default', 'editable': editable}
+            'origin': origin or 'default', 'editable': editable,
+            'origin_label': T(origin_label) if origin_label else ''}
 
 
 def plan_actions(do_label=None, screen=None, can_do=True, do_style='primary'):
@@ -221,6 +224,17 @@ class RunPayroll(_Amber):
             return resolved(text or '', text or '', 'said' if text else 'default')
         return super().resolve_slot(ctx, slot, text)
 
+    def reask_slot(self, ctx, slot):
+        # Empty words pick the pre-selected scheme; the pencil offers them all.
+        if slot.key == 'scheme':
+            schemes = self._defaults(ctx).get('schemes') or []
+            if len(schemes) > 1:
+                return ambiguous([{'value': s['id'], 'label': s.get('name') or '',
+                                   'sublabel': T(_lt('your division')) if s.get('mine')
+                                   else (s.get('cycle_label') or '')}
+                                  for s in schemes[:MAX_CHIPS]])
+        return super().reask_slot(ctx, slot)
+
     # ------------------------------------------------------------- plan
     def _statuses(self, ctx, people_text):
         """The wizard's own default ticks; words like 'active only' narrow them."""
@@ -283,10 +297,10 @@ class RunPayroll(_Amber):
         cur = (card.get('currency') or {}) if card else {}
         lanes = sheet.get('lanes') or {}
         slots = [
-            slot_row('period', _lt('Period'), _period_words(vals), period.get('origin')),
-            slot_row('scheme', _lt('Scheme'), scheme_name, params['scheme'].get('origin')),
+            slot_row('period', _lt('Period'), _period_words(vals), period.get('origin'), True),
+            slot_row('scheme', _lt('Scheme'), scheme_name, params['scheme'].get('origin'), True),
             slot_row('company', _lt('Company'), ctx.env.company.name,
-                     'default'),
+                     'default', origin_label=_lt('current company')),
         ]
         # The People slot shows what the wizard's scheme card shows: who the
         # scheme covers (incl. host employments it gains), not the raw list.
@@ -296,12 +310,12 @@ class RunPayroll(_Amber):
             who = T(_lt('%(n)s people · %(which)s')) % {'n': '{:,}'.format(covered),
                                                        'which': said_statuses}
         slots.append(slot_row('people', _lt('People'), who,
-                              'said' if said_statuses else 'default'))
+                              'said' if said_statuses else 'default', True))
         notes = []
         if sheet.get('wanted'):
             comps = sheet.get('components') or []
             slots.append(slot_row('pay_data', _lt('Pay data'),
-                                  _lt('Without this month\'s file'), 'assumed'))
+                                  _lt('Without this month\'s file'), 'assumed', True))
             notes.append(cards.note('warn', T(_lt(
                 'This scheme expects a pay data file for %(n)s value(s). Files '
                 'are not sent through chat, so if I run it now those values use '
@@ -315,7 +329,9 @@ class RunPayroll(_Amber):
                 parts.append(T(_lt('the employee records')))
             src = T(_lt('From %s, as usual')) % T(_lt(' and ')).join(parts) if parts \
                 else T(_lt('As the scheme is set up'))
-            slots.append(slot_row('pay_data', _lt('Pay data'), src, 'default'))
+            # The chip says why it is default, unless the value already does.
+            slots.append(slot_row('pay_data', _lt('Pay data'), src, 'default', True,
+                                  origin_label=_lt('as the scheme is set up') if parts else ''))
         notes.insert(0, cards.note('ok', T(_lt(
             'No %(month)s run exists for %(scheme)s yet.')) % {
                 'month': month, 'scheme': scheme_name}))
@@ -456,7 +472,7 @@ class RunPayroll(_Amber):
             'plan', task, 'prepare', title=T(_lt('Run prepared: %s')) % (run.name or ''),
             subtitle=T(_lt('Draft · %(scheme)s · %(month)s')) % {
                 'scheme': extra.get('scheme') or '', 'month': extra.get('month') or ''},
-            result=tiles, notes=notes, actions=actions, undo=undo, state='done',
+            slots=cards.plan_slots(task), result=tiles, notes=notes, actions=actions, undo=undo, state='done',
             icon='check', progress={'done': n, 'total': n, 'label': T(_lt('Done'))},
             result_ref={'run_id': run.id},
             offer={'slot': 'run', 'values': [T(run.id)], 'actions': ['submit_run']})
@@ -488,7 +504,8 @@ class RunPayroll(_Amber):
                 actions.append(door)
         actions.append(screen_action(_lt('Open Run payroll'), hub=PAY_HUB_RUN))
         return cards.card('blocked', task, 'prepare', title=_lt('That did not finish'),
-                          subtitle=self.title, notes=notes, actions=actions,
+                          subtitle=self.title, slots=cards.plan_slots(task),
+                          notes=notes, actions=actions,
                           state='failed', result_ref={'run_id': run.id if run else 0})
 
     def undo(self, ctx, task):
@@ -621,7 +638,7 @@ class SubmitRun(_RunAmber):
                               actions=actions)
         row = self._row(ctx, run)
         slots = [
-            slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin')),
+            slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin'), True),
             slot_row('figures', _lt('Figures'), T(_lt('%(n)s people · %(net)s net')) % {
                 'n': '{:,}'.format(int(row.get('employees') or 0)),
                 'net': money(row.get('net'), row.get('currency'))}, 'default'),
@@ -664,6 +681,7 @@ class SubmitRun(_RunAmber):
         if run.state == 'done':
             return cards.card(
                 'plan', task, 'prepare', title=_lt('Approved straight away'), subtitle=run.name,
+                slots=cards.plan_slots(task),
                 notes=[cards.note('ok', _lt(
                     'This route needs nobody\'s approval, so the run is approved. That is recorded.'))],
                 actions=actions, state='done', icon='check',
@@ -671,6 +689,7 @@ class SubmitRun(_RunAmber):
         who = ((row.get('approval') or {}).get('with')) or ''
         return cards.card(
             'plan', task, 'prepare', title=_lt('Sent for approval'), subtitle=run.name,
+            slots=cards.plan_slots(task),
             notes=[cards.note('ok', T(_lt('It is with %s now.')) % who if who else
                               _lt('It is waiting for its approval now.'))],
             actions=actions, state='done', icon='check',
@@ -742,7 +761,7 @@ class SendPayslips(_RunAmber):
                               subtitle=run.name, notes=[cards.note('info', T(_lt(
                                   'These payslips are already waiting to be approved, with %s.')) % (
                                       batch._waiting_for() or T(_lt('their approver'))))])
-        slots = [slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin')),
+        slots = [slot_row('run', _lt('Run'), run.name or '', params['run'].get('origin'), True),
                  slot_row('people', _lt('People'), T(_lt('%s payslips')) % '{:,}'.format(len(slips)),
                           'default')]
         notes = [cards.note('warn', _lt(
@@ -963,8 +982,9 @@ class UpdatePayData(_Amber):
                      params['person'].get('origin')),
             slot_row('field', _lt('Value'), item.get('field_label') or params['field']['label'],
                      params['field'].get('origin')),
-            slot_row('value', _lt('New amount'), new_label, params['value'].get('origin')),
-            slot_row('from', _lt('From'), _day_label(start), (params.get('from') or {}).get('origin')),
+            slot_row('value', _lt('New amount'), new_label, params['value'].get('origin'), True),
+            slot_row('from', _lt('From'), _day_label(start), (params.get('from') or {}).get('origin'),
+                     True),
             slot_row('today', _lt('Today'), item.get('old_label') or T(_lt('(not set)')), 'default'),
         ]
         notes = [cards.note('info', _lt(
@@ -1010,6 +1030,7 @@ class UpdatePayData(_Amber):
             who = out.get('with_whom') or ''
             return cards.card(
                 'plan', task, 'prepare', title=_lt('Sent for approval'), subtitle=name,
+                slots=cards.plan_slots(task),
                 notes=[cards.note('ok', T(_lt(
                     'Sent to %(who)s for approval. %(name)s\'s pay does not change until '
                     'they approve.')) % {'who': who or T(_lt('the approver')), 'name': name})],
@@ -1018,6 +1039,7 @@ class UpdatePayData(_Amber):
                 result_ref=ref)
         return cards.card(
             'plan', task, 'prepare', title=_lt('Changed'), subtitle=name,
+            slots=cards.plan_slots(task),
             notes=[cards.note('ok', T(_lt('Saved as %s. It is on the Records history.')) % (
                 out.get('reference') or ''))],
             state='done', icon='check',
@@ -1186,11 +1208,11 @@ class FilingPrepare(_Amber):
         per = params['period']['value']
         start = fields.Date.to_date(per['date_start'])
         slots = [slot_row('country', _lt('Country'), params['country']['label'],
-                          params['country'].get('origin')),
+                          params['country'].get('origin'), True),
                  slot_row('filing', _lt('Filing'), params['filing']['label'],
-                          params['filing'].get('origin')),
+                          params['filing'].get('origin'), True),
                  slot_row('period', _lt('Period'), month_label(start),
-                          params['period'].get('origin'))]
+                          params['period'].get('origin'), True)]
         notes = [cards.note('info', _lt(
             'I prepare the file for you to check. Nothing is sent to the authority.')),
             cards.note('info', _lt(

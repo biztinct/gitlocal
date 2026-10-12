@@ -140,6 +140,11 @@ class Action:
         from .resolve import RESOLVERS
         return RESOLVERS[slot.kind](ctx, text)
 
+    def reask_slot(self, ctx, slot):
+        """The pencil on a plan card: what to offer for this slot again.
+        Ambiguous (candidates to tap) or anything else (the person types it)."""
+        return self.resolve_slot(ctx, slot, '')
+
 
 def payai_action(cls):
     """Register an Action class (one instance per key)."""

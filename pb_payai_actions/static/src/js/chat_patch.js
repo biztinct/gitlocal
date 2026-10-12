@@ -62,22 +62,38 @@ const ICONS = {
  */
 export class PayaiCountdown extends Component {
     static template = "pb_payai_actions.Countdown";
-    static props = { until: String };
+    static props = { until: String, onExpire: { type: Function, optional: true } };
 
     setup() {
         this.state = useState({ now: Date.now() });
         onMounted(() => {
-            this._timer = setInterval(() => { this.state.now = Date.now(); }, 1000);
+            this._timer = setInterval(() => this._tick(), 1000);
+            this._tick();
         });
         onWillUnmount(() => clearInterval(this._timer));
     }
 
-    get left() {
+    _tick() {
+        this.state.now = Date.now();
+        // design-5: at 0:00 the offer ends — stop ticking and tell the card
+        // once, so it stops showing a button the server would refuse.
+        if (this.seconds <= 0 && !this._expired) {
+            this._expired = true;
+            clearInterval(this._timer);
+            if (this.props.onExpire) { this.props.onExpire(); }
+        }
+    }
+
+    get seconds() {
         // The server sends "YYYY-MM-DD HH:MM:SSZ"; the space form is not
         // ISO 8601 and some browsers (Safari) parse it as NaN, which would
         // read "0:00 left" for the whole window.
         const end = Date.parse(String(this.props.until || "").replace(" ", "T"));
-        const s = Math.max(0, Math.floor(((Number.isNaN(end) ? 0 : end) - this.state.now) / 1000));
+        return Math.max(0, Math.floor(((Number.isNaN(end) ? 0 : end) - this.state.now) / 1000));
+    }
+
+    get left() {
+        const s = this.seconds;
         return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
     }
 }
@@ -232,13 +248,25 @@ patch(AiInsightChat.prototype, {
         this.speak(String(text || ""));
     },
 
-    /** A newer card for the same request: the older one stops offering buttons. */
+    /** A newer card for the same request: the older one stops offering buttons.
+     *  A newer request (another task's card): an older plan stops offering
+     *  Do it / Cancel — the server has already expired it (one open plan per
+     *  person). Its "Open in the screen instead" door stays. */
     _payaiSupersede(msg) {
         const id = msg.card && msg.card.task_id;
         if (!id) { return; }
+        const newer = !msg.card.transient;
         for (const m of this.state.messages) {
-            if (m !== msg && m.card && m.card.task_id === id && (m.card.actions || []).length) {
+            if (m === msg || !m.card) { continue; }
+            const acts = m.card.actions || [];
+            if (!acts.length) { continue; }
+            if (m.card.task_id === id) {
+                // A one-off note answering this plan leaves its Do it alone.
+                if (!newer) { continue; }
                 m.card.actions = [];
+                m.card.superseded = true;
+            } else if (newer && m.card.task_id && acts.some((a) => a.id === "do")) {
+                m.card.actions = acts.filter((a) => a.id !== "do" && a.id !== "cancel");
                 m.card.superseded = true;
             }
         }
@@ -363,6 +391,14 @@ patch(AiInsightChat.prototype, {
         if (!msg.card || msg.card.busy) { return; }
         msg.card.busy = true;
         await this._payaiTaskCall(msg, "rpc_confirm_task", ["tap"]);
+    },
+
+    /** design-5: the countdown hit 0:00. Only hides the button — the server
+     *  stays the judge of what is too late. */
+    payaiUndoExpired(msg) {
+        if (!msg.card || !msg.card.undo || !msg.card.undo.can) { return; }
+        msg.card.undo = { ...msg.card.undo, can: false, label: "",
+            note: _t("The ten minutes are up. It can still be changed on the screen.") };
     },
 
     payaiUndo(msg) {
@@ -510,6 +546,16 @@ patch(AiInsightChat.prototype, {
     payaiAsk(text) {
         if (!text || this.state.isLoading) { return; }
         this.sendSuggestion(String(text));
+    },
+
+    /** The pencil beside a plan slot: ask the server to ask that slot again.
+     *  Only the slot's key travels; the server checks it drew that pencil. */
+    payaiEditLabel(slot) { return _t("Change %s", slot.label); },
+
+    payaiEdit(msg, slot) {
+        if (!msg.card || !msg.card.task_id || this.state.isLoading) { return; }
+        this._payaiResolve = { task_id: msg.card.task_id, slot: slot.key, action: "reask" };
+        this.sendSuggestion(this.payaiEditLabel(slot));
     },
 
     payaiPick(msg, chip) {

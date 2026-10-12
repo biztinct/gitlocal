@@ -9,7 +9,7 @@
     # browser through the wizard's own chain, `@pb_payrun_wizard/js/run_driver`),
     # send for approval, change a pay value, send payslips, prepare a filing;
     # plan card → Do it → progress → result → undo. Red is P3.
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Ask PayAI to open a screen, show a run, or prepare work you then confirm',
     'author': 'Payobook',
