@@ -43,6 +43,13 @@ retained for delivery-state inspection. The visitor's email is the Reply-To.
 Test Connection probes ash@biztinct.com as both sender and recipient, without
 sending a message, so it is independent of the administrator's old placeholder
 profile address. Other outgoing servers retain their standard connection test.
+The dedicated Gmail connection uses one AUTH LOGIN exchange over verified TLS.
+This preserves Gmail's credential rejection instead of Python's automatic
+authentication fallback masking it as an unexpected disconnect. Rejections
+show the SMTP code and instructions to create an App Password in the correct
+Google account; passwords and SMTP authentication exchanges are never logged.
+Correcting credentials or reactivating the configured server retries failed
+notifications linked to saved website enquiries. Unrelated mail is not retried.
 
 Administrator screens (HTTPS):
 

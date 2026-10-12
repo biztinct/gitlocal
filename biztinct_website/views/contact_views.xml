@@ -48,7 +48,8 @@
             <xpath expr="//sheet" position="inside">
                 <div class="alert alert-info" role="status" attrs="{'invisible': [('smtp_host', '!=', 'smtp.gmail.com')]}">
                     <strong>Biztinct website email setup</strong><br/>
-                    Enter the Google App Password for ash@biztinct.com in the Password field (not your normal Gmail password).
+                    Enter the 16-letter Google App Password generated while signed into ash@biztinct.com in the Password field (not your normal Gmail password).
+                    If that address is an alias, use the primary Google account address as the SMTP username.
                     Save, click Test Connection, then switch Active on and save.
                     Saved website enquiries are then queued automatically for ash@biztinct.com.
                     This server is reserved for website enquiries and is excluded from automatic default-server selection.
