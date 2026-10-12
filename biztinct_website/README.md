@@ -68,8 +68,17 @@ temporary restored QA databases cannot change public routing.
 ## Design and assets
 
 The lightweight public pages use self-hosted Manrope and Instrument Serif
-fonts (OFL licenses in `static/src/fonts`). Brand marks and workflow graphics
-are SVG/CSS assets. Workflow illustrations are labelled as examples, not live
+fonts (OFL licenses in `static/src/fonts`). V2 uses three original glass/chrome
+3D illustrations generated with the built-in Imagegen tool, delivered as
+transparent WebP assets. Their complete prompts and paths are recorded in
+`design/artwork-v2.json`. The hero uses a procedural WebGL aurora, spring-like
+pointer parallax, floating artwork and animated typography. Service cards have
+pointer tilt and lighting; sections reveal on scroll, with a moving capability
+strip and animated workflow states. The shader sleeps when hidden or offscreen
+and renders at 30 fps with a capped resolution. Reduced-motion and data-saving
+preferences disable unnecessary effects. No animation is required to use the
+site. The original Biztinct logo and favicon are preserved; explanatory workflow diagrams use SVG/CSS.
+Workflow illustrations are labelled as examples, not live
 customer data. No invented testimonials, client logos or performance claims.
 Links, native forms and FAQ disclosures work without JavaScript. Animations
 respect reduced-motion preferences. Fonts and scripts load from this server;
@@ -85,3 +94,5 @@ HTTP checks cover CSRF, validation, abuse limiting, legacy redirects and the
 production contact-to-database flow. Inspect desktop and mobile Chrome views,
 navigation, FAQ and submission confirmation. Test screenshots must stay in
 memory or be removed before completion.
+
+The original Biztinct logo and favicon are byte-for-byte copies of the existing website assets. The logo is displayed without recolouring, filters or altered proportions; a white backing preserves its legibility on the dark theme.
