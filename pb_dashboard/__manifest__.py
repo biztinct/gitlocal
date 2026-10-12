@@ -27,7 +27,9 @@
     # is deleted; Vietnamese for every Home string; payobook walk fixes W1-W4.
     # 2.2.1: Keep learning shows the lesson title as text in the reader's
     # language (payobook walk: "[object Object]", H43).
-    'version': '19.0.2.2.1',
+    # 2.2.2: Vietnamese style for money ("66,0 triệu") and months
+    # ("Tháng 10/2026") — owner 2026-10-12.
+    'version': '19.0.2.2.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

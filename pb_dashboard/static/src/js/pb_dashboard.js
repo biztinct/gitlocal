@@ -289,8 +289,12 @@ function int(v) {
 function compact(v) {
     const n = Number(v) || 0;
     const a = Math.abs(n);
-    if (a >= 1e9) { return { num: (n / 1e9).toFixed(1), unit: _t("bn") }; }
-    if (a >= 1e6) { return { num: (n / 1e6).toFixed(1), unit: _t("M") }; }
+    // One decimal in the reader's own style: "53.1" in English, "53,1" in
+    // Vietnamese (owner 2026-10-12).
+    const one = (x) => x.toLocaleString(locale(),
+        { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    if (a >= 1e9) { return { num: one(n / 1e9), unit: _t("bn") }; }
+    if (a >= 1e6) { return { num: one(n / 1e6), unit: _t("M") }; }
     if (a >= 1e3) { return { num: Math.round(n / 1e3).toLocaleString(locale()), unit: _t("K") }; }
     return { num: Math.round(n).toLocaleString(locale()), unit: "" };
 }
@@ -658,6 +662,11 @@ export class PbDashboard extends Component {
     shortDate(iso) {
         const d = this.date(iso);
         if (!d || !d.isValid) { return ""; }
+        if (this.isVi) {
+            // "T3, 20/10" this year, "20/10/2025" otherwise (owner 2026-10-12)
+            return d.year === this.today.year
+                ? `${d.toFormat("ccc")}, ${d.toFormat("dd/LL")}` : d.toFormat("dd/LL/yyyy");
+        }
         return d.year === this.today.year ? d.toFormat("ccc d LLL") : d.toFormat("d LLL yyyy");
     }
 
@@ -666,9 +675,19 @@ export class PbDashboard extends Component {
         return d && d.isValid ? Math.round(d.startOf("day").diff(this.today, "days").days) : null;
     }
 
-    monthName(key) { return DateTime.fromISO(`${key}-01`).toFormat("LLLL"); }
+    // Vietnamese writes months by number: "Tháng 10", "Tháng 10/2026" (owner
+    // 2026-10-12); every other language keeps its own month name.
+    get isVi() { return String(locale() || "").toLowerCase().startsWith("vi"); }
 
-    monthLabel(key) { return DateTime.fromISO(`${key}-01`).toFormat("LLLL yyyy"); }
+    monthName(key) {
+        const d = DateTime.fromISO(`${key}-01`);
+        return this.isVi ? `Tháng ${d.month}` : d.toFormat("LLLL");
+    }
+
+    monthLabel(key) {
+        const d = DateTime.fromISO(`${key}-01`);
+        return this.isVi ? `Tháng ${d.month}/${d.year}` : d.toFormat("LLLL yyyy");
+    }
 
     monthShort(key) { return DateTime.fromISO(`${key}-01`).toFormat("LLL"); }
 
@@ -684,7 +703,14 @@ export class PbDashboard extends Component {
         return _t("Good evening");
     }
 
-    get todayLong() { return DateTime.now().toFormat("cccc d LLLL yyyy"); }
+    get todayLong() {
+        const d = DateTime.now();
+        if (this.isVi) {
+            const day = d.toFormat("cccc");
+            return `${day.charAt(0).toUpperCase()}${day.slice(1)}, ${d.toFormat("dd/LL/yyyy")}`;
+        }
+        return d.toFormat("cccc d LLLL yyyy");
+    }
 
     get updatedLine() {
         return this.state.updated ? _t("Updated %(time)s", { time: this.state.updated }) : "";
@@ -1394,7 +1420,7 @@ export class PbDashboard extends Component {
     /** The month before the period, by name ("September"). */
     get prevMonthName() {
         const key = this.period.key;
-        return key ? DateTime.fromISO(`${key}-01`).minus({ months: 1 }).toFormat("LLLL") : "";
+        return key ? this.monthName(DateTime.fromISO(`${key}-01`).minus({ months: 1 }).toFormat("yyyy-LL")) : "";
     }
 
     get peopleCard() {
