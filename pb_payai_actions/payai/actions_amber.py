@@ -1082,23 +1082,71 @@ class UpdatePayData(_Amber):
 
     def undo(self, ctx, task):
         ref = _ref(task)
-        if ref.get('pending') and ref.get('request_id') and 'pb.approval.inbox' in ctx.env:
-            request = ctx.env['biz.approval.request'].browse(int(ref['request_id']))
-            if request.exists() and request.state in ('pending', 'blocked'):
-                ctx.env['pb.approval.inbox'].cancel(request.id, T(_lt('Withdrawn through PayAI')))
-                return 'undone', cards.card(
-                    'done', task, 'prepare', title=_lt('Withdrawn'), state='undone', icon='undo',
-                    notes=[cards.note('ok', _lt('The request was withdrawn. Nothing changed.'))])
+        if ref.get('pending'):
+            # A routed change: "Withdraw" may only ever withdraw. It never
+            # reverts values -- once the request is decided, the approver's
+            # decision stands and the Records history is the place to undo it.
+            return self._withdraw(ctx, task, ref)
         res = self._desk(ctx).undo_apply(int(ref.get('apply_id') or 0))
         if not res.get('ok'):
             raise UserError(res.get('msg') or T(_lt('That could not be undone.')))
-        if not res.get('restored') and res.get('skipped_changed_since'):
-            # The Records Desk's own sentence (records_desk.js undoApply).
-            raise UserError(T(_lt(
-                '1 was changed by somebody else since and was left alone')))
+        restored = int(res.get('restored') or 0)
+        if not restored:
+            # Nothing went back: a refusal, not an "Undone" card. Raising rolls
+            # the Desk's undo bookkeeping back with the runner's savepoint.
+            changed = int(res.get('skipped_changed_since') or 0)
+            if changed == 1:
+                # The Records Desk's own sentence (records_desk.js undoApply).
+                raise UserError(T(_lt(
+                    '1 was changed by somebody else since and was left alone')))
+            if changed:
+                raise UserError(T(_lt(
+                    '%s were changed by somebody else since and were left alone')) % changed)
+            raise UserError(T(_lt('Nothing could be put back.')))
+        note = T(_lt('Put 1 value back')) if restored == 1 else \
+            T(_lt('Put %s values back')) % restored
+        changed = int(res.get('skipped_changed_since') or 0)
+        if changed:
+            note += ' · ' + (T(_lt(
+                '1 was changed by somebody else since and was left alone')) if changed == 1
+                else T(_lt('%s were changed by somebody else since and were left alone')) % changed)
         return 'undone', cards.card(
             'done', task, 'prepare', title=_lt('Undone'), state='undone', icon='undo',
-            notes=[cards.note('ok', T(_lt('Put %s value(s) back.')) % (res.get('restored') or 0))])
+            notes=[cards.note('ok', note)])
+
+    def _withdraw(self, ctx, task, ref):
+        request_id = int(ref.get('request_id') or 0)
+        if not request_id or 'pb.approval.inbox' not in ctx.env:
+            raise UserError(T(_lt('There is no request to withdraw.')))
+        request = ctx.env['biz.approval.request'].browse(request_id).exists()
+        if not request:
+            raise UserError(T(_lt('There is no request to withdraw.')))
+        if request.state in ('pending', 'blocked'):
+            ctx.env['pb.approval.inbox'].cancel(request.id, T(_lt('Withdrawn through PayAI')))
+            return 'undone', cards.card(
+                'done', task, 'prepare', title=_lt('Withdrawn'), state='undone', icon='undo',
+                notes=[cards.note('ok', _lt('The request was withdrawn. Nothing changed.'))])
+        # Decided or closed since Do it. Never call undo_apply here.
+        if request.state in ('approved', 'applied'):
+            who = ''
+            try:
+                who = request.decision_ids[-1:].user_id.name or ''
+            except AccessError:
+                who = ''
+            text = T(_lt('This change was approved by %s. Undo it from the Records '
+                         'history.')) % who if who else T(_lt(
+                             'This change was already approved. Undo it from the Records '
+                             'history.'))
+        else:
+            label = dict(request._fields['state']._description_selection(ctx.env)).get(
+                request.state) or request.state
+            text = T(_lt('This request is already finished (%s). Nothing was withdrawn; '
+                         'see the Records history.')) % label.lower()
+        return None, cards.card(
+            'blocked', task, 'prepare', title=_lt('It has moved on'),
+            notes=[cards.note('warn', text)],
+            actions=[screen_action(_lt('Open Records'), hub=RECORDS_HUB,
+                                   door_id='peoplehub_records')])
 
     def too_late(self, ctx, task, data):
         return cards.card('blocked', task, 'prepare', title=_lt('Too late to undo here'),
