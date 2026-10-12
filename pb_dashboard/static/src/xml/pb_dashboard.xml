@@ -197,7 +197,7 @@
                     <!-- 5. THE MONTH, STEP BY STEP, and what is coming up.
                          Every row opens the screen it talks about. -->
                     <div class="pbd-side">
-                        <section class="pbd-card pbd-steps-card" t-ref="steps" tabindex="-1" data-coach="dash-formula" t-att-aria-label="stepsTitle">
+                        <section class="pbd-card pbd-steps-card" t-ref="steps" tabindex="-1" t-att-aria-label="stepsTitle">
                             <div class="pbd-head">
                                 <div>
                                     <h2><t t-out="ic('listChecks', 16)"/><span t-esc="stepsTitle"/></h2>
@@ -237,7 +237,131 @@
                     </div>
                 </div>
 
-                <div class="pbd-p3"><!-- P3: cards --></div>
+                <!-- 6. THE ROW OF THREE CARDS (HOME P3). A card whose source
+                     is absent (`None`) is not drawn and the row re-flows.
+                     Every row is a door; a note names the problem AND the
+                     next step. -->
+                <div class="pbd-row3">
+                    <t t-set="pc" t-value="peopleCard"/>
+                    <section t-if="pc" class="pbd-card pbd-people" aria-label="People this month">
+                        <div class="pbd-head"><div>
+                            <h2><t t-out="ic('users', 16)"/>People this month</h2>
+                            <p class="pbd-sub" t-esc="pc.sub"/>
+                        </div></div>
+                        <div class="pbd-kv">
+                            <button type="button" class="pbd-kv-i" t-on-click="() => this.openPeople()">
+                                <span class="pbd-kv-k">Joined</span>
+                                <span class="pbd-kv-v" t-att-class="{ 'is-zero': pc.joinedZero }"><t t-esc="pc.joined"/><small t-if="pc.joinedVs" t-esc="pc.joinedVs"/></span>
+                            </button>
+                            <div class="pbd-kv-i">
+                                <button type="button" class="pbd-kv-k" t-on-click="() => this.openDoor('exits')">Leaving</button>
+                                <span class="pbd-kv-v" t-att-class="{ 'is-zero': pc.leavingZero }"><t t-esc="pc.leaving"/><button t-if="pc.settle" type="button" class="pbd-kv-amber" t-on-click="() => this.openDoor('exits')" t-esc="pc.settle"/></span>
+                            </div>
+                        </div>
+                        <div class="pbd-out" t-if="pc.out">
+                            <div class="pbd-out-t"><span>Out today</span><b t-esc="pc.out.n"/></div>
+                            <t t-if="!pc.out.zero">
+                                <div class="pbd-out-bar" role="img" t-att-aria-label="pc.out.aria">
+                                    <i t-foreach="pc.out.segs" t-as="sg" t-key="sg.key" t-att-class="sg.cls" t-attf-style="width: {{ sg.pct }}%"/>
+                                </div>
+                                <div class="pbd-legend"><span t-foreach="pc.out.segs" t-as="sg" t-key="sg.key"><i t-att-class="sg.cls"/><t t-esc="sg.label"/> <t t-esc="sg.n"/></span></div>
+                            </t>
+                            <p t-elif="pc.out.quietWeek" class="pbd-quiet">Nobody is out this week.</p>
+                            <p t-else="" class="pbd-quiet">Nobody is out today.</p>
+                        </div>
+                        <t t-if="pc.week">
+                            <div class="pbd-density" role="img" aria-label="People out over the next 7 days">
+                                <i t-foreach="pc.week" t-as="wk" t-key="wk.date" t-att-class="{ 'is-today': wk.today, 'is-wknd': wk.weekend and !wk.today }" t-att-style="wk.style" t-att-title="wk.title"><b t-if="wk.label and wk.n" t-esc="wk.n"/></i>
+                            </div>
+                            <div class="pbd-dlabels"><span t-foreach="pc.week" t-as="wk" t-key="wk.date" t-att-class="{ 'is-today': wk.today }" t-esc="wk.day"/></div>
+                        </t>
+                        <button t-if="pc.noContract" type="button" class="pbd-rowlink" t-on-click="() => this.openDoor('contracts')"><t t-out="ic('triangleAlert', 13)"/><span><t t-esc="pc.noContract"/> · <b>Fix in Contracts</b></span></button>
+                        <button type="button" class="pbd-link" t-on-click="() => this.openPeople()">Open People<t t-out="ic('arrowRight', 14)"/></button>
+                    </section>
+
+                    <t t-set="rc" t-value="runsCard"/>
+                    <section class="pbd-card pbd-runs-card" t-att-aria-label="rc.title">
+                        <div class="pbd-head"><div>
+                            <h2><t t-out="ic('layers', 16)"/><span t-esc="rc.title"/></h2>
+                            <p class="pbd-sub" t-if="!rc.empty" t-esc="rc.sub"/>
+                        </div></div>
+                        <ul class="pbd-runs" t-if="!rc.empty">
+                            <li t-foreach="rc.rows" t-as="row" t-key="row.id">
+                                <button type="button" class="pbd-run" t-att-title="row.full" t-on-click="() => row.go()">
+                                    <span class="pbd-mg" t-esc="row.mg"/>
+                                    <span class="pbd-run-x">
+                                        <span class="pbd-run-t" t-esc="row.name"/>
+                                        <span class="pbd-run-s">
+                                            <span class="pbd-badge" t-att-class="'is-' + row.badge.tone"><t t-if="row.badge.icon" t-out="ic(row.badge.icon, 11)"/><t t-esc="row.badge.text"/></span>
+                                            <span t-esc="row.count"/>
+                                            <t t-if="row.balance"><span aria-hidden="true">·</span><span t-att-class="{ 'pbd-rose': row.balance.bad }" t-esc="row.balance.text"/></t>
+                                        </span>
+                                        <span t-if="row.prog !== null" class="pbd-run-p" aria-hidden="true"><i t-attf-style="width: {{ row.prog }}%"/></span>
+                                    </span>
+                                    <span class="pbd-run-m">
+                                        <t t-if="row.net"><b><t t-esc="row.net.n"/> <small t-esc="row.net.u"/></b><span t-if="row.soFar">so far</span></t>
+                                        <b t-else="">—</b>
+                                    </span>
+                                </button>
+                            </li>
+                        </ul>
+                        <div t-else="" class="pbd-runs-empty">
+                            <p class="pbd-quiet" t-esc="rc.empty.text"/>
+                            <button type="button" class="pbd-b pbd-b--sm" t-on-click="() => rc.empty.act.go()"><t t-out="ic(rc.empty.act.icon, 14)"/><span t-esc="rc.empty.act.label"/></button>
+                        </div>
+                        <button t-if="rc.bankLine" type="button" class="pbd-note is-rose" t-on-click="() => rc.bankLine.go()"><t t-out="ic('triangleAlert', 14)"/><span><b t-esc="rc.bankLine.head"/><span class="pbd-note-nx" t-esc="rc.bankLine.next"/></span></button>
+                        <button t-if="rc.sourceLine" type="button" class="pbd-note" t-on-click="() => rc.sourceLine.go()"><t t-out="ic('clock', 14)"/><span><b t-esc="rc.sourceLine.head"/><span class="pbd-note-nx" t-esc="rc.sourceLine.next"/></span></button>
+                        <button type="button" class="pbd-link" t-on-click="() => this.openPay('runs')">Open pay runs<t t-out="ic('arrowRight', 14)"/></button>
+                    </section>
+
+                    <t t-set="hc" t-value="hiringCard"/>
+                    <section t-if="hc" class="pbd-card pbd-hiring" aria-label="Hiring">
+                        <div class="pbd-head"><div>
+                            <h2><t t-out="ic('briefcase', 16)"/>Hiring</h2>
+                            <p class="pbd-sub" t-esc="hc.sub"/>
+                        </div></div>
+                        <ul class="pbd-hlist" t-if="hc.rows.length">
+                            <li t-foreach="hc.rows" t-as="hr" t-key="hr.key">
+                                <button type="button" t-on-click="() => this.openDoor('hiring')"><span class="pbd-hl-k" t-esc="hr.k"/><span class="pbd-hl-v" t-att-class="hr.tone ? 'is-' + hr.tone : ''" t-esc="hr.v"/></button>
+                            </li>
+                        </ul>
+                        <button t-if="hc.note" type="button" class="pbd-note is-rose" t-on-click="() => this.openDoor('hiring')"><t t-out="ic('clock', 14)"/><span><b t-esc="hc.note.head"/><span class="pbd-note-nx" t-esc="hc.note.next"/></span></button>
+                        <button type="button" class="pbd-link" t-on-click="() => this.openDoor('hiring')">Open Hiring<t t-out="ic('arrowRight', 14)"/></button>
+                    </section>
+                </div>
+
+                <!-- 7. THE CLOSING ROW: the next lesson, and the pay schemes in
+                     one quiet line — never a ring at 100 %. -->
+                <div class="pbd-row2">
+                    <t t-set="lc" t-value="learnCard"/>
+                    <section t-if="lc" class="pbd-card pbd-close" aria-label="Keep learning">
+                        <span class="pbd-close-ic"><t t-out="ic('graduationCap', 19)"/></span>
+                        <div class="pbd-close-x">
+                            <div class="pbd-close-lab">Keep learning</div>
+                            <div class="pbd-close-t" t-esc="lc.title"/>
+                            <div class="pbd-close-s" t-if="lc.sub" t-esc="lc.sub"/>
+                            <div class="pbd-close-act">
+                                <button type="button" class="pbd-b pbd-b--sm" t-on-click="() => lc.go()"><t t-out="ic('play', 14)"/>Start lesson</button>
+                                <span t-if="lc.streak" class="pbd-streak"><t t-out="ic('flame', 13)"/><t t-esc="lc.streak"/></span>
+                            </div>
+                        </div>
+                    </section>
+                    <t t-set="sc" t-value="schemesCard"/>
+                    <section t-if="sc" class="pbd-card pbd-close" data-coach="dash-formula" aria-label="Pay schemes">
+                        <span class="pbd-close-ic"><t t-out="ic('calculator', 19)"/></span>
+                        <div class="pbd-close-x">
+                            <div class="pbd-close-lab">Pay schemes</div>
+                            <div class="pbd-close-t" t-esc="sc.title"/>
+                            <div class="pbd-close-s" t-if="sc.sub" t-esc="sc.sub"/>
+                            <div class="pbd-close-act">
+                                <span t-if="sc.quiet" class="pbd-close-q" t-att-class="{ 'is-bad': sc.quiet.bad }"><t t-out="ic(sc.quiet.bad ? 'triangleAlert' : 'checkCircle', 13)"/><t t-esc="sc.quiet.text"/></span>
+                                <button type="button" class="pbd-b pbd-b--ghost pbd-b--sm" t-on-click="() => this.openFormulaStudio()">Open Formula Studio<t t-out="ic('arrowRight', 14)"/></button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="pbd-foot">Figures are the pay run totals and match the payslips exactly.</div>
             </t>
         </t>
         <t t-elif="state.failed">

@@ -204,8 +204,9 @@ const STEPS = {
 /** "Coming up" rows: title, sub line and door per kind. */
 const UPCOMING = {
     cutoff: {
+        // P3: next month's cut-off carries its own month (`extra.month`)
         title: (it, self) => _t("Last day for %(month)s changes",
-                                { month: self.monthName(self.period.key) }),
+                                { month: self.monthName((it.extra || {}).month || self.period.key) }),
         sub: () => _t("New joiners, salary changes, overtime"),
         door: "calendar",
     },
@@ -236,6 +237,22 @@ const UPCOMING = {
         door: "hiring",
     },
 };
+
+/** HOME P3 — the badge on a pay-run row, keyed by `runBadge()`. Every state
+ *  the server emits lands on one of these; a cancelled run is not drawn
+ *  (test 2 pins both directions). */
+const RUN_BADGES = {
+    preparing: { text: () => _t("Preparing"), tone: "indigo", icon: "loader" },
+    not_started: { text: () => _t("Not started"), tone: "slate", icon: "" },
+    you: { text: () => _t("Waiting on you"), tone: "amber", icon: "clock" },
+    who: { text: (run) => _t("Waiting on %(who)s", { who: run.waiting_on }), tone: "amber", icon: "clock" },
+    approval: { text: () => _t("Waiting for approval"), tone: "amber", icon: "clock" },
+    done: { text: () => _t("Done"), tone: "green", icon: "check" },
+};
+
+const PEOPLE_HUB = "pb_people_hub.action_pb_people_hub";
+const FORMULA_STUDIO = "pb_formula_studio.action_pb_formula_studio";
+const LEARN_HUB = "pb_learn.action_learn_hub";
 
 /** The chart's segmented control. Money measures drop out on a database
  *  without the stored run totals (H4). */
@@ -338,6 +355,84 @@ function segs(template, vars) {
     if (last < src.length) { out.push({ text: src.slice(last) }); }
     return out;
 }
+
+/* =============================================================================
+   THE CARDS' RULES (HOME P3) — plain functions of the payload: no words, no
+   OWL, no imports. tests/test_home_cards.py (test 3) cuts this block out
+   between the two markers and runs it in node against fixture payloads, so
+   nothing inside it may reach for anything outside it.
+   ========================================================================== */
+/* PURE:start */
+/** The badge a run row wears, as a key into RUN_BADGES, or null for a run
+ *  that is not drawn (cancelled, or a state this table does not know). */
+export function runBadge(run) {
+    if (!run) { return null; }
+    if (run.state === "done") { return "done"; }
+    if (run.state === "approval_pending") {
+        return run.awaiting_me ? "you" : (run.waiting_on ? "who" : "approval");
+    }
+    if (run.state === "draft") {
+        return (run.slips || 0) > 0 ? "preparing" : "not_started";
+    }
+    return null;
+}
+
+/** The run row's progress bar in %, or null for no bar. Done and submitted
+ *  runs are full (every payslip is prepared and sent on); a run being
+ *  prepared fills with its done payslips once it has any. */
+export function runProgress(run) {
+    if (run.state === "done" || run.state === "approval_pending") { return 100; }
+    const slips = run.slips || 0;
+    const done = run.done || 0;
+    return slips && done ? Math.min(100, Math.round((done / slips) * 1000) / 10) : null;
+}
+
+/** People with no bank account: the run with the most (named on the note)
+ *  and how many more sit in the other runs. Null when nobody is missing one. */
+export function bankNote(runs) {
+    let top = null;
+    let total = 0;
+    for (const run of runs || []) {
+        const n = run.no_bank || 0;
+        if (run.state === "cancel" || n <= 0) { continue; }
+        total += n;
+        if (!top || n > (top.no_bank || 0)) { top = run; }
+    }
+    return top ? { n: top.no_bank, id: top.id, more: total - top.no_bank } : null;
+}
+
+/** Pay values with no source, summed over the runs; null at zero. */
+export function sourceNote(runs) {
+    let top = null;
+    let total = 0;
+    for (const run of runs || []) {
+        const n = run.unsourced || 0;
+        if (run.state === "cancel" || n <= 0) { continue; }
+        total += n;
+        if (!top || n > (top.unsourced || 0)) { top = run; }
+    }
+    return total > 0 ? { n: total, id: top.id } : null;
+}
+
+/** The 7-day strip: bar heights in % of the busiest day, the busiest day's
+ *  index (-1 when nobody is out all week), today first. */
+export function weekBars(week) {
+    const days = week || [];
+    let peak = -1;
+    days.forEach((day, i) => {
+        if ((day.n || 0) > 0 && (peak < 0 || day.n > days[peak].n)) { peak = i; }
+    });
+    const max = peak >= 0 ? days[peak].n : 0;
+    return {
+        peak,
+        bars: days.map((day, i) => ({
+            date: day.date, n: day.n || 0, weekend: !!day.weekend, today: i === 0,
+            pct: max ? Math.max(6, Math.round(((day.n || 0) / max) * 100)) : 6,
+            label: (i === 0 || i === peak),
+        })),
+    };
+}
+/* PURE:end */
 
 /* ===================================================== the count-up figure */
 /**
@@ -800,9 +895,12 @@ export class PbDashboard extends Component {
         });
     }
 
-    /** The cut-off, when it is still ahead (P1: `upcoming` drops a past one). */
+    /** THIS month's cut-off, when it is still ahead (P1: `upcoming` drops a
+     *  past one; P3: next month's cut-off carries `extra.month` and is not
+     *  the hero's). */
     get cutoffItem() {
-        return (this.d.upcoming || []).find((u) => u.kind === "cutoff") || null;
+        return (this.d.upcoming || []).find(
+            (u) => u.kind === "cutoff" && !(u.extra || {}).month) || null;
     }
 
     get heroFig() {
@@ -1287,6 +1385,237 @@ export class PbDashboard extends Component {
             };
         });
     }
+
+    // ------------------------------------------- 6. the row of three cards
+    // HOME P3. Each card names a problem AND the next step (amber/rose
+    // notes), nothing at zero is coloured, every row is a door, and a card
+    // whose source is absent (`None`) is not drawn at all — the row re-flows.
+
+    /** The month before the period, by name ("September"). */
+    get prevMonthName() {
+        const key = this.period.key;
+        return key ? DateTime.fromISO(`${key}-01`).minus({ months: 1 }).toFormat("LLLL") : "";
+    }
+
+    get peopleCard() {
+        const pp = this.d.people;
+        if (!pp) { return null; }
+        const withContract = Math.max(0, (pp.headcount || 0) - (pp.no_contract || 0));
+        const month = this.prevMonthName;
+        const diff = (pp.joined || 0) - (pp.joined_prev || 0);
+        const joinedVs = diff > 0 ? _t("%(n)s more than %(month)s", { n: int(diff), month })
+            : diff < 0 ? _t("%(n)s fewer than %(month)s", { n: int(-diff), month })
+            : _t("same as %(month)s", { month });
+        const settle = pp.settlements_to_check || 0;
+        let out = null;
+        if (pp.out_today !== null && pp.out_today !== undefined) {
+            const total = pp.out_today || 0;
+            const parts = (pp.out_breakdown || []).filter((b) => b.n > 0);
+            const named = parts.reduce((t, b) => t + b.n, 0);
+            const segsOut = parts.map((b, i) => ({
+                key: `${i}-${b.label}`, cls: ["is-a", "is-b", "is-c"][i] || "is-c",
+                pct: total ? ((b.n / total) * 100).toFixed(1) : "0",
+                label: b.label || _t("Leave"), n: int(b.n),
+            }));
+            if (total > named) {
+                segsOut.push({ key: "rest", cls: "is-rest", pct: (((total - named) / total) * 100).toFixed(1),
+                               label: _t("Other leave"), n: int(total - named) });
+            }
+            out = {
+                n: int(total), zero: !total, segs: segsOut,
+                aria: _t("%(n)s out today", { n: int(total) }),
+            };
+        }
+        let week = null;
+        const wb = pp.week && pp.week.length ? weekBars(pp.week) : null;
+        if (wb && wb.peak < 0 && out && out.zero) {
+            // a week with nobody out at all is one quiet sentence, not seven
+            // empty bars and a "nobody today" line above them
+            out.quietWeek = true;
+        } else if (wb) {
+            week = wb.bars.map((b) => {
+                const d = this.date(b.date);
+                return Object.assign(b, {
+                    day: d ? d.toFormat("ccc") : "",
+                    title: _t("%(date)s · %(n)s out", { date: this.shortDate(b.date), n: int(b.n) }),
+                    style: `height: ${b.pct}%`,
+                });
+            });
+        }
+        const nc = pp.no_contract || 0;
+        return {
+            sub: withContract === 1 ? _t("1 person with an active contract")
+                : _t("%(n)s people with an active contract", { n: int(withContract) }),
+            joined: int(pp.joined || 0), joinedZero: !pp.joined, joinedVs: month ? joinedVs : "",
+            leaving: int(pp.leaving || 0), leavingZero: !pp.leaving,
+            settle: settle ? (settle === 1 ? _t("1 settlement to check")
+                : _t("%(n)s settlements to check", { n: int(settle) })) : "",
+            out, week,
+            noContract: nc ? (nc === 1
+                ? _t("1 person has no active contract and cannot be paid")
+                : _t("%(n)s people have no active contract and cannot be paid", { n: int(nc) })) : "",
+        };
+    }
+
+    get runsCard() {
+        const all = (this.d.runs || []);
+        const rows = all.map((run) => ({ run, badge: runBadge(run) }))
+            .filter((x) => x.badge && RUN_BADGES[x.badge])
+            .map(({ run, badge }) => {
+                const w = RUN_BADGES[badge];
+                const slips = run.slips || 0;
+                const hasNet = run.net !== null && run.net !== undefined
+                    && (run.state !== "draft" || slips > 0);
+                return {
+                    id: run.id,
+                    mg: run.initials || "",
+                    name: this.runName(run),
+                    full: run.name || "",
+                    badge: { text: w.text(run), tone: w.tone, icon: w.icon },
+                    // A submitted run counts people (every payslip is
+                    // prepared); a run being prepared counts payslips, as
+                    // "done of all" once some are done.
+                    count: !slips ? _t("No payslips yet")
+                        : run.state === "approval_pending" ? this.peopleWord(run.people || slips)
+                        : (run.state === "draft" && !run.done)
+                            ? (slips === 1 ? _t("1 payslip prepared")
+                                : _t("%(n)s payslips prepared", { n: int(slips) }))
+                        : _t("%(done)s of %(slips)s payslips",
+                             { done: int(run.done || 0), slips: int(slips) }),
+                    prog: runProgress(run),
+                    net: hasNet ? this.moneyParts(run.net) : null,
+                    soFar: run.state === "draft" && hasNet,
+                    balance: !slips || run.balance_ok === null || run.balance_ok === undefined ? null
+                        : run.balance_ok ? { text: _t("balances"), bad: false }
+                        : { text: _t("does not balance"), bad: true },
+                    go: () => this.openRun(run.id),
+                };
+            });
+        const bank = bankNote(all);
+        let bankLine = null;
+        if (bank) {
+            const top = all.find((r) => r.id === bank.id) || {};
+            const vars = { n: int(bank.n), run: this.runName(top), more: int(bank.more) };
+            bankLine = {
+                head: bank.more
+                    ? (bank.n === 1 ? _t("1 person in %(run)s and %(more)s more in other runs have no bank account", vars)
+                        : _t("%(n)s people in %(run)s and %(more)s more in other runs have no bank account", vars))
+                    : (bank.n === 1 ? _t("1 person in %(run)s has no bank account", vars)
+                        : _t("%(n)s people in %(run)s have no bank account", vars)),
+                next: _t("Add one before payday, or they will be paid in cash."),
+                go: () => this.door(PEOPLE_HUB),
+            };
+        }
+        const src = sourceNote(all);
+        const sourceLine = src ? {
+            head: src.n === 1 ? _t("1 pay value is missing a source")
+                : _t("%(n)s pay values are missing a source", { n: int(src.n) }),
+            next: _t("Open the run to choose where each one comes from."),
+            go: () => this.openRun(src.id),
+        } : null;
+        const n = rows.length;
+        return {
+            title: _t("%(month)s pay runs", { month: this.monthName(this.period.key) }),
+            sub: n === 1 ? _t("1 run") : _t("%(n)s runs", { n: int(n) }),
+            rows, bankLine, sourceLine,
+            empty: !n ? { text: _t("No pay run this month yet"), act: this.primary } : null,
+        };
+    }
+
+    get hiringCard() {
+        const h = this.d.hiring;
+        if (!h) { return null; }
+        const subs = [h.open === 1 ? _t("1 open role") : _t("%(n)s open roles", { n: int(h.open || 0) })];
+        if (h.candidates !== null && h.candidates !== undefined) {
+            subs.push(h.candidates === 1 ? _t("1 candidate")
+                : _t("%(n)s candidates", { n: int(h.candidates) }));
+        }
+        const rows = [
+            ["interviews", _t("Interviews this week"), h.interviews_week, false],
+            ["budget", _t("Roles over budget"), h.over_budget, true],
+            ["offers", _t("Offers waiting for a reply"), h.offers_waiting, false],
+            ["referrals", _t("Referrals this month"), h.referrals, false],
+        ].filter((r) => r[2] !== null && r[2] !== undefined).map(([key, k, v, alarm]) => ({
+            key, k, v: int(v), tone: !v ? "zero" : (alarm ? "rose" : ""),
+        }));
+        const late = h.writeups_overdue || 0;
+        return {
+            sub: subs.join(" · "),
+            rows,
+            note: late ? {
+                head: late === 1 ? _t("1 interview write-up overdue")
+                    : _t("%(n)s interview write-ups overdue", { n: int(late) }),
+                next: _t("Remind the interviewers, or decide without them."),
+            } : null,
+        };
+    }
+
+    // --------------------------------------------------- 7. the closing row
+    get learnCard() {
+        const l = this.d.learn;
+        if (!l || !l.key) { return null; }
+        const mins = l.minutes ? (l.minutes === 1 ? _t("1 minute")
+            : _t("%(m)s minutes", { m: int(l.minutes) })) : "";
+        const days = l.streak_days || 0;
+        return {
+            title: l.title || _t("Your next lesson"),
+            sub: [mins, l.reason || ""].filter(Boolean).join(" · "),
+            streak: days ? (days === 1 ? _t("1-day streak")
+                : _t("%(d)s-day streak", { d: int(days) })) : "",
+            go: () => this.door(LEARN_HUB, { lens: "lessons", focus: `station:${l.key}` }),
+        };
+    }
+
+    /** "2 hours ago", in the reader's language, from the server's UTC stamp. */
+    ago(stamp) {
+        if (!stamp) { return ""; }
+        const d = DateTime.fromFormat(stamp, "yyyy-MM-dd HH:mm", { zone: "utc" });
+        if (!d.isValid) { return ""; }
+        // a stamp a little ahead of this browser's clock is "just now",
+        // never "in 2 minutes"
+        if (DateTime.now().diff(d, "seconds").seconds < 60) { return _t("just now"); }
+        return d.setLocale(locale() || "en").toRelative() || "";
+    }
+
+    get schemesCard() {
+        const s = this.d.schemes;
+        if (!s) { return null; }
+        const active = s.active || 0;
+        const comps = s.components || 0;
+        const total = s.tests_total || 0;
+        const passed = s.tests_passed;
+        const failing = (passed === null || passed === undefined) ? 0 : Math.max(0, total - passed);
+        const allPassed = total > 0 && passed === total;
+        const title = !s.count ? _t("No pay scheme yet")
+            : [active === 1 ? _t("1 scheme in use") : _t("%(n)s schemes in use", { n: int(active) }),
+               comps === 1 ? _t("1 component") : _t("%(n)s components", { n: int(comps) })].join(" · ");
+        let quiet = null;
+        if (failing) {
+            quiet = { bad: true, text: failing === 1 ? _t("1 test failing")
+                : _t("%(n)s tests failing", { n: int(failing) }) };
+        } else if (s.failing_configs) {
+            quiet = { bad: true, text: s.failing_configs === 1 ? _t("1 scheme failed its last check")
+                : _t("%(n)s schemes failed their last check", { n: int(s.failing_configs) }) };
+        } else if (allPassed) {
+            const ago = this.ago(s.last_run);
+            quiet = { bad: false, text: ago
+                ? _t("All %(n)s tests passed, %(ago)s", { n: int(total), ago })
+                : _t("All %(n)s tests passed", { n: int(total) }) };
+        }
+        return {
+            title,
+            // Said ONLY when it is true of every scheme: no failing scheme
+            // and every test passed — and only of a month that has runs.
+            sub: allPassed && !s.failing_configs && (this.period.run_count || 0) > 0
+                ? _t("every %(month)s run uses a tested scheme", { month: this.monthName(this.period.key) })
+                : (!s.count ? _t("A pay scheme is the rulebook every payslip is computed by.") : ""),
+            quiet,
+        };
+    }
+
+    openPeople() { this.door(PEOPLE_HUB); }
+
+    openFormulaStudio() { this.door(FORMULA_STUDIO); }
 
     // ---------------------------------------------------------------- doors
     /** The return door every hand-off carries: `hub_nav.js`'s `pb_back`

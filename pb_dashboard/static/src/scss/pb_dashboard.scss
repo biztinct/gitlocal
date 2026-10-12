@@ -389,6 +389,166 @@
     .pbd-up-s { font-size: 11.5px; color: var(--pbd-muted); }
     .pbd-up-in { font-size: 11.5px; color: var(--pbd-faint); white-space: nowrap; &.is-amber { color: var(--pbd-amber); font-weight: 700; } }
 
+    // ------------------------------------------- 6. the row of three cards
+    // auto-fit: a card whose source is absent is not drawn and the row
+    // re-flows (program doc, empty states).
+    .pbd-row3 {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;
+        margin-bottom: 16px; align-items: start;
+    }
+    .pbd-row2 {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;
+        margin-bottom: 16px; align-items: stretch;
+    }
+    .pbd-link {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 700;
+        color: var(--pbd-p600); margin-top: 12px; border-radius: 6px;
+        svg { width: 14px; height: 14px; }
+        &:hover { color: var(--pbd-p); }
+    }
+    .pbd-kv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 4px; }
+    .pbd-kv-i { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+    .pbd-kv-k {
+        font-size: 11px; font-weight: 600; color: var(--pbd-muted); text-transform: uppercase; letter-spacing: .05em;
+    }
+    button.pbd-kv-k:hover, .pbd-kv-i:hover > .pbd-kv-k { color: var(--pbd-p600); }
+    .pbd-kv-v {
+        font-size: 19px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: baseline;
+        gap: 6px; flex-wrap: wrap; font-variant-numeric: tabular-nums; color: var(--pbd-ink);
+        small { font-size: 11.5px; font-weight: 600; color: var(--pbd-muted); letter-spacing: 0; }
+        &.is-zero { color: var(--pbd-faint); }
+    }
+    .pbd-kv-amber { font-size: 11.5px; font-weight: 700; color: var(--pbd-amber); &:hover { text-decoration: underline; } }
+    .pbd-out { margin-top: 12px; }
+    .pbd-out-t {
+        display: flex; justify-content: space-between; font-size: 12px; color: var(--pbd-muted); margin-bottom: 4px;
+        b { color: var(--pbd-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+    }
+    .pbd-out-bar {
+        height: 12px; display: flex; gap: 2px; border-radius: 6px; overflow: hidden; background: var(--pbd-lane);
+        i { display: block; height: 100%; }
+    }
+    // two indigo tints and a quieter third; the rest of the leave types in line grey
+    .pbd-out-bar i, .pbd-people .pbd-legend i {
+        &.is-a { background: var(--pbd-p); }
+        &.is-b { background: var(--pbd-soft2); }
+        &.is-c { background: #A99DE0; }
+        &.is-rest { background: var(--pbd-line2); }
+    }
+    .pbd-density {
+        display: flex; gap: 3px; align-items: flex-end; height: 34px; margin-top: 24px;
+        i {
+            font-style: normal; flex: 1; background: var(--pbd-soft2); border-radius: 3px 3px 0 0;
+            position: relative; cursor: default; min-height: 2px;
+            &.is-today { background: var(--pbd-p); }
+            &.is-wknd { background: var(--pbd-line); }
+        }
+        b {
+            position: absolute; left: 50%; transform: translateX(-50%); top: -15px; font-size: 10px;
+            font-weight: 800; color: var(--pbd-ink2); font-variant-numeric: tabular-nums;
+        }
+    }
+    .pbd-dlabels {
+        display: flex; gap: 3px; margin-top: 4px;
+        span { flex: 1; text-align: center; font-size: 10px; color: var(--pbd-faint); font-weight: 600; }
+        span.is-today { color: var(--pbd-p600); font-weight: 800; }
+    }
+    .pbd-rowlink {
+        display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--pbd-rose);
+        font-weight: 600; border-radius: 6px;
+        svg { width: 13px; height: 13px; flex: none; margin-top: 2px; }
+        b { font-weight: 800; }
+        &:hover b { text-decoration: underline; }
+    }
+
+    // the month's pay runs
+    .pbd-runs { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column;
+                li { border-top: 1px solid var(--pbd-line); } li:first-child { border-top: 0; } }
+    .pbd-run {
+        display: grid; grid-template-columns: 34px 1fr auto; gap: 11px; align-items: center;
+        padding: 9px 2px; width: 100%; border-radius: 8px;
+        &:hover .pbd-run-t { color: var(--pbd-p600); }
+    }
+    .pbd-mg {
+        width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+        font-size: 11.5px; font-weight: 800; background: var(--pbd-soft); color: var(--pbd-p600);
+    }
+    .pbd-run-x { display: flex; flex-direction: column; min-width: 0; }
+    .pbd-run-t { font-size: 12.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbd-run-s {
+        font-size: 11.5px; color: var(--pbd-muted); display: flex; gap: 6px; align-items: center;
+        flex-wrap: wrap; margin-top: 2px; font-variant-numeric: tabular-nums;
+    }
+    .pbd-run-p {
+        display: block; height: 5px; border-radius: 3px; background: var(--pbd-soft); margin-top: 6px; overflow: hidden;
+        i { display: block; height: 100%; background: var(--pbd-p); border-radius: 3px; }
+    }
+    .pbd-run-m {
+        text-align: right; white-space: nowrap;
+        b { display: block; font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        small, span { font-size: 11px; color: var(--pbd-muted); font-weight: 600; }
+    }
+    .pbd-badge {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800;
+        border-radius: 999px; padding: 2px 8px; background: var(--pbd-slate-s); color: var(--pbd-slate);
+        svg { width: 11px; height: 11px; }
+        &.is-amber { background: var(--pbd-amber-s); color: var(--pbd-amber); }
+        &.is-green { background: var(--pbd-green-s); color: var(--pbd-green); }
+        &.is-indigo { background: var(--pbd-soft); color: var(--pbd-p600); }
+        &.is-rose { background: var(--pbd-rose-s); color: var(--pbd-rose); }
+    }
+    .pbd-runs-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+                      .pbd-quiet { margin: 0; } }
+    .pbd-b--sm { padding: 6px 11px; font-size: 12px; gap: 6px; svg { width: 14px; height: 14px; } }
+    .pbd-note {
+        margin-top: 10px; border-radius: 9px; padding: 8px 10px; font-size: 12px; width: 100%;
+        background: var(--pbd-amber-s); color: var(--pbd-amber); display: flex; gap: 8px; align-items: flex-start;
+        svg { width: 14px; height: 14px; flex: none; margin-top: 2px; }
+        b { display: block; font-weight: 700; }
+        &.is-rose { background: var(--pbd-rose-s); color: var(--pbd-rose); }
+        &:hover b { text-decoration: underline; }
+    }
+    .pbd-note-nx { display: block; color: var(--pbd-ink2); font-weight: 600; margin-top: 2px; }
+
+    // hiring
+    .pbd-hlist {
+        list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column;
+        li { border-top: 1px solid var(--pbd-line); } li:first-child { border-top: 0; }
+        button { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; width: 100%; font-size: 12.5px; }
+        button:hover .pbd-hl-k { color: var(--pbd-p600); }
+    }
+    .pbd-hl-k { color: var(--pbd-ink2); font-weight: 600; }
+    .pbd-hl-v {
+        font-weight: 800; font-variant-numeric: tabular-nums; color: var(--pbd-ink);
+        &.is-zero { color: var(--pbd-faint); }
+        &.is-rose { color: var(--pbd-rose); }
+    }
+
+    // ---------------------------------------------------- 7. the closing row
+    .pbd-close { display: flex; gap: 14px; align-items: flex-start; }
+    .pbd-close-ic {
+        width: 40px; height: 40px; border-radius: 11px; background: var(--pbd-soft); color: var(--pbd-p);
+        display: grid; place-items: center; flex: none;
+        svg { width: 19px; height: 19px; }
+    }
+    .pbd-close-x { flex: 1; min-width: 0; }
+    .pbd-close-lab {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pbd-muted);
+    }
+    .pbd-close-t { font-size: 13.5px; font-weight: 700; margin-top: 2px; }
+    .pbd-close-s { font-size: 12px; color: var(--pbd-muted); margin-top: 2px; }
+    .pbd-close-act { margin-top: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .pbd-close-q {
+        display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--pbd-green); font-weight: 700;
+        svg { width: 13px; height: 13px; }
+        &.is-bad { color: var(--pbd-rose); }
+    }
+    .pbd-streak {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; color: var(--pbd-muted);
+        svg { width: 13px; height: 13px; }
+    }
+    .pbd-foot { font-size: 11.5px; color: var(--pbd-faint); margin-top: 6px; }
+
     // ------------------------------------------------- loading and failure
     .pbd-skel { display: flex; flex-direction: column; gap: 14px; }
     .pbd-skel-hero { height: 220px; }
@@ -399,7 +559,6 @@
         svg { color: var(--pbd-amber); }
         p { margin: 0; color: var(--pbd-ink2); font-size: 14px; }
     }
-    .pbd-p3:empty { display: none; }
 
     // ------------------------------------------- the activation checklist
     // White surface, a left rail, the locked indigo. The only animation is
@@ -500,9 +659,13 @@
     // reduced-motion preference (the figures' count-up checks the same
     // preference in JS).
     @media (prefers-reduced-motion: no-preference) {
-        .pbd-hero, .pbd-glance, .pbd-split { animation: pbd-rise .55s cubic-bezier(.16,1,.3,1) both; }
+        .pbd-hero, .pbd-glance, .pbd-split, .pbd-row3, .pbd-row2 { animation: pbd-rise .55s cubic-bezier(.16,1,.3,1) both; }
         .pbd-glance { animation-delay: .05s; }
         .pbd-split { animation-delay: .1s; }
+        .pbd-row3 { animation-delay: .15s; }
+        .pbd-row2 { animation-delay: .2s; }
+        .pbd-run-p i, .pbd-out-bar i { transition: width .6s cubic-bezier(.16,1,.3,1); }
+        .pbd-density i { transform-origin: bottom; animation: pbd-grow .6s cubic-bezier(.16,1,.3,1) both; }
         .pbd-jn.is-now .pbd-jn-dot::before {
             content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--pbd-p);
             opacity: 0; animation: pbd-pulse 2.4s ease-out infinite;
