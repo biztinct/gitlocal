@@ -40,6 +40,9 @@ A minute-based cron queues and delivers saved enquiries once this server is
 active and has a password, selecting only this site's dedicated mail server.
 It does not release the general mail backlog. Queued mail is
 retained for delivery-state inspection. The visitor's email is the Reply-To.
+Test Connection probes ash@biztinct.com as both sender and recipient, without
+sending a message, so it is independent of the administrator's old placeholder
+profile address. Other outgoing servers retain their standard connection test.
 
 Administrator screens (HTTPS):
 

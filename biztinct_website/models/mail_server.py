@@ -9,6 +9,14 @@ class IrMailServer(models.Model):
         help='Excluded from automatic default-server selection. Website enquiries '
              'explicitly select this server, so existing mail is not sent through it.')
 
+    def _get_test_email_addresses(self):
+        self.ensure_one()
+        if self.biztinct_contact_only:
+            # The existing admin profile still contains a placeholder email.
+            # Probe the actual mailbox instead; no message is sent by the test.
+            return 'ash@biztinct.com', 'ash@biztinct.com'
+        return super()._get_test_email_addresses()
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False,
                 access_rights_uid=None):

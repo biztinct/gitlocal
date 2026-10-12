@@ -78,6 +78,18 @@ class TestContactNotifications(TransactionCase):
             self.assertIn(self.contact.mail_id, records)
             self.assertNotIn(unrelated, records)
 
+    def test_connection_probe_uses_the_actual_mailbox(self):
+        self.assertEqual(self.server._get_test_email_addresses(),
+                         ('ash@biztinct.com', 'ash@biztinct.com'))
+
+    def test_other_servers_keep_the_standard_connection_probe(self):
+        other = self.env['ir.mail_server'].create({
+            'name': 'QA unrelated SMTP', 'smtp_host': 'localhost', 'active': False,
+        })
+        admin = self.env.ref('base.user_admin')
+        self.assertEqual(other.with_user(admin)._get_test_email_addresses(),
+                         (admin.email, 'noreply@odoo.com'))
+
     def test_public_cannot_create_enquiries_directly(self):
         public = self.env.ref('base.public_user')
         with self.assertRaises(AccessError):
