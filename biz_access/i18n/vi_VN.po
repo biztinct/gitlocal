@@ -2872,3 +2872,8 @@ msgstr "Hồ sơ nhân viên — xuất dữ liệu"
 #: code:addons/biz_access/models/role_assignments.py:0
 msgid "Configuration before the first recorded change"
 msgstr "Cấu hình trước thay đổi được ghi nhận đầu tiên"
+
+#. module: biz_access
+#: code:addons/biz_access/models/role_assignments.py:0
+msgid "Assigned from explicit role membership"
+msgstr "Được gán từ tư cách thành viên vai trò rõ ràng"

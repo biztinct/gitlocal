@@ -28,6 +28,10 @@ members while preserving their other access. Matching permissions are displayed
 separately from assignments; holders and "You hold this" reflect assignments.
 Subsequent migrations do not consume direct grants added after the initial move.
 New tenant-administrator provisioning records its canonical role assignment.
+New explicit Demo memberships, including demo signups, receive the current role
+assignment. An unrelated permission write cannot turn a temporary borrower into
+a permanent role member. Product migration records its memberships after the
+product registration has loaded.
 
 Records capabilities separate read, mapped editing and export. A viewer gets no
 native write ACL or export access. An editor may update only the existing mapped
@@ -39,8 +43,8 @@ with input show a persistent refresh action, preserving work in progress.
 
 ## Validation
 
-- Isolated clone of `payobook_template`: 334 relevant regression tests passed.
-- Final `role_assignment` suite: 20 tests passed after the final corrections.
+- Isolated clone of `payobook_template`: 337 relevant regression tests passed in the final run.
+- Final `role_assignment` suite: 22 tests covered assignments, migration, signup enrolment and loans.
 - Chrome clone checks: native edit entry without native write ACL; search and
   selection; two-user impact review; required reason; additions and reductions
   propagated to both logins; idle observer refreshed; observer input preserved
@@ -53,3 +57,17 @@ latest combined custom runtime trees, while committing only this implementation.
 The server's standard Odoo addons must remain untouched. Preserve retired `abm`
 cron settings. Backups and before/after migration evidence live in
 `/odoo/backups/2026-10-12-access-role-edit-codex`.
+
+## Deployment verification
+
+Runtime ownership must be `odoo:odoo` after copying module trees; the checkout's
+file modes can include private read permissions. Validate every requested module
+is actually installed at its target version and that no modules remain in
+`to upgrade`, `to install` or `to remove`. A process exit of zero alone does not
+prove a successful Odoo upgrade.
+
+Before/after verification found no changed effective permissions apart from
+new ACL-free assignment markers and the intended Records viewer implication.
+Original menu active/restriction settings and permission groups were preserved.
+Demo migration created 357 permanent assignments, covering 185 active logins.
+The remaining 172 inactive accounts also follow the role before reactivation.

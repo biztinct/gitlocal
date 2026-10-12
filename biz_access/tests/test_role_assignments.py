@@ -188,8 +188,9 @@ class TestRoleAssignments(TransactionCase):
         self.env['ir.model.data'].create({'module':'pb_demo','name':'group_payobook_demo',
             'model':'res.groups','res_id':self.g1.id})
         self.role.write({'group_id':self.g1.id})
-        self.people[0].write({'group_ids':[(4,self.g1.id),(4,self.g2.id)]})
-        self.people[1].write({'group_ids':[(4,self.g1.id)]})
+        # Reproduce legacy rows, before automatic membership enrolment existed.
+        self.people[0].with_context(_pb_access_internal=INTERNAL).write({'group_ids':[(4,self.g1.id),(4,self.g2.id)]})
+        self.people[1].with_context(_pb_access_internal=INTERNAL).write({'group_ids':[(4,self.g1.id)]})
         before={u.id:set(u.all_group_ids.ids) for u in self.people}
         self.access._migrate_assignments(include_memberships=True)
         markers=set(self.role.sudo().membership_group_id.ids)
@@ -201,3 +202,34 @@ class TestRoleAssignments(TransactionCase):
         self.edit(self.a2.ids)
         self.assertIn(self.g2,self.people[0].all_group_ids)
         self.assertIn(self.g2,self.people[1].all_group_ids)
+
+    def test_new_explicit_membership_follows_the_current_role(self):
+        xmlid='role_assignment_test.signup_group'
+        self.env['ir.model.data'].create({'module':'role_assignment_test','name':'signup_group',
+            'model':'res.groups','res_id':self.g1.id})
+        self.role.write({'group_id':self.g1.id})
+        self.edit(self.a2.ids)
+        with patch('odoo.addons.biz_access.models.role_assignments.ROLE_MEMBERSHIP_XMLIDS',[xmlid]):
+            user=self.env['res.users'].with_context(no_reset_password=True).create({
+                'name':'Role signup test','login':'assignment-signup-test',
+                'group_ids':[(6,0,(self.g1|self.env.ref('base.group_user')).ids)]})
+        self.assertTrue(self.access._assignments(self.role,user))
+        self.assertIn(self.g2,user.all_group_ids)
+        self.assertNotIn(self.g1,user.all_group_ids)
+        self.edit(self.a1.ids)
+        self.assertIn(self.g1,user.all_group_ids)
+        self.assertNotIn(self.g2,user.all_group_ids)
+
+    def test_unrelated_group_write_does_not_adopt_a_borrowed_membership(self):
+        xmlid='role_assignment_test.borrowed_group'
+        self.env['ir.model.data'].create({'module':'role_assignment_test','name':'borrowed_group',
+            'model':'res.groups','res_id':self.g1.id})
+        self.role.write({'group_id':self.g1.id})
+        lender,recipient=self.people[:2]
+        self.grant(self.role,lender)
+        loan=self.loan(recipient,lender)
+        with patch('odoo.addons.biz_access.models.role_assignments.ROLE_MEMBERSHIP_XMLIDS',[xmlid]):
+            recipient.write({'group_ids':[(4,self.g2.id)]})
+        self.assertFalse(self.access._assignments(self.role,recipient))
+        loan.action_revoke('Unrelated write must not adopt a loan')
+        self.assertNotIn(self.g1,recipient.all_group_ids)

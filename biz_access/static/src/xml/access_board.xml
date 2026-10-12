@@ -1339,7 +1339,7 @@
                 <details t-foreach="composerSurfaces" t-as="surface" t-key="surface.key" class="pbva-cap-area pbva-screen-choice" t-att-open="!surface.key.startsWith('sidebar.') or !!state.abilitySearch">
                   <summary><span t-esc="surface.parent + ' / ' + surface.label"/></summary>
                   <p class="pbva-col-note" t-esc="surface.reason"/>
-                  <div t-foreach="surface.abilities" t-as="choice" t-key="choice.id" t-attf-class="pbva-cap {{ hasAbility(choice.id) ? 'is-on' : '' }}" role="checkbox" tabindex="0" t-att-aria-checked="hasAbility(choice.id)" t-att-aria-disabled="!surface.available" t-on-click="() => surface.available and this.toggleScreenAbility(surface, choice.id)" t-on-keydown="(ev) => surface.available and this.onScreenAbilityKey(ev, surface, choice.id)">
+                  <div t-foreach="surface.abilities" t-as="choice" t-key="choice.id" t-attf-class="pbva-cap {{ hasAbility(choice.id) ? 'is-on' : '' }}" role="checkbox" tabindex="0" t-attf-aria-checked="{{ hasAbility(choice.id) ? 'true' : 'false' }}" t-attf-aria-disabled="{{ surface.available ? 'false' : 'true' }}" t-on-click="() => surface.available and this.toggleScreenAbility(surface, choice.id)" t-on-keydown="(ev) => surface.available and this.onScreenAbilityKey(ev, surface, choice.id)">
                     <span class="pbva-cap-box"><t t-if="hasAbility(choice.id)" t-out="ic('check',12)"/></span><span class="pbva-cap-tx"><b t-esc="choice.name"/><small t-esc="choice.description"/></span>
                   </div>
                   <p t-if="surface.always_open" class="pbva-col-empty">Open to everybody with a login.</p>

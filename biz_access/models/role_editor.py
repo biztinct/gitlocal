@@ -19,7 +19,7 @@ class RoleEditor(models.AbstractModel):
             domain.append(('user_id', '=', user.id))
         return self.env['pb.role.assignment'].sudo().search(domain)
 
-    def _assign_role(self, role, user, reason='', origin='grant', adopt=False):
+    def _assign_role(self, role, user, reason='', origin='grant', adopt=False, adopt_groups=None):
         self.env.cr.execute('SELECT id FROM pb_role_profile WHERE id=%s FOR UPDATE', [role.id])
         role.invalidate_recordset()
         role._ensure_membership_group()
@@ -34,8 +34,13 @@ class RoleEditor(models.AbstractModel):
         if adopt:
             # Migration transfers a documented permission source to its role.
             keep = {self.env.ref('base.group_user').id}
-            base = set(user.pb_access_baseline or []) - (set(role.group_ids.ids) - keep)
-            user.with_context(_pb_access_internal=INTERNAL).write({'pb_access_baseline': sorted(base)})
+            adopted = role.group_ids | (adopt_groups or self.env['res.groups'].browse())
+            transferred = set(user.pb_access_baseline or []) & (set(adopted.ids) - keep)
+            base = set(user.pb_access_baseline or []) - transferred
+            user.with_context(_pb_access_internal=INTERNAL).write({
+                'pb_access_baseline': sorted(base),
+                'pb_access_projected': sorted(set(user.pb_access_projected or []) | transferred),
+            })
         vals = {'active': True, 'reason': reason, 'origin': origin}
         if row:
             row.write(vals)
@@ -130,7 +135,10 @@ class RoleEditor(models.AbstractModel):
         catalog = Ability.search([('active', '=', True)])
         for item in self.env['pb.sidebar.item'].sudo().search([('active', '=', True)], order='section_id, sequence, id'):
             roots = set(item.groups_id.ids)
-            candidate_ids = set(item.role_ids.ability_ids.ids)
+            # One ability can satisfy a one-ability role gate. A capability
+            # inside an administrator bundle does not, by itself, open every
+            # menu that bundle opens.
+            candidate_ids = set(item.role_ids.filtered(lambda r: len(r.ability_ids) == 1).ability_ids.ids)
             for ability in catalog:
                 if roots & set(implied_closure(ability.group_ids).ids):
                     candidate_ids.add(ability.id)
@@ -341,7 +349,7 @@ class RoleEditor(models.AbstractModel):
                 roles = self.env['pb.role.profile'].sudo().search([('group_id', '=', group.id)])
                 for role in roles:
                     for user in group.with_context(active_test=False).user_ids.filtered(lambda u: not u.share):
-                        self._assign_role(role, user, _('Migrated existing role membership'), 'migration', adopt=True)
+                        self._assign_role(role, user, _('Migrated existing role membership'), 'migration', adopt=True, adopt_groups=group)
         loans = self.env['pb.access.delegation'].sudo().search([
             ('origin', '=', 'delegation'), ('state', '=', 'active')])
         for loan in loans:

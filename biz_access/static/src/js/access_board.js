@@ -1497,7 +1497,7 @@ export class PbAccessBoard extends Component {
     get composerSurfaces() {
         const rows = this.state.editorImpact?.surfaces || this.state.options?.surfaces || [];
         const needle = this.state.abilitySearch.trim().toLocaleLowerCase();
-        return rows.filter(r => !needle || (r.parent + " " + r.label + " " + r.abilities.map(a => a.name).join(" ")).toLocaleLowerCase().includes(needle));
+        return rows.filter(r => !needle || (r.parent + " / " + r.label + " " + r.abilities.map(a => a.name).join(" ")).toLocaleLowerCase().includes(needle));
     }
 
     surfaceState(row) {

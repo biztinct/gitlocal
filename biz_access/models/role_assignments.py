@@ -5,7 +5,7 @@ flags. A caller cannot turn a normal group write into an internal projection.
 """
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
-from .access_common import forbidden_in_closure, implied_closure, visible_people
+from .access_common import ROLE_MEMBERSHIP_XMLIDS, forbidden_in_closure, implied_closure, visible_people
 
 INTERNAL = object()
 
@@ -100,6 +100,29 @@ class AccessUser(models.Model):
     pb_access_projected = fields.Json(groups='base.group_system', copy=False)
     pb_access_revision = fields.Integer(default=0, copy=False)
 
+    def _pb_adopt_registered_memberships(self, explicit_ids=None):
+        # A signup that explicitly receives the historical Demo group must
+        # follow the current role too. Unrelated writes to a borrower do not
+        # convert their projected temporary permission into an assignment.
+        access = self.env['pb.access'].sudo()
+        for xmlid in ROLE_MEMBERSHIP_XMLIDS:
+            group = self.env.ref(xmlid, raise_if_not_found=False)
+            if not group or (explicit_ids is not None and group.id not in explicit_ids):
+                continue
+            roles = self.env['pb.role.profile'].sudo().search([
+                ('group_id', '=', group.id), ('active', '=', True)])
+            for user in self.sudo().filtered(lambda u: not u.share and group in u.group_ids):
+                for role in roles.filtered('group_ids'):
+                    access._assign_role(role, user, _('Assigned from explicit role membership'),
+                        origin='migration', adopt=True, adopt_groups=group)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        users = super().create(vals_list)
+        if not self.env.context.get('install_mode') and self.env.context.get('_pb_access_internal') is not INTERNAL:
+            users._pb_adopt_registered_memberships()
+        return users
+
     def _pb_initialize_access(self):
         for user in self.sudo():
             if not user.pb_access_ready:
@@ -186,6 +209,12 @@ class AccessUser(models.Model):
             user._pb_reconcile_access()
         if 'active' in vals and vals['active'] and not internal:
             self.sudo().filtered('pb_access_ready')._pb_reconcile_access()
+        if 'group_ids' in vals and not internal and not self.env.context.get('install_mode'):
+            explicit_ids = set()
+            for command in vals['group_ids']:
+                if command[0] == 4: explicit_ids.add(command[1])
+                elif command[0] == 6: explicit_ids.update(command[2])
+            self._pb_adopt_registered_memberships(explicit_ids)
         return result
 
 
