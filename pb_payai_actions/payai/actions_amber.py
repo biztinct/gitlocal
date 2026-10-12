@@ -21,8 +21,10 @@ Every one follows the same shape (P2_HANDOVER §Scope):
 Nothing here is ever sudo, and no id comes from the browser or the model:
 `vals` are built here and handed to the client by `rpc_confirm_task`.
 """
+import difflib
 import json
 import logging
+import re
 from datetime import timedelta
 
 from odoo import fields
@@ -36,8 +38,8 @@ from .actions_green import RUNS_DOOR, _board_rows, _row_for, money, run_door
 from .registry import Action, Slot, payai_action
 from .resolve import (
     MAX_CHIPS, ambiguous, fold, missing, month_label, parse_amount, parse_day,
-    parse_period, resolve_period, resolve_person, resolve_scheme, resolved,
-    state_label, tok_match, tokens,
+    parse_period, resolve_period, resolve_person, resolve_run, resolve_scheme,
+    resolved, state_label, tok_match, tokens,
 )
 
 _lt = LazyTranslate(__name__)
@@ -155,10 +157,13 @@ class RunPayroll(_Amber):
                   "'June 2026'. Empty means this month."),
              Slot('scheme', _lt('Scheme'), 'scheme', False,
                   "The payroll scheme or part of the business, in the "
-                  "person's words, e.g. 'Retail'. Never an id."),
-             Slot('people', _lt('People'), 'text', False,
-                  "Who to include if the person said, e.g. 'active only'. "
-                  "Empty means everyone the scheme covers."))
+                  "person's words, e.g. 'Retail'. Only the scheme: any "
+                  "people named go in 'people'. Never an id."),
+             Slot('people', _lt('People'), 'people', False,
+                  "Who to include if the person said: named people, e.g. "
+                  "'Vu Khanh Chi only', or a status, e.g. 'active only'. "
+                  "Never part of the scheme. Empty means everyone the scheme "
+                  "covers."))
     screen_keys = PAY_SCREEN
     door_id = 'payhub_run'
     right_subject = _lt('Running payroll')
@@ -182,7 +187,9 @@ class RunPayroll(_Amber):
         return cache['run_defaults']
 
     def normalise_texts(self, ctx, texts):
-        """"Run payroll for Retail for June": the month rides in the scheme."""
+        """"Run payroll for Retail for June": the month rides in the scheme.
+        "… for Retail End-Month for Vũ Khánh Chi only": so do the people
+        (P3-W1) — split off into their own slot."""
         texts = dict(texts or {})
         scheme = texts.get('scheme') or ''
         if scheme and not texts.get('period'):
@@ -190,9 +197,41 @@ class RunPayroll(_Amber):
             got = parse_period(scheme, today)
             if got:
                 texts['period'] = scheme
-                rest = ' '.join(w for w in got[3].split()
-                                if w not in ('for', 'of', 'in', 'the', 'payroll', 'run'))
-                texts['scheme'] = rest.strip()
+                texts['scheme'] = _without_month(scheme, got[3])
+        return self._split_people(ctx, texts)
+
+    _PEOPLE_SPLIT = re.compile(r'^(?P<a>.+?)\s+(?:for|with|just)\s+(?P<b>.+)$', re.I)
+    _ONLY = re.compile(r'(?:^|\s+)only\s*$', re.I)
+
+    def _split_people(self, ctx, texts):
+        """"<scheme> for <people>", "<people> only" → the scheme slot and the
+        people slot. A part counts as the scheme only when the wizard's own
+        scheme list knows its words; "Retail only" stays a scheme."""
+        scheme = (texts.get('scheme') or '').strip()
+        if not scheme or (texts.get('people') or '').strip():
+            return texts
+
+        def is_scheme(words):
+            words = self._ONLY.sub('', words or '').strip()
+            if not words:
+                return False
+            try:
+                res = resolve_scheme(ctx, words, defaults=self._defaults(ctx))
+            except (UserError, AccessError):
+                return False
+            return res['status'] in ('resolved', 'ambiguous')
+
+        m = self._PEOPLE_SPLIT.match(scheme)
+        if m:
+            a, b = m.group('a').strip(), m.group('b').strip()
+            if is_scheme(a):
+                texts.update(scheme=a, people=b)
+            elif is_scheme(b):
+                texts.update(scheme=b, people=a)
+            return texts
+        if self._ONLY.search(scheme) and not is_scheme(scheme):
+            # "Run December payroll for Vũ Khánh Chi only": no scheme said.
+            texts.update(scheme='', people=scheme)
         return texts
 
     def resolve_slot(self, ctx, slot, text):
@@ -221,8 +260,73 @@ class RunPayroll(_Amber):
                                   for s in schemes[:MAX_CHIPS]])
             return resolve_scheme(ctx, text, defaults=d)
         if slot.key == 'people':
-            return resolved(text or '', text or '', 'said' if text else 'default')
+            return self._resolve_people(ctx, text)
         return super().resolve_slot(ctx, slot, text)
+
+    # ----------------------------------------------------------- people
+    def _status_hit(self, ctx, text):
+        """True when the words name employment statuses ("active only")."""
+        words = [w for w in tokens(text or '') if w not in ('only', 'just', 'the')]
+        if not words:
+            return False
+        if set(words) & {'everyone', 'all', 'everybody'}:
+            return True
+        opts = self._defaults(ctx).get('statuses') or []
+        return any(tok_match(w, t) for o in opts for w in words
+                   for t in tokens('%s %s' % (o.get('value') or '', o.get('label') or '')))
+
+    def _resolve_people(self, ctx, text):
+        """Named people (P3-W1), found among the people THIS scheme pays —
+        the wizard's own `eligible_preview`, as the person. A status ("active
+        only") stays a status, read by `_statuses` as before."""
+        text = ' '.join((text or '').split())
+        empty = {'text': '', 'employee_ids': [], 'names': []}
+        if not text:
+            return resolved(empty, '', 'default')
+        if self._status_hit(ctx, text):
+            return resolved(dict(empty, text=text), text, 'said')
+        bare = self._ONLY.sub('', text).strip()
+        names = [n.strip() for n in re.split(r'\s*,\s*|\s+and\s+|\s*&\s*', bare) if n.strip()]
+        config_id = int((ctx.params.get('scheme') or {}).get('value') or 0)
+        ids, labels = [], []
+        for name in names[:MAX_CHIPS]:
+            rows = self._people_named(ctx, config_id, name)
+            if not rows:
+                return missing(T(_lt(
+                    'I could not find "%s" among the people this scheme pays.')) % name[:60])
+            if len(rows) > 1:
+                if len(names) == 1:
+                    return ambiguous([{'value': r['id'], 'label': r['name'],
+                                       'sublabel': r.get('department') or r.get('code') or ''}
+                                      for r in rows])
+                return missing(T(_lt(
+                    'More than one person here is called "%s". Ask for one person at a '
+                    'time, or open the screen to pick them.')) % name[:60])
+            ids.append(rows[0]['id'])
+            labels.append(rows[0]['name'])
+        return resolved({'text': '', 'employee_ids': ids, 'names': labels},
+                        ', '.join(labels), 'said')
+
+    def _people_named(self, ctx, config_id, name):
+        """Rows of the scheme's own people whose name is these words."""
+        W = ctx.env['pb.payrun.wizard']
+        base = {'formula_config_id': config_id} if config_id else {}
+        want = fold(name)
+        words = [w for w in name.split() if len(w) > 1]
+        seen, rows = set(), []
+        for search in [name] + sorted(words, key=len, reverse=True)[:2]:
+            for row in (W.eligible_preview(dict(base, search=search)) or {}).get('employees') or []:
+                if row['id'] in seen:
+                    continue
+                seen.add(row['id'])
+                parts = re.findall(r'[0-9a-z]+', fold(row.get('name') or ''))
+                if all(any(p == t for p in parts)
+                       for t in re.findall(r'[0-9a-z]+', want)):
+                    rows.append(row)
+            if rows:
+                break
+        exact = [r for r in rows if fold(r.get('name') or '') == want]
+        return exact or rows[:MAX_CHIPS]
 
     def reask_slot(self, ctx, slot):
         # Empty words pick the pre-selected scheme; the pencil offers them all.
@@ -271,9 +375,14 @@ class RunPayroll(_Amber):
                 'formula_config_id': int(sch.get('value') or 0)}
         if card.get('division'):
             vals['division'] = card['division']
-        statuses, said = self._statuses(ctx, (params.get('people') or {}).get('value'))
+        people = (params.get('people') or {}).get('value') or {}
+        if not isinstance(people, dict):            # a plan made before P3
+            people = {'text': T(people)}
+        statuses, said = self._statuses(ctx, people.get('text'))
         if statuses is not None:
             vals['statuses'] = statuses
+        if people.get('employee_ids'):
+            vals['employee_ids'] = [int(e) for e in people['employee_ids']]
         return vals, card, said
 
     def plan(self, ctx, params):
@@ -306,11 +415,22 @@ class RunPayroll(_Amber):
         # scheme covers (incl. host employments it gains), not the raw list.
         covered = pv.get('covered', pv['total'])
         who = T(_lt('All %(n)s covered by this scheme')) % {'n': '{:,}'.format(covered)}
+        people_origin = 'said' if said_statuses else 'default'
         if said_statuses:
             who = T(_lt('%(n)s people · %(which)s')) % {'n': '{:,}'.format(covered),
                                                        'which': said_statuses}
-        slots.append(slot_row('people', _lt('People'), who,
-                              'said' if said_statuses else 'default', True))
+        if vals.get('employee_ids'):
+            # P3-W1: "Vũ Khánh Chi (1 of 902)" — the named people out of all
+            # the scheme covers, as the wizard's scheme card counts them.
+            whole = W.scheme_preview({k: v for k, v in vals.items()
+                                      if k != 'employee_ids'}) or {}
+            names = (params['people'].get('value') or {}).get('names') or []
+            who = T(_lt('%(names)s (%(n)s of %(all)s)')) % {
+                'names': ', '.join(names) or params['people'].get('label') or '',
+                'n': '{:,}'.format(pv['total']),
+                'all': '{:,}'.format(whole.get('covered', covered))}
+            people_origin = params['people'].get('origin') or 'said'
+        slots.append(slot_row('people', _lt('People'), who, people_origin, True))
         notes = []
         if sheet.get('wanted'):
             comps = sheet.get('components') or []
@@ -387,7 +507,9 @@ class RunPayroll(_Amber):
             actions.append(door)
         return cards.card(
             'blocked', ctx.task, 'prepare',
-            title=T(_lt('A %(month)s run for %(scheme)s already exists')) % {
+            # P3-W2: no article before a month ("A October" was the walk's
+            # finding) — the scheme leads the sentence instead.
+            title=T(_lt('%(scheme)s already has a run for %(month)s')) % {
                 'month': month, 'scheme': scheme_name},
             subtitle=self.title, notes=notes, actions=actions)
 
@@ -592,6 +714,35 @@ def _route_steps(engine, version_id, context):
     return people, needs, known
 
 
+_GLUE = ('for', 'of', 'in', 'the', 'payroll', 'run', 'from')
+
+
+def _without_month(text, rest_folded):
+    """`text` with the month words `parse_period` took out (`rest_folded` is
+    what it left), and the little words that only led into the month ("for
+    June", "in 2026"). Cut by spaces, never folded: a person's name keeps its
+    own spelling for the people slot (P3-W1)."""
+    words = text.split()
+    kept = rest_folded.split()
+    out, gone = [], []
+    for w in words:
+        f = fold(w)
+        if f in kept:
+            kept.remove(f)
+            out.append(w)
+        else:
+            gone.append(len(out))          # a month word stood here
+    # drop the glue word right before each month word, then the ends
+    for pos in sorted(set(gone), reverse=True):
+        if 0 < pos <= len(out) and fold(out[pos - 1]) in _GLUE:
+            del out[pos - 1]
+    while out and fold(out[0]) in _GLUE:
+        out.pop(0)
+    while out and fold(out[-1]) in _GLUE:
+        out.pop()
+    return ' '.join(out).strip()
+
+
 def _ref(task):
     try:
         return (json.loads(task.result_json or '{}').get('ref') or {})
@@ -785,6 +936,14 @@ class SendPayslips(_RunAmber):
             return False
         return bool(user._is_admin() or _has_any_group(user, PAY_GROUPS))
 
+    def resolve_slot(self, ctx, slot, text):
+        # P3-W4: payslips go out for approved runs only, so a draft is never
+        # offered as a chip; none approved → "No approved run for <month>
+        # yet" with the Runs board door.
+        if slot.kind == 'run':
+            return resolve_run(ctx, text, states=('done',))
+        return super().resolve_slot(ctx, slot, text)
+
     def param_gate(self, ctx, params):
         run = self._run(ctx, params)
         if run.state == 'done':
@@ -966,8 +1125,7 @@ class UpdatePayData(_Amber):
                 return out
             pool = [r for _e, r in full] or [r for s, e, r in scored if s >= 0.5]
             if not pool:
-                return missing(T(_lt(
-                    "I could not find a pay value called \"%s\" on this person's scheme.")) % text[:60])
+                return self._closest_fields(ctx, text, rows, emp, config_id)
             return ambiguous([{'value': r['value'], 'label': r['label'],
                                'sublabel': r['sublabel']} for r in pool])
         if slot.kind == 'value':
@@ -987,6 +1145,61 @@ class UpdatePayData(_Amber):
                 return missing(T(_lt('I could not read "%s" as a date.')) % (text or '')[:40])
             return resolved(fields.Date.to_string(day), label, origin)
         return super().resolve_slot(ctx, slot, text)
+
+    def _records_door(self, emp_id, config_id):
+        return screen_action(
+            _lt('Open People › Records'), hub=RECORDS_HUB, door_id='peoplehub_records',
+            context={'records_employee_ids': [emp_id] if emp_id else [],
+                     'records_config_id': config_id})
+
+    def _closest_fields(self, ctx, text, rows, emp_id, config_id):
+        """P3-W3 — no pay value by that name on this person's scheme: never a
+        dead end. The closest ones (by spelling, ≤ 6) as chips, each showing
+        what the person has today, and the door to Records."""
+        door = self._records_door(emp_id, config_id)
+        if not rows:
+            out = missing(T(_lt(
+                "This person's scheme has no pay value that can be changed here. "
+                "Open People › Records to see what can.")))
+            out['actions'] = [door]
+            return out
+        said, words = fold(text), tokens(text)
+
+        def closeness(row):
+            shared = sum(1 for t in words if any(tok_match(t, w) for w in tokens(row['words'])))
+            return (-shared, -difflib.SequenceMatcher(None, said, fold(row['label'])).ratio())
+        ranked = sorted(rows, key=closeness)[:MAX_CHIPS]
+        today = self._current_labels(ctx, config_id, emp_id, [r['value'] for r in ranked])
+        cands = []
+        for r in ranked:
+            now = today.get(r['value'])
+            cands.append({'value': r['value'], 'label': r['label'],
+                          'sublabel': (T(_lt('now %s')) % now) if now else T(_lt('not set'))})
+        out = ambiguous(cands, note=T(_lt(
+            'I could not find "%s" on this person\'s scheme. These are the closest '
+            'pay values they have — pick one, or open Records.')) % (text or '')[:60])
+        out['actions'] = [door]
+        return out
+
+    def _current_labels(self, ctx, config_id, emp_id, field_ids):
+        """{card id: what Records shows for this person today} — read the way
+        the Records Desk reads its own cells, as the person; '' when unknown."""
+        out = {}
+        try:
+            desk = self._desk(ctx)
+            cards_ = self._cards(ctx, config_id)
+            emp = ctx.env['hr.employee'].browse(int(emp_id or 0)).exists()
+            if not emp:
+                return out
+            probe = desk._probe(config_id)
+            contract = probe._get_latest_contract(emp) or ctx.env['hr.contract']
+            for fid in field_ids:
+                card = cards_.get(fid)
+                if card:
+                    out[fid] = (desk._read_cell(probe, card, emp, contract) or {}).get('label') or ''
+        except Exception:                               # noqa: BLE001
+            _logger.info("PayAI: could not read today's pay values", exc_info=True)
+        return out
 
     def plan(self, ctx, params):
         emp_id = params['person']['value']

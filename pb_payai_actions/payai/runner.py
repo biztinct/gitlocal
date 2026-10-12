@@ -34,7 +34,7 @@ from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
 
 from . import cards, gate, registry
 from .registry import ACTIONS
-from .resolve import door_title, fold
+from .resolve import door_title, fold, tokens
 
 _lt = LazyTranslate(__name__)
 _logger = logging.getLogger(__name__)
@@ -45,7 +45,10 @@ TOOLS_PROMPT = (
     "DOWNLOAD a run's Excel, RUN payroll, SEND a run for approval, CHANGE a "
     "person's pay value, SEND payslips, PREPARE a government filing, or asks "
     "what you can do, call exactly ONE of the tools, passing the person's own "
-    "words for each parameter. Never invent an id, a number or a name. If the "
+    "words for each parameter. When running payroll, 'scheme' holds only the "
+    "scheme's words and any people named go in 'people' (\"for Retail for An "
+    "only\" → scheme 'Retail', people 'An only'). "
+    "Never invent an id, a number or a name. If the "
     "message is a question about how, why or what something means, or "
     "anything else, do NOT call a tool. Nothing is done until the person "
     "confirms the plan they are shown."
@@ -350,11 +353,14 @@ def _coming_soon_card(ctx, action):
 
 
 def _missing_card(ctx, action, slot, res):
-    actions = []
-    if action.door_id and ctx.has_door(action.door_id):
-        row = ctx.door_row(action.door_id)
+    actions = list(res.get('actions') or [])
+    # The resolver may name a better door than the Action's own (P3-W4: "no
+    # approved run yet" points at the Runs board, not at Pay & Deliver).
+    door_id = res.get('door_id') or action.door_id
+    if door_id and ctx.has_door(door_id):
+        row = ctx.door_row(door_id)
         actions.append(cards.door_action(
-            action.door_id, T(_lt('Open %s')) % door_title(row), 'outline'))
+            door_id, T(_lt('Open %s')) % door_title(row), 'outline'))
     return cards.card(
         'blocked', ctx.task, action.tier,
         title=_lt('I could not find that'),
@@ -376,24 +382,48 @@ def _clarify_card(ctx, action, slot, res, said=''):
             'n': len(res['candidates']), 'name': said[:40]}
     elif slot.kind == 'scheme':
         # The person's own word back to them: "Which Retail scheme do you mean?"
-        word = ' '.join((said or '').split())[:40]
-        if word and word.lower().endswith(' scheme'):
-            word = word[:-len(' scheme')].strip()
+        word = _echo_word(said, res['candidates'])
         question = T(_lt('Which %s scheme do you mean?')) % word if word \
             else _lt('Which scheme do you mean?')
     elif slot.kind == 'field':
         question = _lt('Which pay value do you mean?')
+    elif slot.kind == 'people':
+        question = _lt('Which person do you mean?')
     elif slot.kind == 'filing':
         question = _lt('Which filing do you mean?')
     else:
         question = T(_lt('Which %s do you mean?')) % T(slot.label).lower()
     chips = [{'label': c['label'], 'sublabel': c.get('sublabel') or '',
               'value': T(c['value'])} for c in res['candidates']]
+    notes = [cards.note('info', res['note'])] if res.get('note') else []
+    # P3-W5: a question can be put down too — Cancel closes it with the same
+    # audit line as a cancelled plan. Any door the resolver offers stays.
+    actions = list(res.get('actions') or [])
+    actions.append({'id': 'cancel', 'label': T(_lt('Cancel')), 'style': 'ghost'})
     return cards.card(
         'clarify', ctx.task, action.tier,
         title=question, subtitle=action.title,
-        chips=chips, chip_slot=slot.key,
+        chips=chips, chip_slot=slot.key, notes=notes, actions=actions,
     )
+
+
+def _echo_word(said, candidates):
+    """P3-W1: the person's word goes back into the question only when it is
+    short (≤ 3 words) and every word of it is one the offered chips use —
+    so a name that rode in with the scheme ("Retail End-Month for Vũ Khánh
+    Chi only") is never read back as part of a scheme's name."""
+    word = ' '.join((said or '').split())[:40]
+    if word.lower().endswith(' scheme'):
+        word = word[:-len(' scheme')].strip()
+    if not word or len(word.split()) > 3 or '[' in word:
+        return ''
+    known = set()
+    for cand in candidates or []:
+        known.update(tokens('%s %s' % (cand.get('label') or '', cand.get('sublabel') or '')))
+    said_tokens = tokens(word)
+    if not said_tokens or not all(t in known for t in said_tokens):
+        return ''
+    return word
 
 
 def expired_card(ctx):
@@ -680,11 +710,16 @@ def _pin(ctx, slot, value, label=''):
             return None
         return {'status': 'resolved', 'value': run_rec.id, 'label': run_rec.name or label,
                 'origin': 'chose', 'candidates': []}
-    if slot.kind in ('scheme', 'person', 'division'):
+    if slot.kind in ('scheme', 'person', 'division', 'people', 'item'):
         try:
             value = int(value)
         except (TypeError, ValueError):
             return None
+    if slot.kind == 'people':
+        # A chip names ONE of the people the scheme pays (P3-W1).
+        return {'status': 'resolved', 'origin': 'chose', 'candidates': [],
+                'label': label or T(value),
+                'value': {'text': '', 'employee_ids': [value], 'names': [label or '']}}
     return {'status': 'resolved', 'value': value, 'label': label or T(value),
             'origin': 'chose', 'candidates': []}
 
@@ -965,9 +1000,10 @@ def undo(ctx, task_id):
 
 
 def cancel(ctx, task_id):
-    """Cancel on a plan card: nothing was done, and the audit says so."""
+    """Cancel on a plan card or on a question (P3-W5): nothing was done, and
+    the audit says so — the same line either way."""
     task = _own_task(ctx, task_id, lock=True)
-    if task.state != 'planned':
+    if task.state not in ('planned', 'clarify'):
         return _card_of(task)
     card = cards.card('cancelled', task, task.tier, title=_lt('Cancelled'),
                       subtitle=_lt('Nothing was done.'), state='cancelled')

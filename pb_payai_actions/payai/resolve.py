@@ -259,11 +259,13 @@ def _visible_runs(ctx, runs):
     return runs.filtered(lambda r: owner.get(r.id, ctx.env.company.id) in allowed)
 
 
-def resolve_run(ctx, text, allow_many=False):
+def resolve_run(ctx, text, allow_many=False, states=None):
     """The pay run(s) the words name, searched as the person.
 
     `allow_many`: several runs in the month and no narrowing words → the
     whole month is the answer (run_status "this month"), not a question.
+    `states`: only runs in these states are candidates (P3-W4: payslips go
+    out for approved runs only, so a draft is never offered as a chip).
     """
     per = resolve_period(ctx, text)
     period = per['value']
@@ -287,6 +289,11 @@ def resolve_run(ctx, text, allow_many=False):
                     'period': per['label'], 'words': ' '.join(rest)}),
                 period=per)
         runs = narrowed
+    if states and runs:
+        runs = runs.filtered(lambda r: r.state in states)
+        if not runs:
+            return dict(missing(T(_lt("No approved run for %(period)s yet.")) % {
+                'period': per['label']}), period=per, door_id='payhub_runs')
     if not runs:
         return dict(missing(T(_lt("I found no pay run for %(period)s that you can see.")) % {
             'period': per['label']}), period=per)

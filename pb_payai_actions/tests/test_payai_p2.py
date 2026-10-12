@@ -282,7 +282,8 @@ class TestPayaiP2(TransactionCase):
         self._run_with_slip(self.retail_end)
         card, _s = self._plan_june(self.officer)
         self.assertEqual(card['kind'], 'blocked', card)
-        self.assertIn('already exists', card['title'])
+        # P3-W2: never "A October 2026 run …" — the scheme leads.
+        self.assertEqual(card['title'], 'Payai Retail End-Month already has a run for June 2031')
         doors = [a for a in card['actions'] if a['id'] == 'door']
         self.assertTrue(doors and doors[0]['door_id'] == 'payhub_runs')
         self.assertNotIn('force_clean', json.dumps(card))
@@ -624,8 +625,12 @@ class TestPayaiP2(TransactionCase):
             self.skipTest('Pay & Deliver not installed.')
         run = self._run_with_slip(self.retail_end, name='Payai Deliver')
         card, _s = self._send(self.manager, 'Send the Payai Deliver June 2031 payslips')
-        self.assertEqual(card['kind'], 'refused', card)
-        self.assertIn('approved', json.dumps(card))
+        # P3-W4: a draft is never offered — "No approved run for <month> yet"
+        # with the Runs board door, and no chip naming the draft.
+        self.assertEqual(card['kind'], 'blocked', card)
+        self.assertIn('No approved run for June 2031 yet', json.dumps(card))
+        self.assertFalse(card['chips'] and any('Payai Deliver' in c['label'] for c in card['chips']))
+        self.assertIn('payhub_runs', [a.get('door_id') for a in card['actions']])
         self.env.cr.execute("UPDATE hr_payslip SET state = 'done' WHERE payslip_run_id = %s",
                             (run.id,))
         self.env.cr.execute("UPDATE hr_payslip_run SET state = 'done' WHERE id = %s", (run.id,))

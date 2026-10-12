@@ -265,8 +265,11 @@ patch(AiInsightChat.prototype, {
                 if (!newer) { continue; }
                 m.card.actions = [];
                 m.card.superseded = true;
-            } else if (newer && m.card.task_id && acts.some((a) => a.id === "do")) {
-                m.card.actions = acts.filter((a) => a.id !== "do" && a.id !== "cancel");
+            } else if (newer && m.card.task_id && acts.some((a) => a.id === "do"
+                       || a.id === "cancel" || a.id === "typed")) {
+                // An older plan or question (P3-W5: questions carry Cancel
+                // too) is closed on the server; its buttons go with it.
+                m.card.actions = acts.filter((a) => !["do", "cancel", "typed"].includes(a.id));
                 m.card.superseded = true;
             }
         }

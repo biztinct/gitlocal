@@ -49,7 +49,8 @@ class PayaiTask(models.Model):
         ('failed', 'Did not work'),
         ('refused', 'Refused'),
         ('undone', 'Undone'),
-        ('expired', 'Expired'),
+        # P3-W6: plain words in the Audit console's "Asked PayAI: … — <status>".
+        ('expired', 'Not answered in time'),
         ('cancelled', 'Cancelled'),
     ], string='Status', required=True, default='planned', index=True)
     confirm_kind = fields.Selection([
