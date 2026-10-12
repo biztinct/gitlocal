@@ -274,23 +274,20 @@ class TestActivationSource(TransactionCase):
             'from odoo.addons.pb_learn import y'))
 
     def test_06_no_empty_tenant_ever_draws_a_zero_dial(self):
-        """The Phase-0 leftover, closed.
+        """The Phase-0 leftover, closed for good by HOME P2.
 
-        Both cards that could reach the dial with nothing to measure now guard
-        it, and the guard is on the COUNT rather than on the percentage: a run
-        with payslips and nothing approved is a real nought and gets a real
-        dial. The pinned token is spelled by concatenation so this docstring
-        cannot defeat its own check.
+        The new Home draws no dial at all: H-R5 says never a ring at 100 %,
+        and the honest figures are a progress bar and plain numbers. So the
+        template and the script carry no dial call anywhere and no dial
+        placeholder. The call is matched as a whole word (`toLocaleString(`
+        ends in the same four letters) and spelled by concatenation so this
+        docstring cannot defeat its own check.
         """
-        forbidden = 'ring(' + '0)'
-        self.assertNotIn(forbidden, self.tpl)
-        self.assertIn('t-if="state.d.run.slips" t-out="ring(state.d.run.readiness)"',
-                      self.tpl, "the latest-run dial is unguarded")
-        self.assertIn('t-if="state.d.formula.count" t-out="ring(state.d.formula.health)"',
-                      self.tpl, "the formula dial is unguarded")
-        self.assertEqual(self.tpl.count('pbd-ring-none'), 2,
-                         "a guarded dial with no placeholder leaves a hole in "
-                         "the card head")
+        call = re.compile(r'\b' + 'ri' + r'ng\(')
+        self.assertFalse(call.search(self.tpl), "the template draws a dial")
+        self.assertFalse(call.search(self.js), "the script still builds a dial")
+        self.assertEqual(self.tpl.count('pbd-' + 'ring-none'), 0,
+                         "a dial placeholder is still in the template")
 
     # -- the words --------------------------------------------------------
     def test_07_every_step_the_server_emits_has_words_and_the_reverse(self):
@@ -631,9 +628,11 @@ class TestPayrollMonth(TransactionCase):
                              '%s carries a bracketed plural' % rel)
             self.assertNotIn('%%', body,
                              '%s carries a doubled per cent sign' % rel)
+        # HOME P2: the month strip is gone; the singular branch now lives in
+        # every count sentence ("1 person" / "212 people").
         js = _read(JS)
-        self.assertIn('mo.people === 1', js,
-                      'the chip count does not branch on the singular')
+        self.assertIn('n === 1 ? _t(', js,
+                      'the count sentences do not branch on the singular')
 
     def test_p10_the_strip_never_asks_the_line_table_for_ten_months(self):
         """`hr_payslip_line` is 1.7 GB on the master database against 1.9 GB of

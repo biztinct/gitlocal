@@ -318,11 +318,13 @@ class TestEmbeddedLenses(TransactionCase):
                 '%s: expected %s embedded guard(s)' % (fname, n))
 
     def test_the_suppressed_elements_are_identity_and_never_data(self):
-        """The Dashboard's company eyebrow. Nothing carrying a NUMBER is
+        """The Dashboard's top line. Nothing carrying a NUMBER is
         guarded: an embedded mode that removed a figure would be a fork, not a
         suppression."""
+        # HOME P2: the suppressed element is the top line (greeting, date,
+        # company, "Updated") — identity, never a figure.
         expected = {
-            'pb_dashboard.xml': 'pbd-eyebrow',
+            'pb_dashboard.xml': 'pbd-top',
         }
         for module, fname in self.GUARDS:
             src = _read(ROOT, module, 'static', 'src', 'xml', fname)
@@ -411,7 +413,7 @@ class TestDashboardAnalyticsDoors(TransactionCase):
     def test_both_dashboard_doors_go_through_the_one_handler(self):
         xml = self._dash('static', 'src', 'xml', 'pb_dashboard.xml')
         self.assertEqual(xml.count('this.openInsights()'), 2,
-                         'the hero button and the "Open analytics" link')
+                         'the hero Insights button and the four month figures')
 
     def test_the_door_opens_the_insights_hub_by_xmlid_with_a_way_home(self):
         code = _code(self._dash('static', 'src', 'js', 'pb_dashboard.js'))
@@ -443,7 +445,10 @@ class TestDashboardAnalyticsDoors(TransactionCase):
         """Rule 2 of pb_dashboard's own header, asserted rather than trusted:
         this is the first screen of every tenant, including the lean ones."""
         manifest = ast.literal_eval(self._dash('__manifest__.py'))
+        # HOME P2 adds the UI kit (Lucide icons + tokens) and nothing else:
+        # still no hub, no cockpit.
         self.assertEqual(manifest['depends'],
-                         ['web', 'om_hr_payroll', 'pb_hr_payroll_base'])
+                         ['web', 'om_hr_payroll', 'pb_hr_payroll_base',
+                          'pb_import_kit'])
         code = _code(self._dash('static', 'src', 'js', 'pb_dashboard.js'))
         self.assertNotIn('@pb_hub/', code)
