@@ -568,6 +568,11 @@ class PbDashboardHome(models.AbstractModel):
         money = st['period_money']
         no_bank = safe(lambda: self._home_no_bank(runs.ids, st['cos']), {}) or {}
         st['no_bank_total'] = sum(no_bank.values()) if no_bank else 0
+        mine = st.get('awaiting_ids', ())
+        pending = runs.filtered(
+            lambda r: r.state == 'approval_pending' and r.id not in mine)
+        waiting = safe(lambda: self._home_waiting_on(pending, optional),
+                       {}) or {}
         out = []
         for run in runs:
             f = facts[run.id]
@@ -585,9 +590,41 @@ class PbDashboardHome(models.AbstractModel):
                 'net': m.get('net') if m.get('money') else None,
                 'balance_ok': m.get('balance_ok') if m else None,
                 'unsourced': m.get('unsourced') if m else None,
-                'awaiting_me': run.id in st.get('awaiting_ids', ()),
+                'awaiting_me': run.id in mine,
+                # HOME P3: who the run is waiting on, when it is not me —
+                # the name on the current step's open seat (None otherwise).
+                'waiting_on': waiting.get(run.id),
                 'no_bank': no_bank.get(run.id, 0),
             })
+        return out
+
+    @api.model
+    def _home_waiting_on(self, runs, optional):
+        """{run_id: name of the person the run waits on} for submitted runs —
+        the open seat on the request's ACTIVE step (the same seat
+        `_pb_runs_awaiting` counts for me). One search over the period's
+        submitted runs; a seat held by the reader is skipped, so a run that
+        waits on me never reads "waiting on <someone else>"."""
+        env = self.env
+        if not runs:
+            return {}
+        Req = optional('biz.approval.request', lambda: env['biz.approval.request'])
+        if Req is None or 'seat_ids' not in Req._fields:
+            return {}
+        out = {}
+        for req in Req.search([('res_model', '=', 'hr.payslip.run'),
+                               ('res_id', 'in', runs.ids),
+                               ('state', 'in', ('pending', 'blocked'))],
+                              order='id desc'):
+            if req.res_id in out:
+                continue
+            for seat in req.seat_ids:
+                if seat.status != 'open' or seat.step_id.status != 'active':
+                    continue
+                user = seat.acting_user_id or seat.user_id
+                if user and user.id != env.uid and user.name:
+                    out[req.res_id] = user.name
+                    break
         return out
 
     @api.model
@@ -1084,6 +1121,14 @@ class PbDashboardHome(models.AbstractModel):
         if cutoff and cutoff >= today:
             items.append({'kind': 'cutoff', 'date': cutoff.isoformat(),
                           'n': None, 'extra': {}})
+        else:
+            # HOME P3: this month's cut-off has passed (or the calendar has
+            # none) — the next one to plan for is next month's. `extra.month`
+            # tells the browser which month's changes it closes.
+            nxt = safe(lambda: self._home_next_cutoff(st, optional), None)
+            if nxt and nxt[1] >= today:
+                items.append({'kind': 'cutoff', 'date': nxt[1].isoformat(),
+                              'n': None, 'extra': {'month': nxt[0]}})
         payday = fields.Date.to_date(period['payday']) if period['payday'] \
             else None
         if payday and payday >= today:
@@ -1130,6 +1175,26 @@ class PbDashboardHome(models.AbstractModel):
         items = [i for i in items if i['date'] >= today.isoformat()]
         items.sort(key=lambda i: i['date'])
         return items[:UPCOMING_CAP]
+
+    @api.model
+    def _home_next_cutoff(self, st, optional):
+        """('YYYY-MM', cut-off day) of the month after the period, from its
+        pb.payroll.calendar row (the company's own row before a shared one),
+        or None."""
+        env = self.env
+        Cal = optional('pb.payroll.calendar', lambda: env['pb.payroll.calendar'])
+        if Cal is None:
+            return None
+        first = fields.Date.to_date(st['period']['date_start']) \
+            + relativedelta(months=1)
+        rows = Cal.search_read(
+            [('month', '=', first), ('company_id', 'in', st['cos'] + [False]),
+             ('cutoff_date', '!=', False)],
+            ['company_id', 'cutoff_date'])
+        if not rows:
+            return None
+        rows.sort(key=lambda r: 0 if r['company_id'] else 1)
+        return first.strftime('%Y-%m'), rows[0]['cutoff_date']
 
     @api.model
     def _home_bank_count(self, cos):
