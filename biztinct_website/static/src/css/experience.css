@@ -44,6 +44,7 @@ body{background:var(--paper);color:var(--ink);overflow-x:hidden}body::before{con
 .page-home .philosophy-section{display:block;max-width:880px}.page-home .philosophy-copy{max-width:none}.page-home .philosophy-copy p:not(.eyebrow){max-width:720px}
 /* Each heading keeps native, selectable text and its original semantic structure. */
 .effect-word{display:inline-block}
+.hero-copy h1 em .effect-word,main h2 em .effect-word{background:inherit;background-clip:text;-webkit-background-clip:text;color:transparent}
 .motion-ready .words-revealed .effect-word{animation:word-arrive .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--word-delay,0ms)}
 main h2 em{background:linear-gradient(100deg,#b8adff 15%,#e0d8ff 42%,#83d6ea 55%,#b8adff 80%);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:heading-shimmer 12s ease-in-out infinite;animation-play-state:paused}
 main h2.fx-in-view em{animation-play-state:running}

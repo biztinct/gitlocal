@@ -16,10 +16,10 @@
                 <link rel="canonical" t-att-href="'https://biztinct.com' + request.httprequest.path"/>
                 <link rel="icon" type="image/x-icon" href="/biztinct_website/static/src/img/biztinct-original-favicon.ico"/>
                 <link rel="preload" href="/biztinct_website/static/src/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin="anonymous"/>
-                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=2.2.0"/>
-                <link rel="stylesheet" href="/biztinct_website/static/src/css/experience.css?v=2.2.0"/>
-                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=2.2.0"/>
-                <script defer="defer" src="/biztinct_website/static/src/js/experience.js?v=2.2.0"/>
+                <link rel="stylesheet" href="/biztinct_website/static/src/css/site.css?v=2.2.1"/>
+                <link rel="stylesheet" href="/biztinct_website/static/src/css/experience.css?v=2.2.1"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/site.js?v=2.2.1"/>
+                <script defer="defer" src="/biztinct_website/static/src/js/experience.js?v=2.2.1"/>
                 <t t-if="page in ('thanks', 'login')"><meta name="robots" content="noindex, follow"/></t>
             </head>
             <body t-att-class="'page-' + page">

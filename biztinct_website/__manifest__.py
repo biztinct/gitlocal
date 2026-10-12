@@ -1,7 +1,7 @@
 {
     'name': 'Biztinct Website',
     'summary': 'Premium public website and reliable contact enquiries',
-    'version': '14.0.2.2.0',
+    'version': '14.0.2.2.1',
     'category': 'Website',
     'author': 'Biztinct',
     'license': 'LGPL-3',
