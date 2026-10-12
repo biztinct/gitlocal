@@ -28,8 +28,8 @@ body{background:var(--paper);color:var(--ink);overflow-x:hidden}body::before{con
 /* Typography-led homepage, inspired by 21st.dev spotlight and shimmer previews. */
 .hero-stacked{background:#0a0d18;min-height:0}
 .hero-stacked .hero-stage{display:block;min-height:0;padding-top:42px;padding-bottom:105px;z-index:1}
-.hero-brand{position:relative;isolation:isolate;line-height:1.1;margin-bottom:52px;width:fit-content}
-.brand-name{font-family:Manrope,Arial,sans-serif;font-weight:600;font-size:clamp(100px,14vw,220px);letter-spacing:-.07em;display:block;color:#eeedff;background:linear-gradient(110deg,#f4f2ff 15%,#c7bdff 48%,#effcff 72%,#f4f2ff 90%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:brand-shimmer 14s ease-in-out infinite}
+.hero-brand{position:relative;isolation:isolate;line-height:1.1;margin-bottom:40px;width:clamp(240px,32vw,420px);max-width:100%;aspect-ratio:3.2;display:flex;align-items:center;justify-content:center}
+.brand-name{font-family:Manrope,Arial,sans-serif;font-weight:600;font-size:clamp(62px,8.3vw,108px);letter-spacing:-.07em;display:block;color:#eeedff;background:linear-gradient(110deg,#f4f2ff 15%,#c7bdff 48%,#effcff 72%,#f4f2ff 90%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:brand-shimmer 14s ease-in-out infinite}
 .hero-brand::before{content:'';position:absolute;inset:-25% -10%;background:radial-gradient(ellipse at 45% 55%,#9381ff3d,transparent 64%);filter:blur(27px);z-index:-1;pointer-events:none;animation:brand-light 10s ease-in-out infinite}
 .hero-light{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse 420px 280px at var(--light-x,45%) var(--light-y,25%),#8270f51a,transparent 75%)}
 .hero-light::before,.hero-light::after{content:'';position:absolute;top:-55%;left:10%;width:32%;height:135%;background:linear-gradient(180deg,#bba8ff1c,transparent 85%);filter:blur(34px);transform:rotate(-28deg);animation:light-drift 16s ease-in-out infinite;transform-origin:50% 0}
@@ -67,10 +67,37 @@ main h2.fx-in-view em{animation-play-state:running}
 @keyframes border-light{to{--beam-angle:360deg}}
 @media(max-width:1200px){.hero-lower{gap:40px}.hero-stacked .hero-description{font-size:14px}.hero-stacked .hero-copy .eyebrow{font-size:8px}.hero-stacked .hero-actions{gap:18px}.hero-stacked .hero-actions .button{padding-inline:20px;font-size:11px}.hero-stacked .hero-actions .text-link{font-size:11px}}
 @media(max-width:960px){.hero-stacked .hero-stage{padding-top:32px;padding-bottom:80px}.hero-brand{margin-bottom:38px}.hero-lower{gap:28px}.hero-stacked .hero-copy h1{font-size:clamp(42px,5.6vw,56px)}.hero-stacked .hero-copy .eyebrow{font-size:6px}.hero-stacked .hero-description{font-size:13px}.hero-summary{padding-top:10px}}
-@media(max-width:720px){.hero-stacked{padding-bottom:0}.hero-stacked .hero-stage{padding-top:30px;padding-bottom:72px}.hero-brand{margin-bottom:35px}.brand-name{font-size:clamp(74px,18.5vw,132px)}.hero-lower{grid-template-columns:1fr;gap:25px}.hero-stacked .hero-copy h1{font-size:clamp(43px,9.8vw,68px)}.hero-stacked .hero-copy .eyebrow{font-size:7px;margin-bottom:20px}.hero-summary{padding:0}.hero-stacked .hero-description{font-size:14px;line-height:1.85}.hero-stacked .hero-actions{margin-top:25px;gap:20px}.hero-stacked .hero-actions .button{font-size:12px}.hero-stacked .hero-actions .text-link{font-size:11px}.page-home .solution-card{min-height:0}.page-home .solution-card h3{margin-top:32px}}
-@media(max-width:390px){.brand-name{font-size:clamp(68px,19vw,74px)}.hero-stacked .hero-copy .eyebrow{font-size:6px}.hero-stacked .hero-description{font-size:13px}.hero-stacked .hero-actions{flex-direction:column;align-items:flex-start}.hero-stacked .hero-actions .button{font-size:11px}.hero-brand{margin-bottom:30px}}
+@media(max-width:720px){.hero-stacked{padding-bottom:0}.hero-stacked .hero-stage{padding-top:30px;padding-bottom:72px}.hero-brand{margin-bottom:28px;width:min(230px,80%)}.brand-name{font-size:60px}.hero-lower{grid-template-columns:1fr;gap:25px}.hero-stacked .hero-copy h1{font-size:clamp(43px,9.8vw,68px)}.hero-stacked .hero-copy .eyebrow{font-size:7px;margin-bottom:20px}.hero-summary{padding:0}.hero-stacked .hero-description{font-size:14px;line-height:1.85}.hero-stacked .hero-actions{margin-top:25px;gap:20px}.hero-stacked .hero-actions .button{font-size:12px}.hero-stacked .hero-actions .text-link{font-size:11px}.page-home .solution-card{min-height:0}.page-home .solution-card h3{margin-top:32px}}
+@media(max-width:390px){.brand-name{font-size:60px}.hero-stacked .hero-copy .eyebrow{font-size:6px}.hero-stacked .hero-description{font-size:13px}.hero-stacked .hero-actions{flex-direction:column;align-items:flex-start}.hero-stacked .hero-actions .button{font-size:11px}.hero-brand{margin-bottom:30px}}
 /* Pause decorative motion outside the viewport and when visitors request less motion. */
 .hero-stacked:not(.fx-in-view) .brand-name,.hero-stacked:not(.fx-in-view) .hero-brand::before,.hero-stacked:not(.fx-in-view) .hero-light::before,.hero-stacked:not(.fx-in-view) .hero-light::after{animation-play-state:paused}
 body.effects-muted *,body.effects-muted *::before,body.effects-muted *::after{animation-play-state:paused!important}
 body.effects-muted .effect-word{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
 @media(prefers-reduced-motion:reduce){.brand-name,.hero-brand::before,.hero-light::before,.hero-light::after,main h2 em,.effect-word{animation:none!important}.effect-word{opacity:1!important;filter:none!important;transform:none!important}.text-link>span,.text-link::after{transition:none}.solution-card::after,.process-grid article::after,.principles-grid article::after,.digital-banner::after{animation:none!important}.hero-light{background:none}}
+
+/* The original interactive particle wordmark, at a smaller scale above the hero copy. */
+.particle-text-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s}
+.particles-ready .particle-text-canvas{opacity:1}.particles-ready .particle-fallback{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.particle-text-canvas{display:none}.particle-fallback{visibility:visible!important}}
+
+/* A slow text sheen and small, layered tile responses keep the content readable. */
+main :is(h1,h2) em .effect-word{background-size:250% 100%;animation:heading-shimmer 12s ease-in-out infinite;animation-play-state:paused}
+main :is(h1,h2).fx-in-view em .effect-word{animation-play-state:running}
+.motion-ready .words-revealed em .effect-word{animation:word-arrive .75s cubic-bezier(.2,.7,.2,1) both,heading-shimmer 12s ease-in-out infinite;animation-delay:var(--word-delay,0ms),0s}
+main :is(h1,h2):not(.fx-in-view) em .effect-word{animation-play-state:paused}
+.digital-banner{isolation:isolate}.digital-banner::before{content:'';position:absolute;inset:0;border-radius:inherit;z-index:-1;background:radial-gradient(420px circle at var(--pointer-x,50%) var(--pointer-y,30%),#a48bff26,transparent 70%);opacity:0;transition:opacity .4s;pointer-events:none}
+:is(.solution-card,.digital-banner,.process-grid article,.principles-grid article) h3{transition:translate .4s,color .4s,text-shadow .4s}
+.card-link>span{display:inline-block;transition:translate .35s}
+@media(hover:hover) and (pointer:fine){
+    :is(.solution-card,.digital-banner,.process-grid article,.principles-grid article):hover h3{translate:0 -3px;color:#fff;text-shadow:0 0 24px #b5a4ff30}
+    .solution-card:hover .card-link>span{translate:5px 0}
+    .digital-banner:hover::before{opacity:1}
+    main :is(h1,h2):hover em{filter:drop-shadow(0 0 14px #aca8ff25);transition:filter .4s}
+}
+:is(.solution-card,.digital-banner):focus-visible{border-color:#b9a8ff;outline-offset:5px}
+:is(.solution-card,.digital-banner):focus-visible h3{color:#fff}
+@media(prefers-reduced-motion:reduce){
+    main :is(h1,h2) em .effect-word{animation:none!important}
+    :is(.solution-card,.digital-banner,.process-grid article,.principles-grid article) h3,.card-link>span{transition:none;translate:none!important}
+}
+body.effects-muted :is(.solution-card,.digital-banner,.process-grid article,.principles-grid article) h3,body.effects-muted .card-link>span{translate:none!important;transition:none}

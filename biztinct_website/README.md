@@ -77,11 +77,14 @@ temporary restored QA databases cannot change public routing.
 ## Design and assets
 
 The lightweight public pages use self-hosted Manrope and Instrument Serif
-fonts (OFL licenses in `static/src/fonts`). The homepage starts with a solid Manrope Biztinct wordmark, followed by the
+fonts (OFL licenses in `static/src/fonts`). The homepage starts with a compact, interactive particle Biztinct wordmark, followed by the
 headline on the left and the description/actions on the right. Mobile layouts
 stack these in reading order. A diffuse violet/cyan spotlight and light beams
 sit behind the brand. Headings reveal word by word, emphasis has a slow gradient
 shimmer, and cards use pointer spotlights and animated border light on hover.
+Tile titles gently lift and brighten, with sliding link arrows and a matching
+spotlight on the digital-experience banner. Pointer updates are batched per
+animation frame; emphasized heading words retain their slow colour sheen.
 Decorative animations pause offscreen or while the document is hidden, and
 reduced-motion/data-saving preferences disable extra motion. Text remains
 selectable, semantic and visible without JavaScript.
@@ -94,8 +97,9 @@ Inspiration inspected in signed-in Chrome on 21st.dev:
 The effects are native CSS/JavaScript adaptations for Odoo QWeb, with no React
 runtime, third-party scripts, remote asset requests or new build dependencies.
 Components remain in `views/templates.xml`, styles in `static/src/css`, and
-motion behaviour in `static/src/js/experience.js`. The earlier particle canvas
-has been retired in favour of the same solid font used throughout the website.
+motion behaviour in `static/src/js/experience.js`. The original particle canvas forms the brand in Manrope, gently moves, and
+repels particles around the pointer. A readable text fallback appears without
+JavaScript or when reduced-motion/data-saving preferences are enabled.
 
 Service cards have
 pointer tilt and lighting; sections reveal on scroll, with a moving capability

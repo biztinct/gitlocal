@@ -56,25 +56,6 @@
         }
     }
 
-    if (finePointer.matches && !reduced.matches && !navigator.connection?.saveData) {
-        document.querySelectorAll('.solution-card').forEach(card => {
-            card.addEventListener('pointermove', event => {
-                if (reduced.matches || navigator.connection?.saveData) return;
-                const box = card.getBoundingClientRect();
-                const x = (event.clientX - box.left) / box.width;
-                const y = (event.clientY - box.top) / box.height;
-                card.style.setProperty('--pointer-x', `${x * 100}%`);
-                card.style.setProperty('--pointer-y', `${y * 100}%`);
-                card.style.setProperty('--tilt-x', `${(0.5 - y) * 5}deg`);
-                card.style.setProperty('--tilt-y', `${(x - 0.5) * 6}deg`);
-            }, { passive: true });
-            card.addEventListener('pointerleave', () => {
-                card.style.setProperty('--tilt-x', '0deg');
-                card.style.setProperty('--tilt-y', '0deg');
-            });
-        });
-    }
-
     // Ambient light and card spotlights update only once per pointer frame.
     const muted = () => reduced.matches || navigator.connection?.saveData || document.hidden;
     const syncPreferences = () => {
@@ -85,7 +66,7 @@
     reduced.addEventListener('change', syncPreferences);
     navigator.connection?.addEventListener('change', syncPreferences);
     document.addEventListener('visibilitychange', syncPreferences);
-    const lightTargets = document.querySelectorAll('.hero-stacked, .process-grid article, .principles-grid article');
+    const lightTargets = document.querySelectorAll('.hero-stacked, .solution-card, .digital-banner, .process-grid article, .principles-grid article');
     lightTargets.forEach(target => {
         let frame = 0, x = 50, y = 30;
         const apply = () => {
@@ -94,6 +75,10 @@
             const prefix = target.matches('.hero-stacked') ? 'light' : 'pointer';
             target.style.setProperty(`--${prefix}-x`, `${x}%`);
             target.style.setProperty(`--${prefix}-y`, `${y}%`);
+            if (target.matches('.solution-card')) {
+                target.style.setProperty('--tilt-x', `${(0.5 - y / 100) * 5}deg`);
+                target.style.setProperty('--tilt-y', `${(x / 100 - 0.5) * 6}deg`);
+            }
         };
         target.addEventListener('pointermove', event => {
             if (!finePointer.matches || muted()) return;
@@ -105,6 +90,8 @@
         target.addEventListener('pointerleave', () => {
             if (frame) cancelAnimationFrame(frame);
             frame = 0; x = 50; y = 30; apply();
+            target.style.setProperty('--tilt-x', '0deg');
+            target.style.setProperty('--tilt-y', '0deg');
         });
     });
 
