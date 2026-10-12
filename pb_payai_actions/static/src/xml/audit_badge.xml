@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <!-- P3 — a PayAI decision row carries "Typed confirmation" (Lucide keyboard). -->
+  <t t-inherit="pb_audit.PbAudit" t-inherit-mode="extension">
+    <xpath expr="//span[hasclass('pbau-actorchip')]" position="after">
+      <span class="pbau-typedchip" t-if="r.badge" t-att-title="r.badge.label">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/>
+          <path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/>
+          <rect width="20" height="16" x="2" y="4" rx="2"/>
+        </svg>
+        <span t-esc="r.badge.label"/>
+      </span>
+    </xpath>
+  </t>
+</templates>

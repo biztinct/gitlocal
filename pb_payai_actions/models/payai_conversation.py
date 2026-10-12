@@ -114,11 +114,16 @@ class PayrollAIConversation(models.Model):
             reset_lang(token)
 
     @api.model
-    def rpc_confirm_task(self, task_id, how='tap'):
-        """Do it. `how` is 'tap' or 'voice'; a spoken go-ahead is honoured only
-        when the company allows it AND the task is Amber (the runner checks
-        both). Returns the card that replaces the plan card."""
-        card = self._payai_call(runner.confirm, task_id, how if how in ('tap', 'voice') else 'tap')
+    def rpc_confirm_task(self, task_id, how='tap', word=None, note=None):
+        """Do it. `how` is 'tap' or 'voice' (Amber) or 'typed' (Red, with the
+        `word` the person typed and an optional `note`). A spoken go-ahead is
+        honoured only when the company allows it AND the task is Amber; a Red
+        task counts only the typed word, checked here on the server (the
+        runner checks all of it). Returns the card that replaces the plan card."""
+        how = how if how in ('tap', 'voice', 'typed') else 'tap'
+        word = word if isinstance(word, str) else ''
+        note = note if isinstance(note, str) else ''
+        card = self._payai_call(runner.confirm, task_id, how, word[:40], note[:2000])
         return {'card': card}
 
     @api.model

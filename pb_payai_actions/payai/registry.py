@@ -42,8 +42,15 @@ TIER_SWITCH = {
 }
 #: Tiers whose Actions may be OFFERED to the model in this release.
 #: P2: Amber (prepare) joins — every Amber Action still stops at a plan card
-#: the person confirms; Red (decide) stays declared-only until P3.
-OFFERED_TIERS = ('look', 'prepare')
+#: the person confirms. P3: Red (decide) joins — every Red Action stops at a
+#: plan card the person confirms by TYPING its word; never by voice or a tap.
+OFFERED_TIERS = ('look', 'prepare', 'decide')
+
+
+class Stale(Exception):
+    """Raised by an Action's confirm when the world moved under the plan in
+    the last instant (a concurrent decision, a seat moved): the runner then
+    answers with a fresh card, exactly as when the fingerprint differs."""
 
 
 class Slot:
@@ -128,6 +135,10 @@ class Action:
     def finish(self, ctx, task, data, run_id, info):
         """Amber, browser-driven: the browser says it stopped. Card."""
         raise NotImplementedError
+
+    #: P3 Red: the word the person types to confirm (APPROVE, SEND BACK,
+    #: REJECT). Checked on the server, trimmed and case-insensitive.
+    confirm_word = ''
 
     def too_late(self, ctx, task, data):
         """The card when Undo is pressed after its window closed."""

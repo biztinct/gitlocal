@@ -16,7 +16,7 @@
  *
  * The client never decides a tier or a right: it draws what it is given.
  */
-import { Component, markup, onMounted, onWillUnmount, useState } from "@odoo/owl";
+import { Component, markup, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
@@ -52,6 +52,11 @@ const ICONS = {
     book: '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     loader: '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+    keyboard: '<path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/>',
+    usercheck: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/>',
+    cornerleft: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+    circlex: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    bell: '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
     volume: '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/>',
 };
 
@@ -98,7 +103,65 @@ export class PayaiCountdown extends Component {
     }
 }
 
-AiInsightChat.components = { ...AiInsightChat.components, PayaiCountdown };
+/**
+ * P3 — the typed-word confirm, the Red card's hero. The word is shown in the
+ * hint, the box takes focus the moment the card arrives, the button lights the
+ * instant the word matches (trimmed, any case) and Enter submits. The SERVER
+ * checks the word again: this only spares a round trip. A wrong word comes
+ * back as an inline hint under the box, never a toast.
+ */
+export function normWord(word) {
+    return String(word || "").trim().split(/\s+/).join(" ").toUpperCase();
+}
+
+export class PayaiTypedConfirm extends Component {
+    static template = "pb_payai_actions.TypedConfirm";
+    static props = { act: Object, card: Object, onSubmit: Function };
+
+    setup() {
+        const note = this.props.act.note;
+        this.state = useState({ word: "", note: (note && note.value) || "" });
+        this.wordRef = useRef("word");
+        this.uid = `payai-typed-${this.props.card.task_id || 0}`;
+        onMounted(() => {
+            // Only a live plan takes focus: a card redrawn from history (its
+            // ten minutes gone) never steals the cursor from the box.
+            const until = Date.parse(String(this.props.card.expires_iso || "").replace(" ", "T"));
+            const live = Number.isNaN(until) || until > Date.now();
+            if (live && this.wordRef.el && !this.props.card.superseded) {
+                this.wordRef.el.focus({ preventScroll: true });
+            }
+        });
+    }
+
+    get ok() { return normWord(this.state.word) === normWord(this.props.act.word); }
+    get typedSome() { return this.state.word.trim().length > 0; }
+    icon(name) { return svg(name); }
+
+    onInput(ev) {
+        this.state.word = ev.target.value;
+        if (this.props.card.typed_error) { this.props.card.typed_error = ""; }
+    }
+
+    onKey(ev) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.submit();
+        }
+    }
+
+    submit() {
+        if (!this.ok || this.props.card.busy) {
+            if (!this.ok && this.typedSome) {
+                this.props.card.typed_error = _t("That is not the word yet. Type %s.", this.props.act.word);
+            }
+            return;
+        }
+        this.props.onSubmit(this.state.word, this.state.note);
+    }
+}
+
+AiInsightChat.components = { ...AiInsightChat.components, PayaiCountdown, PayaiTypedConfirm };
 
 /**
  * P2-F1 — what kind of door a ⌘K row is, for RANKING only (the server never
@@ -289,6 +352,7 @@ patch(AiInsightChat.prototype, {
     payaiTone(card) {
         if (card.kind === "plan") {
             if (card.state === "done") { return "ok"; }
+            if (card.tier === "decide" && card.state === "planned") { return "bad"; }
             if (card.state === "failed") { return "bad"; }
             if (card.state === "undone") { return "neutral"; }
             return "warn";
@@ -368,7 +432,10 @@ patch(AiInsightChat.prototype, {
             const scenario = (this.env.services || {})["learn.scenario"];
             if (scenario && typeof scenario.begin === "function") {
                 if (!this.constructor.embedded) { this.closePanel(); }
-                Promise.resolve(scenario.begin(act.scenario || "payrun", act.mode || "watch"))
+                // begin() answers false (never throws) for a key it does not
+                // know: say so instead of a button that silently does nothing.
+                Promise.resolve(scenario.begin(act.scenario || "sc_payrun", act.mode || "watch"))
+                    .then((ok) => { if (ok === false) { this._payaiDoorFailed(); } })
                     .catch(() => this._payaiDoorFailed());
             } else {
                 this._payaiDoorFailed();
@@ -394,6 +461,19 @@ patch(AiInsightChat.prototype, {
         if (!msg.card || msg.card.busy) { return; }
         msg.card.busy = true;
         await this._payaiTaskCall(msg, "rpc_confirm_task", ["tap"]);
+    },
+
+    /** P3 — the typed word (and the approver's optional note) go to the
+     *  server, which checks the word, the seat and the plan all over again. */
+    payaiTypedAct(card) {
+        return (card.actions || []).find((a) => a.id === "typed") || null;
+    },
+
+    async payaiTypedDo(msg, word, note) {
+        if (!msg.card || msg.card.busy) { return; }
+        msg.card.busy = true;
+        msg.card.typed_error = "";
+        await this._payaiTaskCall(msg, "rpc_confirm_task", ["typed", word, note || ""]);
     },
 
     /** design-5: the countdown hit 0:00. Only hides the button — the server
@@ -427,6 +507,12 @@ patch(AiInsightChat.prototype, {
     _payaiApply(msg, card) {
         if (!card) {
             if (msg.card) { msg.card.busy = false; }
+            return;
+        }
+        if (card.inline && msg.card && card.task_id === msg.card.task_id) {
+            // P3 — a wrong word: the hint goes under the box on THIS card.
+            msg.card.busy = false;
+            msg.card.typed_error = ((card.notes || [])[0] || {}).text || card.title || "";
             return;
         }
         let target = msg;

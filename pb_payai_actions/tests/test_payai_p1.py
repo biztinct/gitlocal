@@ -19,6 +19,7 @@ from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
 
 GREEN = {'open_screen', 'run_status', 'download_run_excel', 'what_can_you_do'}
 AMBER = {'run_payroll', 'submit_run', 'update_pay_data', 'send_payslips', 'filing_prepare'}
+RED = {'approve_item', 'send_back_item', 'reject_item'}
 
 DOORS = [
     {'id': 'payhub', 'label': 'Pay Run', 'sublabel': 'Payroll operations', 'group': 'Missions',
@@ -158,13 +159,16 @@ class TestPayaiP1(TransactionCase):
             if key not in ('open_screen', 'what_can_you_do') and action.tier != 'never':
                 self.assertTrue(action.screen_keys, '%s names no screen' % key)
         stubs = {k for k, a in ACTIONS.items() if a.stub}
-        # P2: Amber is built; Red stays declared-only until P3.
-        self.assertTrue({'approve_item', 'send_back', 'reject_item'} <= stubs)
-        self.assertFalse(AMBER & stubs)
+        # P3: Amber and Red are built; only the never tier is declared-only.
+        self.assertFalse((AMBER | RED) & stubs)
+        self.assertTrue(RED <= set(ACTIONS))
+        for key in RED:
+            self.assertEqual(ACTIONS[key].tier, 'decide')
+            self.assertTrue(ACTIONS[key].confirm_word)
         tools = registry.tools_schema(self.env, self.officer)
         json.dumps(tools)
         names = {t['name'] for t in tools}
-        self.assertTrue(names <= GREEN | AMBER, names)
+        self.assertTrue(names <= GREEN | AMBER | RED, names)
         self.assertFalse(names & stubs)
         self.assertIn('run_status', names)
         for t in tools:
@@ -384,11 +388,12 @@ class TestPayaiP1(TransactionCase):
     # ========================================================== extras
     def test_13_stub_and_never_cards(self):
         with self._no_provider():
-            # A Red sentence is still declared-only (P3): the honest refusal
-            # with the door to where it is done today.
+            # P3: a Red sentence with nothing waiting for this person: an
+            # honest answer and the door, never a plan, never a decision.
             out, _s = self._send(self.officer, 'Approve the June 2031 run')
             card = out['card']
-            self.assertEqual(card['kind'], 'refused')
+            self.assertIn(card['kind'], ('refused', 'blocked'), card)
+            self.assertNotEqual(card.get('state'), 'planned')
             out, _s = self._send(self.plain, 'Run June payroll for Retail')
             self.assertIn('Run payroll right', json.dumps(out['card']))
             out, _s = self._send(self.officer, 'Delete the May run')

@@ -105,8 +105,14 @@
           </t>
         </div>
 
-        <div class="payai-card__actions" t-if="card.actions and card.actions.length">
+        <!-- P3 Red: the typed word sits ABOVE the other buttons. -->
+        <t t-set="typedAct" t-value="card.state === 'planned' ? this.payaiTypedAct(card) : null"/>
+        <PayaiTypedConfirm t-if="typedAct" act="typedAct" card="card"
+                           onSubmit="(word, note) => this.payaiTypedDo(msg, word, note)"/>
+
+        <div class="payai-card__actions" t-if="card.actions and card.actions.some((a) => a.id !== 'typed')">
           <t t-foreach="card.actions" t-as="act" t-key="act_index">
+            <t t-if="act.id !== 'typed'">
             <span class="payai-card__spacer" t-if="act.id === 'cancel'"/>
             <button type="button"
                     t-attf-class="payai-btn payai-btn--{{ act.style or 'outline' }} {{ act.id === 'do' ? 'payai-btn--do' : '' }}"
@@ -116,6 +122,7 @@
               <t t-elif="act.id !== 'do'" t-out="this.payaiSvg(this.payaiActIcon(act))"/>
               <span t-esc="act.label"/>
             </button>
+            </t>
           </t>
         </div>
 
@@ -146,6 +153,45 @@
   </t>
 
   <t t-name="pb_payai_actions.Countdown"><t t-esc="left"/> left</t>
+
+  <!-- P3 — the typed-word confirm. The word is in the hint, the box is
+       focused on arrival, the button lights the instant the word matches,
+       Enter submits; a wrong word is an inline hint (role=alert). -->
+  <t t-name="pb_payai_actions.TypedConfirm">
+    <div t-attf-class="payai-typed {{ ok ? 'is-ok' : '' }} {{ props.card.typed_error ? 'is-bad' : '' }}">
+      <label class="payai-typed__notefield" t-if="props.act.note">
+        <span class="payai-typed__k" t-esc="props.act.note.label"/>
+        <input type="text" class="payai-typed__note" maxlength="2000"
+               t-att-placeholder="props.act.note.placeholder" t-model="state.note"
+               t-att-disabled="props.card.busy"/>
+      </label>
+      <div class="payai-typed__hint" t-att-id="uid + '-hint'">
+        <t t-out="icon('keyboard')"/>
+        <span t-esc="props.act.hint"/>
+      </div>
+      <div class="payai-typed__row">
+        <input type="text" t-ref="word" class="payai-typed__input"
+               autocomplete="off" autocapitalize="characters" spellcheck="false"
+               t-att-placeholder="props.act.word"
+               t-att-aria-label="props.act.hint"
+               t-att-aria-describedby="uid + '-hint'"
+               t-att-aria-invalid="props.card.typed_error ? 'true' : 'false'"
+               t-att-disabled="props.card.busy"
+               t-on-input="onInput" t-on-keydown="onKey"/>
+        <button type="button" t-attf-class="payai-btn payai-btn--{{ props.act.style or 'primary' }} payai-btn--typed"
+                t-att-disabled="!ok or props.card.busy ? 'disabled' : false"
+                t-on-click="() => this.submit()">
+          <t t-if="props.card.busy" t-out="icon('loader')"/>
+          <t t-else="" t-out="icon(ok ? 'check' : (props.act.icon or 'check'))"/>
+          <span t-esc="props.act.label"/>
+        </button>
+      </div>
+      <div class="payai-typed__error" role="alert" t-if="props.card.typed_error">
+        <t t-out="icon('alert')"/>
+        <span t-esc="props.card.typed_error"/>
+      </div>
+    </div>
+  </t>
 
   <!-- The floating pill: the card follows the text; the text is the card's
        own title, so it is not drawn twice. -->

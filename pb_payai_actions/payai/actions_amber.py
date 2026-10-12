@@ -132,6 +132,15 @@ def _period_words(period):
     return '%s – %s' % (_day_label(start), _day_label(end))
 
 
+def learn_action(scenario):
+    """"Learn to do this yourself" (P3 §2): the Learn walkthrough of the
+    screen this card did the work of, in watch mode. The key is the
+    scenario's own (`pb_learn/static/content/learn_content.json`): P2 sent
+    'payrun', which no scenario carries, so the button did nothing."""
+    return {'id': 'learn', 'scenario': scenario, 'mode': 'watch',
+            'label': T(_lt('Learn to do this yourself')), 'style': 'outline', 'icon': 'book'}
+
+
 def undo_block(minutes, label, note, can=True):
     until = fields.Datetime.now() + timedelta(minutes=minutes)
     return {'until_iso': fields.Datetime.to_string(until) + 'Z' if can else '',
@@ -578,9 +587,7 @@ class RunPayroll(_Amber):
         actions.append({'id': 'followup', 'action': 'submit_run', 'slot': 'run',
                         'value': T(run.id), 'label': T(_lt('Send for approval')),
                         'style': 'outline', 'icon': 'send'})
-        actions.append({'id': 'learn', 'scenario': 'payrun', 'mode': 'watch',
-                        'label': T(_lt('Learn to do this yourself')), 'style': 'outline',
-                        'icon': 'book'})
+        actions.append(learn_action('sc_payrun'))
         n = int(summary.get('count') or 0)
         if self._may_delete(ctx):
             undo = undo_block(self.undo_minutes, _lt('Undo'), T(_lt(
@@ -876,6 +883,7 @@ class SubmitRun(_RunAmber):
         request_id = payload.get('id') or (run.approval_request_id.id if
                                            'approval_request_id' in run._fields else 0)
         actions = [a for a in [run_door(ctx, run.id, _lt('Open the run'))] if a]
+        actions.append(learn_action('sc_payrun'))
         if run.state == 'done':
             return cards.card(
                 'plan', task, 'prepare', title=_lt('Approved straight away'), subtitle=run.name,

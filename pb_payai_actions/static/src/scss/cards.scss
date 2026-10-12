@@ -17,7 +17,8 @@
     --pc-bg: #F7F7FB;
     --pc-ok: #2E7D4F;    --pc-ok-soft: #E6F3EB;
     --pc-warn: #D97706;  --pc-warn-soft: #FBF0DC;
-    --pc-bad: #DC2668;   --pc-bad-soft: #FCE7EF;
+    // P3: the Red tier's header is the design system's rose (locked palette).
+    --pc-bad: #DC2668;   --pc-bad-soft: var(--pbim-rose-soft, #FCE7EF);
     --pc-info: #2563EB;  --pc-info-soft: #E8EFFD;
     --pc-neutral: #64748B; --pc-neutral-soft: #EEF1F5;
     // Darker "ink" shades for text on the -soft tints (AA contrast).
@@ -362,6 +363,77 @@
     .payai-btn:active { transform: none !important; }
 }
 
+// ── P3: the typed-word confirm (Red) ─────────────────────────────────────
+// Deliberate, not bureaucratic: one calm box, the word in the hint, the
+// button lights the instant the word matches. Sits above the other buttons.
+.payai-typed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 11px;
+    border-radius: 12px;
+    border: 1px solid var(--pc-bad-soft);
+    background: var(--pc-card);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    &.is-ok { border-color: var(--pc-brand-light); box-shadow: 0 0 0 3px var(--pc-brand-soft); }
+}
+.payai-typed__notefield { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.payai-typed__k { font-size: 12px; color: var(--pc-muted); font-weight: 600; }
+.payai-typed__note {
+    width: 100%;
+    min-width: 0;
+    font-size: 13.5px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--pc-line);
+    background: var(--pc-bg);
+    color: var(--pc-ink);
+    &:focus { outline: 2px solid var(--pc-brand-light); outline-offset: 0; border-color: var(--pc-brand); }
+}
+.payai-typed__hint {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--pc-bad-ink);
+    .payai-ic { margin-top: 1px; width: 15px; height: 15px; }
+}
+.payai-typed__row { display: flex; gap: 8px; align-items: center; }
+.payai-typed__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 220px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--pc-line);
+    background: var(--pc-bg);
+    color: var(--pc-ink);
+    transition: border-color 0.15s ease;
+    &::placeholder { color: var(--pc-muted); opacity: 0.55; letter-spacing: 0.08em; }
+    &:focus { outline: 2px solid var(--pc-brand-light); outline-offset: 0; border-color: var(--pc-brand); }
+}
+.payai-typed.is-ok .payai-typed__input { border-color: var(--pc-ok); }
+.payai-typed.is-bad .payai-typed__input { border-color: var(--pc-bad); }
+.payai-btn--typed { flex: none; transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease; }
+.payai-typed.is-ok .payai-btn--typed:not([disabled]) { animation: payai-badge-pop 0.24s ease-out both; }
+.payai-typed__error {
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+    font-size: 12.5px;
+    color: var(--pc-bad-ink);
+    .payai-ic { margin-top: 1px; width: 14px; height: 14px; }
+}
+.payai-card.is-busy .payai-btn--typed .payai-ic { animation: payai-spin 0.9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+    .payai-typed, .payai-typed__input, .payai-btn--typed { transition: none !important; }
+    .payai-typed.is-ok .payai-btn--typed, .payai-card.is-busy .payai-btn--typed .payai-ic { animation: none !important; }
+}
+
 // A narrow card — the drawer at its narrowest, or a phone: tiles two across,
 // the plan card's buttons one full row each (no spacer). Written flat, with no
 // nesting inside the at-rule, so the asset compiler passes it through as is.
@@ -370,6 +442,9 @@
     .payai-card__actions .payai-btn { flex: 1 1 100%; justify-content: center; }
     .payai-card__actions .payai-card__spacer { display: none; }
     .payai-card__audit.is-compact { padding-left: 12px; }
+    .payai-typed__row { flex-wrap: wrap; }
+    .payai-typed__input { max-width: none; flex: 1 1 100%; }
+    .payai-btn--typed { flex: 1 1 100%; justify-content: center; }
 }
 // Browsers without container queries keep the old window rule.
 @supports not (container-type: inline-size) {
@@ -397,4 +472,17 @@
     padding: 0;
     border: 0;
     background: transparent;
+}
+
+// ── P3: the Audit console's "Typed confirmation" badge on PayAI rows ─────
+.pbau-typedchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--pbim-rose-soft, #FCE7EF);
+    color: var(--vuf-bad-ink, #A3164B);
 }

@@ -11,5 +11,6 @@ from . import resolve
 from . import cards
 from . import actions_green
 from . import actions_amber
+from . import actions_red
 from . import actions_stubs
 from . import runner

@@ -43,7 +43,8 @@ TOOLS_PROMPT = (
     "You route requests for PayAI, the payroll assistant inside %(brand)s. "
     "If the person asks you to OPEN a screen, SHOW or CHECK a pay run, "
     "DOWNLOAD a run's Excel, RUN payroll, SEND a run for approval, CHANGE a "
-    "person's pay value, SEND payslips, PREPARE a government filing, or asks "
+    "person's pay value, SEND payslips, PREPARE a government filing, APPROVE, "
+    "SEND BACK or REJECT something waiting for their own decision, or asks "
     "what you can do, call exactly ONE of the tools, passing the person's own "
     "words for each parameter. When running payroll, 'scheme' holds only the "
     "scheme's words and any people named go in 'people' (\"for Retail for An "
@@ -426,6 +427,23 @@ def _echo_word(said, candidates):
     return word
 
 
+def _ask_card(ctx, action, slot, res, params):
+    """A question only typed words answer (P3: the reason for a send-back or
+    a rejection). What it is about stays on the card."""
+    slots = []
+    item = params.get('item') or {}
+    if item.get('label'):
+        slots.append({'key': 'item', 'label': T(_lt('What')), 'value_label': item['label'],
+                      'origin': item.get('origin') or 'said', 'editable': False,
+                      'origin_label': ''})
+    notes = [cards.note('info', res['note'])] if res.get('note') else []
+    return cards.card(
+        'clarify', ctx.task, action.tier,
+        title=res.get('question') or T(_lt('Which %s do you mean?')) % T(slot.label).lower(),
+        subtitle=action.title, slots=slots, notes=notes,
+        actions=[{'id': 'cancel', 'label': T(_lt('Cancel')), 'style': 'ghost'}])
+
+
 def expired_card(ctx):
     return cards.card(
         'blocked', ctx.task, 'look',
@@ -488,7 +506,19 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
             task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
                                'expires_at': _now() + task._ttl()})
             return _finish(ctx, task, 'clarify', _clarify_card(ctx, action, slot, res, text))
+        if res['status'] == 'ask':
+            # P3: a slot only the person's own words can fill (a send-back
+            # reason): one typed question, answered in the box.
+            data.update({'pinned': pinned, 'params': dict(params),
+                         'ask': {'slot': slot.key, 'typed': True, 'candidates': []}})
+            task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
+                               'expires_at': _now() + task._ttl()})
+            return _finish(ctx, task, 'clarify', _ask_card(ctx, action, slot, res, params))
         if res['status'] == 'missing':
+            if res.get('card'):
+                # The resolver answered with a whole card (P3: "this is not
+                # waiting for you" — who decides it, and Remind them).
+                return _finish(ctx, task, 'refused', res['card'], res.get('note') or 'not found')
             return _finish(ctx, task, 'refused', _missing_card(ctx, action, slot, res),
                            res.get('note') or 'not found')
         params[slot.key] = res
@@ -505,7 +535,7 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
     if isinstance(refusal, dict):
         return _finish(ctx, task, 'refused', refusal, 'not allowed for this record')
 
-    if action.tier == 'prepare':
+    if action.tier in ('prepare', 'decide'):
         return _plan(ctx, action, task, params, data)
 
     try:
@@ -562,6 +592,11 @@ def on_resolve(ctx, message, resolve):
         if (follow not in (offer.get('actions') or []) or slot_key != offer.get('slot')
                 or value not in (offer.get('values') or [])):
             raise AccessError(T(_lt('That button was not offered here.')))
+        if follow == 'remind':
+            # P3: "Remind <name>" on a not-yours card — a nudge, not an Action
+            # (no decision, no move); the engine's own reminder.
+            from . import actions_red
+            return actions_red.remind(ctx, task, value, offer)
         action = ACTIONS[follow]
         slot = next(s for s in action.slots if s.key == slot_key)
         pinned = {slot_key: _pin(ctx, slot, value)}
@@ -650,10 +685,14 @@ def _reask(ctx, task, slot_key):
     return _finish(ctx, task, 'clarify', card)
 
 
-def typed_answer(ctx, message):
+def typed_answer(ctx, message, only_kinds=None):
     """Words typed after a pencil's question: the new value for that slot.
-    None when no such question is waiting — then they are just words."""
-    text = ' '.join((message or '').split())[:200]
+    None when no such question is waiting — then they are just words.
+
+    `only_kinds`: answer only a question for these slot kinds. A reason
+    (P3) is asked for BEFORE the phrase table runs, so "approve the overtime
+    first" typed as a send-back reason is the reason, not a new request."""
+    text = ' '.join((message or '').split())[:2000]
     if not text or GO_AHEAD.match(text):
         return None
     Task = ctx.env['payai.task'].sudo()
@@ -669,6 +708,10 @@ def typed_answer(ctx, message):
     slot = action and next((s for s in action.slots if s.key == ask.get('slot')), None)
     if not ask.get('typed') or slot is None or not _is_latest(ctx, task):
         return None
+    if only_kinds and slot.kind not in only_kinds:
+        return None
+    if slot.kind != 'reason':
+        text = text[:200]
     ctx.task = task
     ctx.params = dict(data.get('params') or {})
     try:
@@ -676,6 +719,10 @@ def typed_answer(ctx, message):
             res = action.resolve_slot(ctx, slot, text)
     except (UserError, AccessError) as exc:
         res = {'status': 'missing', 'note': _exc_text(exc)}
+    if res.get('status') == 'ask':
+        # Still not enough words: the question stays open, the note says why.
+        return _note_card(ctx, task, res.get('question') or _lt('I could not read that'),
+                          res.get('note') or '', tone='info')
     if res.get('status') == 'missing':
         # The question stays open: the note is added below it.
         return _note_card(ctx, task, _lt('I could not read that'), '%s %s' % (
@@ -766,9 +813,13 @@ def _plan(ctx, action, task, params, data):
     card['expires_iso'] = fields.Datetime.to_string(expires) + 'Z'
     if ctx.voice and out.get('speak'):
         # Read back on the device (speechSynthesis), never sent anywhere.
-        tail = _lt('Tap Do it or say go ahead.') if ctx.env.company.payai_voice_go_ahead \
-            else _lt('Tap Do it to go ahead.')
-        card['speak'] = '%s %s' % (out['speak'], T(tail))
+        if action.tier == 'decide':
+            # Red: the read-back already says the word must be typed.
+            card['speak'] = out['speak']
+        else:
+            tail = _lt('Tap Do it or say go ahead.') if ctx.env.company.payai_voice_go_ahead \
+                else _lt('Tap Do it to go ahead.')
+            card['speak'] = '%s %s' % (out['speak'], T(tail))
     return _finish(ctx, task, 'planned', card)
 
 
@@ -818,24 +869,56 @@ def _in_flight(ctx, task):
 RUN_STALE = timedelta(minutes=3)
 
 
-def confirm(ctx, task_id, how='tap'):
+def _norm_word(word):
+    return ' '.join(str(word or '').split()).upper()
+
+
+def _needs_typing(ctx, task, action):
+    """Red never counts a tap or a spoken yes (owner decision 6)."""
+    word = (action.confirm_word if action else '') or 'the word'
+    return _note_card(ctx, task, _lt('This one needs typing'), T(_lt(
+        'Approvals, send-backs and rejections are confirmed by typing %s on the '
+        'card. A tap or a spoken yes never counts.')) % word, tone='info')
+
+
+def _fresh_card(ctx, task, data, params):
+    """Things moved under the plan: the old task expires and the same words
+    are planned again as they stand now. Nothing was done."""
+    task.write({'state': 'expired', 'error': 'changed since the plan was shown'})
+    card = run(ctx, task.action_key, data.get('texts') or {}, task.utterance,
+               pinned=params)
+    card.setdefault('notes', []).insert(0, cards.note('warn', _lt(
+        'Things changed since I showed you this plan. Here it is as it stands '
+        'now; nothing was done.')))
+    ctx.task.sudo().write({'plan_json': json.dumps(card, ensure_ascii=False, default=str)})
+    return card
+
+
+def confirm(ctx, task_id, how='tap', word=None, note=None):
     """Do it. Re-checks EVERYTHING the plan card promised, then acts.
 
     Returns the card that replaces the plan card: the running card (with the
     exact `vals` to drive, for run payroll), the result card, a refusal, or a
     fresh plan when things changed meanwhile ("Things changed since I showed
     you this plan").
+
+    `how`: 'tap' | 'voice' (Amber) | 'typed' (Red: `word` must be the
+    Action's confirm word, trimmed, any case; `note` is the approver's
+    optional note). Red refuses a tap and a spoken yes, always.
     """
-    how = how if how in ('tap', 'voice') else 'tap'
+    how = how if how in ('tap', 'voice', 'typed') else 'tap'
     task = _own_task(ctx, task_id, lock=True)
     action = ACTIONS.get(task.action_key)
     if action is None or action.tier not in ('prepare', 'decide'):
         raise AccessError(T(_lt('There is nothing to confirm on that request.')))
+    red = action.tier == 'decide'
+    if red and how != 'typed':
+        if task.state in ('done', 'failed'):
+            return _card_of(task)
+        return _needs_typing(ctx, task, action)
+    if not red and how == 'typed':
+        how = 'tap'
     if how == 'voice':
-        if action.tier != 'prepare':
-            return _note_card(ctx, task, _lt('Not by voice'), _lt(
-                'A spoken go-ahead never counts for approvals or rejections. Use '
-                'the plan card instead.'))
         if not ctx.env.company.payai_voice_go_ahead:
             return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
                 'A spoken go-ahead is switched off here, so I did nothing. Tap Do it '
@@ -843,7 +926,9 @@ def confirm(ctx, task_id, how='tap'):
         if not _is_latest(ctx, task):
             return _not_latest_card(ctx)
     if task.state != 'planned':
-        if task.state in ('confirmed', 'running', 'done', 'undone', 'cancelled'):
+        if task.state in ('confirmed', 'running', 'done', 'undone', 'cancelled', 'failed'):
+            # Pressed twice (two tabs, a double Enter): the card of what
+            # already happened, never a second decision.
             return _card_of(task)
         return expired_card(ctx)
     if task.is_expired():
@@ -852,6 +937,13 @@ def confirm(ctx, task_id, how='tap'):
         card['subtitle'] = T(_lt('Plans are good for ten minutes. Ask me again and I '
                                  'will show you a fresh one.'))
         return card
+    if red and _norm_word(word) != _norm_word(action.confirm_word):
+        # Wrong word: an inline hint on the card, never a toast; still a plan.
+        miss = _note_card(ctx, task, _lt('That is not the word'), T(_lt(
+            'Type %s exactly as shown (capitals do not matter). Nothing was done.')) %
+            action.confirm_word, tone='warn')
+        miss['inline'] = True
+        return miss
     if _in_flight(ctx, task):
         return _note_card(ctx, task, _lt('One thing at a time'), _lt(
             'Another request of yours is still running. Wait for it to finish, then '
@@ -870,14 +962,7 @@ def confirm(ctx, task_id, how='tap'):
         msg = _exc_text(exc)
         return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
     if 'kind' in fresh or fresh.get('fingerprint') != data.get('fingerprint'):
-        task.write({'state': 'expired', 'error': 'changed since the plan was shown'})
-        card = run(ctx, task.action_key, data.get('texts') or {}, task.utterance,
-                   pinned=params)
-        card.setdefault('notes', []).insert(0, cards.note('warn', _lt(
-            'Things changed since I showed you this plan. Here it is as it stands '
-            'now; nothing was done.')))
-        ctx.task.sudo().write({'plan_json': json.dumps(card, ensure_ascii=False, default=str)})
-        return card
+        return _fresh_card(ctx, task, data, params)
 
     # The TRANSACTION's clock, the same one `create_date` is stamped with, so
     # "the run this task made" (created after Do it) is never off by the
@@ -900,9 +985,15 @@ def confirm(ctx, task_id, how='tap'):
         stored.pop('drive', None)
         task.write({'plan_json': json.dumps(stored, ensure_ascii=False, default=str)})
         return card
+    ctx.confirm_note = ' '.join(str(note or '').split())[:2000] if red else ''
     try:
         with ctx.env.cr.savepoint():
             card = action.confirm(ctx, task, params, data)
+    except registry.Stale:
+        # The world moved in the last instant (a concurrent decision, a seat
+        # moved): nothing was decided — the savepoint rolled it all back.
+        task.write({'state': 'planned', 'confirm_kind': 'none', 'confirmed_at': False})
+        return _fresh_card(ctx, task, data, params)
     except (UserError, AccessError) as exc:
         msg = _exc_text(exc)
         return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
@@ -1052,6 +1143,9 @@ def go_ahead(ctx, message):
     task = Task.search(domain, order='id desc', limit=1)
     if not task:
         return None
+    if task.tier == 'decide':
+        action = ACTIONS.get(task.action_key)
+        return _needs_typing(ctx, task, action)
     if not ctx.voice:
         return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
             'Typing it does not count. Tap Do it on the plan card if it is right.'),
@@ -1068,6 +1162,9 @@ def handle(engine, message, context):
         if resolve:
             return envelope(on_resolve(ctx, message, resolve))
         said = go_ahead(ctx, message)
+        if said is not None:
+            return envelope(said)
+        said = typed_answer(ctx, message, only_kinds=('reason',))
         if said is not None:
             return envelope(said)
         hit = registry.match(message)
