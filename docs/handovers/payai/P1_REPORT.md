@@ -43,6 +43,15 @@ browser-validation-mandatory): on the clone it needs (a) ≥ 700 MB free, (b) a 
 `odoo-bin shell` on `p0clone`, (c) "PayAI may look" switched on (clone default is off, PA20), (d) a June 2026 run
 fixture (the clone has no pay runs), (e) `/web/assets/%` purge.
 
+### Walked by Fable on payobook 2026-10-12
+Chrome (visible window), QA login, console clean. Seen working: "Open the Runs board" → done card and the board
+opens; "Run June payroll for Retail" → honest stub refusal with the door; "Delete the May run" → blocked card (lock
+note, door, audit line); "Show the June run" → tiles 12 runs / 8,879 people / ₫113.3 bn + one chip per run; "What can
+you do?" → grouped list; "PayAI can act" settings card under Settings with the four switches. Findings, fixed in P2's
+first commit: P2-F1 "Open runs" resolved to the Learn row ("Lesson · 7 min · how to › Runs") instead of the Pay hub's
+Runs lens and did not ask; P2-F2 the settings form opened from the card showed "Unnamed" as its parent breadcrumb;
+P2-F3 the helper drawer's banner still said PayAI never changes a record; P2-F4 this record was missing.
+
 ## Design-bar self-score (1–5, code-level only — not seen in a browser)
 - Extreme WOW / best in class: **3** — clean card language (tier-coloured head, badge pop, tiles, origin pills), but unverified on screen and the hero (plan card) is P2.
 - Hero moment = plan card: **2** — the plan-card anatomy (slots + origin pills) is built into the contract and template, but no P1 Action produces a plan card yet.

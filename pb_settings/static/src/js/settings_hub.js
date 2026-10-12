@@ -347,6 +347,14 @@ export class PbSettingsHub extends Component {
         this.actionService = useService("action");
         this.palette = useService("pb_hub_palette");
         this.dialog = useService("dialog");
+        // PAYAI P2-F2. Opened by its TAG (a ⌘K row, the /bizapp/pb_settings_hub
+        // address, a reload) the action carries no name, and a native card
+        // opened from here with the breadcrumbs kept showed "Unnamed" as the
+        // way back. A client action with no control panel names itself — the
+        // pb_hiring board's fix, copied.
+        if (!this.props.embedded && this.env.config && this.env.config.setDisplayName) {
+            this.env.config.setDisplayName(_t("Settings"));
+        }
         // FLEET P4. Subscribed rather than read: a switch flipped on the
         // platform reaches an open page within a minute, and a padlock that
         // needs a reload to appear is a padlock nobody trusts. Null when the
