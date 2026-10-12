@@ -476,9 +476,9 @@ const PRACTICE = {
       waiting: { division: RUN.division, people: RUN.employees },
       preparing: B("F&B", "F&B"),
       chart: [
-        { m: B("May", "Th5"), net: may.net },
-        { m: B("Jun", "Th6"), net: june.net, latest: true },
-        { m: B("Jul", "Th7"), net: july.reduce((t, r) => t + r.net, 0), inprogress: true },
+        { m: B("May", "T5"), net: may.net },
+        { m: B("Jun", "T6"), net: june.net, latest: true },
+        { m: B("Jul", "T7"), net: july.reduce((t, r) => t + r.net, 0), inprogress: true },
       ],
       figures: { month: B("June 2026", "Tháng 6/2026"), people: june.employees, net: june.net,
                  avg: Math.round(june.net / june.employees) },
