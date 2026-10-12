@@ -10,8 +10,8 @@ import "@biz_theme/js/native_required_fields";
 describe.current.tags("desktop");
 class Panel extends Component {
     static template = xml`<div data-biz-validation-scope="true">
-        <label for="qa-name">Name *</label><input id="qa-name" required="required"/>
-        <label><span>Department *</span><select id="qa-dept" required="required"><option value="">Choose…</option><option value="1">People</option></select></label>
+        <label for="qa-name">Name <span class="pbva-field-required">Required</span></label><input id="qa-name" required="required"/>
+        <label><span>Department *</span><select id="qa-dept"><option value="">Choose…</option><option value="1">People</option></select></label>
         <label for="qa-zero">Amount *</label><input id="qa-zero" type="number" required="required" value="0"/>
         <input aria-label="Disabled" required="required" disabled="disabled"/>
         <input aria-label="Read only" required="required" readonly="readonly"/>

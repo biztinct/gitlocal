@@ -11,19 +11,26 @@ export const nativeFormRoots = new WeakMap();
 export function isEditable(element) {
     return !element.disabled && !element.readOnly && !element.closest("[inert], .o_readonly_modifier, .o_invisible_modifier");
 }
+function associatedLabel(element) {
+    return element.labels?.[0] || element.closest("label") ||
+        (element.previousElementSibling?.matches("label") && element.previousElementSibling);
+}
+function labelText(label) {
+    // Required badges, input contents and select options are not the field name.
+    const copy = label?.cloneNode(true);
+    for (const child of copy?.querySelectorAll(`${controls}, .pbva-field-required`) || []) child.remove();
+    return copy?.textContent || "";
+}
 export function fieldLabel(element) {
     const explicit = element.getAttribute("data-biz-required-label") || element.getAttribute("data-biz-required") || element.getAttribute("aria-label");
     if (explicit) return explicit;
-    const label = element.labels?.[0] || element.closest("label") ||
-        (element.previousElementSibling?.matches("label") && element.previousElementSibling);
-    const text = label?.querySelector("span")?.textContent || label?.textContent;
-    return (text || element.getAttribute("placeholder") || _t("Required field"))
+    return (labelText(associatedLabel(element)) || element.getAttribute("placeholder") || _t("Required field"))
         .replace(/\s*\*\s*$/, "").replace(/\s+Required\s*$/, "").trim();
 }
 function declaredRequired(element) {
     if (element.required || element.getAttribute("aria-required") === "true" || element.hasAttribute("data-biz-required")) return true;
-    const label = element.labels?.[0] || element.closest("label") || element.previousElementSibling;
-    return label?.matches("label") && (/\*\s*$/.test(label.textContent) || !!label.querySelector(".pbva-field-required"));
+    const label = associatedLabel(element);
+    return !!label && (/\*\s*$/.test(labelText(label)) || !!label.querySelector(".pbva-field-required"));
 }
 export function isMissing(element) {
     if (element.hasAttribute("data-biz-missing")) return element.getAttribute("data-biz-missing") === "true";
