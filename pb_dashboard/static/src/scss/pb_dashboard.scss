@@ -75,6 +75,11 @@
     }
     .pbd-hero--hello .pbd-h1 { margin: 0; font-size: 22px; }
     .pbd-sep { color: var(--pbd-soft2); font-weight: 400; margin: 0 8px; }
+    // P3 W2: the words a screen reader reads where the eye sees the dot
+    .pbd-vh {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
     .pbd-say {
         font-size: 15.5px; font-weight: 500; color: var(--pbd-ink2); max-width: 64ch; margin: 0 0 18px;
         b { font-weight: 700; color: var(--pbd-ink); }

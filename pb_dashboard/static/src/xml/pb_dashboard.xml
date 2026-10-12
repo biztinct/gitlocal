@@ -37,7 +37,7 @@
                     <t t-set="hf" t-value="heroFig"/>
                     <div class="pbd-hero-main">
                         <div class="pbd-eyebrow" t-esc="h.eyebrow"/>
-                        <h1 class="pbd-h1"><t t-foreach="h.h1" t-as="part" t-key="part_index"><span t-if="part_index" class="pbd-sep" aria-hidden="true">·</span><t t-esc="part"/></t></h1>
+                        <h1 class="pbd-h1"><t t-foreach="h.h1" t-as="part" t-key="part_index"><t t-if="part_index"><span class="pbd-sep" aria-hidden="true">·</span><span class="pbd-vh"> · </span></t><t t-esc="part"/></t></h1>
                         <p class="pbd-say" t-if="h.say.length"><t t-call="pb_dashboard.Segs"><t t-set="list" t-value="h.say"/></t></p>
                         <ol class="pbd-journey" t-if="h.tracked">
                             <li t-foreach="journey" t-as="j" t-key="j.key" class="pbd-jn" t-att-class="'is-' + j.state">
@@ -206,7 +206,7 @@
                             </div>
                             <ol class="pbd-steps">
                                 <li t-foreach="stepRows" t-as="r" t-key="r.key" class="pbd-st" t-att-class="'is-' + r.state">
-                                    <button type="button" class="pbd-st-b" t-on-click="() => r.go()">
+                                    <button type="button" class="pbd-st-b" t-att-title="r.full || undefined" t-on-click="() => r.go()">
                                         <span class="pbd-st-n"><t t-if="r.state === 'done'" t-out="ic('check', 13)"/><t t-else="" t-esc="r.num"/></span>
                                         <span class="pbd-st-x">
                                             <span class="pbd-st-t" t-esc="r.title"/>

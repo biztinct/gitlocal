@@ -692,9 +692,16 @@ export class PbDashboard extends Component {
             const first = days === 0 ? _t("Payday is today")
                 : days === 1 ? _t("1 day to payday")
                 : _t("%(days)s days to payday", { days });
+            // P3 W1: the second half speaks for ALL of "Needs you". A pay run
+            // waiting on me names itself; otherwise the number of chips (not
+            // their sum) — the headline may never say "nothing" over a line
+            // of open actions.
             const n = p.awaiting_me || 0;
+            const chips = this.needs.length;
             const second = n === 1 ? _t("%(n)s pay run needs your approval", { n })
                 : n > 1 ? _t("%(n)s pay runs need your approval", { n })
+                : chips === 1 ? _t("1 thing needs you")
+                : chips > 1 ? _t("%(n)s things need you", { n: chips })
                 : _t("nothing is waiting on you");
             out.h1 = [first, second];
         } else {
@@ -930,7 +937,10 @@ export class PbDashboard extends Component {
             let top = y;
             let topLabel = "";
             if (m.inprogress) {
-                const ref = li >= 0 ? this.value(months[li]) : 0;
+                // P3 W4: the hollow column is never shorter than its own
+                // fill — when the month so far already exceeds the latest
+                // month, the ghost is the month so far.
+                const ref = li >= 0 ? Math.max(this.value(months[li]), this.value(m)) : 0;
                 if (ref > 0) {
                     const gh = Math.max(2, (ref / max) * plotH);
                     const gy = base - gh;
@@ -1189,22 +1199,32 @@ export class PbDashboard extends Component {
         return parts.join(" · ");
     }
 
+    /** P3 W3: a step names its run as the hero does — the division — and
+     *  keeps the run's full name for the row's tooltip. */
+    stepRun(step) {
+        const p = this.period;
+        const src = step.key === "prepare" ? p.now_run
+            : step.key === "approve" ? p.awaiting_run : null;
+        const byName = (this.d.runs || []).find((r) => r.name === step.run);
+        return this.runName(src) || this.runName(byName) || step.run || "";
+    }
+
     get stepRows() {
         const steps = this.d.steps || [];
         return steps.filter((st) => STEPS[st.key]).map((s, i) => {
             const row = {
                 key: s.key, state: s.state, num: i + 1, title: STEPS[s.key].title(),
-                sub: "", who: null, rose: "",
+                sub: "", who: null, rose: "", full: s.run || "",
                 when: { text: "", amber: false },
                 go: () => this.openStep(s, i + 1),
             };
             if (s.key === "setup" && s.n) {
                 row.sub = s.n === 1 ? _t("1 person added") : _t("%(n)s people added", { n: int(s.n) });
             } else if (s.key === "prepare" && s.run) {
-                row.sub = _t("%(run)s run in progress", { run: s.run });
+                row.sub = _t("%(run)s run in progress", { run: this.stepRun(s) });
             } else if (s.key === "approve" && s.who && s.who.name && s.run) {
                 row.who = s.who.initials || "";
-                row.sub = _t("%(who)s submitted the %(run)s run", { who: s.who.name, run: s.run });
+                row.sub = _t("%(who)s submitted the %(run)s run", { who: s.who.name, run: this.stepRun(s) });
             } else if (s.key === "pay") {
                 row.sub = _t("Bank file");
                 if (s.n) {
