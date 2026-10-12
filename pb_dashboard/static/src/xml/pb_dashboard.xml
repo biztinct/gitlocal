@@ -1,42 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
+<!-- HOME P2 — the Payobook Home. Build target:
+     docs/design/home-dashboard-prototype.html (sections 1–5; the card rows
+     are P3). Every sentence that carries data is built in JS through _t()
+     (pb_dashboard.js); the static words below are extracted from here. -->
+
+<!-- A sentence with inline parts: plain text, bold, or a link-styled button. -->
+<t t-name="pb_dashboard.Segs"><t t-foreach="list" t-as="seg" t-key="seg_index"><button t-if="seg.kind === 'link'" type="button" class="pbd-inlink" t-on-click="() => seg.go()" t-esc="seg.text"/><b t-elif="seg.kind === 'b'" t-esc="seg.text"/><t t-else="" t-esc="seg.text"/></t></t>
+
+<!-- One figure that travels to its new value when the month changes. -->
+<t t-name="pb_dashboard.Count"><span class="pbd-count"><t t-esc="parts.n"/><small t-if="parts.u" t-esc="parts.u"/></span></t>
+
 <t t-name="pb_dashboard.PbDashboard">
-    <div class="pbd-root" t-att-class="{ 'pbd-root--embedded': props.embedded }">
+    <div class="pbim pbd pbd-root" t-att-class="{ 'pbd-root--embedded': props.embedded }">
         <t t-if="state.loaded">
-            <!-- Hero (solid) -->
-            <div class="pbd-hero" data-coach="dash-hero">
-                <div class="pbd-hero-l">
-                    <!-- The one element the Home hub already owns: its command
-                         bar says "Home", so this line would be the second thing
-                         on screen naming where you are (W17). The greeting, the
-                         run summary and both hero buttons stay — an embedded
-                         mode that removed a figure or a door would be a fork. -->
-                    <div class="pbd-eyebrow" t-if="!props.embedded" t-esc="companyEyebrow()"/>
-                    <h1><t t-esc="greeting()"/>, <t t-esc="state.d.user"/></h1>
-                    <div class="pbd-sub" t-if="isEmpty">No payroll data yet — let's get you set up</div>
-                    <div class="pbd-sub" t-else="">
-                        <t t-esc="state.d.run.name"/> · <t t-esc="state.d.run.done"/>/<t t-esc="state.d.run.slips"/> payslips done ·
-                        <t t-esc="state.d.kpis.pending"/> awaiting approval
-                    </div>
-                </div>
-                <div class="pbd-hero-r">
-                    <button class="pbd-btn-glass" data-coach="dash-runpayroll" t-on-click="() => this.open('pb_payrun_wizard.action_pb_payrun_wizard')">
-                        <t t-out="icon('zap',15)"/> Run Payroll</button>
-                    <button class="pbd-btn-glass" t-on-click="() => this.openInsights()">
-                        <t t-out="icon('trending-up',15)"/> Analytics</button>
-                </div>
+            <!-- 1. TOP LINE. Identity only, never a figure: inside the Home hub
+                 the hub's own bar already says where you are (W17), so this
+                 line is the one thing an embedded Home leaves out. -->
+            <div class="pbd-top" t-if="!props.embedded">
+                <div class="pbd-greet"><t t-if="!activation"><t t-esc="greeting()"/>, <b t-esc="d.user"/> · </t><t t-esc="todayLong"/> · <t t-esc="d.company"/></div>
+                <div class="pbd-meta" t-esc="updatedLine"/>
             </div>
 
-            <!-- Activation checklist. Sits BETWEEN the hero and the KPI strip
-                 so every data-coach anchor below stays exactly where it was;
-                 the KPIs and cards still render, showing honest zeros.
+            <!-- 2. HERO. The month's state in words, the journey, the ONE solid
+                 button that names the act, and the month so far. While the
+                 tenant has no pay run at all it shrinks to the greeting and
+                 the checklist below takes the page. -->
+            <section class="pbd-hero" t-att-class="{ 'pbd-hero--hello': activation }" data-coach="dash-hero">
+                <t t-if="activation">
+                    <h1 class="pbd-h1"><t t-esc="greeting()"/>, <t t-esc="d.user"/></h1>
+                </t>
+                <t t-else="">
+                    <t t-set="h" t-value="hero"/>
+                    <t t-set="pr" t-value="primary"/>
+                    <t t-set="hf" t-value="heroFig"/>
+                    <div class="pbd-hero-main">
+                        <div class="pbd-eyebrow" t-esc="h.eyebrow"/>
+                        <h1 class="pbd-h1"><t t-foreach="h.h1" t-as="part" t-key="part_index"><span t-if="part_index" class="pbd-sep" aria-hidden="true">·</span><t t-esc="part"/></t></h1>
+                        <p class="pbd-say" t-if="h.say.length"><t t-call="pb_dashboard.Segs"><t t-set="list" t-value="h.say"/></t></p>
+                        <ol class="pbd-journey" t-if="h.tracked">
+                            <li t-foreach="journey" t-as="j" t-key="j.key" class="pbd-jn" t-att-class="'is-' + j.state">
+                                <button type="button" class="pbd-jn-b" t-on-click="() => j.go()">
+                                    <span class="pbd-jn-dot"><t t-if="j.state === 'done'" t-out="ic('check', 12)"/><t t-else="" t-esc="j.num"/></span>
+                                    <span class="pbd-jn-l" t-esc="j.label"/>
+                                    <span class="pbd-jn-s" t-esc="j.sub"/>
+                                </button>
+                            </li>
+                        </ol>
+                        <div class="pbd-cta">
+                            <button type="button" class="pbd-b pbd-b--primary" data-coach="dash-runpayroll" t-on-click="() => pr.go()"><t t-out="ic(pr.icon, 15)"/><span t-esc="pr.label"/></button>
+                            <button t-if="!pr.runs" type="button" class="pbd-b" t-on-click="() => this.openPay('runs')"><t t-out="ic('layoutGrid', 15)"/>Open pay runs</button>
+                            <button type="button" class="pbd-b pbd-b--ghost" t-on-click="() => this.openInsights()"><t t-out="ic('trendingUp', 15)"/>Insights</button>
+                        </div>
+                    </div>
+                    <div class="pbd-hf">
+                        <div class="pbd-hf-lab"><span t-esc="hf.label"/><span class="pbd-pill" t-att-class="hf.pill.tone ? 'is-' + hf.pill.tone : ''" t-esc="hf.pill.text"/></div>
+                        <button type="button" class="pbd-hf-big" t-on-click="() => this.openPay('payslips')"><t t-esc="hf.big"/><small t-esc="hf.sub"/></button>
+                        <div t-if="hf.prog !== null" class="pbd-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" t-att-aria-valuenow="hf.progNow" t-att-aria-label="hf.aria"><i t-attf-style="width: {{ state.progReady ? hf.prog.toFixed(1) : 0 }}%"/></div>
+                        <div class="pbd-hf-row"><span t-foreach="hf.facts" t-as="fact" t-key="fact_index"><t t-call="pb_dashboard.Segs"><t t-set="list" t-value="fact"/></t></span></div>
+                        <div class="pbd-hf-sparkwrap" t-if="hasMoney">
+                            <div class="pbd-hf-spark" t-ref="heroSpark">
+                                <svg t-if="hf.spark" t-att-viewBox="'0 0 ' + hf.sparkW + ' 46'" t-att-width="hf.sparkW" height="46" aria-hidden="true">
+                                    <path class="pbd-spark-area" t-att-d="hf.spark.area"/>
+                                    <path class="pbd-spark-line" t-att-d="hf.spark.line"/>
+                                    <circle class="pbd-spark-ring" t-att-cx="hf.spark.dot.x" t-att-cy="hf.spark.dot.y" r="5"/>
+                                    <circle class="pbd-spark-dot" t-att-cx="hf.spark.dot.x" t-att-cy="hf.spark.dot.y" r="3.5"/>
+                                </svg>
+                            </div>
+                            <div class="pbd-hf-foot"><span>Net pay, last 12 months</span></div>
+                        </div>
+                    </div>
+                </t>
+            </section>
 
-                 It is drawn while the tenant has no pay run and disappears for
-                 good once it has one. Every tick comes from a count the server
-                 took this second, so there is no state in here to get wrong.
-                 The first unfinished step is the only primary button on the
-                 screen. -->
+            <!-- Activation checklist. Drawn while the tenant has no pay run
+                 and gone for good once it has one; every tick is a count the
+                 server took this second. The first unfinished step is the
+                 only primary button on the screen. -->
             <div class="pbd-act" t-if="activation">
                 <div class="pbd-act-head">
                     <span class="pbd-act-hic"><t t-out="icon('flag',18)"/></span>
@@ -64,156 +105,158 @@
                 </ol>
             </div>
 
-            <!-- WHICH MONTH THESE FIGURES ARE ABOUT.
-                 The one line this page never had. It comes BEFORE the numbers
-                 because a reader who never touches the strip below still has
-                 to know what they are looking at (R4). -->
-            <div class="pbd-period" data-coach="dash-period">
-                <span class="pbd-period-ic"><t t-out="icon('calendar',15)"/></span>
-                <b class="pbd-period-t" t-esc="periodLine"/>
-                <span t-if="period and period.latest" class="pbd-period-tag">the latest payroll month</span>
-                <span t-if="period and period.state === 'current'" class="pbd-period-tag now">this month</span>
-                <span t-if="state.scoping" class="pbd-period-busy" role="status">Reading…</span>
-                <button t-if="period and !period.latest" class="pbd-period-back"
-                        t-on-click="() => this.toLatest()">
-                    Back to the latest month
-                </button>
-            </div>
-
-            <!-- A link that named a month this database does not have.
-                 Not an error, and never a blank screen: the server answered
-                 with the latest one and says so here (ledger rule 21). -->
-            <div t-if="period and period.fell_back" class="pbd-period-note"
-                 t-esc="fellBackLine"/>
-
-            <!-- KPI strip -->
-            <div class="pbd-kpis" data-coach="dash-kpis">
-                <div class="pbd-kpi k-indigo"><div class="kl">Headcount <t t-out="icon('users',15)"/></div><div class="kv" t-esc="state.d.kpis.headcount"/><div class="ks" t-esc="activeContractsLabel()"/></div>
-                <div class="pbd-kpi k-green"><div class="kl">Monthly payroll <t t-out="icon('wallet',15)"/></div><div class="kv" t-esc="money(state.d.kpis.payroll)"/><div class="ks" t-esc="payrollCaption"/></div>
-                <div class="pbd-kpi k-amber"><div class="kl">Pending approval <t t-out="icon('clock',15)"/></div><div class="kv" t-esc="state.d.kpis.pending"/><div class="ks">awaiting sign-off</div></div>
-                <div class="pbd-kpi k-cyan"><div class="kl">Active configs <t t-out="icon('calculator',15)"/></div><div class="kv" t-esc="state.d.formula.active"/><div class="ks" t-esc="rulesLabel()"/></div>
-            </div>
-
-            <!-- THE STRIP. One chip per payroll month, oldest to newest, each
-                 carrying how many people were paid in it against the busiest
-                 month — so the shape of the year is readable before anything
-                 is pressed. Many months scroll; none is ever dropped.
-
-                 Nothing here is `disabled` while the board re-scopes: the
-                 guard is in the handler, or the chip the keyboard is standing
-                 on loses focus mid-flight and the next arrow press goes
-                 nowhere (T23). -->
-            <div t-if="periods.length" class="pbd-strip" t-ref="strip"
-                 t-on-keydown="onStripKey"
-                 role="group" aria-label="Pick a payroll month">
-                <button t-foreach="periods" t-as="mo" t-key="mo.key"
-                        class="pbd-mchip"
-                        t-att-class="{ 'is-on': isLit(mo.key),
-                                       'is-now': mo.state === 'current',
-                                       'is-quiet': !mo.people }"
-                        t-att-data-month="mo.key"
-                        t-att-title="chipTitle(mo)"
-                        t-att-aria-pressed="isLit(mo.key) ? 'true' : 'false'"
-                        t-on-click="() => this.pressChip(mo)">
-                    <span class="pbd-mchip-l">
-                        <b t-esc="mo.short"/><i t-esc="mo.year"/>
-                    </span>
-                    <span class="pbd-mchip-bar">
-                        <span class="pbd-mchip-fill"
-                              t-attf-style="width: {{barWidth(mo)}}%"/>
-                    </span>
-                    <span class="pbd-mchip-v" t-esc="chipCount(mo)"/>
-                    <span t-if="mo.latest" class="pbd-mchip-flag">latest</span>
-                </button>
-            </div>
-            <div t-if="periods.length" class="pbd-striphint" t-esc="stripHint"/>
-
-            <!-- Nobody has been paid on this database yet. Not a hole where a
-                 strip should be: a sentence, and the one thing to do next.
-
-                 Every sentence in this block is built as ONE string in JS and
-                 printed with a single `t-esc`: a sentence written either side
-                 of a `<t t-esc/>` is TWO msgids no translator can reorder
-                 (L17), and the whitespace an XML file indents with is baked
-                 into whatever the extractor collects. -->
-            <div t-else="" class="pbd-strip-empty">
-                <t t-out="icon('calendar',16)"/>
-                <!-- The space between the two is an EXPLICIT non-breaking
-                     space, not the newline above it: whitespace between two
-                     adjacent nodes is whitespace the browser may collapse
-                     (GR22), and it read "months yet.Once a pay run" on the
-                     golden template. -->
-                <span>
-                  <b t-esc="emptyStripLead"/>&#160;<t t-esc="emptyStripLine"/>
-                </span>
-            </div>
-
-            <!-- Cockpit cards -->
-            <div class="pbd-grid">
-                <div class="pbd-card">
-                    <div class="pbd-card-head">
-                        <div><div class="pbd-card-t">Latest pay run</div><div class="pbd-card-m" t-esc="state.d.run.name"/></div>
-                        <!-- With no payslips there is no readiness to measure,
-                             and a red empty dial is a measurement this tenant
-                             has not earned. Draw the placeholder instead —
-                             same idiom as the Company-overview card below. -->
-                        <t t-if="state.d.run.slips" t-out="ring(state.d.run.readiness)"/>
-                        <span class="pbd-ring-none" t-else="">—</span>
-                    </div>
-                    <div class="pbd-pills">
-                        <span class="pbd-pill ok"><t t-esc="state.d.run.done"/>/<t t-esc="state.d.run.slips"/> done</span>
-                        <span class="pbd-pill warn" t-if="state.d.run.pending"><t t-esc="state.d.run.pending"/> pending</span>
-                    </div>
-                    <div class="pbd-mini">
-                        <div><div class="mv" t-esc="state.d.run.slips"/><div class="ml">Payslips</div></div>
-                        <div><div class="mv" t-esc="state.d.run.done"/><div class="ml">Approved</div></div>
-                        <div><div class="mv" t-esc="state.d.run.pending"/><div class="ml">Pending</div></div>
-                    </div>
-                    <button class="pbd-link" t-on-click="() => this.open('pb_payruns.action_pb_payruns_kanban')">Open pay runs →</button>
+            <t t-if="!activation">
+                <!-- 3. NEEDS YOU. One chip per open action (amber = waiting on
+                     somebody, rose = late); nothing is drawn at zero. -->
+                <div class="pbd-glance" role="region" aria-label="What needs you today">
+                    <span class="pbd-gl-cap"><t t-out="ic('bell', 13)"/>Needs you</span>
+                    <t t-if="needs.length">
+                        <button t-foreach="needs" t-as="nd" t-key="nd.key" type="button" class="pbd-gl" t-att-class="'is-' + nd.tone" t-on-click="() => nd.go()"><span class="pbd-gl-d"/><span class="pbd-gl-n" t-esc="nd.n"/><span t-esc="nd.text"/></button>
+                    </t>
+                    <span t-else="" class="pbd-gl-quiet"><t t-esc="quietLine.lead"/><t t-if="quietLine.next"> · <t t-esc="quietLine.next"/></t></span>
+                    <button t-if="approvalsTail" type="button" class="pbd-gl-all" t-on-click="() => this.openApprovals()"><span t-esc="approvalsTail.text"/><t t-out="ic('arrowRight', 14)"/></button>
                 </div>
 
-                <div class="pbd-card">
-                    <div class="pbd-card-head">
-                        <div><div class="pbd-card-t">Company overview</div><div class="pbd-card-m">All departments · monthly</div></div>
-                        <!-- The 100 was a decoration, not a measurement. With nobody
-                             on the payroll there is nothing to be 100% of, and a red
-                             0 ring would be a different lie — so it draws nothing. -->
-                        <t t-if="!isEmpty and state.d.kpis.headcount" t-out="ring(100)"/>
+                <div class="pbd-split">
+                    <!-- 4. PAYROLL, MONTH BY MONTH. The chart is the month
+                         picker: click a column, or ← → on the focused chart,
+                         Escape back to the latest; the month panel reads the
+                         chosen month. -->
+                    <section class="pbd-card pbd-chartcard" data-coach="dash-period" aria-label="Payroll, month by month">
+                        <div class="pbd-head">
+                            <div>
+                                <h2><t t-out="ic('chartColumn', 16)"/>Payroll, month by month</h2>
+                                <p class="pbd-sub">Click a month to read its figures below. The last 12 months of completed pay runs.</p>
+                            </div>
+                            <div class="pbd-seg" role="tablist" aria-label="What the columns measure">
+                                <button t-foreach="measures" t-as="ms" t-key="ms.key" type="button" role="tab" t-att-aria-selected="ms.key === state.measure ? 'true' : 'false'" t-att-class="{ 'is-on': ms.key === state.measure }" t-on-click="() => this.setMeasure(ms.key)" t-esc="ms.label()"/>
+                            </div>
+                        </div>
+                        <t t-set="c" t-value="chart"/>
+                        <div class="pbd-chart" t-ref="chart" tabindex="0" role="group" t-att-aria-label="chartAria" t-on-keydown="onChartKey" t-on-blur="hideTip" t-on-mouseleave="hideTip">
+                            <svg t-att-viewBox="'0 0 ' + c.W + ' ' + c.H" t-att-width="c.W" t-att-height="c.H" aria-hidden="true">
+                                <t t-foreach="c.ticks" t-as="tk" t-key="tk_index">
+                                    <line class="pbd-grid" t-att-x1="c.padL" t-att-x2="c.W - c.padR" t-att-y1="tk.y" t-att-y2="tk.y"/>
+                                    <text class="pbd-tick" t-att-x="c.padL - 8" t-att-y="tk.y + 4" t-esc="tk.label"/>
+                                </t>
+                                <line class="pbd-base" t-att-x1="c.padL" t-att-x2="c.W - c.padR" t-att-y1="c.base" t-att-y2="c.base"/>
+                                <g t-foreach="c.cols" t-as="col" t-key="col.key" class="pbd-slot">
+                                    <path t-if="col.ghost" class="pbd-col pbd-ghost" t-att-class="{ 'is-sel': col.sel }" t-att-d="col.ghost.d"/>
+                                    <path class="pbd-col" t-att-class="{ 'is-sel': col.sel, 'is-inner': !!col.ghost }" t-att-d="col.d" t-att-style="col.delay"/>
+                                    <text t-if="col.topLabel" class="pbd-toplabel" t-att-class="{ 'is-sel': col.sel, 'is-latest': col.latest }" t-att-x="col.labelX" t-att-y="col.topY" t-esc="col.topLabel"/>
+                                    <text class="pbd-xlabel" t-att-class="{ 'is-sel': col.sel }" t-att-x="col.labelX" t-att-y="c.H - 10" t-esc="col.label"/>
+                                    <rect class="pbd-hit" t-att-x="col.hitX" t-att-y="col.hitY" t-att-width="col.hitW" t-att-height="col.hitH" t-on-mouseenter="() => this.showTip(col_index)" t-on-click="() => this.select(col_index)"/>
+                                </g>
+                            </svg>
+                            <t t-set="tp" t-value="tip"/>
+                            <div t-if="tp" class="pbd-tip" t-att-class="tp.flip" t-att-style="tp.style" role="status">
+                                <b t-esc="tp.title"/>
+                                <div t-foreach="tp.rows" t-as="row" t-key="row_index" class="pbd-tip-r"><span t-esc="row.k"/><span t-esc="row.v"/></div>
+                            </div>
+                        </div>
+                        <div class="pbd-hint"><span><kbd>←</kbd> <kbd>→</kbd> walk the months</span><span><kbd>Esc</kbd> back to the latest</span><span>Hover a column for the full figures</span></div>
+
+                        <t t-set="pn" t-value="panel"/>
+                        <div class="pbd-month" t-if="pn">
+                            <div t-if="pn.empty" class="pbd-month-empty"><t t-out="ic('calendar', 16)"/><span>No pay run yet. Figures appear after your first pay run.</span></div>
+                            <t t-else="">
+                                <div class="pbd-mh">
+                                    <h3><span t-esc="pn.title"/><span t-if="pn.pill" class="pbd-pill" t-att-class="pn.pill.tone ? 'is-' + pn.pill.tone : ''" t-esc="pn.pill.text"/></h3>
+                                    <div class="pbd-mfacts">
+                                        <t t-foreach="pn.facts" t-as="f" t-key="f_index">
+                                            <button t-if="f.go" type="button" class="pbd-mf" t-att-class="f.tone ? 'is-' + f.tone : ''" t-on-click="() => f.go()"><t t-if="f.icon" t-out="ic(f.icon, 13)"/><t t-call="pb_dashboard.Segs"><t t-set="list" t-value="f.segs"/></t></button>
+                                            <span t-else="" class="pbd-mf" t-att-class="f.tone ? 'is-' + f.tone : ''"><t t-if="f.icon" t-out="ic(f.icon, 13)"/><t t-call="pb_dashboard.Segs"><t t-set="list" t-value="f.segs"/></t></span>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="pbd-figs" data-coach="dash-kpis">
+                                    <button t-foreach="pn.figs" t-as="fg" t-key="fg.key" type="button" class="pbd-fig" t-on-click="() => this.openInsights()">
+                                        <span class="pbd-fig-l" t-esc="fg.label"/>
+                                        <span class="pbd-fig-v"><PbdCount value="fg.value" format="fg.format"/></span>
+                                        <svg t-if="fg.spark" class="pbd-fig-spark" viewBox="0 0 72 28" width="72" height="28" aria-hidden="true">
+                                            <path class="pbd-spark-area" t-att-d="fg.spark.area"/>
+                                            <path class="pbd-spark-line" t-att-d="fg.spark.line"/>
+                                            <circle class="pbd-spark-ring" t-att-cx="fg.spark.dot.x" t-att-cy="fg.spark.dot.y" r="5"/>
+                                            <circle class="pbd-spark-dot" t-att-cx="fg.spark.dot.x" t-att-cy="fg.spark.dot.y" r="3.5"/>
+                                        </svg>
+                                        <span t-if="fg.delta" class="pbd-delta"><t t-if="fg.delta.icon" t-out="ic(fg.delta.icon, 13)"/><t t-esc="fg.delta.text"/></span>
+                                    </button>
+                                </div>
+                                <div class="pbd-bar" t-if="pn.bar">
+                                    <div class="pbd-bar-title"><span>Where the money goes</span><b t-esc="pn.bar.total"/></div>
+                                    <div class="pbd-bracket"><i t-attf-style="width: {{ pn.bar.bracket }}%"/><span>Gross pay <b t-esc="pn.bar.gross"/></span></div>
+                                    <div class="pbd-stack" t-ref="stack">
+                                        <i t-foreach="pn.bar.segs" t-as="sg" t-key="sg.cls" t-att-class="'is-' + sg.cls" t-attf-style="width: {{ sg.pct }}%" t-att-title="sg.title"><t t-if="sg.show" t-esc="sg.text"/></i>
+                                    </div>
+                                    <div class="pbd-legend"><span><i class="is-net"/>Net pay to people</span><span><i class="is-ded"/>Deductions (tax, insurance)</span><span><i class="is-er"/>Employer cost (insurance, union)</span></div>
+                                </div>
+                            </t>
+                        </div>
+                    </section>
+
+                    <!-- 5. THE MONTH, STEP BY STEP, and what is coming up.
+                         Every row opens the screen it talks about. -->
+                    <div class="pbd-side">
+                        <section class="pbd-card pbd-steps-card" t-ref="steps" tabindex="-1" data-coach="dash-formula" t-att-aria-label="stepsTitle">
+                            <div class="pbd-head">
+                                <div>
+                                    <h2><t t-out="ic('listChecks', 16)"/><span t-esc="stepsTitle"/></h2>
+                                    <p class="pbd-sub" t-if="stepsSub" t-esc="stepsSub"/>
+                                </div>
+                            </div>
+                            <ol class="pbd-steps">
+                                <li t-foreach="stepRows" t-as="r" t-key="r.key" class="pbd-st" t-att-class="'is-' + r.state">
+                                    <button type="button" class="pbd-st-b" t-on-click="() => r.go()">
+                                        <span class="pbd-st-n"><t t-if="r.state === 'done'" t-out="ic('check', 13)"/><t t-else="" t-esc="r.num"/></span>
+                                        <span class="pbd-st-x">
+                                            <span class="pbd-st-t" t-esc="r.title"/>
+                                            <span class="pbd-st-s" t-if="r.sub || r.rose"><span t-if="r.who" class="pbd-av" t-esc="r.who"/><t t-esc="r.sub"/><t t-if="r.rose"> · <span class="pbd-rose" t-esc="r.rose"/></t></span>
+                                        </span>
+                                        <span class="pbd-st-w" t-att-class="{ 'is-amber': r.when.amber }" t-esc="r.when.text"/>
+                                    </button>
+                                </li>
+                            </ol>
+                        </section>
+
+                        <section class="pbd-card" aria-label="Coming up">
+                            <div class="pbd-head"><div><h2><t t-out="ic('calendar', 16)"/>Coming up</h2></div></div>
+                            <ul class="pbd-up" t-if="upcomingRows.length">
+                                <li t-foreach="upcomingRows" t-as="u" t-key="u.key">
+                                    <button type="button" class="pbd-up-b" t-on-click="() => u.go()">
+                                        <span class="pbd-up-d" t-att-class="{ 'is-hot': u.hot }"><b t-esc="u.day"/><span t-esc="u.mon"/></span>
+                                        <span class="pbd-up-x">
+                                            <span class="pbd-up-t" t-esc="u.title"/>
+                                            <span class="pbd-up-s" t-if="u.sub || u.amber || u.tail"><t t-esc="u.sub"/><span t-if="u.amber" class="pbd-amber" t-esc="u.amber"/><t t-if="u.tail"> · <t t-esc="u.tail"/></t></span>
+                                        </span>
+                                        <span class="pbd-up-in" t-att-class="{ 'is-amber': u.inn.amber }" t-esc="u.inn.text"/>
+                                    </button>
+                                </li>
+                            </ul>
+                            <p t-else="" class="pbd-quiet">Cut-off, payday, contracts ending and public holidays appear here as their dates come up.</p>
+                        </section>
                     </div>
-                    <div class="pbd-pills">
-                        <span class="pbd-pill muted"><t t-esc="state.d.kpis.headcount"/> headcount</span>
-                        <span class="pbd-pill warn"><t t-esc="state.d.kpis.pending"/> approvals</span>
-                    </div>
-                    <div class="pbd-mini">
-                        <div><div class="mv" t-esc="money(state.d.kpis.payroll)"/><div class="ml">Payroll</div></div>
-                        <div><div class="mv" t-esc="money(state.d.kpis.avg)"/><div class="ml">Avg salary</div></div>
-                        <div><div class="mv" t-esc="money(state.d.kpis.contributions)"/><div class="ml">Contributions</div></div>
-                    </div>
-                    <button class="pbd-link" t-on-click="() => this.openInsights()">Open analytics →</button>
                 </div>
 
-                <div class="pbd-card" data-coach="dash-formula">
-                    <div class="pbd-card-head">
-                        <div><div class="pbd-card-t">Formula engine</div><div class="pbd-card-m">Excel-driven configs</div></div>
-                        <!-- Nothing configured yet is not nought percent
-                             healthy; it is nothing to be healthy about. -->
-                        <t t-if="state.d.formula.count" t-out="ring(state.d.formula.health)"/>
-                        <span class="pbd-ring-none" t-else="">—</span>
-                    </div>
-                    <div class="pbd-pills">
-                        <span class="pbd-pill cyan"><t t-esc="state.d.formula.active"/> active</span>
-                        <span class="pbd-pill muted"><t t-esc="state.d.formula.count"/> configs</span>
-                    </div>
-                    <div class="pbd-mini">
-                        <div><div class="mv" t-esc="state.d.formula.rules"/><div class="ml">Rules</div></div>
-                        <div><div class="mv" t-esc="state.d.formula.count"/><div class="ml">Configs</div></div>
-                        <div><div class="mv" t-esc="state.d.formula.tests"/><div class="ml">Tests</div></div>
-                    </div>
-                    <button class="pbd-link" t-on-click="() => this.open('pb_formula_studio.action_pb_formula_studio')">Open formula engine →</button>
+                <div class="pbd-p3"><!-- P3: cards --></div>
+            </t>
+        </t>
+        <t t-elif="state.failed">
+            <div class="pbim-empty pbd-failed" role="alert">
+                <t t-out="ic('alert', 20)"/>
+                <p>Home could not load. Try again.</p>
+                <button type="button" class="pbd-b pbd-b--primary" t-att-disabled="state.loading" t-on-click="() => this.retry()"><t t-out="ic('refresh', 15)"/>Retry</button>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="pbd-skel" aria-busy="true">
+                <div class="biz-skeleton biz-skeleton--card pbd-skel-hero"/>
+                <div class="biz-skeleton biz-skeleton--row"/>
+                <div class="pbd-skel-split">
+                    <div class="biz-skeleton biz-skeleton--card"/>
+                    <div class="biz-skeleton biz-skeleton--card"/>
                 </div>
             </div>
         </t>
-        <t t-else=""><div class="pbd-loading">Loading dashboard…</div></t>
     </div>
 </t>
 

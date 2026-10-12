@@ -1,116 +1,465 @@
-// Payobook Dashboard cockpit — Indigo, solid (no gradients)
+// =============================================================================
+//  HOME P2 — the Payobook Home.
+//  Ported class by class from docs/design/home-dashboard-prototype.html into
+//  `pbd-*` names. Locked indigo #5A4BB0, the Pay Runs board's semantic set,
+//  solid fills only, Lucide strokes. Light only (the product has no dark mode).
+//  EVERY MOVING DECLARATION is inside the reduced-motion blocks at the foot.
+// =============================================================================
 .pbd-root {
-    --pbd-brand: #4F46E5;
-    --pbd-ink: #1B1733;
-    --pbd-muted: #6E6A85;
-    --pbd-border: #E7E5F2;
-    --pbd-surface: #FFFFFF;
-    --pbd-bg: #F4F5FB;
-    padding: 22px 26px 60px;
+    // ---- tokens (the prototype's, the Pay Runs board's semantic set) ----
+    --pbd-bg: #F4F5FB; --pbd-lane: #ECEDF6; --pbd-surface: #FFFFFF;
+    --pbd-ink: #1E1B2E; --pbd-ink2: #3F3B57; --pbd-muted: #6F6B86; --pbd-faint: #9D99B4;
+    --pbd-line: #E4E5F1; --pbd-line2: #D6D7E8;
+    --pbd-p: #5A4BB0; --pbd-p600: #4A3D96; --pbd-deep: #241F52;
+    --pbd-soft: #EDEAF8; --pbd-soft2: #DDD6F2; --pbd-wash: #F3F0FB;
+    --pbd-ring: rgba(90, 75, 176, .22);
+    --pbd-amber: #B45309; --pbd-amber-s: #FEF3C7;
+    --pbd-green: #0F7B4F; --pbd-green-s: #D9F2E4;
+    --pbd-rose: #DC2655; --pbd-rose-s: #FFE4E8;
+    --pbd-slate: #64748B; --pbd-slate-s: #EDF0F4;
+    --pbd-teal: #0F766E; --pbd-teal-s: #D6F1EC;
+    --pbd-sh-1: 0 1px 2px rgba(30, 27, 46, .06), 0 1px 1px rgba(30, 27, 46, .03);
+    --pbd-sh-2: 0 12px 30px rgba(60, 50, 130, .13), 0 2px 6px rgba(60, 50, 130, .06);
+    --pbd-tip-bg: #1E1B2E; --pbd-on-p: #FFFFFF;
+    --pbd-brand: var(--pbd-p);
+    // the kit tokens, aliased exactly as the Pay Runs board does, so any
+    // `.pbim-*` primitive inside this root reads the same palette
+    --pbim-primary: var(--pbd-p); --pbim-primary-strong: var(--pbd-p600); --pbim-soft: var(--pbd-soft);
+    --pbim-ring: var(--pbd-ring); --pbim-ink: var(--pbd-ink); --pbim-muted: var(--pbd-muted);
+    --pbim-line: var(--pbd-line); --pbim-amber: var(--pbd-amber);
+
+    padding: 20px 28px 64px;
     background: var(--pbd-bg);
+    color: var(--pbd-ink);
     min-height: 100%;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
 
-    .pbd-loading { padding: 60px; color: var(--pbd-muted); }
+    > * { max-width: 1500px; margin-left: auto; margin-right: auto; }
 
-    // Hero — solid indigo
-    .pbd-hero {
-        background: #312E81;
-        border-radius: 18px;
-        padding: 26px 30px;
-        color: #fff;
+    button {
+        font: inherit; color: inherit; background: none; border: 0; padding: 0;
+        cursor: pointer; text-align: left;
+    }
+    button:focus-visible, [tabindex]:focus-visible {
+        outline: none; box-shadow: 0 0 0 3px var(--pbd-ring); border-radius: 8px;
+    }
+    svg { flex: none; }
+    b { font-weight: 700; }
+
+    // ---------------------------------------------------------- 1. top line
+    .pbd-top {
         display: flex; align-items: center; justify-content: space-between;
-        gap: 18px; flex-wrap: wrap;
-        box-shadow: 0 18px 44px rgba(27,23,51,.14);
-        margin-bottom: 20px;
+        gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px;
     }
-    .pbd-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #C7CBF5; }
-    .pbd-hero h1 { font-size: 28px; font-weight: 800; margin: 8px 0 6px; color: #fff; letter-spacing: -.02em; }
-    .pbd-sub { color: #C7CBF5; font-size: 14px; }
-    .pbd-hero-r { display: flex; gap: 10px; flex-wrap: wrap; }
-    .pbd-btn-glass {
-        display: inline-flex; align-items: center; gap: 7px;
-        background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2);
-        padding: 9px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
-        &:hover { background: rgba(255,255,255,.22); }
-        svg { vertical-align: -.18em; }
+    .pbd-greet { font-size: 13px; color: var(--pbd-muted); b { color: var(--pbd-ink); } }
+    .pbd-meta { font-size: 12.5px; color: var(--pbd-muted); }
+
+    // --------------------------------------------------------------- 2. hero
+    .pbd-hero {
+        background: var(--pbd-wash); border: 1px solid var(--pbd-soft2); border-radius: 20px;
+        padding: 24px 28px; display: grid; grid-template-columns: 1.4fr .9fr; gap: 28px;
+        align-items: stretch; box-shadow: var(--pbd-sh-1);
+    }
+    .pbd-hero--hello { display: block; padding: 18px 24px; margin-bottom: 16px; }
+    .pbd-hero-main { min-width: 0; }
+    .pbd-eyebrow {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+        color: var(--pbd-p); margin-bottom: 8px;
+    }
+    .pbd-h1 {
+        margin: 0 0 8px; font-size: 27px; font-weight: 800; letter-spacing: -.02em;
+        color: var(--pbd-deep); text-wrap: balance; line-height: 1.2;
+    }
+    .pbd-hero--hello .pbd-h1 { margin: 0; font-size: 22px; }
+    .pbd-sep { color: var(--pbd-soft2); font-weight: 400; margin: 0 8px; }
+    .pbd-say {
+        font-size: 15.5px; font-weight: 500; color: var(--pbd-ink2); max-width: 64ch; margin: 0 0 18px;
+        b { font-weight: 700; color: var(--pbd-ink); }
+    }
+    .pbd-inlink {
+        display: inline; border-bottom: 2px solid var(--pbd-soft2); font-weight: 700;
+        color: var(--pbd-deep);
+        &:hover { border-color: var(--pbd-p); }
     }
 
-    // Activation checklist — white surface, left rail accent, solid indigo.
-    // Same vocabulary as .pbd-kpi, one step warmer. Solid colours only, no
-    // gradient, Lucide strokes, and the only animation is the tick drawing
-    // itself.
+    // the five-node journey
+    .pbd-journey { display: flex; align-items: flex-start; margin: 0 0 20px; padding: 0; list-style: none; }
+    .pbd-jn { position: relative; flex: 1; min-width: 0; }
+    .pbd-jn:not(:last-child)::after {
+        content: ""; position: absolute; top: 10px; left: 22px; right: 0; height: 2px;
+        background: var(--pbd-soft2);
+    }
+    .pbd-jn.is-done:not(:last-child)::after { background: var(--pbd-green); }
+    .pbd-jn-b { display: flex; flex-direction: column; gap: 6px; width: 100%; padding-right: 6px; }
+    .pbd-jn-dot {
+        width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--pbd-soft2);
+        background: var(--pbd-surface); display: grid; place-items: center; color: var(--pbd-faint);
+        font-size: 11px; font-weight: 800; position: relative; z-index: 1;
+        svg { width: 12px; height: 12px; stroke-width: 3; }
+    }
+    .pbd-jn.is-done .pbd-jn-dot { background: var(--pbd-green); border-color: var(--pbd-green); color: var(--pbd-on-p); }
+    .pbd-jn.is-now .pbd-jn-dot {
+        background: var(--pbd-p); border-color: var(--pbd-p); color: var(--pbd-on-p);
+        box-shadow: 0 0 0 4px var(--pbd-ring);
+    }
+    .pbd-jn.is-wait .pbd-jn-dot { background: var(--pbd-amber); border-color: var(--pbd-amber); color: var(--pbd-on-p); }
+    .pbd-jn-l { font-size: 12px; font-weight: 700; color: var(--pbd-ink); }
+    .pbd-jn.is-todo .pbd-jn-l { color: var(--pbd-muted); }
+    .pbd-jn-s { font-size: 11px; color: var(--pbd-muted); min-height: 1em; }
+    .pbd-jn.is-wait .pbd-jn-s { color: var(--pbd-amber); font-weight: 700; }
+    .pbd-jn-b:hover .pbd-jn-l { color: var(--pbd-p600); }
+
+    // buttons — ONE solid primary per bar
+    .pbd-cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .pbd-b {
+        display: inline-flex; align-items: center; gap: 8px; border-radius: 10px; padding: 9px 14px;
+        font-size: 13px; font-weight: 700; border: 1px solid var(--pbd-line2);
+        background: var(--pbd-surface); color: var(--pbd-ink); white-space: nowrap;
+        svg { width: 15px; height: 15px; }
+        &:hover { border-color: var(--pbd-soft2); }
+    }
+    .pbd-b--primary {
+        background: var(--pbd-p); border-color: var(--pbd-p); color: var(--pbd-on-p);
+        box-shadow: 0 4px 12px rgba(90, 75, 176, .22);
+        &:hover { background: var(--pbd-p600); border-color: var(--pbd-p600); }
+    }
+    .pbd-b--ghost {
+        background: transparent; border-color: transparent; color: var(--pbd-p600);
+        &:hover { background: var(--pbd-soft); border-color: transparent; }
+    }
+
+    // the month so far
+    .pbd-hf {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-soft2); border-radius: 16px;
+        padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--pbd-sh-1);
+        min-width: 0;
+    }
+    .pbd-hf-lab {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbd-muted); display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .pbd-pill {
+        font-size: 10.5px; font-weight: 800; letter-spacing: 0; text-transform: none;
+        background: var(--pbd-soft); color: var(--pbd-p600); border-radius: 999px; padding: 2px 8px;
+        white-space: nowrap;
+        &.is-amber { background: var(--pbd-amber-s); color: var(--pbd-amber); }
+        &.is-green { background: var(--pbd-green-s); color: var(--pbd-green); }
+    }
+    .pbd-hf-big {
+        font-size: 36px; font-weight: 800; letter-spacing: -.025em; color: var(--pbd-deep); line-height: 1.1;
+        small { font-size: 15px; font-weight: 600; color: var(--pbd-muted); margin-left: 8px; letter-spacing: 0; }
+        &:hover small { color: var(--pbd-p600); }
+    }
+    .pbd-prog {
+        height: 10px; border-radius: 5px; background: var(--pbd-soft); overflow: hidden; position: relative;
+        i { display: block; height: 100%; background: var(--pbd-p); border-radius: 5px; }
+    }
+    .pbd-hf-row {
+        display: flex; align-items: center; gap: 6px 14px; color: var(--pbd-muted); font-size: 12.5px; flex-wrap: wrap;
+        b { color: var(--pbd-ink2); }
+    }
+    .pbd-hf-sparkwrap { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--pbd-line); }
+    .pbd-hf-spark { height: 46px; svg { display: block; width: 100%; height: 46px; } }
+    .pbd-hf-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--pbd-muted); margin-top: 4px; }
+
+    // sparklines (hero + figures)
+    .pbd-spark-area { fill: var(--pbd-p); fill-opacity: .10; }
+    .pbd-spark-line { fill: none; stroke: var(--pbd-p); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .pbd-spark-ring { fill: var(--pbd-surface); }
+    .pbd-spark-dot { fill: var(--pbd-p); }
+
+    // ---------------------------------------------------------- 3. needs you
+    .pbd-glance {
+        display: flex; align-items: center; gap: 4px; flex-wrap: wrap; background: var(--pbd-surface);
+        border: 1px solid var(--pbd-line); border-radius: 12px; padding: 8px 12px; margin: 14px auto 16px;
+        box-shadow: var(--pbd-sh-1);
+    }
+    .pbd-gl-cap {
+        font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbd-muted); margin-right: 6px; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pbd-gl {
+        display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 8px;
+        font-size: 12.5px; color: var(--pbd-ink2);
+        &:hover { background: var(--pbd-bg); }
+    }
+    .pbd-gl-n { font-size: 14px; font-weight: 800; color: var(--pbd-ink); }
+    .pbd-gl-d { width: 7px; height: 7px; border-radius: 50%; background: var(--pbd-line2); }
+    .pbd-gl.is-amber { .pbd-gl-d { background: var(--pbd-amber); } .pbd-gl-n { color: var(--pbd-amber); } }
+    .pbd-gl.is-rose { .pbd-gl-d { background: var(--pbd-rose); } .pbd-gl-n { color: var(--pbd-rose); } }
+    .pbd-gl-quiet { font-size: 12.5px; color: var(--pbd-muted); padding: 5px 4px; }
+    .pbd-gl-all {
+        margin-left: auto; font-size: 12.5px; font-weight: 700; color: var(--pbd-p600);
+        display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 8px;
+        &:hover { background: var(--pbd-soft); }
+    }
+
+    // ------------------------------------------------------------- the split
+    .pbd-split { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; align-items: start; }
+    .pbd-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .pbd-card {
+        background: var(--pbd-surface); border: 1px solid var(--pbd-line); border-radius: 14px;
+        box-shadow: var(--pbd-sh-1); padding: 16px 18px; min-width: 0;
+        h2 {
+            margin: 0; font-size: 14.5px; font-weight: 800; display: flex; align-items: center; gap: 8px;
+            color: var(--pbd-ink);
+            svg { width: 16px; height: 16px; color: var(--pbd-p); }
+        }
+    }
+    .pbd-sub { font-size: 12px; color: var(--pbd-muted); margin: 3px 0 0; }
+    .pbd-head {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .pbd-quiet { font-size: 12.5px; color: var(--pbd-muted); margin: 4px 0 0; }
+
+    // ------------------------------------------------ 4. the chart (picker)
+    .pbd-seg {
+        display: inline-flex; background: var(--pbd-lane); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap;
+        button { padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--pbd-muted); }
+        button.is-on { background: var(--pbd-p); color: var(--pbd-on-p); }
+        button:not(.is-on):hover { color: var(--pbd-ink); }
+    }
+    .pbd-chart {
+        position: relative; border-radius: 8px;
+        svg { display: block; width: 100%; height: auto; overflow: visible; }
+    }
+    .pbd-grid { stroke: var(--pbd-line); stroke-width: 1; }
+    .pbd-base { stroke: var(--pbd-line2); stroke-width: 1; }
+    .pbd-tick { text-anchor: end; font-size: 10.5px; font-weight: 600; fill: var(--pbd-faint); }
+    .pbd-col { fill: var(--pbd-soft2); &.is-sel { fill: var(--pbd-p); } }
+    .pbd-ghost { fill: var(--pbd-surface); stroke: var(--pbd-soft2); stroke-width: 1.5;
+                 &.is-sel { fill: var(--pbd-surface); stroke: var(--pbd-p); stroke-width: 2; } }
+    .pbd-toplabel {
+        text-anchor: middle; font-size: 9.5px; font-weight: 700; fill: var(--pbd-muted);
+        &.is-latest, &.is-sel { fill: var(--pbd-p600); }
+    }
+    .pbd-xlabel {
+        text-anchor: middle; font-size: 11px; font-weight: 600; fill: var(--pbd-muted);
+        &.is-sel { font-weight: 800; fill: var(--pbd-deep); }
+    }
+    .pbd-hit { fill: transparent; cursor: pointer; }
+    .pbd-slot:hover .pbd-col:not(.is-sel):not(.pbd-ghost) { fill: #CBC2EE; }
+    .pbd-tip {
+        position: absolute; pointer-events: none; background: var(--pbd-tip-bg); color: #FFFFFF;
+        border-radius: 10px; padding: 8px 11px; font-size: 12px; box-shadow: var(--pbd-sh-2);
+        white-space: nowrap; z-index: 2; transform: translate(-50%, -100%);
+        b { display: block; font-size: 12.5px; margin-bottom: 2px; }
+        &.is-left { transform: translate(-16px, -100%); }
+        &.is-right { transform: translate(calc(-100% + 16px), -100%); }
+    }
+    .pbd-tip-r { display: flex; justify-content: space-between; gap: 16px; opacity: .85; font-variant-numeric: tabular-nums; }
+    .pbd-hint {
+        font-size: 11.5px; color: var(--pbd-faint); margin-top: 2px; display: flex; gap: 14px; flex-wrap: wrap;
+        opacity: 0; min-height: 18px;
+        kbd {
+            font-family: inherit; font-size: 10.5px; font-weight: 600; line-height: 1.4; border: 1px solid var(--pbd-line); border-radius: 5px;
+            padding: 0 5px; color: var(--pbd-muted); background: var(--pbd-bg); box-shadow: none;
+        }
+    }
+    .pbd-chart:focus-within + .pbd-hint, .pbd-chartcard:hover .pbd-hint { opacity: 1; }
+
+    // the month panel
+    .pbd-month { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--pbd-line); }
+    .pbd-month-empty {
+        display: flex; align-items: center; gap: 10px; color: var(--pbd-muted); font-size: 13px; padding: 4px 0 2px;
+        svg { color: var(--pbd-p); }
+    }
+    .pbd-mh {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 10px 16px;
+        flex-wrap: wrap; margin-bottom: 12px;
+        h3 { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; color: var(--pbd-ink); }
+    }
+    .pbd-mfacts { display: flex; gap: 6px 14px; font-size: 12px; color: var(--pbd-muted); flex-wrap: wrap; b { color: var(--pbd-ink); } }
+    .pbd-mf {
+        display: inline-flex; align-items: center; gap: 4px;
+        svg { width: 13px; height: 13px; }
+        &.is-ok { color: var(--pbd-green); font-weight: 700; }
+        &.is-soon { color: var(--pbd-amber); font-weight: 700; }
+        &.is-bad { color: var(--pbd-rose); font-weight: 700; }
+    }
+    .pbd-figs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+    .pbd-fig {
+        min-width: 0; padding: 10px 12px; border: 1px solid var(--pbd-line); border-radius: 12px;
+        display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: end;
+        &:hover { border-color: var(--pbd-soft2); background: var(--pbd-wash); }
+    }
+    .pbd-fig-l { grid-column: 1 / 3; font-size: 11.5px; font-weight: 600; color: var(--pbd-muted); }
+    .pbd-fig-v {
+        font-size: 21px; font-weight: 800; letter-spacing: -.02em; color: var(--pbd-ink); line-height: 1.15;
+        white-space: nowrap; min-width: 0;
+        small { font-size: 12px; font-weight: 600; color: var(--pbd-muted); margin-left: 3px; letter-spacing: 0; }
+    }
+    .pbd-fig-spark { width: 72px; height: 28px; grid-row: 2 / 4; grid-column: 2; }
+    .pbd-delta {
+        grid-column: 1; justify-self: start; display: inline-flex; align-items: center; gap: 4px;
+        font-size: 11.5px; font-weight: 700; color: var(--pbd-muted); white-space: nowrap;
+        svg { width: 13px; height: 13px; color: var(--pbd-faint); }
+    }
+
+    // where the money goes
+    .pbd-bar-title {
+        display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; margin-bottom: 4px;
+        span { color: var(--pbd-muted); }
+        b { font-size: 14px; font-weight: 800; }
+    }
+    .pbd-bracket {
+        position: relative; height: 16px; font-size: 11px; color: var(--pbd-muted);
+        i { font-style: normal; position: absolute; left: 0; top: 11px; height: 5px; border: 1px solid var(--pbd-line2); border-bottom: 0; border-radius: 3px 3px 0 0; }
+        span { position: absolute; top: -4px; left: 0; background: var(--pbd-surface); padding-right: 6px; }
+        b { color: var(--pbd-ink); }
+    }
+    .pbd-stack {
+        height: 22px; display: flex; gap: 2px; border-radius: 6px; overflow: hidden; background: var(--pbd-lane);
+        i {
+            display: flex; align-items: center; padding-left: 8px; height: 100%; font-size: 11px; font-weight: 700;
+            font-style: normal; color: var(--pbd-on-p); white-space: nowrap; overflow: hidden; min-width: 0;
+        }
+        i.is-net { background: var(--pbd-p); }
+        i.is-ded { background: var(--pbd-slate); }
+        i.is-er { background: var(--pbd-teal); }
+    }
+    .pbd-legend {
+        display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 11.5px; color: var(--pbd-muted); margin-top: 8px;
+        span { display: inline-flex; align-items: center; gap: 6px; }
+        i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+        i.is-net { background: var(--pbd-p); }
+        i.is-ded { background: var(--pbd-slate); }
+        i.is-er { background: var(--pbd-teal); }
+    }
+
+    // ------------------------------------------------- 5. steps + coming up
+    .pbd-steps-card:focus-visible { box-shadow: 0 0 0 3px var(--pbd-ring); }
+    .pbd-steps { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; }
+    .pbd-st { position: relative; }
+    .pbd-st:not(:last-child)::after {
+        content: ""; position: absolute; left: 13px; top: 38px; bottom: -4px; width: 2px; background: var(--pbd-line);
+    }
+    .pbd-st.is-done:not(:last-child)::after { background: var(--pbd-green); }
+    .pbd-st-b {
+        display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start;
+        padding: 10px 0; width: 100%;
+        &:hover .pbd-st-t { color: var(--pbd-p600); }
+    }
+    .pbd-st-n {
+        width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px;
+        font-weight: 800; border: 2px solid var(--pbd-line2); color: var(--pbd-faint); background: var(--pbd-surface);
+        position: relative; z-index: 1;
+        svg { width: 13px; height: 13px; stroke-width: 3; }
+    }
+    .pbd-st.is-done .pbd-st-n { background: var(--pbd-green); border-color: var(--pbd-green); color: var(--pbd-on-p); }
+    .pbd-st.is-now .pbd-st-n { background: var(--pbd-p); border-color: var(--pbd-p); color: var(--pbd-on-p); box-shadow: 0 0 0 4px var(--pbd-ring); }
+    .pbd-st.is-wait .pbd-st-n { background: var(--pbd-amber); border-color: var(--pbd-amber); color: var(--pbd-on-p); }
+    .pbd-st-x { display: flex; flex-direction: column; min-width: 0; }
+    .pbd-st-t { font-size: 13px; font-weight: 700; }
+    .pbd-st.is-todo .pbd-st-t { color: var(--pbd-muted); }
+    .pbd-st-s { font-size: 12px; color: var(--pbd-muted); margin-top: 1px; }
+    .pbd-av {
+        width: 16px; height: 16px; border-radius: 50%; background: var(--pbd-soft); color: var(--pbd-p600);
+        font-size: 8.5px; font-weight: 800; display: inline-grid; place-items: center; margin-right: 5px; vertical-align: 1px;
+    }
+    .pbd-rose { color: var(--pbd-rose); font-weight: 700; }
+    .pbd-amber { color: var(--pbd-amber); font-weight: 700; }
+    .pbd-st-w { font-size: 11.5px; color: var(--pbd-faint); white-space: nowrap; padding-top: 2px;
+                &.is-amber { color: var(--pbd-amber); font-weight: 700; } }
+
+    .pbd-up { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column;
+              li { border-top: 1px solid var(--pbd-line); } li:first-child { border-top: 0; } }
+    .pbd-up-b {
+        display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center;
+        padding: 8px 2px; width: 100%; border-radius: 8px;
+        &:hover .pbd-up-t { color: var(--pbd-p600); }
+    }
+    .pbd-up-d {
+        text-align: center; background: var(--pbd-bg); border-radius: 9px; padding: 4px 0; line-height: 1.1;
+        b { display: block; font-size: 15px; font-weight: 800; }
+        span { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--pbd-muted); }
+        &.is-hot { background: var(--pbd-soft); b { color: var(--pbd-deep); } }
+    }
+    .pbd-up-x { display: flex; flex-direction: column; min-width: 0; }
+    .pbd-up-t { font-size: 12.5px; font-weight: 700; }
+    .pbd-up-s { font-size: 11.5px; color: var(--pbd-muted); }
+    .pbd-up-in { font-size: 11.5px; color: var(--pbd-faint); white-space: nowrap; &.is-amber { color: var(--pbd-amber); font-weight: 700; } }
+
+    // ------------------------------------------------- loading and failure
+    .pbd-skel { display: flex; flex-direction: column; gap: 14px; }
+    .pbd-skel-hero { height: 220px; }
+    .pbd-skel-split { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; .biz-skeleton--card { height: 320px; } }
+    .pbd-failed {
+        display: flex; flex-direction: column; align-items: center; gap: 10px; background: var(--pbd-surface);
+        border: 1px solid var(--pbd-line); border-radius: 14px; margin-top: 40px; max-width: 520px;
+        svg { color: var(--pbd-amber); }
+        p { margin: 0; color: var(--pbd-ink2); font-size: 14px; }
+    }
+    .pbd-p3:empty { display: none; }
+
+    // ------------------------------------------- the activation checklist
+    // White surface, a left rail, the locked indigo. The only animation is
+    // the tick drawing itself.
     .pbd-act {
-        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
+        background: var(--pbd-surface); border: 1px solid var(--pbd-line); border-radius: 18px;
         padding: 20px 22px; margin-bottom: 20px; position: relative; overflow: hidden;
-        box-shadow: 0 6px 18px rgba(27,23,51,.08);
+        box-shadow: var(--pbd-sh-1);
         &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
     }
     .pbd-act-head { display: flex; align-items: flex-start; gap: 12px; }
     .pbd-act-hic {
         display: inline-grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
-        border-radius: 10px; background: #EEF0FE; color: var(--pbd-brand);
+        border-radius: 10px; background: var(--pbd-soft); color: var(--pbd-brand);
     }
     .pbd-act-hx { flex: 1 1 auto; min-width: 0; }
     .pbd-act-t { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
     .pbd-act-s { color: var(--pbd-muted); font-size: 13px; margin-top: 3px; }
     .pbd-act-count {
         flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: var(--pbd-muted);
-        background: #F4F5FB; border: 1px solid var(--pbd-border);
-        padding: 5px 11px; border-radius: 999px; white-space: nowrap;
-        font-variant-numeric: tabular-nums;
+        background: var(--pbd-bg); border: 1px solid var(--pbd-line);
+        padding: 5px 11px; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums;
     }
-
-    .pbd-acts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid #F0EFF7; }
+    .pbd-acts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--pbd-line); }
     .pbd-act-i {
         display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px 0;
-        border-bottom: 1px solid #F0EFF7; position: relative;
+        border-bottom: 1px solid var(--pbd-line); position: relative;
         &:last-child { border-bottom: none; padding-bottom: 2px; }
-
-        // The step being asked for. A rail rather than a fill: the row still
-        // has to read as one of a list, and a filled row would compete with
-        // the hero above it.
+        // the step being asked for: a rail, not a fill
         &.is-next {
             padding-left: 12px;
             &::before {
                 content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
                 width: 3px; border-radius: 3px; background: var(--pbd-brand);
             }
-            .pbd-act-mark { background: #EEF0FE; border-color: #C7CBF5; }
+            .pbd-act-mark { background: var(--pbd-soft); border-color: var(--pbd-soft2); }
         }
-        // Behind you. Dimmed, never struck through — a finished step is still
-        // a place somebody may want to go back to.
+        // behind you: dimmed, never struck through
         &.is-done {
             .pbd-act-n { color: var(--pbd-muted); }
-            .pbd-act-mark { background: #E7F8F1; border-color: #A7E4CD; color: #0F8A63; }
+            .pbd-act-mark { background: var(--pbd-green-s); border-color: #A3DBBE; color: var(--pbd-green); }
         }
     }
     .pbd-act-mark {
         display: inline-grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
-        border-radius: 10px; background: #F4F5FB; color: var(--pbd-brand);
-        border: 1px solid var(--pbd-border);
+        border-radius: 10px; background: var(--pbd-bg); color: var(--pbd-brand);
+        border: 1px solid var(--pbd-line);
     }
     .pbd-act-x { flex: 1 1 auto; min-width: 0; }
     .pbd-act-n { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
     .pbd-act-d { font-size: 12.5px; color: var(--pbd-muted); margin-top: 2px; }
     .pbd-btn {
-        flex: 0 0 auto; background: var(--pbd-brand); color: #fff; border: 1px solid var(--pbd-brand);
+        flex: 0 0 auto; background: var(--pbd-brand); color: var(--pbd-on-p); border: 1px solid var(--pbd-brand);
         padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
-        &:hover { background: #4338CA; border-color: #4338CA; }
-        // Every step is reachable; only one is being asked for. A ghost button
-        // is still a button, which is the point — somebody who wants to import
-        // first is not wrong.
+        &:hover { background: var(--pbd-p600); border-color: var(--pbd-p600); }
+        // every step is reachable; only one is being asked for
         &.ghost {
-            background: transparent; color: var(--pbd-brand); border-color: var(--pbd-border);
+            background: transparent; color: var(--pbd-brand); border-color: var(--pbd-line);
             font-weight: 600;
-            &:hover { background: #F4F5FB; border-color: #C7CBF5; }
+            &:hover { background: var(--pbd-bg); border-color: var(--pbd-soft2); }
         }
     }
 
-    // THE TICK DRAWS ITSELF. CSS only — no library, no sprite, no emoji: the
-    // Lucide check is a single stroked path, so dashing it and animating the
-    // offset draws it left to right exactly once, when the row first appears
-    // with its state already decided by the server.
+    // THE TICK DRAWS ITSELF. The Lucide check is one stroked path, so dashing
+    // it and animating the offset draws it left to right exactly once.
     .pbd-act-i.is-done .pbd-act-mark svg path {
         stroke-dasharray: 24;
         stroke-dashoffset: 24;
@@ -121,212 +470,56 @@
         .pbd-act-i.is-done .pbd-act-mark svg path { animation: none; stroke-dashoffset: 0; }
     }
 
-    @media (max-width: 640px) {
+    // ------------------------------------------------------------ responsive
+    @media (max-width: 1280px) {
+        .pbd-figs { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1100px) {
+        .pbd-split, .pbd-hero, .pbd-skel-split { grid-template-columns: 1fr; }
+        .pbd-hint { opacity: 1; }
+    }
+    @media (max-width: 760px) {
+        padding: 16px 16px 48px;
+        .pbd-figs { grid-template-columns: 1fr; }
+        .pbd-hero { padding: 18px; }
+        .pbd-h1 { font-size: 22px; }
+        .pbd-jn-s { display: none; }
+        .pbd-gl-all { margin-left: 0; }
         .pbd-act-i { flex-wrap: wrap; }
         .pbd-btn { width: 100%; }
     }
 
-    // ----------------------------------------------------- the pay month
-    // WHICH MONTH THE FIGURES BELOW ARE ABOUT. One line, before the numbers,
-    // because a reader who never touches the strip still has to know.
-    //
-    // NOTHING HERE HAS A FIXED HEIGHT (L2): every string in this block is
-    // translated and every one of them wraps on a phone, so the row grows by
-    // what it has to say instead of printing over the numbers under it.
-    .pbd-period {
-        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-        margin-bottom: 12px;
-    }
-    .pbd-period-ic { display: inline-flex; color: var(--pbd-brand); }
-    .pbd-period-ic svg { vertical-align: -.18em; }
-    .pbd-period-t { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: var(--pbd-ink); }
-    .pbd-period-tag {
-        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-        background: #EEF1F5; color: #64748B;
-        &.now { background: var(--pbd-ink); color: #FFFFFF; }
-    }
-    .pbd-period-busy { font-size: 12px; font-weight: 700; color: var(--pbd-brand); }
-    .pbd-period-back {
-        background: none; border: 1px solid var(--pbd-border); border-radius: 999px;
-        padding: 4px 12px; font-size: 12px; font-weight: 700; font-family: inherit;
-        color: var(--pbd-brand); cursor: pointer;
-        &:hover { background: #F4F5FB; border-color: #C7CBF5; }
-    }
-    .pbd-period-note {
-        margin: -4px 0 12px; padding: 8px 13px; border-radius: 10px;
-        background: #FEF3E2; color: #8A5A12; font-size: 12.5px; font-weight: 600;
-    }
-
-    // THE STRIP. One chip per payroll month, oldest to newest. Many months
-    // SCROLL — a chip is never squeezed until it cannot be read, and no month
-    // is ever dropped. The bar is how many people were paid that month against
-    // the busiest month, which is this strip's own question.
-    // THE STRIP SCROLLS, AND IT SAYS SO. A platform's overlay scrollbar is
-    // invisible at rest, so a strip that runs off its own edge looks like a
-    // strip that simply starts in April. This one keeps a slim track that is
-    // always drawn — a real affordance rather than a gradient the design
-    // system does not allow, and it costs no motion at all.
-    .pbd-strip {
-        display: flex; gap: 0; align-items: stretch;
-        overflow-x: auto; overflow-y: hidden;
-        margin-bottom: 8px; padding: 2px 2px 6px;
-        scrollbar-width: thin;
-        scrollbar-color: #C7CBF5 #EDECF6;
-
-        &::-webkit-scrollbar { height: 7px; }
-        &::-webkit-scrollbar-track {
-            background: #EDECF6; border-radius: 4px;
-        }
-        &::-webkit-scrollbar-thumb {
-            background: #C7CBF5; border-radius: 4px;
-            &:hover { background: var(--pbd-brand); }
-        }
-    }
-    .pbd-mchip {
-        position: relative; flex: 0 0 96px;
-        display: flex; flex-direction: column; align-items: stretch; gap: 5px;
-        text-align: left; font-family: inherit; cursor: pointer;
-        border: 1px solid var(--pbd-border); border-radius: 0;
-        background: var(--pbd-surface); padding: 9px 10px 8px;
-        margin-left: -1px;
-
-        &:first-child { margin-left: 0; border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
-        &:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
-
-        &:hover { border-color: var(--pbd-brand); z-index: 2; }
-        &:focus-visible {
-            outline: none; z-index: 3;
-            border-color: var(--pbd-brand);
-            box-shadow: 0 0 0 3px rgba(79,70,229,.18);
-        }
-        // The chosen month. Its border wins the one-pixel collapse with its
-        // neighbours, so the chip reads as one lit thing rather than as a
-        // chip with a broken edge.
-        &.is-on {
-            z-index: 4;
-            border-color: var(--pbd-brand);
-            background: #EEF0FD;
-            border-radius: 10px;
-            box-shadow: 0 0 0 2px rgba(79,70,229,.18);
-        }
-        // A month nobody was paid in is quiet, not disabled: it is still a
-        // month a person may want to stand in to see that for themselves.
-        &.is-quiet { opacity: .66; }
-        &.is-now { border-color: var(--pbd-ink); }
-    }
-    // The month AND its year, on every chip: this strip runs over whatever
-    // months a database has, and two chips both reading "Oct" is the one thing
-    // a period control may never do.
-    .pbd-mchip-l {
-        display: flex; align-items: baseline; gap: 4px; line-height: 1.2;
-        b { font-size: 12px; font-weight: 800; color: var(--pbd-ink); }
-        i { font-style: normal; font-size: 10px; font-weight: 700;
-            color: var(--pbd-muted); font-variant-numeric: tabular-nums; }
-    }
-    // The micro bar: the track is the busiest month, the fill is this one.
-    .pbd-mchip-bar { display: block; height: 5px; border-radius: 3px; background: #EDECF6; overflow: hidden; }
-    .pbd-mchip-fill { display: block; height: 5px; border-radius: 3px; background: var(--pbd-brand); }
-    .pbd-mchip-v {
-        font-size: 10.5px; font-weight: 700; color: var(--pbd-muted);
-        font-variant-numeric: tabular-nums; line-height: 1.25;
-    }
-    .pbd-mchip-flag {
-        position: absolute; top: -7px; right: 6px;
-        border-radius: 999px; padding: 1px 7px;
-        font-size: 9.5px; font-weight: 800;
-        background: var(--pbd-brand); color: #FFFFFF;
-    }
-    .pbd-striphint { font-size: 12px; color: var(--pbd-muted); margin-bottom: 20px; }
-    .pbd-strip-empty {
-        display: flex; align-items: flex-start; gap: 10px;
-        margin-bottom: 20px; padding: 12px 15px;
-        border: 1px dashed var(--pbd-border); border-radius: 12px;
-        background: var(--pbd-surface); color: var(--pbd-muted); font-size: 12.5px;
-        b { color: var(--pbd-ink); }
-        svg { flex: 0 0 auto; margin-top: 1px; color: var(--pbd-brand); }
-    }
-
-    // KPI strip
-    .pbd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 20px; }
-    .pbd-kpi {
-        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 16px;
-        padding: 16px 18px; box-shadow: 0 2px 6px rgba(27,23,51,.06); position: relative; overflow: hidden;
-        &::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--pbd-brand); }
-        &.k-green::before { background: #10B981; } &.k-amber::before { background: #B7791F; }
-        &.k-cyan::before { background: #0891B2; } &.k-indigo::before { background: #4F46E5; }
-        .kl { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--pbd-muted);
-              display: flex; align-items: center; justify-content: space-between; }
-        .kl svg { opacity: .6; }
-        .kv { font-size: 26px; font-weight: 800; margin-top: 8px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
-        .ks { font-size: 12px; color: var(--pbd-muted); margin-top: 4px; }
-    }
-
-    // Cockpit cards
-    .pbd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; }
-    .pbd-card {
-        background: var(--pbd-surface); border: 1px solid var(--pbd-border); border-radius: 18px;
-        padding: 20px 22px; box-shadow: 0 6px 18px rgba(27,23,51,.08);
-        // The lift on hover MOVES, so it lives in the reduced-motion block at
-        // the foot of this file with everything else that does (R85). It sat
-        // here, unguarded, from the day this cockpit shipped until LOOK P4.
-        &:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(27,23,51,.14); }
-    }
-    .pbd-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .pbd-card-t { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
-    .pbd-card-m { color: var(--pbd-muted); font-size: 12.5px; margin-top: 3px; }
-    .pbd-ring { position: relative; display: inline-grid; place-items: center; }
-    .pbd-ring-n { position: absolute; font-weight: 800; }
-    // Stands where the dial would: nothing measured yet, and the card keeps
-    // its shape rather than jumping when the first figure arrives.
-    .pbd-ring-none {
-        display: inline-grid; place-items: center; width: 66px; height: 66px;
-        color: var(--pbd-muted); font-size: 20px; font-weight: 800; flex: 0 0 66px;
-    }
-
-    .pbd-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-    .pbd-pill { font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px; }
-    .pbd-pill.ok { background: #E7F8F1; color: #0F8A63; }
-    .pbd-pill.warn { background: #FEF3E2; color: #B7791F; }
-    .pbd-pill.cyan { background: #E0F4F9; color: #0E7490; }
-    .pbd-pill.muted { background: #EEF1F5; color: #64748B; }
-
-    .pbd-mini { display: flex; gap: 22px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #F0EFF7; flex-wrap: wrap;
-        .mv { font-size: 17px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
-        .ml { font-size: 11px; color: var(--pbd-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
-    }
-    .pbd-link { margin-top: 16px; background: none; border: none; color: var(--pbd-brand); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0;
-        &:hover { text-decoration: underline; } }
-
-    // ------------------------------------------------------------- motion
-    // EVERY MOVING DECLARATION IN THIS COCKPIT IS INSIDE THIS BLOCK (R85).
-    // Under a reduced-motion preference none of them is applied at all, so the
-    // page paints finished on the first frame with nothing to recover from —
-    // which is a better property than declaring an animation and cancelling
-    // it. The check's own `@keyframes` stays at the top level of the file,
-    // where a browser will play it, with its `reduce` branch beside it.
+    // ---------------------------------------------------------------- motion
+    // Motion with purpose only: the hero rises, the columns grow, the "now"
+    // node pulses, the bar and the progress travel. None of it under a
+    // reduced-motion preference (the figures' count-up checks the same
+    // preference in JS).
     @media (prefers-reduced-motion: no-preference) {
-        .pbd-card { transition: transform .2s, box-shadow .2s; }
-        // Picking a month re-scopes the board rather than replacing it: the
-        // cards keep their places and the bars TRAVEL to their new heights.
-        .pbd-mchip-fill { transition: width .4s cubic-bezier(.22, .68, .36, 1); }
-        .pbd-mchip {
-            transition: border-color .14s, background .14s, box-shadow .14s,
-                        border-radius .18s cubic-bezier(.22, .68, .36, 1),
-                        opacity .14s;
+        .pbd-hero, .pbd-glance, .pbd-split { animation: pbd-rise .55s cubic-bezier(.16,1,.3,1) both; }
+        .pbd-glance { animation-delay: .05s; }
+        .pbd-split { animation-delay: .1s; }
+        .pbd-jn.is-now .pbd-jn-dot::before {
+            content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--pbd-p);
+            opacity: 0; animation: pbd-pulse 2.4s ease-out infinite;
         }
-        .pbd-period-back { transition: background .14s, border-color .14s; }
+        .pbd-col { transform-box: fill-box; transform-origin: bottom; animation: pbd-grow .6s cubic-bezier(.16,1,.3,1) both; }
+        .pbd-prog i { transition: width .8s cubic-bezier(.16,1,.3,1); }
+        .pbd-stack i { transition: width .6s cubic-bezier(.16,1,.3,1); }
+        .pbd-bracket i { transition: width .6s cubic-bezier(.16,1,.3,1); }
+        .pbd-tip { transition: opacity .12s; }
+        .pbd-hint { transition: opacity .2s; }
+        .pbd-b { transition: transform .15s, box-shadow .15s, border-color .15s, background .15s; }
+        .pbd-b--primary:hover { transform: translateY(-1px); }
     }
 }
+@keyframes pbd-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes pbd-pulse { 0% { transform: scale(.7); opacity: .7; } 100% { transform: scale(1.5); opacity: 0; } }
+@keyframes pbd-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
 // ------------------------------------------------------------------ embedded
-// The Dashboard as the PULSE lens of the Home hub (W17).
-//
-// Two things change and nothing else. The padding tightens, because the hub
-// owns the outer frame. And the root becomes its own SCROLLPORT: standalone it
-// is `min-height: 100%` inside the web client's scrolling action host, but
-// `.pbhub-lens` is a definite-height flex box, so a child that only flows grows
-// past the bottom of the workspace with nothing to scroll it (W20 — the failure
-// has no error and simply looks like a page that ends early).
+// The Dashboard as the PULSE lens of the Home hub (W17): the hub owns the
+// outer frame, and `.pbhub-lens` is a definite-height flex box, so the root
+// becomes its own scrollport (W20).
 .pbd-root.pbd-root--embedded {
     height: 100%;
     min-height: 0;

@@ -12,12 +12,17 @@
     # 2.0.0: HOME P1 — `get_home_data()`, the new Home's one call (period,
     # needs-you, 12 months from the stored run totals, runs, steps, upcoming,
     # people, hiring, learn, schemes), every foreign read through optional().
-    'version': '19.0.2.0.0',
+    # 2.1.0: HOME P2 — the new Home front end on get_home_data(): the hero
+    # sentence + journey + one primary, needs-you chips, the 12-month chart
+    # that is the month picker, the month panel, steps and coming up; Lucide
+    # and tokens from pb_import_kit (now a dependency); months carry
+    # `foreign_runs` (H21).
+    'version': '19.0.2.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit'],
     'data': [
         'views/pb_dashboard_action.xml',
     ],
