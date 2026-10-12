@@ -1,11 +1,14 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_dashboard
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 01:46+0000\n"
-"PO-Revision-Date: 2026-09-09 01:46+0000\n"
-"Last-Translator: Payobook Translation Automation\n"
+"POT-Creation-Date: 2026-10-12 09:20+0000\n"
+"PO-Revision-Date: 2026-10-12 09:20+0000\n"
+"Last-Translator: \n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
 "MIME-Version: 1.0\n"
@@ -16,56 +19,502 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%(month)s — %(count)s people were paid."
-msgstr "%(month)s — %(count)s người đã được trả lương."
+msgid "%(d)s-day streak"
+msgstr "Chuỗi %(d)s ngày"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%(what)s in %(month)s"
-msgstr "%(what)s trong %(month)s"
+msgid "%(date)s · %(n)s out"
+msgstr "%(date)s · %(n)s người nghỉ"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s active contracts"
-msgstr "%s hợp đồng đang hoạt động"
+msgid "%(days)s days to payday"
+msgstr "Còn %(days)s ngày tới ngày trả lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s people"
-msgstr "%s người"
+msgid "%(delta)s vs %(month)s"
+msgstr "%(delta)s so với %(month)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s rules"
-msgstr "%s quy tắc"
+msgid "%(done)s of %(n)s payslips prepared"
+msgstr "Đã chuẩn bị %(done)s trên %(n)s phiếu lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — 1 person was paid."
-msgstr "%s — 1 người đã được trả lương."
+msgid "%(done)s of %(slips)s payslips"
+msgstr "%(done)s trên %(slips)s phiếu lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — no end-of-month run."
-msgstr "%s — không có đợt tính lương cuối tháng."
+msgid "%(done)s payslips prepared"
+msgstr "Đã chuẩn bị %(done)s phiếu lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — nobody was paid."
-msgstr "%s — không có ai được trả lương."
+msgid "%(m)s minutes"
+msgstr "%(m)s phút"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s is at %(step)s."
+msgstr "%(month)s đang ở %(step)s."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s pay runs"
+msgstr "Các đợt lương %(month)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s payroll"
+msgstr "Kỳ lương %(month)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s payroll is at step %(stage)s of 5"
+msgstr "Kỳ lương %(month)s đang ở bước %(stage)s trên 5"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s so far"
+msgstr "%(month)s đến nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s · in progress"
+msgstr "%(month)s · đang thực hiện"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s, step by step"
+msgstr "%(month)s, từng bước một"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s already renewed"
+msgstr "%(n)s đã gia hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s banks"
+msgstr "%(n)s ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s candidates"
+msgstr "%(n)s ứng viên"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s components"
+msgstr "%(n)s thành phần"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s contracts end"
+msgstr "%(n)s hợp đồng kết thúc"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s fewer than %(month)s"
+msgstr "ít hơn %(month)s là %(n)s người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s interview write-ups overdue"
+msgstr "%(n)s nhận xét phỏng vấn quá hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s interviews"
+msgstr "%(n)s buổi phỏng vấn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s more than %(month)s"
+msgstr "nhiều hơn %(month)s là %(n)s người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s of %(of)s so far"
+msgstr "%(n)s trên %(of)s đến nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s open roles"
+msgstr "%(n)s vị trí đang tuyển"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s out today"
+msgstr "%(n)s người nghỉ hôm nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay run"
+msgstr "%(n)s đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay run needs your approval"
+msgstr "%(n)s đợt lương cần bạn phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay runs"
+msgstr "%(n)s đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay runs need your approval"
+msgstr "%(n)s đợt lương cần bạn phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay values are missing a source"
+msgstr "%(n)s giá trị lương chưa có nguồn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s payslips prepared"
+msgstr "Đã chuẩn bị %(n)s phiếu lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people"
+msgstr "%(n)s người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people added"
+msgstr "Đã thêm %(n)s người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people have no active contract and cannot be paid"
+msgstr "%(n)s người chưa có hợp đồng đang hiệu lực nên chưa thể trả lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people have no bank account"
+msgstr "%(n)s người chưa có tài khoản ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"%(n)s people in %(run)s and %(more)s more in other runs have no bank account"
+msgstr ""
+"%(n)s người ở %(run)s và %(more)s người ở các đợt khác chưa có tài khoản "
+"ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people in %(run)s have no bank account"
+msgstr "%(n)s người ở %(run)s chưa có tài khoản ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people with an active contract"
+msgstr "%(n)s người có hợp đồng đang hiệu lực"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s renewals to start"
+msgstr "%(n)s hợp đồng cần bắt đầu gia hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s runs"
+msgstr "%(n)s đợt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s runs in another currency are not added"
+msgstr "%(n)s đợt bằng loại tiền khác không được cộng vào"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s schemes failed their last check"
+msgstr "%(n)s chương trình lương không đạt lần kiểm tra gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s schemes in use"
+msgstr "%(n)s chương trình lương đang dùng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s settlements to check"
+msgstr "%(n)s quyết toán cần kiểm tra"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s tests failing"
+msgstr "%(n)s phép thử không đạt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s things need you"
+msgstr "%(n)s việc cần bạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(net)s net pay so far"
+msgstr "%(net)s lương thực nhận đến nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(run)s run in progress"
+msgstr "Đợt %(run)s đang thực hiện"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(who)s has submitted the %(run)s run (%(people)s) for your approval"
+msgstr "%(who)s đã gửi đợt %(run)s (%(people)s) để bạn phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"%(who)s has submitted the %(run)s run (%(people)s, %(net)s) for your "
+"approval"
+msgstr "%(who)s đã gửi đợt %(run)s (%(people)s, %(net)s) để bạn phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(who)s submitted the %(run)s run"
+msgstr "%(who)s đã gửi đợt %(run)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ", and the %(run)s run is being prepared"
+msgstr ", và đợt %(run)s đang được chuẩn bị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 approval"
+msgstr "1 yêu cầu phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 bank"
+msgstr "1 ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 candidate"
+msgstr "1 ứng viên"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 component"
+msgstr "1 thành phần"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 contract ends"
+msgstr "1 hợp đồng kết thúc"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 day to payday"
+msgstr "Còn 1 ngày tới ngày trả lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 interview"
+msgstr "1 buổi phỏng vấn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 interview write-up overdue"
+msgstr "1 nhận xét phỏng vấn quá hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 minute"
+msgstr "1 phút"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 open role"
+msgstr "1 vị trí đang tuyển"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 pay value is missing a source"
+msgstr "1 giá trị lương chưa có nguồn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 payslip prepared"
+msgstr "Đã chuẩn bị 1 phiếu lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "1 person"
 msgstr "1 người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person added"
+msgstr "Đã thêm 1 người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person has no active contract and cannot be paid"
+msgstr "1 người chưa có hợp đồng đang hiệu lực nên chưa thể trả lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person has no bank account"
+msgstr "1 người chưa có tài khoản ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"1 person in %(run)s and %(more)s more in other runs have no bank account"
+msgstr ""
+"1 người ở %(run)s và %(more)s người ở các đợt khác chưa có tài khoản ngân "
+"hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person in %(run)s has no bank account"
+msgstr "1 người ở %(run)s chưa có tài khoản ngân hàng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person with an active contract"
+msgstr "1 người có hợp đồng đang hiệu lực"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 renewal to start"
+msgstr "1 hợp đồng cần bắt đầu gia hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 run"
+msgstr "1 đợt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 run in another currency is not added"
+msgstr "1 đợt bằng loại tiền khác không được cộng vào"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 scheme failed its last check"
+msgstr "1 chương trình lương không đạt lần kiểm tra gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 scheme in use"
+msgstr "1 chương trình lương đang dùng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 settlement to check"
+msgstr "1 quyết toán cần kiểm tra"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 test failing"
+msgstr "1 phép thử không đạt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 thing needs you"
+msgstr "1 việc cần bạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1-day streak"
+msgstr "Chuỗi 1 ngày"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -77,13 +526,20 @@ msgstr "Một chuyến tham quan 2 phút. Tôi lái xe, bạn xem."
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "A name, a contract, a salary. That is all it takes."
-msgstr "Một cái tên, một hợp đồng, một mức lương. Đó là tất cả những gì cần thiết."
+msgstr ""
+"Một cái tên, một hợp đồng, một mức lương. Đó là tất cả những gì cần thiết."
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Active configs"
-msgstr "Cấu hình đang chạy"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "A pay scheme is the rulebook every payslip is computed by."
+msgstr "Chương trình lương là bộ quy tắc dùng để tính mọi phiếu lương."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "A run does not balance"
+msgstr "Có một đợt lương không cân"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -94,14 +550,39 @@ msgstr "Thêm nhân viên"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Add one before payday, or they will be paid in cash."
+msgstr ""
+"Hãy thêm trước ngày trả lương, nếu không họ sẽ được trả bằng tiền mặt."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Add your first employee"
 msgstr "Thêm nhân viên đầu tiên của bạn"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "All departments · monthly"
-msgstr "Tất cả các phòng ban · hàng tháng"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s approvals"
+msgstr "Tất cả %(n)s yêu cầu phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s tests passed"
+msgstr "Cả %(n)s phép thử đều đạt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s tests passed, %(ago)s"
+msgstr "Cả %(n)s phép thử đều đạt, %(ago)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All runs balance"
+msgstr "Mọi đợt lương đều cân"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -111,27 +592,21 @@ msgstr "Bạn đã có tờ giấy chưa? Đưa mọi người vào cùng một 
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Analytics"
-msgstr "Phân tích"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Approve"
+msgstr "Phê duyệt"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Approved"
-msgstr "Đã phê duyệt"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Average net per person"
+msgstr "Thực nhận bình quân mỗi người"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Avg salary"
-msgstr "Mức lương trung bình"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Back to the latest month"
-msgstr "Quay lại tháng gần nhất"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Bank file"
+msgstr "Tệp ngân hàng"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -142,20 +617,62 @@ msgstr "Mang theo bảng lương Excel của bạn"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Company overview"
-msgstr "Tổng quan công ty"
+msgid ""
+"Click a month to read its figures below. The last 12 months of completed pay"
+" runs."
+msgstr ""
+"Bấm vào một tháng để đọc số liệu của tháng đó bên dưới. 12 tháng gần nhất "
+"của các đợt lương đã hoàn tất."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"Column chart. Use the arrow keys to change month, Escape for the latest "
+"month."
+msgstr ""
+"Biểu đồ cột. Dùng phím mũi tên để đổi tháng, phím Escape để về tháng gần "
+"nhất."
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Configs"
-msgstr "Cấu hình"
+msgid "Coming up"
+msgstr "Sắp tới"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Complete"
+msgstr "Hoàn tất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Completed"
+msgstr "Đã hoàn tất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Continue preparing %(run)s"
+msgstr "Tiếp tục chuẩn bị %(run)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Cut-off %(date)s"
+msgstr "Hạn chốt %(date)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Contributions"
-msgstr "Đóng góp"
+msgid ""
+"Cut-off, payday, contracts ending and public holidays appear here as their "
+"dates come up."
+msgstr ""
+"Hạn chốt, ngày trả lương, hợp đồng sắp kết thúc và ngày lễ sẽ hiện ở đây khi"
+" tới gần."
 
 #. module: pb_dashboard
 #: model:ir.actions.client,name:pb_dashboard.action_pb_dashboard
@@ -163,33 +680,96 @@ msgid "Dashboard"
 msgstr "Bảng điều khiển"
 
 #. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Deductions"
+msgstr "Khấu trừ"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Deductions (tax, insurance)"
+msgstr "Khấu trừ (thuế, bảo hiểm)"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Deliver payslips"
+msgstr "Gửi phiếu lương"
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_ui_menu__display_name
 #: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Each step opens the screen it talks about. Come back here any time."
-msgstr "Mỗi bước sẽ mở ra màn hình mà nó nói đến. Hãy quay lại đây bất cứ lúc nào."
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Excel-driven configs"
-msgstr "Cấu hình dựa trên Excel"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Done"
+msgstr "Hoàn tất"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "Figures for %s"
-msgstr "Số liệu của %s"
+msgid "Done %(date)s"
+msgstr "Xong %(date)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Formula engine"
-msgstr "Bộ máy công thức"
+msgid "Each step opens the screen it talks about. Come back here any time."
+msgstr ""
+"Mỗi bước sẽ mở ra màn hình mà nó nói đến. Hãy quay lại đây bất cứ lúc nào."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Email in English and Vietnamese"
+msgstr "Email bằng tiếng Anh và tiếng Việt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Email, EN + VI"
+msgstr "Email, Anh + Việt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Employer cost"
+msgstr "Chi phí doanh nghiệp"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Employer cost (insurance, union)"
+msgstr "Chi phí doanh nghiệp (bảo hiểm, công đoàn)"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Esc"
+msgstr "Esc"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Figures are the pay run totals and match the payslips exactly."
+msgstr "Số liệu là tổng của các đợt lương và khớp chính xác với phiếu lương."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Figures grow as payslips are prepared"
+msgstr "Số liệu tăng dần khi phiếu lương được chuẩn bị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Fix in Contracts"
+msgstr "Sửa ở Hợp đồng"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -217,9 +797,21 @@ msgstr "Chào buổi sáng"
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Headcount"
-msgstr "Số lượng nhân sự"
+msgid "Gross pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_dashboard
+#: model:ir.model,name:pb_dashboard.model_ir_http
+msgid "HTTP Routing"
+msgstr "Định tuyến HTTP"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Hiring"
+msgstr "Tuyển dụng"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -228,6 +820,20 @@ msgid "Home"
 msgstr "Trang chủ"
 
 #. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Home could not load. Try again."
+msgstr "Không tải được Trang chủ. Hãy thử lại."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Hover a column for the full figures"
+msgstr "Trỏ vào một cột để xem số liệu đầy đủ"
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_http__id
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_ui_menu__id
 #: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__id
 msgid "ID"
 msgstr "ID"
@@ -240,15 +846,75 @@ msgstr "Nhập dữ liệu"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Latest pay run"
-msgstr "Đợt lương mới nhất"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "In progress"
+msgstr "Đang thực hiện"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Loading dashboard…"
-msgstr "Đang tải trang tổng quan…"
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Interviews this week"
+msgstr "Phỏng vấn tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Joined"
+msgstr "Vào làm"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "K"
+msgstr "nghìn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Keep learning"
+msgstr "Tiếp tục học"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Last day for %(month)s changes"
+msgstr "Ngày cuối cho thay đổi của %(month)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Latest"
+msgstr "Gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Latest completed"
+msgstr "Hoàn tất gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Leaving"
+msgstr "Nghỉ việc"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "M"
+msgstr "triệu"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -257,28 +923,129 @@ msgid "Meet Payobook"
 msgstr "Gặp gỡ Payobook"
 
 #. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Monthly payroll"
-msgstr "Chi phí lương tháng"
+#: model:ir.model,name:pb_dashboard.model_ir_ui_menu
+msgid "Menu"
+msgstr "Trình đơn"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "No payroll data yet — let's get you set up"
-msgstr "Chưa có dữ liệu bảng lương - hãy giúp bạn thiết lập"
+msgid "Needs you"
+msgstr "Cần bạn"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "No payroll has been run yet"
-msgstr "Chưa có đợt tính lương nào"
+msgid "Net %(amount)s"
+msgstr "Thực nhận %(amount)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "No payroll months yet."
-msgstr "Chưa có tháng lương nào."
+msgid "Net pay"
+msgstr "Lương thực nhận"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Net pay to people"
+msgstr "Lương thực nhận của mọi người"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Net pay, last 12 months"
+msgstr "Lương thực nhận, 12 tháng gần nhất"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "New joiners, salary changes, overtime"
+msgstr "Người mới vào, thay đổi lương, tăng ca"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Next public holiday"
+msgstr "Ngày lễ tiếp theo"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run"
+msgstr "Không có đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run has started yet."
+msgstr "Chưa có đợt lương nào bắt đầu."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run this month"
+msgstr "Tháng này không có đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run this month yet"
+msgstr "Tháng này chưa có đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "No pay run yet. Figures appear after your first pay run."
+msgstr "Chưa có đợt lương. Số liệu sẽ hiện sau đợt lương đầu tiên của bạn."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay scheme yet"
+msgstr "Chưa có chương trình lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No payslips yet"
+msgstr "Chưa có phiếu lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Nobody is out this week."
+msgstr "Tuần này không ai nghỉ."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Nobody is out today."
+msgstr "Hôm nay không ai nghỉ."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Not finished"
+msgstr "Chưa xong"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Nothing needs you right now"
+msgstr "Lúc này không có việc gì cần bạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Offers waiting for a reply"
+msgstr "Thư mời đang chờ trả lời"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -288,27 +1055,76 @@ msgstr "Trên một công ty trang điểm. Không có gì ở đây là có th�
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open Formula Studio"
+msgstr "Mở Xưởng công thức"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open Hiring"
+msgstr "Mở Tuyển dụng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open People"
+msgstr "Mở Con người"
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "Once a pay run is done, every month it covers appears here and the figures above can be read for any of them."
-msgstr "Khi một đợt tính lương hoàn tất, mọi tháng thuộc đợt đó sẽ hiện ở đây và bạn có thể xem số liệu phía trên cho bất kỳ tháng nào."
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open pay runs"
+msgstr "Mở các đợt lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Open the run to choose where each one comes from."
+msgstr "Mở đợt lương để chọn nguồn cho từng giá trị."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Other leave"
+msgstr "Loại nghỉ khác"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open analytics →"
-msgstr "Phân tích mở →"
+msgid "Out today"
+msgstr "Nghỉ hôm nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay"
+msgstr "Chi trả"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay runs are not tracked on this database"
+msgstr "Đợt lương không được theo dõi trên cơ sở dữ liệu này"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open formula engine →"
-msgstr "Mở công cụ công thức →"
+msgid "Pay schemes"
+msgstr "Chương trình lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open pay runs →"
-msgstr "Mở các đợt lương →"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Payday"
+msgstr "Ngày trả lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Payday is today"
+msgstr "Hôm nay là ngày trả lương"
 
 #. module: pb_dashboard
 #: model:ir.model,name:pb_dashboard.model_pb_dashboard
@@ -318,32 +1134,32 @@ msgstr "Nhà cung cấp dữ liệu Bảng điều khiển Payobook"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Payroll"
-msgstr "Tiền lương"
+msgid "Payroll, month by month"
+msgstr "Lương, theo từng tháng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "People"
+msgstr "Số người"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Payslips"
-msgstr "Phiếu lương"
+msgid "People out over the next 7 days"
+msgstr "Số người nghỉ trong 7 ngày tới"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "People paid"
+msgstr "Số người được trả lương"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pending"
-msgstr "Đang chờ"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pending approval"
-msgstr "Đang chờ phê duyệt"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pick a payroll month"
-msgstr "Chọn một tháng lương"
+msgid "People this month"
+msgstr "Nhân sự tháng này"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -354,26 +1170,50 @@ msgstr "Tiếp tục nơi bạn đã dừng lại"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "Press a month to read the figures above for it. Arrow keys walk the strip; Escape comes back to the latest month."
-msgstr "Bấm một tháng để xem số liệu phía trên của tháng đó. Phím mũi tên di chuyển trên dải; phím Escape quay lại tháng gần nhất."
+msgid "Prepare"
+msgstr "Chuẩn bị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Prepare payslips"
+msgstr "Chuẩn bị phiếu lương"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Preparing"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Referrals this month"
+msgstr "Giới thiệu tháng này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Remind the interviewers, or decide without them."
+msgstr "Nhắc người phỏng vấn, hoặc quyết định mà không cần họ."
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Reading…"
-msgstr "Đang đọc…"
+msgid "Retry"
+msgstr "Thử lại"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Rules"
-msgstr "Quy tắc"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Review %(run)s"
+msgstr "Xem xét %(run)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Run Payroll"
-msgstr "Chạy bảng lương"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Roles over budget"
+msgstr "Vị trí vượt ngân sách"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -390,26 +1230,38 @@ msgstr "kỳ lương thực tế đầu tiên của bạn"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Set up"
+msgstr "Thiết lập"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Set up the month"
+msgstr "Thiết lập tháng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Start"
 msgstr "Bắt đầu"
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Start %(month)s payroll"
+msgstr "Bắt đầu kỳ lương %(month)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Tests"
-msgstr "Kiểm thử"
+msgid "Start lesson"
+msgstr "Bắt đầu bài học"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "That month could not be read. Try again in a moment."
-msgstr "Không đọc được tháng này. Hãy thử lại sau giây lát."
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "That month is not on this database, so these figures are for %s."
-msgstr "Tháng đó không có trên cơ sở dữ liệu này, nên các số liệu này là của %s."
+msgid "Tet"
+msgstr "Tết"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -420,8 +1272,27 @@ msgstr "Màn hình đó chưa được cài đặt trên cơ sở dữ liệu n�
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "The %(run)s run (%(people)s) is waiting for your approval"
+msgstr "Đợt %(run)s (%(people)s) đang chờ bạn phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "The %(run)s run is being prepared."
+msgstr "Đợt %(run)s đang được chuẩn bị."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "The guided tour is not installed on this database."
-msgstr "Chuyến tham quan có hướng dẫn chưa được cài đặt trên cơ sở dữ liệu này."
+msgstr ""
+"Chuyến tham quan có hướng dẫn chưa được cài đặt trên cơ sở dữ liệu này."
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Total cost to the company"
+msgstr "Tổng chi phí của công ty"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -432,8 +1303,62 @@ msgstr "Hãy thử nó"
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Under way"
+msgstr "Đang làm"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Updated %(time)s"
+msgstr "Cập nhật lúc %(time)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting on %(who)s"
+msgstr "Đang chờ %(who)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Watch the tour"
 msgstr "Xem chuyến tham quan"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "What needs you today"
+msgstr "Những việc cần bạn hôm nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "What the columns measure"
+msgstr "Các cột đo gì"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Where the money goes"
+msgstr "Tiền đi đâu"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Your next lesson"
+msgstr "Bài học tiếp theo của bạn"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -443,33 +1368,63 @@ msgstr "Dữ liệu của riêng bạn, với hướng dẫn bên cạnh bạn. 
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "active"
-msgstr "hoạt động"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "about the same as %(month)s"
+msgstr "gần như bằng %(month)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "approved %(date)s"
+msgstr "duyệt %(date)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "approvals"
-msgstr "phê duyệt"
+msgid "back to the latest"
+msgstr "về tháng gần nhất"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "awaiting approval"
-msgstr "đang chờ duyệt"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "balances"
+msgstr "cân"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "awaiting sign-off"
-msgstr "đang chờ phê duyệt"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "bn"
+msgstr "tỷ"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "configs"
-msgstr "cấu hình"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "contract renewal to start"
+msgstr "hợp đồng cần bắt đầu gia hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "contract renewals to start"
+msgstr "hợp đồng cần bắt đầu gia hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "cut-off %(date)s"
+msgstr "hạn chốt %(date)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "delivered %(date)s"
+msgstr "gửi %(date)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "does not balance"
+msgstr "không cân"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -479,27 +1434,75 @@ msgstr "xong"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "headcount"
-msgstr "số lượng nhân viên"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "latest"
-msgstr "gần nhất"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "every %(month)s run uses a tested scheme"
+msgstr "mọi đợt lương %(month)s đều dùng chương trình lương đã được kiểm thử"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "no end-of-month run"
-msgstr "không có đợt cuối tháng"
+msgid "final settlement to check"
+msgstr "quyết toán thôi việc cần kiểm tra"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "nobody paid"
-msgstr "không ai được trả"
+msgid "final settlements to check"
+msgstr "quyết toán thôi việc cần kiểm tra"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "in %(n)s days"
+msgstr "sau %(n)s ngày"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "interview write-up overdue"
+msgstr "nhận xét phỏng vấn quá hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "interview write-ups overdue"
+msgstr "nhận xét phỏng vấn quá hạn"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "just now"
+msgstr "vừa xong"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "leave request to approve"
+msgstr "đơn nghỉ phép cần duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "leave requests to approve"
+msgstr "đơn nghỉ phép cần duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "next: payday %(date)s"
+msgstr "tiếp theo: ngày trả lương %(date)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "no earlier month"
+msgstr "không có tháng trước"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "nothing is waiting on you"
+msgstr "không có gì đang chờ bạn"
 
 #. module: pb_dashboard
 #. odoo-javascript
@@ -509,30 +1512,96 @@ msgstr "của"
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "payslips done ·"
-msgstr "phiếu lương đã xong ·"
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "pending"
-msgstr "đang chờ xử lý"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "of %(n)s payslips prepared"
+msgstr "trên %(n)s phiếu lương đã chuẩn bị"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "personnel cost"
-msgstr "chi phí nhân sự"
+msgid "other approval"
+msgstr "yêu cầu phê duyệt khác"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "other approvals"
+msgstr "yêu cầu phê duyệt khác"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "pay run to approve"
+msgstr "đợt lương cần duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "pay runs to approve"
+msgstr "đợt lương cần duyệt"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "payday %(date)s"
+msgstr "ngày trả lương %(date)s"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "payslips prepared"
+msgstr "phiếu lương đã chuẩn bị"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "same as %(month)s"
+msgstr "bằng %(month)s"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "the latest payroll month"
-msgstr "tháng lương gần nhất"
+msgid "so far"
+msgstr "đến nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "so far · no comparison yet"
+msgstr "đến nay · chưa có so sánh"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "step %(n)s of 5"
+msgstr "bước %(n)s trên 5"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "this week"
+msgstr "tuần này"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "tomorrow"
+msgstr "ngày mai"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "waiting on you"
+msgstr "đang chờ bạn"
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "this month"
-msgstr "tháng này"
+msgid "walk the months"
+msgstr "đi qua các tháng"

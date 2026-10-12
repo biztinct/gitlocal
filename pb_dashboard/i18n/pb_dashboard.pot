@@ -1,4 +1,4 @@
-# Translation of Odoo Server.
+# Translation of Payobook.
 # This file contains the translation of the following modules:
 # 	* pb_dashboard
 #
@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 01:45+0000\n"
-"PO-Revision-Date: 2026-09-09 01:45+0000\n"
+"POT-Creation-Date: 2026-10-12 09:20+0000\n"
+"PO-Revision-Date: 2026-10-12 09:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,55 +18,497 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%(month)s — %(count)s people were paid."
+msgid "%(d)s-day streak"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%(what)s in %(month)s"
+msgid "%(date)s · %(n)s out"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s active contracts"
+msgid "%(days)s days to payday"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s people"
+msgid "%(delta)s vs %(month)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s rules"
+msgid "%(done)s of %(n)s payslips prepared"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — 1 person was paid."
+msgid "%(done)s of %(slips)s payslips"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — no end-of-month run."
+msgid "%(done)s payslips prepared"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "%s — nobody was paid."
+msgid "%(m)s minutes"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s is at %(step)s."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s pay runs"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s payroll"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s payroll is at step %(stage)s of 5"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s so far"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s · in progress"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(month)s, step by step"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s already renewed"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s banks"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s candidates"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s components"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s contracts end"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s fewer than %(month)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s interview write-ups overdue"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s interviews"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s more than %(month)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s of %(of)s so far"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s open roles"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s out today"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay run"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay run needs your approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay runs"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay runs need your approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s pay values are missing a source"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s payslips prepared"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people added"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people have no active contract and cannot be paid"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people have no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"%(n)s people in %(run)s and %(more)s more in other runs have no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people in %(run)s have no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people with an active contract"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s renewals to start"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s runs"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s runs in another currency are not added"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s schemes failed their last check"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s schemes in use"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s settlements to check"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s tests failing"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s things need you"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(net)s net pay so far"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(run)s run in progress"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(who)s has submitted the %(run)s run (%(people)s) for your approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"%(who)s has submitted the %(run)s run (%(people)s, %(net)s) for your "
+"approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(who)s submitted the %(run)s run"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ", and the %(run)s run is being prepared"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 bank"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 candidate"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 component"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 contract ends"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 day to payday"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 interview"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 interview write-up overdue"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 minute"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 open role"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 pay value is missing a source"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 payslip prepared"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "1 person"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person added"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person has no active contract and cannot be paid"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person has no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"1 person in %(run)s and %(more)s more in other runs have no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person in %(run)s has no bank account"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person with an active contract"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 renewal to start"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 run"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 run in another currency is not added"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 scheme failed its last check"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 scheme in use"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 settlement to check"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 test failing"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 thing needs you"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1-day streak"
 msgstr ""
 
 #. module: pb_dashboard
@@ -83,8 +525,14 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Active configs"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "A pay scheme is the rulebook every payslip is computed by."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "A run does not balance"
 msgstr ""
 
 #. module: pb_dashboard
@@ -96,13 +544,37 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Add one before payday, or they will be paid in cash."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Add your first employee"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "All departments · monthly"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s approvals"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s tests passed"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All %(n)s tests passed, %(ago)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "All runs balance"
 msgstr ""
 
 #. module: pb_dashboard
@@ -113,26 +585,20 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Analytics"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Approve"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Approved"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Average net per person"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Avg salary"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Back to the latest month"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Bank file"
 msgstr ""
 
 #. module: pb_dashboard
@@ -144,19 +610,55 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Company overview"
+msgid ""
+"Click a month to read its figures below. The last 12 months of completed pay"
+" runs."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid ""
+"Column chart. Use the arrow keys to change month, Escape for the latest "
+"month."
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Configs"
+msgid "Coming up"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Complete"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Completed"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Continue preparing %(run)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Cut-off %(date)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Contributions"
+msgid ""
+"Cut-off, payday, contracts ending and public holidays appear here as their "
+"dates come up."
 msgstr ""
 
 #. module: pb_dashboard
@@ -165,8 +667,40 @@ msgid "Dashboard"
 msgstr ""
 
 #. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Deductions (tax, insurance)"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Deliver payslips"
+msgstr ""
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_ui_menu__display_name
 #: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Done"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Done %(date)s"
 msgstr ""
 
 #. module: pb_dashboard
@@ -177,20 +711,50 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Excel-driven configs"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Email in English and Vietnamese"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "Figures for %s"
+msgid "Email, EN + VI"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Employer cost"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Formula engine"
+msgid "Employer cost (insurance, union)"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Esc"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Figures are the pay run totals and match the payslips exactly."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Figures grow as payslips are prepared"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Fix in Contracts"
 msgstr ""
 
 #. module: pb_dashboard
@@ -219,8 +783,20 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Headcount"
+msgid "Gross pay"
+msgstr ""
+
+#. module: pb_dashboard
+#: model:ir.model,name:pb_dashboard.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Hiring"
 msgstr ""
 
 #. module: pb_dashboard
@@ -230,6 +806,20 @@ msgid "Home"
 msgstr ""
 
 #. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Home could not load. Try again."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Hover a column for the full figures"
+msgstr ""
+
+#. module: pb_dashboard
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_http__id
+#: model:ir.model.fields,field_description:pb_dashboard.field_ir_ui_menu__id
 #: model:ir.model.fields,field_description:pb_dashboard.field_pb_dashboard__id
 msgid "ID"
 msgstr ""
@@ -242,14 +832,74 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Latest pay run"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "In progress"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Loading dashboard…"
+msgid "Insights"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Interviews this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Joined"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "K"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Keep learning"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Last day for %(month)s changes"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Latest"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Latest completed"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Leave"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Leaving"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "M"
 msgstr ""
 
 #. module: pb_dashboard
@@ -259,27 +909,128 @@ msgid "Meet Payobook"
 msgstr ""
 
 #. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Monthly payroll"
+#: model:ir.model,name:pb_dashboard.model_ir_ui_menu
+msgid "Menu"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "No payroll data yet — let's get you set up"
+msgid "Needs you"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "No payroll has been run yet"
+msgid "Net %(amount)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "No payroll months yet."
+msgid "Net pay"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Net pay to people"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Net pay, last 12 months"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "New joiners, salary changes, overtime"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Next public holiday"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run has started yet."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run this month"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay run this month yet"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "No pay run yet. Figures appear after your first pay run."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No pay scheme yet"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "No payslips yet"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Nobody is out this week."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Nobody is out today."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Not finished"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Not started"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Nothing needs you right now"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Offers waiting for a reply"
 msgstr ""
 
 #. module: pb_dashboard
@@ -290,28 +1041,75 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open Formula Studio"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open Hiring"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open People"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid ""
-"Once a pay run is done, every month it covers appears here and the figures "
-"above can be read for any of them."
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Open pay runs"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Open the run to choose where each one comes from."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Other leave"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open analytics →"
+msgid "Out today"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay runs are not tracked on this database"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open formula engine →"
+msgid "Pay schemes"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Open pay runs →"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Payday"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Payday is today"
 msgstr ""
 
 #. module: pb_dashboard
@@ -322,31 +1120,31 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Payroll"
+msgid "Payroll, month by month"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "People"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Payslips"
+msgid "People out over the next 7 days"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "People paid"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pending"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pending approval"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Pick a payroll month"
+msgid "People this month"
 msgstr ""
 
 #. module: pb_dashboard
@@ -358,27 +1156,49 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid ""
-"Press a month to read the figures above for it. Arrow keys walk the strip; "
-"Escape comes back to the latest month."
+msgid "Prepare"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Prepare payslips"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Preparing"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Referrals this month"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Remind the interviewers, or decide without them."
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Reading…"
+msgid "Retry"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Rules"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Review %(run)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Run Payroll"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Roles over budget"
 msgstr ""
 
 #. module: pb_dashboard
@@ -396,25 +1216,37 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Set up"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Set up the month"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Start"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Start %(month)s payroll"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "Tests"
+msgid "Start lesson"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "That month could not be read. Try again in a moment."
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "That month is not on this database, so these figures are for %s."
+msgid "Tet"
 msgstr ""
 
 #. module: pb_dashboard
@@ -426,7 +1258,25 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "The %(run)s run (%(people)s) is waiting for your approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "The %(run)s run is being prepared."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "The guided tour is not installed on this database."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Total cost to the company"
 msgstr ""
 
 #. module: pb_dashboard
@@ -438,7 +1288,61 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Under way"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Updated %(time)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting for approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting on %(who)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Waiting on you"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Watch the tour"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "What needs you today"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "What the columns measure"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Where the money goes"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Your next lesson"
 msgstr ""
 
 #. module: pb_dashboard
@@ -449,32 +1353,62 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "active"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "about the same as %(month)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "approved %(date)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "approvals"
+msgid "back to the latest"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "awaiting approval"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "balances"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "awaiting sign-off"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "bn"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "configs"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "contract renewal to start"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "contract renewals to start"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "cut-off %(date)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "delivered %(date)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "does not balance"
 msgstr ""
 
 #. module: pb_dashboard
@@ -485,26 +1419,74 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "headcount"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "latest"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "every %(month)s run uses a tested scheme"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "no end-of-month run"
+msgid "final settlement to check"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "nobody paid"
+msgid "final settlements to check"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "in %(n)s days"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "interview write-up overdue"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "interview write-ups overdue"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "just now"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "leave request to approve"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "leave requests to approve"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "next: payday %(date)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "no earlier month"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "nothing is waiting on you"
 msgstr ""
 
 #. module: pb_dashboard
@@ -515,30 +1497,96 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "payslips done ·"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "pending"
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "of %(n)s payslips prepared"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "personnel cost"
+msgid "other approval"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "other approvals"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "pay run to approve"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "pay runs to approve"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "payday %(date)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "payslips prepared"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "same as %(month)s"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "the latest payroll month"
+msgid "so far"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "so far · no comparison yet"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "step %(n)s of 5"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "today"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "tomorrow"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "waiting on you"
 msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
-msgid "this month"
+msgid "walk the months"
 msgstr ""
