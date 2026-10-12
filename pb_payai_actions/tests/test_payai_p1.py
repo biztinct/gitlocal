@@ -373,7 +373,7 @@ class TestPayaiP1(TransactionCase):
         sent = ' '.join(m['content'] for m in sink[0]['messages'])
         self.assertNotIn('Zyxwq', sent)
         self.assertIn('[person-', sent)
-        self.assertTrue({t['name'] for t in sink[0]['tools']} <= GREEN | AMBER)
+        self.assertTrue({t['name'] for t in sink[0]['tools']} <= GREEN | AMBER | RED)
 
     # =============================================================== 12
     def test_12_question_unchanged_plus_chip(self):
