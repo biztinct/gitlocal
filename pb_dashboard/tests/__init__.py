@@ -6,3 +6,5 @@ from . import test_menu_rails
 from . import test_home_data
 # HOME P2 — the new Home front end.
 from . import test_home_front
+# HOME P3 — the cards, the clean-up and Vietnamese.
+from . import test_home_cards
