@@ -48,7 +48,7 @@ body{background:var(--paper);color:var(--ink);overflow-x:hidden}body::before{con
 .motion-ready .words-revealed .effect-word{animation:word-arrive .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--word-delay,0ms)}
 main h2 em{background:linear-gradient(100deg,#b8adff 15%,#e0d8ff 42%,#83d6ea 55%,#b8adff 80%);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:heading-shimmer 12s ease-in-out infinite;animation-play-state:paused}
 main h2.fx-in-view em{animation-play-state:running}
-.capability-strip .marquee-track{flex-wrap:nowrap}
+.capability-strip .shell>.marquee-track{flex-wrap:nowrap}
 .text-link{position:relative}.text-link::after{content:'';position:absolute;left:0;right:24px;bottom:-6px;height:1px;background:linear-gradient(90deg,#b3a1ff,#82d5ee);transform:scaleX(0);transform-origin:left;transition:transform .35s}
 .text-link:hover::after,.text-link:focus-visible::after{transform:scaleX(1)}.text-link>span{transition:transform .3s}.text-link:hover>span{transform:translate(3px,-2px)}
 @property --beam-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
