@@ -9,7 +9,10 @@
     # frontend corner widget stops raising KeyError on an action-less root.
     # 1.6.1: the formula-engine figures read inside `safe()`, so a person who
     # may read configs but not their test results gets zeros, not an error.
-    'version': '19.0.1.6.1',
+    # 2.0.0: HOME P1 — `get_home_data()`, the new Home's one call (period,
+    # needs-you, 12 months from the stored run totals, runs, steps, upcoming,
+    # people, hiring, learn, schemes), every foreign read through optional().
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
