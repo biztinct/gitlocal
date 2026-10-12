@@ -27,7 +27,7 @@
     # four figures, the Pay schemes card). Content + asset change: needs a -u.
     # 20.5.1: Home practice chart labels months "T5" in Vietnamese, as the
     # live Home does (owner 2026-10-12: Vietnamese-style months).
-    'version': '19.0.20.5.1',
+    'version': '19.0.20.5.2',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

@@ -14,7 +14,12 @@
     # on the server; "Remind <name>" when it is not theirs; "Learn to do this
     # yourself" on run / submit / approve done cards; the Audit console's
     # "Typed confirmation" badge.
-    'version': '19.0.3.0.0',
+    # PAYAI P4 (2026-10-13): Vietnamese — every card, refusal and setting
+    # (i18n/vi_VN.po), Vietnamese phrasings for every Action (payai/
+    # phrases_vi.py), Vietnamese months/amounts/dates, confirm words DUYỆT /
+    # TRẢ LẠI / TỪ CHỐI beside the English ones; approvals doors open the one
+    # request (pb_focus); P4-W1/W2 walk fixes.
+    'version': '19.0.4.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Ask PayAI to open a screen, show a run, or prepare work you then confirm',
     'author': 'Payobook',

@@ -35,7 +35,7 @@ it adds no logging. If a wanted event does not yet exist, that is a hand-back
 note, not a write hook here.
 """,
     # 19.0.1.4.0 — PAYAI P1: PayAI requests are a stream source.
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.4.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
