@@ -1004,15 +1004,22 @@ class PbDashboardHome(models.AbstractModel):
             else:
                 item = safe(lambda: Content.station(best['key']), None)
         item = item or {}
-        reason = best.get('reason') or {}
-        if isinstance(reason, dict):
-            lang = (env.context.get('lang') or env.user.lang or '')
-            reason = reason.get('vi' if lang.startswith('vi') else 'en') or ''
+        lang = (env.context.get('lang') or env.user.lang or '')
+
+        def words(value):
+            # Learn content carries {'en': …, 'vi': …} for names and reasons;
+            # the browser shows text (payobook walk: "[object Object]", H43).
+            if isinstance(value, dict):
+                return value.get('vi' if lang.startswith('vi') else 'en') \
+                    or value.get('en') or ''
+            return value or ''
+
+        reason = words(best.get('reason'))
         streak = safe(Runtime.streak, {}) or {}
         minutes = item.get('duration_min')
         return {
             'key': best['key'],
-            'title': item.get('name') or item.get('title') or '',
+            'title': words(item.get('name') or item.get('title')),
             'minutes': int(minutes) if minutes else None,
             'reason': reason or '',
             'streak_days': int(streak.get('days') or 0),

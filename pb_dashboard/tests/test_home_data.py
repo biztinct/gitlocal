@@ -579,3 +579,25 @@ class TestHomeData(TransactionCase):
 
         self.assertEqual(self.D.get_home_data()['activation'],
                          self.D._activation(employees, contracts, runs, optional))
+
+    def test_13_learn_words_are_text_in_the_reader_s_language(self):
+        """H43: Learn content names its lessons {'en': …, 'vi': …}; Home must
+        hand the browser text (payobook walk showed "[object Object]")."""
+        if 'learn.runtime' not in self.env or 'learn.content' not in self.env:
+            self.skipTest('pb_learn is not installed on this database')
+        Runtime = type(self.env['learn.runtime'])
+        Content = type(self.env['learn.content'])
+        best = {'key': 'st_home', 'kind': 'station',
+                'reason': {'en': 'Next on the map', 'vi': 'Bài tiếp theo'}}
+        item = {'name': {'en': 'Read your Home', 'vi': 'Đọc trang chủ'},
+                'duration_min': 8}
+        with patch.object(Runtime, 'next_best', lambda self: best, create=True), \
+                patch.object(Content, 'station', lambda self, key: item, create=True), \
+                patch.object(Runtime, 'streak', lambda self: {'days': 2}, create=True):
+            learn = self.home()['learn']
+            self.assertEqual(learn['title'], 'Read your Home')
+            self.assertEqual(learn['reason'], 'Next on the map')
+            vi = self.D.with_context(lang='vi_VN')._home_learn(
+                {}, lambda fn, default=None: fn(),
+                lambda model, fn, default=None: fn() if model in self.env else default)
+            self.assertEqual(vi['title'], 'Đọc trang chủ')

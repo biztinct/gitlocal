@@ -25,7 +25,9 @@
     # next month's cut-off in Coming up; runs carry `waiting_on`; the old
     # payload (`get_dashboard_data`, its month strip and line-table figures)
     # is deleted; Vietnamese for every Home string; payobook walk fixes W1-W4.
-    'version': '19.0.2.2.0',
+    # 2.2.1: Keep learning shows the lesson title as text in the reader's
+    # language (payobook walk: "[object Object]", H43).
+    'version': '19.0.2.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
