@@ -1516,9 +1516,11 @@ export class PbDashboard extends Component {
                     prog: runProgress(run),
                     net: hasNet ? this.moneyParts(run.net) : null,
                     soFar: run.state === "draft" && hasNet,
-                    balance: !slips || run.balance_ok === null || run.balance_ok === undefined ? null
-                        : run.balance_ok ? { text: _t("balances"), bad: false }
-                        : { text: _t("does not balance"), bad: true },
+                    // Quiet when it balances (the month line says "All runs
+                    // balance"); a word only when there is something to fix —
+                    // "balances" on every row wrapped onto a second line.
+                    balance: slips && run.balance_ok === false
+                        ? { text: _t("does not balance"), bad: true } : null,
                     go: () => this.openRun(run.id),
                 };
             });

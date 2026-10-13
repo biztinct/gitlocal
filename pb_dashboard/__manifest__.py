@@ -30,7 +30,9 @@
     # 2.2.2: Vietnamese style for money ("66,0 triệu") and months
     # ("Tháng 10/2026") — owner 2026-10-12.
     # 2.2.3: Vietnamese chart labels "T10", "T1/26", axis "100 tỷ".
-    'version': '19.0.2.2.3',
+    # 2.2.4: pay-run rows say nothing when a run balances, rose "does not
+    # balance" only when it doesn't (the row no longer wraps).
+    'version': '19.0.2.2.4',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
