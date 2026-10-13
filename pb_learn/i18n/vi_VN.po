@@ -1093,3 +1093,8 @@ msgstr "Bài học"
 #: code:addons/pb_learn/static/src/hub/learn_palette.js:0
 msgid "%s min"
 msgstr "%s phút"
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_standardworkingdays
+msgid "22"
+msgstr "22"

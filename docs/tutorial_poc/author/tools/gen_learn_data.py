@@ -255,6 +255,53 @@ class Trans:
             out.append('')
         return '\n'.join(out)
 
+    # The .po this module ships is a HAND-KEPT translation file (UI strings from
+    # code and views, ~160 entries); the generator owns only the records it
+    # writes itself (sidebar sections/leaves, tenant slots). Rendering only those
+    # wiped the rest — `--check` said STALE for months and a real run deleted
+    # 159 translations (HOME ledger H45). `merge()` rewrites the generator's own
+    # entries in place, appends new ones, and keeps every other block byte-for-byte.
+    OWNED = ('model:pb.sidebar.section,', 'model:pb.sidebar.item,',
+             'model:learn.tenant.override,')
+
+    def _block(self, msgid):
+        e = self.entries[msgid]
+        out = ['#. module: %s' % MODULE]
+        out += ['#: %s' % ref for ref in sorted(set(e['refs']))]
+        out.append(_po_str('msgid', msgid))
+        out.append(_po_str('msgstr', e['msgstr']))
+        return '\n'.join(out)
+
+    def merge(self, existing):
+        if not existing.strip():
+            return self.render()
+        encoded = {_po_str('msgid', m): m for m in self.entries}
+        blocks = existing.rstrip('\n').split('\n\n')
+        out, done = [blocks[0]], set()
+        for block in blocks[1:]:
+            lines = block.split('\n')
+            refs = [l[3:] for l in lines if l.startswith('#: ')]
+            start = next((i for i, l in enumerate(lines) if l.startswith('msgid ')), None)
+            stop = next((i for i, l in enumerate(lines) if l.startswith('msgstr ')), None)
+            msgid = encoded.get('\n'.join(lines[start:stop])) if start is not None and stop else None
+            owned = bool(refs) and all(r.startswith(self.OWNED) for r in refs)
+            if owned:
+                if msgid is not None and msgid not in done:
+                    out.append(self._block(msgid))
+                    done.add(msgid)
+                continue
+            if msgid is not None and msgid not in done:
+                # a hand-kept entry that shares its English with a generated
+                # record: keep it, and add the record's refs so it loads there too
+                extra = sorted(set(self.entries[msgid]['refs']) - set(refs))
+                lines[start:start] = ['#: %s' % r for r in extra]
+                block = '\n'.join(lines)
+                done.add(msgid)
+            out.append(block)
+        for msgid in sorted(set(self.entries) - done):
+            out.append(self._block(msgid))
+        return '\n\n'.join(out) + '\n'
+
 
 def _po_str(kw, s):
     """A .po literal. Multi-line strings use the empty-first-line form so the
@@ -1657,7 +1704,9 @@ def main():
         'static/src/engine/fixture.js': gen_fixture(),
         'static/src/anchors.json': gen_anchors(data),
     }
-    files['i18n/vi_VN.po'] = tr.render()
+    po_path = os.path.join(ADDON, 'i18n', 'vi_VN.po')
+    existing = open(po_path, encoding='utf-8').read() if os.path.exists(po_path) else ''
+    files['i18n/vi_VN.po'] = tr.merge(existing)
 
     # Parse everything we are about to write. A generator that can emit
     # malformed XML will eventually emit malformed XML — the "--" inside an XML
