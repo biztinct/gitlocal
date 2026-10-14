@@ -29,13 +29,13 @@
         <div class="alert alert-info" invisible="state != 'published'">This edition is preserved. Duplicate it with a new version and effective date when statutory values change.</div>
         <group><group>
           <field name="name" readonly="state == 'published'"/>
-          <field name="code" readonly="state == 'published'"/>
-          <field name="country_code" readonly="state == 'published'"/>
-          <field name="company_id" readonly="state == 'published'" groups="base.group_multi_company"/>
+          <field name="code" readonly="state == 'published' or binding_ids"/>
+          <field name="country_code" readonly="state == 'published' or binding_ids"/>
+          <field name="company_id" readonly="state == 'published' or binding_ids" groups="base.group_multi_company"/>
           <field name="version" readonly="state == 'published'"/>
         </group><group>
           <field name="effective_from" readonly="state == 'published'"/><field name="effective_to" readonly="state == 'published'"/>
-          <field name="method" readonly="state == 'published'"/><field name="basis" readonly="state == 'published'"/>
+          <field name="method" readonly="state == 'published' or binding_ids"/><field name="basis" readonly="state == 'published' or binding_ids"/>
           <field name="authority" readonly="state == 'published'"/>
         </group></group>
         <notebook>

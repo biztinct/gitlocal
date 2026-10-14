@@ -177,6 +177,34 @@ class TestCountryTaxMapping(TransactionCase):
         self.assertAlmostEqual(rule.constant_value, .05000001, places=8)
         self.assertNotEqual(before, self.config._content_hash())
 
+    def test_mapped_table_cannot_change_country_or_formula_method(self):
+        table = self.table()
+        self.bind(table)
+        with self.assertRaises(UserError):
+            table.country_code = 'VN'
+        with self.assertRaises(UserError):
+            table.method = 'progressive'
+
+    def test_new_method_is_detected_instead_of_selecting_obsolete_method(self):
+        old = self.table()
+        self.publish(old)
+        self.bind(old)
+        new = self.table(version='November', start='2026-11-01')
+        new.method = 'progressive'
+        self.publish(new)
+        with self.assertRaises(UserError):
+            self.config._tax_refresh_plan('2026-11-01')
+
+    def test_activation_requires_the_current_edition_for_the_selected_date(self):
+        old = self.table()
+        self.publish(old)
+        self.bind(old)
+        new = self.table(version='November', start='2026-11-01', rate=.06)
+        self.publish(new)
+        self.config.statutory_asof = '2026-11-01'
+        with self.assertRaises(UserError):
+            self.config.action_activate()
+
     def test_cockpit_country_filter_never_returns_vietnam_for_indonesia(self):
         if 'pb.statutory' not in self.env:
             self.skipTest('Statutory cockpit is not installed')

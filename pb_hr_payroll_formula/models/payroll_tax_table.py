@@ -84,6 +84,10 @@ class PayrollTaxTable(models.Model):
 
     def write(self, vals):
         self._check_mutable()
+        identity = {'code', 'country_code', 'company_id', 'method', 'basis'} & set(vals)
+        for table in self.filtered('binding_ids'):
+            if any(table._fields[k].convert_to_write(table[k], table) != vals[k] for k in identity):
+                raise UserError(_('This table is mapped to payroll formulas. Duplicate it to change its country, company, code, method or basis.'))
         if 'state' in vals and self.env.context.get(_APPLY_KEY) is not _APPLY_TOKEN:
             raise UserError(_('Publish this edition through its approval action.'))
         return super().write(vals)
@@ -315,6 +319,24 @@ class TaxMappedConfig(models.Model):
                     r.tax_table_id.company_id != config.company_id)):
                 raise ValidationError(_('Mapped statutory editions must match the configuration company and country.'))
 
+    def _tax_edition_for(self, rule, asof):
+        """Select the current family edition before checking formula structure.
+
+        Filtering on method first would hide a legislation change from TER
+        to progressive bands and quietly retain the obsolete edition.
+        """
+        old = rule.tax_table_id
+        candidate = self.env['hr.payroll.tax.table'].search([
+            ('company_id', '=', self.company_id.id), ('country_code', '=', self.country_code),
+            ('code', '=', old.code), ('state', '=', 'published'), ('effective_from', '<=', asof),
+            '|', ('effective_to', '=', False), ('effective_to', '>=', asof)],
+            order='effective_from desc, id desc', limit=1)
+        if not candidate:
+            raise UserError(_('No published edition of %s covers this date.', old.code))
+        if old.method != candidate.method or old.basis != candidate.basis or set(old._values()) != set(candidate._values()):
+            raise UserError(_('The new edition changes the calculation structure. Re-import the updated template for %s.', old.code))
+        return candidate
+
     def _tax_refresh_plan(self, asof):
         self.ensure_one()
         self.check_access('write')
@@ -324,22 +346,11 @@ class TaxMappedConfig(models.Model):
         plan = []
         for rule in self.rule_ids.filtered('tax_table_id'):
             old = rule.tax_table_id
-            candidates = self.env['hr.payroll.tax.table'].search([
-                ('company_id', '=', self.company_id.id), ('country_code', '=', self.country_code),
-                ('code', '=', old.code), ('method', '=', old.method), ('basis', '=', old.basis),
-                ('state', '=', 'published'), ('effective_from', '<=', asof),
-                '|', ('effective_to', '=', False), ('effective_to', '>=', asof)],
-                order='effective_from desc, id desc', limit=1)
-            if not candidates:
-                raise UserError(_('No published edition of %s covers this date.', old.code))
+            candidates = self._tax_edition_for(rule, asof)
             slot = rule.tax_parameter_code if rule.tax_field == 'parameter' else rule.tax_band_sequence
             value = candidates._values().get((slot, rule.tax_field))
             if value is None:
                 raise UserError(_('The new edition changes the band structure. Re-import or remap the formulas before refreshing %s.', old.code))
-            # A newly added band also changes formula structure; never merely
-            # update the old slots and pretend the new rate is being used.
-            if set(old._values()) != set(candidates._values()):
-                raise UserError(_('The new edition changes the band structure. Re-import the updated template for %s.', old.code))
             plan.append({'rule_id': rule.id, 'name': rule.name, 'before': rule.constant_value,
                          'field': rule.tax_field, 'slot': str(slot),
                          'old_table_id': old.id, 'table_id': candidates.id, 'after': value,
@@ -372,6 +383,12 @@ class TaxMappedConfig(models.Model):
             rules = config.rule_ids.filtered('tax_table_id')
             if rules.filtered(lambda r: r.tax_table_id.state != 'published' or not r.tax_aligned):
                 raise UserError(_('Publish the mapped statutory editions and align their constants before activating this scheme.'))
+            if rules:
+                rules._check_tax_binding()
+                if not config.statutory_asof:
+                    raise UserError(_('Refresh the statutory constants for the intended payroll date before activating.'))
+                if any(config._tax_edition_for(r, config.statutory_asof) != r.tax_table_id for r in rules):
+                    raise UserError(_('A newer statutory edition covers this date. Refresh the draft before activating.'))
         return super().action_activate()
 
 

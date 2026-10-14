@@ -102,6 +102,12 @@ template/formula review, not a partial value refresh. Edits to published
 editions and their child rows are refused. The source date represents the
 client August snapshot, not the original legislation commencement date.
 
+Mapped table identities (country, company, code, method and basis) are locked
+even while the edition is a draft. Activation checks the latest published
+edition for the configuration's selected statutory date. Changes to the
+calculation method or period basis require a formula review just like a
+change in band count; they cannot be hidden by selecting an older edition.
+
 The table form exposes mapped constants, current/source values and alignment.
 **Export mapped constants** downloads a cell-addressed patch in the same map
 format. Apply its numeric values to the indicated cells in the payroll
