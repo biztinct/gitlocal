@@ -102,13 +102,21 @@ probe = Batch.new({'formula_config_id': config.id, 'company_id': config.company_
     'file_header_row': 1, 'file_data_start_row': 2, 'file_sheet_name': 'Payroll'})
 parsed = probe._parse_source_file((root / 'monthly-probe.xlsx').read_bytes(), 'monthly-probe.xlsx')
 assert parsed['multisheet'] and len(parsed['rows']) == 8, parsed.keys()
+def sample_input(rule, value):
+    # People/bank fields travel beside calculation inputs in a real run.
+    # Preserve them as the typed parser delivered them, rather than passing
+    # reference codes through the older amount-only contract normalizer.
+    if rule.value_kind in {'text', 'identifier', 'date'}:
+        return probe._normalize_component_text(value)
+    return probe._normalize_rule_input_value(rule, value) if value is not None else ''
+
 formula_checks = 0
 for i, raw in enumerate(parsed['rows']):
     inputs = probe._transform_data_to_formula_inputs(raw)
     for c in inputs_cols:
         rule = by_col[source.cell(13, c).column_letter]
         value = raw.get('Payroll|%s' % source.cell(12, c).value)
-        inputs[rule.code] = probe._normalize_rule_input_value(rule, value) if value is not None else ''
+        inputs[rule.code] = sample_input(rule, value)
     if i == 0:
         assert inputs[by_col['A'].code] == '000001', inputs[by_col['A'].code]
         assert inputs[by_col['AC'].code] == '0000123456', inputs[by_col['AC'].code]
@@ -142,7 +150,7 @@ for i, raw in enumerate(parsed['rows']):
 source_controls = json.loads((root / 'source-controls.json').read_text())['controls']
 for control in source_controls:
     inputs = {by_col[source.cell(13, c).column_letter].code:
-              probe._normalize_rule_input_value(by_col[source.cell(13, c).column_letter], cached.cell(13, c).value)
+              sample_input(by_col[source.cell(13, c).column_letter], cached.cell(13, c).value)
               for c in inputs_cols if cached.cell(13, c).value is not None}
     inputs.update({by_col[col].code: value for col, value in control['inputs'].items()})
     errors = {}
