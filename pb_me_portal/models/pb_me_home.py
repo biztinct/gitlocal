@@ -33,6 +33,7 @@ import pytz
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
+from odoo.tools.misc import formatLang
 from odoo.tools.translate import LazyGettext, LazyTranslate
 
 _logger = logging.getLogger(__name__)
@@ -393,6 +394,15 @@ class PbMeHome(models.AbstractModel):
 
     # ================================================================ week
     @api.model
+    def _pbme_hm_short(self, hhmm):
+        """'09:00' → '9', '09:30' → '9:30' — a day cell is ~45 px wide, and
+        '09:00–18:00' would be cut to '09:0…' on every desktop (M2)."""
+        hh, _sep, mm = (hhmm or '').partition(':')
+        if not hh.isdigit():
+            return hhmm or ''
+        return str(int(hh)) + ('' if mm in ('', '00') else ':' + mm)
+
+    @api.model
     def _pbme_week(self, Ess, monday):
         """The FIRST week of the schedule facade, kept as it gives it (its own
         day labels and shift hours); hr.shift.planning is not re-queried."""
@@ -404,13 +414,15 @@ class PbMeHome(models.AbstractModel):
         days = []
         for d in wk.get('days') or []:
             cards = d.get('shifts') or []
-            shift, state = None, 'off'
+            shift, short, state = None, None, 'off'
             if cards:
                 first = cards[0]
                 if first.get('start') and first.get('end'):
                     shift = '%s–%s' % (first['start'], first['end'])
+                    short = '%s–%s' % (self._pbme_hm_short(first['start']),
+                                       self._pbme_hm_short(first['end']))
                 else:
-                    shift = first.get('hours_label') or None
+                    shift = short = first.get('hours_label') or None
                 state = ('pending' if any(c.get('can_ack') for c in cards)
                          else 'acked')
             elif d.get('leave'):
@@ -421,6 +433,7 @@ class PbMeHome(models.AbstractModel):
                 'label': d.get('label') or '',
                 'day_num': d.get('day_num'),
                 'shift': shift,
+                'shift_short': short,
                 'shifts': len(cards),
                 'state': state,
             })
@@ -434,8 +447,33 @@ class PbMeHome(models.AbstractModel):
             'pending': wk.get('pending') or 0,
             'hours_label': wk.get('hours_label') or '',
             'scheduled_h': scheduled,
+            'worked_h': self._pbme_worked_h(Ess, monday),
             'url': '/my/work/schedule',
         }
+
+    @api.model
+    def _pbme_worked_h(self, Ess, monday):
+        """Hours worked so far this week: the timesheet facade's week total
+        `totals.actual` (pb.time.hub `_person_week`: `{sched, actual,
+        entered, delta}`), one decimal. ``None`` when the facade gives
+        nothing — and a failure here only loses this one number, never the
+        week card (its own savepoint through `optional`)."""
+        def read(W):
+            totals = (W.get_my_week(monday.isoformat()) or {}).get('totals') or {}
+            actual = totals.get('actual')
+            return None if actual is None else round(float(actual), 1)
+        return self.optional(Ess._name, read)
+
+    # ============================================================== words
+    @api.model
+    def fmt_num(self, value):
+        """A count of days or hours as the reader's language writes it: no
+        decimals when whole ("12", "38"), one when not ("9.5", or "9,5" in
+        Vietnamese). Formatting only — the template still owns every word."""
+        if value is None or value is False:
+            return ''
+        value = round(float(value), 1)
+        return formatLang(self.env, value, digits=0 if value == int(value) else 1)
 
     # ============================================================ needs you
     @api.model

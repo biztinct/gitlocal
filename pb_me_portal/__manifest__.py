@@ -27,7 +27,7 @@ Every route re-resolves the employee from the session user (C18.26); no route
 accepts an employee_id for own-data pages (safety rail 3).
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.2.0.0',
+    'version': '19.0.2.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -55,6 +55,11 @@ accepts an employee_id for own-data pages (safety rail 3).
         # a LEAN frontend bundle — pbim tokens + the .pbme components only;
         # backend assets are NOT leaked into the portal (handover §4.4).
         'web.assets_frontend': [
+            # MEHOME M2: Inter itself (the kit's self-hosted variable face,
+            # weights 100-900) BEFORE anything names it. The website theme
+            # only brings Inter 400/700 from its font host, so the home's 800
+            # weights were synthetic bold (ledger M17).
+            'pb_import_kit/static/src/scss/fonts.scss',
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_me_portal/static/src/scss/me_portal.scss',
             # MEHOME: moves each /my tile into its section (no OWL)

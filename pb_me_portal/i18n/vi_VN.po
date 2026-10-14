@@ -469,6 +469,7 @@ msgstr ""
 
 #. module: pb_me_portal
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_payslips
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
 msgid "No payslips yet"
 msgstr "Chưa có phiếu lương"
 
@@ -1332,3 +1333,163 @@ msgstr "ca làm"
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
 msgid "things"
 msgstr "việc"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "1 request waiting"
+msgstr "1 yêu cầu đang chờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "All payslips"
+msgstr "Tất cả phiếu lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Confirm shifts"
+msgstr "Xác nhận ca làm"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Explain my pay"
+msgstr "Giải thích lương của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Last pay"
+msgstr "Kỳ lương gần nhất"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "On leave"
+msgstr "Phép"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Next pay"
+msgstr "Kỳ lương tới"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "No leave allocated yet"
+msgstr "Chưa được cấp ngày nghỉ phép"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "No shifts scheduled this week"
+msgstr "Tuần này chưa có ca làm nào"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "None taken yet"
+msgstr "Chưa dùng ngày nào"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "Open My Leave"
+msgstr "Mở Nghỉ phép của tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Open schedule"
+msgstr "Mở lịch làm việc"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Paid on"
+msgstr "Đã trả ngày"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Payslip PDF"
+msgstr "Phiếu lương PDF"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "Request time off"
+msgstr "Xin nghỉ phép"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Same as"
+msgstr "Bằng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "Your balance appears here once HR allocates your days"
+msgstr "Số ngày phép còn lại sẽ hiện ở đây khi bộ phận nhân sự cấp ngày phép cho bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "Your first payslip appears here once payroll runs"
+msgstr "Phiếu lương đầu tiên của bạn sẽ hiện ở đây khi kỳ lương được chạy"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "allocated"
+msgstr "ngày được cấp"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "day left"
+msgstr "ngày còn lại"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "days left"
+msgstr "ngày còn lại"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "h scheduled"
+msgstr "giờ theo lịch"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "h worked so far"
+msgstr "giờ đã làm"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "less than"
+msgstr "ít hơn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_pay
+msgid "more than"
+msgstr "nhiều hơn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "of"
+msgstr "trên tổng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "off"
+msgstr "nghỉ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+msgid "requests waiting"
+msgstr "yêu cầu đang chờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "to confirm"
+msgstr "cần xác nhận"

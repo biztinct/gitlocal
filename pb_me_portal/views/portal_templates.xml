@@ -163,14 +163,20 @@
     <t t-else=""><b>1 thing</b> needs you.</t>
   </template>
 
-  <!-- The bento (M1: Needs you + the Me strip; the Pay, Leave and This week
-       cards take the slots data-pbme-slot="pay|leave|week" in M2 — nothing is
-       drawn for them now, so there are no empty boxes) and the sections
-       below it. Section bodies start empty: the Interaction moves each tile
-       in by its data-pbme-group, and an empty section is never drawn. -->
+  <!-- The bento and the sections below it. Slots in reading order: Pay,
+       Leave, This week, Needs you, the Me strip (the grid places them; on a
+       phone CSS reorders to Pay, Needs you, This week, Leave, Me). Leave and
+       This week are not drawn when their source is absent (`None`); the
+       no-leave / no-week modifier classes on the grid tell it which
+       fallback placement to use, so auto-placement can never leave a hole.
+       Section bodies start empty: the Interaction moves each tile in by its
+       data-pbme-group, and an empty section is never drawn. -->
   <template id="pbme_bento" name="Employee home: cards and sections">
     <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
-    <div class="pbme-bento">
+    <div t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week') if c)">
+      <t t-call="pb_me_portal.pbme_card_pay"/>
+      <t t-call="pb_me_portal.pbme_card_leave"/>
+      <t t-call="pb_me_portal.pbme_card_week"/>
       <section class="pbme-b pbme-b-needs" data-pbme-slot="needs" aria-labelledby="pbme-needs-h">
         <h2 class="pbme-lab" id="pbme-needs-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="15"/></t>Needs you<span t-if="pbme_needs" class="pbme-count" t-out="len(pbme_needs)"/></h2>
         <div t-if="pbme_needs" class="pbme-needs">
@@ -203,6 +209,130 @@
     <section class="pbme-sec" aria-labelledby="pbme-sec-more">
       <h2 class="pbme-sec-h" id="pbme-sec-more">More</h2>
       <div class="pbme-sec-body" data-pbme-section="more"/>
+    </section>
+  </template>
+
+  <!-- PAY (M2) — the hero card: the last net figure, a NEUTRAL delta against
+       the slip before it (grey, no arrow colour — M-R6), six bars for the
+       paid months (heights set here, server-side, as the bar height property; the newest
+       solid), the next pay day, and the two doors. Always drawn: with no slip
+       it says what will appear. Money only through the monetary widget, never
+       counted up in the browser (the locale's formatting stays here). -->
+  <template id="pbme_card_pay" name="Employee home: pay card">
+    <t t-set="pbme_pay" t-value="pbme_home.get('pay') or {'count': 0}"/>
+    <t t-set="pbme_last" t-value="pbme_pay.get('count') and pbme_pay.get('last') or None"/>
+    <t t-set="pbme_list_url" t-value="pbme_pay.get('list_url') or '/my/payslips'"/>
+    <section t-att-class="'pbme-b pbme-b-pay' + ('' if pbme_last else ' is-empty')" data-pbme-slot="pay" aria-labelledby="pbme-pay-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbme-pay-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'banknote'"/><t t-set="isz" t-value="15"/></t><t t-if="pbme_last">Last pay<span class="pbme-lab-sub"><span class="visually-hidden" t-out="' · '"/><t t-out="pbme_last['period_date']" t-options="{'widget': 'date', 'format': 'MMMM'}"/></span></t><t t-else="">Pay</t></h2>
+        <a class="pbme-lab-link" t-att-href="pbme_list_url">All payslips</a>
+      </div>
+      <t t-if="pbme_last">
+        <t t-set="pbme_cur" t-value="pbme_last['currency']"/>
+        <t t-set="pbme_net" t-value="pbme_last['net']"/>
+        <t t-set="pbme_prev" t-value="pbme_pay.get('previous_net')"/>
+        <t t-set="pbme_trend" t-value="pbme_pay.get('trend') or []"/>
+        <div t-if="pbme_net is not None" class="pbme-pay-big" t-out="pbme_net" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/>
+        <t t-if="pbme_prev is not None and pbme_net is not None and len(pbme_trend) &gt;= 2">
+          <t t-set="pbme_diff" t-value="pbme_net - pbme_prev"/>
+          <t t-set="pbme_prev_month" t-value="pbme_trend[-2]['month_date']"/>
+          <p t-if="pbme_cur.is_zero(pbme_diff)" class="pbme-pay-delta">Same as <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+          <p t-elif="pbme_diff &gt; 0" class="pbme-pay-delta"><span class="pbme-num" t-out="abs(pbme_diff)" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/> more than <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+          <p t-else="" class="pbme-pay-delta"><span class="pbme-num" t-out="abs(pbme_diff)" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/> less than <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+        </t>
+        <t t-if="pbme_trend">
+          <t t-set="pbme_max" t-value="max([t['net'] for t in pbme_trend] + [0])"/>
+          <div class="pbme-bars" aria-hidden="true">
+            <t t-foreach="pbme_trend" t-as="t"><i t-att-class="'pbme-bar is-cur' if t_last else 'pbme-bar'" t-att-style="'--pbme-h: %g' % (round(max(t['net'], 0) * 100.0 / pbme_max, 1) if pbme_max &gt; 0 else 0) + '%'"/></t>
+          </div>
+          <div class="pbme-bars-x" aria-hidden="true">
+            <t t-foreach="pbme_trend" t-as="t"><span t-out="t['month_date']" t-options="{'widget': 'date', 'format': 'MMM'}"/></t>
+          </div>
+        </t>
+      </t>
+      <div t-else="" class="pbme-empty-card">
+        <span class="pbme-badge pbme-badge--indigo" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/></t></span>
+        <p class="pbme-empty-h">No payslips yet</p>
+        <p class="pbme-empty-d">Your first payslip appears here once payroll runs</p>
+      </div>
+      <div class="pbme-pay-foot">
+        <div class="pbme-pay-next">
+          <t t-if="pbme_pay.get('next_pay_date')">Next pay<b t-out="pbme_pay['next_pay_date']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM'}"/></t>
+          <t t-elif="pbme_last and pbme_last.get('paid_on')">Paid on<b t-out="pbme_last['paid_on']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM'}"/></t>
+        </div>
+        <div t-if="pbme_last" class="pbme-pay-act">
+          <a t-if="pbme_pay.get('explain_url')" class="pbme-btn pbme-btn--out" t-att-href="pbme_pay['explain_url']">Explain my pay</a>
+          <a t-if="pbme_last.get('pdf_url')" class="pbme-btn pbme-btn--pri" t-att-href="pbme_last['pdf_url']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>Payslip PDF</a>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <!-- LEAVE (M2) — days left as a ring. The ring is the page's ONE two-tone
+       (a conic-gradient of two flat colours, a chart — M-R1); its share is
+       left / allocated, set here as the ring share property. Never a full ring: when
+       nothing is taken yet the ring is all soft colour and says so. Green,
+       amber when the balance is low (never rose). Balances are not
+       year-bound (M3): "of N allocated", never "this year". Not drawn when
+       the workforce module is absent (`leave` is None). -->
+  <template id="pbme_card_leave" name="Employee home: leave card">
+    <t t-set="pbme_lv" t-value="pbme_home.get('leave')"/>
+    <section t-if="pbme_lv" t-att-class="'pbme-b pbme-b-leave' + ('' if pbme_lv['allocated'] &gt; 0 else ' is-empty')" data-pbme-slot="leave" aria-labelledby="pbme-leave-h">
+      <h2 class="pbme-lab" id="pbme-leave-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'umbrella'"/><t t-set="isz" t-value="15"/></t>Leave</h2>
+      <t t-if="pbme_lv['allocated'] &gt; 0">
+        <t t-set="pbme_full" t-value="pbme_lv['left'] &gt;= pbme_lv['allocated']"/>
+        <t t-set="pbme_pct" t-value="0 if pbme_full else max(0.0, min(100.0, pbme_lv['left'] * 100.0 / pbme_lv['allocated']))"/>
+        <div t-att-class="'pbme-ring is-low' if pbme_lv['low'] else 'pbme-ring'" t-att-style="'--pbme-pct: %g' % round(pbme_pct, 1) + '%'">
+          <span class="pbme-ring-in"><b class="pbme-num" t-out="env['pb.me.home'].fmt_num(pbme_lv['left'])"/><small t-if="pbme_lv['left'] == 1">day left</small><small t-else="">days left</small></span>
+        </div>
+        <p class="pbme-leave-cap">
+          <t t-if="pbme_full">None taken yet</t>
+          <t t-else="">of <t t-out="env['pb.me.home'].fmt_num(pbme_lv['allocated'])"/> allocated</t>
+          <span t-if="pbme_lv['booked_pending'] == 1" class="pbme-leave-wait"><span class="visually-hidden" t-out="' · '"/>1 request waiting</span>
+          <span t-elif="pbme_lv['booked_pending']" class="pbme-leave-wait"><span class="visually-hidden" t-out="' · '"/><t t-out="pbme_lv['booked_pending']"/> requests waiting</span>
+        </p>
+        <a class="pbme-btn pbme-btn--out pbme-leave-go" t-att-href="pbme_lv['url']">Request time off</a>
+      </t>
+      <div t-else="" class="pbme-empty-card">
+        <span class="pbme-badge pbme-badge--slate" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'umbrella'"/></t></span>
+        <p class="pbme-empty-h">No leave allocated yet</p>
+        <p class="pbme-empty-d">Your balance appears here once HR allocates your days</p>
+        <a class="pbme-lab-link" t-att-href="pbme_lv['url']">Open My Leave</a>
+      </div>
+    </section>
+  </template>
+
+  <!-- THIS WEEK (M2) — seven day cells from the schedule facade: a shift's
+       hours (indigo once confirmed, amber while it waits for the person),
+       approved leave green, a day off grey; today outlined. The day name is
+       formatted from the date in the reader's language (the facade's own
+       label is an English abbreviation). Not drawn when the workforce module
+       is absent (`week` is None). -->
+  <template id="pbme_card_week" name="Employee home: this week card">
+    <t t-set="pbme_wk" t-value="pbme_home.get('week')"/>
+    <section t-if="pbme_wk" class="pbme-b pbme-b-week" data-pbme-slot="week" aria-labelledby="pbme-week-h">
+      <h2 class="pbme-lab" id="pbme-week-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="15"/></t>This week<span t-if="pbme_wk['pending']" class="pbme-pill pbme-pill--amber"><t t-out="pbme_wk['pending']"/> to confirm</span></h2>
+      <ol class="pbme-week">
+        <t t-foreach="pbme_wk['days']" t-as="d">
+          <li t-att-class="'pbme-day is-%s%s' % (d['state'], ' is-today' if d['is_today'] else '')" t-att-title="d.get('shift') or None">
+            <span t-if="d.get('date')" class="pbme-day-d" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEE'}"/>
+            <span t-else="" class="pbme-day-d" t-out="d.get('label') or ''"/>
+            <span class="pbme-day-n" t-out="d.get('day_num') or ''"/>
+            <span t-if="d['state'] in ('acked', 'pending')" class="pbme-day-s"><t t-out="d.get('shift_short') or d.get('shift') or ''"/><t t-if="d.get('shifts', 0) &gt; 1" t-out="' +%s' % (d['shifts'] - 1)"/></span>
+            <span t-elif="d['state'] == 'leave'" class="pbme-day-s">On leave</span>
+            <span t-else="" class="pbme-day-s">off</span>
+          </li>
+        </t>
+      </ol>
+      <t t-set="pbme_has_shift" t-value="any(d['state'] in ('acked', 'pending') for d in pbme_wk['days'])"/>
+      <div class="pbme-week-foot">
+        <span class="pbme-week-h">
+          <t t-if="pbme_has_shift"><t t-out="env['pb.me.home'].fmt_num(pbme_wk.get('scheduled_h') or 0)"/> h scheduled<span t-if="pbme_wk.get('worked_h') is not None" class="pbme-week-worked"><span class="visually-hidden" t-out="' · '"/><t t-out="env['pb.me.home'].fmt_num(pbme_wk['worked_h'])"/> h worked so far</span></t>
+          <t t-else="">No shifts scheduled this week</t>
+        </span>
+        <a t-if="pbme_wk['pending']" class="pbme-btn pbme-btn--pri" t-att-href="pbme_wk['url']">Confirm shifts</a>
+        <a t-else="" class="pbme-btn pbme-btn--out" t-att-href="pbme_wk['url']">Open schedule</a>
+      </div>
     </section>
   </template>
 
