@@ -8,6 +8,7 @@ from odoo.tests import TransactionCase, tagged
 from odoo.exceptions import UserError, ValidationError
 
 from ..formula_engine.tax_workbook import HEADERS, read_tax_map
+from ..formula_engine.header_detector import HeaderDetector
 from ..models.payroll_tax_table import _APPLY_KEY, _APPLY_TOKEN, stamp
 
 
@@ -134,6 +135,16 @@ class TestCountryTaxMapping(TransactionCase):
         w['Payroll']['B4'] = 5
         with self.assertRaises(ValueError):
             read_tax_map(w)
+
+    def test_declared_header_overrides_tax_table_headings(self):
+        from openpyxl.workbook.defined_name import DefinedName
+        w = self.workbook()
+        s = w['Payroll']
+        s['A1'], s['B1'], s['C1'] = 'Band', 'Upper bound', 'Rate'
+        w.defined_names.add(DefinedName('PayrollHeader', attr_text="'Payroll'!$A$6:$C$6"))
+        header, start, details = HeaderDetector(s).detect_header_row()
+        self.assertEqual((header, start), (6, 7))
+        self.assertTrue(details['declared_header'])
         w['Payroll']['B4'] = '=1/20'
         with self.assertRaises(ValueError):
             read_tax_map(w)

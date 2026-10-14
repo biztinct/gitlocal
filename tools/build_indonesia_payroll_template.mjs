@@ -116,6 +116,12 @@ const headers = [
 ];
 const last=letter(headers.length), headerRow=29, dataStart=30;
 sheet.getRange(`A${headerRow}:${last}${headerRow}`).values=[headers];
+wb.names.add('PayrollHeader',sheet.getRange(`A${headerRow}:${last}${headerRow}`));
+for(const [first,end,label] of [['A','K','Employee details'],['L','Y','Earnings'],['AA','AB','Employer contributions'],['AC','AP','Deductions'],['AS','BF','Payroll inputs'],['BG','BT','Calculation steps'],['BU','BW','Payment inputs']]) {
+ sheet.getRange(`${first}28`).values=[[label]];
+ sheet.getRange(`${first}28:${end}28`).merge();
+ sheet.getRange(`${first}28:${end}28`).format={fill:'#EDE9F9',font:{name:'Arial',size:10,bold:true,color:'#35286F'}};
+}
 sheet.getRange(`A${headerRow}:${last}${headerRow}`).format={fill:'#35286F',font:{name:'Arial',size:10,color:'#FFFFFF',bold:true},wrapText:true,rowHeight:58,verticalAlignment:'center',horizontalAlignment:'center'};
 const missing='"Missing PTKP status"';
 function category(r, exprs) {

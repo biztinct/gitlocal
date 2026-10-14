@@ -76,6 +76,12 @@ workbook cannot overwrite a database edition under the same version. Invalid
 country, percentages, missing slots, duplicate cells or excluded constants
 abort the transaction.
 
+The generated workbook declares `PayrollHeader` as an Excel named range.
+The importer uses that employee header instead of mistaking the TER table
+headings above it for employee columns. Tax Map templates use explicit
+header/cell metadata rather than colored-header heuristics; the configuration's
+existing color-import preference is preserved for other workbooks.
+
 ## Changes to government rates
 
 1. Duplicate the current source edition, give it a new version and effective

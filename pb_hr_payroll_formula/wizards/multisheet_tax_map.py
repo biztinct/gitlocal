@@ -16,6 +16,13 @@ class TaxMappedPreview(models.TransientModel):
 class TaxMappedImport(models.TransientModel):
     _inherit = 'hr.formula.multisheet.import.wizard'
 
+    def _use_color_import(self):
+        # Explicit Tax Map templates use header/cell metadata. Do not let
+        # shaded editable employee cells masquerade as colored header rows.
+        if self.import_file and self._tax_map_groups():
+            return False
+        return super()._use_color_import()
+
     def _tax_map_groups(self):
         import openpyxl
         self.ensure_one()

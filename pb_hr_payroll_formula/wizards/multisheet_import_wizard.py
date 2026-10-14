@@ -370,6 +370,9 @@ class MultiSheetImportWizard(models.TransientModel):
     # ==========================================
     # STEP 1: UPLOAD FILE
     # ==========================================
+    def _use_color_import(self):
+        return self.config_id.use_color_coded_excel_import
+
     def action_analyze_file(self):
         """Analyze uploaded Excel file and populate sheet list."""
         self.ensure_one()
@@ -400,7 +403,7 @@ class MultiSheetImportWizard(models.TransientModel):
             import json
             wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
             formula_wb = None
-            if self.config_id.use_color_coded_excel_import:
+            if self._use_color_import():
                 formula_wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=False)
 
             for idx, sheet_name in enumerate(workbook_data['sheet_names']):
@@ -422,7 +425,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     ws = wb[sheet_name]
                     all_columns = []
                     header_row_num = sheet_info.get('detected_header_row', 1)
-                    if self.config_id.use_color_coded_excel_import and formula_wb:
+                    if self._use_color_import() and formula_wb:
                         formula_ws = formula_wb[sheet_name]
                         color_info = self._get_color_coded_sheet_data(formula_ws, formula_ws)
                         header_row_num = color_info['header_block_end']
@@ -470,7 +473,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
                 detected_header_row = sheet_info.get('detected_header_row', 1)
                 row_count = sheet_info.get('max_row', 0) - sheet_info.get('detected_data_start_row', 2) + 1
-                if self.config_id.use_color_coded_excel_import and formula_wb:
+                if self._use_color_import() and formula_wb:
                     try:
                         formula_ws = formula_wb[sheet_name]
                         color_info = self._get_color_coded_sheet_data(formula_ws, formula_ws)
@@ -590,7 +593,7 @@ class MultiSheetImportWizard(models.TransientModel):
             for sheet_line in selected_sheets:
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
                 data_sheet = connector.workbook[sheet_line.sheet_name]
-                if self.config_id.use_color_coded_excel_import:
+                if self._use_color_import():
                     color_info = self._get_color_coded_sheet_data(formula_sheet, formula_sheet)
                     sheet_context[sheet_line.id] = {
                         'sheet_data': color_info['sheet_data'],
@@ -640,7 +643,7 @@ class MultiSheetImportWizard(models.TransientModel):
             constant_index = 0
             for sheet_line in selected_sheets:
                 ctx = sheet_context[sheet_line.id]
-                if self.config_id.use_color_coded_excel_import:
+                if self._use_color_import():
                     constant_scan_start = max(1, (ctx.get('header_block_start') or 1) - 1)
                     sheet_constants = self._detect_blue_constant_cells_color_coded(
                         ctx['formula_sheet'],
@@ -1070,7 +1073,7 @@ class MultiSheetImportWizard(models.TransientModel):
             )
 
             main_formula_sheet = formula_workbook[main_sheet.sheet_name]
-            if self.config_id.use_color_coded_excel_import:
+            if self._use_color_import():
                 color_info = self._get_color_coded_sheet_data(main_formula_sheet, main_formula_sheet)
                 main_formula_columns = color_info['formula_columns']
             else:
@@ -1191,7 +1194,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
 
                 # Detect formula columns for this sheet
-                if self.config_id.use_color_coded_excel_import:
+                if self._use_color_import():
                     color_info = self._get_color_coded_sheet_data(formula_sheet, formula_sheet)
                     formula_columns = color_info['formula_columns']
                 else:
