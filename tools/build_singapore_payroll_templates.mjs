@@ -23,15 +23,15 @@ const kinds = {A:'identifier',B:'text',C:'text',D:'text',E:'date',F:'date',G:'te
  AD:'text',AE:'identifier',AF:'text',AG:'text'};
 function formulas(r) {
  return {
-  M:`IF(ISNUMBER(AJ${r}),MIN(MAX(AJ${r}*$C$4,$G$4),$K$4),AJ${r})`,
-  N:`H${r}-I${r}-K${r}`, O:`IF(ISNUMBER(M${r}),SUM(H${r},L${r},M${r}),M${r})`,
-  P:`IF(ISNUMBER(O${r}),O${r}*12,O${r})`, Q:`N${r}*12`, W:`T${r}-U${r}+V${r}`,
+  M:`IF(T${r}>0,MIN(MAX(AJ${r}*$C$4,$G$4),$K$4),"Working days required")`,
+  N:`H${r}-I${r}-K${r}`, O:`IF(T${r}>0,SUM(H${r},L${r},M${r}),"Working days required")`,
+  P:`IF(T${r}>0,O${r}*12,"Working days required")`, Q:`N${r}*12`, W:`T${r}-U${r}+V${r}`,
   X:`IF(T${r}>0,ROUND(N${r}/T${r}*W${r},0)+Y${r},"Working days required")`,
-  AA:`IF(ISNUMBER(X${r}),X${r}+Z${r},X${r})`,
+  AA:`IF(T${r}>0,X${r}+Z${r},"Working days required")`,
   AH:`IF(T${r}>0,ROUND(H${r}/T${r}*W${r},0),"Working days required")`,
   AI:`IF(T${r}>0,AH${r}-ROUND(N${r}/T${r}*W${r},0),"Working days required")`,
-  AJ:`IF(ISNUMBER(AH${r}),AH${r}+Y${r}+Z${r},AH${r})`,
-  AK:`IF(ISNUMBER(AJ${r}),SUM(AJ${r},L${r},M${r}),AJ${r})`, AL:'0',
+  AJ:`IF(T${r}>0,AH${r}+Y${r}+Z${r},"Working days required")`,
+  AK:`IF(T${r}>0,SUM(AJ${r},L${r},M${r}),"Working days required")`, AL:'0',
  };
 }
 const formulaCols = Object.keys(formulas(13));

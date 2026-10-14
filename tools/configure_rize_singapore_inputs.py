@@ -91,6 +91,15 @@ cached = openpyxl.load_workbook(formula_path, data_only=True)['Payroll']
 inputs_cols = [c for c in range(1, 39) if source.cell(13, c).data_type != 'f']
 formulas_cols = [c for c in range(1, 39) if source.cell(13, c).data_type == 'f']
 assert len(inputs_cols) == 25 and len(formulas_cols) == 13
+for c in formulas_cols:
+    rule = by_col[source.cell(13, c).column_letter]
+    desired = source.cell(13, c).value
+    for constant in config.rule_ids.filtered('tax_table_id'):
+        letter, row = openpyxl.utils.cell.coordinate_from_string(constant.tax_source_cell)
+        desired = desired.replace('$%s$%s' % (letter, row), '%s2' % constant.column_letter)
+    if rule.excel_formula != desired:
+        saved = env['pb.formula.studio'].save_formula(rule.id, desired)
+        assert saved.get('ok'), saved
 blank = openpyxl.load_workbook(monthly_path, data_only=False)
 assert blank.sheetnames == ['Payroll', 'Instructions']
 assert [c.value for c in blank['Payroll'][1]] == [source.cell(12, c).value for c in inputs_cols]
@@ -102,6 +111,9 @@ probe = Batch.new({'formula_config_id': config.id, 'company_id': config.company_
     'file_header_row': 1, 'file_data_start_row': 2, 'file_sheet_name': 'Payroll'})
 parsed = probe._parse_source_file((root / 'monthly-probe.xlsx').read_bytes(), 'monthly-probe.xlsx')
 assert parsed['multisheet'] and len(parsed['rows']) == 8, parsed.keys()
+Wizard = env['pb.payrun.wizard'].with_company(config.company_id)
+preflight = Wizard.preflight_spreadsheet(config.id, base64.b64encode((root / 'monthly-probe.xlsx').read_bytes()).decode(), 'monthly-probe.xlsx')
+assert preflight['ok'] and preflight['columns'] == 25 and preflight['fed'] == 25 and not preflight['missing'], preflight
 def sample_input(rule, value):
     # People/bank fields travel beside calculation inputs in a real run.
     # Preserve them as the typed parser delivered them, rather than passing
@@ -193,5 +205,6 @@ print(json.dumps({'database': env.cr.dbname, 'config_id': config.id, 'state': co
     'components': len(config.rule_ids), 'inputs': len(inputs_cols), 'mapped_constants': len(statutory),
     'monthly_rows_tested': 8, 'formula_checks': formula_checks, 'tests': test_results,
     'client_controls': len(source_controls) * 8,
+    'monthly_preflight': {'columns': preflight['columns'], 'fed': preflight['fed'], 'missing': len(preflight['missing'])},
     'health': health['counts'], 'treatment_review': board['review_count'],
     'type_conflicts': board['role_conflict_count'], 'attachments': attachment_ids}))
