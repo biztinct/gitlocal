@@ -215,7 +215,9 @@ msgid "Chat History"
 msgstr "Lịch sử trò chuyện"
 
 #. module: pb_payroll_ai_insights
+#. odoo-javascript
 #: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_chat
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
 msgid "Chat with PayAI"
 msgstr "Trò chuyện với PayAI"
 
@@ -356,8 +358,10 @@ msgstr ""
 "128×128 pixel. Nếu không được đặt, biểu tượng mặc định sẽ được sử dụng."
 
 #. module: pb_payroll_ai_insights
+#. odoo-javascript
 #: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__dashboard_id
 #: model:ir.ui.menu,name:pb_payroll_ai_insights.menu_payai_dashboard
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
 msgid "Dashboard"
 msgstr "Bảng điều khiển"
 
@@ -1395,36 +1399,6 @@ msgid "to"
 msgstr "ĐẾN"
 
 #. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
-msgid "➕ New Chat"
-msgstr "➕ Trò chuyện mới"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
-msgid "💡 Key Insights"
-msgstr "💡 Thông tin chi tiết chính"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
-msgid "💬 Chat with PayAI"
-msgstr "💬 Trò chuyện với PayAI"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
-msgid "📊 Dashboard"
-msgstr "📊 Bảng điều khiển"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
-msgid "📌 Pin to Dashboard"
-msgstr "👉 Ghim vào Bảng điều khiển"
-
-#. module: pb_payroll_ai_insights
 #: model_terms:ir.ui.view,arch_db:pb_payroll_ai_insights.view_payroll_ai_config_form
 msgid "🔌 Test Connection"
 msgstr "🔌 Kiểm tra kết nối"
@@ -1471,12 +1445,6 @@ msgstr "Biểu đồ được ghim vào bảng điều khiển!"
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:145
 msgid "Failed to pin chart"
 msgstr "Không thể ghim biểu đồ"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:143
-msgid "Chart pinned to dashboard! 📌"
-msgstr "Biểu đồ được ghim vào bảng điều khiển! 🎯"
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
@@ -1646,3 +1614,21 @@ msgstr "Từ dữ liệu lương của bạn"
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
 msgid "Here are the figures you asked for — they are on screen."
 msgstr "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "New Chat"
+msgstr "Trò chuyện mới"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.js:0
+msgid "Chart pinned to the dashboard."
+msgstr "Đã ghim biểu đồ vào bảng điều khiển."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat_full.xml:0
+msgid "Send"
+msgstr "Gửi"
