@@ -83,6 +83,11 @@ class TaxMappedImport(models.TransientModel):
                         for g in groups for v in g['values']}
         result = super(TaxMappedImport, self.with_context(
             payroll_tax_numeric_literals=typed_values)).action_execute_import()
+        if groups:
+            # A same-sheet IF can read a categorical payroll input such as
+            # PTKP status. Its payroll role must not make a source connector
+            # coerce S/0 into zero. Reuse the operator-aware type classifier.
+            self.config_id.classify_value_kinds()
         Table = self.env['hr.payroll.tax.table']
         for group in groups:
             table = Table.search([('company_id', '=', self.config_id.company_id.id),

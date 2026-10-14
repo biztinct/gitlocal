@@ -83,6 +83,7 @@ class TestCountryTaxMapping(TransactionCase):
         self.assertTrue(all(r.value_kind == 'rate' for r in rules.filtered(lambda r: r.tax_field == 'rate')))
         status = self.config.rule_ids.filtered(lambda r: r.original_column_letter == 'D')
         self.assertEqual(status.column_role, 'payroll')
+        self.assertEqual(status.value_kind, 'text')
         self.assertFalse(self.config.rule_ids.filtered(lambda r: r.name == 'Table Code'))
         # Same edition and same cells round-trip without duplicate source tables.
         wizard.action_execute_import()
