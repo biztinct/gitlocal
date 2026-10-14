@@ -88,6 +88,16 @@ class TaxMappedImport(models.TransientModel):
             # PTKP status. Its payroll role must not make a source connector
             # coerce S/0 into zero. Reuse the operator-aware type classifier.
             self.config_id.classify_value_kinds()
+            for preview in self.component_preview_ids.filtered(lambda p:
+                    p.include_in_import and p.column_type == 'input'):
+                if preview.sample_value and coerce_number(preview.sample_value) is None:
+                    rule = self.config_id.rule_ids.filtered(lambda r: r.code == preview.generated_code)
+                    if rule and rule.value_kind_source == 'auto':
+                        # Literal text is stronger evidence than arithmetic
+                        # inferred from an enclosing SUM(IF(status="S/0",...)).
+                        rule.write({'value_kind': rule.value_kind if rule.value_kind in ('date', 'identifier') else 'text',
+                                    'value_kind_source': 'auto', 'is_text_component': True,
+                                    'value_kind_reason': 'Literal text input in mapped payroll workbook'})
         Table = self.env['hr.payroll.tax.table']
         for group in groups:
             table = Table.search([('company_id', '=', self.config_id.company_id.id),
