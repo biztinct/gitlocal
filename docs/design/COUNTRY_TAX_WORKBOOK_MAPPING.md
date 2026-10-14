@@ -82,6 +82,16 @@ headings above it for employee columns. Tax Map templates use explicit
 header/cell metadata rather than colored-header heuristics; the configuration's
 existing color-import preference is preserved for other workbooks.
 
+Mapped imports run the existing operator-aware value classifier. A status read
+by a text comparison remains a text input even though it belongs to payroll;
+source connectors must preserve values such as `S/0`. Literal nonnumeric
+workbook inputs explicitly retain text even inside nested `SUM(IF(...))`
+formulas. The usage parser and health check distinguish a comparison
+inside a numeric total from actual arithmetic on the text input. The live
+preview preserves text, identifiers with leading zeros, and review messages.
+Rate fields and cells
+formatted as percentages retain fractional storage and display as percentages.
+
 ## Changes to government rates
 
 1. Duplicate the current source edition, give it a new version and effective
