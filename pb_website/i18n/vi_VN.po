@@ -324,15 +324,6 @@ msgstr "<span/>Cuộn"
 
 #. module: pb_website
 #: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
-msgid ""
-"<span>Ask PayAI… or hold to speak</span>\n"
-"                <span class=\"pbw-send\">→</span>"
-msgstr ""
-"<span>Ask PayAI… hoặc giữ để nói</span>\n"
-"                <span class=\"pbw-send\">→</span>"
-
-#. module: pb_website
-#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
 msgid "<span>Headcount</span><b>1,284</b>"
 msgstr "<span>Số nhân viên</span><b>1,284</b>"
 
