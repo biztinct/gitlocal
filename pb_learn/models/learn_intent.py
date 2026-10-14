@@ -987,17 +987,32 @@ class LearnIntent(models.AbstractModel):
 
         The Access home has no left-menu entry of its own: it is a tab of the
         Settings cog (`pb_settings.item_settings`). So "can see Access" is
-        "can reach the Settings entry", decided by the one place every
-        reachability verdict is decided (`learn.runtime._station_reach`, the
-        same call `_capability` makes). Absent module → not visible.
+        "the Settings entry is OPEN on this person's own left menu", read from
+        the one rule the menu is drawn from (`pb.sidebar.item.visibility_for`,
+        the same reading PayAI's `gate.screen_state` makes — lent roles
+        included): the entry 'on' (not 'locked', not 'hidden') and its block
+        'on'.
+
+        NOT `learn.runtime._station_reach`: that one answers "is it on the
+        rail", and the cog is `restricted` — shown LOCKED to everybody outside
+        the access team — so it said "visible" to everyone (ledger OC30).
+        Absent module, absent entry or an unreadable menu → not visible.
         """
         try:
-            visible, _missing, _reach = self.env['learn.runtime']._station_reach(
-                ACCESS_SIDEBAR_KEY)
+            item = self.env.ref(ACCESS_SIDEBAR_KEY, raise_if_not_found=False)
+            if not item or 'pb.sidebar.item' not in self.env:
+                return False
+            row = item.sudo()
+            vis = self.env['pb.sidebar.item'].visibility_for(self.env.user) or {}
+            if (vis.get('items') or {}).get(row.id) != 'on':
+                return False
+            section = row.section_id.id if row.section_id else None
+            if section and (vis.get('sections') or {}).get(section, 'hidden') != 'on':
+                return False
+            return True
         except Exception:                                     # noqa: BLE001
             _logger.info("Learn coach: Access reach unreadable", exc_info=True)
             return False
-        return bool(visible)
 
     @api.model
     def _access_filter(self, answer, screen_key=None):

@@ -257,8 +257,17 @@ class TestHelperRouteBase(TransactionCase):
             self.assertEqual((floor.get('watch'), floor.get('try')), ('', ''))
         out = self.Helper.route('delegate my access', 'payruns', 'en')
         self.assertEqual(out['answer']['watch'], 'sc_access')
-        # The real reach answers a plain yes / no for a real person.
-        self.assertIn(intent_mod.LearnIntent._access_visible(self.Intent), (True, False))
+
+    # ------------------------------------------------------- OC1 review
+    def test_review_go_ahead_with_punctuation_and_small_talk(self):
+        # Base: no plan can wait; "go ahead?" is the cannot-act note, and a
+        # yes / thanks with a filler word is small talk — no model call.
+        out = self.Helper.route('go ahead?', 'payruns', 'en')
+        self.assertEqual((out['why'], out['note']['key']), ('nothing_waiting', 'cannotActHere'))
+        for text in ('ok thanks', 'great, thanks', 'yes please', 'ok cảm ơn', 'vâng ạ',
+                     'dạ vâng'):
+            out = self.Helper.route(text, 'payruns', 'en')
+            self.assertEqual((out['route'], out['why']), ('note', 'smalltalk'), text)
 
     # ------------------------------------------------------------- 1.23
     def test_1_23_small_talk(self):
@@ -281,3 +290,68 @@ class TestHelperRouteBase(TransactionCase):
             pair = chrome.get(key)
             self.assertTrue(pair and pair['en'] and pair['vi'], key)
             self.assertNotIn('odoo', (pair['en'] + pair['vi']).lower(), key)
+
+
+@tagged('post_install', '-at_install', 'onechat')
+class TestAccessBoundaryRealUsers(TransactionCase):
+    """1.22 with the REAL predicate (OC1 review blocker, ledger OC30): no
+    patch on `_access_visible`. The Settings cog is restricted, so somebody
+    outside the access team sees it LOCKED on their own left menu — and must
+    not be offered the Access walkthrough, a Show me into it or the
+    `delegate` answer. Somebody the cog opens for is offered all three."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.item = cls.env.ref(intent_mod.ACCESS_SIDEBAR_KEY, raise_if_not_found=False)
+        team = cls.env.ref('biz_access.group_access_manager', raise_if_not_found=False) \
+            or cls.env.ref('base.group_system')
+        base = cls.env.ref('base.group_user').id
+        if cls.item:
+            # The live shape (pb_vendor_access): the access team only, shown
+            # locked to everybody else.
+            cls.item.sudo().write({'groups_id': [(6, 0, [team.id])], 'restricted': True})
+            # A demo database may padlock whole blocks of the menu; this test
+            # is about the entry, so its block is open.
+            cls.item.sudo().section_id.write({'restricted': False})
+        Users = cls.env['res.users'].with_context(no_reset_password=True)
+        cls.outsider = Users.create({'name': 'OC Outsider', 'login': 'oc_outsider',
+                                     'group_ids': [(6, 0, [base])]})
+        cls.team_member = Users.create({'name': 'OC Access team', 'login': 'oc_access_team',
+                                        'group_ids': [(6, 0, [base, team.id])]})
+
+    def setUp(self):
+        super().setUp()
+        if not self.item:
+            self.skipTest('no Settings entry on this database')
+        HelperCls = type(self.env['learn.helper'])
+        for name in HOOKS:
+            p = patch.object(HelperCls, name, helper_mod.LearnHelper.__dict__[name])
+            p.start()
+            self.addCleanup(p.stop)
+        self.env['ir.config_parameter'].sudo().set_param(intent_mod.COMPOSE_FLAG, False)
+
+    def test_outside_the_access_team(self):
+        Sidebar = self.env['pb.sidebar.item']
+        self.assertEqual(Sidebar.visibility_for(self.outsider)['items'][self.item.id], 'locked')
+        Intent = self.env['learn.intent'].with_user(self.outsider)
+        self.assertFalse(Intent._access_visible())
+        Helper = self.env['learn.helper'].with_user(self.outsider)
+        self.assertFalse(Helper._offerable('sc_access'))
+        for screen in ('payruns', 'approvals', None):
+            out = Helper.route('delegate my access', screen, 'en')
+            blob = json.dumps(out)
+            self.assertEqual(out['route'], 'miss', screen)
+            for needle in ('sc_access', 'ac-handover', '"delegate"'):
+                self.assertNotIn(needle, blob, screen)
+        self.assertFalse(Intent.answer_for('delegate', 'payruns')['matched'])
+        floor = Intent.explain_screen('access')
+        self.assertEqual((floor.get('watch'), floor.get('try')), ('', ''))
+
+    def test_on_the_access_team(self):
+        Sidebar = self.env['pb.sidebar.item']
+        self.assertEqual(Sidebar.visibility_for(self.team_member)['items'][self.item.id], 'on')
+        self.assertTrue(self.env['learn.intent'].with_user(self.team_member)._access_visible())
+        out = self.env['learn.helper'].with_user(self.team_member).route(
+            'delegate my access', 'payruns', 'en')
+        self.assertEqual(out['answer']['watch'], 'sc_access')

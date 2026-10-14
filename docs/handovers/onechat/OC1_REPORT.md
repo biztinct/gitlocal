@@ -312,3 +312,20 @@ Added (EN + VI): `nothingWaiting`, `nothingToCancel`, `cannotActHere`, `typeWord
   (§10), then re-pin the affected corpus rows (run the offline suite; it prints every mismatch).
 * Clone stage: run the three server files first; the P-column and state tests are the ones never
   executed.
+
+## 11. Review repair (commit "fix(onechat): OC1 review")
+The OC1 review found one blocker, two majors and two minors; all five are fixed and pinned.
+
+| Finding | Fix | Pinned by |
+|---|---|---|
+| Access check always true (blocker) | `_access_visible()` reads the person's own left menu (`visibility_for` 'on' for the Settings cog and its block), not `_station_reach` (ledger OC30) | offline `TestAccessRealPredicate` (on / locked / hidden / locked block / no entry; the rail reach is never asked); server `TestAccessBoundaryRealUsers` (a real user outside the access team, and one on it — no patch) |
+| English how-to only at the start (major) | inner how-to shapes searched anywhere, except after a practise trigger (OC31) | 8 corpus rows; offline `TestReviewShapes.test_howto_in_mid_sentence_is_never_a_command` |
+| Title Case read as names (major) | definition questions need a possessive or a preposition before a capital counts as a name; VI common nouns (OC32) | 8 corpus rows; Title Case == lower case for the reviewer's 7 pairs, P and B |
+| "go ahead?" with a plan waiting (minor) | tap_card note (OC33) | 3 state corpus rows; server `test_1_7_a_plan_waiting` extended |
+| Small talk with a filler word (minor) | marked trimming for yes / cancel, ack + thanks (OC34) | 11 corpus rows (2 with a plan waiting); server base test |
+
+Corpus: 137 → 167 rows (30 added, all observed offline; no existing row changed value). Offline suite
+33 tests OK (was 26); `check_contract.py` 73 checks; `gen_learn_data.py --check` clean;
+`simulate_resolver.py` every property holds; `client_fix.test.mjs` 1/1; `replay_tests.py` 215 pass /
+2 fail — the same 2 "bridge suite did not run" environment failures as at HEAD. Server tests
+(including the new real-user Access class) run at the clone stage.

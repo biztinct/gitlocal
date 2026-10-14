@@ -435,6 +435,129 @@ class TestAccess(unittest.TestCase):
         self.assertNotIn('sc_access', json.dumps(out))
 
 
+class TestAccessRealPredicate(unittest.TestCase):
+    """OC1 review blocker: "can see Access" is the person's OWN left menu
+    (`pb.sidebar.item.visibility_for`), never the rail reach — the Settings
+    cog is restricted, so the rail shows it LOCKED to everybody outside the
+    access team and `_station_reach` called that "visible" (ledger OC30).
+    The harness's `_station_reach` says "visible" for every key, so a
+    boundary that read it would let everything through here."""
+
+    def test_locked_or_hidden_settings_is_not_access(self):
+        for state, want in (('on', True), ('locked', False), ('hidden', False)):
+            env = R.make_env('P', access_visible=state)
+            self.assertIs(env['learn.intent']._access_visible(), want, state)
+            self.assertIs(R.helper(env)._offerable('sc_access'), want, state)
+        env = R.make_env('P', access_visible='on')
+        env.extra['pb.sidebar.item'].section = 'locked'
+        self.assertFalse(env['learn.intent']._access_visible())
+        # No Settings entry on this database at all → not visible.
+        env = R.make_env('P')
+        env.extra['__refs__'] = {}
+        self.assertFalse(env['learn.intent']._access_visible())
+
+    def test_the_rail_reach_is_not_asked(self):
+        env = R.make_env('B', access_visible=False)
+        self.assertFalse(env['learn.intent']._access_visible())
+        self.assertNotIn('pb_settings.item_settings', env.extra['learn.runtime'].reach_calls)
+        self.assertTrue(env.extra['pb.sidebar.item'].calls)
+
+    def test_delegate_for_somebody_outside_the_access_team(self):
+        for state in ('locked', 'hidden'):
+            # B: the guide does not teach it, offers no Watch / lesson.
+            out, _env = route('B', 'delegate my access', 'payruns', access_visible=state)
+            self.assertEqual((out['route'], out['why']), ('miss', 'guide'), state)
+            self.assertNotIn('sc_access', json.dumps(out))
+            # P: PayAI's own refusal card, and NO "Explain how instead" chip
+            # into the Access lesson (PayAI refuses that walkthrough).
+            out, _env = route('P', 'delegate my access', 'payruns', access_visible=state)
+            self.assertEqual((out['route'], out['why']), ('payai', 'command'), state)
+            self.assertNotIn('extra_chips', out, state)
+            # The screenless pass finds it from any screen; the filter holds.
+            for screen in ('approvals', 'dashboard', None):
+                out, _env = route('B', 'delegate my access', screen, access_visible=state)
+                self.assertNotIn('sc_access', json.dumps(out), (state, screen))
+        # The access team: offered.
+        out, _env = route('B', 'delegate my access', 'payruns', access_visible='on')
+        self.assertEqual(out['answer']['watch'], 'sc_access')
+        out, _env = route('P', 'delegate my access', 'payruns', access_visible='on')
+        self.assertEqual(out.get('extra_chips', [{}])[0].get('key'), 'delegate')
+
+
+class TestReviewShapes(unittest.TestCase):
+    """OC1 review majors/minors, each repro pinned (also in the corpus)."""
+
+    HOWTO_EN = ('can you tell me how to approve the June run', 'I want to know how to run payroll',
+                'I need to know how to approve the June run',
+                'help me understand how to approve the June run',
+                'remind me how to approve a request', "I don't know how to run payroll")
+
+    def test_howto_in_mid_sentence_is_never_a_command(self):
+        for text in self.HOWTO_EN:
+            self.assertEqual(H.howto_kind(text), 'proc', text)
+            for mode in ('P', 'B'):
+                out, _env = route(mode, text)
+                self.assertNotIn(out['why'], ('command', 'command_ai', 'guide_offer'),
+                                 (mode, text))
+                if out['route'] == 'payai':
+                    self.assertTrue(out.get('ask_only'), (mode, text))
+        # The Vietnamese twin was right already and stays right.
+        out, _env = route('P', 'tôi muốn biết cách chạy lương')
+        self.assertEqual((out['route'], out.get('ask_only')), ('payai', True))
+        # A practise trigger that mentions "how to" is still a practice start.
+        for text in ('let me practise how to run payroll', 'practise how to approve'):
+            self.assertIsNone(H.howto_kind(text), text)
+            out, _env = route('P', text)
+            self.assertEqual(out['route'], 'practice', text)
+
+    def test_title_case_definitions_are_not_names(self):
+        pairs = (('What is Social Insurance?', 'what is social insurance'),
+                 ('What is Net Pay?', 'what is net pay'),
+                 ('What is Gross Pay?', 'what is gross pay'),
+                 ('What is a Pay Scheme?', 'what is a pay scheme'),
+                 ('How does Overtime work?', 'how does overtime work'),
+                 ('Where is the Bank File?', 'where is the bank file'),
+                 ('bảo hiểm xã hội của công ty là gì', 'bảo hiểm xã hội là gì'))
+        for title, lower in pairs:
+            self.assertFalse(H.name_ref(title), title)
+            for mode in ('P', 'B'):
+                a, _e = route(mode, title)
+                b, _e = route(mode, lower)
+                self.assertEqual(_summ(a), _summ(b), (mode, title))
+                self.assertNotEqual(a['why'], 'no_payai', (mode, title))
+        # A real name still counts: possessive, or after a preposition.
+        for text in ("What is Lan's net pay?", 'what is the net pay of Lan',
+                     'how much back pay is owed to Lan', 'Is Lan on the practice company?'):
+            self.assertTrue(H.name_ref(text), text)
+        out, _env = route('P', "What is Lan's net pay?")
+        self.assertEqual((out['route'], out['why']), ('payai', 'data'))
+
+    def test_go_ahead_with_punctuation_while_a_plan_waits(self):
+        for text, state, note in (('go ahead?', 'plan_amber', 'tapDoIt'),
+                                  ('do it?', 'plan_amber', 'tapDoIt'),
+                                  ('go ahead,', 'plan_red', 'typeWordOnCard')):
+            out, _env = route('P', text, state=state)
+            self.assertEqual((out['route'], out['why'], out['note']['key']),
+                             ('note', 'tap_card', note), text)
+        # Nothing waiting: still the honest "nothing is waiting".
+        out, _env = route('P', 'go ahead?')
+        self.assertEqual(out['why'], 'nothing_waiting')
+
+    def test_small_talk_with_a_filler_word_reaches_no_model(self):
+        for text in ('ok thanks', 'ok, thanks', 'great, thanks', 'no thanks', 'yes please',
+                     'cancel please', 'ok cảm ơn', 'vâng ạ', 'dạ vâng'):
+            for mode in ('P', 'B'):
+                out, _env = route(mode, text)
+                self.assertEqual(out['route'], 'note', (mode, text))
+                self.assertIn(out['why'], ('smalltalk', 'nothing_waiting'), (mode, text))
+        out, _env = route('P', 'yes please', state='plan_amber')
+        self.assertEqual((out['why'], out['note']['key']), ('tap_card', 'tapDoIt'))
+        out, _env = route('P', 'cancel please', state='plan_red')
+        self.assertEqual((out['why'], out['note']['key']), ('tap_card', 'tapCancel'))
+        # Marks still matter: "đã" is not "dạ".
+        self.assertIsNone(H.whole_word_class('đã ạ'))
+
+
 class TestContract(unittest.TestCase):
     def test_1_19_contract(self):
         res = subprocess.run([sys.executable, os.path.join(GEN_DIR, 'check_contract.py'),

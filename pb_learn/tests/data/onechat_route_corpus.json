@@ -1997,6 +1997,451 @@
     "why": "open_question"
    },
    "B": null
+  },
+  {
+   "text": "can you tell me how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "I want to know how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "I need to know how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "help me understand how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "remind me how to approve a request",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "I don't know how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi muốn biết cách chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Social Insurance?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Net Pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "What is a Pay Scheme?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "How does Overtime work?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "Where is the Bank File?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "bảo hiểm xã hội của công ty là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Lan's net pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "what is the net pay of Lan",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "go ahead?",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "go ahead,",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "typeWordOnCard"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_red"
+  },
+  {
+   "text": "do it?",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "ok thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "ok, thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "great, thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "no thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": null
+  },
+  {
+   "text": "yes please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "cancel please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": null
+  },
+  {
+   "text": "ok cảm ơn",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "vâng ạ",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "dạ vâng",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "yes please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "cancel please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": "plan_red"
   }
  ]
 }

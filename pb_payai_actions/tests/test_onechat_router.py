@@ -105,6 +105,15 @@ class TestOneChatRouter(_RouterMixin, p3._P3Case):
         self.assertEqual(out['note']['en'], 'Tap Do it or say go ahead.')
         out = self._route(self.officer, 'cancel', session)
         self.assertEqual(out['note']['en'], 'To stop, tap Cancel on the plan card.')
+        # OC1 review: a go-ahead the runner's anchored words do not take
+        # ("go ahead?") and a polite yes / cancel point at the card — never
+        # "nothing is waiting", never PayAI's AI planning call.
+        for text, note in (('go ahead?', 'Tap Do it to go ahead.'),
+                           ('do it,', 'Tap Do it to go ahead.'),
+                           ('yes please', 'Tap Do it to go ahead.'),
+                           ('cancel please', 'To stop, tap Cancel on the plan card.')):
+            out = self._route(self.officer, text, session)
+            self.assertEqual((out['why'], out['note']['en']), ('tap_card', note), text)
         # Somebody else naming this conversation sees nothing waiting in it.
         out = self._route(self.manager, 'go ahead', session)
         self.assertEqual(out['why'], 'nothing_waiting')

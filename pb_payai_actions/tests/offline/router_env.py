@@ -63,16 +63,17 @@ class FakeUser:
 
 
 class FakeRuntime:
-    """learn.runtime: the Access reach and the live next step."""
+    """learn.runtime: the rail reach and the live next step.
 
-    def __init__(self, access_visible=True):
-        self.access_visible = access_visible
+    `_station_reach` says "visible" for EVERY key, the Settings cog included —
+    exactly what the real one says for a LOCKED entry (OC1 review blocker,
+    ledger OC30). The Access boundary must not read it."""
+
+    def __init__(self):
         self.reach_calls = []
 
     def _station_reach(self, sidebar_key, visible_ids=None, index=None):
         self.reach_calls.append(sidebar_key)
-        if sidebar_key == 'pb_settings.item_settings':
-            return self.access_visible, False, None
         return True, False, None
 
     def next_step_live(self, screen):
@@ -80,6 +81,42 @@ class FakeRuntime:
 
     def features(self):
         return {}
+
+
+class FakeSidebarItem:
+    """The Settings cog (`pb_settings.item_settings`): restricted, so a person
+    outside the access team gets it LOCKED, never hidden."""
+    id = 50
+
+    def __init__(self):
+        self.section_id = _FakeSection()
+
+    def sudo(self):
+        return self
+
+    def __bool__(self):
+        return True
+
+
+class _FakeSection:
+    id = 5
+
+    def __bool__(self):
+        return True
+
+
+class FakeSidebar:
+    """pb.sidebar.item.visibility_for — this person's own left menu."""
+
+    def __init__(self, settings='on', section='on'):
+        self.settings = settings
+        self.section = section
+        self.calls = []
+
+    def visibility_for(self, user):
+        self.calls.append(user)
+        return {'items': {FakeSidebarItem.id: self.settings, 51: 'on'},
+                'sections': {_FakeSection.id: self.section}}
 
 
 class FakeLive:
@@ -150,8 +187,15 @@ class FakeConversation:
 def make_env(mode='P', look=True, access_visible=True, voice=False, voice_go_ahead=False,
              provider_available=True, compose=False, lang='en_US'):
     provider = FakeProvider(provider_available) if mode == 'P' else None
+    # `access_visible`: True → the Settings cog is open on this person's menu;
+    # False → it is LOCKED (somebody outside the access team); or the menu
+    # state itself ('on' | 'locked' | 'hidden').
+    settings = access_visible if isinstance(access_visible, str) else (
+        'on' if access_visible else 'locked')
     extra = {
-        'learn.runtime': FakeRuntime(access_visible),
+        '__refs__': {'pb_settings.item_settings': FakeSidebarItem()},
+        'pb.sidebar.item': FakeSidebar(settings),
+        'learn.runtime': FakeRuntime(),
         'learn.live': FakeLive(),
         'payroll.ai.config': FakeConfig(provider),
         'payroll.ai.conversation': FakeConversation(voice),

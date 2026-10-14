@@ -219,7 +219,8 @@ class Env:
         return self._cache[model]
 
     def ref(self, xmlid, raise_if_not_found=True):
-        return None
+        # Records a test names by xml id live in `extra['__refs__']`.
+        return (self.extra.get('__refs__') or {}).get(xmlid)
 
     def _(self, msg, *a, **kw):
         return _gettext(msg, *a, **kw)

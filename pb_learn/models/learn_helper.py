@@ -134,6 +134,20 @@ _H_PROC_EN = re.compile(
 _H_DEF_EN = re.compile(
     _POLITE_HEAD + r"(?:where\s+(?:is|are)|what\s+(?:is|are)|what\s+does\b.*\bmean)\b",
     re.I)
+#: The same procedure shapes INSIDE a sentence ("can you tell me how to …",
+#: "I want to know how to …", "I don't know how to …", "remind me how to …").
+#: The Vietnamese check was never anchored; English must not differ (OC1
+#: review): a how-to request in mid-sentence is still never a command. Not
+#: for a sentence that opens with a practise trigger ("let me practise how to
+#: run payroll" is a practice start, step 6).
+_H_PROC_EN_INNER = re.compile(
+    r"\b(?:show\s+me\s+how|teach\s+me\s+how|walk\s+me\s+through|explain\s+how|"
+    r"how\s+(?:do|can|should|would)\s+(?:i|we)|how\s+to|"
+    r"(?:the\s+)?steps\s+(?:to|for))\b", re.I)
+#: … and a definition / place asked through a lead ("I want to know what net
+#: pay is", "can you tell me where the bank file is").
+_H_DEF_EN_INNER = re.compile(
+    r"\b(?:know|tell\s+me|understand|wonder(?:ing)?|explain)\s+(?:what|where)\b", re.I)
 #: Folded Vietnamese how-to shapes (chỉ tôi cách, hướng dẫn, các bước, …).
 _H_PROC_VI = re.compile(
     r"\b(?:chi (?:toi |minh |em )?cach|huong dan|cach(?: de)?|cac buoc|lam sao|"
@@ -150,6 +164,12 @@ _H_LEAD_EN = re.compile(
     r"(?:what\s+are\s+)?the\s+steps\s+(?:to|for)|steps\s+(?:to|for)|"
     r"explain\s+how(?:\s+(?:to|do\s+i|i))?|how\s+(?:do|can|should|would)\s+(?:i|we)|"
     r"how\s+to|where\s+(?:do|can)\s+(?:i|we))\s+(?P<topic>.+)$", re.I)
+#: The lead found INSIDE a sentence (same family as `_H_PROC_EN_INNER`).
+_H_LEAD_EN_INNER = re.compile(
+    r"\b(?:show\s+me\s+how(?:\s+(?:to|do\s+i|i))?|teach\s+me\s+how(?:\s+to)?|"
+    r"walk\s+me\s+through(?:\s+how\s+to)?|explain\s+how(?:\s+(?:to|do\s+i|i))?|"
+    r"how\s+(?:do|can|should|would)\s+(?:i|we)|how\s+to|"
+    r"(?:the\s+)?steps\s+(?:to|for))\s+(?P<topic>.+)$", re.I)
 _H_LEAD_VI = re.compile(
     r"^(?:cho toi xem |chi (?:toi |minh |em )?|huong dan (?:toi |minh |em )?|"
     r"lam sao (?:de )?|lam the nao (?:de )?|cac buoc (?:de )?|cach (?:de )?)+(?P<topic>.+)$")
@@ -164,6 +184,12 @@ def howto_kind(text):
         return 'proc'
     if _H_DEF_EN.match(t) or _H_DEF_VI.search(folded):
         return 'def'
+    if practise_trigger(t)[0]:
+        return None
+    if _H_PROC_EN_INNER.search(t):
+        return 'proc'
+    if _H_DEF_EN_INNER.search(t):
+        return 'def'
     return None
 
 
@@ -171,7 +197,7 @@ def howto_canonical(text):
     """The how-to request rewritten in the guide's own phrase shape ("how do
     i <topic>" / "lam sao <topic>"), or '' when it has no lead to take off."""
     t = clean(text).rstrip(' ?？!.')
-    m = _H_LEAD_EN.match(t)
+    m = _H_LEAD_EN.match(t) or _H_LEAD_EN_INNER.search(t)
     if m:
         return 'how do i %s' % m.group('topic')
     m = _H_LEAD_VI.match(_norm(t))
@@ -255,7 +281,9 @@ _PRODUCT_WORDS = frozenset((
     'hiring', 'settings', 'excel', 'bank', 'payslip', 'payslips', 'tiếng', 'việt',
 ))
 _PRONOUNS_VI = frozenset(('toi', 'minh', 'em', 'anh', 'chi', 'ban', 'chung', 'ho',
-                          'nguoi', 'moi', 'tat', 'cac', 'nhung', 'nhan'))
+                          'nguoi', 'moi', 'tat', 'cac', 'nhung', 'nhan',
+                          # common nouns, never a name: công ty, doanh nghiệp
+                          'cong', 'doanh'))
 
 
 def is_howto(text):
@@ -278,20 +306,45 @@ def is_question(text):
     return bool(_Q_VI.search(_norm(t)))
 
 
+#: A definition question ("what is Net Pay?", "How does Overtime work?",
+#: "Where is the Bank File?"). Typed or transcribed in Title Case, its
+#: capitals are a term's, not a person's (OC1 review) — there a capital
+#: counts as a name only with a possessive ("Lan's") or after a preposition
+#: ("the salary of Lan"). "who is …" stays out: it asks about a person.
+_DEF_SHAPE_EN = re.compile(
+    r"^(?:(?:please|pls|can\s+you|could\s+you)\s+)?(?:tell\s+me\s+)?"
+    r"(?:what|where|how|which|why)\s+(?:is|are|was|were|does|do|did)\b", re.I)
+_NAME_PREPS = frozenset(('of', 'for', 'to', 'by', 'about', 'from', 'with', 'at'))
+_DEF_SHAPE_VI = re.compile(r"\b(?:la gi|nghia la|la nhu the nao)\b")
+
+
 def name_ref(text):
     """A capitalised word that is not the first word, not all capitals and
-    not a product word — a likely person name ("Lan", "Retail"). Vietnamese:
-    also a word after "của" / "cho" that is not a pronoun."""
-    words = re.findall(r"[^\W\d_]+(?:'s)?", text or '', re.U)
-    for word in words[1:]:
-        bare = word[:-2] if word.endswith("'s") else word
+    not a product word — a likely person name ("Lan", "Retail"). In a
+    definition question only with a possessive or after a preposition.
+    Vietnamese: also a word after "của" / "cho" that is not a pronoun or a
+    common noun ("của công ty") — in a "… là gì" question only when that
+    word is written with a capital."""
+    t = clean(text)
+    definition = bool(_DEF_SHAPE_EN.match(t))
+    words = re.findall(r"[^\W\d_]+(?:'s)?", t, re.U)
+    for i, word in enumerate(words[1:], start=1):
+        possessive = word.endswith("'s")
+        bare = word[:-2] if possessive else word
         if bare[:1].isupper() and not bare.isupper() \
                 and bare.lower() not in _PRODUCT_WORDS:
-            return True
-    folded = _norm(text).split()
+            if not definition or possessive or words[i - 1].lower() in _NAME_PREPS:
+                return True
+    folded = _norm(t).split()
+    raw = t.split()
+    vi_definition = bool(_DEF_SHAPE_VI.search(' '.join(folded)))
     for i, word in enumerate(folded[:-1]):
         if word in ('cua', 'cho') and folded[i + 1] not in _PRONOUNS_VI:
-            return True
+            if not vi_definition:
+                return True
+            nxt = raw[i + 1] if i + 1 < len(raw) and len(raw) == len(folded) else ''
+            if nxt[:1].isupper():
+                return True
     return False
 
 
@@ -326,7 +379,12 @@ def data_signal(text, question=None):
 
 # -- whole-sentence words --------------------------------------------------
 _YES = frozenset(('yes', 'yeah', 'yep', 'yup', 'ok', 'okay', 'sure', 'alright',
-                  'có', 'dạ', 'vâng', 'ừ', 'được', 'đồng ý', 'ok luôn', 'oke'))
+                  'có', 'dạ', 'vâng', 'ừ', 'được', 'đồng ý', 'ok luôn', 'oke',
+                  'dạ vâng', 'vâng vâng', 'dạ được', 'ừ được'))
+#: Polite words around a bare yes / no that do not change it ("yes please",
+#: "cancel please", "no thanks", "vâng ạ"). MARKED, like the word lists.
+_BARE_TAIL = frozenset(('please', 'pls', 'thanks', 'thank you', 'ạ', 'nhé', 'nha', 'nhe'))
+_BARE_LEAD = frozenset(('oh', 'well', 'um', 'uh', 'ờ'))
 _CANCEL = frozenset(('cancel', 'no', 'nope', 'stop', 'never mind', 'nevermind',
                      'không', 'thôi', 'hủy', 'huỷ', 'hủy bỏ', 'huỷ bỏ', 'bỏ qua'))
 #: A go-ahead without PayAI's runner (base databases): the same anchored idea,
@@ -343,11 +401,14 @@ _GREETING = re.compile(
     r"^(?:hi|hello|hey|hiya|good\s+(?:morning|afternoon|evening)|xin\s+chao|chao"
     r"(?:\s+ban)?|alo)(?:\s+(?:there|payai|payobook|ban|ban oi|em|anh|chi))?$")
 _THANKS = re.compile(
-    r"^(?:thanks?|thank\s+you|thx|ty|cheers|cam\s+on|cam\s+on\s+ban|"
+    r"^(?:(?:ok|okay|oke|great|cool|perfect|fine|alright|got\s+it|nice|awesome|"
+    r"vang|da|u|duoc\s+roi)\s+)?"
+    r"(?:thanks?|thank\s+you|thx|ty|cheers|cam\s+on|cam\s+on\s+ban|"
     r"cam\s+on\s+nhieu)(?:\s+(?:a\s+lot|so\s+much|very\s+much|again|nhe|nha|nhieu|"
     r"ban|em|anh|chi))*$")
 _ACK = re.compile(r"^(?:ok|okay|got\s+it|i\s+see|cool|great|fine|alright|"
-                  r"duoc\s+roi|u|uh\s+huh|vang|da|hieu\s+roi|ro\s+roi)$")
+                  r"duoc\s+roi|u|uh\s+huh|vang|da|hieu\s+roi|ro\s+roi|"
+                  r"da\s+vang|vang\s+a|da\s+a|ok\s+(?:got\s+it|cool|great))$")
 _FILLER = frozenset(('uh', 'um', 'umm', 'uhm', 'hmm', 'hm', 'er', 'erm', 'ah', 'oh',
                      'o', 'a', 'u', 'ho', 'ha'))
 
@@ -358,13 +419,26 @@ def whole_word_class(text):
     Vietnamese ones that fold onto other words ("đã" is not "dạ")."""
     t = clean(text).strip(' .!?,;:')
     m = marked(t)
-    if m in _YES:
-        return 'yes'
-    if m in _CANCEL:
-        return 'cancel'
+    for cand in (m, _bare_trim(m)):
+        if cand in _YES:
+            return 'yes'
+        if cand in _CANCEL:
+            return 'cancel'
     if _GO_EN.match(t) or _GO_VI.match(_norm(t)):
         return 'go'
     return None
+
+
+def _bare_trim(m):
+    """A marked sentence without its punctuation and the polite words around
+    a bare yes / no ("yes, please" → "yes", "vâng ạ" → "vâng")."""
+    words = re.sub(r"[.!?,;:…]+", ' ', m).split()
+    while len(words) > 1 and (words[-1] in _BARE_TAIL
+                              or ' '.join(words[-2:]) in _BARE_TAIL):
+        words = words[:-2] if ' '.join(words[-2:]) in _BARE_TAIL else words[:-1]
+    while len(words) > 1 and words[0] in _BARE_LEAD:
+        words = words[1:]
+    return ' '.join(words)
 
 
 def is_smalltalk(text):
@@ -811,7 +885,10 @@ class LearnHelper(models.AbstractModel):
         if word == 'go' or self._go_ahead_words(t):
             word = 'go'
         plan = self._waiting_plan(session_id) if word else None
-        if plan and word == 'yes':
+        # A go-ahead step 2 did not take while a plan IS waiting ("go
+        # ahead?", "do it," — the runner's own words are anchored and allow
+        # no "?" or ","): the card is the way, never "nothing is waiting".
+        if plan and word in ('yes', 'go'):
             if plan.get('tier') == 'decide':
                 note = self._note('typeWordOnCard', word=plan.get('word') or {})
             else:
