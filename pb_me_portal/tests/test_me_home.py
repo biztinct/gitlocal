@@ -270,9 +270,15 @@ class TestMeHome(TransactionCase):
         self.assertEqual(Home._pbme_short_name('Nguyễn Văn An', True), 'An')
         self.assertEqual(Home._pbme_short_name('Mitchell Admin', False), 'Mitchell')
         self.assertEqual(Home._pbme_short_name('', False), '')
-        # the rule that picks the order: the user's language, or a VN company
+        # the rule that picks the order: the user's language, or a Vietnamese
+        # family name — never the company's country (a Western name in a
+        # Vietnamese company keeps its first word)
         co = self.env['res.company'].create({
-            'name': 'PBME AU Co', 'country_id': self.env.ref('base.au').id})
+            'name': 'PBME VN Co', 'country_id': self.env.ref('base.vn').id})
+        self.assertTrue(Home._pbme_name_last_first(
+            self.env['hr.employee'].new({'name': 'Tran Thi Mai', 'company_id': co.id})))
+        self.assertFalse(Home._pbme_name_last_first(
+            self.env['hr.employee'].new({'name': 'Mitchell Admin', 'company_id': co.id})))
         en = _make_user(self.env, 'test_pbme_en', 'Mitchell Admin')
         en.write({'lang': 'en_US', 'company_ids': [(4, co.id)], 'company_id': co.id})
         emp_en = self.env['hr.employee'].create({

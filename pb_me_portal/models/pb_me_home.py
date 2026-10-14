@@ -29,6 +29,16 @@ import logging
 import time
 from datetime import datetime, timedelta
 
+# The common Vietnamese family names (with and without diacritics, casefolded):
+# a name that opens with one of these is read given-name-last.
+VN_FAMILY_NAMES = frozenset(n.casefold() for n in (
+    'Nguyễn', 'Nguyen', 'Trần', 'Tran', 'Lê', 'Le', 'Phạm', 'Pham', 'Hoàng', 'Hoang',
+    'Huỳnh', 'Huynh', 'Phan', 'Vũ', 'Vu', 'Võ', 'Vo', 'Đặng', 'Dang', 'Bùi', 'Bui',
+    'Đỗ', 'Do', 'Hồ', 'Ho', 'Ngô', 'Ngo', 'Dương', 'Duong', 'Lý', 'Ly', 'Đinh', 'Dinh',
+    'Trịnh', 'Trinh', 'Lâm', 'Lam', 'Mai', 'Đào', 'Dao', 'Trương', 'Truong', 'Lưu', 'Luu',
+    'Tạ', 'Ta', 'Cao', 'Thái', 'Thai', 'Hà', 'Ha', 'Tô', 'To', 'Chu', 'Vương', 'Vuong',
+))
+
 import pytz
 
 from odoo import api, fields, models
@@ -277,9 +287,18 @@ class PbMeHome(models.AbstractModel):
 
     @api.model
     def _pbme_name_last_first(self, emp):
-        """Vietnamese names put the given name LAST ("Nguyễn Văn An" is An)."""
-        return (self.env.user.lang == 'vi_VN'
-                or (emp.company_id.country_id.code or '') == 'VN')
+        """Vietnamese names put the given name LAST ("Nguyễn Văn An" is An).
+
+        Decided by the person, never by the company alone: a Vietnamese-language
+        user, or a name that opens with a Vietnamese family name (the demo
+        world's people read English but are Vietnamese). The live walk greeted
+        "Mitchell Admin" of a Vietnamese company as "Admin" when the company's
+        country decided it.
+        """
+        if self.env.user.lang == 'vi_VN':
+            return True
+        first = ((emp.name or '').split() or [''])[0]
+        return first.casefold() in VN_FAMILY_NAMES
 
     @api.model
     def _pbme_short_name(self, name, given_name_last):

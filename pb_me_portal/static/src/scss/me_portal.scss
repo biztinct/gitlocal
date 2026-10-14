@@ -443,8 +443,10 @@
     .pbme-day-n { font-size: 14px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
     .pbme-day-s {
         align-self: stretch; margin-top: 3px; padding: 2px 1px; border-radius: 5px;
-        font-size: 9.5px; font-weight: 700; letter-spacing: -.02em;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-size: 9.5px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25;
+        // a long shift ("22–23:30") wraps to a second line rather than being cut
+        // (owner 2026-10-15); the cell grows with it
+        white-space: normal; overflow-wrap: anywhere;
     }
     .pbme-day.is-acked .pbme-day-s   { background: var(--pbim-soft); color: var(--pbim-primary); }
     .pbme-day.is-pending .pbme-day-s { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
