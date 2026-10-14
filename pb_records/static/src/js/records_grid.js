@@ -48,6 +48,12 @@ export const PAGE = 100;
  */
 const MAX_WINDOW = 120;
 
+const IDENTITY_COLUMNS = [
+    { id: "@person", label: _t("Person"), builtin: "person", css: "rd-c-id" },
+    { id: "@code", label: _t("Code"), builtin: "code", css: "rd-c-code" },
+    { id: "@department", label: _t("Department"), builtin: "department", css: "rd-c-dept" },
+];
+
 // ---------------------------------------------------------------------------
 //  State + the mutations, as plain functions
 // ---------------------------------------------------------------------------
@@ -58,6 +64,7 @@ export function cellKey(empId, fieldId) {
 export function createGridState(overrides = {}) {
     return Object.assign({
         columns: [],        // picked cards, in the order they were picked
+        columnOrder: [],    // all visible columns, including the identity columns
         rows: [],           // sparse, indexed by position in the match set
         total: 0,
         loading: false,
@@ -72,6 +79,48 @@ export function createGridState(overrides = {}) {
         undoStack: [],
         redoStack: [],
     }, overrides);
+}
+
+/** The visual order also drives DOM order; checkbox selection always stays first. */
+export function visibleColumns(state) {
+    const columns = [...IDENTITY_COLUMNS, ...state.columns.map((col, dataIndex) => ({
+        ...col, dataIndex, css: "rd-c-data",
+    }))];
+    const byId = new Map(columns.map((col) => [col.id, col]));
+    const ids = [...new Set([...(state.columnOrder || []), ...byId.keys()])];
+    return ids.filter((id) => byId.has(id)).map((id) => byId.get(id));
+}
+
+/** Keep the focused/editor field and staged values attached to their field ids. */
+export function reorderColumns(state, order) {
+    const focused = state.columns[state.focus.c]?.id;
+    const editing = state.editing && state.columns[state.editing.c]?.id;
+    state.columnOrder = order;
+    const visible = visibleColumns(state);
+    state.columnOrder = visible.map((col) => col.id);
+    const byId = new Map(state.columns.map((col) => [col.id, col]));
+    state.columns = visible.filter((col) => !col.builtin).map((col) => byId.get(col.id));
+    state.focus = { ...state.focus, c: state.columns.findIndex((col) => col.id === focused) };
+    if (state.editing) {
+        const c = state.columns.findIndex((col) => col.id === editing);
+        state.editing = c < 0 ? null : { ...state.editing, c };
+    }
+    state.menu = -1;
+}
+
+export function moveColumn(state, id, direction) {
+    const order = visibleColumns(state).map((col) => col.id);
+    const from = order.indexOf(id);
+    if (from < 0) { return false; }
+    const target = {
+        first: 0, left: Math.max(0, from - 1),
+        right: Math.min(order.length - 1, from + 1), last: order.length - 1,
+    }[direction];
+    if (target === undefined || target === from) { return false; }
+    order.splice(from, 1);
+    order.splice(target, 0, id);
+    reorderColumns(state, order);
+    return true;
 }
 
 /** How many values are staged, and over how many people. */
@@ -229,6 +278,8 @@ export class RecordsGrid extends Component {
         onSetFor: { type: Function, optional: true },
         // (fieldId) => void — take the column off the grid
         onHideColumn: { type: Function, optional: true },
+        // (columnId, direction) => void — reorder and remember the layout
+        onMoveColumn: { type: Function, optional: true },
         // () => void — the strip nudge, when nothing is picked
         onPickFields: { type: Function, optional: true },
         // () => void — clear the filters, from the empty state
@@ -249,6 +300,7 @@ export class RecordsGrid extends Component {
 
     ic(n, s = 15) { return ic(n, s); }
     get ROW_H() { return ROW_H; }
+    get visibleColumns() { return visibleColumns(this.st); }
 
     // ------------------------------------------------------------ windowing
     measure() {
@@ -521,6 +573,12 @@ export class RecordsGrid extends Component {
 
     // ------------------------------------------------------- column header
     toggleMenu(c) { this.st.menu = this.st.menu === c ? -1 : c; }
+
+    menuMove(col, direction) {
+        this.st.menu = -1;
+        if (this.props.onMoveColumn) { this.props.onMoveColumn(col.id, direction); }
+        else { moveColumn(this.st, col.id, direction); }
+    }
 
     menuSetSelected(col) {
         this.st.menu = -1;

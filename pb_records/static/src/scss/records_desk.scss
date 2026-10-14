@@ -314,15 +314,16 @@ $rd-w-data: 194px;
     }
     .rd-c-check { width: #{$rd-w-check}; padding: 0; justify-content: center;
                   position: sticky; left: 0; z-index: 4; background: inherit; }
-    .rd-c-id    { width: #{$rd-w-id}; position: sticky; left: #{$rd-w-check};
-                  z-index: 3; background: inherit; }
+    .rd-c-id    { width: #{$rd-w-id}; }
     .rd-c-code  { width: #{$rd-w-code}; color: var(--pbim-muted);
                   font-variant-numeric: tabular-nums; }
     .rd-c-dept  { width: #{$rd-w-dept}; color: var(--pbim-muted); }
     .rd-c-data  { width: #{$rd-w-data}; }
     .rd-c-nudge { width: 200px; color: var(--pbim-primary-strong);
                   font-size: 11.5px; gap: 6px; }
-    .rd-head .rd-c-check, .rd-head .rd-c-id { background: #fff; }
+    .rd-c-first { position: sticky; left: #{$rd-w-check}; z-index: 3;
+                  background: inherit; }
+    .rd-head .rd-c-check, .rd-head .rd-c-first { background: #fff; }
 
     .rd-av {
         width: 28px; height: 28px; border-radius: 9px; flex: none;

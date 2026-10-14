@@ -23,6 +23,7 @@ import {
     RecordsGrid, createGridState, cellKey, dirtyCount, setValue, setForRows,
     revertColumn, undo, redo, pasteAt, parseClipboard, toggleRow, selectRange,
     clearSelection, selectLoaded, initialsOf,
+    moveColumn, reorderColumns, visibleColumns,
 } from "@pb_records/js/records_grid";
 import {
     RdDropZone, RdFileMenu, RdFileReview, fileApplyLabel, fileSummaryLine,
@@ -87,6 +88,71 @@ async function modClick(el, mods = {}) {
     el.dispatchEvent(new MouseEvent("click", { bubbles: true, ...mods }));
     await animationFrame();
 }
+
+// =====================================================================
+//  Column order — identity, keyboard/edit targets and saved layouts
+// =====================================================================
+test("Employee Id can move ahead of Person and becomes the pinned first column", async () => {
+    const st = state(1);
+    st.columns[2] = { ...st.columns[2], label: "Employee Id" };
+    await mountGrid(st);
+    await click('[data-column-id="f:hr.employee:barcode"] .rd-kebab');
+    await click(".rd-menu button:first-child");
+    await animationFrame();
+    expect(queryAllTexts(".rd-head .lb").slice(0, 4))
+        .toEqual(["Employee Id", "Person", "Code", "Department"]);
+    expect(queryFirst(".rd-head .rd-c-first").dataset.columnId)
+        .toBe("f:hr.employee:barcode");
+    expect(queryAllTexts(".rd-row .rd-c-first .rd-v")).toEqual(["B1"]);
+    expect(dirtyCount(st).values).toBe(0);
+});
+
+test("moving columns keeps the editor, focus, staged values and paste on their fields", async () => {
+    const st = state(2);
+    setValue(st, 1, COLUMNS[0].id, "Lead", "Lead");
+    st.focus = { r: 0, c: 0 };
+    st.editing = { r: 0, c: 0 };
+    st.selected = [2];
+    moveColumn(st, COLUMNS[0].id, "last");
+    expect(st.columns[st.focus.c].id).toBe(COLUMNS[0].id);
+    expect(st.columns[st.editing.c].id).toBe(COLUMNS[0].id);
+    expect(st.selected).toEqual([2]);
+    expect(st.dirty[cellKey(1, COLUMNS[0].id)].value).toBe("Lead");
+    pasteAt(st, 1, st.focus.c, [["Supervisor"]]);
+    expect(st.dirty[cellKey(2, COLUMNS[0].id)].value).toBe("Supervisor");
+    expect(st.rows[1].values[COLUMNS[0].id].v).toBe("Operator 2");
+    undo(st);
+    expect(st.dirty[cellKey(2, COLUMNS[0].id)]).toBe(undefined);
+    expect(st.dirty[cellKey(1, COLUMNS[0].id)].value).toBe("Lead");
+});
+
+test("saved layouts survive restored fields and ignore removed or duplicate columns", () => {
+    const st = state();
+    moveColumn(st, COLUMNS[2].id, "first");
+    moveColumn(st, "@department", "last");
+    const restored = state();
+    reorderColumns(restored, [...st.columnOrder, "removed-field", COLUMNS[2].id]);
+    expect(visibleColumns(restored).map((col) => col.id)).toEqual(st.columnOrder);
+    expect(restored.columns.map((col) => col.id)).toEqual(st.columns.map((col) => col.id));
+    restored.columns = restored.columns.filter((col) => col.id !== COLUMNS[2].id);
+    reorderColumns(restored, restored.columnOrder);
+    expect(visibleColumns(restored).some((col) => col.id === COLUMNS[2].id)).toBe(false);
+    expect(moveColumn(restored, "removed-field", "first")).toBe(false);
+});
+
+test("identity-column menus move in both directions and stop at the first and last positions", async () => {
+    const st = state(1);
+    await mountGrid(st);
+    await click('[data-column-id="@department"] .rd-kebab');
+    await click(".rd-menu button:first-child");
+    await animationFrame();
+    expect(queryAllTexts(".rd-head .lb")[0]).toBe("Department");
+    expect(moveColumn(st, "@department", "left")).toBe(false);
+    moveColumn(st, "@department", "right");
+    expect(visibleColumns(st)[1].id).toBe("@department");
+    moveColumn(st, "@department", "last");
+    expect(moveColumn(st, "@department", "right")).toBe(false);
+});
 
 // =====================================================================
 //  Selection

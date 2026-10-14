@@ -32,6 +32,7 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { RdCellEditor } from "@pb_records/js/records_cells";
 import {
     RecordsGrid, createGridState, dirtyCount, setForRows, clearSelection, PAGE,
+    reorderColumns, moveColumn,
 } from "@pb_records/js/records_grid";
 import {
     RdFileMenu, RdFileReview, fileApplyLabel, fileSummaryLine,
@@ -40,6 +41,7 @@ import {
 import { RdReviewList, grouped, measureReserve } from "@pb_records/js/records_review";
 
 const FIELDS_KEY = (configId) => `pb_records.fields.${configId}`;
+const ORDER_KEY = (configId) => `pb_records.column_order.${configId}`;
 
 export class PbRecordsDesk extends Component {
     static template = "pb_records.PbRecordsDesk";
@@ -209,6 +211,7 @@ export class PbRecordsDesk extends Component {
             picked = this.restorePicked().filter((id) => known.has(id));
         }
         this.state.picked = picked;
+        this.grid.columnOrder = this.restoreOrder();
         this.state.stripOpen = picked.length === 0;
         this.syncColumns();
     }
@@ -234,7 +237,15 @@ export class PbRecordsDesk extends Component {
     restorePicked() {
         try {
             const raw = window.localStorage.getItem(FIELDS_KEY(this.state.configId));
-            return raw ? JSON.parse(raw) : [];
+            const picked = raw ? JSON.parse(raw) : [];
+            return Array.isArray(picked) ? picked : [];
+        } catch { return []; }
+    }
+
+    restoreOrder() {
+        try {
+            const order = JSON.parse(window.localStorage.getItem(ORDER_KEY(this.state.configId)) || "[]");
+            return Array.isArray(order) ? order : [];
         } catch { return []; }
     }
 
@@ -242,12 +253,23 @@ export class PbRecordsDesk extends Component {
         try {
             window.localStorage.setItem(FIELDS_KEY(this.state.configId),
                                         JSON.stringify(this.state.picked));
+            window.localStorage.setItem(ORDER_KEY(this.state.configId),
+                                        JSON.stringify(this.grid.columnOrder));
         } catch { /* private mode */ }
     }
 
     syncColumns() {
         const byId = Object.fromEntries(this.allCards.map((c) => [c.id, c]));
         this.grid.columns = this.state.picked.map((id) => byId[id]).filter(Boolean);
+        reorderColumns(this.grid, this.grid.columnOrder);
+        this.state.picked = this.grid.columns.map((col) => col.id);
+    }
+
+    moveColumn(columnId, direction) {
+        if (moveColumn(this.grid, columnId, direction)) {
+            this.state.picked = this.grid.columns.map((col) => col.id);
+            this.rememberPicked();
+        }
     }
 
     isPicked(id) { return this.state.picked.includes(id); }
@@ -256,8 +278,8 @@ export class PbRecordsDesk extends Component {
         const i = this.state.picked.indexOf(card.id);
         if (i >= 0) { this.state.picked.splice(i, 1); }
         else { this.state.picked.push(card.id); }
-        this.rememberPicked();
         this.syncColumns();
+        this.rememberPicked();
         await this.reload();
     }
 
@@ -265,8 +287,8 @@ export class PbRecordsDesk extends Component {
         const i = this.state.picked.indexOf(fieldId);
         if (i >= 0) {
             this.state.picked.splice(i, 1);
-            this.rememberPicked();
             this.syncColumns();
+            this.rememberPicked();
             this.reload();
         }
     }

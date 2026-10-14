@@ -344,37 +344,53 @@
 
           <div class="rd-head">
             <div class="rd-hcell rd-c-check"/>
-            <div class="rd-hcell rd-c-id">Person</div>
-            <div class="rd-hcell rd-c-code">Code</div>
-            <div class="rd-hcell rd-c-dept">Department</div>
-            <div t-foreach="st.columns" t-as="col" t-key="col.id" class="rd-hcell rd-c-data">
+            <div t-foreach="visibleColumns" t-as="col" t-key="col.id"
+                 t-attf-class="rd-hcell {{ col.css }} {{ col_index === 0 ? 'rd-c-first' : '' }}"
+                 t-att-data-column-id="col.id">
               <div class="rd-hcell-in">
                 <span class="lb" t-esc="col.label"/>
-                <span t-if="!col.editable" class="lk" t-att-title="col.hint and col.hint.title">
+                <span t-if="!col.builtin and !col.editable" class="lk" t-att-title="col.hint and col.hint.title">
                   <t t-out="ic('lock',12)"/>
                 </span>
-                <button type="button" class="rd-kebab" t-att-title="'Column actions'"
-                        t-on-click.stop="() => this.toggleMenu(col_index)">
+                <button type="button" class="rd-kebab" t-att-title="'Column actions: ' + col.label"
+                        t-on-click.stop="() => this.toggleMenu(col.id)">
                   <t t-out="ic('moreVertical',14)"/>
                 </button>
               </div>
               <div t-if="col.sub" class="rd-hcell-sub" t-esc="col.sub"/>
-              <div t-if="st.menu === col_index" class="rd-menu" t-on-click.stop="">
-                <button type="button" t-on-click="() => this.menuSetSelected(col)"
+              <div t-if="st.menu === col.id" class="rd-menu" t-on-click.stop="">
+                <button type="button" t-on-click="() => this.menuMove(col, 'first')"
+                        t-att-disabled="col_index === 0">
+                  <t t-out="ic('chevronLeft',14)"/> Move to first
+                </button>
+                <button type="button" t-on-click="() => this.menuMove(col, 'left')"
+                        t-att-disabled="col_index === 0">
+                  <t t-out="ic('chevronLeft',14)"/> Move left
+                </button>
+                <button type="button" t-on-click="() => this.menuMove(col, 'right')"
+                        t-att-disabled="col_last">
+                  <t t-out="ic('arrowRight',14)"/> Move right
+                </button>
+                <button type="button" t-on-click="() => this.menuMove(col, 'last')"
+                        t-att-disabled="col_last">
+                  <t t-out="ic('arrowRight',14)"/> Move to last
+                </button>
+                <div t-if="!col.builtin" class="rd-menu-sep"/>
+                <button t-if="!col.builtin" type="button" t-on-click="() => this.menuSetSelected(col)"
                         t-att-disabled="!st.selected.length">
                   <t t-out="ic('users',14)"/> Set for everyone selected…
                 </button>
-                <button type="button" t-on-click="() => this.menuSetAll(col)">
+                <button t-if="!col.builtin" type="button" t-on-click="() => this.menuSetAll(col)">
                   <t t-out="ic('list',14)"/> Set for all <t t-esc="loadedCount"/> shown…
                 </button>
-                <button type="button" t-on-click="() => this.menuClear(col)">
+                <button t-if="!col.builtin" type="button" t-on-click="() => this.menuClear(col)">
                   <t t-out="ic('x',14)"/> Clear for selected
                 </button>
-                <div class="rd-menu-sep"/>
-                <button type="button" t-on-click="() => this.menuRevert(col)">
+                <div t-if="!col.builtin" class="rd-menu-sep"/>
+                <button t-if="!col.builtin" type="button" t-on-click="() => this.menuRevert(col)">
                   <t t-out="ic('rotate',14)"/> Undo my edits in this column
                 </button>
-                <button type="button" t-on-click="() => this.menuHide(col)">
+                <button t-if="!col.builtin" type="button" t-on-click="() => this.menuHide(col)">
                   <t t-out="ic('eyeOff',14)"/> Hide this column
                 </button>
               </div>
@@ -396,7 +412,9 @@
                       <t t-if="isSelected(w.row.id)" t-out="ic('check',11)"/>
                     </button>
                   </div>
-                  <div class="rd-cell rd-c-id">
+                  <t t-foreach="visibleColumns" t-as="col" t-key="col.id">
+                  <div t-if="col.builtin === 'person'"
+                       t-attf-class="rd-cell rd-c-id {{ col_index === 0 ? 'rd-c-first' : '' }}">
                     <span class="rd-av" t-attf-style="background-image:url({{ w.row.avatar }})">
                       <t t-esc="ini(w.row.name)"/>
                     </span>
@@ -405,15 +423,16 @@
                       <span class="jb" t-esc="w.row.job"/>
                     </span>
                   </div>
-                  <div class="rd-cell rd-c-code" t-esc="w.row.code"/>
-                  <div class="rd-cell rd-c-dept" t-esc="w.row.department"/>
+                  <div t-elif="col.builtin === 'code'"
+                       t-attf-class="rd-cell rd-c-code {{ col_index === 0 ? 'rd-c-first' : '' }}" t-esc="w.row.code"/>
+                  <div t-elif="col.builtin === 'department'"
+                       t-attf-class="rd-cell rd-c-dept {{ col_index === 0 ? 'rd-c-first' : '' }}" t-esc="w.row.department"/>
+                    <div t-else=""
+                         t-attf-class="{{ cellClass(col, w.row) }} rd-c-data {{ col_index === 0 ? 'rd-c-first' : '' }} {{ isFocused(w.i, col.dataIndex) ? 'focus' : '' }}"
+                         t-on-click="(ev) => this.onCellClick(ev, w.i, col.dataIndex, w.row, col)"
+                         t-on-dblclick="() => this.onCellDblClick(w.i, col.dataIndex, w.row, col)">
 
-                  <t t-foreach="st.columns" t-as="col" t-key="col.id">
-                    <div t-attf-class="{{ cellClass(col, w.row) }} rd-c-data {{ isFocused(w.i, col_index) ? 'focus' : '' }}"
-                         t-on-click="(ev) => this.onCellClick(ev, w.i, col_index, w.row, col)"
-                         t-on-dblclick="() => this.onCellDblClick(w.i, col_index, w.row, col)">
-
-                      <t t-if="isEditing(w.i, col_index)">
+                      <t t-if="isEditing(w.i, col.dataIndex)">
                         <RdCellEditor col="col" value="editorValue(col, w.row)"
                                       lookup="lookupFor(col)"
                                       onCommit.bind="commit"
@@ -437,11 +456,10 @@
 
                 <div t-else="" class="rd-row skel">
                   <div class="rd-cell rd-c-check"/>
-                  <div class="rd-cell rd-c-id"><span class="rd-sk w60"/></div>
-                  <div class="rd-cell rd-c-code"><span class="rd-sk w40"/></div>
-                  <div class="rd-cell rd-c-dept"><span class="rd-sk w50"/></div>
-                  <t t-foreach="st.columns" t-as="col" t-key="col.id">
-                    <div class="rd-cell rd-c-data"><span class="rd-sk w70"/></div>
+                  <t t-foreach="visibleColumns" t-as="col" t-key="col.id">
+                    <div t-attf-class="rd-cell {{ col.css }} {{ col_index === 0 ? 'rd-c-first' : '' }}">
+                      <span class="rd-sk w70"/>
+                    </div>
                   </t>
                   <div t-if="!st.columns.length" class="rd-cell rd-c-nudge"/>
                 </div>
@@ -652,6 +670,7 @@
                          onLookup.bind="onLookup"
                          onSetFor.bind="openSetFor"
                          onHideColumn.bind="hideColumn"
+                         onMoveColumn.bind="moveColumn"
                          onPasted.bind="onPasted"
                          onSelectAllMatching.bind="onSelectAllMatching"
                          onClearFilters.bind="clearFilters"/>
