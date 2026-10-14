@@ -62,7 +62,7 @@
                                     <t t-else="">PayAI</t>
                                     <span class="payai-full-msg-time" t-esc="formatTimestamp(msg.timestamp)"/>
                                 </div>
-                                <div class="payai-full-msg-text" t-esc="msg.content"/>
+                                <div class="payai-full-msg-text" t-att-class="{'payai-rich': msg.role !== 'user'}"><t t-if="msg.role === 'user'" t-esc="msg.content"/><t t-else=""><t t-set="rich" t-value="richOf(msg.content)"/><t t-call="pb_payroll_ai_insights.RichText"/></t></div>
 
                                 <t t-if="msg.chart">
                                     <div class="payai-full-msg-chart">

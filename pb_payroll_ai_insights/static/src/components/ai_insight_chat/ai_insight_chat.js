@@ -278,7 +278,12 @@ export function speechText(text, opts = {}) {
         .replace(/<[^>]*>/g, " ")
         .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&quot;/g, "\u0022").replace(/&#39;/g, "'")
-        .replace(/[*_#\x60>|~]+/g, " ");
+        // the answer's list bullets and "---" rules are not words
+        .replace(/^[ \t]*(?:[-+•][ \t]+|([-*_])(?:[ \t]*\1){2,}[ \t]*$)/gm, " ")
+        // markdown marks out: stars and backticks hug their words
+        // ("**Dữ liệu lương**:" → "Dữ liệu lương:")
+        .replace(/[*\x60]+/g, "")
+        .replace(/[_#>|~]+/g, " ");
     say = debrandSpoken(say, opts.brand);
     const word = opts.amount || "an amount shown on screen";
     say = say.replace(/\s+/g, " ");
@@ -353,6 +358,157 @@ export function markerOf(row) {
         };
     }
     return null;
+}
+
+/* ONECHAT — PayAI's free-text answers arrive as light markdown ("**Home ›
+   Approvals**", "1. **Dữ liệu lương**: …"). They are drawn from a TREE OF
+   PLAIN STRINGS (`richBlocks`), never from HTML: the templates
+   (pb_payroll_ai_insights.RichText) print every piece with t-esc, so nothing
+   the model writes can become a tag, a link, an image or a script — "<img
+   src=x onerror=…>" is shown as those characters. The whitelist:
+     **bold**, *italic*, ***both***, `code`;
+     numbered ("1." / "1)") and bulleted ("-", "*", "+", "•") lists, one
+     indented level under an item, an indented line continuing an item;
+     "#" headings drawn as a bold line; "---" between paragraphs;
+     line breaks and blank-line paragraphs.
+   Anything else ("5 * 3", a lone "**", "[text](url)") stays as written.
+   Shape: [{kind: "p", lines}, {kind: "ol"|"ul", start, items: [{lines,
+   subs: [{kind, start, items: [{lines}]}]}]}], a line = [{text, b, i,
+   code}]. No look-behind (older Safari, OC49). */
+const RICH_OL = /^([ \t]*)(\d{1,3})[.)][ \t]+(.*)$/;
+const RICH_UL = /^([ \t]*)[-*+•][ \t]+(.*)$/;
+const RICH_H = /^[ \t]{0,3}#{1,6}[ \t]+(.*?)[ \t]*#*[ \t]*$/;
+const RICH_RULE = /^[ \t]*([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
+const RICH_CODE = /`([^`\n]+)`/g;
+/* At one position: *** before ** before *; the inside never starts or ends
+   with a space or a star. */
+const RICH_EMPH = /\*\*\*([^\s*](?:[^*]*?[^\s*])?)\*\*\*|\*\*([^\s*](?:[\s\S]*?[^\s*])?)\*\*|\*([^\s*](?:[^*]*?[^\s*])?)\*/;
+const RICH_WORD = /[A-Za-z0-9À-ỹ]/;
+const RICH_CACHE = new Map();
+const RICH_CACHE_MAX = 300;
+
+function richPush(out, text, f) {
+    if (!text) {
+        return;
+    }
+    const last = out[out.length - 1];
+    if (last && last.b === !!f.b && last.i === !!f.i && last.code === !!f.code) {
+        last.text += text;
+    } else {
+        out.push({ text: String(text), b: !!f.b, i: !!f.i, code: !!f.code });
+    }
+}
+
+function richEmph(out, s, f) {
+    let rest = s;
+    while (rest) {
+        const m = RICH_EMPH.exec(rest);
+        if (!m) {
+            richPush(out, rest, f);
+            return;
+        }
+        const end = m.index + m[0].length;
+        // A single star inside a word ("Rate*Hours*1.5") is not italic.
+        if (m[3] !== undefined && ((m.index > 0 && RICH_WORD.test(rest[m.index - 1]))
+                                   || (end < rest.length && RICH_WORD.test(rest[end])))) {
+            richPush(out, rest.slice(0, m.index + 1), f);
+            rest = rest.slice(m.index + 1);
+            continue;
+        }
+        richPush(out, rest.slice(0, m.index), f);
+        if (m[1] !== undefined) {
+            richPush(out, m[1], { ...f, b: true, i: true });
+        } else if (m[2] !== undefined) {
+            richEmph(out, m[2], { ...f, b: true });
+        } else {
+            richPush(out, m[3], { ...f, i: true });
+        }
+        rest = rest.slice(end);
+    }
+}
+
+/** One line of text → its pieces, [{text, b, i, code}]. */
+export function richInline(text, flags = {}) {
+    const out = [];
+    const s = String(text || "");
+    let at = 0;
+    RICH_CODE.lastIndex = 0;
+    let m;
+    while ((m = RICH_CODE.exec(s))) {
+        richEmph(out, s.slice(at, m.index), flags);
+        richPush(out, m[1], { ...flags, code: true });
+        at = m.index + m[0].length;
+    }
+    richEmph(out, s.slice(at), flags);
+    return out;
+}
+
+/** A PayAI answer → the block tree the RichText template draws. */
+export function richBlocks(text) {
+    const src = String(text || "").replace(/\r\n?/g, "\n");
+    if (RICH_CACHE.has(src)) {
+        return RICH_CACHE.get(src);
+    }
+    const blocks = [];
+    let para = null;
+    let list = null;
+    const indentOf = (ws) => ws.replace(/\t/g, "    ").length;
+    for (const raw of src.split("\n")) {
+        if (!raw.trim() || RICH_RULE.test(raw)) {
+            para = null;
+            list = null;
+            continue;
+        }
+        const ol = RICH_OL.exec(raw);
+        const ul = !ol && RICH_UL.exec(raw);
+        if (ol || ul) {
+            const kind = ol ? "ol" : "ul";
+            const start = ol ? Number(ol[2]) : 1;
+            const item = { lines: [richInline(ol ? ol[3] : ul[2])], subs: [] };
+            if (list && list.items.length && indentOf(ol ? ol[1] : ul[1]) >= 2) {
+                const parent = list.items[list.items.length - 1];
+                let sub = parent.subs[parent.subs.length - 1];
+                if (!sub || sub.kind !== kind) {
+                    sub = { kind, start, items: [] };
+                    parent.subs.push(sub);
+                }
+                sub.items.push({ lines: item.lines });
+                continue;
+            }
+            if (!list || list.kind !== kind) {
+                list = { kind, start, items: [] };
+                blocks.push(list);
+            }
+            para = null;
+            list.items.push(item);
+            continue;
+        }
+        const h = RICH_H.exec(raw);
+        if (list && !h && /^[ \t]{2,}/.test(raw) && list.items.length) {
+            // An indented line continues the item above it.
+            const last = list.items[list.items.length - 1];
+            const sub = last.subs[last.subs.length - 1];
+            const into = sub ? sub.items[sub.items.length - 1] : last;
+            into.lines.push(richInline(raw.trim()));
+            continue;
+        }
+        list = null;
+        if (h) {
+            blocks.push({ kind: "p", lines: [richInline(h[1], { b: true })] });
+            para = null;
+            continue;
+        }
+        if (!para) {
+            para = { kind: "p", lines: [] };
+            blocks.push(para);
+        }
+        para.lines.push(richInline(raw.trim()));
+    }
+    if (RICH_CACHE.size >= RICH_CACHE_MAX) {
+        RICH_CACHE.delete(RICH_CACHE.keys().next().value);
+    }
+    RICH_CACHE.set(src, blocks);
+    return blocks;
 }
 
 /**
@@ -1623,6 +1779,12 @@ export class AiInsightChat extends Component {
                 this.chatBodyRef.el.scrollTop = this.chatBodyRef.el.scrollHeight;
             }
         }, 100);
+    }
+
+    /** A PayAI answer as the safe block tree (`richBlocks`) the RichText
+     *  template draws — bold, lists and line breaks, never HTML. */
+    richOf(text) {
+        return richBlocks(text);
     }
 
     formatTimestamp(ts) {
