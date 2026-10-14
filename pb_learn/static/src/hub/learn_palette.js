@@ -14,6 +14,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
+import { user } from "@web/core/user";
 
 import { RT, tx, SP } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
@@ -25,7 +26,9 @@ const BASE = 5000;
 function restoreLang() {
     try {
         const p = JSON.parse(window.localStorage.getItem("pbLearnPrefs") || "{}");
-        const sessionLang = window.odoo?.session_info?.user_context?.lang || "";
+        // `user.lang` ("vi-VN"): the page's session info is deleted on load on
+        // this version, so the old read always fell back to English (ONECHAT OC2).
+        const sessionLang = String(user.lang || "").toLowerCase();
         return p.lang || (sessionLang.startsWith("vi") ? "vi" : "en");
     } catch {
         return "en";

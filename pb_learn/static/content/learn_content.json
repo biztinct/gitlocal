@@ -1,9 +1,29 @@
 {
   "__generated__": "GENERATED FILE. Do not edit. Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py",
   "chrome": {
+    "aboutColumn": {
+      "en": "About this column",
+      "vi": "Về cột số liệu này"
+    },
+    "aboutScreen": {
+      "en": "About this screen",
+      "vi": "Về màn hình này"
+    },
     "aboutWord": {
       "en": "about",
       "vi": "khoảng"
+    },
+    "answering": {
+      "en": "PayAI is answering",
+      "vi": "PayAI đang trả lời"
+    },
+    "askAny": {
+      "en": "Ask a question, or tell me what to do…",
+      "vi": "Đặt câu hỏi, hoặc bảo tôi cần làm gì…"
+    },
+    "askAnyNoAct": {
+      "en": "Ask about this screen or your pay figures…",
+      "vi": "Hỏi về màn hình này hoặc số liệu lương của bạn…"
     },
     "askDataInstead": {
       "en": "Ask about your pay data instead",
@@ -161,9 +181,29 @@
       "en": "Before doing this for real, always check",
       "vi": "Trước khi làm thật, luôn kiểm tra"
     },
+    "clearConv": {
+      "en": "Clear conversation",
+      "vi": "Xoá cuộc trò chuyện"
+    },
+    "clearConvConfirm": {
+      "en": "Clear this conversation? Plans waiting for you stop working.",
+      "vi": "Xoá cuộc trò chuyện này? Các kế hoạch đang chờ bạn sẽ không dùng được nữa."
+    },
+    "clearConvNo": {
+      "en": "Keep it",
+      "vi": "Giữ lại"
+    },
+    "clearConvYes": {
+      "en": "Clear it",
+      "vi": "Xoá"
+    },
+    "close": {
+      "en": "Close",
+      "vi": "Đóng"
+    },
     "coachName": {
-      "en": "Payobook helper",
-      "vi": "Trợ lý Payobook"
+      "en": "PayAI",
+      "vi": "PayAI"
     },
     "coachNoScreen": {
       "en": "This screen has no lesson yet. You can still ask me anything in the box below.",
@@ -176,6 +216,10 @@
     "commitImport": {
       "en": "Commit import",
       "vi": "Ghi vào hệ thống"
+    },
+    "composedAgain": {
+      "en": "Composed from the guide — ask again to see it.",
+      "vi": "Tổng hợp từ tài liệu hướng dẫn — hãy hỏi lại để xem."
     },
     "composedAnswer": {
       "en": "Composed from the guide",
@@ -265,6 +309,10 @@
       "en": "Explain this screen",
       "vi": "Giải thích màn hình này"
     },
+    "figuresOnScreen": {
+      "en": "Here are the figures you asked for — they are on screen.",
+      "vi": "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình."
+    },
     "findItIn": {
       "en": "Find it in",
       "vi": "Nằm ở"
@@ -272,6 +320,14 @@
     "finish": {
       "en": "Finish",
       "vi": "Hoàn thành"
+    },
+    "fromGuide": {
+      "en": "From the guide",
+      "vi": "Từ tài liệu hướng dẫn"
+    },
+    "fromPayData": {
+      "en": "From your pay data",
+      "vi": "Từ dữ liệu lương của bạn"
     },
     "fullLesson": {
       "en": "Full lesson",
@@ -298,8 +354,8 @@
       "vi": "Căn cứ trên màn hình này:"
     },
     "helperFailed": {
-      "en": "The guide could not load just now. Your screen is not affected. Close the helper and open it again, or use the Ask tab.",
-      "vi": "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng trợ lý rồi mở lại, hoặc dùng tab Hỏi đáp."
+      "en": "The guide could not load just now. Your screen is not affected. Close PayAI and open it again.",
+      "vi": "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng PayAI rồi mở lại."
     },
     "helperLoading": {
       "en": "Getting the guide ready…",
@@ -316,6 +372,18 @@
     "honest": {
       "en": "Ask me to do something and I show you the plan first. I only ever do what you could do yourself on the screen.",
       "vi": "Bạn nhờ tôi làm một việc, tôi cho bạn xem kế hoạch trước. Tôi chỉ làm những gì bạn tự làm được trên màn hình."
+    },
+    "honestAct": {
+      "en": "Ask me anything, or ask me to do something. I always show you the plan first, and nothing changes until you say so.",
+      "vi": "Hãy hỏi tôi bất cứ điều gì, hoặc nhờ tôi làm một việc. Tôi luôn cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn đồng ý."
+    },
+    "honestAsk": {
+      "en": "Ask me about this screen, how to do something, or your pay figures.",
+      "vi": "Hãy hỏi tôi về màn hình này, cách làm một việc, hoặc số liệu lương của bạn."
+    },
+    "honestGuide": {
+      "en": "Ask me how anything on this screen works.",
+      "vi": "Hãy hỏi tôi bất cứ phần nào trên màn hình này hoạt động ra sao."
     },
     "howAsk": {
       "en": "How to get access:",
@@ -365,6 +433,10 @@
       "en": "Journals",
       "vi": "Bút toán"
     },
+    "jumpLatest": {
+      "en": "Jump to latest",
+      "vi": "Tới tin mới nhất"
+    },
     "learn": {
       "en": "Learning",
       "vi": "Học tập"
@@ -376,6 +448,10 @@
     "lessonsWord": {
       "en": "lessons",
       "vi": "bài"
+    },
+    "letMePractise": {
+      "en": "Let me practise this",
+      "vi": "Cho tôi thực hành việc này"
     },
     "lifeTrailHere": {
       "en": "Nam is here",
@@ -565,6 +641,10 @@
       "en": "Match…",
       "vi": "Khớp…"
     },
+    "micStart": {
+      "en": "Speak instead of typing",
+      "vi": "Nói thay vì gõ"
+    },
     "min": {
       "en": "min",
       "vi": "phút"
@@ -600,6 +680,10 @@
     "monthEndToday": {
       "en": "Changes close today",
       "vi": "Hôm nay là hạn chốt thay đổi"
+    },
+    "more": {
+      "en": "More",
+      "vi": "Thêm"
     },
     "motionOn": {
       "en": "Motion on",
@@ -749,17 +833,25 @@
       "en": "Open",
       "vi": "Mở"
     },
+    "openingPractice": {
+      "en": "Opening practice: {name} — on the practice company, nothing real changes.",
+      "vi": "Đang mở bài thực hành: {name} — trên công ty thực hành, không có gì thật bị thay đổi."
+    },
+    "openingWatch": {
+      "en": "Opening the walkthrough: {name}. You watch; nothing is pressed.",
+      "vi": "Đang mở phần hướng dẫn: {name}. Bạn chỉ xem, không có nút nào bị bấm."
+    },
     "optional": {
       "en": "Optional",
       "vi": "Tuỳ chọn"
     },
     "orbHint": {
-      "en": "Help for this screen. Press ? on any screen.",
-      "vi": "Trợ giúp cho màn hình này. Bấm ? ở bất kỳ màn hình nào."
+      "en": "PayAI: help for this screen. Press ? on any screen.",
+      "vi": "PayAI: trợ giúp cho màn hình này. Bấm ? ở bất kỳ màn hình nào."
     },
     "orbLabel": {
-      "en": "Ask Payobook",
-      "vi": "Hỏi Payobook"
+      "en": "Ask PayAI",
+      "vi": "Hỏi PayAI"
     },
     "outline": {
       "en": "Outline",
@@ -777,6 +869,10 @@
       "en": "Overall",
       "vi": "Tiến độ chung"
     },
+    "pinDashboard": {
+      "en": "Pin to dashboard",
+      "vi": "Ghim vào bảng điều khiển"
+    },
     "pointNotHere": {
       "en": "That control is not on this screen right now. I will not pretend to point at it.",
       "vi": "Nút đó hiện không có trên màn hình này. Tôi sẽ không giả vờ chỉ vào nó."
@@ -784,6 +880,10 @@
     "practiceBanner": {
       "en": "Practice company. Nothing you do here reaches a real employee, payslip or pay run.",
       "vi": "Công ty thực hành. Mọi thao tác ở đây đều không chạm tới nhân viên, phiếu lương hay đợt lương thật."
+    },
+    "practiceChipsLead": {
+      "en": "Pick one to practise — on the practice company, nothing real changes.",
+      "vi": "Chọn một việc để thực hành — trên công ty thực hành, không có gì thật bị thay đổi."
     },
     "practiceHint": {
       "en": "Use the menu on the left and the tabs above the screen to move around. In Payobook the tabs are a column of icons down the left; here they show their names. Leave when you are done.",
@@ -817,6 +917,10 @@
       "en": "Practice company — nothing here is real.",
       "vi": "Công ty thực hành — không có gì ở đây là thật."
     },
+    "practiseThis": {
+      "en": "Practise this",
+      "vi": "Thực hành việc này"
+    },
     "prereq": {
       "en": "What you need first",
       "vi": "Cần gì trước"
@@ -832,6 +936,14 @@
     "reachViaBody": {
       "en": "This screen no longer has its own menu line. Open the one named above, and you will find this screen inside it.",
       "vi": "Màn hình này không còn dòng menu riêng nữa. Bạn hãy mở dòng menu ghi ở trên, rồi tìm màn hình này ở bên trong."
+    },
+    "readAloud": {
+      "en": "Read answers aloud",
+      "vi": "Đọc to câu trả lời"
+    },
+    "recording": {
+      "en": "Recording",
+      "vi": "Đang ghi âm"
     },
     "recoveryUsed": {
       "en": "you needed a way back on this run",
@@ -909,6 +1021,10 @@
       "en": "Owner",
       "vi": "Chủ doanh nghiệp"
     },
+    "routeFailed": {
+      "en": "That did not go through. Please try again in a moment.",
+      "vi": "Việc này chưa thực hiện được. Vui lòng thử lại sau giây lát."
+    },
     "runPayroll": {
       "en": "Run payroll",
       "vi": "Chạy bảng lương"
@@ -960,6 +1076,10 @@
     "scNudge": {
       "en": "Not that one — try the glowing control.",
       "vi": "Không phải nút đó — hãy thử nút đang phát sáng."
+    },
+    "scPractise": {
+      "en": "Practise",
+      "vi": "Thực hành"
     },
     "scPressIt": {
       "en": "Press the control I am pointing at.",
@@ -1045,6 +1165,10 @@
       "en": "Search the journey",
       "vi": "Tìm trong hành trình"
     },
+    "send": {
+      "en": "Send",
+      "vi": "Gửi"
+    },
     "setAdminOnly": {
       "en": "Only an administrator can change these.",
       "vi": "Chỉ quản trị viên mới thay đổi được các mục này."
@@ -1064,6 +1188,10 @@
     "setTitle": {
       "en": "Learning settings",
       "vi": "Cài đặt học tập"
+    },
+    "showAgain": {
+      "en": "Show again",
+      "vi": "Xem lại"
     },
     "showHint": {
       "en": "Hint",
@@ -1088,6 +1216,10 @@
     "source": {
       "en": "Grounded in:",
       "vi": "Căn cứ:"
+    },
+    "spoken": {
+      "en": "Spoken",
+      "vi": "Nói bằng giọng"
     },
     "startHere": {
       "en": "Start here",
@@ -1186,16 +1318,16 @@
       "vi": "Không rời khỏi Payobook"
     },
     "swVoiceBody": {
-      "en": "Adds a microphone to the Ask tab. Each person agrees once before anything is recorded. What they say becomes text they check before sending.",
-      "vi": "Thêm micro vào thẻ Hỏi đáp. Mỗi người đồng ý một lần trước khi ghi âm. Lời nói được chuyển thành chữ để người dùng kiểm tra trước khi gửi."
+      "en": "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send.",
+      "vi": "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi."
     },
     "swVoiceLeaves": {
       "en": "Sends the recording to a speech service.",
       "vi": "Gửi bản ghi âm tới dịch vụ nhận dạng giọng nói."
     },
     "swVoiceTitle": {
-      "en": "Talk to the helper",
-      "vi": "Nói chuyện với trợ lý"
+      "en": "Talk to PayAI",
+      "vi": "Nói chuyện với PayAI"
     },
     "tabAsk": {
       "en": "Ask",
@@ -1321,6 +1453,10 @@
       "en": "Undo it",
       "vi": "Hoàn tác"
     },
+    "useVoice": {
+      "en": "Use my voice",
+      "vi": "Dùng giọng nói của tôi"
+    },
     "verify": {
       "en": "What to check first",
       "vi": "Cần kiểm tra gì trước"
@@ -1352,6 +1488,10 @@
     "welcomeTitle": {
       "en": "Welcome to Payobook",
       "vi": "Chào mừng bạn đến với Payobook"
+    },
+    "whatCanYouDo": {
+      "en": "What can you do?",
+      "vi": "Bạn làm được gì?"
     },
     "whatIs": {
       "en": "What it is",
@@ -33888,5 +34028,5 @@
       }
     }
   ],
-  "version": "7b1859b316ca"
+  "version": "ce6d4e37542a"
 }

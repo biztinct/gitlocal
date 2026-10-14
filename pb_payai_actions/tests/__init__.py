@@ -12,3 +12,5 @@ from . import test_payai_fix_access
 from . import test_payai_fix_vi
 # ONECHAT OC1 — the helper's router on payobook's shape; ask_only; markers after a plan.
 from . import test_onechat_router
+# ONECHAT OC2 — the one chat's browser halves, run in node.
+from . import test_onechat_client

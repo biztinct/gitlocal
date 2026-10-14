@@ -1652,3 +1652,15 @@ msgstr "Cuộc trò chuyện này là của người khác."
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
 msgid "That note cannot be recorded."
 msgstr "Không thể ghi lại ghi chú này."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "From your pay data"
+msgstr "Từ dữ liệu lương của bạn"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Here are the figures you asked for — they are on screen."
+msgstr "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình."

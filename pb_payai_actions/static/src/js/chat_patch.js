@@ -3,7 +3,7 @@
  * PAYAI P1 — the chat learns to draw and answer PayAI cards.
  *
  * Patches the existing chat (both the floating pill and the helper drawer's
- * Ask tab inherit these methods) rather than rewriting it:
+ * one chat inherit these methods) rather than rewriting it:
  *
  *  - on mount, it sends the person's own ⌘K rows to their conversation
  *    (`rpc_register_doors`), so "open the runs board" resolves against the
@@ -27,6 +27,12 @@ import { AiInsightChat } from "@pb_payroll_ai_insights/components/ai_insight_cha
 import { runPayroll, stashPrefill } from "@pb_payrun_wizard/js/run_driver";
 
 export const PAYAI_HOOKS = "pb_payai";
+
+/* ONECHAT OC2 — the ⌘K doors are registered once per page load and per
+   conversation, not on every open of the drawer: a re-open costs one status
+   call, no doors call (handover §5.1). The key is the rows themselves, so a
+   person whose doors changed (a role lent) registers again. */
+const DOORS = { key: "" };
 
 /**
  * P3:crit-7 — what to say when a task call did not come back with a card.
@@ -280,7 +286,6 @@ patch(AiInsightChat.prototype, {
     setup() {
         super.setup(...arguments);
         this._payaiOrm = useService("orm");
-        this._payaiVoice = false;
         this._payaiResolve = null;
         this._payaiDoorsReady = Promise.resolve();
         this._payaiOpenHook = null;
@@ -323,16 +328,24 @@ patch(AiInsightChat.prototype, {
         }
         try {
             const rows = await palette.entries();
+            const doors = rows.filter((r) => !r.anyQuery).map((r) => ({
+                id: r.id, label: String(r.label || ""), sublabel: String(r.sublabel || ""),
+                group: String(r.group || ""), groups: r.groups || [],
+                restricted: !!r.restricted, kind: doorKind(r), target: doorTarget(r),
+            }));
+            const key = `${this.state.sessionId || ""}|${JSON.stringify(doors)}`;
+            if (this.constructor.embedded && this.state.sessionId && DOORS.key === key) {
+                return;
+            }
             const out = await rpc("/web/dataset/call_kw", {
                 model: "payroll.ai.conversation",
                 method: "rpc_register_doors",
-                args: [this.state.sessionId, rows.filter((r) => !r.anyQuery).map((r) => ({
-                    id: r.id, label: String(r.label || ""), sublabel: String(r.sublabel || ""),
-                    group: String(r.group || ""), groups: r.groups || [],
-                    restricted: !!r.restricted, kind: doorKind(r), target: doorTarget(r),
-                }))],
+                args: [this.state.sessionId, doors],
                 kwargs: {},
             }, { silent: true });
+            if (this.constructor.embedded) {
+                DOORS.key = `${(out && out.session_id) || this.state.sessionId || ""}|${JSON.stringify(doors)}`;
+            }
             if (out && out.session_id && !this.state.sessionId) {
                 this.state.sessionId = out.session_id;
             }
@@ -361,24 +374,37 @@ patch(AiInsightChat.prototype, {
         return out;
     },
 
-    _extraSendKwargs() {
+    /** ONECHAT OC2 — what rides along with a send. A card chip's answer
+     *  (`resolve`) wins and travels alone. Otherwise `voice: true` only when
+     *  THIS send is spoken (the words heard into an empty box, sent as heard
+     *  — the chat's `_takeSpoken`; never a chip, never a hand-off: ledger
+     *  OC7), and `ask_only: true` when the router said the sentence is a
+     *  question, so PayAI answers it and never plans it (OC10). */
+    _extraSendKwargs(opts) {
         const resolve = this._payaiResolve;
-        const voice = this._payaiVoice;
         this._payaiResolve = null;
-        this._payaiVoice = false;
-        const out = resolve ? { resolve } : { ...super._extraSendKwargs(...arguments) };
-        if (voice) { out.voice = true; }
+        if (resolve) {
+            return { resolve };
+        }
+        const o = opts && typeof opts === "object" ? opts : {};
+        const out = { ...super._extraSendKwargs(...arguments) };
+        if (o.spoken) { out.voice = true; }
+        if (o.askOnly) { out.ask_only = true; }
         return out;
     },
 
-    /** P2 — the box was filled by voice: the send that follows is spoken. */
-    async _transcribe() {
-        const before = this.state.inputText;
-        const out = await super._transcribe(...arguments);
-        if (this.state.inputText && this.state.inputText !== before) {
-            this._payaiVoice = true;
-        }
-        return out;
+    /** Clear conversation: the doors go with the conversation they were
+     *  registered on, so the next open registers them again. */
+    async clearHistory() {
+        DOORS.key = "";
+        return super.clearHistory(...arguments);
+    },
+
+    /** A send that answers a PayAI card never goes through the router: a
+     *  router would read "Cancel" or a person's name as a new question
+     *  (OC-R4). */
+    _bypassRouter() {
+        return Boolean(this._payaiResolve) || super._bypassRouter(...arguments);
     },
 
     _payaiSpeak(text) {

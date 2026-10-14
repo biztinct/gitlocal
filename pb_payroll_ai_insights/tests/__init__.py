@@ -9,3 +9,5 @@ from . import test_schemectx_p2_grouping
 from . import test_p0_gates
 # ONECHAT OC1 — one conversation: markers, helper status, the catch-all.
 from . import test_onechat_conversation
+# ONECHAT OC2 — the pill decides the answer language.
+from . import test_onechat_prompt
