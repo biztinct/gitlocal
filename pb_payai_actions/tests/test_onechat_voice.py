@@ -27,12 +27,19 @@ from odoo.tests.common import tagged
 
 from odoo.addons.pb_payai_actions.payai import runner
 from odoo.addons.pb_payai_actions.payai.i18n import reset_lang, set_lang
+from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine import PayrollAIEngine
 # Through the module: a class imported by name would be collected twice.
 from odoo.addons.pb_payai_actions.tests import test_payai_p3 as p3
 
 PLAN_JUNE = 'Run June 2031 payroll for Payai Retail End-Month'
 PLAN_CHI = 'Run December 2031 payroll for Payai Retail End-Month for Vũ Khánh Chi only'
 Q6_EN = 'Tap Do it — I heard a name or an amount, so I need your tap.'
+
+
+def _answered(self_, message, conversation_history=None, context=None):
+    """The question path, stubbed: no provider is reached."""
+    return {'response': 'answered', 'intent': 'payroll_knowledge',
+            'follow_up_questions': []}
 
 
 @tagged('post_install', '-at_install', 'payai', 'onechat')
@@ -157,8 +164,11 @@ class TestOneChatVoiceRed(p3.TestPayaiP3Red):
         self.assertEqual(card['kind'], 'plan', card)
         self.company.payai_voice_go_ahead = True
         # A spoken "APPROVE" sent from the box (the card's word, said aloud).
-        self.env['payroll.ai.conversation'].with_user(self.approver).rpc_send_message(
-            'APPROVE', session.id, None, voice=True)
+        # It is not a command, so it reaches the question path — stubbed, as
+        # these fixtures have no AI service (test_onechat_router precedent).
+        with patch.object(PayrollAIEngine, 'process_message', _answered):
+            self.env['payroll.ai.conversation'].with_user(self.approver).rpc_send_message(
+                'APPROVE', session.id, None, voice=True)
         self.assertFalse(self._decisions(request), 'a spoken APPROVE decided something')
         decided = self.env['payai.task'].sudo().search(
             [('user_id', '=', self.approver.id), ('state', 'in', ('confirmed', 'running', 'done'))])
