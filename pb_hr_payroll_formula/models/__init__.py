@@ -115,3 +115,4 @@ from . import statutory_approval
 from . import mapping_approval
 from . import schememap_approval
 from . import demo_approval
+from . import payroll_tax_table

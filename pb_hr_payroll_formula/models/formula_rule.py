@@ -19,6 +19,7 @@ _logger = logging.getLogger(__name__)
 # produces no version row.
 VERSIONED_FIELDS = {
     'excel_formula', 'code', 'name', 'category_id',
+    'tax_table_id', 'tax_field', 'tax_band_sequence', 'tax_parameter_code',
     'column_type', 'number_format', 'appears_on_payslip',
     # COLROLES — moving a column out of Payroll (or back into it) changes what the
     # structure is understood to DO, so it earns a version row like any other

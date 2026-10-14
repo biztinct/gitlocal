@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.147.1',
+    'version': '19.0.1.148.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
@@ -88,6 +88,7 @@ License: LGPL-3
         'views/assets.xml',
         'views/formula_config_views.xml',
         'views/formula_rule_views.xml',
+        'views/payroll_tax_table_views.xml',
         'views/integration_views.xml',
         # RD53 — inherits the two views above, so it must load AFTER them.
         'views/integration_cron_views.xml',

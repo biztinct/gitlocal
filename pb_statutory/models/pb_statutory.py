@@ -28,8 +28,10 @@ no edit UI. Records stay editable through their existing native forms.
 """
 import logging
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
+from odoo.addons.pb_hr_payroll_formula.models.formula_legislation import _COUNTRY
+from odoo.addons.pb_hr_payroll_formula.models.formula_config import COUNTRY_CURRENCY
 
 from odoo.addons.pb_hr_payroll_formula.models.statutory_approval import (
     STATUTORY_GROUP,
@@ -111,10 +113,14 @@ class PbStatutory(models.AbstractModel):
             return default
 
     @api.model
-    def get_statutory_data(self):
+    def get_statutory_data(self, country_code=None):
         company = self.env.company
         cur = company.currency_id
         co_ids = self.env.companies.ids or [company.id]
+        country_code = country_code or company.country_id.code or 'VN'
+        if country_code not in dict(_COUNTRY):
+            country_code = 'VN'
+        tax_cur = self.env['res.currency'].search([('name', '=', COUNTRY_CURRENCY[country_code])], limit=1)
 
         # ---------- insurance policy ----------
         policy = None
@@ -148,10 +154,10 @@ class PbStatutory(models.AbstractModel):
 
         # ---------- tax table ----------
         tax = None
-        if 'vietnam.tax.table' in self.env:
+        if country_code == 'VN' and 'vietnam.tax.table' in self.env:
             Tax = self.env['vietnam.tax.table']
             rec = self._safe(
-                lambda: Tax.search([('company_id', 'in', co_ids), ('active', '=', True)],
+                lambda: Tax.search([('company_id', 'in', co_ids), ('country_code', '=', 'VN'), ('active', '=', True)],
                                    order='tax_year desc', limit=1),
                 default=Tax.browse())
             if rec:
@@ -223,15 +229,39 @@ class PbStatutory(models.AbstractModel):
                     'active': bool(p.active),
                 })
         tax_tables = []
-        if 'vietnam.tax.table' in self.env:
+        if country_code == 'VN' and 'vietnam.tax.table' in self.env:
             for t in self._safe(lambda: self.env['vietnam.tax.table'].search(
-                    [], order='tax_year desc, id desc', limit=120), default=[]):
+                    [('company_id', 'in', co_ids), ('country_code', '=', 'VN')], order='tax_year desc, id desc', limit=120), default=[]):
                 tax_tables.append({
                     'id': t.id, 'name': t.name or '—', 'code': t.code or '',
                     'year': t.tax_year, 'slabs': getattr(t, 'slab_count', 0) or len(t.slab_ids),
                     'personal': t.personal_deduction, 'dependent': t.dependent_deduction,
                     'active': bool(t.active),
+                    'model': 'vietnam.tax.table', 'country': 'VN',
+                    'edition': 'Legacy Vietnam table',
                 })
+        # The library is country/company scoped. Legacy Vietnam rows keep
+        # their old detail screen, and can never leak into an Indonesia filter.
+        editions = self.env['hr.payroll.tax.table'].search([
+            ('country_code', '=', country_code), ('company_id', 'in', co_ids)],
+            order='effective_from desc, id desc', limit=120)
+        for t in editions:
+            tax_tables.append({
+                'id': t.id, 'model': t._name, 'name': t.name, 'code': t.code,
+                'year': t.effective_from.year, 'slabs': len(t.slab_ids),
+                'personal': 0, 'dependent': 0, 'active': t.state == 'published',
+                'country': t.country_code, 'edition': '%s · %s · %s' % (t.version, t.basis, t.state),
+            })
+        current = editions.filtered(lambda t: t.state == 'published' and
+            t.method != 'parameters' and t.effective_from <= fields.Date.today() and
+            (not t.effective_to or t.effective_to >= fields.Date.today()))[:1]
+        if current:
+            tax = {'name': current.name, 'year': current.effective_from.year,
+                   'personal_deduction': 0, 'dependent_deduction': 0,
+                   'method': current.method, 'basis': current.basis, 'canonical': True,
+                   'slabs': [{'from': s.income_from, 'to': s.income_to,
+                              'rate': round(s.tax_rate * 100, 6), 'fixed': 0}
+                             for s in current.slab_ids.sorted('sequence')]}
         dependents = self._safe(
             lambda: self.env['vietnam.employee.dependent'].search_count([])
             if 'vietnam.employee.dependent' in self.env else 0)
@@ -246,6 +276,8 @@ class PbStatutory(models.AbstractModel):
 
         return {
             'currency': cur.symbol or '',
+            'tax_currency': tax_cur.symbol or COUNTRY_CURRENCY[country_code],
+            'tax_country': country_code, 'tax_countries': _COUNTRY,
             'company': company.name,
             'kpis': {
                 'contributions': (actuals or {}).get('grand_total', 0),

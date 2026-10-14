@@ -68,6 +68,7 @@ export class PbStatutory extends Component {
         this.state = useState({
             loaded: false, currency: "", kpis: {}, policy: null, tax: null, actuals: null,
             policies: [], tax_tables: [], analyticsAction: "", ledgers: [],
+            taxCountry: "", taxCountries: [], taxCurrency: "",
             view: askedKind ? "data" : "policies", year: "", showActive: false,
 
             // ---- the Data view ----
@@ -84,12 +85,13 @@ export class PbStatutory extends Component {
     }
 
     async load() {
-        const d = await this.orm.call("pb.statutory", "get_statutory_data", []);
+        const d = await this.orm.call("pb.statutory", "get_statutory_data", [this.state.taxCountry || null]);
         Object.assign(this.state, {
             currency: d.currency, kpis: d.kpis, policy: d.policy, tax: d.tax,
             actuals: d.actuals, policies: d.policies, tax_tables: d.tax_tables,
             analyticsAction: d.analytics_action || "",
             ledgers: d.ledgers || [], loaded: true,
+            taxCountry: d.tax_country, taxCountries: d.tax_countries || [], taxCurrency: d.tax_currency,
         });
     }
 
@@ -104,10 +106,28 @@ export class PbStatutory extends Component {
         return cur + Math.round(n);
     }
     moneyFull(n) { return (this.state.currency || "₫") + Math.round(n || 0).toLocaleString("en-US"); }
+    taxMoney(n) { return (this.state.taxCurrency || "") + Math.round(n || 0).toLocaleString("en-US"); }
+    async setTaxCountry(ev) {
+        this.state.taxCountry = ev.target.value;
+        this.state.year = "";
+        if (this.state.kind === "tax" && this.state.taxCountry !== "VN") {
+            this.state.kind = "policy";
+            this.state.ledger = null;
+            this.state.drawer = null;
+        }
+        await this.load();
+    }
+    manageTaxTables() {
+        this.action.doAction({type: "ir.actions.act_window", name: _t("Country statutory tables"),
+            res_model: "hr.payroll.tax.table", views: [[false, "list"], [false, "form"]],
+            domain: [["country_code", "=", this.state.taxCountry]],
+            context: {default_country_code: this.state.taxCountry}});
+    }
+    refreshTaxConstants() { this.action.doAction("pb_hr_payroll_formula.action_payroll_tax_refresh"); }
 
     // ================================================================ the views
     get ledgerTabs() {
-        return LEDGER_TABS.filter((t) => this.state.ledgers.includes(t.id));
+        return LEDGER_TABS.filter((t) => this.state.ledgers.includes(t.id) && (t.id !== "tax" || this.state.taxCountry === "VN"));
     }
     get hasLedgers() { return this.ledgerTabs.length > 0; }
 
@@ -251,9 +271,19 @@ export class PbStatutory extends Component {
     }
 
     openPolicy(id) { this.action.doAction({ type: "ir.actions.client", tag: "pb_policy_detail", name: "Insurance policy", params: { policy_id: id } }); }
-    openTax(id) { this.action.doAction({ type: "ir.actions.client", tag: "pb_tax_detail", name: "Tax table", params: { tax_id: id } }); }
+    openTax(table) {
+        if (table.model === "hr.payroll.tax.table") {
+            this.action.doAction({type: "ir.actions.act_window", name: _t("Country statutory table"),
+                res_model: table.model, res_id: table.id, views: [[false, "form"]], target: "new"},
+                {onClose: () => this.load()});
+        } else {
+            this.action.doAction({ type: "ir.actions.client", tag: "pb_tax_detail", name: "Tax table", params: { tax_id: table.id } });
+        }
+    }
     newPolicy() { this.action.doAction({ type: "ir.actions.client", tag: "pb_policy_wizard", name: "New policy" }); }
-    newTax() { this.action.doAction({ type: "ir.actions.client", tag: "pb_tax_wizard", name: "New tax table" }); }
+    newTax() { this.action.doAction({type: "ir.actions.act_window", name: _t("New country tax table"),
+        res_model: "hr.payroll.tax.table", views: [[false, "form"]], target: "new",
+        context: {default_country_code: this.state.taxCountry}}, {onClose: () => this.load()}); }
 
     /**
      * The one legacy launch that survived, and it is a MODAL.

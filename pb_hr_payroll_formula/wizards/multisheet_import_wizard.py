@@ -1311,6 +1311,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'requires_new_contract': False,
                         'column_type': 'constant',
                         'excel_formula': '',
+                        'constant_cell_ref': col_sel.constant_cell_ref,
                         'resolved_formula': '',
                         'sample_value': col_sel.sample_value,
                         'is_duplicate': False,

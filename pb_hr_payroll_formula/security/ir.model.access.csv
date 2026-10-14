@@ -147,3 +147,10 @@ access_pb_schememap_proposal_admin,pb.schememap.proposal.admin,model_pb_schemema
 access_pb_schememap_proposal_user,pb.schememap.proposal.user,model_pb_schememap_proposal,base.group_user,1,0,0,0
 access_pb_demo_proposal_admin,pb.demo.proposal.admin,model_pb_demo_proposal,base.group_system,1,1,1,1
 access_pb_demo_proposal_user,pb.demo.proposal.user,model_pb_demo_proposal,base.group_user,1,0,0,0
+access_country_tax_user,country.tax.user,model_hr_payroll_tax_table,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_country_tax_manager,country.tax.manager,model_hr_payroll_tax_table,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_country_band_user,country.band.user,model_hr_payroll_tax_band,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_country_band_manager,country.band.manager,model_hr_payroll_tax_band,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_country_parameter_user,country.parameter.user,model_hr_payroll_tax_parameter,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_country_parameter_manager,country.parameter.manager,model_hr_payroll_tax_parameter,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_country_refresh_manager,country.refresh.manager,model_hr_payroll_tax_refresh_wizard,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
