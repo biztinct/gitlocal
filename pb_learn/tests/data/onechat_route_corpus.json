@@ -258,13 +258,14 @@
    "text": "show me how payroll works",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
    },
    "state": null
   },
@@ -391,13 +392,14 @@
    "text": "chỉ tôi cách duyệt",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
    },
    "state": null
   },
@@ -970,13 +972,14 @@
    "text": "how do I compare two pay runs",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "variance"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "variance"
    },
    "state": null
   },
@@ -1055,13 +1058,14 @@
    "text": "where is the bank file",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
    },
    "state": null
   },
@@ -1069,13 +1073,14 @@
    "text": "bhxh là gì",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
    },
    "state": null
   },
@@ -2092,13 +2097,14 @@
    "text": "tôi muốn biết cách chạy lương",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
    },
    "state": null
   },
@@ -2136,13 +2142,14 @@
    "text": "What is Net Pay?",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "state": null
   },
@@ -2178,13 +2185,14 @@
    "text": "Where is the Bank File?",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
    },
    "state": null
   },
@@ -2630,13 +2638,14 @@
    "text": "ok what is net pay",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "state": null
   },
@@ -2659,13 +2668,14 @@
    "text": "Ok, what is Net Pay?",
    "screen": "payruns",
    "P": {
-    "route": "payai",
-    "why": "question",
-    "ask_only": true
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "B": {
-    "route": "miss",
-    "why": "guide"
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
    },
    "state": null
   },
@@ -2723,6 +2733,261 @@
     "route": "note",
     "why": "smalltalk",
     "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "bhyt là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "bhyt la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "what is BHYT",
+   "screen": "payslips",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "lương thực nhận là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "luong thuc nhan la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "what is net pay",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Lan's take-home pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "bhxh la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương thế nào",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chay luong the nao",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "cách chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chỉ tôi cách duyệt tăng ca",
+   "screen": "wftime",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approveot"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approveot"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise adding an employee",
+   "screen": "employees",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi thực hành thêm một nhân viên",
+   "screen": "employees",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "state": null
+  },
+  {
+   "text": "làm thử chốt công tuần",
+   "screen": "wfclose",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi thực hành tuyển thêm người",
+   "screen": "hiring",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_hiring:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_hiring:try"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi muốn thực hành soát phiếu lương",
+   "screen": "payslips",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
    },
    "state": null
   }

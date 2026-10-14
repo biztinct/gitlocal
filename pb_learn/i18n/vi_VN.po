@@ -83,12 +83,6 @@ msgstr ""
 " thống. Của bạn bị thiếu: %(groups)s"
 
 #. module: pb_learn
-#. odoo-javascript
-#: code:addons/pb_learn/static/src/coach/coach.xml:0
-msgid "Close"
-msgstr "Đóng"
-
-#. module: pb_learn
 #. odoo-python
 #: code:addons/pb_learn/models/learn_progress.py:0
 msgid "Coach answered"

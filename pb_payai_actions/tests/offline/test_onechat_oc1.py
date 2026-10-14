@@ -530,9 +530,12 @@ class TestReviewShapes(unittest.TestCase):
                                  (mode, text))
                 if out['route'] == 'payai':
                     self.assertTrue(out.get('ask_only'), (mode, text))
-        # The Vietnamese twin was right already and stays right.
+        # The Vietnamese twin was right already and stays right. OC4: the
+        # guide now carries "cách chạy lương" (ledger OC26), so it answers
+        # itself instead of going to PayAI's question path — never a command.
         out, _env = route('P', 'tôi muốn biết cách chạy lương')
-        self.assertEqual((out['route'], out.get('ask_only')), ('payai', True))
+        self.assertNotIn(out['why'], ('command', 'command_ai', 'guide_offer'))
+        self.assertEqual((out['route'], (out.get('answer') or {}).get('key')), ('guide', 'howrun'))
         # A practise trigger that mentions "how to" is still a practice start.
         for text in ('let me practise how to run payroll', 'practise how to approve'):
             self.assertIsNone(H.howto_kind(text), text)

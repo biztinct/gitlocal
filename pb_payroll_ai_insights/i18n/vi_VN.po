@@ -1517,32 +1517,8 @@ msgstr "Cực"
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Ask about your pay data"
-msgstr "Hỏi về dữ liệu lương của bạn"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Numbers, people, trends, or how to do something. Charts appear right here."
-msgstr "Con số, nhân sự, xu hướng, hoặc cách làm một việc. Biểu đồ hiện ngay tại đây."
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
 msgid "Ask about your payroll…"
 msgstr "Hỏi về bảng lương của bạn…"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Read aloud: on"
-msgstr "Đọc to: bật"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Read aloud: off"
-msgstr "Đọc to: tắt"
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript

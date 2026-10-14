@@ -191,6 +191,7 @@ columns Draft → Waiting → Done). Phone width. Lucide only.
    submit, turn it down in the inbox → run shows Rejected with the reason; delete it.
 7. Helper Guide me on Home › Approvals and Pay Run › Runs → the new lessons, not the
    orientation fallback.
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 8. Ask Payobook: "how do I run payroll?", "who approves my pay run?", "where is the
    formula engine?", "show me around" → answers match the new rail/flow; a hand-off
    opens the right lesson or walkthrough; no "Odoo".

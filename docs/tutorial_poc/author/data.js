@@ -328,9 +328,8 @@ const I18N = {
     coachName: "PayAI",
     stuck: "Stuck?",
     askPlaceholder: "Ask about this screen…",
-    honest: "Ask me to do something and I show you the plan first. I only ever do what you could do yourself on the screen.",
     groundedIn: "Grounded in this screen:",
-    coachNoScreen: "This screen has no lesson yet. You can still ask me anything in the box below.",
+    coachNoScreen: "This screen has no lesson yet. You can still ask me about it, or ask me how to do something, in the box below.",
     suggested: "Suggested for this screen",
     canAnswer: "What I can answer here",
     showMe: "Show me",
@@ -445,22 +444,16 @@ const I18N = {
     stopReading: "Stop reading",
     /* -- LEARN v3: one helper ---------------------------------------------
        The Coach and PayAI used to be two floating buttons that knew nothing
-       about each other. They are now one button with three tabs. The Ask
-       tab is PayAI's chat, drawn inside this drawer when PayAI is installed;
-       without it the drawer shows two tabs and says nothing about a third. */
+       about each other. They became one button with three tabs (LEARN v3),
+       and since ONECHAT (2026-10-14) one chat called PayAI with no tabs at
+       all: the router decides what each sentence is. ONECHAT OC4 retired the
+       tab names, "Your next step", the Ask-tab hand-off and the Practice
+       tab's own cards (tabGuide/tabAsk/tabPractice, nextStep, thisScreen,
+       askDataInstead, askDataLead, practiceTry, practiceTour,
+       practiceTourLead, honest) — no code reads them any more. */
     orbLabel: "Ask PayAI",
     orbHint: "PayAI: help for this screen. Press ? on any screen.",
     onScreen: "On:",
-    tabGuide: "Guide me",
-    tabAsk: "Ask",
-    tabPractice: "Practice",
-    nextStep: "Your next step",
-    thisScreen: "This screen",
-    askDataInstead: "Ask about your pay data instead",
-    askDataLead: "The guide has no answer for that. The Ask tab can look at your own pay data.",
-    practiceTry: "Try it on the practice company",
-    practiceTour: "Take the tour",
-    practiceTourLead: "The whole product in one pass. You watch, nothing is pressed.",
     /* -- LEARN v3: the path, month-end, moments, team --------------------
        Scene 2 turns the map into three chapters with a path per role; scene
        4 brings short notes onto the real screens; the Team lens is for
@@ -543,7 +536,7 @@ const I18N = {
     swOff: "Off",
     swStays: "Stays inside Payobook",
     swNextTitle: "Suggest the next step",
-    swNextBody: "The helper and the lesson map show one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
+    swNextBody: "The lesson map shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
     swSkillTitle: "Streaks and badge levels",
     swSkillBody: "Shows days in a row, and bronze, silver or gold on each finished lesson. Gold means the quiz was right the first time.",
     swComposeTitle: "Written answers from the guide",
@@ -553,7 +546,7 @@ const I18N = {
     swVoiceBody: "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send. Recordings go to the speech service only to be turned into text.",
     swVoiceLeaves: "Sends the recording to a speech service.",
     swCollectTitle: "Learn from the questions people ask",
-    swCollectBody: "Keeps questions for 180 days so we can see what the lessons miss. Each person also agrees in the helper. Names and amounts are removed first.",
+    swCollectBody: "Keeps questions for 180 days so we can see what the lessons miss. Each person also agrees in PayAI. Names and amounts are removed first.",
     swNoProvider: "No AI service is set up yet, so this changes nothing until one is.",
     swNoSpeech: "No speech service is set up yet, so this changes nothing until one is.",
     /* -- storing questions: asked once, remembered either way -------------
@@ -562,7 +555,7 @@ const I18N = {
        RETENTION_DAYS, and that the row really does carry the learner's name.
        Reword the promises and the test fails, which is the point. */
     consentTitle: "Help improve the guide?",
-    consentBody: "If you allow it, we store the question you just asked. That is how we see what the guide does not cover yet. Names and amounts are removed before anything is saved. The stored question does carry your name — that is how you can find yours and delete it at any time. We delete stored questions after 180 days. Say no and nothing is stored. The Coach works exactly the same either way.",
+    consentBody: "If you allow it, we store the question you just asked. That is how we see what the guide does not cover yet. Names and amounts are removed before anything is saved. The stored question does carry your name — that is how you can find yours and delete it at any time. We delete stored questions after 180 days. Say no and nothing is stored. PayAI works exactly the same either way.",
     consentYes: "Yes, store my questions",
     consentNo: "No, do not store them",
     /* -- the practice replica -------------------------------------------- */
@@ -769,7 +762,7 @@ const I18N = {
     /* -- the first-run welcome (LEARNOS Phase 3) ------------------------- */
     welcomeTitle: "Chào mừng bạn đến với Payobook",
     welcomeBody: "Bạn muốn xem qua 2 phút trước không? Tôi sẽ chỉ cho bạn những màn hình bạn dùng nhiều nhất.",
-    welcomeGo: "Xem hướng dẫn",
+    welcomeGo: "Đi một vòng Payobook",
     welcomeLater: "Để sau",
     welcomeHiringBody: "Bạn muốn xem qua Tuyển dụng trong 2 phút không? Tôi sẽ chỉ cho bạn bảng mà bạn dùng nhiều nhất.",
     welcomeHiringGo: "Xem hướng dẫn Tuyển dụng",
@@ -777,9 +770,8 @@ const I18N = {
     coachName: "PayAI",
     stuck: "Cần trợ giúp?",
     askPlaceholder: "Hỏi về màn hình này…",
-    honest: "Bạn nhờ tôi làm một việc, tôi cho bạn xem kế hoạch trước. Tôi chỉ làm những gì bạn tự làm được trên màn hình.",
     groundedIn: "Căn cứ trên màn hình này:",
-    coachNoScreen: "Màn hình này chưa có bài học. Bạn vẫn có thể hỏi tôi bất cứ điều gì ở ô bên dưới.",
+    coachNoScreen: "Màn hình này chưa có bài học. Bạn vẫn có thể hỏi tôi về nó, hoặc hỏi cách làm một việc, ở ô bên dưới.",
     suggested: "Gợi ý cho màn hình này",
     canAnswer: "Những gì tôi trả lời được ở đây",
     showMe: "Chỉ cho tôi",
@@ -881,16 +873,6 @@ const I18N = {
     orbLabel: "Hỏi PayAI",
     orbHint: "PayAI: trợ giúp cho màn hình này. Bấm ? ở bất kỳ màn hình nào.",
     onScreen: "Đang ở:",
-    tabGuide: "Hướng dẫn",
-    tabAsk: "Hỏi đáp",
-    tabPractice: "Thực hành",
-    nextStep: "Bước tiếp theo của bạn",
-    thisScreen: "Màn hình này",
-    askDataInstead: "Hỏi về dữ liệu lương của bạn",
-    askDataLead: "Tài liệu hướng dẫn chưa có câu trả lời cho câu này. Thẻ Hỏi đáp có thể xem dữ liệu lương của chính bạn.",
-    practiceTry: "Thử trên công ty thực hành",
-    practiceTour: "Xem hướng dẫn tổng quan",
-    practiceTourLead: "Toàn bộ sản phẩm trong một lượt. Bạn chỉ xem, không có nút nào bị bấm.",
     /* -- LEARN v3: the path, month-end, moments, team ------------------- */
     ch1Title: "Làm quen",
     ch1Lead: "Mọi thứ nằm ở đâu, việc gì đang chờ, và ai ký duyệt việc gì.",
@@ -966,7 +948,7 @@ const I18N = {
     swOff: "Tắt",
     swStays: "Không rời khỏi Payobook",
     swNextTitle: "Gợi ý bước tiếp theo",
-    swNextBody: "Trợ lý và bản đồ bài học gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook.",
+    swNextBody: "Bản đồ bài học gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook.",
     swSkillTitle: "Chuỗi ngày học và cấp huy hiệu",
     swSkillBody: "Hiện số ngày học liên tiếp, và mức đồng, bạc hoặc vàng trên mỗi bài đã học xong. Vàng nghĩa là trả lời đúng phần kiểm tra ngay lần đầu.",
     swComposeTitle: "Câu trả lời soạn từ tài liệu hướng dẫn",
@@ -976,12 +958,12 @@ const I18N = {
     swVoiceBody: "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi. Bản ghi âm chỉ được gửi tới dịch vụ chuyển giọng nói để đổi thành chữ.",
     swVoiceLeaves: "Gửi bản ghi âm tới dịch vụ nhận dạng giọng nói.",
     swCollectTitle: "Học hỏi từ câu hỏi của mọi người",
-    swCollectBody: "Lưu câu hỏi trong 180 ngày để biết bài học còn thiếu gì. Mỗi người cũng phải đồng ý trong trợ lý. Tên riêng và số tiền được loại bỏ trước.",
+    swCollectBody: "Lưu câu hỏi trong 180 ngày để biết bài học còn thiếu gì. Mỗi người cũng phải đồng ý trong PayAI. Tên riêng và số tiền được loại bỏ trước.",
     swNoProvider: "Chưa thiết lập dịch vụ AI nào, nên công tắc này chưa có tác dụng.",
     swNoSpeech: "Chưa thiết lập dịch vụ nhận dạng giọng nói nào, nên công tắc này chưa có tác dụng.",
     /* -- storing questions: asked once, remembered either way ------------- */
     consentTitle: "Giúp chúng tôi cải thiện tài liệu hướng dẫn?",
-    consentBody: "Nếu bạn đồng ý, chúng tôi lưu lại câu hỏi bạn vừa đặt. Nhờ đó chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu. Câu hỏi có lưu kèm tên bạn — nhờ vậy bạn tìm được câu hỏi của mình và xoá đi bất cứ lúc nào. Chúng tôi xoá câu hỏi đã lưu sau 180 ngày. Bạn từ chối thì không có gì được lưu. Trợ lý vẫn hoạt động y như vậy.",
+    consentBody: "Nếu bạn đồng ý, chúng tôi lưu lại câu hỏi bạn vừa đặt. Nhờ đó chúng tôi biết tài liệu còn thiếu những gì. Tên riêng và số tiền đều được loại bỏ trước khi lưu. Câu hỏi có lưu kèm tên bạn — nhờ vậy bạn tìm được câu hỏi của mình và xoá đi bất cứ lúc nào. Chúng tôi xoá câu hỏi đã lưu sau 180 ngày. Bạn từ chối thì không có gì được lưu. PayAI vẫn hoạt động y như vậy.",
     consentYes: "Đồng ý, hãy lưu câu hỏi của tôi",
     consentNo: "Không, đừng lưu lại",
     /* -- the practice replica -------------------------------------------- */
@@ -3786,10 +3768,25 @@ const LESSONS = {
       },
       {
         screen: "dashboard", anchor: "",
+        /* ONECHAT OC4 — the one PayAI chat. The old body ("It explains — you
+           act. It never computes a run…") was false where PayAI may prepare
+           work, and promised "what to do next", which left the drawer with
+           "Your next step". Split: this step is for every database (the chat
+           is called PayAI everywhere — owner decision Q3, so test_feature_gate
+           lists it as the one ungated PayAI step); the next one only where
+           PayAI may prepare work (`requires`). */
         kicker: B("How to get help", "Cách hỏi khi cần"),
-        title: B("There is a helper on every screen, and it will not act for you", "Mọi màn hình đều có trợ lý, và nó sẽ không thao tác thay bạn"),
-        body: B("The button in the bottom-right corner opens on <b>any</b> screen. It knows which page and tab you are on: what it is for, what to do next, what a tile counts. It explains — you act. It never computes a run, approves a payslip or changes a record, and it never invents a rate.",
-                "Nút ở góc dưới bên phải mở được trên <b>mọi</b> màn hình. Nó biết bạn đang ở trang và tab nào: màn hình đó để làm gì, nên làm gì tiếp, một ô số liệu đếm cái gì. Nó giải thích — bạn thao tác. Nó không bao giờ tự tính lương, phê duyệt phiếu lương hay sửa dữ liệu, và không bao giờ bịa ra một tỷ lệ."),
+        title: B("PayAI is on every screen", "PayAI có mặt trên mọi màn hình"),
+        body: B("The button in the bottom-right corner opens PayAI on <b>any</b> screen. It knows which page and tab you are on. It answers questions about it, and opens a safe practice copy when you want to try a task first. Type, or speak if your company has turned voice on. It never invents a rate.",
+                "Nút ở góc dưới bên phải mở PayAI trên <b>mọi</b> màn hình. PayAI biết bạn đang ở trang và tab nào. Nó trả lời câu hỏi về màn hình đó, và mở một bản thực hành an toàn khi bạn muốn thử một việc trước. Bạn gõ chữ, hoặc nói nếu công ty bạn đã bật giọng nói. Nó không bao giờ bịa ra một tỷ lệ."),
+      },
+      {
+        requires: "payai_prepare",
+        screen: "dashboard", anchor: "",
+        kicker: B("Ask PayAI", "Nhờ PayAI"),
+        title: B("Ask PayAI to do something, and read the plan first", "Nhờ PayAI làm một việc, và đọc kế hoạch trước"),
+        body: B("Ask it to do something and it shows you the plan first. Nothing changes until you tap <b>Do it</b>. It only ever does what you could do yourself on the screen.",
+                "Nhờ PayAI làm một việc, nó cho bạn xem kế hoạch trước. Không có gì thay đổi cho tới khi bạn bấm <b>Thực hiện</b>. Nó chỉ làm những gì chính bạn làm được trên màn hình."),
       },
     ],
     quiz: {
@@ -8313,7 +8310,8 @@ const QA = [
   {
     id: "approve", screens: ["payruns", "payslips", "approvals"],
     label: B("Can I approve this run?", "Tôi có thể phê duyệt đợt này không?"),
-    match: ["how do i approve", "can i approve", "approve this run", "phê duyệt thế nào", "toi duyet duoc khong"],
+    match: ["how do i approve", "can i approve", "approve this run", "phê duyệt thế nào", "toi duyet duoc khong",
+            "chỉ tôi cách duyệt", "cách duyệt đợt lương", "cach duyet dot luong"],
     showMe: ["ai-approve", "ai-tabs"],
     roleVariants: {
       any: [
@@ -8468,7 +8466,8 @@ const QA = [
        example, not a definition. */
     id: "bhxh", screens: ["payslips", "runpayroll", "statutory"],
     label: B("Explain BHXH on this payslip", "Giải thích BHXH trên phiếu lương này"),
-    match: ["what is bhxh", "explain bhxh", "social insurance", "bao hiem xa hoi", "bảo hiểm xã hội"],
+    match: ["what is bhxh", "explain bhxh", "social insurance", "bao hiem xa hoi", "bảo hiểm xã hội",
+            "bhxh là gì", "bhxh la gi", "bảo hiểm xã hội là gì"],
     showMe: ["ps-breakdown"],
     simpler: B("Think of BHXH as a shared fund the law requires. Every month you put in 8% of the salary written in your contract. Not your bonuses, and not your overtime. Your company puts in more than double that on top. The fund pays for pensions, sick leave and maternity leave.",
                "Hãy hình dung BHXH như một quỹ chung mà pháp luật yêu cầu. Mỗi tháng bạn đóng 8% mức lương ghi trong hợp đồng. Không tính thưởng, không tính tăng ca. Công ty đóng thêm hơn gấp đôi phần đó. Quỹ này chi trả lương hưu, ốm đau và thai sản."),
@@ -8480,6 +8479,43 @@ const QA = [
                      "Mấu chốt nằm ở mức đóng. Đó là mức lương đã đăng ký theo hợp đồng, không phải số kiếm được trong tháng. Vì vậy một tháng có 1.500.000 ₫ tăng ca vẫn cho ra đúng khoản BHXH như tháng không có đồng tăng ca nào.") },
       { k: "src", v: B("Mai's July payslip, and the BHXH line on the statutory policy.",
                        "Phiếu lương tháng 7 của Mai, và dòng BHXH trên chính sách bảo hiểm.") },
+    ],
+  },
+
+  {
+    /* ONECHAT OC4 — two definitions people ask in one line ("bhyt là gì",
+       "lương thực nhận là gì") that no intent answered: the guide fell
+       through to PayAI's question path, or to an honest miss on a database
+       without the assistant (ledger OC26). The facts are the glossary's own
+       (`bhyt`, `net`) and the statutory lesson's rates. */
+    id: "bhyt", screens: ["payslips", "runpayroll", "statutory"],
+    label: B("What is BHYT?", "BHYT là gì?"),
+    match: ["what is bhyt", "explain bhyt", "health insurance", "bhyt là gì", "bhyt la gi",
+            "bảo hiểm y tế là gì", "bao hiem y te"],
+    showMe: ["ps-breakdown"],
+    blocks: [
+      { k: "p", v: B("BHYT is health insurance. The employee pays 1.5% of the registered insurance base, and it is deducted on the payslip. The company pays a further 3% on top — a company cost that never appears in anybody's net.",
+                     "BHYT là bảo hiểm y tế. Người lao động đóng 1,5% trên mức lương đóng bảo hiểm đã đăng ký, và khoản này được khấu trừ trên phiếu lương. Doanh nghiệp đóng thêm 3% — chi phí công ty, không bao giờ xuất hiện trong thực nhận của ai.") },
+      { k: "p", v: B("It is charged on the same insurance base as BHXH, so overtime and bonuses do not change it.",
+                     "Nó được tính trên cùng mức lương đóng bảo hiểm như BHXH, nên tăng ca và tiền thưởng không làm nó thay đổi.") },
+      { k: "src", v: B("The BHYT line on the statutory policy, and the payslip's deductions.",
+                       "Dòng BHYT trên chính sách bảo hiểm, và các khoản khấu trừ trên phiếu lương.") },
+    ],
+  },
+
+  {
+    id: "netpay", screens: ["payslips", "payruns", "runpayroll"],
+    label: B("What is net pay?", "Lương thực nhận là gì?"),
+    match: ["what is net pay", "what does net pay mean", "what is take-home pay",
+            "lương thực nhận là gì", "luong thuc nhan la gi", "thực nhận là gì", "thuc nhan la gi"],
+    showMe: ["ps-breakdown"],
+    blocks: [
+      { k: "p", v: B("Net pay is the money that actually reaches the employee's bank account. It is gross pay — everything earned this month — minus every deduction: the employee's share of insurance and thuế TNCN.",
+                     "Lương thực nhận là số tiền thật sự về tới tài khoản ngân hàng của nhân viên. Nó bằng tổng thu nhập — mọi thứ kiếm được trong tháng — trừ đi mọi khoản khấu trừ: phần bảo hiểm người lao động đóng và thuế TNCN.") },
+      { k: "p", v: B("The company's own share of insurance is a cost on top. It never comes out of net pay.",
+                     "Phần bảo hiểm doanh nghiệp đóng là chi phí cộng thêm. Nó không bao giờ bị trừ vào thực nhận.") },
+      { k: "src", v: B("The payslip's gross, deduction and net lines.",
+                       "Các dòng tổng thu nhập, khấu trừ và thực nhận trên phiếu lương.") },
     ],
   },
 
@@ -8631,8 +8667,8 @@ const QA = [
       { k: "p",
         v: B("On this company right now, employee / employer: {{live:active_policy_rates}}. Read straight off the policy in force — if that is not what you expected, the roster below will show you which record is being applied.",
              "Trên công ty này ngay lúc này, người lao động / doanh nghiệp: {{live:active_policy_rates}}. Đọc trực tiếp từ chính sách đang hiệu lực — nếu con số khác với bạn nghĩ, danh sách bên dưới sẽ cho thấy bản ghi nào đang được áp dụng."),
-        liveFallback: B("Open the rates table above to read the split that is in force here. Every figure the Coach quotes about contributions comes off that record, never from memory.",
-                        "Hãy mở bảng tỷ lệ ở trên để đọc mức đóng đang hiệu lực tại đây. Mọi con số về bảo hiểm mà trợ lý đưa ra đều lấy từ bản ghi đó, không bao giờ theo trí nhớ."),
+        liveFallback: B("Open the rates table above to read the split that is in force here. Every figure PayAI quotes about contributions comes off that record, never from memory.",
+                        "Hãy mở bảng tỷ lệ ở trên để đọc mức đóng đang hiệu lực tại đây. Mọi con số về bảo hiểm mà PayAI đưa ra đều lấy từ bản ghi đó, không bao giờ theo trí nhớ."),
       },
       { k: "warn", v: B("Whichever policy is displayed, it is a DECLARATION. It is not what priced the payslips you are looking at — that came from the rate parameters on each division's formula configuration. If the two disagree, the payslips are not wrong; the declaration and the configuration are simply out of step, and somebody has to decide which one is behind.",
                         "Dù bản nào đang hiển thị thì đó cũng là một BẢN KHAI BÁO. Nó không phải thứ đã tính ra các phiếu lương bạn đang xem — những phiếu đó đến từ các tham số tỷ lệ trên cấu hình công thức của từng bộ phận. Nếu hai bên lệch nhau thì phiếu lương không sai; chỉ là bản khai báo và cấu hình đang không đồng bộ, và phải có người quyết định bên nào đang chậm.") },
@@ -8811,7 +8847,8 @@ const QA = [
     id: "howmanyslips", screens: ["approvals", "payslips", "payruns"],
     label: B("How many payslips should I read?", "Tôi nên đọc bao nhiêu phiếu lương?"),
     match: ["how many payslips do i read", "do i have to read every payslip", "sampling strategy",
-            "doc bao nhieu phieu", "co phai doc het khong", "lay mau phieu luong"],
+            "doc bao nhieu phieu", "co phai doc het khong", "lay mau phieu luong",
+            "how many payslips should i check", "nên đọc bao nhiêu phiếu lương", "có phải đọc hết không"],
     showMe: ["ps-list", "ai-facts"],
     practice: "m2",
     simpler: B("Not all of them. Start with the ones that changed most since last month. Then pick two or three ordinary ones at random.",
@@ -8835,7 +8872,9 @@ const QA = [
     id: "variance", screens: ["approvals", "payslips", "insights", "payruns"],
     label: B("Is this variance normal?", "Biến động thế này có bình thường không?"),
     match: ["explain the variance", "the total moved", "why is the run bigger",
-            "bien dong co binh thuong", "tong thay doi", "giai thich chenh lech"],
+            "bien dong co binh thuong", "tong thay doi", "giai thich chenh lech",
+            "compare two pay runs", "compare this run with last month",
+            "so sánh hai đợt lương", "so sanh hai dot luong"],
     showMe: ["ai-facts", "ps-kpis"],
     blocks: [
       { k: "p", v: B("\"Normal\" is not a percentage. It is whether you can finish the sentence. On this run, July is 612,480,000 ₫ against June's 596,110,000 ₫: the request says +2.7%. There is one more employee, and one payslip carries 3,100,000 ₫ more overtime than last month.",
@@ -9038,7 +9077,9 @@ const QA = [
             "pay my staff this month", "how do we pay everyone",
             "chay bang luong the nao", "bắt đầu tính lương", "lam sao chay luong",
             "tra luong cho nhan vien the nao", "trả lương cho nhân viên thế nào",
-            "lam sao tra luong cho moi nguoi"],
+            "lam sao tra luong cho moi nguoi",
+            "how does payroll work", "how payroll works",
+            "chạy lương thế nào", "chay luong the nao", "cách chạy lương", "cach chay luong"],
     showMe: ["scenario:sc_payrun", "dash-runpayroll"],
     watch: "sc_payrun",
     try: "sc_payrun",
@@ -9072,16 +9113,16 @@ const QA = [
     watch: "sc_welcome",
     blocks: [
       { k: "p", v: B("Start with the tour, then Home › Pulse. The tour walks the real screens most people use — Pulse, a pay run, the Approvals inbox, the Formula Engine — and presses nothing for you.",
-                     "Hãy bắt đầu bằng lượt giới thiệu, rồi tới Trang chủ › Tổng quan. Lượt giới thiệu đi qua các màn hình thật mà nhiều người dùng nhất — Tổng quan, một đợt lương, hộp Phê duyệt, Bộ máy công thức — và không bấm hộ bạn thứ gì.") },
+                     "Hãy bắt đầu bằng Đi một vòng Payobook, rồi tới Trang chủ › Tổng quan. Lượt đi này qua các màn hình thật mà nhiều người dùng nhất — Tổng quan, một đợt lương, hộp Phê duyệt, Bộ máy công thức — và không bấm hộ bạn thứ gì.") },
       { k: "steps", v: [
-        { t: B("Watch the tour — it starts on Home › Pulse", "Xem lượt giới thiệu — nó bắt đầu ở Trang chủ › Tổng quan"), a: "dash-hero" },
+        { t: B("Watch the tour — it starts on Home › Pulse", "Bấm Đi một vòng Payobook — lượt đi bắt đầu ở Trang chủ › Tổng quan"), a: "dash-hero" },
         { t: B("Read the headline: days to payday and what needs you", "Đọc dòng tiêu đề: còn bao nhiêu ngày tới ngày trả lương và việc gì cần bạn"), a: "dash-hero" },
         { t: B("Open Learn › Lessons and take the first lesson. Nothing in it is real", "Mở Học cùng Payobook › Bài học và làm bài đầu tiên. Không có gì trong đó là thật") },
       ] },
       { k: "ok", v: B("Nothing you read costs anything. The controls that write are the small number the lessons keep naming.",
                       "Đọc thì không mất gì cả. Những nút thực sự ghi dữ liệu chỉ là số ít mà các bài học liên tục gọi tên.") },
-      { k: "src", v: B("The lessons in Learn, and the walkthroughs this helper can start.",
-                       "Các bài học trong Học cùng Payobook, và những lượt hướng dẫn mà trợ lý này mở được.") },
+      { k: "src", v: B("The lessons in Learn, and the walkthroughs PayAI can start.",
+                       "Các bài học trong Học cùng Payobook, và những lượt hướng dẫn mà PayAI mở được.") },
     ],
   },
 
@@ -9116,6 +9157,9 @@ const QA = [
     match: ["how do i add an employee", "add a new employee", "onboard someone", "hire someone",
             "them nhan vien moi", "tạo hồ sơ nhân viên", "them nguoi vao he thong"],
     showMe: ["pe-head", "ct-roster"],
+    // ONECHAT OC4 — "Practise this" under the answer: sc_people is the Try
+    // of exactly this task on the practice company (handover §5.6).
+    try: "sc_people",
     blocks: [
       { k: "p", v: B("Add employee, at the top of the Employees screen. It opens a three-step wizard rather than a bare form: the person, then their role, then their contract.",
                      "Nút Thêm nhân viên, ở phía trên màn hình Nhân sự. Nó mở một trình hướng dẫn ba bước thay vì một biểu mẫu trống: thông tin cá nhân, rồi vị trí công việc, rồi hợp đồng.") },
@@ -9137,7 +9181,8 @@ const QA = [
     id: "getpaid", screens: ["payruns", "payslips", "afterrun"],
     label: B("How does the money actually reach people?", "Tiền thực sự tới tay mọi người bằng cách nào?"),
     match: ["how does the money go out", "how are people actually paid", "make the payment",
-            "generate the bank file", "chuyen tien the nao", "chi lương ra sao", "xuat tep ngan hang"],
+            "generate the bank file", "chuyen tien the nao", "chi lương ra sao", "xuat tep ngan hang",
+            "where is the bank file", "find the bank file", "tệp ngân hàng ở đâu", "tep ngan hang o dau"],
     showMe: ["pk-card-actions"],
     blocks: [
       { k: "p", v: B("Not from the approval itself. Once a run is Done its card offers <b>Pay &amp; Deliver</b>. That opens Deliver for the run: the bank file ({{bankFileFormat}}), then the payment release, each approved on its own, and the payslips.",
@@ -10284,9 +10329,9 @@ const SCENARIOS = [
     name: B("Take the tour", "Đi một vòng Payobook"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["the tour", "a tour", "a quick tour", "look around", "around payobook", "the whole product", "the product tour", "đi một vòng", "xem một vòng", "tham quan payobook", "giới thiệu sản phẩm", "di mot vong", "xem mot vong", "gioi thieu san pham"],
-    tagline: B("Pulse, a pay run, the Approvals inbox, the Formula Engine and the helper — the whole product in one pass.",
-               "Tổng quan, một đợt lương, hộp Phê duyệt, Bộ máy công thức và trợ lý — toàn bộ sản phẩm trong một lượt."),
+    match: ["the tour", "a tour", "a quick tour", "look around", "around payobook", "the whole product", "the product tour", "đi một vòng", "xem một vòng", "tham quan payobook", "giới thiệu sản phẩm", "di mot vong", "xem mot vong", "gioi thieu san pham", "giới thiệu payobook", "xem qua payobook", "đi xem một vòng", "tham quan sản phẩm", "gioi thieu payobook", "di xem mot vong", "tham quan san pham"],
+    tagline: B("Pulse, a pay run, the Approvals inbox, the Formula Engine and PayAI — the whole product in one pass.",
+               "Tổng quan, một đợt lương, hộp Phê duyệt, Bộ máy công thức và PayAI — toàn bộ sản phẩm trong một lượt."),
     entry: { nav: "pb_dashboard.action_pb_dashboard" },
     steps: [
       {
@@ -10361,9 +10406,12 @@ const SCENARIOS = [
         key: "copilot", anchor: "helper-orb", nav: "pb_dashboard.action_pb_dashboard",
         act: "observe",
         say: {
-          title: B("And help is always one press away", "Và trợ giúp luôn chỉ cách một lần bấm"),
-          body: B("Press this button, or the ? key, on any screen. It knows which page and tab you are on, answers questions, and opens a safe practice copy. That is the tour.",
-                  "Bấm nút này, hoặc phím ?, ở bất kỳ màn hình nào. Nó biết bạn đang ở trang và tab nào, trả lời câu hỏi, và mở một bản thực hành an toàn. Vậy là xong một vòng."),
+          /* ONECHAT OC4 — the one PayAI chat. Scenario steps have no
+             `requires` gate, so the "prepares the work" clause stays out:
+             this step plays on every database (handover §10). */
+          title: B("And PayAI is always one press away", "Và PayAI luôn chỉ cách một lần bấm"),
+          body: B("Press this button, or the ? key, on any screen. Ask PayAI anything — type it, or speak it when voice is on. It knows which page and tab you are on, answers questions, and opens a safe practice copy. That is the tour.",
+                  "Bấm nút này, hoặc phím ?, ở bất kỳ màn hình nào. Hỏi PayAI bất cứ điều gì — gõ chữ, hoặc nói khi giọng nói đã được bật. PayAI biết bạn đang ở trang và tab nào, trả lời câu hỏi, và mở một bản thực hành an toàn. Vậy là xong một vòng Payobook."),
         },
       },
     ],
@@ -10383,7 +10431,7 @@ const SCENARIOS = [
     name: B("Run a pay run", "Chạy một đợt lương"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["run payroll", "run the payroll", "run a pay run", "start a pay run", "compute payroll", "process payroll", "pay my staff", "chạy lương", "chạy bảng lương", "chạy một đợt lương", "tính lương", "chay luong", "chay bang luong", "chay mot dot luong", "tinh luong"],
+    match: ["run payroll", "run the payroll", "run a pay run", "start a pay run", "compute payroll", "process payroll", "pay my staff", "chạy lương", "chạy bảng lương", "chạy một đợt lương", "tính lương", "chay luong", "chay bang luong", "chay mot dot luong", "tinh luong", "chạy lương tháng này", "trả lương cho nhân viên", "chay luong thang nay", "tra luong cho nhan vien"],
     tagline: B("Pay scheme, month, scope, compute — the reads and the one press.",
                "Chương trình lương, tháng, phạm vi, tính — những lần đọc và một lần bấm."),
     entry: { nav: "pb_payrun_wizard.action_pb_payrun_wizard", screen: "runpayroll" },
@@ -10489,7 +10537,7 @@ const SCENARIOS = [
     name: B("Read a pay run and its payslips", "Đọc một đợt lương và các phiếu lương"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["read payslips", "read the payslips", "check payslips", "check the payslips", "read a pay run", "review a pay run", "read a payslip", "đọc phiếu lương", "xem phiếu lương", "kiểm tra phiếu lương", "đọc đợt lương", "doc phieu luong", "xem phieu luong", "kiem tra phieu luong", "doc dot luong"],
+    match: ["read payslips", "read the payslips", "check payslips", "check the payslips", "read a pay run", "review a pay run", "read a payslip", "đọc phiếu lương", "xem phiếu lương", "kiểm tra phiếu lương", "đọc đợt lương", "doc phieu luong", "xem phieu luong", "kiem tra phieu luong", "doc dot luong", "soát phiếu lương", "xem lại đợt lương", "soat phieu luong", "xem lai dot luong"],
     tagline: B("From the board to one person's net, and the working behind it.",
                "Từ bảng đợt lương tới số thực nhận của một người, và phần tính toán đứng sau."),
     entry: { nav: "pb_payruns.action_pb_payruns_kanban", screen: "payruns" },
@@ -10746,7 +10794,7 @@ const SCENARIOS = [
       {
         key: "payai", anchor: "fs-payai", act: "observe", modes: ["watch"],
         say: {
-          title: B("The copilot knows this configuration", "Trợ lý hiểu cấu hình này"),
+          title: B("PayAI knows this configuration", "PayAI hiểu cấu hình này"),
           body: B("Ask it to explain a rule or draft a new one. That is Formula Studio — spreadsheet power without a spreadsheet to keep in a folder.",
                   "Hãy nhờ nó giải thích một quy tắc hoặc phác một quy tắc mới. Đó là Xưởng công thức — sức mạnh bảng tính mà không phải giữ một tệp bảng tính trong thư mục nào cả."),
         },
@@ -10779,7 +10827,7 @@ const SCENARIOS = [
     name: B("Load a month's pay data", "Tải dữ liệu lương của một tháng"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["import pay data", "load pay data", "import a file", "import the month", "upload the pay file", "load the month's file", "import data", "nhập dữ liệu lương", "tải dữ liệu lương", "nhập tệp lương", "tải tệp lên", "nhap du lieu luong", "tai du lieu luong", "nhap tep luong", "tai tep len"],
+    match: ["import pay data", "load pay data", "import a file", "import the month", "upload the pay file", "load the month's file", "import data", "nhập dữ liệu lương", "tải dữ liệu lương", "nhập tệp lương", "tải tệp lên", "nhap du lieu luong", "tai du lieu luong", "nhap tep luong", "tai tep len", "nhập dữ liệu tháng", "tải tệp dữ liệu lương", "nhap du lieu thang", "tai tep du lieu luong"],
     tagline: B("Load the month's file, match rows to people, fix what is wrong — then commit.",
                "Tải tệp của tháng, khớp các dòng với từng người, sửa chỗ sai — rồi ghi vào hệ thống."),
     entry: { nav: "pb_import.action_pb_import", screen: "import" },
@@ -10911,7 +10959,7 @@ const SCENARIOS = [
     name: B("Add your first employee", "Thêm nhân viên đầu tiên"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["add an employee", "add a new employee", "add employee", "add a person", "add staff", "new employee", "create an employee", "thêm nhân viên", "thêm người mới", "tạo nhân viên", "tạo hồ sơ nhân viên", "them nhan vien", "them nguoi moi", "tao nhan vien", "tao ho so nhan vien"],
+    match: ["add an employee", "add a new employee", "add employee", "add a person", "add staff", "new employee", "create an employee", "thêm nhân viên", "thêm người mới", "tạo nhân viên", "tạo hồ sơ nhân viên", "them nhan vien", "them nguoi moi", "tao nhan vien", "tao ho so nhan vien", "thêm một nhân viên", "tạo nhân viên mới", "them mot nhan vien", "tao nhan vien moi"],
     tagline: B("Name, division, save — and the one thing that still stands between a new person and their pay.",
                "Tên, bộ phận, lưu — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."),
     entry: { screen: "employees" },
@@ -11737,7 +11785,7 @@ const SCENARIOS = [
     name: B("Open a role and ask for its request", "Mở một vị trí và nhờ gửi đề xuất"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["open a role", "start hiring", "hire someone", "hiring request", "a new role", "ask for a hire", "mở vị trí", "tuyển dụng", "đề xuất tuyển dụng", "tuyển người", "mo vi tri", "tuyen dung", "de xuat tuyen dung", "tuyen nguoi"],
+    match: ["open a role", "start hiring", "hire someone", "hiring request", "a new role", "ask for a hire", "mở vị trí", "tuyển dụng", "đề xuất tuyển dụng", "tuyển người", "mo vi tri", "tuyen dung", "de xuat tuyen dung", "tuyen nguoi", "tuyển thêm người", "mở vị trí tuyển dụng", "tuyen them nguoi", "mo vi tri tuyen dung"],
     tagline: B("The Hiring board, a role in five fields, and the request its manager sends in.",
                "Bảng Tuyển dụng, một vị trí với năm thông tin, và đề xuất mà quản lý gửi."),
     entry: { nav: "hiring", screen: "hiring" },
@@ -12166,7 +12214,7 @@ const SCENARIOS = [
     name: B("Close the week", "Chốt tuần"),
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
-    match: ["close the week", "lock the week", "close a week", "lock a week", "week close", "send the week to payroll", "chốt tuần", "khoá tuần", "khóa tuần", "đóng tuần", "chot tuan", "khoa tuan", "dong tuan"],
+    match: ["close the week", "lock the week", "close a week", "lock a week", "week close", "send the week to payroll", "chốt tuần", "khoá tuần", "khóa tuần", "đóng tuần", "chot tuan", "khoa tuan", "dong tuan", "gửi tuần vào bảng lương", "chốt công tuần", "khoá tuần làm việc", "gui tuan vao bang luong", "chot cong tuan", "khoa tuan lam viec"],
     tagline: B("Fix or approve every flag, read the handoff, then lock the week for payroll.",
                "Điều chỉnh hoặc duyệt mọi cờ, đọc phần chuyển giao, rồi khoá tuần cho bảng lương."),
     entry: { nav: "wfclose", screen: "wfclose" },

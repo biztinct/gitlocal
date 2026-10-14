@@ -37,6 +37,16 @@ PROSE = ('kicker', 'title', 'body', 'consequence')
 ALL_ON = {k: True for k in FEATURE_SWITCHES}
 ALL_OFF = {k: False for k in FEATURE_SWITCHES}
 
+# ONECHAT OC4 — the ONE lesson step that may name PayAI without a gate. The
+# helper drawer is called PayAI on every database (owner decision Q3,
+# 2026-10-14), so the welcome lesson's "how to get help" step names it
+# everywhere; it teaches asking and practising only. What PayAI DOES for you
+# (the plan, Do it) is the next step, which carries `requires`. Listed by
+# exact English title so any NEW ungated PayAI step still fails test_01.
+UNGATED_PAYAI_STEPS = {('dashboard', 'PayAI is on every screen')}
+# Words that would mean an ungated step promises an optional feature.
+ACTING_WORDS = re.compile(r'\b(Do it|the plan|prepares?|prepared|approves?|computes?)\b')
+
 
 def _en(pair):
     return (pair or {}).get('en', '') if isinstance(pair, dict) else (pair or '')
@@ -63,6 +73,8 @@ class TestFeatureGate(TransactionCase):
             for lesson in station.get('lessons') or []:
                 for i, step in enumerate(lesson.get('steps') or []):
                     where = '%s step %d' % (station['key'], i)
+                    if (station['key'], _en(step.get('title'))) in UNGATED_PAYAI_STEPS:
+                        continue
                     if any('PayAI' in _en(step.get(f)) for f in PROSE):
                         seen += 1
                         self.assertTrue(
@@ -88,6 +100,50 @@ class TestFeatureGate(TransactionCase):
         self.assertEqual(appr[0].get('tip_requires'), 'payai_decide')
         # Only the tip: the step itself (Approve is a signature) is for all.
         self.assertFalse(appr[0].get('requires'))
+
+    def test_02b_the_welcome_help_step_is_split_by_the_switch(self):
+        """ONECHAT OC4 (handover §10, test 4.2). LW's last step said "It
+        explains — you act. It never computes a run…", false where PayAI may
+        prepare work, and promised "what to do next" (the drawer's retired
+        "Your next step"). Now: one step for every database, one gated."""
+        steps = _lesson_steps(self.tree, 'dashboard')
+        help_ = [s for s in steps if _en(s['title']) == 'PayAI is on every screen']
+        self.assertEqual(len(help_), 1)
+        self.assertFalse(help_[0].get('requires'))
+        for f in PROSE:
+            self.assertFalse(ACTING_WORDS.search(_en(help_[0].get(f))),
+                             "the ungated help step promises acting: %s" % f)
+        for old in ('It explains', 'what to do next', 'never computes a run'):
+            self.assertNotIn(old, _en(help_[0]['body']))
+        self.assertIn('speak', _en(help_[0]['body']))
+        act = [s for s in steps if s.get('requires') == 'payai_prepare']
+        self.assertEqual(len(act), 1)
+        self.assertIn('Do it', _en(act[0]['body']))
+        self.assertIn('Thực hiện', act[0]['body']['vi'])
+        # The acting step follows the help step, and only it goes when off.
+        self.assertEqual(steps.index(act[0]), steps.index(help_[0]) + 1)
+        for feats in (None, ALL_OFF):
+            shown = gate_steps(steps, feats)
+            self.assertEqual(len(shown), len(steps) - 1)
+            self.assertIn(help_[0], shown)
+            self.assertNotIn(act[0], shown)
+        self.assertEqual(gate_steps(steps, ALL_ON), steps)
+
+    def test_02c_the_tour_step_promises_nothing_it_cannot_gate(self):
+        """Scenario steps have no `requires`, so the tour's last step (it
+        plays on every database) names PayAI and never "prepares the work"
+        (handover §10: "else keep it without that clause")."""
+        tour = next(sc for sc in self.tree['scenarios'] if sc['key'] == 'sc_welcome')
+        step = next(st for st in tour['steps'] if st['key'] == 'copilot')
+        self.assertNotIn('requires', step)
+        for f in ('title', 'body'):
+            en, vi = step[f]['en'], step[f]['vi']
+            self.assertIn('PayAI', en)
+            self.assertIn('PayAI', vi)
+            self.assertFalse(ACTING_WORDS.search(en), en)
+            self.assertNotRegex(en.lower(), r'\bhelper\b|tab (guide|ask|practice)')
+        self.assertIn('speak', step['body']['en'])
+        self.assertEqual(tour['name']['vi'], 'Đi một vòng Payobook')
 
     def test_03_every_gate_names_a_feature_the_server_answers(self):
         """A typo would hide a step on every database, silently."""

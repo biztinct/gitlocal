@@ -36,3 +36,5 @@ from . import test_feature_gate
 from . import test_helper_route
 # ONECHAT OC2 — the one chat: no tabs, no next step, PayAI by name (source).
 from . import test_onechat_ui
+# ONECHAT OC4 — Learn content follows the one PayAI chat (keys, lessons, phrases).
+from . import test_onechat_content
