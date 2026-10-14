@@ -23,6 +23,11 @@ assert len(config) == 1 and config.state in ('draft', 'testing')
 assert config.country_code == 'ID' and config.currency_id.name == 'IDR'
 assert len(config.rule_ids) == 367
 by_col = {r.column_letter: r for r in config.rule_ids}
+# The app's income-tax headline and coverage check use the standard PIT code.
+# Rename through its normal API so all stored sample/reference keys follow.
+if by_col['AN'].code != 'PIT':
+    renamed = env['pb.formula.studio'].rename_component(by_col['AN'].id, 'PIT')
+    assert renamed.get('ok'), renamed
 employee_rules = config.rule_ids.filtered(lambda r: not r.tax_table_id)
 assert len(employee_rules) == 75
 updates = {}
@@ -173,6 +178,8 @@ placeholder.write({'active': False})
 test_results = config.run_sample_tests()
 assert test_results['passed'] == 6 and not test_results['failed']
 blueprint = env['pb.blueprint.studio']
+mapping_status = blueprint.bp_task_set(config.id, 'mapping', 'configured')
+assert mapping_status.get('ok'), mapping_status
 checks = blueprint.bp_run_checks(config.id)
 assert checks.get('ok'), checks
 finished = blueprint.bp_finish(config.id)
