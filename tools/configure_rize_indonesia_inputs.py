@@ -151,6 +151,12 @@ for i, raw in enumerate(parsed['rows']):
     costs = sum(values.get(r.code, 0) for r in config.rule_ids if r.net_role == 'employer_cost' and not r.net_role_detail)
     assert costs == values[by_col['BT'].code]
 
+# The guided setup initially supplies a generic BASIC/STDDAYS example. Those
+# codes are absent from this imported schema; retain it archived for history.
+placeholder = config.sample_data_ids.filtered(lambda s: s.name == 'Sample employee'
+    and not json.loads(s.expected_values_json or '{}')
+    and 'BASIC' in json.loads(s.input_values_json or '{}'))
+placeholder.write({'active': False})
 test_results = config.run_sample_tests()
 assert test_results['passed'] == 6 and not test_results['failed']
 board = config.value_kind_board()
