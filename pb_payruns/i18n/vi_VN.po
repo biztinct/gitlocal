@@ -310,7 +310,7 @@ msgstr "Chi trả & gửi phiếu"
 #: model:ir.actions.act_window,name:pb_payruns.action_pb_payruns_kanban
 #: model:ir.actions.client,name:pb_payruns.action_pb_payruns
 msgid "Pay Runs"
-msgstr "kỳ lương"
+msgstr "Các đợt lương"
 
 #. module: pb_payruns
 #. odoo-python

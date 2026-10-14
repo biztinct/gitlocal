@@ -336,7 +336,7 @@ msgstr "Tổng quan"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:121
 msgid "Pay & Deliver"
-msgstr "Thanh toán và giao hàng"
+msgstr "Chi trả & gửi phiếu"
 
 #. module: pb_hub
 #. odoo-javascript
@@ -358,7 +358,7 @@ msgstr "Đợt lương"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:111
 msgid "Pay Runs"
-msgstr "kỳ lương"
+msgstr "Các đợt lương"
 
 #. module: pb_hub
 #. odoo-javascript

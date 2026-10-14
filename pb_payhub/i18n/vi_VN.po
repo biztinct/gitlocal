@@ -70,7 +70,7 @@ msgstr "Nhập Dữ liệu"
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:73
 msgid "Pay & Deliver"
-msgstr "Thanh toán và giao hàng"
+msgstr "Chi trả & gửi phiếu"
 
 #. module: pb_payhub
 #. odoo-javascript
@@ -97,7 +97,7 @@ msgstr "Trung tâm tính lương"
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:65
 msgid "Pay Runs"
-msgstr "kỳ lương"
+msgstr "Các đợt lương"
 
 #. module: pb_payhub
 #: model:ir.model,name:pb_payhub.model_pb_pay_hub

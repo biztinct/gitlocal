@@ -5137,3 +5137,21 @@ msgstr "chi tiền"
 #: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
 msgid "Switching…"
 msgstr "Đang chuyển…"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "You cannot open this request."
+msgstr "Bạn không mở được yêu cầu này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Moving a step to somebody else is something whoever looks after approvals does."
+msgstr "Chuyển một bước cho người khác là việc của người phụ trách phê duyệt."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Refused"
+msgstr "Đã từ chối"

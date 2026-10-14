@@ -618,7 +618,7 @@ msgstr "Lương đã hoàn tất không bao giờ bị xoá từ đây. Hãy m�
 #. odoo-python
 #: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
 msgid "Running payroll is for payroll staff. Your sign-in does not have the Run payroll right; ask your administrator under Settings › Access and delegations."
-msgstr "Chạy lương dành cho nhân viên tính lương. Tài khoản của bạn chưa có quyền Chạy lương; hãy nhờ quản trị viên cấp trong Cài đặt › Truy cập và ủy quyền."
+msgstr "Chạy lương dành cho nhân viên tính lương. Tài khoản của bạn chưa có quyền Chạy lương; hãy nhờ quản trị viên cấp trong Cài đặt › Quyền truy cập & bàn giao."
 
 #. module: pb_payrun_wizard
 #. odoo-python
