@@ -81,13 +81,22 @@ class _P3Case(TransactionCase):
             self.skipTest('This database has no payroll schemes.')
         Wizard = self.registry['pb.payrun.wizard']
         ours = {self.e1.id, self.e2.id, self.chi.id}
+        real = Wizard._eligible_employees
+        self.real_eligible = real
 
         def eligible(self_, statuses=None, employee_ids=None, formula_config_id=None,
                      date_start=None, date_end=None):
-            out = sorted(ours)
+            # The stub scopes the POPULATION to our three people only (the
+            # status filter is part of that: a clone's feed knows nothing of
+            # ours). A shortlist is the wizard's own filter (P3:test-13): the
+            # real method answers it, narrowed to ours (a shared clone's
+            # other people never leak in).
             if employee_ids:
-                out = [e for e in out if e in {int(x) for x in employee_ids}]
-            return out
+                return [e for e in real(self_, statuses=None, employee_ids=employee_ids,
+                                        formula_config_id=formula_config_id,
+                                        date_start=date_start, date_end=date_end)
+                        if e in ours]
+            return sorted(ours)
         for p in (patch.object(Wizard, '_eligible_employees', eligible),
                   patch.object(Wizard, '_scheme_population',
                                lambda self_, config_id, base: (list(base), [])),
@@ -197,6 +206,9 @@ class TestPayaiP3Walk(_P3Case):
         self.assertEqual(slots['people']['origin'], 'said')
         vals = json.loads(self._task(card).params_json)['vals']
         self.assertEqual(vals['employee_ids'], [self.chi.id])
+        # The wizard's own shortlist (not the stub's) keeps exactly her.
+        W = self.env['pb.payrun.wizard'].with_user(self.officer)
+        self.assertEqual(self.real_eligible(W, employee_ids=[self.chi.id]), [self.chi.id])
         # Do it: exactly one payslip, for her.
         _v, prep, summary, res = self._drive(self.officer, card)
         self.assertEqual(summary['count'], 1, summary)
@@ -366,8 +378,28 @@ class TestPayaiP3Red(_P3Case):
         return self._lay([_people_step('hr_check', first or [self.approver], 'HR Manager check'),
                           _people_step('finance', [self.finance], 'Finance release')])
 
-    def _submitted(self, name='Payai P3 Retail June'):
+    def _net_line(self, run, amount):
+        """A NET line on the run's payslip, so the frozen net is a real
+        figure (P3:test-1), counted by the one pay-band rule."""
+        category = self.env['hr.salary.rule.category'].search([('code', '=', 'NET')], limit=1)
+        rule = self.env['hr.salary.rule'].search([], limit=1)
+        if not category or not rule:
+            self.skipTest('No NET category or salary rule on this database.')
+        slip = run.slip_ids[:1]
+        Line = self.env['hr.payslip.line']
+        vals = {'slip_id': slip.id, 'name': 'NET', 'code': 'NET', 'amount': amount,
+                'quantity': 1.0, 'rate': 100.0, 'employee_id': slip.employee_id.id,
+                'contract_id': slip.contract_id.id, 'category_id': category.id,
+                'salary_rule_id': rule.id}
+        if 'pay_role' in Line._fields:
+            vals['pay_role'] = 'net'
+        Line.create(vals)
+        run.invalidate_recordset()
+
+    def _submitted(self, name='Payai P3 Retail June', net=None):
         run = self._run_with_slip(self.retail_end, name)
+        if net is not None:
+            self._net_line(run, net)
         out = self.env['biz.approval.engine'].with_user(self.preparer).submit(
             run.with_user(self.preparer))
         request = self.env['biz.approval.request'].browse(out['id'])
@@ -391,8 +423,9 @@ class TestPayaiP3Red(_P3Case):
 
     # ================================================================ 1
     def test_01_plan_card_for_the_seat_holder(self):
+        from odoo.addons.pb_payai_actions.payai.actions_green import money
         self._two_steps()
-        run, request = self._submitted()
+        run, request = self._submitted(net=1234567.0)
         card, _s = self._plan_approve()
         self.assertEqual((card['kind'], card['tier'], card['state']), ('plan', 'decide', 'planned'), card)
         self.assertEqual(card['title'], 'Approve %s' % request.title)
@@ -401,9 +434,13 @@ class TestPayaiP3Red(_P3Case):
         slots = {s['key']: s for s in card['slots']}
         self.assertEqual(slots['item']['value_label'], request.title)
         self.assertIn(slots['item']['origin'], ('said', 'assumed'))
-        self.assertTrue(slots['figures']['value_label'].startswith('1 person · '),
-                        slots['figures'])
-        self.assertTrue(slots['figures']['value_label'].endswith(' net'))
+        # The FROZEN net (request facts), which is the run band's net by the
+        # one pay-band rule — and a real figure, not 0 (P3:test-1).
+        frozen = request.facts['net_total']['value']
+        self.assertEqual(frozen, run.slip_ids.pb_pay_totals()['net'])
+        self.assertEqual(frozen, 1234567.0)
+        symbol = request.currency_id.symbol or request.currency_id.name or ''
+        self.assertEqual(slots['figures']['value_label'], '1 person · %s net' % money(frozen, symbol))
         self.assertEqual(slots['step']['value_label'], 'HR Manager check, 1 of 2')
         self.assertEqual(slots['next']['value_label'], 'Finance release · Finance Payai')
         typed = next(a for a in card['actions'] if a['id'] == 'typed')
@@ -489,11 +526,16 @@ class TestPayaiP3Red(_P3Case):
             done = self._confirm(self.approver, card, word='  approve ', note='Checked the totals')
             self.assertEqual(done['state'], 'done', done)
             again = self._confirm(self.approver, card, word='APPROVE')
-        self.assertEqual(calls, ['payai-task-%s' % card['task_id']])
+        # FIX-1 final: the key is the task's, tied to the request, with a
+        # secret part nobody else can guess (actions_red._decision_key).
+        self.assertEqual(len(calls), 1, calls)
+        self.assertTrue(calls[0].startswith('payai-task-%s-%s-' % (card['task_id'], request.id)),
+                        calls)
+        self.assertGreater(len(calls[0]), len('payai-task-%s-%s-' % (card['task_id'], request.id)) + 16)
         self.assertEqual(again['state'], 'done')
         mine = self._decisions(request, self.approver)
         self.assertEqual(len(mine), 1)
-        self.assertEqual(mine.idempotency_key, 'payai-task-%s' % card['task_id'])
+        self.assertEqual(mine.idempotency_key, calls[0])
         self.assertEqual(mine.reason, 'Checked the totals')
         self.assertFalse(self._decisions(request) - mine)
         # The plan's promise is what happened: Finance release, Finance Payai.
@@ -503,7 +545,7 @@ class TestPayaiP3Red(_P3Case):
         self.assertEqual(plan_next, '%s · %s' % (live.title, ', '.join(
             live.seat_ids.filtered(lambda s: s.status == 'open').acting_user_id.mapped('name'))))
         note = done['notes'][0]['text']
-        self.assertIn('Approved as HR Manager check. It moves to Finance release (Finance Payai).',
+        self.assertIn('Approved at HR Manager check. It moves to Finance release (Finance Payai).',
                       note)
         self.assertIn('Nobody has been paid yet.', note)
         self.assertFalse((done.get('undo') or {}).get('can'))
@@ -544,12 +586,24 @@ class TestPayaiP3Red(_P3Case):
         seat = step.seat_ids.filtered(lambda s: s.acting_user_id == self.approver)
         self.env['pb.approval.inbox'].move_it(request.id, seat.key, self.backup.id,
                                               'Away this week')
-        out = self._confirm(self.approver, card, word='APPROVE')
+        # PayAI's own seat re-check refuses BEFORE the inbox is asked to
+        # decide — not the engine's backstop (P3:test-5).
+        Inbox = self.registry['pb.approval.inbox']
+        real = Inbox.decide
+        calls = []
+
+        def spy(self_, *args, **kwargs):
+            calls.append(args)
+            return real(self_, *args, **kwargs)
+        with patch.object(Inbox, 'decide', spy):
+            out = self._confirm(self.approver, card, word='APPROVE')
+        self.assertEqual(calls, [])
         self.assertNotEqual(out['task_id'], card['task_id'])
         self.assertIn('Things changed', json.dumps(out))
         self.assertEqual(out['kind'], 'refused', out)
         self.assertIn('Backup Payai', json.dumps(out))
-        self.assertEqual(self._task(card).state, 'expired')
+        # FIX-1 (P3 wf-10): changed under the plan reads 'replanned', not 'expired'.
+        self.assertEqual(self._task(card).state, 'replanned')
         self.assertFalse(self._decisions(request))
 
     # ================================================================ 6
@@ -558,12 +612,44 @@ class TestPayaiP3Red(_P3Case):
         # engine keeps them on it and refuses their approval — so does PayAI.
         self._two_steps(first=[self.preparer])
         run, request = self._submitted()
-        card, _s = self._plan_approve(self.preparer)
+        Inbox = self.registry['pb.approval.inbox']
+        real = Inbox.decide
+        calls = []
+
+        def spy(self_, *args, **kwargs):
+            calls.append(kwargs.get('use_exception'))
+            return real(self_, *args, **kwargs)
+        # The drawer's own words for THIS request (P3:test-6, ux-7).
+        conflict = self.env['pb.approval.inbox'].with_user(self.preparer).get_request(
+            request.id)['conflict']
+        self.assertEqual(conflict['text'], 'You sent this in.')
+        with patch.object(Inbox, 'decide', spy):
+            card, _s = self._plan_approve(self.preparer)
         self.assertEqual(card['kind'], 'refused', card)
         self.assertEqual(card['title'], 'Somebody else has to decide this')
-        self.assertIn('You were part of preparing or sending this in, so you cannot also '
-                      'approve it', json.dumps(card))
+        text = json.dumps(card)
+        self.assertIn(conflict['text'], text)
+        self.assertIn(conflict['note'], text)
+        # Never the engine's copied sentence ("you were part of preparing").
+        self.assertNotIn('You were part of preparing', text)
         self.assertNotIn('typed', [a['id'] for a in card['actions']])
+        self.assertFalse(self._decisions(request))
+        # An exception in force: still refused here, with PayAI's one line;
+        # the inbox is never asked to use it.
+        self.env['biz.approval.exception.grant'].sudo().create({
+            'company_id': self.company.id, 'process_id': self.process.id,
+            'user_ids': [(6, 0, [self.preparer.id])],
+            'conflicts': ['maker', 'submitter', 'subject'], 'reason': 'Payai test grant'})
+        conflict = self.env['pb.approval.inbox'].with_user(self.preparer).get_request(
+            request.id)['conflict']
+        self.assertTrue(conflict['grant_id'], conflict)
+        with patch.object(Inbox, 'decide', spy):
+            card, _s = self._plan_approve(self.preparer)
+            self.assertEqual(card['kind'], 'refused', card)
+            self.assertIn('PayAI never uses an exception', json.dumps(card))
+            self.assertNotIn('typed', [a['id'] for a in card['actions']])
+            self._confirm(self.preparer, card, word='APPROVE')
+        self.assertEqual(calls, [])
         self.assertFalse(self._decisions(request))
 
     # ================================================================ 7
@@ -602,13 +688,18 @@ class TestPayaiP3Red(_P3Case):
                               'Reject the June 2031 Payai Retail run because it was paid twice')
         self.assertEqual(card['kind'], 'plan', card)
         self.assertIn('every payslip in it is cancelled', json.dumps(card))
+        typed = next(a for a in card['actions'] if a['id'] == 'typed')
+        self.assertEqual(typed['word'], 'TURN DOWN')
+        self.assertIn('REJECT', typed['words'])      # the word P3 shipped still counts
         out = self._confirm(self.approver, card, word='REJECT')
         self.assertEqual(out['state'], 'done', out)
         request.invalidate_recordset()
         run.invalidate_recordset()
         self.assertEqual((request.state, request.return_note), ('rejected', 'it was paid twice'))
         self.assertEqual(run.state, 'cancel')
-        self.assertIn('Rejected. The run and its payslips are cancelled', json.dumps(out))
+        # The inbox's own words for the act (P3:ux-4).
+        self.assertEqual(out['title'], 'Turned down')
+        self.assertIn('Turned down. The run and its payslips are cancelled', json.dumps(out))
 
     # ================================================================ 9
     def test_09_lock_revision_moved(self):
@@ -619,15 +710,23 @@ class TestPayaiP3Red(_P3Case):
         self.assertIn('Joint Payai', next(s for s in card['slots'] if s['key'] == 'next')['value_label'])
         # The other half of the joint step decides meanwhile.
         self.env['biz.approval.engine'].with_user(self.joint).decide(request.id, 'both', 'approve')
-        out = self._confirm(self.approver, card, word='APPROVE')
+        # The lock-revision fingerprint catches it at re-plan: the inbox is
+        # never asked to decide (P3:test-9; part 2 is the engine backstop).
+        Inbox = self.registry['pb.approval.inbox']
+        real = Inbox.decide
+        calls = []
+
+        def spy(self_, *args, **kwargs):
+            calls.append(args)
+            return real(self_, *args, **kwargs)
+        with patch.object(Inbox, 'decide', spy):
+            out = self._confirm(self.approver, card, word='APPROVE')
+        self.assertEqual(calls, [])
         self.assertIn('Things changed', json.dumps(out))
         self.assertNotEqual(out['task_id'], card['task_id'])
         self.assertEqual(out['state'], 'planned', out)
         self.assertFalse(self._decisions(request, self.approver))
         # The very last instant: the lock moves inside Do it. Nothing decided.
-        Inbox = self.registry['pb.approval.inbox']
-        real = Inbox.decide
-
         def racing(self_, request_id, *args, **kwargs):
             self_.env['biz.approval.request'].sudo().browse(request_id)._bump_lock()
             return real(self_, request_id, *args, **kwargs)
@@ -638,6 +737,55 @@ class TestPayaiP3Red(_P3Case):
         # The fresh card is good: one decision, the request moves on.
         out3 = self._confirm(self.approver, out2, word='APPROVE')
         self.assertEqual(out3['state'], 'done', out3)
+        self.assertEqual(len(self._decisions(request, self.approver)), 1)
+
+    def test_09b_lock_revision_alone_moved(self):
+        """P3:test-9 — the lock revision on its own is part of the plan's
+        fingerprint. Only the lock moves between the plan and Do it: the
+        step, the request's state and the open seats stay exactly as they
+        were, so nothing but the lock revision can tell the plans apart.
+        Dropping it from the fingerprint lets this confirm reach the inbox."""
+        self._two_steps()
+        run, request = self._submitted()
+        card, _s = self._plan_approve()
+        self.assertEqual(card['kind'], 'plan', card)
+        Inbox = self.env['pb.approval.inbox'].with_user(self.approver)
+
+        def shape(pay):
+            current = next((s for s in pay.get('steps') or [] if s.get('status') == 'active'),
+                           {})
+            seats = sorted(s.get('key') or '' for s in current.get('seats') or []
+                           if s.get('status') == 'open')
+            return pay.get('state'), current.get('key'), seats
+        before = Inbox.get_request(request.id)
+        request.sudo()._bump_lock()
+        request.invalidate_recordset()
+        after = Inbox.get_request(request.id)
+        self.assertEqual(after['lock_revision'], before['lock_revision'] + 1)
+        self.assertEqual(shape(after), shape(before))
+        # The two fingerprints differ in the lock revision and nothing else.
+        old_fp = json.loads(json.loads(self._task(card).params_json)['fingerprint'])
+        Registry = self.registry['pb.approval.inbox']
+        real = Registry.decide
+        calls = []
+
+        def spy(self_, *args, **kwargs):
+            calls.append(args)
+            return real(self_, *args, **kwargs)
+        with patch.object(Registry, 'decide', spy):
+            out = self._confirm(self.approver, card, word='APPROVE')
+        self.assertEqual(calls, [])
+        self.assertIn('Things changed', json.dumps(out))
+        self.assertNotEqual(out['task_id'], card['task_id'])
+        self.assertEqual(out['state'], 'planned', out)
+        self.assertEqual(self._task(card).state, 'replanned')
+        self.assertFalse(self._decisions(request))
+        new_fp = json.loads(json.loads(self._task(out).params_json)['fingerprint'])
+        self.assertEqual(len(old_fp), len(new_fp))
+        self.assertEqual([i for i, (a, b) in enumerate(zip(old_fp, new_fp)) if a != b], [1])
+        # The fresh card carries the new lock: Do it on it decides once.
+        out2 = self._confirm(self.approver, out, word='APPROVE')
+        self.assertEqual(out2['state'], 'done', out2)
         self.assertEqual(len(self._decisions(request, self.approver)), 1)
 
     # =============================================================== 10
@@ -652,18 +800,21 @@ class TestPayaiP3Red(_P3Case):
         card, _s = self._plan_approve()
         done = self._confirm(self.approver, card, word='APPROVE')
         learn = [a for a in done['actions'] if a['id'] == 'learn']
-        self.assertEqual([a['scenario'] for a in learn], ['sc_payslips'])
+        # The scenario, in watch mode (P3:test-10), named for what it
+        # teaches: reading the run, not approving it (P3:ux-5).
+        self.assertEqual([(a['scenario'], a['mode']) for a in learn], [('sc_payslips', 'watch')])
+        self.assertEqual(learn[0]['label'], 'Learn to read a pay run')
         # Run payroll and send for approval: the run walkthrough.
         card, _s = self._send(self.officer, 'Run August 2031 payroll for Payai Retail End-Month')
         _v, prep, _sum, res = self._drive(self.officer, card)
-        self.assertEqual([a['scenario'] for a in res['actions'] if a['id'] == 'learn'],
-                         ['sc_payrun'])
+        self.assertEqual([(a['scenario'], a['mode']) for a in res['actions'] if a['id'] == 'learn'],
+                         [('sc_payrun', 'watch')])
         self._run_with_slip(self.retail_mid, 'Payai P3 July', dates=('2031-07-01', '2031-07-31'))
         sub, _s = self._send(self.preparer, 'Send the July 2031 run for approval')
         self.assertEqual(sub['kind'], 'plan', sub)
         sent = self._conv(self.preparer).rpc_confirm_task(sub['task_id'], 'tap')['card']
-        self.assertEqual([a['scenario'] for a in sent['actions'] if a['id'] == 'learn'],
-                         ['sc_payrun'])
+        self.assertEqual([(a['scenario'], a['mode']) for a in sent['actions']
+                          if a['id'] == 'learn'], [('sc_payrun', 'watch')])
         for key in ('sc_payslips', 'sc_payrun'):
             self.assertIn(key, scenarios)
             self.assertIn('watch', scenarios[key]['modes'])
@@ -698,7 +849,51 @@ class TestPayaiP3Red(_P3Case):
         row = next(r for r in rows if r['key'] == 'payai-%s' % amber['task_id'])
         self.assertFalse(row.get('badge'))
 
+    def test_11b_no_sudo_inside_an_action(self):
+        """PA-R2, pinned (P3:test-11): `.sudo()` keeps the uid, so "the
+        decision is under their own name" cannot tell a sudo call apart. No
+        Action module calls sudo at all; bookkeeping lives in the runner."""
+        import os
+        import re
+        from odoo.modules.module import get_module_path
+        folder = os.path.join(get_module_path('pb_payai_actions'), 'payai')
+        for name in sorted(os.listdir(folder)):
+            if not (name.startswith('actions_') and name.endswith('.py')):
+                continue
+            with open(os.path.join(folder, name), encoding='utf-8') as fh:
+                code = [line.split('#', 1)[0] for line in fh]
+            hits = [n + 1 for n, line in enumerate(code) if re.search(r'\.sudo\(', line)]
+            self.assertEqual(hits, [], '%s calls sudo() on lines %s' % (name, hits))
+
+    def test_11c_approver_who_lost_read_on_the_run(self):
+        """The seat holder can no longer read the pay run (a record rule):
+        Do it is refused, nothing is decided, and it is not a "things
+        changed" loop. A sudo() inside the Action would decide it."""
+        self._two_steps()
+        run, request = self._submitted()
+        card, _s = self._plan_approve()
+        self.assertEqual(card['kind'], 'plan', card)
+        self.env['ir.rule'].create({
+            'name': 'Payai P3 hide one run', 'model_id': self.env['ir.model']._get_id(
+                'hr.payslip.run'),
+            'domain_force': "[('id', '!=', %d)]" % run.id})
+        out = self._confirm(self.approver, card, word='APPROVE')
+        self.assertNotEqual(out.get('state'), 'done', out)
+        self.assertNotIn('Things changed', json.dumps(out))
+        self.assertFalse(self._decisions(request))
+        request.invalidate_recordset()
+        self.assertEqual(request.state, 'pending')
+
     # =============================================================== 12
+    def _lock_home(self, item, restricted=False):
+        """FIX-1b (P3:sec-4): lock the screen the way the Access home does —
+        a permission written on the menu entry (real data, no patch). The
+        approver does not hold it; `restricted` shows it padlocked."""
+        group = self.env['res.groups'].sudo().create({'name': 'Payai Home gate 2031'})
+        item.sudo().write({'groups_id': [(6, 0, group.ids)], 'restricted': restricted})
+        self.env.invalidate_all()
+        return group
+
     def test_12_no_back_door(self):
         from odoo.addons.pb_payai_actions.payai import gate
         self._two_steps()
@@ -707,24 +902,31 @@ class TestPayaiP3Red(_P3Case):
         self.assertEqual(gate.allowed(self.env, self.approver, action), (True, ''))
         item = gate.screen_item(self.env, action)
         self.assertTrue(item, 'no Home screen on this database')
-        Item = self.registry['pb.sidebar.item']
-        real = Item.visibility_for
-
-        def locked(self_, user):
-            out = real(self_, user)
-            out['items'][item.id] = 'locked'
-            return out
-        with patch.object(Item, 'visibility_for', locked):
-            for text in ('Approve the June 2031 Payai Retail run',
-                         'Reject the June 2031 Payai Retail run because it is wrong'):
-                card, _s = self._send(self.approver, text)
-                self.assertEqual(card['kind'], 'refused', card)
-                self.assertIn('not switched on for you', json.dumps(card))
-                self.assertEqual(self._task(card).error, 'screen_off')
-        # A plan made while the screen was on is refused at Do it once it is not.
+        # A plan made while the screen was on ...
         card, _s = self._plan_approve()
         self.assertEqual(card['kind'], 'plan', card)
-        with patch.object(Item, 'visibility_for', locked):
-            out = self._confirm(self.approver, card, word='APPROVE')
+        # ... and then Home is locked for the approver in the Access home.
+        # Nothing else is sent in between (a newer request would close the
+        # plan as replaced): the screen gate itself refuses it at Do it.
+        group = self._lock_home(item)
+        self.assertEqual(gate.screen_state(self.env, self.approver, action), 'hidden')
+        self.assertEqual(self._task(card).state, 'planned')
+        out = self._confirm(self.approver, card, word='APPROVE')
         self.assertEqual(out['kind'], 'refused', out)
+        self.assertIn('not switched on for you', json.dumps(out))
+        self.assertEqual((self._task(card).state, self._task(card).error),
+                         ('refused', 'screen_off'))
         self.assertFalse(self._decisions(request))
+        # New requests are refused too, before any plan is made.
+        for text in ('Approve the June 2031 Payai Retail run',
+                     'Reject the June 2031 Payai Retail run because it is wrong'):
+            refused, _s = self._send(self.approver, text)
+            self.assertEqual(refused['kind'], 'refused', refused)
+            self.assertIn('not switched on for you', json.dumps(refused))
+            self.assertEqual(self._task(refused).error, 'screen_off')
+        self.assertFalse(self._decisions(request))
+        # Lending the approver that permission (a lent role arrives as its
+        # permissions) opens it again: the rule is the menu's own.
+        self.approver.sudo().write({'group_ids': [(4, group.id)]})
+        self.env.invalidate_all()
+        self.assertEqual(gate.screen_state(self.env, self.approver, action), 'on')

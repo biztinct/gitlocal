@@ -403,7 +403,10 @@ class PbAuditConsole(models.AbstractModel):
             return []
         tasks = self.env['payai.task'].sudo().search(
             dom, order='create_date desc, id desc', limit=limit)
-        states = dict(self.env['payai.task']._fields['state'].selection)
+        # The status in the reader's language (the field's selection alone
+        # is the English source).
+        Task = self.env['payai.task']
+        states = dict(Task._fields['state']._description_selection(Task.env))
         rows = []
         for t in tasks:
             state = states.get(t.state, t.state)

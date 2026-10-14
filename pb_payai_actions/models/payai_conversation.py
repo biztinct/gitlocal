@@ -17,7 +17,7 @@ import logging
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
-from ..payai import runner
+from ..payai import gate, runner
 from ..payai.i18n import reset_lang, set_lang
 
 from ..payai.resolve import DOOR_KINDS
@@ -32,6 +32,21 @@ def _clean_str(value, cap=_TEXT_CAP):
     if not isinstance(value, str):
         return ''
     return ' '.join(value.split())[:cap]
+
+
+def _clean_target(value):
+    """FIX-1b — where a ⌘K row leads, by identifier only (its action's tag,
+    xmlid, lens, focus): what the deny-list matches on besides the row id.
+    Never a destination PayAI builds from — a door still runs only through
+    the client's own palette (PA19)."""
+    if not isinstance(value, dict):
+        return {}
+    out = {}
+    for key in ('tag', 'xmlid', 'lens', 'focus'):
+        text = _clean_str(value.get(key), 120)
+        if text:
+            out[key] = text
+    return out
 
 
 class PayrollAIConversation(models.Model):
@@ -58,10 +73,15 @@ class PayrollAIConversation(models.Model):
                 continue
             if row.get('restricted'):
                 continue
+            target = _clean_target(row.get('target'))
+            # FIX-1b (owner ruling 2026-10-13): a door into Settings › Access
+            # and delegations is never stored, so PayAI can never open it.
+            if gate.door_denied({'id': rid, 'target': target}):
+                continue
             seen.add(rid)
             groups = [g for g in (row.get('groups') or [])
                       if isinstance(g, str) and '.' in g][:12]
-            clean.append({
+            entry = {
                 'id': rid,
                 'label': _clean_str(row.get('label')),
                 'sublabel': _clean_str(row.get('sublabel')),
@@ -70,7 +90,10 @@ class PayrollAIConversation(models.Model):
                 # P2-F1 — ranking only (a lens before a deep link before a
                 # lesson); never a permission, never a destination.
                 'kind': row.get('kind') if row.get('kind') in DOOR_KINDS else '',
-            })
+            }
+            if target:
+                entry['target'] = target
+            clean.append(entry)
         blob = json.dumps(clean, ensure_ascii=False)
         if session.payai_doors_json != blob:
             session.write({'payai_doors_json': blob})
@@ -83,7 +106,9 @@ class PayrollAIConversation(models.Model):
             rows = json.loads(self.payai_doors_json or '[]')
         except (TypeError, ValueError):
             return []
-        return [r for r in rows if isinstance(r, dict) and r.get('id')]
+        # FIX-1b: rows stored before the deny-list existed are dropped here.
+        return [r for r in rows if isinstance(r, dict) and r.get('id')
+                and not gate.door_denied(r)]
 
     # ================================================================ P2
     # The Amber callbacks. Every one names a task by id and nothing else: the
@@ -109,7 +134,8 @@ class PayrollAIConversation(models.Model):
             if not task or task.user_id != self.env.user:
                 raise AccessError(self.env._('That request belongs to somebody else.'))
             ctx = runner.Ctx.for_task(self.env, task)
-            return fn(ctx, task.id, *args)
+            # FIX-1b: no card that leaves here offers a door into Access.
+            return gate.scrub_card(fn(ctx, task.id, *args))
         finally:
             reset_lang(token)
 
@@ -149,7 +175,8 @@ class PayrollAIMessage(models.Model):
     def _card_dict(self):
         """A plan card is one card in three states (plan → running → result):
         history shows the task's LATEST card, not the plan as first sent."""
-        card = super()._card_dict()
+        # FIX-1b: a card from before the deny-list loses its Access door too.
+        card = gate.scrub_card(super()._card_dict())
         if not card or card.get('kind') != 'plan' or not card.get('task_id'):
             return card
         task = self.env['payai.task'].sudo().browse(int(card['task_id'])).exists()
@@ -169,4 +196,4 @@ class PayrollAIMessage(models.Model):
                 'text': self.env._('This stopped when the page was closed. Open the '
                                    'Runs board to see what was made.')}])
         latest.pop('drive', None)
-        return latest
+        return gate.scrub_card(latest)

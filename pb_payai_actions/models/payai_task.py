@@ -50,8 +50,14 @@ class PayaiTask(models.Model):
         ('refused', 'Refused'),
         ('undone', 'Undone'),
         # P3-W6: plain words in the Audit console's "Asked PayAI: … — <status>".
+        # Only a plan or question left past its ten minutes.
         ('expired', 'Not answered in time'),
         ('cancelled', 'Cancelled'),
+        # FIX-1 (P3 wf-10): closed for a reason other than time — a newer
+        # request took its place, or things changed under it at Do it and it
+        # was planned again (the new task carries the fresh card).
+        ('replaced', 'Replaced by a newer request'),
+        ('replanned', 'Changed before it was done'),
     ], string='Status', required=True, default='planned', index=True)
     confirm_kind = fields.Selection([
         ('none', 'Not needed'), ('tap', 'Tap'), ('typed', 'Typed word'),

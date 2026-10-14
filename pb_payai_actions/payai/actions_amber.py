@@ -25,6 +25,7 @@ import difflib
 import json
 import logging
 import re
+import unicodedata
 from datetime import timedelta
 
 from odoo import fields
@@ -35,11 +36,13 @@ from .i18n import T, num, stamp
 
 from . import cards
 from .actions_green import RUNS_DOOR, _board_rows, _row_for, money, run_door
-from .registry import Action, Slot, payai_action
+from .phrases_vi import PHRASES_VI
+from .registry import MARKED_ONLY, Action, Slot, payai_action
 from .resolve import (
-    MAX_CHIPS, ambiguous, fold, missing, month_label, parse_amount, parse_day,
-    parse_period, resolve_period, resolve_person, resolve_run, resolve_scheme,
-    resolved, state_label, tok_match, tokens,
+    _VI_LABEL_BEFORE_COUNT, MAX_CHIPS, MONTHS, ambiguous, division_names, fold, missing,
+    month_label,
+    parse_amount, parse_day, parse_period, period_problem, resolve_period, resolve_person,
+    resolve_run, resolve_scheme, resolved, state_label, tok_match, tokens,
 )
 
 _lt = LazyTranslate(__name__)
@@ -147,6 +150,226 @@ def undo_block(minutes, label, note, can=True):
             'label': T(label) if can else '', 'note': T(note), 'can': bool(can)}
 
 
+#: P3 crit-3 — "Send back the June run because two payslips are missing" and
+#: "Send the June run back as the payslips are wrong" are a send-back (the
+#: Red action), never an email of payslips or a send for approval.
+#:
+#: Only a REAL send-back counts — "back" right after "send", or right after
+#: the thing being sent. A "back" further on in the sentence is somebody
+#: else's: "Send the June payslips now that Mai is back", "…, I am back",
+#: "…to the staff who are back", "…, they want them back by Friday", "…to
+#: Mai, she is back from leave" are ordinary payslip sends.
+#: Never a send-back: "back pay" and "Back Office" (a run's or a team's
+#: name: "back" goes on with more of the name, or a hyphen), and "back to me"
+#: / "back to us" (the payslips come to the asker).
+_BACK_NAME = (r'back\b(?![\s-]*(?:pay|office)\b)(?!-)'
+              r'(?!\s+to\s+(?:me|myself|us)\b)')
+#: A word that cannot sit inside the thing being sent back when nothing
+#: after "back" says it is a send-back: it starts another clause or names
+#: who the payslips go TO.
+_CLAUSE_WORD = (
+    r'(?:to|into|that|who|whom|which|whose|when|whenever|where|while|now|once|'
+    r'after|before|until|till|since|because|as|if|unless|and|or|but|then|so|'
+    r'also|is|are|am|was|were|be|been|being|has|have|had|will|would|can|could|'
+    r'should|want|wants|wanted|need|needs|needed|let|i|he|she|we|they|you|'
+    r'come|came|comes|coming|get|gets|got|go|goes|went|call|ring|phone|write|'
+    r'report|reply|text|message|check|circle|loop|hear|bring|brought|send|sent|'
+    r'give|gave|pass|passed)\b')
+#: FIX-1 fifth pass: the word right before a send-back's "back" is the end
+#: of the thing being sent ("the Sales and Marketing run", "the run that Mai
+#: prepared", "it"). It is never a "be" or a coming/going word ("Mai is
+#: back", "people who came back", "get back"), a word that makes "back" a
+#: place ("at the back", "from the back"), or a short form ("Mai's back",
+#: "they're back").
+_NOT_BEFORE_BACK = (
+    r'(?:the|a|an|at|in|on|from|of|by|with|out|way|right|straight|is|are|am|'
+    r'was|were|be|been|being|get|gets|got|getting|gotten|come|comes|came|'
+    r'coming|go|goes|went|going|gone|report|reported|reporting|check|checked|'
+    r'checking|call|called|ring|rang|phone|phoned|write|wrote|writes|reply|'
+    r'replied|text|texted|message|hear|heard|step|stepped|move|moved|look|'
+    r'looked|fall|fell|bounce|bounced|turn|turned|head|headed|walk|walked|'
+    r'fly|flew|drive|drove|hold|held|sit|sat|stand|stood|lie|lay|'
+    r'feel|felt|settle|settled|lean|leaned|kick|kicked|relax|heading|walking|'
+    r'moving|stepping|driving|flying|looking|falling|turning|sitting|leaning|'
+    r'me|us|him|her|you|welcome|'
+    # FIX-1 sixth pass: "from two months back", "a while back" (= ago), and
+    # a word that says how or when somebody is back ("now back", "just
+    # back", "not yet back", "anyone else back", "round back"). "Last month"
+    # stays the thing sent ("the payslips from last month back"); "a month
+    # back" is `_AGO`.
+    r'now|just|finally|already|all|also|recently|newly|yet|not|still|else|'
+    r'safely|fully|round|around|ago|soon|later|again|far|long|home|'
+    r'days|weeks|months|years|fortnights|hours|minutes|while|ways)\b'
+    r'|\S+[\'’](?:s|re|m|ve|d|ll)\b')
+#: "a month back", "one week back": a time ago, never the thing sent.
+_AGO = (r'(?:a|an|one)\s+(?:day|week|month|year|fortnight|hour|minute)\s+'
+        r'back\b')
+#: A word that never sits inside the thing being sent back, however the
+#: sentence ends: a second order ("…and send me a note back", "…and call me
+#: back", "…and get them back", "…, I want them back").
+_SECOND_ORDER = (r'(?:send|sends|sent|email|emailed|e-mail|mail|mailed|let|'
+                 r'tell|told|ask|asked|call|ring|phone|text|ping|write|get|'
+                 r'gets|got|want|wants|need|needs|bring|brought|take|took|'
+                 r'keep|kept|hand|handed|give|gave|pass|passed)\b')
+#: What can follow a send-back's "back" when the thing being sent back is
+#: long or has "and" / "to" / "that" in it ("Send the Sales and Marketing
+#: run back because the payslips are wrong", "Send the run that Mai
+#: prepared back", "Send the June run to Mai back because …"): the end of
+#: the sentence, a reason, a break in the sentence, "to <whoever>" then one
+#: of those, or "and/so" + the fix.
+_SEND_BACK_END = (
+    r'(?:\s+to\s+(?!(?:normal|work|school|the\s+office|office|me|myself|us)\b)'
+    r'[^\s,;.:!?—]+(?:\s+[^\s,;.:!?—]+){0,2}?)?'
+    r'(?:\s*$|\s+(?:please|now|today|asap|immediately|right\s+away|straight\s+away)\b'
+    r'|\s*[,;:.!?—]|\s+-\s|\s+(?:because|since|as|cos|cause|'
+    r'due\s+to|and|so)\b|\s+for\s+(?:fixing|a\s+fix|fixes|correction|corrections|'
+    r'changes|review|rework|amendment|amendments|another\s+look)\b)')
+#: One word of the thing being sent; a send-back's own "back" never is one
+#: ("Back Office" and "back pay" are).
+_ITEM_WORD = r'(?!' + _BACK_NAME + r')[^\s,;.:!?—]+'
+#: FIX-1 sixth pass — a long sentence ("to", "who", "and" … in it) is a
+#: send-back only when the words right before "back" end the THING being
+#: sent: "the Sales and Marketing run", "the run (that) Mai prepared", "the
+#: June run to Mai". Never a word that says somebody is back ("…to everyone
+#: who is now back", "…to people just back", "…when the team is all back").
+_THING = (r'(?:(?:pay\s*)?runs?|payrolls?|(?:pay\s*)?slips?|batch(?:es)?|requests?|'
+          r'it|them|ones?)\b')
+#: Words that are a group of people, never one person the run goes back to.
+_GROUP = (r'(?:everyone|everybody|anyone|anybody|someone|somebody|all|both|staff|'
+          r'people|employees?|workers?|team|teams|those|these|them|us|me|him|her|'
+          r'others?|ones?|folks?|guys|drivers?)\b')
+#: Who made the thing: "Mai", "I", "the preparer".
+_MAKER = (r'(?:(?:i|we|you|he|she|they)\b|(?:the\s+)?(?!' + _CLAUSE_WORD + r'|' + _GROUP
+          + r')[^\W\d_]+)')
+#: What they did to it: "prepared", "made", "set up" — never a coming or
+#: going word ("returned", "came") or a second order ("wanted", "called").
+_MADE = (r'(?!' + _SECOND_ORDER + r'|(?:needed|wanted|called|texted|phoned|pinged|'
+         r'returned|arrived|joined|moved|headed|walked|stepped|turned|reported|'
+         r'checked|replied|settled|landed)\b)'
+         r'(?:[^\W\d_]+ed|made|ran|did|built|wrote|began|drew\s+up|set\s+up|'
+         r'put\s+together)\b')
+_SENT_THING = (
+    _THING + r'(?:\s+(?:(?:that|which)\s+)?' + _MAKER
+    + r'(?:\s+(?:has|had|have|just|already))?\s+' + _MADE
+    + r'|\s+to\s+(?:the\s+)?(?!(?:the|a|an|my|our|your|their)\b|' + _CLAUSE_WORD + r'|'
+    + _GROUP + r'|' + _BACK_NAME + r')[^\s,;.:!?—]+)?')
+#: Either up to 12 words of ONE thing being sent ("the June 2031 Retail
+#: End-Month pay run"), then "back" (with anything after it); or up to 20
+#: words with no break and no second order, ending in the thing being sent
+#: (`_SENT_THING`), then "back" ("straight back", "right back") and an
+#: ending that makes it a send-back.
+#: FIX-1 seventh pass: "Send the June payslips for staff back from leave",
+#: "… - Mai back Monday" — after "for <people>" or a lone dash, "back" says
+#: who is back unless an ending makes it a send-back ("… back to Mai",
+#: "… back because …"; any reason: `_RETURN_WITH_REASON`).
+_FOR_PEOPLE = (r'for\s+(?:(?:the|all|our|my|those|these|any|every|returning)\s+)*'
+               + _GROUP)
+_DASH = r'[-–](?=\s|$)'
+_SEND_BACK_AHEAD = (
+    r'(?:' + _BACK_NAME
+    + r'|(?:(?!' + _CLAUSE_WORD + r'|' + _AGO + r'|' + _FOR_PEOPLE + r'|' + _DASH + r')'
+    + _ITEM_WORD + r'\s+){0,11}?'
+    + r'(?!' + _CLAUSE_WORD + r'|' + _NOT_BEFORE_BACK + r'|' + _DASH + r')' + _ITEM_WORD + r'\s+'
+    + _BACK_NAME
+    # …and with them, only when an ending makes it a send-back: "Send the
+    # payslips for the people in Retail back to Mai".
+    + r'|(?:(?!' + _CLAUSE_WORD + r'|' + _AGO + r')' + _ITEM_WORD + r'\s+){0,11}?'
+    + r'(?!' + _CLAUSE_WORD + r'|' + _NOT_BEFORE_BACK + r')' + _ITEM_WORD + r'\s+'
+    + _BACK_NAME + _SEND_BACK_END
+    + r'|(?:(?!' + _SECOND_ORDER + r')' + _ITEM_WORD + r'\s+){0,19}?'
+    + _SENT_THING + r'(?:\s+(?:straight|right))?\s+' + _BACK_NAME + _SEND_BACK_END
+    + r')')
+_NOT_SEND_BACK = r'(?!' + _SEND_BACK_AHEAD + r')'
+
+#: FIX-1 seventh pass (P3 crit-3, still broken after the sixth): the word
+#: lists above cannot tell every send-back from a "back" that is somebody
+#: else's — "Send it all back because the payslips are wrong", "Send the run
+#: Mai sent in back because …", "Send the run waiting for me back because …",
+#: "Email the June payslips back to Mai because they are wrong" all reached
+#: Send payslips. A sentence that says WHY something goes back ("because",
+#: "wrong", "missing", "fix" … anywhere after a standalone "back") is never
+#: an email of payslips, whatever words sit before "back" — only "Mai is
+#: back", "they came back", "two weeks back" are somebody else's "back".
+#: Payslip emails cannot be undone, so an unsure sentence goes to the
+#: send-back phrases or the model, never to Send payslips.
+_FIX_WORD = (r'(?:because|cos|coz|cause|bc|due\s+to|wrong|missing|incorrect|inaccurate|'
+             r'mistakes?|errors?|erroneous|faulty|broken|fix|fixed|fixes|fixing|'
+             r'correct|corrected|correcting|corrections?|redo|re-do|rework|reworked|'
+             r'amend|amended|amendments?)\b')
+#: The word before a "back" that is somebody coming or going back, a time
+#: ago, or a place ("at the back") — never a send-back.
+_BACK_OF_SOMEBODY = (
+    r'(?:is|are|am|was|were|be|been|being|get|gets|got|getting|come|comes|came|'
+    r'coming|go|goes|went|going|gone|days?|weeks?|months?|years?|fortnights?|'
+    r'hours?|minutes?|while|the|at|from|'
+    # FIX-1 ninth pass (regressions of the seventh): people who are back,
+    # not a thing sent back — "…, welcome back everyone, mistakes fixed",
+    # "…to everyone back at work, errors corrected", "…to people who were
+    # away, now back, …", "…to the team who returned back, …", "…to staff
+    # back in the office, …", "…to those back from leave, …".
+    r'welcome|now|returned|everyone|everybody|staff'
+    r')\s'
+    # FIX-1 eleventh pass (regressions of the seventh): a second order's own
+    # "back" ("…and report back if anything is wrong", "…, call me back if
+    # something is wrong", "…and write back if any are wrong"), and the
+    # people the payslips go TO who are back ("…to employees back from
+    # leave, errors corrected", "…to the drivers back on shift, mistakes
+    # fixed"). Never when "back" goes on "to <whoever>" or with the reason
+    # ("…to the team back to Lan for corrections", "…I had to report back
+    # because …"), and never after "for" ("…for the drivers back with a note
+    # that …"): those keep the guard.
+    r'|(?:(?:report|write|reply|call|ring|phone|text|message|hear|check|circle|loop)\s'
+    r'|(?<=\b(?:call|ring|text)\s)(?:me|us)\s|(?<=\b(?:phone|write)\s)(?:me|us)\s'
+    r'|(?<=\bget\s)(?:me|us|them)\s'
+    r'|(?:(?<=\bto\s)|(?<=\bto\sthe\s))(?:people|employees?|workers?|drivers?|guys|'
+    r'folks?|teams?|others)\s)'
+    r'(?!back\s+(?:to(?!\s+(?:me|myself|us)\b)|because|since|as|cos|coz|cause|bc|'
+    r'due\s+to)\b)'
+    # "Send the June payslips, back from leave staff included, …": a break
+    # right before a "back from / at / in / on" is somebody being back.
+    r'|\S+,\s(?=back\s+(?:from|at|in|on)\s)'
+    r'|(?<=\bto\s)(?:those|these)\s'
+    r'|\S+[\'’](?:s|re|m)\s')
+_PLAIN_BACK = r'back\b(?![\s-]*(?:pay|office)\b)(?!-)'
+_RETURN_WITH_REASON = (
+    r'(?!(?:' + _PLAIN_BACK + r'|.*?(?<!\S)(?!' + _BACK_OF_SOMEBODY + r')\S+\s+'
+    + _PLAIN_BACK + r').*?\b' + _FIX_WORD + r')')
+
+#: FIX-1 eighth pass (P3 crit-3, still broken after the seventh): a reason
+#: need not use any of `_FIX_WORD`'s words — "Send it all back, the payslips
+#: show last month's rates", "Send the run Mai sent in back, the payslips
+#: need another look", "Send all back, payslips show old rates" all reached
+#: Send payslips with "it all back, the" as the run. A payslip send names
+#: the payslips right after what it sends ("Send the June payslips", "Send
+#: out the Retail payslips"); a "back" BEFORE the first "payslips" is never
+#: part of that — the sentence sends something back (or is unsure), so it
+#: goes to the send-back phrases or the model, never to an email that
+#: cannot be undone. "back pay", "Back Office", "back-pay", "payback",
+#: "welcome-back" are names, not a "back".
+_NO_BACK_BEFORE_SLIPS = (
+    r'(?!(?:(?!pay\s*slips?\b).)*?(?<![\w\'’-])back\b(?![\s-]*(?:pay|office)\b)(?!-))')
+
+#: FIX-1 sixth pass (P3 crit-3, the Vietnamese half): "Gửi phiếu lương tháng
+#: 6 trả lại cho Mai vì sai" sends something BACK — never an email of the
+#: payslips or a send for approval. "trả lại" / "trả về" / "gửi trả"
+#: anywhere in the sentence takes it off the payslip and approval phrases
+#: (the model, which knows the send-back, reads it instead). Written with
+#: marks; the registry folds it with the phrase.
+_VI_SEND_BACK = r'(?!.*(?<!\w)(?:trả\s+(?:lại|về)|gửi\s+trả)(?!\w))'
+
+
+def _vi_not_send_back(key):
+    """The Vietnamese phrases of `key` (`phrases_vi.PHRASES_VI`, kept there)
+    with `_VI_SEND_BACK` right after their start."""
+    out = []
+    for phrase in PHRASES_VI.get(key, ()):
+        head = MARKED_ONLY if phrase.startswith(MARKED_ONLY) else ''
+        body = phrase[len(head):]
+        caret = '^' if body.startswith('^') else ''
+        out.append(head + caret + _VI_SEND_BACK + body[len(caret):])
+    return tuple(out)
+
+
 class _Amber(Action):
     tier = 'prepare'
     priority = 20
@@ -198,54 +421,526 @@ class RunPayroll(_Amber):
     def normalise_texts(self, ctx, texts):
         """"Run payroll for Retail for June": the month rides in the scheme.
         "… for Retail End-Month for Vũ Khánh Chi only": so do the people
-        (P3-W1) — split off into their own slot."""
-        texts = dict(texts or {})
-        scheme = texts.get('scheme') or ''
-        if scheme and not texts.get('period'):
-            today = fields.Date.context_today(ctx.env.user)
-            got = parse_period(scheme, today)
-            if got:
-                texts['period'] = scheme
-                texts['scheme'] = _without_month(scheme, got[3])
-        return self._split_people(ctx, texts)
+        (P3-W1) — split off into their own slot.
 
-    _PEOPLE_SPLIT = re.compile(r'^(?P<a>.+?)\s+(?:for|with|just)\s+(?P<b>.+)$', re.I)
-    _ONLY = re.compile(r'(?:^|\s+)only\s*$', re.I)
+        FIX-1 (P3 wf-4): the people are split off FIRST, on the words as
+        typed, and a month is only read from the scheme's part — "Mây" (a
+        name) is never the month May."""
+        texts = dict(texts or {})
+        self._period_words_to_scheme(ctx, texts)
+        scheme = (texts.get('scheme') or '').strip()
+        if not scheme:
+            return texts
+        if not (texts.get('people') or '').strip():
+            return self._split_people(ctx, texts)
+        # The people came in their own slot: only a month and an "only" can
+        # ride here. FIX-1 (P3 wf-3, second pass): "Retail End-Month only" /
+        # "… for May only" lose their "only" here too, as on the phrase
+        # path, so the scheme resolves without a question; the period gets
+        # the month's own words ("May"), never the whole text.
+        scheme = self._bare(scheme)
+        texts['scheme'] = scheme
+        if not texts.get('period'):
+            got = self._month_in(scheme)
+            if got:
+                texts['period'] = _month_words(scheme, got[3]) or scheme
+                texts['scheme'] = _without_month(scheme, got[3])
+        return texts
+
+    #: Words before "payroll" that name neither a month nor a scheme ("Run
+    #: my payroll", "Run the monthly payroll", "Chạy lương kỳ này").
+    _PERIOD_FILLER = frozenset((
+        'my', 'our', 'your', 'their', 'a', 'an', 'this', 'that', 'next', 'new',
+        'monthly', 'regular', 'usual', 'normal', 'whole', 'full', 'current',
+        'latest', 's', 'nay', 'toi', 'chung', 'ta', 'minh'))
+
+    #: FIX-1 eighth pass: words that belong to the month phrase itself —
+    #: "the end of May", "mid-month", "May month", "this pay period", "June
+    #: and July", "June '31", "13th month", "cuối / giữa / đầu tháng 5", "kỳ
+    #: 1", "đợt 2". They stay in the period; they never make a scheme.
+    _MONTH_PHRASE = frozenset((
+        'end', 'ending', 'mid', 'middle', 'early', 'late', 'beginning', 'begin',
+        'start', 'starting', 'first', 'second', 'third', 'last', 'half', 'month',
+        'period', 'pay', 'cycle', 'year', 'quarter', 'week', 'fortnight', 'day',
+        'of', 'to', 'and', 'or', 'through', 'thru', 'until', 'till', 'this',
+        'next', 'previous', 'prior', 'current', 'same', 'th', 'st', 'nd', 'rd'))
+    #: The Vietnamese ones, as written with marks ("năm" is the year; "Nam"
+    #: is a name).
+    _MONTH_PHRASE_VI = frozenset((
+        'cuối', 'giữa', 'đầu', 'tháng', 'năm', 'kỳ', 'đợt', 'sau', 'trước',
+        'tới', 'qua', 'đến', 'và', 'hoặc', 'nửa', 'này'))
+    #: …and typed without marks ("cuoi thang 5"), "nam" left out.
+    _MONTH_PHRASE_VI_BARE = frozenset(
+        fold(w) for w in _MONTH_PHRASE_VI if fold(w) != 'nam')
+
+    def _month_phrase_word(self, word):
+        """True for a word that is part of a month phrase (`_MONTH_PHRASE`), a
+        number ("2031", "'31", "13th", "1-31"), a filler word ("my", "the"),
+        or an English month written without marks ("July" in "June and
+        July"). "Mây" (marks on it) is a name, never the month May."""
+        low = unicodedata.normalize('NFC', word).lower().strip('\'’,.;:!?()')
+        if low in self._MONTH_PHRASE_VI:
+            return True
+        marked = low != fold(low)
+        if not marked and fold(low) in self._MONTH_PHRASE_VI_BARE:
+            return True
+        stop = self._MONTH_PHRASE.union(self._PERIOD_FILLER, _GLUE)
+        # Unstemmed ("this" is no plural of "thi"); "months" / "periods" too.
+        for tok in re.findall(r'[0-9a-z]+', fold(low)):
+            if tok in stop or tok[:-1] in stop and tok.endswith('s') \
+                    or any(c.isdigit() for c in tok):
+                continue
+            if tok in MONTHS and not marked:
+                continue
+            return False
+        return True
+
+    @staticmethod
+    def _labels_a_number(words, i):
+        """FIX-1 final round (safety check): "khối 2 / tổ 2 / nhóm 2 / tuần 2
+        / quý 3" in the period slot labels a team, week or quarter, as
+        `resolve._not_a_count` reads it ("chạy lương khối 2 tháng trước" is
+        last month's). The label stays with its number in the period, as
+        before FIX-1 — never the scheme "Lương khối văn phòng", and never
+        leaving "2 tháng trước" (two months ago) behind."""
+        if i + 1 >= len(words) or not words[i + 1].strip(',.;:').isdigit():
+            return False
+        folded = fold(words[i].strip(',.;:'))
+        if folded not in _VI_LABEL_BEFORE_COUNT:
+            return False
+        return not (folded == 'ca' and i and fold(words[i - 1]) == 'tang')
+
+    def _period_words_to_scheme(self, ctx, texts):
+        """FIX-1 seventh pass (regression of wf-4): "Run Retail End-Month
+        payroll for May" puts "Retail End-Month" in the period slot and
+        "May" in the scheme slot (the phrase reads the words before
+        "payroll" as the month). Words there that are no part of a month
+        phrase are the SCHEME's ("Retail End-Month", "Bán lẻ", "June Retail
+        End-Month" → "Retail End-Month"): they move to the scheme and the
+        period keeps the rest. Before, the scheme was blanked and the month
+        thrown away: a ready plan for this month on the wizard's default
+        scheme.
+
+        FIX-1 eighth pass (regressions of the seventh): the words of the
+        month phrase itself — "the end of May", "mid-month", "May month",
+        "cuối tháng 5", "kỳ 1 tháng 5", "June and July", "2031" — stay in the
+        period, on every path (phrase, model, pencil). Only a period with
+        some OTHER word in it moves anything, and then the longest stretch
+        of words around those that one scheme covers moves ("Retail
+        End-Month", "Pay for Performance"), never words on the far side of
+        the month. The two halves are joined as one scheme when one scheme
+        covers them together ("Run Retail payroll for Mid-Month"); otherwise
+        with "for", so a month or people said after "payroll" are read as
+        before."""
+        period = (texts.get('period') or '').strip()
+        if not period:
+            return
+        # A month that cannot be read ("tháng 13", "thang sau") stays for
+        # the period question; it is no scheme.
+        if period_problem(period, fields.Date.today()):
+            return
+        words = period.split()
+        got = self._month_in(period)
+        kept = got[3].split() if got else [fold(w) for w in words]
+        month = []
+        for w in words:
+            f = fold(w)
+            if f in kept:
+                kept.remove(f)
+                month.append(False)
+            else:
+                month.append(True)
+        other = [i for i, w in enumerate(words)
+                 if not month[i] and not self._month_phrase_word(w)
+                 and not self._labels_a_number(words, i)]
+        if not other:
+            return
+        lo, hi = other[0], other[-1]
+        if any(month[lo:hi + 1]):
+            # A month in the middle of the other words: all the words that
+            # are no month go, as said.
+            span = [i for i in range(len(words)) if not month[i]]
+        else:
+            a_min = lo
+            while a_min > 0 and not month[a_min - 1]:
+                a_min -= 1
+            b_max = hi
+            while b_max < len(words) - 1 and not month[b_max + 1]:
+                b_max += 1
+            spans = sorted(((a, b) for a in range(a_min, lo + 1)
+                            for b in range(hi, b_max + 1)),
+                           key=lambda ab: ab[0] - ab[1])
+            # FIX-1 eleventh pass: a name ends in a word the month phrase also
+            # has ("Nguyễn Văn An" — "an"): the whole name moves, never
+            # "Nguyễn Văn" (three people) with the "An" left behind.
+            a, b = next((ab for ab in spans if self._said_scheme(
+                ctx, ' '.join(words[ab[0]:ab[1] + 1])) or self._names_people(
+                ctx, ' '.join(words[ab[0]:ab[1] + 1]))), (lo, hi))
+            span = list(range(a, b + 1))
+        said = ' '.join(words[i] for i in span).strip(' ,')
+        scheme = (texts.get('scheme') or '').strip()
+        both = '%s %s' % (said, scheme)
+        if not self._words_to_move(ctx, said, scheme, texts.get('people')):
+            return
+        left = ' '.join(w for i, w in enumerate(words) if i not in span).strip(' ,')
+        if not any(month) and not tokens(left, stop=self._PERIOD_FILLER.union(_GLUE)):
+            left = ''
+        texts['period'] = left
+        if not scheme:
+            texts['scheme'] = said
+        elif self._said_scheme(ctx, self._bare(said), self._bare(scheme)):
+            texts['scheme'] = both
+        else:
+            # FIX-1 eleventh pass (regression of the eighth): only the scheme
+            # slot's FIRST part (up to its first "for" / "with" …) is read
+            # with the period's words; the rest keeps its own cut. "Run Retail
+            # payroll for Mid-Month for Mai" is Retail Mid-Month for Mai, never
+            # "Retail for Mid-Month" (no scheme with the "for" in it) and a
+            # person called "Mid-Month". A first part of nothing but
+            # month-phrase words is the period ("Run Retail End-Month payroll
+            # for 13th month" / "… for this pay period for Mai" / "… for 2031
+            # for Mai", tenth pass), never a person's name either.
+            cut = self._CUT.search(scheme)
+            head = (scheme[:cut.start()] if cut else scheme).strip(' ,')
+            tail = scheme[cut.start():] if cut else ''
+            bare = self._bare(head)
+            if tail and bare and self._said_scheme(ctx, self._bare(said), bare):
+                texts['scheme'] = '%s %s%s' % (said, head, tail)
+            elif bare and all(self._month_phrase_word(w) for w in head.split()) \
+                    and not self._covers_scheme(ctx, bare) \
+                    and not (left and self._month_in(head)):
+                texts['scheme'] = said + tail
+                texts['period'] = self._month_phrase_period(left, head)
+            elif self._period_name(ctx, said) or (
+                    bare and not self._covers_scheme(ctx, bare) and (
+                        self._names_somebody(ctx, head) or self._status_hit(ctx, head)
+                        or self._month_in(bare))):
+                texts['scheme'] = '%s for %s' % (said, scheme)
+            else:
+                # FIX-1 twelfth pass (regression of the eleventh): what comes
+                # after "payroll" is no name, no status and no month ("Run
+                # Retail payroll for End-Month staff", "… for the store
+                # team"), or is a scheme of its own ("Run Pay for Performance
+                # payroll for Retail for Mai"). Joined with "for", it was cut
+                # off as a person nobody is called and the plan was refused.
+                # The words stay where they were said, as before FIX-1: the
+                # scheme question asks which.
+                texts['period'], texts['scheme'] = period, scheme
+
+    def _month_phrase_period(self, left, head):
+        """The period for month-phrase words said after "payroll" (`head`),
+        with what the period slot kept (`left`). A month that only reads
+        with its "for" ("for May month") keeps just the month's words; a
+        month said before "payroll" ("Run May Retail End-Month payroll for
+        this pay period") stays that month, with a year said after it ("…
+        for 2031") when the two read together."""
+        if left:
+            both = '%s %s' % (left, head)
+            return both if self._month_in(both) else left
+        if not self._month_in(head):
+            joined = 'for %s' % head
+            got = self._month_in(joined)
+            if got:
+                return _month_words(joined, got[3]) or head
+        return head
+
+    def _words_to_move(self, ctx, said, scheme, people=''):
+        """FIX-1 ninth pass (regressions of the seventh and eighth): may the
+        period's other words (`said`) move to the scheme? Only when they are
+        plainly the scheme's or somebody's — never a word the period merely
+        carries ("May 2031 bonus", "salaries for May", "tháng 5 nhé", "May
+        please", "nhân viên tháng 5"): those stay in the period, as before
+        FIX-1, so the model's and the pencil's month is read as said.
+
+        - The scheme slot already names a scheme on its own (the model's or
+          the pencil's slots; "Run Retail payroll for Mid-Month"): the words
+          move only when they are somebody's name, or add words the scheme
+          slot lacks and one scheme covers the two together. "May payroll
+          Retail" next to "Retail End-Month" adds nothing: nothing moves.
+        - The scheme slot is empty ("Chạy lương Bán lẻ tháng 5", "Run Retail
+          End-Month payroll"): only words one scheme covers, or a name.
+        - The scheme slot holds no scheme ("Run Retail End-Month payroll for
+          May", "… for May for Mai"): words one scheme covers, a name, or —
+          when a month rides in the scheme slot, as on the phrase path — any
+          words ("Run Warehouse payroll for May" asks which scheme).
+
+        FIX-1 twelfth pass (regressions of the seventh): the scheme's words
+        count only AS WRITTEN (`_said_scheme`) — "luôn" (right away) is not
+        "Lương …", "lẹ" (quickly) and "lễ" (holiday) are not "Bán lẻ". A name
+        moves only as `_period_name` reads one ("mai" in small letters is also
+        "tomorrow"), and never when the people slot is already filled (the
+        model's or the pencil's slots). Those words stay in the period, as
+        before FIX-1."""
+        if self._period_name(ctx, said):
+            return not (people or '').strip()
+        if not scheme:
+            return self._said_scheme(ctx, self._bare(said))
+        if self._covers_scheme(ctx, self._bare(scheme)):
+            have = tokens(self._bare(scheme))
+            adds = any(not any(tok_match(t, w) for w in have)
+                       for t in tokens(self._bare(said)) if t not in self._SCHEME_FILLER)
+            return adds and self._said_scheme(ctx, self._bare(said), self._bare(scheme))
+        return bool(self._said_scheme(ctx, self._bare(said)) or self._month_in(scheme))
+
+    # "… for May only", "… for May just": the trailing word is never part
+    # of a month, a scheme or a name.
+    _ONLY = re.compile(r'(?:^|\s+)(?:only|just)\s*$', re.I)
+    _LEAD_ONLY = re.compile(r'^\s*(?:just|only)\s+', re.I)
+    # FIX-1 sixth pass: "… for May only please" — a polite word at either
+    # end is never part of a month, a scheme or a name either.
+    _POLITE = re.compile(r'(?:^|[\s,]+)(?:please|pls|plz|thanks|thank\s+you|thx)\s*$'
+                         r'|^\s*please\s+', re.I)
+    # "May Retail End-Month": `parse_period` does not take "may" leading other
+    # words ("may" is too common a word); here it leads a scheme's name.
+    # Unmarked only — "Mây" is a name (P3 wf-4).
+    _LEAD_MAY = re.compile(r'^\s*(may)\s+(\S.*)$', re.I)
     # P4 — "Bán lẻ chỉ Vũ Khánh Chi", "Bán lẻ, riêng Vũ Khánh Chi", "Vũ Khánh
     # Chi thôi". On the MARKED text: "chỉ" (only) is not the name "Chi".
-    _PEOPLE_SPLIT_VI = re.compile(
-        r'^(?P<a>.+?)\s*,?\s+(?:cho\s+riêng|riêng|chỉ\s+cho|chỉ|cho|với)\s+(?P<b>.+)$', re.I)
     _ONLY_VI = re.compile(r'(?:^|\s+)(?:mà\s+)?thôi\s*$|^\s*(?:chỉ|riêng)\s+', re.I)
+    #: Where one part of "<scheme> for <people>" ends and the next begins.
+    #: "just for" / "only for" / "just with" are ONE cut (FIX-1 third pass:
+    #: "… just for Mai" left "for Mai" as the person's name).
+    _CUT = re.compile(r'\s+(?:(?:just|only)\s+)?(?:for|with)\s+|\s+just\s+'
+                      r'|\s*,?\s+(?:cho\s+riêng|riêng|chỉ\s+cho|chỉ|cho|với)\s+', re.I)
+    #: Words that never decide whether a part names a scheme.
+    _SCHEME_FILLER = frozenset(('the', 'scheme', 'payroll'))
+
+    def _bare(self, words):
+        """The words without "only" / "just" / "chỉ" / "thôi" around them."""
+        words = self._POLITE.sub('', words or '')
+        words = self._LEAD_ONLY.sub('', self._ONLY.sub('', words))
+        return self._ONLY_VI.sub('', words).strip(' ,')
+
+    @staticmethod
+    def _month_in(text):
+        """`parse_period` on `text`, except that a word written WITH marks
+        that folds to an English month ("Mây" → may) is a name, never the
+        month (P3 wf-4). Same (start, end, origin, rest) as `parse_period`;
+        `rest` lines up with `text` for `_without_month`."""
+        hidden = {}
+
+        def hide(m):
+            word = m.group(0)
+            if fold(word) in MONTHS and word.lower() != fold(word):
+                key = 'zqhide%s' % chr(97 + len(hidden))
+                hidden[key] = fold(word)
+                return key
+            return word
+        probe = re.sub(r'[^\W\d_]+', hide, text or '')
+        # Only WHETHER a month is there and the words it leaves are used here;
+        # the period slot reads the month again with the person's own today.
+        got = parse_period(probe, fields.Date.today())
+        if not got or not hidden:
+            return got
+        rest = got[3]
+        for key, word in hidden.items():
+            rest = rest.replace(key, word)
+        return got[0], got[1], got[2], rest
+
+    def _covers_scheme(self, ctx, words, whole=False):
+        """True when ONE scheme the person may run has every one of these
+        words — its name, code or part of the business, a near spelling
+        counting. A part that only shares a word with a scheme ("Văn" in
+        "Lương khối văn phòng") is not a scheme (P3 wf-1).
+
+        `whole`: the words must also name that scheme in FULL — every word of
+        its name, its code, or every word of its part of the business
+        ("Retail") — not just some of its words ("Phong" of "Lương khối văn
+        phòng"). Asked of words that are also somebody's name."""
+        q = [t for t in tokens(words or '') if t not in self._SCHEME_FILLER]
+        if not q:
+            return False
+        try:
+            schemes = self._defaults(ctx).get('schemes') or []
+        except (UserError, AccessError):
+            return False
+        for s in schemes:
+            have = tokens(' '.join(x for x in (
+                s.get('name') or '', s.get('code') or '',
+                (s.get('division') or '').replace('_', ' '),
+                division_names(s.get('division'))) if x))
+            if not all(any(tok_match(t, w) for w in have) for t in q):
+                continue
+            if not whole:
+                return True
+            for full in (s.get('name') or '', s.get('code') or '',
+                         (s.get('division') or '').replace('_', ' '),
+                         division_names(s.get('division'))):
+                need = [w for w in tokens(full) if w not in self._SCHEME_FILLER]
+                if need and all(any(tok_match(t, w) for t in q) for w in need):
+                    return True
+        return False
+
+    def _period_name(self, ctx, said):
+        """True when the period slot's other words (`said`) are people: each
+        name somebody's whole name, or found by its words (`_names_somebody`)
+        AND written as a name, every word with a capital ("Run Mai payroll for
+        Retail"). FIX-1 twelfth pass: "Chạy lương tháng 5 mai nhé" — "mai"
+        (tomorrow) — stays in the period, as before FIX-1."""
+        if self._names_people(ctx, said):
+            return True
+        names = self._names(said)
+        return bool(names) and all(w[:1].isupper() for n in names for w in n.split()) \
+            and self._names_somebody(ctx, said)
+
+    def _said_scheme(self, ctx, said, rest=''):
+        """True when ONE scheme the person may run has every word of `said`
+        exactly as written — no near spelling, and a word typed WITH marks
+        has that scheme word's own marks ("lẹ" / "lễ" are not "lẻ", "luôn" is
+        not "lương") — and every word of `rest` the way `_covers_scheme`
+        reads it. Asked of the words that leave the period slot (FIX-1
+        twelfth pass): those were never a scheme before FIX-1, so only a
+        scheme's own words may make one there."""
+        said_words = [w for w in _marked_words(said)
+                      if not set(tokens(w)) <= self._SCHEME_FILLER]
+        if not said_words:
+            return False
+        q = [t for t in tokens(rest or '') if t not in self._SCHEME_FILLER]
+        try:
+            schemes = self._defaults(ctx).get('schemes') or []
+        except (UserError, AccessError):
+            return False
+        for s in schemes:
+            text = ' '.join(x for x in (
+                s.get('name') or '', s.get('code') or '',
+                (s.get('division') or '').replace('_', ' '),
+                division_names(s.get('division'))) if x)
+            own = _marked_words(text)
+            if not all(any(tokens(w) == tokens(o) and (w == fold(w) or w == o)
+                           for o in own) for w in said_words):
+                continue
+            have = tokens(text)
+            if all(any(tok_match(t, w) for w in have) for t in q):
+                return True
+        return False
 
     def _split_people(self, ctx, texts):
         """"<scheme> for <people>", "<people> only" → the scheme slot and the
-        people slot. A part counts as the scheme only when the wizard's own
-        scheme list knows its words; "Retail only" stays a scheme."""
-        scheme = (texts.get('scheme') or '').strip()
-        if not scheme or (texts.get('people') or '').strip():
-            return texts
+        people slot (P3-W1). FIX-1 (P3 wf-1…wf-4, wf-7) — decided in this
+        order, part by part ("for", "with", "just", "chỉ", "cho" … cut them):
 
-        def is_scheme(words):
-            words = self._ONLY_VI.sub('', self._ONLY.sub('', words or '')).strip()
-            if not words:
-                return False
-            try:
-                res = resolve_scheme(ctx, words, defaults=self._defaults(ctx))
-            except (UserError, AccessError):
-                return False
-            return res['status'] in ('resolved', 'ambiguous')
+        1. a part that is exactly the name of somebody a run could pay (marks
+           and capitals aside) is PEOPLE, whatever words it shares with a
+           scheme or a status;
+        2. the longest run of the other parts that one scheme's words cover
+           word for word is the SCHEME — "Pay for Performance" stays whole,
+           "Retail End-Month only" loses its "only". A part whose every word
+           is in somebody's name ("Phong", "Dũng") counts only when it names
+           the scheme in full: "Phong only" is Trần Thanh Phong, never
+           "Lương khối văn phòng" (FIX-1 second pass);
+           A month riding at either end of that run ("Pay for Performance
+           December", "December Pay for Performance") goes to the period
+           and the rest is still the whole scheme (FIX-1 third pass);
+        3. a part that is nothing but a month is the PERIOD; a month word
+           inside a name is never one;
+        4. whatever is left is the people's words (names or a status). A
+           part after "with" that is nobody's name and no status ("Retail
+           with overtime") stays there — the run is never silently widened
+           or narrowed — and is remembered, so the reply can say a run is
+           narrowed only to people or a status.
+        """
+        scheme = texts['scheme'].strip()
+        bounds, cuts, start = [], [''], 0
+        for m in self._CUT.finditer(scheme):
+            bounds.append((start, m.start()))
+            cuts.append(m.group(0))
+            start = m.end()
+        bounds.append((start, len(scheme)))
+        n = len(bounds)
 
-        m = self._PEOPLE_SPLIT.match(scheme) or self._PEOPLE_SPLIT_VI.match(scheme)
-        if m:
-            a, b = m.group('a').strip(), m.group('b').strip()
-            if is_scheme(a):
-                texts.update(scheme=a, people=b)
-            elif is_scheme(b):
-                texts.update(scheme=b, people=a)
+        def part(i, j=None):
+            return scheme[bounds[i][0]:bounds[i if j is None else j][1]].strip(' ,')
+
+        people = {i for i in range(n) if self._names_people(ctx, part(i))}
+        # Every word in somebody's name, not exactly their name: a person
+        # unless the part names a scheme in full.
+        named = {i for i in range(n) if i not in people
+                 and self._names_somebody(ctx, part(i))}
+        # The period keeps the BARE words: "May only" is no month to
+        # `parse_period` ("may" alone is too common a word), "May" is (FIX-1
+        # fourth pass — the period silently fell back to this month).
+        months = {}
+        for i in range(n):
+            if i in people:
+                continue
+            words = self._bare(part(i))
+            got = self._month_in(words)
+            # FIX-1 eighth pass: "the month of May", "mid May", "the end of
+            # May" are nothing but a month too (`_month_phrase_word`).
+            if got and all(self._month_phrase_word(w)
+                           for w in _without_month(words, got[3]).split()):
+                months[i] = words
+        best = None                 # (first part, last part, scheme words, period words)
+        for size in range(n, 0, -1):
+            for i in range(n - size + 1):
+                j = i + size - 1
+                if any(k in people or k in months for k in range(i, j + 1)):
+                    continue
+                words = self._bare(part(i, j))
+                whole = any(k in named for k in range(i, j + 1))
+                if self._covers_scheme(ctx, words, whole):
+                    best = (i, j, words, '')
+                    break
+                # A month in the run (any size: "Pay for Performance
+                # December" spans two parts) — the rest must be the scheme.
+                got = self._month_in(words)
+                rest = _without_month(words, got[3]) if got else ''
+                if rest and self._covers_scheme(ctx, rest, whole):
+                    best = (i, j, rest, words)
+                    break
+                # FIX-1 sixth pass: "May Retail End-Month only" — the month
+                # the person said, then the whole scheme.
+                lead = self._LEAD_MAY.match(words)
+                if lead and self._covers_scheme(ctx, lead.group(2), whole):
+                    best = (i, j, lead.group(2).strip(), lead.group(1))
+                    break
+            if best:
+                break
+        others = [k for k in range(n) if k not in people and k not in months
+                  and not (best and best[0] <= k <= best[1])]
+        period = next((months[k] for k in sorted(months)), '')
+        if best:
+            texts['scheme'] = best[2]
+            period = best[3] or period
+            who = sorted(people.union(others))
+        elif n == 1 and not people and not months:
+            if named or self._ONLY.search(scheme) or self._ONLY_VI.search(scheme):
+                # "Run December payroll for An only", "… for Phong": no
+                # scheme said — somebody's name is.
+                texts.update(scheme='', people=scheme)
+                return texts
+            # One part that is not a scheme word for word: kept for the
+            # scheme question; a month riding in it still goes to the period.
+            got = self._month_in(scheme)
+            if got and not texts.get('period'):
+                texts.update(period=scheme, scheme=_without_month(scheme, got[3]))
             return texts
-        if (self._ONLY.search(scheme) or self._ONLY_VI.search(scheme)) and not is_scheme(scheme):
-            # "Run December payroll for Vũ Khánh Chi only": no scheme said.
-            texts.update(scheme='', people=scheme)
+        else:
+            # No part is a scheme word for word: the first part that is not
+            # people or a month is what was said for the scheme (the scheme
+            # question asks which); the people keep their own words.
+            # A part that is somebody's name is never taken for the scheme.
+            first = next((k for k in others if k not in named), None)
+            words = part(first) if first is not None else ''
+            bare = self._bare(words)
+            got = self._month_in(bare) if bare else None
+            if got and _without_month(bare, got[3]):
+                period = period or bare
+                words = _without_month(bare, got[3])
+            texts['scheme'] = words
+            who = sorted(people.union(k for k in others if k != first))
+        if period and not texts.get('period'):
+            texts['period'] = period
+        if who:
+            texts['people'] = ', '.join(part(k) for k in who)
+            wishes = ctx.cache.setdefault('run_wishes', set())
+            for k in who:
+                if k in people or k in named or not re.search(
+                        r'\b(?:with|với)\b', cuts[k], re.I):
+                    continue
+                if self._status_hit(ctx, part(k)):
+                    continue
+                wishes.update(fold(name) for name in self._names(part(k)))
         return texts
 
     def resolve_slot(self, ctx, slot, text):
@@ -278,70 +973,230 @@ class RunPayroll(_Amber):
         return super().resolve_slot(ctx, slot, text)
 
     # ----------------------------------------------------------- people
+    #: Words around a status that are not part of it ("active staff only",
+    #: "staff on probation", "nhân viên chính thức").
+    _STATUS_FILLER = frozenset((
+        'only', 'just', 'the', 'people', 'person', 'staff', 'employee', 'worker',
+        'who', 'are', 'is', 'still', 'currently', 'status', 'those', 'one',
+        'and', 'or', 'on', 'in', 'under', 'with', 'of', 'at',
+        'nguoi', 'cac', 'nhung', 'va', 'hoac', 'nhan', 'vien', 'la'))
+    _EVERYONE = frozenset(('everyone', 'all', 'everybody'))
+
+    def _status_words(self, text):
+        return [w for w in tokens(self._bare(text or '')) if w not in self._STATUS_FILLER]
+
+    def _status_opts(self, ctx):
+        """[(value, its words)] for every employment status the wizard ticks."""
+        return [(o.get('value'), [w for w in tokens('%s %s' % (o.get('value') or '',
+                                                               o.get('label') or ''))
+                                  if w not in self._STATUS_FILLER])
+                for o in self._defaults(ctx).get('statuses') or []]
+
     def _status_hit(self, ctx, text):
-        """True when the words name employment statuses ("active only")."""
-        words = [w for w in tokens(text or '') if w not in ('only', 'just', 'the')]
+        """True when the words name employment statuses ("active only") —
+        EVERY word, not one of them: "Nguyễn Thị Thu" shares "thu" with
+        "Thử việc" and is a person (P3 wf-7)."""
+        words = self._status_words(text)
         if not words:
             return False
-        if set(words) & {'everyone', 'all', 'everybody'}:
+        if set(words) & self._EVERYONE:
             return True
-        opts = self._defaults(ctx).get('statuses') or []
-        return any(tok_match(w, t) for o in opts for w in words
-                   for t in tokens('%s %s' % (o.get('value') or '', o.get('label') or '')))
+        known = [t for _v, ws in self._status_opts(ctx) for t in ws]
+        return all(any(tok_match(w, t) for t in known) for w in words)
+
+    def _status_said(self, ctx, text):
+        """The statuses said IN FULL — every word of each ("thử việc" is
+        Thử việc, never also Đang làm việc for sharing "việc") — when the
+        words are nothing but whole statuses; else []."""
+        words = self._status_words(text)
+        if not words:
+            return []
+        hit, used = [], set()
+        for value, ws in self._status_opts(ctx):
+            if ws and all(any(tok_match(w, t) for w in words) for t in ws):
+                hit.append(value)
+                used.update(w for w in words if any(tok_match(w, t) for t in ws))
+        return hit if used >= set(words) else []
+
+    def _names(self, text):
+        """"Chi, An and Lan only" → ['Chi', 'An', 'Lan']."""
+        return [n.strip() for n in re.split(r'\s*,\s*|\s+and\s+|\s+và\s+|\s*&\s*',
+                                            self._bare(text)) if n.strip()]
+
+    def _people_pool(self, ctx, config_id=0):
+        """Everybody a run for this scheme could pay — the wizard's own list
+        (`_eligible_employees`, no status ticks), all of them, not the screen
+        search's first 40 (P3 wf-6) — with the names read AS THE PERSON
+        (PA-R2): the employee records, or the employee directory when the
+        person may not open the records. Once per request."""
+        cache = ctx.cache.setdefault('run_people', {})
+        key = int(config_id or 0)
+        if key not in cache:
+            try:
+                ids = ctx.env['pb.payrun.wizard']._eligible_employees(
+                    formula_config_id=key or None)
+            except (UserError, AccessError):
+                ids = []
+            cache[key] = self._people_rows(ctx, ids)
+        return cache[key]
+
+    @staticmethod
+    def _people_rows(ctx, ids):
+        ids = list(ids or [])
+        if not ids:
+            return []
+        for model, names in (('hr.employee', ['name', 'barcode', 'department_id']),
+                             ('hr.employee.public', ['name', 'department_id'])):
+            if model not in ctx.env:
+                continue
+            Model = ctx.env[model]
+            if model == 'hr.employee' and 'departure_date' in Model._fields:
+                names = names + ['departure_date']
+            try:
+                found = Model.search_read([('id', 'in', ids)], names, order='name')
+            except AccessError:
+                continue
+            out = []
+            for r in found:
+                words = re.findall(r'[0-9a-z]+', fold(r.get('name') or ''))
+                marked = _marked_words(r.get('name'))
+                dept = r.get('department_id')
+                out.append({'id': r['id'], 'name': r.get('name') or '',
+                            'code': r.get('barcode') or '',
+                            'department': dept[1] if isinstance(dept, (list, tuple)) else '',
+                            'left': r.get('departure_date') or '',
+                            'words': words, 'wordset': set(words),
+                            'marked': set(marked)})
+            return out
+        return []
+
+    @staticmethod
+    def _match_people(pool, name):
+        """(rows, exact) — the people called exactly this (marks and capitals
+        aside, or by their code), else everybody with every one of these
+        name words."""
+        want = re.findall(r'[0-9a-z]+', fold(name))
+        if not want:
+            return [], False
+        code = fold(name).strip()
+        exact = [r for r in pool
+                 if r['words'] == want or (r['code'] and fold(r['code']) == code)]
+        if exact:
+            return exact, True
+        return [r for r in pool if all(t in r['wordset'] for t in want)], False
+
+    def _names_people(self, ctx, text):
+        """True when the words are exactly the names of people a run could
+        pay — every name of a list ("Chi, An and Lan")."""
+        names = self._names(text)
+        if not names:
+            return False
+        pool = self._people_pool(ctx, 0)
+        return all(self._match_people(pool, name)[1] for name in names)
+
+    def _names_somebody(self, ctx, text):
+        """True when every name of the words finds somebody a run could pay —
+        exactly, or by every one of its words ("Phong" → Trần Thanh Phong).
+        A word typed WITH marks must match the name's own marks here: "văn
+        phòng" (office) is not Trần Văn Phong, "Vận tải" not Nguyễn Văn Tài;
+        typed without marks it matches either."""
+        names = self._names(text)
+        if not names:
+            return False
+        pool = self._people_pool(ctx, 0)
+        for name in names:
+            rows, _exact = self._match_people(pool, name)
+            said = _marked_words(name)
+            marked = [w for w in said if w != fold(w)]
+            if not any(all(w in r.get('marked', ()) for w in marked) for r in rows):
+                return False
+        return True
 
     def _resolve_people(self, ctx, text):
         """Named people (P3-W1), found among the people THIS scheme pays —
-        the wizard's own `eligible_preview`, as the person. A status ("active
-        only") stays a status, read by `_statuses` as before."""
+        the wizard's own list, as the person. A status ("active only") stays
+        a status, read by `_statuses` as before — when it is said in full, or
+        when every word names one and no name finds anybody (P3 wf-7). A name
+        found only by some of its words is 'assumed', never 'said' (P3 wf-6)."""
         text = ' '.join((text or '').split())
         empty = {'text': '', 'employee_ids': [], 'names': []}
-        if not text:
+        names = self._names(text)
+        if not text or not names:
             return resolved(empty, '', 'default')
-        if self._status_hit(ctx, text):
-            return resolved(dict(empty, text=text), text, 'said')
-        bare = self._ONLY_VI.sub('', self._ONLY.sub('', text)).strip()
-        names = [n.strip() for n in re.split(r'\s*,\s*|\s+and\s+|\s+và\s+|\s*&\s*', bare)
-                 if n.strip()]
         config_id = int((ctx.params.get('scheme') or {}).get('value') or 0)
-        ids, labels = [], []
+        pool = self._people_pool(ctx, config_id)
+        # FIX-1 (P3 wf-7), in this order: somebody called exactly this; a
+        # status said in full ("thử việc only", "active staff"); somebody
+        # with every one of these name words ("Thu only" is Nguyễn Thị Thu
+        # even with a "Thử việc" status); only then status words.
+        found = [self._match_people(pool, name) for name in names]
+        if not all(exact for _rows, exact in found):
+            words = set(self._status_words(text))
+            if (words & self._EVERYONE) or self._status_said(ctx, text) \
+                    or (not all(rows for rows, _exact in found)
+                        and self._status_hit(ctx, text)):
+                return resolved(dict(empty, text=text), text, 'said')
+        ids, labels, all_exact = [], [], True
         for name in names[:MAX_CHIPS]:
-            rows = self._people_named(ctx, config_id, name)
+            rows, exact = self._match_people(pool, name)
             if not rows:
+                if fold(name) in ctx.cache.get('run_wishes', ()):
+                    # "Retail with overtime": not a person, not a status.
+                    return missing(T(_lt(
+                        'I could not find "%s" among the people this scheme pays, and a '
+                        'run can only be narrowed to people or an employment status.'))
+                        % name[:60])
                 return missing(T(_lt(
                     'I could not find "%s" among the people this scheme pays.')) % name[:60])
             if len(rows) > 1:
-                if len(names) == 1:
+                if len(names) == 1 and len(rows) <= MAX_CHIPS:
                     return ambiguous([{'value': r['id'], 'label': r['name'],
                                        'sublabel': r.get('department') or r.get('code') or ''}
                                       for r in rows])
+                if len(names) == 1:
+                    return missing(T(_lt(
+                        '%(n)s people this scheme pays are called "%(name)s". Type more '
+                        'of the name, or open the screen to pick them.')) % {
+                            'n': num(len(rows)), 'name': name[:60]})
                 return missing(T(_lt(
                     'More than one person here is called "%s". Ask for one person at a '
                     'time, or open the screen to pick them.')) % name[:60])
             ids.append(rows[0]['id'])
             labels.append(rows[0]['name'])
+            all_exact = all_exact and exact
         return resolved({'text': '', 'employee_ids': ids, 'names': labels},
-                        ', '.join(labels), 'said')
+                        ', '.join(labels), 'said' if all_exact else 'assumed')
 
-    def _people_named(self, ctx, config_id, name):
-        """Rows of the scheme's own people whose name is these words."""
-        W = ctx.env['pb.payrun.wizard']
-        base = {'formula_config_id': config_id} if config_id else {}
-        want = fold(name)
-        words = [w for w in name.split() if len(w) > 1]
-        seen, rows = set(), []
-        for search in [name] + sorted(words, key=len, reverse=True)[:2]:
-            for row in (W.eligible_preview(dict(base, search=search)) or {}).get('employees') or []:
-                if row['id'] in seen:
-                    continue
-                seen.add(row['id'])
-                parts = re.findall(r'[0-9a-z]+', fold(row.get('name') or ''))
-                if all(any(p == t for p in parts)
-                       for t in re.findall(r'[0-9a-z]+', want)):
-                    rows.append(row)
-            if rows:
-                break
-        exact = [r for r in rows if fold(r.get('name') or '') == want]
-        return exact or rows[:MAX_CHIPS]
+    def _named_outside(self, ctx, config_id, ids, names, statuses):
+        """P3 wf-5 — somebody NAMED whose employment status the usual ticks
+        leave out (a leaver's final pay). Their status joins the ticks for
+        this run — the named list still limits the run to them — and the
+        card says so, instead of a silent "0 of N". (statuses, [who])."""
+        cache = ctx.cache
+        if 'run_signals' not in cache:
+            try:
+                cache['run_signals'] = ctx.env['pb.payrun.wizard']._employee_signals() or {}
+            except (UserError, AccessError):
+                cache['run_signals'] = {}
+        signals = cache['run_signals']
+        if not signals:
+            return statuses, []
+        label = {o.get('value'): o.get('label') or o.get('value')
+                 for o in self._defaults(ctx).get('statuses') or []}
+        rows = {r['id']: r for r in self._people_pool(ctx, config_id)}
+        extra, who = [], []
+        for k, eid in enumerate(ids):
+            status = (signals.get(eid) or {}).get('status') or ''
+            if status in statuses:
+                continue
+            if status not in extra:
+                extra.append(status)
+            row = rows.get(eid) or {}
+            who.append({'name': (names[k] if k < len(names) else '') or row.get('name') or '',
+                        # '' is the wizard's own "Not stated" tick.
+                        'status': label.get(status) or status or T(_lt('Not stated')),
+                        'left': row.get('left') or ''})
+        return list(statuses) + extra, who
 
     def reask_slot(self, ctx, slot):
         # Empty words pick the pre-selected scheme; the pencil offers them all.
@@ -356,20 +1211,24 @@ class RunPayroll(_Amber):
 
     # ------------------------------------------------------------- plan
     def _statuses(self, ctx, people_text):
-        """The wizard's own default ticks; words like 'active only' narrow them."""
+        """The wizard's own default ticks; words like 'active only' narrow them.
+        A status said in full is that status alone (FIX-1: "thử việc" never
+        also ticks Đang làm việc and Nghỉ việc for sharing "việc")."""
         opts = self._defaults(ctx).get('statuses') or []
         if not opts:
             return None, ''
         chosen = [o['value'] for o in opts if o.get('default')]
         words = tokens(people_text or '')
-        if words and not set(words) & {'everyone', 'all', 'everybody'}:
-            hit = [o['value'] for o in opts
-                   if any(tok_match(w, t) for w in words
-                          for t in tokens('%s %s' % (o.get('value') or '', o.get('label') or '')))]
+        if words and set(words) & self._EVERYONE:
+            return [o['value'] for o in opts], T(_lt('every employment status'))
+        if words:
+            hit = self._status_said(ctx, people_text)
+            if not hit:
+                words = self._status_words(people_text)
+                hit = [v for v, ws in self._status_opts(ctx)
+                       if any(tok_match(w, t) for w in words for t in ws)]
             if hit:
                 return hit, ', '.join(hit)
-        if words and set(words) & {'everyone', 'all', 'everybody'}:
-            return [o['value'] for o in opts], T(_lt('every employment status'))
         return chosen, ''
 
     def _vals(self, ctx, params):
@@ -396,15 +1255,20 @@ class RunPayroll(_Amber):
         if not isinstance(people, dict):            # a plan made before P3
             people = {'text': T(people)}
         statuses, said = self._statuses(ctx, people.get('text'))
-        if statuses is not None:
-            vals['statuses'] = statuses
+        named = {'usual': statuses, 'outside': []}
         if people.get('employee_ids'):
             vals['employee_ids'] = [int(e) for e in people['employee_ids']]
-        return vals, card, said
+            if statuses is not None:
+                statuses, named['outside'] = self._named_outside(
+                    ctx, vals['formula_config_id'], vals['employee_ids'],
+                    people.get('names') or [], statuses)
+        if statuses is not None:
+            vals['statuses'] = statuses
+        return vals, card, said, named
 
     def plan(self, ctx, params):
         W = ctx.env['pb.payrun.wizard']
-        vals, card, said_statuses = self._vals(ctx, params)
+        vals, card, said_statuses, named = self._vals(ctx, params)
         sheet = {}
         try:
             sheet = W.spreadsheet_gate({'formula_config_id': vals['formula_config_id']}) or {}
@@ -439,8 +1303,11 @@ class RunPayroll(_Amber):
         if vals.get('employee_ids'):
             # P3-W1: "Vũ Khánh Chi (1 of 902)" — the named people out of all
             # the scheme covers, as the wizard's scheme card counts them.
-            whole = W.scheme_preview({k: v for k, v in vals.items()
-                                      if k != 'employee_ids'}) or {}
+            whole_vals = {k: v for k, v in vals.items() if k != 'employee_ids'}
+            if named['usual'] is not None:
+                # "of 152" counts with the usual ticks, not a leaver's status.
+                whole_vals['statuses'] = named['usual']
+            whole = W.scheme_preview(whole_vals) or {}
             names = (params['people'].get('value') or {}).get('names') or []
             who = T(_lt('%(names)s (%(n)s of %(all)s)')) % {
                 'names': ', '.join(names) or params['people'].get('label') or '',
@@ -472,6 +1339,18 @@ class RunPayroll(_Amber):
         notes.insert(0, cards.note('ok', T(_lt(
             'No %(month)s run exists for %(scheme)s yet.')) % {
                 'month': month, 'scheme': scheme_name}))
+        for row in named['outside'][:MAX_CHIPS]:
+            # P3 wf-5: a named leaver is in the run, and the card says so.
+            left = fields.Date.to_date(row['left']) if row['left'] else None
+            if left:
+                text = T(_lt('%(name)s left on %(date)s (marked %(status)s). They are '
+                             'in this run because you named them.')) % {
+                    'name': row['name'], 'date': _day_label(left), 'status': row['status']}
+            else:
+                text = T(_lt('%(name)s is marked %(status)s, which a usual run leaves '
+                             'out. They are in this run because you named them.')) % {
+                    'name': row['name'], 'status': row['status']}
+            notes.append(cards.note('warn', text))
         if pv.get('not_covered') == 1:
             notes.append(cards.note('info', _lt(
                 '1 person in this company is not covered by this scheme and stays '
@@ -489,8 +1368,12 @@ class RunPayroll(_Amber):
             notes.append(cards.note('warn', _lt(
                 'This scheme covers nobody yet, so the run would be empty. Open '
                 'it in the screen to see who the scheme is mapped to.')))
+        prefill = dict(vals)
+        if named['outside']:
+            # The screen takes the ticks, not the named list: the usual ones.
+            prefill['statuses'] = named['usual']
         screen = screen_action(_lt('Open in the screen instead'), hub=PAY_HUB_RUN,
-                               prefill=dict(vals),
+                               prefill=prefill,
                                style='primary' if sheet.get('wanted') else 'outline')
         do_label = _lt('Run without the file') if sheet.get('wanted') else _lt('Do it')
         sub = _lt('Prepare · creates a draft run · can be undone for 10 minutes') \
@@ -734,6 +1617,21 @@ _GLUE = ('for', 'of', 'in', 'the', 'payroll', 'run', 'from',
          'cho', 'cua', 'trong', 'vao', 'ky', 'luong', 'bang', 'dot')
 
 
+def _month_words(text, rest_folded):
+    """The words of `text` that `parse_period` read as the month (the ones
+    `rest_folded` no longer has): "Retail End-Month for May 2031" → "May
+    2031". Cut by spaces, never folded."""
+    kept = rest_folded.split()
+    out = []
+    for w in text.split():
+        f = fold(w)
+        if f in kept:
+            kept.remove(f)
+        else:
+            out.append(w)
+    return ' '.join(out).strip()
+
+
 def _without_month(text, rest_folded):
     """`text` with the month words `parse_period` took out (`rest_folded` is
     what it left), and the little words that only led into the month ("for
@@ -758,6 +1656,12 @@ def _without_month(text, rest_folded):
     while out and fold(out[-1]) in _GLUE:
         out.pop()
     return ' '.join(out).strip()
+
+
+def _marked_words(text):
+    """The words as written, marks kept, small letters ("Trần Văn Phong" →
+    ['trần', 'văn', 'phong'])."""
+    return re.findall(r'[^\W_]+', unicodedata.normalize('NFC', (text or '').lower()))
 
 
 def _ref(task):
@@ -795,9 +1699,10 @@ class SubmitRun(_RunAmber):
                   "optionally a scheme. Never an id."),)
     right_subject = _lt('Sending a pay run for approval')
     right_label = _lt('Pay Run')
+    phrases_vi = _vi_not_send_back('submit_run')
     phrases = (
-        r'^(?:send|submit|forward)\s+(?:the\s+)?(?P<run>.+?)\s+(?:for|to)\s+'
-        r'(?:approval|sign[- ]?off|approve)$',
+        r'^(?:send\s+' + _NOT_SEND_BACK + r'|(?:submit|forward)\s+)'
+        r'(?:the\s+)?(?P<run>.+?)\s+(?:for|to)\s+(?:approval|sign[- ]?off|approve)$',
         r'^submit\s+(?:the\s+)?(?P<run>.*\b(?:run|payroll)s?\b.*)$',
     )
 
@@ -944,8 +1849,13 @@ class SendPayslips(_RunAmber):
     right_subject = _lt('Sending payslips')
     right_label = _lt('Pay & Deliver')
     undo_minutes = 0
+    phrases_vi = _vi_not_send_back('send_payslips')
     phrases = (
-        r'^(?:send|email|e-mail|deliver|mail)\s+(?:out\s+)?(?:the\s+)?'
+        # FIX-1 eighth pass: "Email the June payslips back to Mai to update"
+        # is a send-back as much as "Send … back …" is (`_NOT_SEND_BACK` on
+        # every verb), and no "back" stands before the payslips.
+        r'^(?:send|email|e-mail|deliver|mail)\s+' + _NOT_SEND_BACK
+        + _NO_BACK_BEFORE_SLIPS + _RETURN_WITH_REASON + r'(?:out\s+)?(?:the\s+)?'
         r'(?:(?P<run>.+?)\s+)?pay\s*slips?\b.*$',
     )
 
@@ -1217,8 +2127,10 @@ class UpdatePayData(_Amber):
         cands = []
         for r in ranked:
             now = today.get(r['value'])
-            cands.append({'value': r['value'], 'label': r['label'],
-                          'sublabel': (T(_lt('now %s')) % now) if now else T(_lt('not set'))})
+            # P3 wf-11: "not set" only when the value was READ and is empty; a
+            # value that could not be read says nothing rather than something false.
+            sub = '' if now is None else (T(_lt('now %s')) % now) if now else T(_lt('not set'))
+            cands.append({'value': r['value'], 'label': r['label'], 'sublabel': sub})
         out = ambiguous(cands, note=T(_lt(
             'I could not find "%s" on this person\'s scheme. These are the closest '
             'pay values they have — pick one, or open Records.')) % (text or '')[:60])
@@ -1226,23 +2138,47 @@ class UpdatePayData(_Amber):
         return out
 
     def _current_labels(self, ctx, config_id, emp_id, field_ids):
-        """{card id: what Records shows for this person today} — read the way
-        the Records Desk reads its own cells, as the person; '' when unknown."""
+        """{card id: what Records shows for this person today}; a card whose
+        value could not be read is left OUT (its chip then says nothing).
+
+        P3 wf-11: read through the Records Desk's own page read
+        (`search_people`, its own gate) so the chips and the screen agree;
+        only if that page cannot be read, cell by cell as the person — one
+        unreadable cell never blanks the others."""
         out = {}
+        desk = self._desk(ctx)
         try:
-            desk = self._desk(ctx)
+            emp_id = int(emp_id or 0)
+            page = desk.search_people(config_id, filters={'employee_ids': [emp_id]},
+                                      field_ids=list(field_ids), limit=1,
+                                      with_facets=False) or {}
+            row = next((r for r in page.get('rows') or [] if r.get('id') == emp_id), None)
+            if row is not None:
+                values = row.get('values') or {}
+                for fid in field_ids:
+                    if fid in values:
+                        out[fid] = (values[fid] or {}).get('label') or ''
+                return out
+        except Exception:                               # noqa: BLE001
+            _logger.info("PayAI: the Records page could not be read", exc_info=True)
+        try:
             cards_ = self._cards(ctx, config_id)
             emp = ctx.env['hr.employee'].browse(int(emp_id or 0)).exists()
             if not emp:
                 return out
             probe = desk._probe(config_id)
             contract = probe._get_latest_contract(emp) or ctx.env['hr.contract']
-            for fid in field_ids:
-                card = cards_.get(fid)
-                if card:
-                    out[fid] = (desk._read_cell(probe, card, emp, contract) or {}).get('label') or ''
         except Exception:                               # noqa: BLE001
             _logger.info("PayAI: could not read today's pay values", exc_info=True)
+            return out
+        for fid in field_ids:
+            card = cards_.get(fid)
+            if not card:
+                continue
+            try:
+                out[fid] = (desk._read_cell(probe, card, emp, contract) or {}).get('label') or ''
+            except Exception:                           # noqa: BLE001
+                _logger.info("PayAI: could not read pay value %s", fid, exc_info=True)
         return out
 
     def plan(self, ctx, params):

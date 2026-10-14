@@ -12,7 +12,7 @@ from odoo.tools.translate import LazyTranslate
 
 from .i18n import T, num, short_amount
 
-from . import cards, registry
+from . import cards, gate, registry
 from .registry import Action, Slot, payai_action
 from .resolve import door_title, resolve_run, run_scheme_label, state_label
 
@@ -126,8 +126,22 @@ class OpenScreen(Action):
     def method_gate(self, env, user):
         return user._is_internal()
 
+    def resolve_slot(self, ctx, slot, text):
+        """FIX-1b (owner ruling 2026-10-13): a screen named in the words of
+        access, roles, permissions or delegations — however it arrived (the
+        phrase table sends those to `never_access` first; this catches the
+        model's tool call) — is the same plain refusal, with no door."""
+        if slot.kind == 'door' and gate.names_access(text):
+            from . import runner
+            return {'status': 'missing', 'note': 'never',
+                    'card': runner.access_refusal_card(ctx)}
+        return super().resolve_slot(ctx, slot, text)
+
     def param_gate(self, ctx, params):
         door_id = params['door']['value']
+        if gate.door_denied(door_id):
+            from . import runner
+            return runner.access_refusal_card(ctx)
         row = ctx.door_row(door_id)
         if not row or not ctx.holds_door(row):
             return 'screen_off'

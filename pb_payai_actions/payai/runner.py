@@ -34,7 +34,7 @@ from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
 
 from . import cards, gate, registry
 from .registry import ACTIONS
-from .resolve import door_title, fold, tokens
+from .resolve import ambiguous, door_title, fold, missing, resolved, tokens
 
 _lt = LazyTranslate(__name__)
 _logger = logging.getLogger(__name__)
@@ -65,15 +65,233 @@ GO_AHEAD = re.compile(
 #: P4 — the same in Vietnamese, matched with the marks folded away:
 #: "làm đi", "tiến hành", "xác nhận", "cứ làm đi", "ok chạy đi", "gửi đi".
 GO_AHEAD_VI = re.compile(
-    r'^(?:(?:ok|oke|okay|vang|da|u|duoc|dong\s+y)[,!. ]*)?(?:(?:ban\s+)?(?:cu|hay)\s+)?'
+    r'^(?:(?:ban\s+)?(?:cu|hay)\s+)?'
     r'(?:lam\s+di|tien\s+hanh|xac\s+nhan|thuc\s+hien|lam\s+luon|chay\s+di|gui\s+di|'
     r'dong\s+y\s+lam)(?:\s+(?:nhe|nha|di|luon))?[.!]*$', re.I)
+#: FIX-1 (P4 vi-5): the yes-word in front ("dạ, làm đi", "vâng tiến hành") is
+#: read WITH its marks: folded, "đã" (already — "Đã gửi đi" asks whether it
+#: went) and "ừ" would be the same "da" / "u" as the polite yes. A word that
+#: folds to nothing else may come without marks ("vang", "duoc", "dong y").
+GO_AHEAD_VI_YES = re.compile(
+    r'^(?:ok|oke|okay|dạ|vâng|vang|ừ|được|duoc|đồng\s+ý|dong\s+y)[,!. ]+', re.I)
 
 
 def go_ahead_words(text):
     """True when the words mean "do the plan you just showed me"."""
+    import unicodedata
     text = ' '.join((text or '').split())
-    return bool(GO_AHEAD.match(text) or GO_AHEAD_VI.match(fold(text)))
+    if GO_AHEAD.match(text):
+        return True
+    marked = unicodedata.normalize('NFC', text).lower()
+    yes = GO_AHEAD_VI_YES.match(marked + ' ')
+    rest = marked[yes.end():] if yes and yes.end() <= len(marked) else marked
+    return bool(GO_AHEAD_VI.match(fold(rest)) or GO_AHEAD_VI.match(fold(marked)))
+
+
+#: FIX-1 (P3 crit-4): words that put an open reason question down — the
+#: Cancel button, typed. "cancel" is six letters, a valid reason by length.
+CANCEL_WORDS = re.compile(
+    r'^(?:no[,!. ]+)?(?:please\s+)?(?:cancel(?:\s+(?:it|that|this))?|never\s*mind|'
+    r'forget\s+(?:it|that)|stop)(?:\s+please)?[.!]*$', re.I)
+#: The same in Vietnamese, marks folded away: "hủy", "huỷ bỏ", "bỏ qua", "thôi".
+CANCEL_WORDS_VI = re.compile(
+    r'^(?:thoi\s+)?(?:huy(?:\s+bo)?|bo\s+qua|thoi|dung\s+lai)(?:\s+(?:di|nhe|nha|luon))?[.!]*$',
+    re.I)
+
+#: FIX-1 (P3 crit-4, fourth pass): a cancel word followed by more words —
+#: "Cancel this request", "cancel the June run", "abort", "Hủy giúp tôi",
+#: "không cần nữa", "don't send it back". The words after the cancel word
+#: must ALL be filler or name what was asked for (the request's own words),
+#: so "Cancel the overtime line for Lan" or "stop paying Lan twice" — a
+#: change for the preparer — stays the reason. Folded text.
+_CANCEL_LEAD = re.compile(
+    r'^(?:(?:no|ok|okay|actually|oh)\b[,!. ]*)*(?:please\s+)?'
+    r'(?:cancel|abort|stop|drop|scrap|forget(?:\s+about)?|never\s*mind|no\s+thanks|'
+    r'no\s+need(?:\s+for)?|don\W?t\s+bother(?:\s+with)?)\b(?P<rest>.*)$')
+#: "don't send it back", "do not reject it", "no, don't approve it".
+_CANCEL_DONT = re.compile(
+    r'^(?:(?:no|ok|okay|actually|oh)\b[,!. ]*)*(?:don\W?t|do\s+not)\s+'
+    r'(?P<verb>send|return|reject|decline|refuse|turn|approve|do)\b(?P<rest>.*)$')
+_CANCEL_LEAD_VI = re.compile(
+    r'^(?:thoi\s+)?(?:huy(?:\s+bo)?|bo\s+qua|bo\s+di|thoi|dung(?:\s+lai)?|khoi|'
+    r'khong\s+can|khong\s+lam\s+nua|'
+    r'khong\s+(?:tra\s+lai|tu\s+choi|duyet))\b(?P<rest>.*)$')
+#: Words after a cancel word that never name anything to change.
+_CANCEL_FILLER = frozenset((
+    'it', 'that', 'this', 'the', 'a', 'an', 'my', 'our', 'whole', 'thing', 'request',
+    'question', 'one', 'all', 'everything', 'please', 'now', 'instead', 'plan', 'reason',
+    'for', 'me', 'us', 'thank', 'thanks', 'just', 'ok', 'okay', 'then', 'again', 'pls',
+    'send', 'sending', 'back', 'return', 'reject', 'rejecting', 'turn', 'turning', 'down',
+    'approve', 'approving', 'approval', 'decline', 'decision', 'do', 'doing', 'item',
+    'cancel', 'stop', 'abort', 'never', 'mind', 'forget', 'about', 'bother',
+    # Vietnamese, marks folded ("giúp tôi", "yêu cầu này", "nữa", "nhé").
+    'di', 'nhe', 'nha', 'luon', 'nua', 'dau', 'giup', 'gium', 'toi', 'minh', 'em',
+    'anh', 'chi', 'cho', 'yeu', 'cau', 'nay', 'do', 'cai', 'ban', 'oi', 'ha', 'thi',
+    'huy', 'bo', 'thoi', 'khong', 'can', 'vay', 'qua', 'tra', 'tu', 'choi', 'duyet',
+))
+#: Words of the request that say WHAT TO DO, not what it is about: "thôi làm
+#: lại" (do it again) must not cancel just because "trả lại" was the order.
+_DECIDE_WORDS = frozenset((
+    'send', 'back', 'return', 'reject', 'decline', 'refuse', 'turn', 'down', 'approve',
+    'tra', 'lai', 'tu', 'choi', 'duyet', 'gui',
+))
+
+
+def _words(text):
+    return re.findall(r'[0-9a-z]+', fold(text))
+
+
+def cancel_words(text, about='', action=''):
+    """True when the words mean "put this question down".
+
+    `about` — the words of what is being asked about (the request as typed,
+    the item's title): "cancel the June run" cancels a question about the
+    June run, and "Cancel the overtime line for Lan" does not.
+
+    `action` — the open task's action key. "Don't approve it" / "Không
+    duyệt" cancel only an approval (its optional Note question): asked for
+    a send-back or turn-down reason they AGREE with the decision, and are
+    the reason, as they were before FIX-1 (P3 crit-4, seventh pass)."""
+    text = ' '.join((text or '').split())
+    if CANCEL_WORDS.match(text):
+        return True
+    if CANCEL_WORDS_VI.match(fold(text)) and _vi_marks_fit(text, fold(text)):
+        return True
+    folded = fold(text).rstrip(' .!')
+    named = set(_words(about)) - _DECIDE_WORDS
+    for rx in (_CANCEL_LEAD, _CANCEL_DONT, _CANCEL_LEAD_VI):
+        m = rx.match(folded)
+        if not m or not all(w in _CANCEL_FILLER or w in named
+                            for w in _words(m.group('rest'))):
+            continue
+        if rx is _CANCEL_LEAD_VI and not _vi_marks_fit(text, folded[:m.start('rest')]):
+            continue
+        if action != 'approve_item' and (
+                (rx is _CANCEL_DONT and m.group('verb') == 'approve')
+                or (rx is _CANCEL_LEAD_VI
+                    and folded[:m.start('rest')].split()[-1:] == ['duyet'])):
+            continue
+        return True
+    return False
+
+
+#: FIX-1 (P3 crit-4, fifth pass): folded, a Vietnamese cancel word is also
+#: another word — "khởi" (start) and "khỏi" (no need) are both "khoi",
+#: "đúng" (right: "đúng vậy") and "dừng" (stop) both "dung", "thời" (time)
+#: and "thôi" both "thoi". A cancel word typed WITH marks must carry the
+#: cancel word's own marks; typed with none at all it is taken as meant.
+_VI_CANCEL_MARKS = {
+    'huy': ('hủy', 'huỷ'), 'bo': ('bỏ',), 'di': ('đi',), 'thoi': ('thôi',),
+    'dung': ('dừng',), 'lai': ('lại',), 'khoi': ('khỏi',), 'khong': ('không',),
+    'can': ('cần',), 'lam': ('làm',), 'nua': ('nữa',), 'tra': ('trả',),
+    'tu': ('từ',), 'choi': ('chối',), 'duyet': ('duyệt',),
+}
+
+
+def _vi_marks_fit(text, folded_lead):
+    """True when each word of `folded_lead` (the folded cancel words at the
+    start of `text`) was typed as that cancel word: with its own marks, or
+    with no marks at all.
+
+    FIX-1 (P3 crit-4, sixth pass): the FIRST word — the cancel word itself —
+    typed without marks in a message that has marks elsewhere is not the
+    cancel word but a name: "Huy không duyệt" (Huy did not approve), "Huy
+    từ chối", "Huy đi", "Khoi không duyệt". A message typed with no marks
+    at all ("huy", "huy di") is still taken as meant."""
+    import unicodedata
+    lead = folded_lead.split()
+    words = unicodedata.normalize('NFC', text or '').lower().split()
+    marked = any(w != fold(w) for w in words)
+    for pos, (want, word) in enumerate(zip(lead, words[:len(lead)])):
+        word = word.strip('.,!?;:')
+        allowed = _VI_CANCEL_MARKS.get(want.strip('.,!?;:'))
+        if not allowed:
+            continue
+        if word != fold(word) and word not in allowed:
+            return False
+        if pos == 0 and marked and word == fold(word):
+            return False
+    return True
+
+
+#: FIX-1 (P3 crit-4, fifth / sixth pass): thanks typed after PayAI
+#: answered a question in between ("thank you", "ok, makes sense", "cảm ơn
+#: đã giải thích") — words that say nothing to change. Typed while a
+#: send-back / turn-down reason is asked for, they are not the reason: they
+#: go to the answers, and the reason question stays open for the next words.
+#:
+#: Read as whole PHRASES, and the Vietnamese ones WITH their marks: folded,
+#: "vâng" is "vắng" (absent), "hiểu" is the name "Hiếu", "cảm" is "cấm",
+#: "tốt" is the name "Tốt" — "Hiếu đã vắng" or "Vắng nhiều quá" is a real
+#: reason. A word typed without marks matches only in a message typed with
+#: no marks at all ("cam on"). When unsure, the words stay the reason: the
+#: plan card shows them before anything is decided, so a mistake there is
+#: seen; thanks swallowed by mistake would lose the reason silently.
+#: Each entry: (words, kind) — 'thanks' says thanks or agrees; 'glue' may go
+#: anywhere around it; 'after' only after a thanks ("cảm ơn anh", never
+#: "anh Hiếu").
+def _thanks_phrases():
+    import unicodedata
+    thanks = (
+        'thank you', 'thanks', 'thank', 'thankyou', 'thx', 'ty', 'tks', 'tnx', 'cheers',
+        'ok', 'okay', 'oke', 'okie', 'kk', 'great', 'cool', 'nice', 'perfect', 'awesome',
+        'alright', 'all right', 'understood', 'noted', 'got it', 'gotcha', 'i see',
+        'i understand', 'fine', 'good', 'brilliant', 'excellent', 'helpful', 'that helps',
+        'this helps', 'it helps', 'that helped', 'makes sense', 'that makes sense',
+        'it makes sense', 'clear', 'all clear', 'all good', 'sounds good', 'looks good',
+        'appreciated', 'much appreciated', 'appreciate it', 'i appreciate it',
+        # Vietnamese, with marks.
+        'cảm ơn', 'cám ơn', 'vâng', 'dạ', 'ừ', 'được', 'được rồi', 'hiểu rồi', 'đã hiểu',
+        'biết rồi', 'rõ rồi', 'đã rõ', 'tốt quá', 'tốt lắm', 'tốt rồi', 'rất tốt',
+        'tuyệt', 'tuyệt vời', 'tuyệt quá', 'hay quá', 'ổn', 'ổn rồi',
+    )
+    thanks += tuple('%s %s%s' % (c, p + ' ' if p else '', n)
+                    for c in ('cảm ơn', 'cám ơn')
+                    for p in ('', 'bạn', 'anh', 'chị', 'em', 'mình')
+                    for n in ('nhiều', 'rất nhiều', 'nhiều lắm', 'lắm'))
+    glue = (
+        'you', 'u', 'so', 'very', 'much', 'so much', 'very much', 'a lot', 'lots', 'really',
+        'super', 'oh', 'ah', 'again', 'now', 'that is', 'that s', 'thats', 'it is', 'it s',
+        'this is', 'that was', 'for that', 'for this', 'for your help', 'for the help',
+        'for helping', 'for the answer', 'for your answer', 'for the reply', 'for the info',
+        'for the information', 'for explaining', 'for the explanation', 'for clarifying',
+        'for checking', 'for everything',
+        'nhé', 'nha', 'nhá', 'ạ', 'đã giải thích', 'vì đã giải thích', 'đã giúp',
+        'vì đã giúp', 'đã giúp đỡ', 'vì đã giúp đỡ', 'về thông tin', 'vì thông tin',
+    )
+    after = ('bạn', 'anh', 'chị', 'em', 'mình', 'all', 'everyone')
+    out = []
+    for kind, rows in (('thanks', thanks), ('glue', glue), ('after', after)):
+        out.extend((tuple(unicodedata.normalize('NFC', r).split()), kind) for r in rows)
+    return tuple(out)
+
+
+_THANKS_PHRASES = _thanks_phrases()
+
+
+def only_thanks(text):
+    """True when the words only thank or agree — nothing to change."""
+    import unicodedata
+    typed = re.findall(r'[^\W_]+', unicodedata.normalize('NFC', text or '').lower())
+    if not 0 < len(typed) <= 12:
+        return False
+    marked = any(w != fold(w) for w in typed)
+
+    def fits(word, spec):
+        # Its own marks; or no marks at all, in a message with none.
+        return word == spec or (not marked and word == fold(word) == fold(spec))
+
+    reach = {0: {False}}                # position -> "a thanks was read"
+    for i in range(len(typed)):
+        for said in tuple(reach.get(i, ())):
+            for words, kind in _THANKS_PHRASES:
+                end = i + len(words)
+                if end > len(typed) or (kind == 'after' and not said):
+                    continue
+                if all(fits(typed[i + j], w) for j, w in enumerate(words)):
+                    reach.setdefault(end, set()).add(said or kind == 'thanks')
+    return True in reach.get(len(typed), ())
+
 
 #: P2 latency: the last sentences the model routed, per person (process-local).
 _LRU = OrderedDict()
@@ -95,7 +313,10 @@ class Ctx:
         # may post into somebody else's; their doors are not this person's).
         self.conversation = conv if conv and conv.user_id == self.user else \
             self.env['payroll.ai.conversation'].browse()
-        self.doors = self.conversation.payai_doors() if self.conversation else []
+        # FIX-1b (owner ruling 2026-10-13): a door into Settings › Access and
+        # delegations is never one PayAI holds, whatever the browser sent.
+        self.doors = [row for row in (self.conversation.payai_doors() if self.conversation
+                                      else []) if not gate.door_denied(row)]
         self.task = None
         #: P2 — slots resolved so far in this request (a later slot may need
         #: an earlier one: the pay value depends on the person's scheme).
@@ -117,6 +338,8 @@ class Ctx:
         return None
 
     def has_door(self, door_id):
+        if gate.door_denied(door_id):
+            return False
         row = self.door_row(door_id)
         return bool(row and self.holds_door(row))
 
@@ -243,8 +466,14 @@ def _new_task(ctx, action, utterance, texts):
     Task = ctx.env['payai.task'].sudo()
     # One open question or plan per person: a new request closes the old one,
     # so an unconfirmed plan never stays confirmable behind later cards.
-    Task.search([('user_id', '=', ctx.user.id),
-                 ('state', 'in', ('clarify', 'planned'))]).write({'state': 'expired'})
+    # FIX-1 (P3 wf-10): "replaced", never "not answered in time" — unless
+    # its ten minutes were already up: then it was not answered in time.
+    open_ones = Task.search([('user_id', '=', ctx.user.id),
+                             ('state', 'in', ('clarify', 'planned'))])
+    now = _now()
+    lapsed = open_ones.filtered(lambda t: t.expires_at and t.expires_at < now)
+    lapsed.write({'state': 'expired'})
+    (open_ones - lapsed).write({'state': 'replaced'})
     safe, _mapping = _redact(ctx, utterance or '')
     task = Task.create({
         'user_id': ctx.user.id,
@@ -288,6 +517,7 @@ def _finish(ctx, task, state, card, error=''):
     card['task_id'] = task.id
     if not card.get('audit_line'):
         card['audit_line'] = _audit_line(ctx, task, state)
+    gate.scrub_card(card)                               # FIX-1b
     vals['plan_json'] = json.dumps(card, ensure_ascii=False, default=str)
     task.sudo().write(vals)
     return card
@@ -319,10 +549,9 @@ def _audit_line(ctx, task, state):
 # ----------------------------------------------------------------- cards
 def _refusal_card(ctx, action, reason):
     text = gate.refusal_text(action, reason)
+    # FIX-1b (owner ruling 2026-10-13): no "Open Access and delegations"
+    # button on any refusal — the sentence names the place in words only.
     actions = []
-    if reason in ('no_right', 'screen_off') and ctx.has_door(gate.ACCESS_DOOR):
-        actions.append(cards.door_action(
-            gate.ACCESS_DOOR, _lt('Open Access and delegations'), 'outline'))
     if reason == 'tier_off':
         title = _lt('PayAI is not allowed to do this here')
     elif reason == 'never':
@@ -341,6 +570,13 @@ def _refusal_card(ctx, action, reason):
         notes=[cards.note('bad' if reason != 'tier_off' else 'warn', text)],
         actions=actions,
     )
+
+
+def access_refusal_card(ctx):
+    """FIX-1b (owner ruling 2026-10-13): the one answer to anything about
+    access, roles, permissions or delegations — a `never` card, plain words,
+    no door, nothing opened or changed."""
+    return _refusal_card(ctx, ACTIONS['never_access'], 'never')
 
 
 def _coming_soon_card(ctx, action):
@@ -382,11 +618,24 @@ def _missing_card(ctx, action, slot, res):
         'blocked', ctx.task, action.tier,
         title=_lt('I could not find that'),
         subtitle=action.title,
-        notes=[cards.note('warn', res.get('note') or T(_lt(
-            'I could not work out which %s you mean.')) % T(slot.label).lower())],
+        notes=[cards.note('warn', res.get('note') or _unsure_text(slot))],
         actions=actions,
         chips=[cards.what_can_you_do_chip()],
     )
+
+
+def _which_question(slot):
+    """The plain question for a slot nothing more specific covers. FIX-1 (P3
+    ux-1): a Red item's label is "What", so it is never "Which what …"."""
+    if slot.kind == 'item':
+        return T(_lt('Which request do you mean?'))
+    return T(_lt('Which %s do you mean?')) % T(slot.label).lower()
+
+
+def _unsure_text(slot):
+    if slot.kind == 'item':
+        return T(_lt('I could not work out which request you mean.'))
+    return T(_lt('I could not work out which %s you mean.')) % T(slot.label).lower()
 
 
 def _clarify_card(ctx, action, slot, res, said=''):
@@ -409,7 +658,7 @@ def _clarify_card(ctx, action, slot, res, said=''):
     elif slot.kind == 'filing':
         question = _lt('Which filing do you mean?')
     else:
-        question = T(_lt('Which %s do you mean?')) % T(slot.label).lower()
+        question = _which_question(slot)
     chips = [{'label': c['label'], 'sublabel': c.get('sublabel') or '',
               'value': T(c['value'])} for c in res['candidates']]
     notes = [cards.note('info', res['note'])] if res.get('note') else []
@@ -455,7 +704,7 @@ def _ask_card(ctx, action, slot, res, params):
     notes = [cards.note('info', res['note'])] if res.get('note') else []
     return cards.card(
         'clarify', ctx.task, action.tier,
-        title=res.get('question') or T(_lt('Which %s do you mean?')) % T(slot.label).lower(),
+        title=res.get('question') or _which_question(slot),
         subtitle=action.title, slots=slots, notes=notes,
         actions=[{'id': 'cancel', 'label': T(_lt('Cancel')), 'style': 'ghost'}])
 
@@ -477,6 +726,7 @@ def _summary_text(card):
 
 
 def envelope(card, intent='command'):
+    gate.scrub_card(card)                               # FIX-1b
     return {
         'response': _summary_text(card),
         'chart': None,
@@ -504,6 +754,10 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
     texts = action.normalise_texts(ctx, dict(texts or {}))
     params = {}
     ctx.params = params
+    # FIX-1 (P3 wf-8): choices made before the pencil changed an earlier slot
+    # (a person picked from a chip, then the scheme changed) — kept only when
+    # they still fit, never carried over blind.
+    recheck = dict(data.get('recheck') or {})
     for slot in action.slots:
         if slot.key in pinned:
             params[slot.key] = pinned[slot.key]
@@ -513,6 +767,10 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
             res = {'status': 'missing', 'note': T(_lt('Which screen should I open?'))}
         else:
             res = action.resolve_slot(ctx, slot, text)
+        if slot.key in recheck:
+            res = _recheck(slot, recheck[slot.key], res)
+            if res is recheck[slot.key]:
+                pinned[slot.key] = res
         if res['status'] == 'ambiguous':
             data.update({'pinned': pinned, 'ask': {
                 'slot': slot.key,
@@ -524,7 +782,11 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
             return _finish(ctx, task, 'clarify', _clarify_card(ctx, action, slot, res, text))
         if res['status'] == 'ask':
             # P3: a slot only the person's own words can fill (a send-back
-            # reason): one typed question, answered in the box.
+            # reason): one typed question, answered in the box. FIX-1 (P3
+            # crit-2): what is already resolved is PINNED, so the answer plans
+            # the very request the question showed — never a fresh look-up of
+            # the first words ("send it back") against an inbox that moved.
+            pinned = dict(pinned, **params)
             data.update({'pinned': pinned, 'params': dict(params),
                          'ask': {'slot': slot.key, 'typed': True, 'candidates': []}})
             task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
@@ -543,6 +805,9 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
                             'origin': v.get('origin')} for k, v in params.items()}
     data['params'] = params
     data['texts'] = texts
+    if data.pop('recheck', None) is not None:
+        # The choices that still fit stay chosen for the next pencil.
+        data['pinned'] = pinned
     task.sudo().write({'params_json': json.dumps(data, ensure_ascii=False, default=str)})
 
     refusal = action.param_gate(ctx, params)
@@ -591,7 +856,7 @@ def on_resolve(ctx, message, resolve):
     value = T(resolve.get('value') or '')
     follow = resolve.get('action')
 
-    if task.is_expired() or task.state == 'expired':
+    if task.is_expired() or task.state in ('expired', 'replaced', 'replanned'):
         if task.state == 'clarify':
             task.write({'state': 'expired'})
         return expired_card(ctx)
@@ -676,6 +941,21 @@ def _reask(ctx, task, slot_key):
         res = {'status': 'missing'}
     pinned = dict(data.get('pinned') or {})
     pinned.pop(slot_key, None)
+    # FIX-1: the slots BEFORE this one stay exactly as planned (P3 crit-2: a
+    # new reason never re-reads "send it back" against an inbox that moved);
+    # a choice read FROM this slot (P3 wf-8: the people a scheme pays) is
+    # checked again once the new value is known.
+    keys = [s.key for s in action.slots]
+    planned = data.get('params') or {}
+    for key in keys[:keys.index(slot_key)]:
+        if key not in pinned and isinstance(planned.get(key), dict):
+            pinned[key] = planned[key]
+    recheck = dict(data.get('recheck') or {})
+    for key in keys:
+        if slot_key in DEPENDS_ON.get(key, ()) and (pinned.get(key) or {}).get('origin') == 'chose':
+            recheck[key] = pinned.pop(key)
+    if recheck:
+        data['recheck'] = recheck
     data['pinned'] = pinned
     for key in ('vals', 'fingerprint', 'extra'):
         data.pop(key, None)
@@ -701,16 +981,15 @@ def _reask(ctx, task, slot_key):
     return _finish(ctx, task, 'clarify', card)
 
 
-def typed_answer(ctx, message, only_kinds=None):
-    """Words typed after a pencil's question: the new value for that slot.
-    None when no such question is waiting — then they are just words.
+def _open_question(ctx):
+    """(task, data, action, slot) of the typed question waiting for this
+    person's next words in this conversation, or None.
 
-    `only_kinds`: answer only a question for these slot kinds. A reason
-    (P3) is asked for BEFORE the phrase table runs, so "approve the overtime
-    first" typed as a send-back reason is the reason, not a new request."""
-    text = ' '.join((message or '').split())[:2000]
-    if not text or go_ahead_words(text):
-        return None
+    FIX-1 (P3 crit-4, third pass): a reason question stays open across the
+    answers PayAI gives in between. A question typed while it is open goes
+    to the answers, and that answer carries no card — so for a reason the
+    question only has to be the newest PayAI card, not the newest message;
+    the next words typed are still the reason."""
     Task = ctx.env['payai.task'].sudo()
     domain = [('user_id', '=', ctx.user.id), ('state', '=', 'clarify')]
     if ctx.conversation:
@@ -722,9 +1001,64 @@ def typed_answer(ctx, message, only_kinds=None):
     ask = data.get('ask') or {}
     action = ACTIONS.get(task.action_key)
     slot = action and next((s for s in action.slots if s.key == ask.get('slot')), None)
-    if not ask.get('typed') or slot is None or not _is_latest(ctx, task):
+    if not ask.get('typed') or slot is None:
         return None
+    if not _is_latest(ctx, task, past_answers=slot.kind == 'reason'):
+        return None
+    return task, data, action, slot
+
+
+def reason_question_open(ctx):
+    """True while a typed send-back / turn-down reason is being asked for."""
+    found = _open_question(ctx)
+    return bool(found) and found[3].kind == 'reason'
+
+
+def typed_answer(ctx, message, only_kinds=None):
+    """Words typed after a pencil's question: the new value for that slot.
+    None when no such question is waiting — then they are just words.
+
+    `only_kinds`: answer only a question for these slot kinds. A reason
+    (P3) is asked for BEFORE the phrase table runs, so "approve the overtime
+    first" typed as a send-back reason is the reason, not a new request."""
+    text = ' '.join((message or '').split())[:2000]
+    if not text or go_ahead_words(text):
+        return None
+    found = _open_question(ctx)
+    if found is None:
+        return None
+    task, data, action, slot = found
     if only_kinds and slot.kind not in only_kinds:
+        return None
+    if slot.kind == 'reason' and not only_kinds:
+        # A reason question is answered by the call made BEFORE the phrase
+        # table (PA49). What that call let through is not a reason.
+        return None
+    if slot.kind == 'reason' and cancel_words(text, _asked_about(task, data),
+                                                task.action_key):
+        # FIX-1 (P3 crit-4): "cancel" typed while a reason is asked for is the
+        # Cancel button. Only there: typed after a pencil's question, the words
+        # go to the slot as they did before FIX-1 — "Huy", "Dung" or "Thoi"
+        # (names typed without marks) are the person asked for, not a cancel.
+        return cancel(ctx, task.id)
+    if slot.kind == 'reason' and only_thanks(text):
+        # FIX-1 (P3 crit-4, fifth pass): "thank you" after an answer is not
+        # the reason; handle() sends it to the answers, the question stays.
+        return None
+    if slot.kind == 'reason' and not _asks_a_question(text):
+        # FIX-1 (P3 crit-4, fourth pass): "Reject it instead" — the other
+        # decision on the SAME request — plans that decision ("Reject it
+        # instead?" is asked of the answers, as every question is).
+        switched = _other_decision(ctx, text, task, data)
+        if switched is not None:
+            return switched
+    if slot.kind == 'reason' and (_asks_a_question(text) or _is_command(ctx, text)):
+        # FIX-1 (P3 crit-4): a question goes to the answers (handle() sends
+        # it there; this question stays open for the next words), a clear
+        # new request to see or start something is that request (it
+        # replaces this question). A pay value to correct or a decision
+        # ("approve the overtime first", "set Lan's overtime to 400000") is
+        # how "What should change?" is answered: it stays the reason (PA49).
         return None
     if slot.kind != 'reason':
         text = text[:200]
@@ -753,6 +1087,221 @@ def typed_answer(ctx, message, only_kinds=None):
     task.write({'params_json': json.dumps(data, ensure_ascii=False, default=str),
                 'state': 'planned'})
     return run(ctx, task.action_key, texts, task.utterance, task=task, pinned=pinned)
+
+
+def _asked_about(task, data):
+    """The words a cancel may name: the request as typed, and the title of
+    the item the question is about."""
+    pin = (data.get('pinned') or {}).get('item') or {}
+    return ' '.join(x for x in (task.utterance or '', str(pin.get('label') or '')) if x)
+
+
+#: Words that change nothing about WHICH request "Reject it instead" means.
+_SWITCH_FILLER = frozenset(('instead', 'actually', 'rather', 'then', 'now', 'just',
+                            'thay', 'vay', 'luon', 'di', 'nhe', 'nha', 'no'))
+
+
+def _other_decision(ctx, text, task, data):
+    """FIX-1 (P3 crit-4, fourth pass): while a send-back / turn-down reason
+    is asked for, a DIFFERENT decision on the same request ("Reject it
+    instead", "Approve it", "Từ chối nó đi") is that decision — planned on
+    the request already found (never looked up again, P3:crit-2), and the
+    question is replaced. A decision that names anything else ("Approve the
+    overtime first") is how "What should change?" is answered: it stays the
+    reason (PA49). Nothing is decided here: the new plan still needs its own
+    typed word."""
+    hit = registry.match(text)
+    if hit is None:
+        return None
+    key, texts = hit
+    new = ACTIONS.get(key)
+    if new is None or new.stub or new.tier != 'decide' or key == task.action_key:
+        return None
+    pin = (data.get('pinned') or {}).get('item')
+    if not pin or pin.get('value') in (None, ''):
+        return None
+    said = (texts or {}).get('item') or ''
+    if _MORE_THAN_ONE_THOUGHT.search(registry.strip_marks(said)):
+        return None
+    named = set(_words(_asked_about(task, data))) - _DECIDE_WORDS
+    if not all(w in _CANCEL_FILLER or w in _SWITCH_FILLER or w in named
+               for w in _words(said)):
+        return None
+    reason = ((texts or {}).get('reason') or '').strip()
+    return run(ctx, key, {'reason': reason} if reason else {}, text,
+               pinned={'item': pin})
+
+
+#: FIX-1 (P3 wf-8): slots whose choices are read from an earlier slot — the
+#: people a scheme pays, the pay values of a person's scheme, a country's
+#: filings. Changing the earlier one with the pencil re-checks the later one.
+DEPENDS_ON = {'people': ('scheme',), 'field': ('person',), 'filing': ('country',)}
+
+
+def _value_key(value):
+    """One comparable form for a slot value: a chip's value, a chosen pin's,
+    or a resolver's (named people compare by who they are)."""
+    if isinstance(value, dict):
+        ids = value.get('employee_ids')
+        if ids:
+            return tuple(sorted(str(i) for i in ids))
+        return json.dumps(value, sort_keys=True, default=str)
+    return (str(value),)
+
+
+def _recheck(slot, pin, res):
+    """A choice made before an earlier slot changed, against what the slot
+    resolves to NOW. Still offered → kept as chosen. Gone → never swapped
+    for something else in silence: the person is asked (or told) why."""
+    status = res.get('status')
+    if status not in ('resolved', 'ambiguous', 'missing'):
+        return res
+    want = _value_key(pin.get('value'))
+    if status == 'ambiguous':
+        offered = res.get('candidates') or []
+    elif status == 'resolved':
+        offered = [{'value': res.get('value')}]
+    else:
+        offered = []
+    if any(_value_key(c.get('value')) == want for c in offered):
+        return pin
+    name = pin.get('label') or ''
+    if slot.kind == 'people':
+        note = T(_lt('%s is not among the people this scheme pays.')) % name
+    else:
+        note = T(_lt('%s was picked before this change and no longer fits.')) % name
+    if status == 'resolved':
+        # One other value would fit: offered as a chip, never put in quietly.
+        value = res.get('value')
+        if isinstance(value, dict):
+            ids = value.get('employee_ids') or []
+            if len(ids) != 1:
+                return missing(note)
+            value, label = ids[0], (value.get('names') or [''])[0] or res.get('label')
+        else:
+            label = res.get('label') or ''
+        return ambiguous([{'value': value, 'label': label, 'sublabel': ''}], note)
+    # Other chips to pick from, or nothing that fits: either way, why.
+    return dict(res, note=note)
+
+
+#: FIX-1 (P3 crit-4): a question to PayAI without its question mark only
+#: when it opens the way no send-back reason does: "why is …", "how do I …",
+#: "what does … mean". "What is missing: …", "How the overtime was worked
+#: out is wrong", "Explain … in the note" are reasons, not questions.
+_ASK_LEAD = re.compile(
+    r'^\s*(?:(?:how|why)\s+(?:do|does|did|can|could|should|would|will|is|are|was|were|'
+    r'has|have|isn\'t|aren\'t|wasn\'t|weren\'t|doesn\'t|didn\'t)|'
+    r'what\s+(?:does|do|did)|tell\s+me\s+(?:about|why|how))\b', re.I)
+#: The same in Vietnamese (marks folded): only an OPENING "tại sao / làm sao
+#: …" or a closing "… là gì" — mid-sentence ("…, không rõ tại sao bị thiếu")
+#: it is part of the reason.
+_ASK_LEAD_VI = re.compile(
+    r'^\s*(?:lam\s+(?:sao|the\s+nao)|tai\s+sao|vi\s+sao|the\s+nao|khi\s+nao)\b'
+    r'|\b(?:la\s+gi|nghia\s+la\s+gi)\s*$')
+
+
+def _asks_a_question(text):
+    """FIX-1 (P3 crit-4): typed while a reason is asked for, these words are
+    a question for PayAI's answers, not the reason: they end with a question
+    mark ("Is Lan's overtime included?", "Lan có tăng ca không?" — a
+    question to PayAI in any shape), or they read as a question (the
+    knowledge path's own test) AND open the way only a question does.
+    Anything else stays the reason — the plan card shows it before anything
+    can be decided, and the question stays open after an answer, so the
+    reason can be typed next."""
+    text = (text or '').rstrip()
+    if text.endswith(('?', '\uff1f')):
+        return True
+    if not registry.looks_like_question(text):
+        return False
+    if _ASK_LEAD.match(text):
+        return True
+    return bool(_ASK_LEAD_VI.search(registry.strip_marks(text).lower()))
+
+
+class _Probe(Exception):
+    """Leaves a look-up's savepoint by rolling it back: nothing it read or
+    touched is kept."""
+
+
+#: A second thought in the same message ("…, Lan's overtime is missing",
+#: "… and fix the rate", "… because …", "… after it is fixed"): words
+#: written for the preparer. Marks folded first ("và", "vì", "rồi" — but
+#: not a closing "… sao rồi", which asks how a run is doing).
+_MORE_THAN_ONE_THOUGHT = re.compile(
+    r'[,;:]|\b(?:and|also|because|but|since|then|after|before|until|once|unless|when|if|'
+    r'so\s+that|va|vi|nhung|roi(?!\W*$)|sau\s+khi|truoc\s+khi|neu|de\s+ma)\b', re.I)
+
+
+#: FIX-1 (P3 crit-4): Actions whose words are how "What should change?" is
+#: answered — a pay value to correct ("Set Lan's overtime to 400000") — so
+#: typed while a reason is asked for they stay the reason (PA49). Every
+#: decide Action is in the same place: "Approve the overtime first" is an
+#: instruction to the preparer, and the open question is itself a decision.
+_REASON_SHAPED = frozenset({'update_pay_data'})
+
+
+def _is_command(ctx, text):
+    """FIX-1 (P3 crit-4): True when the words, typed while a reason is
+    asked for, can only be a new request: a phrase-table hit (never a
+    "coming soon" Action), allowed for this person, one thought only, and
+    every slot it names found among what the person can see (exactly, or
+    as a choice between several: "the June run" with two June runs still
+    leaves).
+
+    - A request to SEE something (show, open, status, download) leaves.
+    - A request to START something (run payroll, submit a run, send
+      payslips, prepare a filing) leaves only when it names what it is for
+      ("Run July 2031 payroll for Payai Retail Mid-Month") and that is found.
+    - A pay value to correct ("Set Lan's overtime to 400000") and any
+      decision ("Approve the overtime first", "Reject it instead") is how
+      "What should change?" is answered: it stays the reason (PA49). The
+      plan card shows it, nothing is decided without the typed word, and
+      "cancel" leaves.
+
+    Read-only: the slots are looked up as the person inside a savepoint
+    that is rolled back."""
+    hit = registry.match(text)
+    if hit is None:
+        return False
+    key, texts = hit
+    action = ACTIONS.get(key)
+    if action is None or action.stub or key in _REASON_SHAPED:
+        return False
+    if action.tier not in ('look', 'prepare'):
+        return False
+    if action.tier == 'prepare' and not any(
+            (v or '').strip() for v in (texts or {}).values()):
+        return False
+    if _MORE_THAN_ONE_THOUGHT.search(registry.strip_marks(text)):
+        return False
+    ok, _reason = gate.allowed(ctx.env, ctx.user, action)
+    if not ok:
+        return False
+    saved = (ctx.params, ctx.task)
+    params = {}
+    ctx.params, ctx.task = params, None
+    try:
+        with ctx.env.cr.savepoint():
+            found = True
+            texts = action.normalise_texts(ctx, dict(texts or {}))
+            for slot in action.slots:
+                said = (texts.get(slot.key) or '').strip()
+                if not said:
+                    continue
+                res = action.resolve_slot(ctx, slot, said)
+                if res.get('status') not in ('resolved', 'ambiguous'):
+                    found = False
+                    break
+                params[slot.key] = res
+            raise _Probe(found)
+    except _Probe as probe:
+        return bool(probe.args[0])
+    except Exception:                                   # noqa: BLE001
+        return False
+    finally:
+        ctx.params, ctx.task = saved
 
 
 def _pin(ctx, slot, value, label=''):
@@ -897,23 +1446,51 @@ def word_ok(action, word):
     return bool(said) and any(said == _norm_word(w) for w in action.confirm_words())
 
 
-def _needs_typing(ctx, task, action):
-    """Red never counts a tap or a spoken yes (owner decision 6)."""
-    word = (action.shown_word() if action else '') or 'the word'
-    return _note_card(ctx, task, _lt('This one needs typing'), T(_lt(
-        'Approvals, send-backs and rejections are confirmed by typing %s on the '
-        'card. A tap or a spoken yes never counts.')) % word, tone='info')
+def _needs_typing(ctx, task, action, how='tap'):
+    """Red never counts a tap or a spoken yes (owner decision 6). FIX-1 (P3
+    ux-3): the note names this card's own word and what the person really
+    did — pressed a button, spoke, or typed a go-ahead in the chat."""
+    word = (action.shown_word() if action else '') or T(_lt('the word'))
+    if how == 'voice':
+        text = _lt('This one is confirmed only by typing %s in the box on the card. '
+                   'A spoken go-ahead never counts.')
+    elif how == 'chat':
+        text = _lt('This one is confirmed only by typing %s in the box on the card. '
+                   'A go-ahead typed in the chat never counts.')
+    else:
+        text = _lt('This one is confirmed only by typing %s in the box on the card. '
+                   'Pressing a button never counts.')
+    return _note_card(ctx, task, _lt('This one needs typing'), T(text) % word, tone='info')
 
 
-def _fresh_card(ctx, task, data, params):
-    """Things moved under the plan: the old task expires and the same words
-    are planned again as they stand now. Nothing was done."""
-    task.write({'state': 'expired', 'error': 'changed since the plan was shown'})
+def _fresh_card(ctx, task, data, params, note=None):
+    """Things moved under the plan: the old task is closed as changed and the
+    same words are planned again as they stand now. Nothing was done.
+
+    FIX-1 (P3 ux-10): the note typed on the card comes along (the approver's
+    note box is filled again), and the warning fits what comes back — a
+    plan again, or why it can no longer be done.
+
+    `note` is the Note box as sent at Do it (Red only; None = no box). An
+    EMPTY box is an explicit clear (P3 crit-1 follow-on): the fresh plan's
+    box comes back empty, never refilled with the words first planned."""
+    task.write({'state': 'replanned', 'error': 'changed since the plan was shown'})
+    pinned = dict(params)
+    action = ACTIONS.get(task.action_key)
+    if note is not None and action is not None and action.tier == 'decide' \
+            and not getattr(action, 'reason_required', True) \
+            and any(s.key == 'reason' for s in action.slots):
+        pinned['reason'] = resolved(note, note, 'said') if note else \
+            resolved('', '', 'default')
     card = run(ctx, task.action_key, data.get('texts') or {}, task.utterance,
-               pinned=params)
-    card.setdefault('notes', []).insert(0, cards.note('warn', _lt(
-        'Things changed since I showed you this plan. Here it is as it stands '
-        'now; nothing was done.')))
+               pinned=pinned)
+    if card.get('kind') == 'plan':
+        text = _lt('Things changed since I showed you this plan. Here it is as it stands '
+                   'now; nothing was done.')
+    else:
+        text = _lt('Things changed since I showed you this plan, so nothing was done. '
+                   'This is where it stands now.')
+    card.setdefault('notes', []).insert(0, cards.note('warn', text))
     ctx.task.sudo().write({'plan_json': json.dumps(card, ensure_ascii=False, default=str)})
     return card
 
@@ -939,7 +1516,7 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
     if red and how != 'typed':
         if task.state in ('done', 'failed'):
             return _card_of(task)
-        return _needs_typing(ctx, task, action)
+        return _needs_typing(ctx, task, action, how)
     if not red and how == 'typed':
         how = 'tap'
     if how == 'voice':
@@ -985,8 +1562,10 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
     except (UserError, AccessError) as exc:
         msg = _exc_text(exc)
         return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
+    # The approver's note as typed on the card (P3 ux-10: kept on a fresh plan).
+    typed_note = ' '.join(str(note or '').split())[:2000] if red else ''
     if 'kind' in fresh or fresh.get('fingerprint') != data.get('fingerprint'):
-        return _fresh_card(ctx, task, data, params)
+        return _fresh_card(ctx, task, data, params, typed_note if red else None)
 
     # The TRANSACTION's clock, the same one `create_date` is stamped with, so
     # "the run this task made" (created after Do it) is never off by the
@@ -1009,7 +1588,7 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
         stored.pop('drive', None)
         task.write({'plan_json': json.dumps(stored, ensure_ascii=False, default=str)})
         return card
-    ctx.confirm_note = ' '.join(str(note or '').split())[:2000] if red else ''
+    ctx.confirm_note = typed_note
     try:
         with ctx.env.cr.savepoint():
             card = action.confirm(ctx, task, params, data)
@@ -1017,7 +1596,7 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
         # The world moved in the last instant (a concurrent decision, a seat
         # moved): nothing was decided — the savepoint rolled it all back.
         task.write({'state': 'planned', 'confirm_kind': 'none', 'confirmed_at': False})
-        return _fresh_card(ctx, task, data, params)
+        return _fresh_card(ctx, task, data, params, typed_note if red else None)
     except (UserError, AccessError) as exc:
         msg = _exc_text(exc)
         return _finish(ctx, task, 'failed', _fail_card(ctx, task, action, msg), msg)
@@ -1125,9 +1704,13 @@ def cancel(ctx, task_id):
     return _finish(ctx, task, 'cancelled', card)
 
 
-def _is_latest(ctx, task):
+def _is_latest(ctx, task, past_answers=False):
     """A spoken go-ahead counts only for the plan the person saw LAST: the
-    newest task in the conversation, and the card on the newest answer."""
+    newest task in the conversation, and the card on the newest answer.
+
+    `past_answers` (an open reason question, FIX-1 P3 crit-4): answers that
+    carry no PayAI card — the answer to a question asked in between — are
+    looked past; the newest PayAI card must still be this task's."""
     Task = ctx.env['payai.task'].sudo()
     domain = [('user_id', '=', ctx.user.id)]
     if task.session_id:
@@ -1137,14 +1720,19 @@ def _is_latest(ctx, task):
     conv = ctx.conversation
     if not conv or (task.session_id and conv != task.session_id):
         return not task.session_id
+    domain = [('conversation_id', '=', conv.id), ('role', '=', 'assistant')]
+    if past_answers:
+        domain.append(('card', '!=', False))
     try:
-        last = ctx.env['payroll.ai.message'].search(
-            [('conversation_id', '=', conv.id), ('role', '=', 'assistant')],
-            order='id desc', limit=1)
-        card = json.loads(last.card or '{}') if last else {}
+        for last in ctx.env['payroll.ai.message'].search(
+                domain, order='id desc', limit=20 if past_answers else 1):
+            card = json.loads(last.card or '{}')
+            if past_answers and not (isinstance(card, dict) and card.get('task_id')):
+                continue
+            return isinstance(card, dict) and card.get('task_id') == task.id
     except (AccessError, TypeError, ValueError):
         return False
-    return isinstance(card, dict) and card.get('task_id') == task.id
+    return False
 
 
 def _not_latest_card(ctx):
@@ -1169,7 +1757,7 @@ def go_ahead(ctx, message):
         return None
     if task.tier == 'decide':
         action = ACTIONS.get(task.action_key)
-        return _needs_typing(ctx, task, action)
+        return _needs_typing(ctx, task, action, 'voice' if ctx.voice else 'chat')
     if not ctx.voice:
         return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
             'Typing it does not count. Tap Do it on the plan card if it is right.'),
@@ -1191,6 +1779,18 @@ def handle(engine, message, context):
         said = typed_answer(ctx, message, only_kinds=('reason',))
         if said is not None:
             return envelope(said)
+        words = ' '.join((message or '').split())[:2000]
+        if (_asks_a_question(words) and reason_question_open(ctx)
+                and not _is_command(ctx, words)):
+            # FIX-1 (P3 crit-4): a question typed while a reason is asked
+            # for is answered — never read as a new order ("Approve the
+            # overtime?"), neither by the phrase table nor by the model —
+            # and the reason question stays open for the next words.
+            return None
+        if only_thanks(words) and reason_question_open(ctx):
+            # FIX-1 (P3 crit-4, fifth pass): thanks are answered too — not
+            # the reason, not an order — and the question stays open.
+            return None
         hit = registry.match(message)
         if hit is None:
             said = typed_answer(ctx, message)
@@ -1203,3 +1803,27 @@ def handle(engine, message, context):
         return envelope(run(ctx, key, texts, message))
     finally:
         reset_lang(token)
+
+
+# ------------------------------------------------- bookkeeping for Actions
+# PA-R2 (P3:test-11): no Action module calls sudo — `.sudo()` keeps the uid,
+# so "the decision is under their own name" could not tell it apart. The two
+# reads/writes below touch only PayAI's own task row and the approvals
+# outbox (an admin-only table), never the business record the Action is about.
+def file_task_under(task, company):
+    """File the PayAI task row under the company its request belongs to
+    (P3:sec-1), so THAT company's payroll managers see it in their PayAI
+    audit. No task (a read-only probe): nothing to file."""
+    if task and company and task.company_id != company:
+        task.sudo().write({'company_id': company.id})
+
+
+def payai_reminder_queued(env, key, step, whom, since):
+    """Is a PayAI reminder for `whom` on `step` already in the outbox — under
+    today's key `key`, or under another day's key since `since` (a press from
+    a time zone already on the next date)? The outbox is not readable by the
+    person pressing Remind, so the runner asks for them (P3:corr-3)."""
+    return bool(env['biz.approval.outbox'].sudo().search_count([
+        '|', ('dedupe_key', '=', key), '&',
+        ('dedupe_key', '=like', 'payai-remind-%s-%s-%%' % (step.id, whom.id)),
+        ('create_date', '>=', since)]))

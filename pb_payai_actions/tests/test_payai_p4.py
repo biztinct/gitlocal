@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from odoo.modules.module import get_module_path
 from odoo.tests.common import tagged
-from odoo.tools.translate import PoFileReader
+from odoo.tools.translate import PoFileReader, babel_extract_qweb
 
 from odoo.addons.pb_payai_actions.payai import i18n, registry, resolve, runner
 from odoo.addons.pb_payai_actions.payai.actions_amber import UpdatePayData
@@ -50,10 +50,19 @@ def _catalogue(module, name='vi_VN.po'):
     return out
 
 
+def _is_translate_call(node):
+    """`_lt(...)` / `_(...)` — and (FIX-1 P4:test-4) `self.env._(...)`."""
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id in ('_lt', '_')
+    return isinstance(func, ast.Attribute) and func.attr == '_'
+
+
 def _payai_literals():
     """(source, file) for every translatable literal pb_payai_actions shows:
-    _lt/_ in Python (an Action's `summary` excepted: only the model reads
-    it) and _t in the JavaScript."""
+    _lt/_/env._ in Python (an Action's `summary` excepted: only the model
+    reads it), _t in the JavaScript and the OWL templates' own text (read by
+    the very extractor the translation export uses)."""
     root = get_module_path('pb_payai_actions')
     found = []
     for sub in ('payai', 'models'):
@@ -68,8 +77,7 @@ def _payai_literals():
                         isinstance(t, ast.Name) and t.id == 'summary' for t in node.targets):
                     skip.update(id(n) for n in ast.walk(node.value))
             for node in ast.walk(tree):
-                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-                        and node.func.id in ('_lt', '_') and node.args
+                if (isinstance(node, ast.Call) and _is_translate_call(node) and node.args
                         and isinstance(node.args[0], ast.Constant)
                         and isinstance(node.args[0].value, str) and node.args[0].value
                         and id(node) not in skip):
@@ -80,7 +88,43 @@ def _payai_literals():
         for m in re.finditer(r'_t\(\s*"((?:[^"\\]|\\.)*)"', src):
             found.append((m.group(1).encode().decode('unicode_escape').encode('latin-1')
                           .decode('utf-8'), 'js/' + name))
+    xml_dir = os.path.join(root, 'static', 'src', 'xml')
+    for name in sorted(os.listdir(xml_dir)):
+        if not name.endswith('.xml'):
+            continue
+        with open(os.path.join(xml_dir, name), 'rb') as fh:
+            for _line, _f, text, _c in babel_extract_qweb(fh, [], [], {}):
+                found.append((text, 'xml/' + name))
     return found
+
+
+def _shown_text(card):
+    """Every piece of a card a person reads: title, subtitle, hint, audit
+    line, slot labels and values, notes, button and chip labels."""
+    out = [card.get(k) or '' for k in ('title', 'subtitle', 'hint', 'audit_line', 'footer')]
+    for slot in card.get('slots') or []:
+        out += [slot.get(k) or '' for k in ('label', 'value_label', 'origin_label', 'note')]
+    out += [(n or {}).get('text') or '' for n in card.get('notes') or []]
+    for act in (card.get('actions') or []) + (card.get('chips') or []):
+        out += [act.get(k) or '' for k in ('label', 'sublabel', 'hint', 'placeholder')]
+    return [t for t in out if isinstance(t, str) and t]
+
+
+def _po_blocks(module, name='vi_VN.po'):
+    """The entries of a catalogue as lists of lines (header dropped)."""
+    path = os.path.join(get_module_path(module), 'i18n', name)
+    text = open(path, encoding='utf-8').read()
+    for block in text.split('\n\n')[1:]:
+        lines = [l for l in block.strip().split('\n') if l]
+        if lines:
+            yield lines
+
+
+def _strip_js_comments(src):
+    """JavaScript without its comments (a comment may name what the code
+    no longer does)."""
+    src = re.sub(r'/\*.*?\*/', ' ', src, flags=re.S)
+    return re.sub(r'(?m)(^|[^:\\])//.*$', r'\1', src)
 
 
 @tagged('post_install', '-at_install', 'payai')
@@ -138,23 +182,27 @@ class TestPayaiP4Catalogue(_P3Case):
             path = os.path.join(get_module_path(module), 'i18n', name)
             rows = list(PoFileReader(path))          # a bad entry raises here
             self.assertTrue(rows, path)
-        # pb_payai_actions: every entry has its module line FIRST, a marker
-        # and a code occurrence (or a model one) — the three things a .po
-        # entry needs (po-translation-loading-rules).
-        path = os.path.join(get_module_path('pb_payai_actions'), 'i18n', 'vi_VN.po')
-        text = open(path, encoding='utf-8').read()
-        for block in text.split('\n\n')[1:]:
-            lines = [l for l in block.strip().split('\n') if l]
-            if not lines:
-                continue
-            self.assertTrue(lines[0].startswith('#. module: pb_payai_actions'), block[:120])
-            occ = [l for l in lines if l.startswith('#: ')]
-            self.assertTrue(occ, block[:120])
-            if any(o.startswith('#: code:') for o in occ):
-                self.assertTrue(any(l in ('#. odoo-python', '#. odoo-javascript') for l in lines),
-                                block[:120])
-                self.assertTrue(all(re.match(r'#: (code:addons/pb_payai_actions/\S+:\d+|model)', o)
-                                    for o in occ), block[:120])
+        # FIX-1 (P4:test-3): EVERY catalogue this phase wrote to — not only
+        # pb_payai_actions — has, on every entry, its module line FIRST, an
+        # occurrence under its own module and, for a code entry, the
+        # odoo-python / odoo-javascript marker: without the marker the entry
+        # parses but is never loaded, and the screen stays English
+        # (po-translation-loading-rules). Only om_hr_payroll's pre-P4 entries
+        # in the old exporter's shape ("#, python-format", no marker) are
+        # left as they were.
+        for module, name in P4_CATALOGUES:
+            for lines in _po_blocks(module, name):
+                where = '%s: %s' % (module, ' | '.join(lines[:4])[:160])
+                self.assertTrue(lines[0].startswith('#. module: %s' % module), where)
+                occ = [part for l in lines if l.startswith('#: ') for part in l[3:].split()]
+                self.assertTrue(occ, where)
+                if not any(o.startswith('code:') for o in occ):
+                    continue
+                self.assertTrue(all(re.match(r'(?:code:addons/%s/\S+:\d+|model:\S+|model_terms:\S+)$'
+                                             % module, o) for o in occ), where)
+                marked = any(l in ('#. odoo-python', '#. odoo-javascript') for l in lines)
+                legacy = module == 'om_hr_payroll' and '#, python-format' in lines
+                self.assertTrue(marked or legacy, where)
 
     def test_01b_every_shown_string_has_vietnamese(self):
         """Coverage re-derived from the source on every run: a new card
@@ -298,7 +346,14 @@ class TestPayaiP4Catalogue(_P3Case):
         self.assertTrue(rx.match('request:42') and rx.match('request:42:org'))
         self.assertFalse(rx.match('queue') or rx.match('month:2026-06'))
         self.assertIn('_consumedFocus', src)        # one arrival opens one drawer
-        self.assertIn('currentAction', src)          # a lens reads the hub's context
+        # FIX-1 (P4:link-1): a lens reads the hub's arrival prop (`wantsArrival`),
+        # never the action service's current action (a Promise, and the
+        # previous screen's while the lens is set up). Comments may still
+        # tell that story; the code must not do it.
+        code = _strip_js_comments(src)
+        self.assertIn('inboxArrival', code)
+        self.assertIn('props.arrival', code)
+        self.assertNotIn('currentAction', code)
 
     # ================================================================ 8
     def test_08_learn_teaches_asking_payai_in_both_languages(self):
@@ -317,7 +372,7 @@ class TestPayaiP4Catalogue(_P3Case):
         self.assertEqual(len(ask), 1, 'the Runs lesson has no "Ask PayAI" step')
         ask = ask[0]
         for lang, words in (('en', ('plan card', 'Do it', 'Withdraw', '10 minutes')),
-                            ('vi', ('thẻ kế hoạch', 'Thực hiện', 'Rút lại', '10 phút'))):
+                            ('vi', ('thẻ kế hoạch', 'Thực hiện', 'Thu hồi', '10 phút'))):
             for word in words:
                 self.assertIn(word, ask['body'][lang] + ask['tip'][lang], (lang, word))
         self.assertIn('Undo', ask['tip']['en'])
@@ -339,12 +394,28 @@ class TestPayaiP4Catalogue(_P3Case):
     # =============================================================== 10
     def test_10_no_odoo_on_any_card(self):
         root = get_module_path('pb_payai_actions')
-        cat = _catalogue('pb_payai_actions')
-        for src, vi in cat.items():
-            self.assertNotIn('odoo', src.lower(), src)
-            self.assertNotIn('odoo', vi.lower(), vi)
+        # FIX-1 (P4:test-4): every row of the catalogue — code AND model
+        # rows (settings labels, help, choices) — in English and Vietnamese.
+        path = os.path.join(root, 'i18n', 'vi_VN.po')
+        for row in PoFileReader(path):
+            self.assertNotIn('odoo', (row['src'] or '').lower(), row['src'])
+            self.assertNotIn('odoo', (row['value'] or '').lower(), row['value'])
         for src, _f in _payai_literals():
             self.assertNotIn('odoo', src.lower(), src)
+        # Field labels, help and choices written in the models.
+        for name in sorted(os.listdir(os.path.join(root, 'models'))):
+            if not name.endswith('.py'):
+                continue
+            tree = ast.parse(open(os.path.join(root, 'models', name), encoding='utf-8').read())
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call):
+                    continue
+                texts = [kw.value for kw in node.keywords if kw.arg in ('string', 'help', 'selection')]
+                for value in texts:
+                    for const in ast.walk(value):
+                        if isinstance(const, ast.Constant) and isinstance(const.value, str):
+                            self.assertNotIn('odoo', const.value.lower(),
+                                             'models/%s: %s' % (name, const.value[:60]))
         for sub in ('static/src/xml', 'views'):
             for name in os.listdir(os.path.join(root, sub)):
                 text = open(os.path.join(root, sub, name), encoding='utf-8').read()
@@ -397,15 +468,37 @@ class TestPayaiP4Vietnamese(p3.TestPayaiP3Red):
         labels = [a['label'] for a in card['actions']]
         self.assertIn('Thực hiện', labels)
         self.assertIn('Hủy bỏ', labels)
-        self.assertIn('Mở trên màn hình thay vào đó', labels)
-        english = ('Run payroll', 'Period', 'Scheme', 'Do it', 'Cancel', ' to ', 'December')
-        blob = json.dumps({k: card[k] for k in ('title', 'subtitle', 'slots', 'notes', 'actions')},
-                          ensure_ascii=False)
-        for word in english:
-            self.assertNotIn('"%s"' % word if ' ' not in word else word, blob, word)
-        # The run is still NAMED the screen's way (the wizard names in English).
+        self.assertIn('Mở trên màn hình', labels)
+        # FIX-1 (P4:test-7): no English word anywhere a person reads on the
+        # card — inside sentences too, chips, hint and audit line included.
+        # The names people gave (the scheme, the run) are theirs and stay.
         vals = json.loads(self._task(card).params_json)['vals']
+        blob = ' | '.join(_shown_text(card))
+        for name in (vals['name'], 'Payai Retail End-Month', 'PayAI'):
+            blob = blob.replace(name, ' ')
+        english = ('Run payroll', 'Period', 'Scheme', 'Do it', 'Cancel', 'to', 'December',
+                   'Pay period', 'People', 'Everyone', 'Open', 'instead', 'the', 'and', 'No run')
+        for word in english:
+            self.assertFalse(re.search(r'(?<![\w])%s(?![\w])' % re.escape(word), blob),
+                             '%r on a Vietnamese card: %s' % (word, blob[:300]))
+        # The run is still NAMED the screen's way (the wizard names in English).
         self.assertEqual(vals['name'], 'Payai Retail End-Month · December 2031')
+
+    def test_p4_02b_card_follows_the_users_own_language(self):
+        """FIX-1 (P4:test-7): no language in the call's context — the card
+        follows the asker's own language setting (`user.lang`)."""
+        session = self._session(self.vi_officer)
+        context = {k: v for k, v in self.env.context.items() if k != 'lang'}
+        Conv = self.env['payroll.ai.conversation'].with_user(self.vi_officer).with_context(context)
+        self.assertFalse(Conv.env.context.get('lang'))
+        card = Conv.rpc_send_message('chạy lương tháng 12 năm 2031 cho Payai Retail End-Month',
+                                     session.id, None)['card']
+        self.assertEqual(card['title'], 'Chạy lương', card)
+        # And an English user asking the same thing reads English.
+        en = Conv.with_user(self.officer)
+        card = en.rpc_send_message('Run December 2031 payroll for Payai Retail End-Month',
+                                   self._session(self.officer).id, None)['card']
+        self.assertEqual(card['title'], 'Run payroll', card)
 
     # ================================================================ 3
     def test_p4_03_vietnamese_confirm_words(self):
@@ -434,7 +527,7 @@ class TestPayaiP4Vietnamese(p3.TestPayaiP3Red):
         # The not-yours deep link and the inbox door carry this request.
         inbox = next(a for a in card['actions'] if a.get('door_id') == 'homehub_approvals')
         self.assertEqual(inbox['hub']['focus'], 'request:%s' % request.id)
-        self.assertEqual(inbox['label'], 'Mở mục Phê duyệt của tôi thay vào đó')
+        self.assertEqual(inbox['label'], 'Mở mục Phê duyệt')
         # A wrong word: the hint is Vietnamese and names the Vietnamese word.
         out = self._confirm_vi(self.hoa, card, word='duyệt đi')
         self.assertTrue(out.get('inline'), out)

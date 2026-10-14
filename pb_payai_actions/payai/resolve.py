@@ -22,7 +22,7 @@ from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tools.translate import LazyTranslate
 
-from .i18n import T, month_label as _month_label
+from .i18n import T, is_vi, lang as _lang, month_label as _month_label
 
 _lt = LazyTranslate(__name__)
 
@@ -61,6 +61,8 @@ RUN_STOP = frozenset((
     'trang', 'thai', 'tinh', 'hinh', 'excel', 'file', 'tep', 'phieu', 'nay',
     'toi', 'minh', 'gui', 'o', 'dau', 'the', 'nao', 'ra', 'sao', 'kiem', 'tra',
     'di', 'nhe', 'giup', 'dang', 'den',
+    # FIX-1 (P4 vi-8): "xem trạng thái duyệt …", "… chưa", "duyệt lại …"
+    'duyet', 'phe', 'lai', 'chua', 'het', 'luon',
 ))
 
 #: Words a person uses for a ⌘K row that its label does not contain.
@@ -74,8 +76,9 @@ DOOR_ALIASES = {
     'payhub_deliver': ('pay and deliver', 'bank file', 'send payslips'),
     'homehub_approvals': ('approvals', 'my approvals', 'approval inbox',
                           'inbox'),
-    'va_access': ('access', 'access home', 'access and delegations',
-                  'access and delegation', 'permissions', 'roles'),
+    # FIX-1b (owner ruling 2026-10-13): no alias leads into Settings › Access
+    # and delegations — PayAI never opens it (`gate.ACCESS_DOORS`; the words
+    # are answered by the `never_access` card instead).
 }
 #: P4 — the same doors in the words a Vietnamese payroll officer uses (the
 #: screens' own Vietnamese: "Các đợt lương", "Chạy lương", "Phiếu lương",
@@ -88,7 +91,6 @@ DOOR_ALIASES_VI = {
     'payhub_deliver': ('chi tra', 'gui phieu luong'),
     'homehub_approvals': ('phe duyet', 'duyet', 'hop phe duyet', 'viec cho duyet',
                           'cho duyet', 'phe duyet cua toi'),
-    'va_access': ('phan quyen', 'quyen truy cap', 'quyen'),
 }
 for _door, _words in DOOR_ALIASES_VI.items():
     DOOR_ALIASES[_door] = tuple(DOOR_ALIASES.get(_door, ())) + _words
@@ -181,27 +183,324 @@ VI_MONTHS = {
 _VI_MONTH = re.compile(
     r'\b(?:thang\s*|t)(muoi\s+mot|muoi\s+hai|muoi|mot|gieng|hai|ba|tu|bon|nam|sau|'
     r'bay|tam|chin|chap|\d{1,2})\b(?:\s*(?:nam\s+|/\s*|-\s*|,\s*)?(20\d\d)\b)?')
+#: FIX-1 (P4 vi-10): "hai tháng trước" (two months ago), "tháng sau nữa"
+#: (the month after next), "tháng này năm ngoái".
+#: Second pass: "hai tháng nữa" / "2 tháng nữa" (in two months) — "nữa"
+#: right after "tháng" counts forward; "năm" (five) stays out: it is "year".
+#: Third pass: "năm tháng trước" is FIVE months ago — "năm" right before
+#: "tháng <trước/sau/tới/nữa…>" is the count, not "year" — and "mười lăm"
+#: (15) and the other "mười …" counts are read.
+_VI_COUNT = {'mot': 1, 'hai': 2, 'ba': 3, 'bon': 4, 'tu': 4, 'nam': 5, 'lam': 5, 'sau': 6,
+             'bay': 7, 'tam': 8, 'chin': 9, 'muoi': 10}
+#: Fifth pass: a bare "tư" is not a count — it folds to "từ" (from), and
+#: "từ tháng trước" is "from last month"; four months is "bốn tháng".
+_VI_COUNT_WORDS = r'(?:muoi\s+(?:mot|hai|ba|bon|tu|lam|sau|bay|tam|chin)|muoi|mot|hai|ba|bon|nam|sau|bay|tam|chin)'
+#: Fifth pass: how each count word is written. In a message that has marks
+#: the count must be written so — "bà tháng trước" (her … last month) and
+#: "sau tháng trước" (after last month) are not three and six.
+_VI_COUNT_SPELLING = {
+    'mot': ('một',), 'hai': ('hai',), 'ba': ('ba',), 'bon': ('bốn',), 'tu': ('tư',),
+    'nam': ('năm',), 'lam': ('lăm',), 'sau': ('sáu',), 'bay': ('bảy', 'bẩy'), 'tam': ('tám',),
+    'chin': ('chín',), 'muoi': ('mười',),
+}
+#: Fifth pass: a number right after one of these LABELS a run, a week, a
+#: quarter or a team ("đợt 2 tháng trước" is last month's round 2), never a
+#: count of months. "tăng ca" (overtime) is not "ca" (shift).
+_VI_LABEL_BEFORE_COUNT = {
+    'dot': ('đợt',), 'ky': ('kỳ', 'kì'), 'lan': ('lần',), 'khoi': ('khối',), 'tuan': ('tuần',),
+    'quy': ('quý',), 'ca': ('ca',), 'to': ('tổ',), 'nhom': ('nhóm',),
+}
+#: … and "năm" after these is "year" ("thưởng cuối năm tháng trước": last
+#: month's year-end bonus), not five.
+_VI_YEAR_BEFORE_NAM = {
+    'cuoi': ('cuối',), 'dau': ('đầu',), 'giua': ('giữa',), 'ca': ('cả',), 'moi': ('mỗi',),
+    'hang': ('hằng', 'hàng'),
+}
+_VI_REL = re.compile(
+    r'\b(?:(\d{1,2}|' + _VI_COUNT_WORDS + r')\s+)?'
+    r'thang\s+(nay|truoc|roi|qua|toi|sau|nua)\b'
+    r'(\s+nua\b)?(?!\s*(?:/|-|nam\s+)?\s*20\d\d)')
+#: "năm nay / sau / tới / trước / ngoái / qua / kia", "sang năm" — this,
+#: next or last year; "… nữa" one further ("năm sau nữa": in two years).
+_VI_YEAR_REL = re.compile(r'\b(?:nam\s+(nay|sau|toi|truoc|ngoai|qua|kia)|(sang)\s+nam)(\s+nua)?\b')
+_VI_YEAR_STEP = {'nay': 0, 'sau': 1, 'toi': 1, 'sang': 1, 'truoc': -1, 'ngoai': -1, 'qua': -1,
+                 'kia': -2}
+#: Third pass: a named month with its direction — "tháng sáu tới" (the
+#: coming June), "tháng 6 vừa rồi / vừa qua / trước" (the June just gone),
+#: "tháng 6 này" (this year's June). Only where the words END the month —
+#: "gửi phiếu lương tháng 6 tới nhân viên" is "to the staff", and "… qua
+#: email" is "by email".
+_VI_MONTH_DIR = re.compile(
+    r'\s*(?:(sap\s+toi|toi)|(vua\s+roi|vua\s+qua|roi|qua|truoc)|(nay))'
+    r'(?:\s+(?:day|nay))?(?=\s*$|\s*[,.;!?])')
+
+
+def _vi_count(word):
+    """'2' / 'hai' / 'muoi lam' → 2 / 2 / 15."""
+    word = ' '.join(word.split())
+    if word.isdigit():
+        return int(word)
+    parts = word.split()
+    if len(parts) == 2:                                 # "mười lăm" = 10 + 5
+        return 10 + _VI_COUNT[parts[1]]
+    return _VI_COUNT[word]
+
+
+def _add_months(year, month, step):
+    index = year * 12 + (month - 1) + step
+    return index // 12, index % 12 + 1
+
+
+def has_marks(text):
+    """True when the text carries any Vietnamese mark (đ included)."""
+    low = unicodedata.normalize('NFC', text or '').lower()
+    return fold_keep(low) != low
+
+
+#: FIX-1 (P4 vi-4, second pass): little words that are also names. Each
+#: folds to the same letters as a name ("mình" / Minh, "đang" / Đặng, "đó" /
+#: Đỗ, "em" / Em, "tôi"), so they are told apart by how they were WRITTEN:
+#: the word's own spelling (marks, capitals) decides, never its folded form.
+FILLER_SPELLING = {
+    'minh': ('mình',), 'toi': ('tôi',), 'em': ('em',), 'ban': ('bạn',),
+    # "do" unmarked is a word too (because / by): only "Đỗ" is the name.
+    'dang': ('đang',), 'do': ('đó', 'đấy', 'do'), 'a': ('ạ', 'à'),
+    # "chạy lương thôi" (just run it); "thời" / "Thơi" are other words.
+    'thoi': ('thôi',),
+    # Third pass: "duyệt luôn" (right away); "Luôn" with a capital is a name.
+    'luon': ('luôn',),
+}
+
+
+def filler_word(word, unmarked_message):
+    """True when `word` is the little word, False when it is a name.
+
+    Written as the little word is written ("mình", "đang", lower-case "em")
+    → the little word. A message typed with no marks at all cannot tell
+    "minh" from "Minh" by marks: lower case is the little word, a capital
+    is a name. Anything else ("Minh", "Đặng", "Đỗ", "Em", or "minh" in a
+    message that has marks elsewhere) is a name."""
+    word = unicodedata.normalize('NFC', word or '')
+    low = word.lower()
+    spellings = FILLER_SPELLING.get(fold_keep(low))
+    if spellings is None:
+        return True
+    if low in spellings and (has_marks(low) or word == low):
+        return True
+    return bool(unmarked_message) and word == low and not has_marks(low)
+
+
+_WORD = re.compile(r'[^\W\d_]+', re.U)
+
+
+def drop_vi_filler(text):
+    """`text` without the little words of `FILLER_SPELLING` that were
+    written as little words ("của mình", "đang chờ"), names kept ("Minh",
+    "Đặng", "Đỗ") — so a name is never folded away as filler before a
+    request or a run is narrowed by it (FIX-1 P4 vi-4)."""
+    text = unicodedata.normalize('NFC', text or '')
+    unmarked = not has_marks(text)
+
+    def _keep(m):
+        word = m.group(0)
+        folded = fold_keep(word.lower())
+        if folded not in FILLER_SPELLING:
+            return True
+        if folded in _NAME_AFTER_CUA and re.search(r'(?:^|\W)cua\W+$', fold_keep(text[:m.start()].lower())):
+            # FIX-1 (P4 vi-4, fourth pass): the word right after "của" says
+            # whose it is ("nghỉ phép của bạn" / "… của thôi" is a person's
+            # leave), as at the end of an order (`registry._tail_start`).
+            return True
+        if folded in _NAME_AFTER_CUA and m.start() and word[:1].isupper() and not word.isupper():
+            # FIX-1 (P4 vi-4, fourth pass): a capital after the first word
+            # is a name, however it is marked ("của Bạn", "của Thôi", "của
+            # Luôn") — as at the end of an order (`registry._tail_start`).
+            # Fifth pass: only for these, spelled exactly like the name; a
+            # capitalised "Mình / Đang / Đó" (Title Case typing) is still
+            # the little word — the names have their own marks (Minh,
+            # Đặng, Đỗ).
+            return True
+        return not filler_word(word, unmarked)
+    out = _WORD.sub(lambda m: m.group(0) if _keep(m) else ' ', text)
+    return ' '.join(out.split())
+
+
+#: Folded words a narrowing stop list may hold that `drop_vi_filler` already
+#: told apart from the names they share letters with ("Minh", "Đặng", "Đỗ",
+#: "Thắng"): after it, they are names and must narrow.
+NAME_LIKE = frozenset(('minh', 'dang', 'do', 'em', 'thang'))
+#: The `FILLER_SPELLING` words FIX-1 added that no narrowing stop list held
+#: before: right after "của" they are a person's name, as typed.
+_NAME_AFTER_CUA = frozenset(('ban', 'thoi', 'luon'))
+#: "lương / thưởng tháng 13" is the 13th-month pay item, not a month — but
+#: "bảng / đợt / kỳ / phiếu lương tháng 13" names a pay run, and is asked.
+_MONTH_13_ITEM = re.compile(
+    r'(?<!\bbang\s)(?<!\bdot\s)(?<!\bky\s)(?<!\bphieu\s)\b(?:luong|thuong)\s+thang\s*13\b')
+
+
+def _name_like(raw):
+    """`NAME_LIKE`, with "thang" only when the text writes the name Thắng
+    (a marked "tháng" — length, "cuối tháng", "6 tháng" — never narrows)."""
+    words = {w.lower() for w in _WORD.findall(unicodedata.normalize('NFC', raw or ''))}
+    return NAME_LIKE if 'thắng' in words else NAME_LIKE - {'thang'}
+
+
+def item_query(text, today, stop=frozenset()):
+    """(period, words, problem) for the words that say WHICH waiting request
+    is meant (FIX-1 P4 vi-2 / vi-4 / vi-12, the Red Actions' seam):
+
+    - `problem`: a plain question when the words name a month that cannot
+      be read ("tháng 13", "thang sau" typed with no marks) — ask it; never
+      narrow silently by another month;
+    - `period`: `parse_period`'s (start, end, origin, rest) or None;
+    - `words`: the folded words left to narrow by, `stop` and digits out —
+      the little words dropped by how they were written, the names that
+      share their letters (Minh, Đặng, Đỗ, Thắng) kept even when `stop`
+      lists their folded form.
+    """
+    raw = unicodedata.normalize('NFC', text or '')
+    problem = '' if _MONTH_13_ITEM.search(fold_keep(raw.lower())) else period_problem(raw, today)
+    if problem:
+        return None, [], problem
+    kept = drop_vi_filler(raw)
+    per = parse_period(kept, today)
+    rest = per[3] if per else fold(kept)
+    stop = frozenset(stop) - _name_like(raw)
+    return per, [t for t in tokens(rest, stop) if not t.isdigit()], ''
+
+
+def sau_after_thang(raw):
+    """FIX-1 (P4 vi-2): how "sau" after "tháng" was written, decided on THAT
+    word's own marks (people mark some words and not others; an NFD text
+    counts the same): 'june' (sáu), 'next' (sau, the text has marks
+    elsewhere), 'unsure' (no marks anywhere: "thang sau" is either), or ''
+    (no "tháng sau" at all)."""
+    nfc = unicodedata.normalize('NFC', raw or '').lower()
+    aligned = fold_keep(nfc)
+    m = re.search(r'\bthang\s+(sau)\b', aligned)
+    if not m:
+        return ''
+    word = nfc[m.start(1):m.end(1)]
+    if 'á' in word:
+        return 'june'
+    if word == 'sau' and not has_marks(nfc):
+        return 'unsure'
+    return 'next'
+
+
+def _vi_year_step(rest):
+    """(years to add, rest without the year words) for "năm sau/ngoái…",
+    "sang năm", "năm sau nữa"."""
+    m = _VI_YEAR_REL.search(rest)
+    if not m:
+        return 0, rest
+    step = _VI_YEAR_STEP[m.group(1) or m.group(2)]
+    if m.group(3) and step:
+        step += 1 if step > 0 else -1
+    return step, rest.replace(m.group(0), ' ', 1)
+
+
+def _not_a_count(raw, low, rel):
+    """FIX-1 (P4 vi-10, fourth pass): True when the number before "tháng
+    trước / sau / tới / nữa" is not how many months — a DAY ("ngày 2", "mùng
+    5", "mồng 5", or written "05") or a NAME: a number word right after
+    "của / cho", or written with a capital after the first word ("Năm",
+    "Hai", "Ba" are given names). "năm tháng trước" / "6 tháng trước" stay
+    counts.
+
+    Fifth pass: nor a LABEL ("đợt 2", "kỳ 2", "tuần 2", "quý 3" —
+    `_VI_LABEL_BEFORE_COUNT`), nor the "năm" of "cuối / đầu / giữa năm"
+    (year), nor — in a message that has marks — a word not written as the
+    number is ("bà", "sau": `_VI_COUNT_SPELLING`)."""
+    count = rel.group(1)
+    before = low[:rel.start(1)]
+    if re.search(r'\b(?:ngay|mung|mong)\s+$', before):
+        return True
+    words = [w.strip('.,;:!?()"\'') for w in unicodedata.normalize('NFC', raw or '').split()]
+    head = before.split()
+    index = len(head)
+    aligned = bool(raw) and fold(raw) == low and index + len(count.split()) <= len(words)
+    marked = aligned and has_marks(raw)
+
+    def _written(at, folded, spellings):
+        # The word at `at` is `folded` as written (marks decide when the
+        # message has any; a message with none is read on its letters).
+        spelled = spellings.get(folded)
+        return spelled is not None and (not marked or words[at].lower() in spelled)
+
+    prev = head[-1] if head else ''
+    # Final round (safety check): a label typed without its marks in a
+    # marked message ("chạy lương khoi 2 tháng trước", "nhom 2") is still the
+    # label, as before FIX-1 — "lan" aside (Lan is a name).
+    bare_label = marked and prev in _VI_LABEL_BEFORE_COUNT and prev != 'lan' and \
+        words[index - 1] == prev
+    if prev and (_written(index - 1, prev, _VI_LABEL_BEFORE_COUNT) or bare_label) and \
+            not (prev == 'ca' and head[-2:-1] == ['tang']):
+        return True
+    if count.isdigit():
+        return len(count) == 2 and count.startswith('0')
+    if re.search(r'\b(?:cua|cho)\s+$', before):
+        return True
+    if count == 'nam' and prev and _written(index - 1, prev, _VI_YEAR_BEFORE_NAM):
+        return True
+    if marked and any(words[index + k].lower() not in _VI_COUNT_SPELLING.get(part, ())
+                      for k, part in enumerate(count.split())):
+        return True
+    if index and aligned:
+        word = words[index]
+        return word[:1].isupper() and not word.isupper()
+    return False
 
 
 def _vi_period(raw, low, today):
     """(start, end, origin, rest) for Vietnamese month words, or None.
 
-    "tháng này" (this month), "tháng trước"/"tháng rồi" (last), "tháng sau"/
-    "tháng tới" (next), "tháng 6", "tháng sáu", "tháng 12 năm 2031",
-    "tháng 6/2026", "T6". `raw` keeps the marks (sáu ≠ sau), `low` is folded.
+    "tháng này" (this month), "tháng trước"/"tháng rồi"/"tháng qua" (last),
+    "tháng sau"/"tháng tới" (next), "tháng sau nữa" / "hai tháng trước"
+    (FIX-1 vi-10), "tháng 6", "tháng sáu", "tháng 12 năm 2031",
+    "tháng 6 năm sau / năm ngoái", "tháng 6/2026", "T6". `raw` keeps the
+    marks (sáu ≠ sau), `low` is folded.
     """
-    marked = ' '.join((raw or '').lower().split())
-    rel = re.search(r'\bthang\s+(nay|truoc|roi|toi|sau)\b(?!\s*(?:/|-|nam\s+)?\s*20\d\d)', low)
-    if rel and not (rel.group(1) == 'sau' and re.search(r'tháng\s+sáu', marked)):
-        word = rel.group(1)
-        if word == 'nay':
-            y, m = today.year, today.month
-        elif word in ('truoc', 'roi'):
-            y, m = (today.year, today.month - 1) if today.month > 1 else (today.year - 1, 12)
+    rel = None
+    for cand in _VI_REL.finditer(low):
+        if cand.group(2) == 'sau' and sau_after_thang(raw) == 'june':
+            continue                                    # "tháng sáu" is June
+        if cand.group(2) == 'nua' and (not cand.group(1) or _not_a_count(raw, low, cand)):
+            continue                                    # "tháng nữa": no count
+        rel = cand
+        break
+    if rel:
+        word = rel.group(2)
+        count = rel.group(1)
+        rest = None
+        if count and _not_a_count(raw, low, rel):
+            # FIX-1 (P4 vi-10, fourth pass): "ngày 2 tháng trước" is the 2nd
+            # of last month and "của Năm tháng trước" is Năm's — the number
+            # stays in the words, the month is one away.
+            count = None
+            rest = low[:rel.start(1)] + low[rel.start(1):rel.end(1)] + ' ' + low[rel.end():]
+        if count:
+            # Second pass: the count as said ("13 tháng trước" is September
+            # of last year) — never quietly one month.
+            count = _vi_count(count)
         else:
-            y, m = (today.year, today.month + 1) if today.month < 12 else (today.year + 1, 1)
-        s, e = _month_bounds(y, m)
-        return s, e, 'said', low.replace(rel.group(0), ' ', 1)
+            count = 1
+        if word == 'nua':                               # "hai tháng nữa": +2
+            word = 'toi'
+        elif rel.group(3):                              # "tháng sau nữa": one further
+            count += 1
+        if word == 'nay':
+            step = 0
+        elif word in ('truoc', 'roi', 'qua'):
+            step = -count
+        else:
+            step = count
+        y, m = _add_months(today.year, today.month, step)
+        if rest is None:
+            rest = low.replace(rel.group(0), ' ', 1)
+        years, rest = _vi_year_step(rest)
+        s, e = _month_bounds(y + years, m)
+        return s, e, 'said', rest
     for m in _VI_MONTH.finditer(low):
         word = ' '.join(m.group(1).split())
         if word.isdigit():
@@ -213,19 +512,58 @@ def _vi_period(raw, low, today):
         if not 1 <= month <= 12:
             continue
         rest = low.replace(m.group(0), ' ', 1)
+        way = None if m.group(2) else _VI_MONTH_DIR.match(low, m.end())
         if m.group(2):
             year = int(m.group(2))
+        elif way:
+            # Third pass: the coming / the last / this year's one.
+            if way.group(1):
+                year = today.year if month > today.month else today.year + 1
+            elif way.group(2):
+                year = today.year if month < today.month else today.year - 1
+            else:
+                year = today.year
+            rest = low[:m.start()] + ' ' + low[way.end():]
         else:
             ym = re.search(r'\bnam\s+(20\d\d)\b', rest)
             if ym:
                 year = int(ym.group(1))
                 rest = rest.replace(ym.group(0), ' ', 1)
             else:
-                year = today.year if month <= today.month + 1 else today.year - 1
+                years, rest = _vi_year_step(rest)
+                if years or re.search(r'\bnam\s+nay\b', low):
+                    year = today.year + years
+                else:
+                    year = today.year if month <= today.month + 1 else today.year - 1
         rest = re.sub(r'\bnam\s+nay\b', ' ', rest)
         s, e = _month_bounds(year, month)
         return s, e, 'said', rest
     return None
+
+
+#: FIX-1 (P4 vi-2, vi-12): a period said in a way that cannot be read is
+#: asked about — never silently read as this month.
+#: Second pass: only after the month WORD ("tháng 13", "month 14") — a bare
+#: "T15" is a run's or a team's name, read as such ("the T15 run").
+_NO_SUCH_MONTH = re.compile(r'\bthang\s*(1[3-9]|[2-9]\d)\b|\bmonth\s+(1[3-9]|[2-9]\d)\b')
+
+
+def period_problem(text, today):
+    """A plain question when the words name a period that cannot be read
+    ("tháng 13", "thang sau" with no marks at all), else ''."""
+    nfc = ' '.join(unicodedata.normalize('NFC', text or '').split())
+    aligned = fold_keep(nfc.lower())
+    if len(aligned) != len(nfc):
+        nfc = nfc.lower()
+    if sau_after_thang(nfc) == 'unsure':
+        m = re.search(r'\bthang\s+sau\b', aligned)
+        return T(_lt('Do you mean June or next month? Without its marks, "%s" can be '
+                     'either. Write the month as a number, for example 6.')) % nfc[m.start():m.end()]
+    m = _NO_SUCH_MONTH.search(aligned)
+    if m and parse_period(nfc, today) is None:
+        return T(_lt('I could not tell which month "%s" is. Name the month and the year, '
+                     'for example June 2031.')) % nfc[m.start():m.end()]
+    return ''
 
 
 def parse_period(text, today):
@@ -280,6 +618,9 @@ def parse_period(text, today):
 
 def resolve_period(ctx, text):
     today = fields.Date.context_today(ctx.env.user)
+    note = period_problem(text or '', today)
+    if note:
+        return dict(missing(note), rest=fold(text or ''))
     got = parse_period(text or '', today)
     if got is None:
         s, e = _month_bounds(today.year, today.month)
@@ -366,9 +707,14 @@ def resolve_run(ctx, text, allow_many=False, states=None):
     `states`: only runs in these states are candidates (P3-W4: payslips go
     out for approved runs only, so a draft is never offered as a chip).
     """
-    per = resolve_period(ctx, text)
+    # FIX-1 (P4 vi-4, second pass): "của mình" / "đang" are dropped as they
+    # were written; "Minh", "Đặng" stay and narrow ("gửi phiếu lương cho
+    # Minh" is no order to send the whole run).
+    per = resolve_period(ctx, drop_vi_filler(text))
+    if per['status'] != 'resolved':
+        return dict(per, period=per)
     period = per['value']
-    rest = [t for t in tokens(per.get('rest') or '', RUN_STOP) if not t.isdigit()]
+    rest = [t for t in tokens(per.get('rest') or '', RUN_STOP - NAME_LIKE) if not t.isdigit()]
     Run = ctx.env['hr.payslip.run']
     domain = [('date_end', '>=', period['date_start']),
               ('date_end', '<=', period['date_end'])]
@@ -377,6 +723,7 @@ def resolve_run(ctx, text, allow_many=False, states=None):
     live = runs.filtered(lambda r: r.state != 'cancel')
     if live:
         runs = live
+    month_runs = runs
     if rest and runs:
         def _hit(run):
             words = _run_words(run)
@@ -389,7 +736,20 @@ def resolve_run(ctx, text, allow_many=False, states=None):
                 period=per)
         runs = narrowed
     if states and runs:
+        named = runs
         runs = runs.filtered(lambda r: r.state in states)
+        if not runs and rest and month_runs.filtered(lambda r: r.state in states):
+            # FIX-1 (P3 wf-9): the run the words name is not approved, but
+            # another run of the month is — say so of THAT run, never "no
+            # approved run for <month>".
+            if len(named) == 1:
+                note = T(_lt('Payslips go out once the run is approved. "%(name)s" is '
+                             '%(state)s now.')) % {'name': named.name or '',
+                                                   'state': state_label(named.state)}
+            else:
+                note = T(_lt('None of the pay runs for %(period)s matching "%(words)s" is '
+                             'approved yet.')) % {'period': per['label'], 'words': ' '.join(rest)}
+            return dict(missing(note), period=per, door_id='payhub_runs')
         if not runs:
             return dict(missing(T(_lt("No approved run for %(period)s yet.")) % {
                 'period': per['label']}), period=per, door_id='payhub_runs')
@@ -617,9 +977,29 @@ def door_title(row):
 #: Words around a name that are not the name.
 PERSON_STOP = frozenset(('the', 'employee', 'staff', 'worker', 'person', 'mr',
                          'mrs', 'ms', 'miss', 'for', 'of', 'to', 's',
-                         # P4 — "của chị Linh", "cho anh An", "nhân viên Chi"
-                         'cua', 'cho', 'anh', 'chi', 'em', 'ong', 'ba', 'co',
-                         'nhan', 'vien', 'ban'))
+                         # P4 — "của Linh", "cho An"
+                         'cua', 'cho'))
+#: FIX-1 (P4 vi-4): Vietnamese forms of address ("chị Linh", "anh An",
+#: "nhân viên Chi"). They are also common given names (Chi, Anh, Nhân), so
+#: they are dropped only IN FRONT of another word — never a bare or a last
+#: one ("Lan Anh", "Chi").
+PERSON_TITLES = frozenset(('anh', 'chi', 'em', 'ong', 'ba', 'co', 'ban', 'bac', 'chu',
+                           'di', 'thay', 'nhan vien'))
+
+
+def person_words(text):
+    """The words of a name: filler dropped anywhere, a form of address only
+    in front of another word ("chị Chi" → Chi, "Lan Anh" stays)."""
+    words = [w for w in re.findall(r"[^\W_]+", text or '', re.U)
+             if fold(w) not in PERSON_STOP]
+    while len(words) > 1:
+        if len(words) > 2 and fold(' '.join(words[:2])) in PERSON_TITLES:
+            words = words[2:]
+        elif fold(words[0]) in PERSON_TITLES:
+            words = words[1:]
+        else:
+            break
+    return words
 
 
 def resolve_person(ctx, text):
@@ -628,15 +1008,25 @@ def resolve_person(ctx, text):
     Several matches → one question with chips carrying the department, the
     way two people called Linh are told apart on any screen.
     """
-    words = [w for w in re.findall(r"[^\W_]+", text or '', re.U)
-             if fold(w) not in PERSON_STOP]
+    words = person_words(text)
     if not words:
         return missing(T(_lt("Who is this for? Name the person.")))
     Employee = ctx.env['hr.employee']
     company = [('company_id', 'in', ctx.env.companies.ids)]
     phrase = ' '.join(words)
+    # FIX-1 (P4 vi-4, third pass): a form of address in front may be part
+    # of the name itself ("Anh Tuấn" is Nguyễn Anh Tuấn as well as "Mr
+    # Tuấn"): the words as said are looked for first, then without it.
+    said = ' '.join(w for w in re.findall(r"[^\W_]+", text or '', re.U)
+                    if fold(w) not in PERSON_STOP)
     try:
-        found = Employee.search(company + [('name', 'ilike', phrase)], limit=MAX_CHIPS + 1)
+        found = Employee.browse()
+        if said != phrase:
+            found = Employee.search(company + [('name', 'ilike', said)], limit=MAX_CHIPS + 1)
+            if found:
+                phrase = said
+        if not found:
+            found = Employee.search(company + [('name', 'ilike', phrase)], limit=MAX_CHIPS + 1)
         if not found:
             domain = list(company)
             for w in words:
@@ -703,42 +1093,151 @@ def parse_amount(text):
         return None
 
 
+_TODAY_WORDS = ('today', 'now', 'immediately', 'right away', 'hom nay', 'ngay',
+                'ngay bay gio', 'bay gio', 'ngay lap tuc')
+#: Words that pin the year (or say the month relative to today), so a date
+#: is taken as said: "2031", "năm sau", "next month", "tháng trước".
+#: Third pass: "sang năm", "năm kia", "<n> tháng nữa" ("13 tháng nữa" is
+#: November NEXT year, never re-picked as this one) and a month with its
+#: direction ("tháng sáu tới", "tháng 6 vừa rồi").
+_YEAR_SAID = re.compile(
+    r'\b20\d\d\b|\bnam\s+(?:nay|sau|toi|truoc|ngoai|qua|kia)\b|\bsang\s+nam\b|'
+    r'\b(?:this|current|last|previous|prior|next)\s+month\b|'
+    r'\bthang\s+(?:nay|truoc|roi|qua|toi|nua)\b|\bthang\s+\w+\s+nua\b|'
+    r'\bthang\s+(?:\d{1,2}|muoi\s+mot|muoi\s+hai|muoi|mot|gieng|hai|ba|tu|bon|nam|sau|bay|tam|chin|chap)'
+    r'\s+(?:sap\s+toi|toi|vua\s+roi|vua\s+qua|roi|qua|truoc|nay)(?:\s+(?:day|nay))?\s*$')
+
+
+def _day_first(ctx):
+    """True when the asker writes the day before the month: a Vietnamese
+    reader always; anyone else as their language's own date format says
+    (en_US: 11/1 is 1 November) — FIX-1 (P4 crit-3)."""
+    if is_vi():
+        return True
+    try:
+        fmt = ctx.env['res.lang']._get_data(code=_lang()).date_format or ''
+    except Exception:                                   # noqa: BLE001
+        return False
+    return 0 <= fmt.find('%d') < fmt.find('%m')
+
+
+def _on_day(year, month, day):
+    try:
+        return datetime.date(year, month, day)
+    except ValueError:
+        return None
+
+
+def _nearest(month, day, today):
+    """A day said without its year: the occurrence nearest today. One that
+    falls before last month began is a question, never a back-dated
+    change taken as said (FIX-1 P4 crit-3)."""
+    options = [d for d in (_on_day(today.year + k, month, day) for k in (-1, 0, 1)) if d]
+    if not options:
+        return None
+    when = min(options, key=lambda d: (abs((d - today).days), d < today))
+    floor_y, floor_m = _add_months(today.year, today.month, -1)
+    if when < datetime.date(floor_y, floor_m, 1):
+        return None
+    return when
+
+
+def _said(when):
+    return when, 'said', '%s %s' % (when.day, month_label(when))
+
+
 def parse_day(ctx, text):
-    """(date, origin, label) for 'from July' / 'from 1 July 2026' / '' (today)."""
+    """(date, origin, label) for 'from July' / 'from 1 July 2026' / '' (today).
+
+    A date that cannot be told for sure comes back as (None, 'said', ''),
+    and the card asks for it: a day the month does not have ("31/2"), a
+    year that is not said and leaves the date months in the past, "thang
+    sau" written with no marks at all (June, or next month?).
+    """
     today = fields.Date.context_today(ctx.env.user)
-    low = fold(text or '').strip()
-    if not low or low in ('today', 'now', 'immediately', 'right away', 'hom nay',
-                          'ngay', 'ngay bay gio', 'bay gio', 'ngay lap tuc'):
+    raw = unicodedata.normalize('NFC', text or '')
+    low = fold(raw).strip()
+    if not low or low in _TODAY_WORDS:
         return today, 'default' if not low else 'said', T(_lt('Today'))
-    # P4 — "ngày 1 tháng 11 (năm 2026)", "1/11/2026", "01/11": day first.
-    m = re.search(r'\b(?:ngay\s+)?(\d{1,2})\s+thang\s+(\d{1,2})\b(?:\s*(?:nam\s+|/\s*|,\s*)?(20\d\d)\b)?',
-                  low) or re.search(r'\b(\d{1,2})/(\d{1,2})(?:/(20\d\d))?\b', low)
-    if m and 1 <= int(m.group(2)) <= 12:
-        got = _vi_period('', 'thang %s %s' % (m.group(2), m.group(3) or ''), today)
-        if got:
-            start = got[0]
-            day = min(max(int(m.group(1)), 1), calendar.monthrange(start.year, start.month)[1])
-            when = start.replace(day=day)
-            return when, 'said', '%s %s' % (when.day, month_label(when))
-    m = re.search(r'\b(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)\s*(20\d\d)?\b', low)
-    if m and m.group(2) in MONTHS:
-        got = parse_period('%s %s' % (m.group(2), m.group(3) or ''), today)
-        if got:
-            start = got[0]
-            day = min(int(m.group(1)), calendar.monthrange(start.year, start.month)[1])
-            when = start.replace(day=day)
-            return when, 'said', '%s %s' % (when.day, month_label(when))
-    m = re.search(r'\b(20\d\d)-(\d{1,2})-(\d{1,2})\b', low)
+    if period_problem(raw, today):
+        return None, 'said', ''
+    explicit = bool(_YEAR_SAID.search(low)) or (
+        bool(re.search(r'\bthang\s+sau\b', low)) and sau_after_thang(raw) == 'next')
+    # 1. Year first: 2026-11-15, 2026/11/15, 2026.11.15 (second pass: not
+    #    only "-", or the day was lost and the 1st taken as said).
+    m = re.search(r'\b(20\d\d)\s*([./-])\s*(\d{1,2})\s*\2\s*(\d{1,2})\b', low)
     if m:
-        try:
-            when = datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-            return when, 'said', '%s %s' % (when.day, month_label(when))
-        except ValueError:
-            pass
-    got = parse_period(low, today)
+        when = _on_day(int(m.group(1)), int(m.group(3)), int(m.group(4)))
+        return _said(when) if when else (None, 'said', '')
+    # 2. Numbers: 15/11/2026, 15.11.2026, 15-11, 11/1. FIX-1 (P4 vi-6, crit-3):
+    #    any of / . - between them; the asker's own order (day first for a
+    #    Vietnamese reader, the language's date format for anyone else);
+    #    the other order only when theirs cannot be a date.
+    m = re.search(r'(?<![\d./-])(\d{1,2})\s*([./-])\s*(\d{1,2})(?:\s*\2\s*(20\d\d))?(?![\d./-]*\d)',
+                  low)
+    if m:
+        a, b = int(m.group(1)), int(m.group(3))
+        orders = [(a, b), (b, a)] if _day_first(ctx) else [(b, a), (a, b)]
+        for day, month in orders:
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                break
+        else:
+            return None, 'said', ''
+        if m.group(4):
+            when = _on_day(int(m.group(4)), month, day)
+        elif _on_day(2000, month, day) is None:
+            when = None                                 # "31/2": no such day
+        else:
+            when = _nearest(month, day, today)
+        return _said(when) if when else (None, 'said', '')
+    # 3. "ngày 15 tháng 11 (năm 2026)", "ngày 15 tháng sau", "15 tháng mười
+    #    một": the day, then the month the rest names (FIX-1 P4 vi-6).
+    #    Third pass: never a COUNT of months — "6 tháng trước" (six months
+    #    ago), "3 tháng tới", "13 tháng nữa" are months, read below as
+    #    `parse_period` reads them; "ngày 2 tháng trước" (the 2nd of last
+    #    month) and "15 tháng sáu" (15 June) are days.
+    m = re.search(r'\b((?:ngay|mung|mong)\s+)?(\d{1,2})\s+(thang\b.*)$', low)
+    counted = bool(m) and not m.group(1) and not m.group(2).startswith('0') and bool(
+        re.match(r'thang\s+(?:truoc|roi|qua|toi|sau|nua)\b', m.group(3))) and not (
+        m.group(3).startswith('thang sau') and sau_after_thang(raw) == 'june')
+    if m and not counted:
+        got = _vi_period(raw, m.group(3), today)
+        if got:
+            return _with_day(got[0], int(m.group(2)), explicit, today)
+    # 3b. "15 this month", "the 15th of next month" (second pass: the day
+    #     was dropped and the 1st taken).
+    m = re.search(r'\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?((?:the\s+)?(?:this|next|last|current|'
+                  r'previous|prior|coming)\s+month\b.*)$', low)
+    if m:
+        got = parse_period(m.group(2), today)
+        if got:
+            return _with_day(got[0], int(m.group(1)), True, today)
+    # 4. English: "1 July 2026", "1st of July", "July 1, 2026".
+    for rx in (r'\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?([a-z]+)\b(?:\s*,?\s*(20\d\d)\b)?',
+               r'\b([a-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\b(?:\s*,?\s*(20\d\d)\b)?'):
+        for m in re.finditer(rx, low):
+            first, second = m.group(1), m.group(2)
+            day, word = (first, second) if first.isdigit() else (second, first)
+            if word not in MONTHS:
+                continue
+            got = parse_period('%s %s' % (word, m.group(3) or ''), today)
+            if got:
+                return _with_day(got[0], int(day), explicit, today)
+    # 5. A month only: "tháng 11", "July", "next month" — its first day.
+    got = parse_period(raw, today)
     if got:
-        return got[0], 'said', '1 %s' % month_label(got[0])
+        return _with_day(got[0], 1, explicit, today)
     return None, 'said', ''
+
+
+def _with_day(month_start, day, explicit, today):
+    """The day in the month a person named; the year as said, or the
+    nearest one (`_nearest`) when it was not."""
+    if explicit:
+        when = _on_day(month_start.year, month_start.month, day)
+    else:
+        when = _nearest(month_start.month, day, today)
+    return _said(when) if when else (None, 'said', '')
 
 
 RESOLVERS = {

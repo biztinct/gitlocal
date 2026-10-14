@@ -13,14 +13,20 @@ of its own:
   * the confirm is a TYPED word, checked on the server (runner.confirm):
     a tap or a spoken yes is refused with "this one needs typing";
   * Do it calls the inbox's own `decide(...)` as the person, with the lock
-    revision the plan read and the task as the idempotency key. The engine
-    re-checks the seat, the account, the record and the independence rule.
+    revision the plan read and a secret, per-task key as the idempotency key
+    (`_decision_key`); a done card only when that decision really exists
+    (`_recorded`). The engine re-checks the seat, the account, the record
+    and the independence rule.
 
 Nothing here is ever sudo (PA-R2). Two reads go through the inbox's own
 gated helpers (`_readable`, `_current_step`), the same ones its drawer uses.
 """
 import json
 import logging
+import secrets
+from datetime import datetime, time
+
+import pytz
 
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
@@ -28,19 +34,35 @@ from odoo.tools.translate import LazyTranslate
 
 from .i18n import T, num, stamp
 
-from . import cards
+from . import cards, gate
 from .actions_amber import learn_action
 from .actions_green import RUNS_DOOR, money
-from .registry import Action, Slot, Stale, payai_action
+from .registry import ACTIONS, Action, Slot, Stale, payai_action
 from .resolve import (
-    MAX_CHIPS, ambiguous, division_names, fold, missing, month_label, parse_period,
+    MAX_CHIPS, ambiguous, division_names, fold, item_query, missing, month_label,
     resolved, tok_match, tokens,
 )
 
 _lt = LazyTranslate(__name__)
 _logger = logging.getLogger(__name__)
 
+#: FIX-1b (P3:sec-4) — the left-menu entry that really carries the Approvals
+#: inbox. The inbox is a tab of Home (`pb_home_hub` mounts it as the
+#: "approvals" lens, and Home's entry claims the old `pb_approval` tag); the
+#: retired `pb_sidebar.item_approvals` is inactive and opened the payroll
+#: cockpit, not the inbox. So a person's Approvals screen is locked in the
+#: Access home by locking Home for them (its permissions or roles, a lent role
+#: counts) or the Overview block it sits in — `gate.screen_state` reads all
+#: of it. There is no lever for the Approvals tab ALONE: its gate is
+#: `APPROVAL_GATE = []` in home_hub.js, empty on purpose (every internal user
+#: decides something) and pinned empty by pb_home_hub's own tests.
 HOME_SCREEN = ('pb_home_hub.item_home',)
+#: The Approvals tab inside Home, as the Access home's passport names it (the
+#: ⌘K row `homehub_approvals`), and its permissions — a copy of
+#: `APPROVAL_GATE` that `test_payai_fix_red` holds equal to the source, so a
+#: gate put on the tab one day is a gate on PayAI's decisions that same day.
+APPROVALS_SURFACE = 'homehub_approvals'
+APPROVALS_SURFACE_GROUPS = ()
 APPROVALS_DOOR = 'homehub_approvals'
 APPROVALS_HUB = {'tag': 'pb_home_hub', 'lens': 'approvals'}
 
@@ -58,6 +80,11 @@ def approvals_hub(request_id=0, scope='me'):
         focus += ':%s' % scope
     return dict(APPROVALS_HUB, focus=focus, context={'pb_focus': focus})
 PAYRUN_MODEL = 'hr.payslip.run'
+#: FIX-1b (owner ruling 2026-10-13) — a request whose decision changes
+#: somebody's access (`gate.access_request`).
+ACCESS_REQUEST_TEXT = _lt('PayAI does not open or change access, so it does not decide or '
+                          'chase requests about access. Decide it yourself on the Approvals '
+                          'screen.')
 #: The facade's own floor for a send-back / reject reason (inbox_facade.MIN_REASON).
 MIN_REASON = 6
 MAX_REASON = 2000
@@ -77,6 +104,9 @@ ITEM_STOP = frozenset((
 #: walkthrough of deciding in the Approvals inbox itself; for a pay run the
 #: approver's own job on the screen is reading the run and its payslips.
 LEARN_FOR = {'payrun': 'sc_payslips'}
+#: P3:ux-5 — what that walkthrough really teaches, on the button: after a
+#: decision "Learn to do this yourself" would promise a lesson in approving.
+LEARN_LABEL = {'sc_payslips': _lt('Learn to read a pay run')}
 
 
 def _clip(text, size=MAX_REASON):
@@ -92,12 +122,75 @@ def _names(seats):
     return [s['name'] for s in seats if s.get('name')]
 
 
-def _joined(names):
+def _joined(names, joint=True):
+    """Names in one phrase. `joint` False — any ONE of them decides (the
+    engine closes the other seats as soon as one approves), so "A or B", as
+    the inbox's own card words it; "A and B" only when all must (P3:corr-6)."""
     names = [n for n in names if n]
     if len(names) <= 1:
         return ''.join(names)
-    return T(_lt('%(first)s and %(last)s')) % {'first': ', '.join(names[:-1]),
-                                               'last': names[-1]}
+    text = _lt('%(first)s and %(last)s') if joint else _lt('%(first)s or %(last)s')
+    return T(text) % {'first': ', '.join(names[:-1]), 'last': names[-1]}
+
+
+def _seat_label(seat):
+    """A seat of the drawer's payload as the drawer names it: the person, and
+    whom they stand in for only when the seat ITSELF already says so. Never a
+    hand-over read from anywhere else — the asker may not see it (P3:crit-5)."""
+    name = seat.get('name') or ''
+    if seat.get('covering_for'):
+        return T(_lt('%(who)s, covering for %(whose)s')) % {
+            'who': name, 'whose': seat['covering_for']}
+    return name
+
+
+def _waiting_label(seat):
+    """A seat still open on the asker's own step: their OTHER seat reads as
+    "you, for <whose>" (P3:corr-5), everybody else by name."""
+    if seat.get('mine'):
+        return T(_lt('you, for %s')) % (seat.get('covering_for') or seat.get('name') or '')
+    return _seat_label(seat)
+
+
+def _day_start_utc(env):
+    """(midnight of the person's own day as a naive UTC timestamp, that day).
+
+    The SAME day the reminder's dedupe key names (`context_today`), so the
+    "already reminded today" check and the outbox never disagree (P3:corr-3)."""
+    day = fields.Date.context_today(env.user)
+    try:
+        tz = pytz.timezone(env.context.get('tz') or env.user.tz or 'UTC')
+    except pytz.UnknownTimeZoneError:
+        tz = pytz.utc
+    start = tz.localize(datetime.combine(day, time.min))
+    return start.astimezone(pytz.utc).replace(tzinfo=None), day
+
+
+def _file_under(ctx, company):
+    """File the PayAI task row under the company the request belongs to
+    (P3:sec-1), so ITS payroll managers see it in their PayAI audit — the
+    runner opens the row under the top-bar company, and the inbox lists
+    every ticked company. Done wherever a request is read for a card (the
+    plan, its refusals, the fresh plan made at Do it, a not-yours card and
+    its Remind). No task (a read-only probe): nothing to file."""
+    _file_task(getattr(ctx, 'task', None), company)
+
+
+def _file_task(task, company):
+    # Bookkeeping on PayAI's own row: it lives in the runner, never under an
+    # Action's name (PA-R2, P3:test-11 — no Action module calls sudo).
+    from . import runner
+    runner.file_task_under(task, company)
+
+
+class _Refused(Exception):
+    """The engine refused inside Do it; `moved` says whether the plan's world
+    moved (→ a fresh card) or the refusal is the real answer (→ show it)."""
+
+    def __init__(self, exc, moved):
+        super().__init__(str(exc))
+        self.exc = exc
+        self.moved = moved
 
 
 # ------------------------------------------------------------------ matching
@@ -142,13 +235,23 @@ def _card_words(inbox, card):
     return tokens(' '.join(parts)), record
 
 
+def _item_words(ctx, text):
+    """(period, words, problem) for the words that say WHICH waiting request
+    is meant — `resolve.item_query`, the Red Actions' seam (FIX-1 P4 vi-2,
+    vi-4, vi-12): a name that folds to a little word (Minh, Thắng, Đặng, Đỗ)
+    narrows, and a month that cannot be read ("tháng 13", "thang sau" typed
+    with no marks) comes back as `problem`, to be asked."""
+    today = fields.Date.context_today(ctx.env.user)
+    return item_query(text or '', today, ITEM_STOP)
+
+
 def match_cards(ctx, inbox, text, cards_):
     """[(exact, card)] whose words cover every word said. None when nothing
-    narrowing was said at all (no words, no month)."""
-    today = fields.Date.context_today(ctx.env.user)
-    per = parse_period(text or '', today)
-    rest = per[3] if per else fold(text or '')
-    query = [t for t in tokens(rest, ITEM_STOP) if not t.isdigit()]
+    narrowing was said at all (no words, no month). A month that cannot be
+    read matches nothing (`_resolve_item` asks about it first)."""
+    per, query, problem = _item_words(ctx, text)
+    if problem:
+        return []
     if not query and not per:
         return None
     out = []
@@ -176,6 +279,12 @@ class _Red(Action):
     tier = 'decide'
     priority = 20
     screen_keys = HOME_SCREEN
+    surface_key = APPROVALS_SURFACE
+    surface_groups = APPROVALS_SURFACE_GROUPS
+    #: P3:sec-1 — the "PayAI can decide" switch is the REQUEST's company's
+    #: (`_read`, `remind`); the gate asks only that it is on somewhere the
+    #: person works (`gate.allowed`).
+    switch_per_record = True
     door_id = APPROVALS_DOOR
     right_label = _lt('Approvals')
     #: what the inbox's `decide` is asked to record
@@ -225,9 +334,31 @@ class _Red(Action):
     def _reason_question(self):
         return T(_lt('What should change? Type the reason.'))
 
+    def _not_access(self, ctx, cards_):
+        """(cards PayAI may decide, the cards left out). FIX-1b (owner
+        ruling 2026-10-13): a request whose decision changes somebody's
+        access — an access request under the roles process — is never
+        offered, matched, decided or chased through PayAI."""
+        Request = ctx.env['biz.approval.request']
+        kept, left = [], []
+        for c in cards_:
+            if gate.access_request(ctx.env, Request.browse(c['id']), c.get('process_key')):
+                left.append(c)
+            else:
+                kept.append(c)
+        return kept, left
+
     def _resolve_item(self, ctx, text):
+        _per, _words, problem = _item_words(ctx, text)
+        if problem:
+            # P4 vi-2 / vi-12: a month that cannot be read is asked about —
+            # never matched against every waiting pay run.
+            out = missing(problem)
+            out['door_id'] = APPROVALS_DOOR
+            return out
         inbox = self._inbox(ctx)
         mine = (inbox.list_requests(tab='mine', scope='me') or {}).get('cards') or []
+        mine, hidden = self._not_access(ctx, mine)
         hits = match_cards(ctx, inbox, text, mine)
         if hits is None:
             # "Approve it": nothing narrowing said — what is waiting for me.
@@ -235,13 +366,17 @@ class _Red(Action):
                 return resolved(mine[0]['id'], mine[0]['title'] or '', 'assumed')
             if mine:
                 return ambiguous([_chip(c) for c in mine[:MAX_CHIPS]])
-            return self._nothing_waiting(ctx)
+            return self._nothing_waiting(ctx, hidden=hidden)
         full = [c for _e, c in hits]
         if len(full) == 1:
             exact = hits[0][0]
             return resolved(full[0]['id'], full[0]['title'] or '', 'said' if exact else 'assumed')
         if full:
             return ambiguous([_chip(c) for c in full[:MAX_CHIPS]])
+        if hidden and match_cards(ctx, inbox, text, hidden):
+            # FIX-1b: what they named IS a request about access — said
+            # plainly, never decided.
+            return self._nothing_waiting(ctx, hidden=hidden)
         # Not in MY inbox: is it something I can see, waiting for somebody else?
         mine_ids = {c['id'] for c in mine}
         for scope in self._scopes(inbox):
@@ -250,6 +385,9 @@ class _Red(Action):
             except (AccessError, UserError):
                 continue
             others = [c for c in others if c['id'] not in mine_ids]
+            others, others_access = self._not_access(ctx, others)
+            if others_access and match_cards(ctx, inbox, text, others_access):
+                return self._nothing_waiting(ctx, hidden=others_access)
             found = [c for _e, c in (match_cards(ctx, inbox, text, others) or [])]
             if found:
                 return {'status': 'missing', 'card': self._not_mine_card(ctx, found[0]['id'], scope),
@@ -260,7 +398,7 @@ class _Red(Action):
                 'I could not find "%s" among the things waiting for your decision. '
                 'These are:')) % (text or '')[:60]
             return out
-        return self._nothing_waiting(ctx, text)
+        return self._nothing_waiting(ctx, text, hidden=hidden)
 
     def _scopes(self, inbox):
         scopes = ['me']
@@ -271,7 +409,24 @@ class _Red(Action):
             pass
         return scopes
 
-    def _nothing_waiting(self, ctx, text=''):
+    def _nothing_waiting(self, ctx, text='', hidden=()):
+        """`hidden`: the requests about access left out of what PayAI may
+        decide. With nothing named (or the named thing IS one of them, see
+        `_resolve_item`) the access sentence answers; when something else
+        was named and not found, the person is told THAT first — never a
+        reply about access alone, as if what they named were one."""
+        if hidden and not (text or '').strip():
+            # FIX-1b: only access requests wait — said plainly, never decided.
+            out = missing(T(ACCESS_REQUEST_TEXT))
+            out['door_id'] = APPROVALS_DOOR
+            return out
+        if hidden:
+            out = missing(T(_lt(
+                'I could not find "%s" waiting for your decision. Only requests about '
+                'access are waiting for you, and PayAI does not decide those: decide '
+                'them yourself on the Approvals screen.')) % text[:60])
+            out['door_id'] = APPROVALS_DOOR
+            return out
         note = T(_lt('Nothing is waiting for your decision right now.'))
         if (text or '').strip():
             note = T(_lt('I could not find "%s" waiting for your decision, and nothing '
@@ -279,6 +434,13 @@ class _Red(Action):
         out = missing(note)
         out['door_id'] = APPROVALS_DOOR
         return out
+
+    def _access_card(self, ctx, title=''):
+        """FIX-1b: the plain refusal for a request about access — no door to
+        it, nothing decided, nobody reminded."""
+        return cards.card('refused', ctx.task, 'never', title=_lt('Not through PayAI'),
+                          subtitle=title or '',
+                          notes=[cards.note('bad', ACCESS_REQUEST_TEXT)])
 
     # ------------------------------------------- not yours / cannot decide
     def _holders(self, ctx, request_id, scope):
@@ -304,7 +466,11 @@ class _Red(Action):
             request, step, seats = self._holders(ctx, request_id, scope)
         except (AccessError, UserError):
             return self._gone_card(ctx)
-        actions = self._inbox_door(ctx, request_id=request.id, scope=scope)
+        _file_under(ctx, request.company_id)
+        # P3:ux-11 — a door to the item itself: "Open my approvals" lands on
+        # "My turn", where a request that is not yours is not listed.
+        actions = self._run_door(ctx, request) + \
+            self._inbox_door(ctx, request_id=request.id, scope=scope)
         title = request.title or ''
         if request.state == 'blocked':
             return cards.card(
@@ -313,21 +479,49 @@ class _Red(Action):
                     'Nobody could be found to decide it.')))], actions=actions)
         if request.state != 'pending' or not seats:
             return self._gone_card(ctx, request)
-        who = _joined([s['name'] for s in seats])
-        notes = [cards.note('info', T(_lt(
-            '"%(what)s" is waiting for %(who)s at "%(step)s". You are not the one who '
-            'decides it, so I cannot do it for you.')) % {
-                'what': title, 'who': who, 'step': step.title or ''})]
+        who = _joined([s['name'] for s in seats], step.kind == 'joint')
+        facts = {'what': title, 'who': who, 'step': step.title or ''}
+        uid = ctx.env.uid
+        later = self._my_later_step(ctx, request, step)
+        if step.seat_ids.filtered(lambda s: s.acting_user_id.id == uid and s.status == 'approved'):
+            # P3:ux-9 — they DID decide this step: their part is in.
+            card_title = _lt('You have already approved your part')
+            text = T(_lt('"%(what)s" now waits for %(who)s at "%(step)s".')) % facts
+        elif later:
+            # P3:corr-7 — not their turn YET: a later step is theirs.
+            card_title = _lt('It comes to you after this step')
+            text = T(_lt('"%(what)s" is waiting for %(who)s at "%(step)s". It comes to you '
+                         'at "%(mine)s" after that.')) % dict(facts, mine=later.title or '')
+        else:
+            card_title = _lt('This is not waiting for you')
+            text = T(_lt(
+                '"%(what)s" is waiting for %(who)s at "%(step)s". You are not the one who '
+                'decides it, so I cannot do it for you.')) % facts
+        notes = [cards.note('info', text)]
         values = ['%s:%s' % (request.id, s['user_id']) for s in seats[:3]]
         chips = [{'label': T(_lt('Remind %s')) % s['first'], 'sublabel': s['name'],
                   'value': v} for s, v in zip(seats[:3], values)]
         notes.append(cards.note('info', _lt(
             'I can remind them: they get a note on the request and a to-do.')))
         return cards.card(
-            'refused', ctx.task, 'decide', title=_lt('This is not waiting for you'),
+            'refused', ctx.task, 'decide', title=card_title,
             subtitle=title, notes=notes, actions=actions, chips=chips,
             chip_slot='item', chip_action='remind',
             offer={'slot': 'item', 'values': values, 'actions': ['remind'], 'scope': scope})
+
+    @staticmethod
+    def _my_later_step(ctx, request, step):
+        """The first decision step AFTER the live one where the asker holds a
+        seat (read off the request's own steps, as the drawer shows them)."""
+        uid = ctx.env.uid
+        for later in request.step_ids.sorted('sequence'):
+            if (later.sequence, later.id) <= (step.sequence, step.id) or not later.included \
+                    or later.kind in ('notify', 'fast') or later.status != 'pending':
+                continue
+            if later.seat_ids.filtered(lambda s: s.status == 'open' and uid in (
+                    s.acting_user_id.id, s.user_id.id)):
+                return later
+        return None
 
     def _gone_card(self, ctx, request=None):
         state = ''
@@ -336,9 +530,28 @@ class _Red(Action):
                 request.state) or request.state or ''
         text = T(_lt('This is no longer waiting for a decision (%s).')) % state.lower() \
             if state else T(_lt('I cannot find that request any more.'))
+        actions = self._inbox_door(ctx)
+        if request is not None:
+            actions = self._run_door(ctx, request) + \
+                self._inbox_door(ctx, request_id=request.id)
         return cards.card('refused', ctx.task, 'decide', title=_lt('Nothing to decide'),
                           subtitle=(request.title or '') if request is not None else '',
-                          notes=[cards.note('info', text)], actions=self._inbox_door(ctx))
+                          notes=[cards.note('info', text)], actions=actions)
+
+    def _run_door(self, ctx, request):
+        """"Open the run" on the Runs board, for a pay run (navigation only,
+        PA19: the board re-reads the run with the person's own rights)."""
+        if request is None or not ctx.has_door(RUNS_DOOR):
+            return []
+        try:
+            record = self._inbox(ctx)._record_of(request)
+        except Exception:                               # noqa: BLE001
+            record = None
+        if not record or record._name != PAYRUN_MODEL:
+            return []
+        return [cards.door_action(RUNS_DOOR, _lt('Open the run'), 'outline',
+                                  hub={'tag': 'pb_pay_hub', 'lens': 'runs',
+                                       'focus': T(record.id)})]
 
     def _inbox_door(self, ctx, style='outline', request_id=0, scope='me'):
         if not ctx.has_door(APPROVALS_DOOR):
@@ -347,15 +560,14 @@ class _Red(Action):
                                   hub=approvals_hub(request_id, scope))]
 
     def _conflict_card(self, ctx, request, conflict):
-        """The independence rule, in the engine's own words. PayAI never uses
-        an exception: if one exists, the screen is where it is used."""
-        notes = [cards.note('bad', '%s %s' % (conflict.get('text') or '', T(_lt(
-            'You were part of preparing or sending this in, so you cannot also '
-            'approve it. Ask someone else, or ask for an exception to be set up.'))))]
+        """The independence rule, in the inbox drawer's own words (its `text`
+        and `note`, P3:ux-7). PayAI never uses an exception: if one exists,
+        the screen is where it is used."""
+        notes = [cards.note('bad', ' '.join(
+            x for x in (conflict.get('text') or '', conflict.get('note') or '') if x))]
         if conflict.get('grant_id'):
             notes.append(cards.note('info', _lt(
-                'An exception exists for this. PayAI never uses one: open your approvals '
-                'to approve it yourself with a written reason.')))
+                'PayAI never uses an exception: open your approvals to use it there.')))
         return cards.card('refused', ctx.task, 'decide', title=_lt('Somebody else has to decide this'),
                           subtitle=request.get('title') or '', notes=notes,
                           actions=self._inbox_door(ctx, request_id=request.get('id') or 0))
@@ -367,6 +579,19 @@ class _Red(Action):
             pay = self._inbox(ctx).get_request(int(request_id))
         except (AccessError, UserError):
             return None, self._gone_card(ctx)
+        # FIX-1b (owner ruling 2026-10-13): deciding an access request gives
+        # or takes a role — never through PayAI, on the plan or at Do it.
+        if gate.access_request(ctx.env, ctx.env['biz.approval.request'].browse(pay['id']),
+                               pay.get('process_key')):
+            return None, self._access_card(ctx, pay.get('title'))
+        # P3:sec-1 — the switch of the company the REQUEST belongs to, not of
+        # the company in the top bar: the inbox lists every ticked company.
+        # Asked on the plan and again at Do it (the runner re-plans).
+        company = ctx.env['biz.approval.request'].browse(pay['id']).company_id
+        _file_under(ctx, company)
+        if not gate.tier_on(ctx.env, self.tier, company):
+            from . import runner
+            return None, runner._refusal_card(ctx, self, 'tier_off')
         if pay.get('state') != 'pending' or not pay.get('can_decide'):
             return None, self._not_mine_card(ctx, pay['id'])
         if self.engine_action == 'approve' and pay.get('conflict'):
@@ -380,43 +605,41 @@ class _Red(Action):
 
     def _route(self, ctx, pay):
         """Where the request stands and who comes after this person — read
-        off the request's OWN steps and seats, frozen when it was sent in,
-        which are exactly what the engine opens next (`_activate_next`, with
-        today's hand-overs applied the same way)."""
+        off the request's OWN steps and seats, exactly as the drawer shows
+        them (a hand-over is named only once the seat carries it, P3:crit-5),
+        and what the engine's `_activate_next` will do with them:
+
+          * a joint step: the person's approval counts for ONE of their open
+            seats (`decide` takes the first); others still open — the step
+            waits (`others`), and so does their own second seat (`again`,
+            P3:corr-5);
+          * a later decision step that is blocked, or the next one with no
+            seat at all, stops the request there (`stuck`, P3:corr-2);
+          * else the next pending step and its people (`next`).
+        """
         steps = self._decision_steps(pay)
         current = next((s for s in steps if s.get('status') == 'active'), None)
         index = steps.index(current) + 1 if current else 0
-        others = []
+        others, again = [], []
         if current and current.get('joint'):
-            others = [s['name'] for s in current.get('seats') or []
-                      if s.get('status') == 'open' and not s.get('mine')]
-        nxt = None
+            open_seats = [s for s in current.get('seats') or [] if s.get('status') == 'open']
+            mine = [s for s in open_seats if s.get('mine')]
+            others = [_seat_label(s) for s in open_seats if not s.get('mine')]
+            again = [s.get('covering_for') or s.get('name') or '' for s in mine[1:]]
+        nxt = stuck = None
         if current:
-            for s in steps[index:]:
-                if s.get('status') in ('pending', 'blocked'):
-                    nxt = s
-                    break
-        next_names = []
-        if nxt:
-            company = ctx.env['biz.approval.request'].browse(pay['id']).company_id
-            for seat in nxt.get('seats') or []:
-                if seat.get('status') != 'open':
-                    continue
-                next_names.append(self._cover_name(ctx, seat, company))
+            later = steps[index:]
+            stuck = next((s for s in later if s.get('status') == 'blocked'), None)
+            if stuck is None:
+                nxt = next((s for s in later if s.get('status') == 'pending'), None)
+                if nxt is not None and not nxt.get('seats'):
+                    stuck, nxt = nxt, None
+        next_names = [_seat_label(s) for s in (nxt or {}).get('seats') or []
+                      if s.get('status') == 'open']
         return {'current': current, 'index': index, 'total': len(steps), 'next': nxt,
-                'next_names': [n for n in next_names if n], 'others': others}
-
-    def _cover_name(self, ctx, seat, company):
-        name = seat.get('name') or ''
-        try:
-            holder = ctx.env['res.users'].browse(int(seat.get('key', 'u0')[1:] or 0)).exists()
-            cover = ctx.env['biz.approval.delegation'].covering(holder, company) if holder else None
-            if cover and cover != holder:
-                return T(_lt('%(who)s, covering for %(whose)s')) % {
-                    'who': cover.name or '', 'whose': holder.name or ''}
-        except Exception:                               # noqa: BLE001
-            pass
-        return name
+                'next_names': [n for n in next_names if n],
+                'next_joint': bool(nxt and nxt.get('joint')),
+                'stuck': stuck, 'others': others, 'again': again}
 
     def _figures(self, ctx, pay):
         """The record's headline figures, as they were FROZEN when it was
@@ -506,8 +729,10 @@ class _Red(Action):
                             'label': T(_lt('Open my approvals instead')), 'style': 'outline',
                             'icon': 'panel'})
         actions.append({'id': 'cancel', 'label': T(_lt('Cancel')), 'style': 'ghost'})
-        sub = T(_lt('Decide · your decision as %(step)s · PayAI cannot undo it')) % {
-            'step': current.get('title') or T(_lt('approver'))}
+        # P3:ux-6 — a step is a step name ("HR Manager check"), not a role.
+        sub = T(_lt('Decide · your decision at %(step)s · PayAI cannot undo it')) % {
+            'step': current['title']} if current.get('title') else \
+            T(_lt('Decide · your decision · PayAI cannot undo it'))
         card = cards.card('plan', ctx.task, 'decide', title=T(self.title_on) % (pay.get('title') or ''),
                           subtitle=sub, slots=slots, notes=notes, actions=actions,
                           state='planned', icon=self.icon)
@@ -519,62 +744,136 @@ class _Red(Action):
                 'lock_revision': pay.get('lock_revision'), 'action': self.engine_action,
                 'reason': reason, 'next_names': route['next_names'],
                 'next_step': (route['next'] or {}).get('title') or '',
-                'others': route['others'], 'last': not route['next'],
+                'others': route['others'],
+                'last': not route['next'] and not route['stuck'],
                 'process_key': pay.get('process_key') or '',
-                'submitted_by': pay.get('submitted_by') or ''}
+                'submitted_by': pay.get('submitted_by') or '',
+                # The secret half of the idempotency key (`_decision_key`):
+                # kept server-side on the task, never on the card.
+                'nonce': secrets.token_hex(16)}
         speak = T(_lt('This is a decision. I need you to type the word %s on the card; '
                       'voice cannot confirm it.')) % word
-        return {'card': card, 'vals': vals, 'fingerprint': fp, 'speak': speak}
+        # `company_id`: the company the decision is made IN (the request's);
+        # `_read` has already filed the task row under it (P3:sec-1).
+        company = ctx.env['biz.approval.request'].browse(pay['id']).company_id
+        return {'card': card, 'vals': vals, 'fingerprint': fp, 'speak': speak,
+                'company_id': company.id}
 
     # ---------------------------------------------------------- Do it
     def confirm(self, ctx, task, params, data):
         vals = data.get('vals') or {}
         reason = vals.get('reason') or ''
-        note = _clip(getattr(ctx, 'confirm_note', '') or '')
-        if not self.reason_required and note:
-            reason = note
+        # P3:crit-1 — what is in the Note box is what goes on the record, as
+        # on the Approvals screen. The card pre-fills the box with the planned
+        # words, so an untouched box keeps them; a cleared box records none.
+        # Every confirm through the runner carries the box (`confirm_note`;
+        # `rpc_confirm_task` and `runner.confirm` both turn a missing note
+        # into ''), so a caller that sends no note also records none — on
+        # purpose: words the approver may have removed never reach the record.
+        # Only a direct call that never went through `runner.confirm` (no
+        # `confirm_note` on the context at all) keeps the planned words.
+        note = getattr(ctx, 'confirm_note', None)
+        if not self.reason_required and note is not None:
+            reason = _clip(note)
         inbox = self._inbox(ctx)
         request = ctx.env['biz.approval.request'].browse(int(vals['request_id']))
+        key = self._decision_key(task, request, vals)
         try:
-            after = inbox.decide(request.id, vals['step_key'], self.engine_action, reason,
-                                 expected_lock_revision=vals.get('lock_revision'),
-                                 idempotency_key='payai-task-%s' % task.id)
-        except (UserError, AccessError) as exc:
-            request.invalidate_recordset()
-            moved = False
-            try:
-                moved = (request.lock_revision != vals.get('lock_revision')
-                         or request.current_step_key != vals['step_key']
-                         or not inbox._is_mine(request))
-            except Exception:                           # noqa: BLE001
-                moved = True
-            if moved:
-                raise Stale(str(exc)) from exc
-            raise
-        decision = request.decision_ids.filtered(
-            lambda d: d.idempotency_key == 'payai-task-%s' % task.id)[:1]
+            # Its own savepoint, so what is read to judge a refusal is read
+            # BEFORE the engine's half-written work is rolled back, and the
+            # rest of Do it never sees that work.
+            with ctx.env.cr.savepoint():
+                try:
+                    after = inbox.decide(request.id, vals['step_key'], self.engine_action,
+                                         reason, expected_lock_revision=vals.get('lock_revision'),
+                                         idempotency_key=key)
+                except (UserError, AccessError) as exc:
+                    raise _Refused(exc, self._moved(ctx, inbox, request, vals, key)) from exc
+        except _Refused as refused:
+            ctx.env.invalidate_all()
+            if refused.moved:
+                raise Stale(str(refused.exc)) from refused.exc
+            raise refused.exc
+        decision = self._recorded(ctx, request, key)
+        if not decision:
+            # The engine answered without recording anything (its
+            # idempotency check matched a decision that is not this one):
+            # nothing happened, so no done card, no "Recorded" line.
+            ctx.env.invalidate_all()
+            _logger.warning("PayAI: decide returned without a decision under task %s's key "
+                            "on request %s", task.id, request.id)
+            raise UserError(T(_lt(
+                'Nothing was recorded: your decision did not go through, and the request '
+                'still waits for you. Decide it on the Approvals screen.')))
         return self._result_card(ctx, task, vals, after, reason, decision)
 
+    @staticmethod
+    def _decision_key(task, request, vals):
+        """The engine's idempotency key for this task's decision.
+
+        The engine looks a key up across EVERY request and every person, and
+        anybody can record a decision under a key of their choosing through
+        the inbox's public `decide` — so a key another person can guess
+        (the task id is on every card) would let them make this decision
+        silently do nothing. The key is tied to the task AND the request and
+        carries a random part the plan stored on the task (`vals['nonce']`),
+        which never leaves the server. A plan made before the nonce existed
+        gets a fresh random part: Do it runs once per task (the runner locks
+        the task row and answers a second press from its stored card)."""
+        nonce = vals.get('nonce') or secrets.token_hex(16)
+        return 'payai-task-%s-%s-%s' % (task.id, request.id, nonce)
+
+    @staticmethod
+    def _recorded(ctx, request, key):
+        """The decision Do it recorded: on THIS request, under THIS task's
+        key, by THIS person — the only proof the done card may stand on."""
+        return ctx.env['biz.approval.decision'].search(
+            [('request_id', '=', request.id), ('idempotency_key', '=', key),
+             ('user_id', '=', ctx.env.uid)], limit=1)
+
+    @staticmethod
+    def _moved(ctx, inbox, request, vals, key):
+        """Did the plan's world move (P3:corr-1)? Asked inside the decision's
+        savepoint, before it is rolled back.
+
+        A decision row under this task's key means the engine ACCEPTED the
+        decision and something after it failed (the record's own
+        `_approval_return`, the next step, the drawer's re-read): that is a
+        real failure, shown as it is — never "things changed", which would
+        loop. Without one, the engine refused at its door: the plan is stale
+        only when the lock, the live step or the seat really moved."""
+        try:
+            if ctx.env['biz.approval.decision'].search_count(
+                    [('request_id', '=', request.id), ('idempotency_key', '=', key)]):
+                return False
+        except Exception:                               # noqa: BLE001
+            _logger.info("PayAI: decision read failed while judging a refusal", exc_info=True)
+        try:
+            request.invalidate_recordset()
+            return bool(request.lock_revision != vals.get('lock_revision')
+                        or request.current_step_key != vals['step_key']
+                        or not inbox._is_mine(request))
+        except Exception:                               # noqa: BLE001
+            # Unreadable: show the engine's own sentence rather than loop.
+            _logger.info("PayAI: request unreadable while judging a refusal", exc_info=True)
+            return False
+
     def _result_card(self, ctx, task, vals, after, reason, decision):
-        notes = [cards.note('ok', self._outcome(vals, after))]
+        # P3:corr-2 — a request the engine BLOCKED is not "approved".
+        tone = 'warn' if after.get('state') == 'blocked' else 'ok'
+        notes = [cards.note(tone, self._outcome(vals, after))]
         if after.get('block_reason') and after.get('state') == 'approved':
             notes.append(cards.note('warn', T(_lt(
                 'Approved, but it could not be carried out yet: %s')) % after['block_reason']))
-        actions = []
         scenario = LEARN_FOR.get(vals.get('process_key') or '')
-        record = None
-        try:
-            record = self._inbox(ctx)._record_of(
-                ctx.env['biz.approval.request'].browse(after['id']))
-        except Exception:                               # noqa: BLE001
-            record = None
-        if record is not None and record._name == PAYRUN_MODEL and ctx.has_door(RUNS_DOOR):
-            actions.append(cards.door_action(RUNS_DOOR, _lt('Open the run'), 'outline',
-                                             hub={'tag': 'pb_pay_hub', 'lens': 'runs',
-                                                  'focus': T(record.id)}))
+        actions = self._run_door(ctx, ctx.env['biz.approval.request'].browse(after['id'])) \
+            if after.get('id') else []
         actions += self._inbox_door(ctx, request_id=after.get('id') or 0)
         if scenario:
-            actions.append(learn_action(scenario))
+            learn = learn_action(scenario)
+            if scenario in LEARN_LABEL:
+                learn['label'] = T(LEARN_LABEL[scenario])
+            actions.append(learn)
         card = cards.card(
             'plan', task, 'decide', title=T(self.done_title), subtitle=after.get('title') or '',
             slots=cards.plan_slots(task), notes=notes, actions=actions, state='done',
@@ -628,21 +927,37 @@ class ApproveItem(_Red):
     phrases = (r'^approve\s+(?P<item>.+?)' + _REASON_TAIL,)
 
     def _next_label(self, pay, route):
+        if route.get('again'):
+            return T(_lt('Your seat for %s still waits on this step')) % _joined(route['again'])
         if route['others']:
             return T(_lt('%s still has to approve this step too')) % _joined(route['others'])
+        if route.get('stuck'):
+            return T(_lt('%s · nobody can decide it yet')) % (
+                route['stuck'].get('title') or T(_lt('The next step')))
         if route['next']:
-            names = _joined(route['next_names'])
+            names = _joined(route['next_names'], route.get('next_joint'))
             title = route['next'].get('title') or ''
             return '%s · %s' % (title, names) if names else title
         return T(_lt('Nobody: approving finishes it'))
 
     def _what_happens(self, pay, route):
         payrun = pay.get('process_key') == 'payrun'
+        if route.get('again'):
+            return T(_lt('You hold %(n)s seats on this step. This approval counts for one; '
+                         'ask me again to approve the one you hold for %(whose)s.')) % {
+                'n': num(len(route['again']) + 1), 'whose': _joined(route['again'])}
         if route['others']:
             return T(_lt('Your approval is recorded; the step waits for %s as well.')) % \
                 _joined(route['others'])
+        if route.get('stuck'):
+            text = T(_lt('After you it stops at %s: nobody can decide that step yet, so it '
+                         'waits there until whoever looks after approvals sets it up.')) % (
+                route['stuck'].get('title') or T(_lt('the next step')))
+            if payrun:
+                text += ' ' + T(_lt('Nobody is paid by approving.'))
+            return text
         if route['next']:
-            names = _joined(route['next_names'])
+            names = _joined(route['next_names'], route.get('next_joint'))
             text = T(_lt('After you, it goes to %(step)s%(who)s.')) % {
                 'step': route['next'].get('title') or '',
                 'who': (' (%s)' % names) if names else ''}
@@ -655,30 +970,50 @@ class ApproveItem(_Red):
         return T(_lt('You are the last step: approving lets it go ahead.'))
 
     def _outcome(self, vals, after):
+        """What the ENGINE did with the approval, read off its answer
+        (P3:corr-2): still waiting on this step, moved on, blocked, or
+        approved. Worded around the step's name (P3:ux-6)."""
         step = ''
         for s in after.get('steps') or []:
             if s.get('key') == vals.get('step_key'):
                 step = s.get('title') or ''
         payrun = vals.get('process_key') == 'payrun'
+        state = after.get('state')
+        if state == 'blocked':
+            return T(_lt('Your approval is recorded, but it cannot move on: %s')) % (
+                after.get('block_reason') or T(_lt('nobody could be found to decide the next '
+                                                   'step.')))
         live = next((s for s in after.get('steps') or [] if s.get('status') == 'active'), None)
+        facts = {'step': step}
         if live and live.get('key') == vals.get('step_key'):
-            waiting = [x['name'] for x in live.get('seats') or []
-                       if x.get('status') == 'open']
-            return T(_lt('Your approval as %(step)s is recorded. The step still waits for '
-                         '%(who)s.')) % {'step': step, 'who': _joined(waiting)}
+            facts['who'] = _joined([_waiting_label(x) for x in live.get('seats') or []
+                                    if x.get('status') == 'open'], live.get('joint'))
+            text = _lt('Your approval at %(step)s is recorded. The step still waits for '
+                       '%(who)s.') if step else \
+                _lt('Your approval is recorded. The step still waits for %(who)s.')
+            return T(text) % facts
         if live:
-            names = _joined([x['name'] for x in live.get('seats') or []
-                             if x.get('status') == 'open'])
-            text = T(_lt('Approved as %(step)s. It moves to %(next)s%(who)s.')) % {
-                'step': step, 'next': live.get('title') or '',
-                'who': (' (%s)' % names) if names else ''}
+            names = _joined([_seat_label(x) for x in live.get('seats') or []
+                             if x.get('status') == 'open'], live.get('joint'))
+            facts.update({'next': live.get('title') or '',
+                          'who': (' (%s)' % names) if names else ''})
+            text = T(_lt('Approved at %(step)s. It moves to %(next)s%(who)s.') if step
+                     else _lt('Approved. It moves to %(next)s%(who)s.')) % facts
             if payrun:
                 text += ' ' + T(_lt('Nobody has been paid yet.'))
             return text
-        if payrun:
-            return T(_lt('Approved as %s. That was the last step: the run is approved. '
-                         'Nobody has been paid yet.')) % step
-        return T(_lt('Approved as %s. That was the last step, so it goes ahead.')) % step
+        if state in ('approved', 'applied'):
+            if payrun:
+                return T(_lt('Approved at %(step)s. That was the last step: the run is '
+                             'approved. Nobody has been paid yet.') if step else
+                         _lt('Approved. That was the last step: the run is approved. '
+                             'Nobody has been paid yet.')) % facts
+            return T(_lt('Approved at %(step)s. That was the last step, so it goes ahead.')
+                     if step else _lt('Approved. That was the last step, so it goes ahead.')) \
+                % facts
+        # Anything else (the request ended some other way meanwhile): only
+        # what is certain.
+        return T(_lt('Your approval is recorded.'))
 
 
 @payai_action
@@ -727,45 +1062,56 @@ class SendBackItem(_Red):
 
 @payai_action
 class RejectItem(_Red):
+    """P3:ux-4 — the Approvals inbox's own words for this act: its button is
+    "Turn it down", its badge "Turned down". The typed word follows the
+    inbox's ("TURN DOWN"; Vietnamese TỪ CHỐI is already the inbox's "Từ
+    chối"); REJECT, the word P3 shipped, is still accepted."""
     key = 'reject_item'
-    title = _lt('Reject something')
-    title_short = _lt('Reject')
-    title_on = _lt('Reject %s')
-    done_title = _lt('Rejected')
-    summary = _lt('Reject a request that is waiting for your decision, with a reason; '
-                  'confirmed by typing REJECT.')
-    examples = (_lt('Reject the May bonus run because it was paid twice'),)
-    right_subject = _lt('Rejecting')
-    confirm_word = 'REJECT'
+    title = _lt('Turn something down')
+    title_short = _lt('Turn down')
+    title_on = _lt('Turn down %s')
+    done_title = _lt('Turned down')
+    summary = _lt('Turn down a request that is waiting for your decision, with a reason; '
+                  'confirmed by typing TURN DOWN.')
+    examples = (_lt('Turn down the May bonus run because it was paid twice'),)
+    right_subject = _lt('Turning down')
+    confirm_word = 'TURN DOWN'
     confirm_word_vi = 'TỪ CHỐI'
+    #: Accepted as well, never shown: the word P3 shipped.
+    confirm_word_old = 'REJECT'
     icon = 'circlex'
-    did = _lt('rejected')
+    did = _lt('turned down')
     engine_action = 'reject'
     reason_required = True
     slots = (Slot('item', _lt('What'), 'item', True,
-                  "What to reject, in the person's words. Never an id."),
+                  "What to turn down (reject), in the person's words. Never an id."),
              Slot('reason', _lt('Reason'), 'reason', True,
                   "Why, in the person's own words."))
-    phrases = (r'^(?:reject|decline|refuse|turn\s+down)\s+(?P<item>.+?)' + _REASON_TAIL,)
+    phrases = (r'^(?:reject|decline|refuse|turn\s+down)\s+(?P<item>.+?)' + _REASON_TAIL,
+               # FIX-1 (P3 crit-4): the inbox's own "Turn it down" word order.
+               r'^turn\s+(?P<item>.+?)\s+down(?:\s+instead)?' + _REASON_TAIL)
+
+    def confirm_words(self):
+        return super().confirm_words() + (self.confirm_word_old,)
 
     def _reason_question(self):
-        return T(_lt('Why is it rejected? Type the reason.'))
+        return T(_lt('Why is it turned down? Type the reason.'))
 
     def _next_label(self, pay, route):
         return T(_lt('It ends here'))
 
     def _what_happens(self, pay, route):
         if pay.get('process_key') == 'payrun':
-            return T(_lt('The run is rejected and every payslip in it is cancelled. It cannot '
-                         'be sent again; a new run has to be prepared.'))
+            return T(_lt('The run is turned down and every payslip in it is cancelled. It '
+                         'cannot be sent again; a new run has to be prepared.'))
         return T(_lt('It is turned down and ends here. %s is told, with your reason.')) % (
             pay.get('submitted_by') or T(_lt('Whoever sent it in')))
 
     def _outcome(self, vals, after):
         if vals.get('process_key') == 'payrun':
-            return T(_lt('Rejected. The run and its payslips are cancelled, and %s is told '
-                         'why.')) % (vals.get('submitted_by') or T(_lt('whoever sent it in')))
-        return T(_lt('Rejected. %s is told why.')) % (
+            return T(_lt('Turned down. The run and its payslips are cancelled, and %s is '
+                         'told why.')) % (vals.get('submitted_by') or T(_lt('whoever sent it in')))
+        return T(_lt('Turned down. %s is told why.')) % (
             vals.get('submitted_by') or T(_lt('Whoever sent it in')))
 
 
@@ -775,13 +1121,42 @@ def remind(ctx, task, value, offer):
     outbox's 'reminder' kind — the same note the overdue cron sends: a
     message on the request and a to-do for them), at most once a day per
     person and step, and an event in the approval trail under the asker's
-    name. Never a decision, never a move."""
+    name. Never a decision, never a move.
+
+    P3:sec-2/corr-3/ux-8:
+      * the gate is asked again on the press (switch, screen, right — and
+        the switch of the request's own company), not only when the card
+        was made;
+      * "already reminded today" means THIS person on THIS step, today in
+        the asker's own day (the day the outbox's dedupe key names): the
+        overdue cron's reminder of the step, or a PayAI reminder for them;
+      * "sent" / "Recorded" only when THIS press made the outbox row (and,
+        for "Recorded", the trail line was written). The outbox's `_queue`
+        hands back the EXISTING row on a repeat key, so a row already under
+        the key — a press by somebody in a time zone where the day began
+        earlier, or an earlier press whose trail line failed — is "already
+        reminded", never a second claim (P3:sec-2).
+    """
+    action = ACTIONS.get(task.action_key) if task else None
+    if action is None:
+        raise AccessError(T(_lt('That button was not offered here.')))
+    ok, why = gate.allowed(ctx.env, ctx.user, action)
+    if not ok:
+        return _refused_now(ctx, action, why)
     try:
         request_id, user_id = [int(x) for x in str(value).split(':', 1)]
     except (TypeError, ValueError):
         raise AccessError(T(_lt('That button was not offered here.')))
     inbox = ctx.env['pb.approval.inbox']
     request = inbox._readable(request_id, (offer or {}).get('scope') or 'me')
+    if gate.access_request(ctx.env, request):
+        # FIX-1b: nobody is chased about an access request through PayAI.
+        card = action._access_card(ctx, request.title or '')
+        card['transient'] = True
+        return card
+    _file_task(task, request.company_id)                 # P3:sec-1
+    if not gate.tier_on(ctx.env, action.tier, request.company_id):
+        return _refused_now(ctx, action, 'tier_off')
     step = inbox._current_step(request)
     seat = step.seat_ids.filtered(
         lambda s: s.status == 'open' and s.acting_user_id.id == user_id)[:1]
@@ -791,29 +1166,63 @@ def remind(ctx, task, value, offer):
                           notes=[cards.note('info', _lt(
                               'They are no longer the one deciding it, so I sent nothing.'))])
     whom = seat.acting_user_id
-    day = fields.Date.context_today(ctx.env.user)
-    # Already reminded today (by anybody, the overdue cron included)? Asked
-    # of the approval trail the person may read, not of the queue.
-    since = fields.Datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    fresh = not ctx.env['biz.approval.event'].search_count([
-        ('request_id', '=', request.id), ('kind', '=', 'reminded'),
-        ('create_date', '>=', since)])
-    if fresh:
-        ctx.env['biz.approval.outbox']._queue(
-            'reminder', whom, request, payload={'step_title': step.title or ''},
-            dedupe='payai-remind-%s-%s-%s' % (step.id, whom.id, day))
-        try:
-            ctx.env['biz.approval.event']._log(
-                'reminded', T(_lt('%(who)s asked PayAI to remind %(whom)s about "%(step)s" '
-                                  'on "%(what)s"')) % {
-                    'who': ctx.user.name, 'whom': whom.name, 'step': step.title or '',
-                    'what': request.title or ''},
-                company=request.company_id, request=request)
-        except Exception:                               # noqa: BLE001
-            _logger.info("PayAI: reminder event not written", exc_info=True)
-    text = T(_lt('%s gets a note on the request and a to-do. Recorded.')) % whom.name \
-        if fresh else T(_lt('%s was already reminded about this today.')) % whom.name
+    since, day = _day_start_utc(ctx.env)
+    # The overdue cron reminds every open seat of the step at once.
+    already = bool(step.reminded_at and step.reminded_at >= since)
+    if not already:
+        events = ctx.env['biz.approval.event'].search([
+            ('request_id', '=', request.id), ('kind', '=', 'reminded'),
+            ('create_date', '>=', since)])
+        already = any((e.payload or {}).get('step_id') == step.id
+                      and (e.payload or {}).get('user_id') == whom.id for e in events)
+    Outbox = ctx.env['biz.approval.outbox']
+    key = 'payai-remind-%s-%s-%s' % (step.id, whom.id, day)
+    if not already:
+        # The outbox itself: a row under today's key (whoever pressed first,
+        # whatever their time zone), or a PayAI reminder for this person and
+        # step made since the start of the asker's day under another day's
+        # key (a press from a time zone already on the next date).
+        from . import runner
+        already = runner.payai_reminder_queued(ctx.env, key, step, whom, since)
+    if already:
+        return cards.card('done', task, 'decide', title=T(_lt('Reminded %s')) % whom.name,
+                          subtitle=request.title or '', transient=True,
+                          notes=[cards.note('info', T(_lt(
+                              '%s was already reminded about this today.')) % whom.name)])
+    # Nothing is under the key (asked just above), so a row back from
+    # `_queue` is the one this press made.
+    row = Outbox._queue('reminder', whom, request, payload={'step_title': step.title or ''},
+                        dedupe=key)
+    if not row:
+        # `_queue` takes nothing for a sign-in that cannot receive it.
+        return cards.card('blocked', task, 'decide', title=_lt('Nothing was sent'),
+                          subtitle=request.title or '', transient=True,
+                          notes=[cards.note('warn', T(_lt(
+                              'I could not remind %s: their sign-in cannot receive '
+                              'reminders. Nothing was sent.')) % whom.name)])
+    recorded = True
+    try:
+        ctx.env['biz.approval.event']._log(
+            'reminded', T(_lt('%(who)s asked PayAI to remind %(whom)s about "%(step)s" '
+                              'on "%(what)s"')) % {
+                'who': ctx.user.name, 'whom': whom.name, 'step': step.title or '',
+                'what': request.title or ''},
+            company=request.company_id, request=request,
+            payload={'step_id': step.id, 'user_id': whom.id, 'via': 'payai'})
+    except Exception:                                   # noqa: BLE001
+        recorded = False
+        _logger.info("PayAI: reminder event not written", exc_info=True)
+    text = T(_lt('%s gets a note on the request and a to-do. Recorded.')) if recorded \
+        else T(_lt('%s gets a note on the request and a to-do.'))
     return cards.card('done', task, 'decide', title=T(_lt('Reminded %s')) % whom.name,
                       subtitle=request.title or '', transient=True,
-                      notes=[cards.note('ok' if fresh else 'info', text)])
+                      notes=[cards.note('ok', text % whom.name)])
 
+
+def _refused_now(ctx, action, reason):
+    """The gate said no on a follow-up press: the runner's own refusal card,
+    added below the card it answers (nothing was sent)."""
+    from . import runner
+    card = runner._refusal_card(ctx, action, reason)
+    card['transient'] = True
+    return card

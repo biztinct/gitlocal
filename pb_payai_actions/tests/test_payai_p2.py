@@ -388,7 +388,8 @@ class TestPayaiP2(TransactionCase):
         self.assertIn('Things changed', json.dumps(out))
         self.assertEqual(out['kind'], 'blocked', out)
         self.assertNotIn('drive', out)
-        self.assertEqual(self._task(card).state, 'expired')
+        # FIX-1 (P3 wf-10): changed under the plan reads 'replanned', not 'expired'.
+        self.assertEqual(self._task(card).state, 'replanned')
         self.assertEqual(self.env['hr.payslip.run'].search_count([]), before + 1)
         # An expired plan is never acted on.
         card, _s = self._plan_june(self.officer, 'Payai Retail Mid-Month')
