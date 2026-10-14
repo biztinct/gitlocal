@@ -561,18 +561,25 @@ export class PbFormulaStudio extends Component {
         }, () => [this.state.cmdOpen]);
         this._setupCommandLayer();   // WP-A: ⌘K palette, ⌘F find, hover-card listeners
         onWillStart(async () => {
-            await this.load();
+            const a = this.props.action || {};
+            const cfgId = (a.params && a.params.config_id) || (a.context && a.context.config_id);
+            // Load the requested scheme first. Loading the company's default
+            // before following an explicit link wastes a full set of RPCs.
+            if ((a.params && a.params.pbfs_readonly)
+                || (a.context && a.context.pbfs_readonly)) {
+                this.state.auditMode = true;
+                this.state.canEdit = false;
+            }
+            await this.load(cfgId);
             try {
                 const s = await this.orm.call("pb.formula.studio", "ai_status", []);
                 this.state.aiLlm = s.llm; this.state.aiModel = s.model;
             } catch (e) { /* non-fatal */ }
             // arriving from the native list's "New" → jump straight into the guided wizard
-            const a = this.props.action || {};
             if ((a.params && a.params.open_wizard) || (a.context && a.context.open_wizard)) {
                 await this.openWizard();
             }
             // arriving from a config row → open that config's Settings surface
-            const cfgId = (a.params && a.params.config_id) || (a.context && a.context.config_id);
             const openWiz = (a.params && a.params.open_wizard) || (a.context && a.context.open_wizard);
             // COLROLES P4 — arriving from an import that produced people columns:
             // open the structure AND its people-mapping board, which is the next
@@ -582,15 +589,9 @@ export class PbFormulaStudio extends Component {
             // RD46 — arriving from a payslip's "Show the calculation": load that
             // person's numbers and lock the formulas. Read BEFORE the config
             // branch below so `load()` sees `auditMode` and computes `canEdit`
-            // with it — setting the flag afterwards would leave one render in
-            // which every edit affordance was live.
+            // with it (the flag is set before the initial load above).
             const slipId = (a.params && a.params.pbfs_preview_payslip_id)
                 || (a.context && a.context.pbfs_preview_payslip_id);
-            if ((a.params && a.params.pbfs_readonly)
-                || (a.context && a.context.pbfs_readonly)) {
-                this.state.auditMode = true;
-                this.state.canEdit = false;
-            }
             if (cfgId) {
                 if (!this.state.config || this.state.config.id !== cfgId) await this.load(cfgId);
                 if ((a.params && a.params.open_settings) || (a.context && a.context.open_settings)) {
@@ -644,6 +645,7 @@ export class PbFormulaStudio extends Component {
             }
         });
         onPatched(() => {
+            this._bindArrowEvents();
             this._observeWorkspace();
             this.redrawArrows();
             // F12 — seed the raw textarea imperatively (uncontrolled, so the caret
@@ -679,7 +681,19 @@ export class PbFormulaStudio extends Component {
         // W82 — drop a stale test verdict when the user switches to another
         // config; a reload of the SAME config (after a save) keeps the chip.
         const prevCfgId = this.state.config && this.state.config.id;
-        const d = await this.orm.call("pb.formula.studio", "get_studio_data", [configId || false]);
+        const wasLoaded = this.state.loaded;
+        // The picker closes before the RPC returns. Cover the previous scheme
+        // with the existing loading view until ALL of the new scheme is ready,
+        // including its dependency graph and health data. Same-scheme saves
+        // retain their current view.
+        if (configId && configId !== prevCfgId) this.state.loaded = false;
+        let d;
+        try {
+            d = await this.orm.call("pb.formula.studio", "get_studio_data", [configId || false]);
+        } catch (e) {
+            this.state.loaded = wasLoaded;
+            throw e;
+        }
         this.state.empty = d.empty;
         this.state.configs = d.configs || [];
         // RD46 — audit mode reuses the SAME flag a read-only Formula User
@@ -3166,8 +3180,12 @@ export class PbFormulaStudio extends Component {
         });
     }
     _bindArrowEvents() {
+        const targets = [document.querySelector(".pbfs-outline"), document.querySelector(".pbfs-editor"), document.querySelector(".pbfs-test"), window];
+        if (this._arrowTargets && targets.every((el, i) => el === this._arrowTargets[i])) return;
+        for (const remove of this._arrowListeners || []) remove();
+        this._arrowTargets = targets;
         this._arrowListeners = [];
-        for (const el of [document.querySelector(".pbfs-outline"), document.querySelector(".pbfs-editor"), document.querySelector(".pbfs-test"), window]) {
+        for (const el of targets) {
             if (!el) continue;
             const event = el === window ? "resize" : "scroll";
             const listener = () => this.redrawArrows();
