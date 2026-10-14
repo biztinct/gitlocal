@@ -79,6 +79,8 @@ class TestCountryTaxMapping(TransactionCase):
         self.assertEqual(set(rules.mapped('tax_source_cell')), {'B1', 'B2', 'B3', 'B4'})
         self.assertTrue(all(rules.mapped('tax_aligned')))
         self.assertEqual(rules.tax_table_id.state, 'draft')
+        self.assertEqual(rules.filtered(lambda r: r.tax_field == 'rate').mapped('number_format'), ['percentage', 'percentage'])
+        self.assertTrue(all(r.value_kind == 'rate' for r in rules.filtered(lambda r: r.tax_field == 'rate')))
         status = self.config.rule_ids.filtered(lambda r: r.original_column_letter == 'D')
         self.assertEqual(status.column_role, 'payroll')
         self.assertFalse(self.config.rule_ids.filtered(lambda r: r.name == 'Table Code'))

@@ -73,7 +73,10 @@ class TaxMappedImport(models.TransientModel):
         return super()._import_constant_number(component)
 
     def action_execute_import(self):
+        import openpyxl
         groups = self._tax_map_groups()
+        source = openpyxl.load_workbook(
+            io.BytesIO(base64.b64decode(self.import_file)), data_only=False)
         if groups and self.config_id.state not in ('draft', 'testing'):
             raise UserError(_('Import mapped statutory values into a draft or testing configuration.'))
         typed_values = {'%s!%s' % (v['sheet'], v['cell']): v['value']
@@ -116,10 +119,15 @@ class TaxMappedImport(models.TransientModel):
                 rule = self.config_id.rule_ids.filtered(lambda r: r.code == previews.generated_code)
                 if len(rule) != 1 or not same_number(rule.constant_value, entry['value']):
                     raise UserError(_('The imported statutory constant %s!%s does not match its workbook value.', entry['sheet'], entry['cell']))
+                is_rate = entry['field'] == 'rate' or '%' in source[entry['sheet']][entry['cell']].number_format
                 rule.write({'tax_table_id': table.id, 'tax_field': entry['field'],
                             'tax_band_sequence': entry['slot'] if entry['field'] != 'parameter' else 0,
                             'tax_parameter_code': entry['slot'] if entry['field'] == 'parameter' else False,
-                            'tax_source_sheet': entry['sheet'], 'tax_source_cell': entry['cell']})
+                            'tax_source_sheet': entry['sheet'], 'tax_source_cell': entry['cell'],
+                            'number_format': 'percentage' if is_rate else 'number',
+                            'value_kind': 'rate' if is_rate else 'decimal',
+                            'value_kind_source': 'auto',
+                            'value_kind_reason': 'Statutory workbook field and cell format'})
         if groups:
             self.config_id.statutory_asof = max(g['effective_from'] for g in groups)
         return result
