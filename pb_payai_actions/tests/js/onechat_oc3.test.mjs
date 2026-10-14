@@ -828,6 +828,88 @@ async function readBackSuite() {
         check(speechText(said) === said, `M3 read: "${said}"`, speechText(said));
     }
     check(WITHHELD.length + READ.length >= 40, "M3: the table has at least 40 cases", String(WITHHELD.length + READ.length));
+    // ONECHAT ids (ledger OC71): a plain number right after an id label is
+    // READ — run, payslip, employee, ID, no., number, #, code, step, version,
+    // line, row, page, room, ext, mã, số, đợt, phiếu (+ phiếu lương, đợt
+    // lương, nhân viên, bước, dòng, trang, phòng) — and years and dates.
+    // A sign or code, a currency word, a scale, decimals, a grouped figure or
+    // a money word before the label still withholds it (Q2 never loosened).
+    const ID_READ = [
+        "Open run 681.",
+        "Pay run 681 is ready.",
+        "Payslip 1234 is waiting.",
+        "Payslip #1234 is ready.",
+        "#4500 is ready.",
+        "Employee ID 00451 has no contract.",
+        "Run ID: 00451",
+        "ID#00451",
+        "Employee 00451 joined in 2019.",
+        "Room 305, ext 4021.",
+        "Call ext. 4021.",
+        "Use code 4500.",
+        "See row 1250 and line 3400.",
+        "Go to page 112.",
+        "Order No. 4500 is done.",
+        "Number 7781 is closed.",
+        "Step 12 is done.",
+        "Version 19.0 is live.",
+        "Mở đợt 681.",
+        "Đợt lương 681 đã chạy.",
+        "Phiếu 1234 đã gửi.",
+        "Phiếu lương 1234 đã duyệt.",
+        "Mã 4500 đã khóa.",
+        "Mã nhân viên 00451 chưa có hợp đồng.",
+        "Số 4500 ở đây.",
+        "Payday is 15.06.2026.",
+        "Payday is 2026.06.15.",
+        "Ngày 15.06.26 là ngày trả lương.",
+        "From 2025 to 2026.",
+    ];
+    const ID_WITHHELD = [
+        ["Run 681 costs 4500.", `Run 681 costs ${W}.`],
+        ["#12 — USD 950", `#12 — ${W}`],
+        ["#1234 — USD 950", `#1234 — ${W}`],
+        ["Mã 4500 trả 4.500.000.", `Mã 4500 trả ${W}.`],
+        ["Payslip 1234 net 950.", `Payslip 1234 net ${W}.`],
+        ["Phiếu 1234 trả 5 triệu.", `Phiếu 1234 trả ${W}.`],
+        ["Đợt 681 tổng 950 đồng.", `Đợt 681 tổng ${W}.`],
+        ["ID 00451 gets RM200.", `ID 00451 gets ${W}.`],
+        ["Room 305 costs $95.", `Room 305 costs ${W}.`],
+        ["Code 4500 VND.", `Code ${W}.`],
+        ["Code 4500 dollars.", `Code ${W}.`],
+        ["Code 4500k.", `Code ${W}.`],
+        ["Run 950 triệu.", `Run ${W}.`],
+        ["Payslip 1,234 is ready.", `Payslip ${W} is ready.`],
+        ["Line 12: 25.75", `Line 12: ${W}`],
+        ["Step 3: pay 4500.", `Step 3: pay ${W}.`],
+        ["Run 681: 4500", `Run 681: ${W}`],
+        ["Give each employee 950.", `Give each employee ${W}.`],
+        ["Bonus per employee 950.", `Bonus per employee ${W}.`],
+        ["Pay to the employee 950.", `Pay to the employee ${W}.`],
+        ["Total number 4500.", `Total number ${W}.`],
+        ["Rerun 681 now.", `Rerun ${W} now.`],
+        ["Lương nhân viên 950.", `Lương nhân viên ${W}.`],
+        ["Mỗi nhân viên 950.", `Mỗi nhân viên ${W}.`],
+        ["Trả cho nhân viên 950.", `Trả cho nhân viên ${W}.`],
+        ["Số tiền 4500.", `Số tiền ${W}.`],
+        ["Tổng số 4500.", `Tổng số ${W}.`],
+        ["Version 2.5 million.", `Version ${W}.`],
+        ["Pay 50 dollars.", `Pay ${W}.`],
+        ["Phụ cấp 20 đô la.", `Phụ cấp ${W}.`],
+        ["Lương 15.06 triệu.", `Lương ${W}.`],
+        ["Bonus 1.50.000 for Lan.", `Bonus ${W} for Lan.`],
+        ["Net 12.13.2026 now.", `Net ${W} now.`],
+        ["Indian 1,50,000 bonus.", `Indian ${W} bonus.`],
+    ];
+    for (const said of ID_READ) {
+        check(speechText(said) === said, `id read: "${said}"`, speechText(said));
+    }
+    for (const [said, keep] of ID_WITHHELD) {
+        const out = speechText(said);
+        check(out === keep, `id withheld: "${said}"`, out);
+    }
+    check(ID_READ.length + ID_WITHHELD.length >= 25 && ID_READ.length >= 10 && ID_WITHHELD.length >= 10,
+          "ids: at least 25 new cases, both ways", String(ID_READ.length + ID_WITHHELD.length));
     // … and what the plan card marks as money is withheld word for word.
     const { moneyOfCard } = chatMod;
     const card = { slots: [{ key: "person", value_label: "Lan Nguyen" },
