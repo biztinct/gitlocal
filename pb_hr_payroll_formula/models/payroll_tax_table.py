@@ -278,7 +278,20 @@ class TaxMappedRule(models.Model):
     tax_source_sheet = fields.Char(string='Workbook sheet')
     tax_source_cell = fields.Char(string='Workbook cell')
     tax_expected_value = fields.Float(compute='_compute_tax_value', digits=(20, 8), string='Database value')
+    tax_current_display = fields.Char(compute='_compute_tax_value', string='Current')
+    tax_expected_display = fields.Char(compute='_compute_tax_value', string='Database')
     tax_aligned = fields.Boolean(compute='_compute_tax_value', string='Aligned')
+
+    def _tax_display(self, value):
+        if value is None:
+            return _('Unmapped')
+        if self.tax_field == 'upper' and value == 0:
+            return _('Unlimited')
+        if self.tax_field == 'rate':
+            return ('%.6f' % (value * 100)).rstrip('0').rstrip('.') + '%'
+        if same_number(value, round(value)):
+            return format(round(value), ',')
+        return format(value, ',.8f').rstrip('0').rstrip('.')
 
     @api.depends('tax_table_id.slab_ids.income_to', 'tax_table_id.slab_ids.tax_rate',
                  'tax_table_id.parameter_ids.value', 'constant_value', 'tax_field',
@@ -288,6 +301,8 @@ class TaxMappedRule(models.Model):
             slot = rule.tax_parameter_code if rule.tax_field == 'parameter' else rule.tax_band_sequence
             value = rule.tax_table_id._values().get((slot, rule.tax_field)) if rule.tax_table_id else None
             rule.tax_expected_value = value or 0
+            rule.tax_current_display = rule._tax_display(rule.constant_value)
+            rule.tax_expected_display = rule._tax_display(value)
             rule.tax_aligned = value is not None and same_number(rule.constant_value, value)
 
     @api.constrains('tax_table_id', 'config_id', 'column_type', 'tax_field', 'tax_band_sequence', 'tax_parameter_code')

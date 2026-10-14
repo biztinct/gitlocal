@@ -167,6 +167,8 @@ class TestCountryTaxMapping(TransactionCase):
             'column_type': 'constant', 'constant_value': 550000000.000001,
             'tax_table_id': table.id, 'tax_field': 'upper', 'tax_band_sequence': 1})
         self.assertTrue(rule.tax_aligned)
+        self.assertEqual(rule.tax_current_display, '550,000,000')
+        self.assertEqual(rule.tax_expected_display, '550,000,000')
         rule.constant_value = 550000001
         self.assertFalse(rule.tax_aligned)
 

@@ -57,7 +57,7 @@
             <field name="binding_ids" readonly="1"><list create="0" delete="0">
               <field name="config_id"/><field name="name"/><field name="tax_source_sheet"/><field name="tax_source_cell"/>
               <field name="tax_field"/><field name="tax_band_sequence"/><field name="tax_parameter_code"/>
-              <field name="constant_value"/><field name="tax_expected_value"/><field name="tax_aligned"/>
+              <field name="tax_current_display"/><field name="tax_expected_display"/><field name="tax_aligned"/>
             </list></field>
           </page>
         </notebook>
