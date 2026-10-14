@@ -13,7 +13,7 @@ add class "pbim" (powder) or "pbim ppl" (teal) on their root.
     # layoutGrid, moveRight, chartColumn, triangleAlert, flame) and Inter
     # self-hosted (static/fonts, OFL), loaded first in the backend bundle so
     # every screen that names Inter finally renders in it.
-    'version': '19.0.1.21.0',
+    'version': '19.0.1.22.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -39,6 +39,11 @@ $pbim-cyan:       #2563EB;   // info / blue
 $pbim-cyan-soft:  #E5EDFD;
 $pbim-slate:      #64748B;
 $pbim-slate-soft: #EEF1F5;
+// two more badge tones for tiles (employee home, MEHOME): teal and pink
+$pbim-teal:       #0F766E;
+$pbim-teal-soft:  #E0F2F1;
+$pbim-pink:       #BE185D;
+$pbim-pink-soft:  #FCE7F3;
 
 // --- shape ---
 $pbim-r:     14px;
@@ -78,6 +83,10 @@ $pbim-sh-lg: 0 18px 44px rgba(40, 50, 90, .12);
     --pbim-cyan-soft:      #{$pbim-cyan-soft};
     --pbim-slate:          #{$pbim-slate};
     --pbim-slate-soft:     #{$pbim-slate-soft};
+    --pbim-teal:           #{$pbim-teal};
+    --pbim-teal-soft:      #{$pbim-teal-soft};
+    --pbim-pink:           #{$pbim-pink};
+    --pbim-pink-soft:      #{$pbim-pink-soft};
     --pbim-r:              #{$pbim-r};
     --pbim-r-sm:           #{$pbim-r-sm};
     --pbim-r-lg:           #{$pbim-r-lg};
