@@ -1,0 +1,3317 @@
+{
+ "_doc": "ONECHAT OC1 routing corpus (handover §4.8, test 1.1). Every row asserts route AND why; the other keys are asserted when present. P = payobook (pb_payai_actions, PayAI can act, an assistant that is set up); B = pb_learn's base behaviour (no assistant, no command path). `state` rows need a conversation state: plan_amber / plan_amber_voice (company counts a spoken go-ahead and the person has a microphone) / plan_red / reason_open. Values were OBSERVED by the offline harness (pb_payai_actions/tests/offline) and reviewed against the handover; the server tests replay the same file on the clone.",
+ "rows": [
+  {
+   "text": "how do I approve a request",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "How do I approve a request?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "approve the request waiting for me",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "approve"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "approve this run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "approve"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "approve",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai",
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "Run payroll?",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "order_question",
+    "note": "doOrHow",
+    "choices": [
+     "payai",
+     "guide"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "Run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "Approve?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "lock the week",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_offer",
+    "answer": "lockweek",
+    "extra_chips": [
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "lockweek"
+   },
+   "state": null
+  },
+  {
+   "text": "run June payroll for Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "help me run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "please process June salaries",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "I'd like to run June payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương tháng 6 cho Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "show me how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "show me how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "show me how payroll works",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "show me the steps to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi xem cách chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "can I approve the June run?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "where do I approve requests?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "where can I approve",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "could I run payroll now?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "which button approves the run?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "hướng dẫn tôi chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chỉ tôi cách duyệt",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "cách chạy lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi có thể duyệt đợt lương tháng 6 không",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "column:pay_runs"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi thực hành chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise approving overtime",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wftime:watch",
+    "note": "watchOnlyNote"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wftime:watch",
+    "note": "watchOnlyNote"
+   },
+   "state": null
+  },
+  {
+   "text": "practice",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
+   },
+   "state": null
+  },
+  {
+   "text": "show me around Payobook",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "show me the tour",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "start the tour",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "open the practice company",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "state": null
+  },
+  {
+   "text": "how do I get off the practice company?",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "weak",
+    "answer": "practice",
+    "practice": "chips:sc_payslips"
+   },
+   "B": {
+    "route": "practice",
+    "why": "weak",
+    "answer": "practice",
+    "practice": "chips:sc_payslips"
+   },
+   "state": null
+  },
+  {
+   "text": "Is Lan on the practice company?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "practice",
+    "why": "weak",
+    "answer": "practice",
+    "practice": "chips:sc_payslips"
+   },
+   "state": null
+  },
+  {
+   "text": "Practice of paying overtime twice must stop",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "nhân viên mới đang tập làm quen",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "Làm thủ tục nghỉ việc cho Lan",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "làm thủ công",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "explain this screen",
+   "screen": "payruns",
+   "P": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "B": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "state": null
+  },
+  {
+   "text": "explain this screen is wrong",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "what can you do",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "what can I ask",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "giúp tôi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "bạn làm được gì",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "trợ giúp",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "giúp tôi chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "go ahead",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingWaiting"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": null
+  },
+  {
+   "text": "yes",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "hi",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "ok",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "uh",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "what is BHXH",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "how many payslips should there be",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "how many payslips are in the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "how much back pay is owed to Lan",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "retroq"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "retroq"
+   },
+   "state": null
+  },
+  {
+   "text": "what was Lan's last day",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "leaver"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "leaver"
+   },
+   "state": null
+  },
+  {
+   "text": "how many people have their first day this month",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "firstday"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "firstday"
+   },
+   "state": null
+  },
+  {
+   "text": "how many employees do we have",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "how much does BHXH cost the company",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "how do I compare two pay runs",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "variance"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "variance"
+   },
+   "state": null
+  },
+  {
+   "text": "what is the most common reason a payslip changes",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "rejectright"
+   },
+   "state": null
+  },
+  {
+   "text": "show me headcount by department",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": false
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "show me net pay for June",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": false
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "open the runs board",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "open the pay runs board",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "where is the bank file",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
+   },
+   "state": null
+  },
+  {
+   "text": "bhxh là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "send it back",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide",
+    "answer": "rejectright"
+   },
+   "state": null
+  },
+  {
+   "text": "Approve the overtime first",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "approve"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "delegate my access",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "delegate"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "delegate"
+   },
+   "state": null
+  },
+  {
+   "text": "How do I approve a request?",
+   "screen": "approvals",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "practice",
+   "screen": "approvals",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "state": null
+  },
+  {
+   "text": "practice",
+   "screen": "dashboard",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "state": null
+  },
+  {
+   "text": "open the practice company",
+   "screen": "dashboard",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people:sandbox_first"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people:sandbox_first"
+   },
+   "state": null
+  },
+  {
+   "text": "what is BHXH",
+   "screen": null,
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "what is BHXH",
+   "screen": "dashboard",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise running payroll",
+   "screen": null,
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "how do I approve a request",
+   "screen": null,
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "practice",
+   "screen": null,
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_payslips,sc_import,sc_people"
+   },
+   "state": null
+  },
+  {
+   "text": "explain this screen",
+   "screen": "dashboard",
+   "P": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "B": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "state": null
+  },
+  {
+   "text": "lock the week",
+   "screen": "approvals",
+   "P": {
+    "route": "guide",
+    "why": "guide_offer",
+    "answer": "lockweek",
+    "extra_chips": [
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "lockweek"
+   },
+   "state": null
+  },
+  {
+   "text": "how many employees do we have",
+   "screen": "dashboard",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "Tôi chạy bảng lương thế nào?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "lam sao chay luong",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "cho toi thuc hanh chay luong",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "lam thu cong",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "tap lam quen",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "try again",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "thực hành",
+   "screen": "runpayroll",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_schemes"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_schemes"
+   },
+   "state": null
+  },
+  {
+   "text": "làm thử chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cảm ơn",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "xin chào",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "ờ",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "hmm",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "dạ",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "giải thích màn hình này",
+   "screen": "payruns",
+   "P": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "B": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "state": null
+  },
+  {
+   "text": "màn hình này là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "B": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "state": null
+  },
+  {
+   "text": "what am I looking at",
+   "screen": "payruns",
+   "P": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "B": {
+    "route": "explain",
+    "why": "explain"
+   },
+   "state": null
+  },
+  {
+   "text": "help",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi có thể hỏi gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "B": {
+    "route": "guide",
+    "why": "capability",
+    "answer": "capability"
+   },
+   "state": null
+  },
+  {
+   "text": "show me around",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "take the tour",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "give me a tour",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "đi một vòng payobook",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi xem một vòng",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_welcome:watch"
+   },
+   "state": null
+  },
+  {
+   "text": "thử trên công ty thực hành",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "state": null
+  },
+  {
+   "text": "take me to the practice company",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips:sandbox_first"
+   },
+   "state": null
+  },
+  {
+   "text": "i want to practise importing the month",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_import:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_import:try"
+   },
+   "state": null
+  },
+  {
+   "text": "practise how to close the week",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise adding an employee",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise something random entirely",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payslips"
+   },
+   "state": null
+  },
+  {
+   "text": "rehearse",
+   "screen": "runpayroll",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_schemes"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "chips:sc_payrun,sc_schemes"
+   },
+   "state": null
+  },
+  {
+   "text": "try it safely",
+   "screen": "formula",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_formula:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_formula:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cancel",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": null
+  },
+  {
+   "text": "làm đi",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingWaiting"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": null
+  },
+  {
+   "text": "how do I pay less BHXH",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "compliance"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "compliance"
+   },
+   "state": null
+  },
+  {
+   "text": "pay less tax on salaries",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "compliance"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "compliance"
+   },
+   "state": null
+  },
+  {
+   "text": "go ahead",
+   "screen": "payruns",
+   "state": "plan_amber",
+   "P": {
+    "route": "payai",
+    "why": "goahead"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   }
+  },
+  {
+   "text": "làm đi",
+   "screen": "payruns",
+   "state": "plan_amber",
+   "P": {
+    "route": "payai",
+    "why": "goahead"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   }
+  },
+  {
+   "text": "yes",
+   "screen": "payruns",
+   "state": "plan_amber",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   }
+  },
+  {
+   "text": "yes",
+   "screen": "payruns",
+   "state": "plan_amber_voice",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoItOrSay"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   }
+  },
+  {
+   "text": "ok",
+   "screen": "payruns",
+   "state": "plan_red",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "typeWordOnCard"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   }
+  },
+  {
+   "text": "cancel",
+   "screen": "payruns",
+   "state": "plan_amber",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   }
+  },
+  {
+   "text": "Practice of paying overtime twice must stop",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "explain this screen is wrong",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "thanks",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "yes",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "send it back",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "Approve the overtime first",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "how do I approve a request",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "let me practise running payroll",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "what can you do",
+   "screen": "payruns",
+   "state": "reason_open",
+   "P": {
+    "route": "payai",
+    "why": "open_question"
+   },
+   "B": null
+  },
+  {
+   "text": "can you tell me how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "I want to know how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "I need to know how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "help me understand how to approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "remind me how to approve a request",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "I don't know how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi muốn biết cách chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise how to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payrun:try"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Social Insurance?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Net Pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "What is a Pay Scheme?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "How does Overtime work?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "Where is the Bank File?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "getpaid"
+   },
+   "state": null
+  },
+  {
+   "text": "bảo hiểm xã hội của công ty là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Lan's net pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "what is the net pay of Lan",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "go ahead?",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "go ahead,",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "typeWordOnCard"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_red"
+  },
+  {
+   "text": "do it?",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "cannotActHere"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "ok thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "ok, thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "great, thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "no thanks",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": null
+  },
+  {
+   "text": "yes please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "cancel please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": null
+  },
+  {
+   "text": "ok cảm ơn",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "vâng ạ",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "dạ vâng",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "yes please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapDoIt"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": "plan_amber"
+  },
+  {
+   "text": "cancel please",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "tap_card",
+    "note": "tapCancel"
+   },
+   "B": {
+    "route": "note",
+    "why": "nothing_waiting",
+    "note": "nothingToCancel"
+   },
+   "state": "plan_red"
+  },
+  {
+   "text": "hey, can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "and can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok can I run June payroll for Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "so can I run June payroll for Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "um can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "well, can I approve this run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok so can I approve this run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "quick question can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "so should I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "hey, could I run payroll now",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "okay so could we run payroll for June",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "so is the June run approved",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "ok what is net pay",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "any idea how I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "Ok, what is Net Pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "so can you approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "hey, run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "ok approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok so",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
+  },
+  {
+   "text": "bhyt là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "bhyt la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "what is BHYT",
+   "screen": "payslips",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhyt"
+   },
+   "state": null
+  },
+  {
+   "text": "lương thực nhận là gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "luong thuc nhan la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "what is net pay",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "netpay"
+   },
+   "state": null
+  },
+  {
+   "text": "What is Lan's take-home pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "bhxh la gi",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "bhxh"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương thế nào",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chay luong the nao",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "cách chạy lương",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "chỉ tôi cách duyệt tăng ca",
+   "screen": "wftime",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approveot"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approveot"
+   },
+   "state": null
+  },
+  {
+   "text": "let me practise adding an employee",
+   "screen": "employees",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi thực hành thêm một nhân viên",
+   "screen": "employees",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_people:try"
+   },
+   "state": null
+  },
+  {
+   "text": "làm thử chốt công tuần",
+   "screen": "wfclose",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_wfclose:try"
+   },
+   "state": null
+  },
+  {
+   "text": "cho tôi thực hành tuyển thêm người",
+   "screen": "hiring",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_hiring:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_hiring:try"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi muốn thực hành soát phiếu lương",
+   "screen": "payslips",
+   "P": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
+   },
+   "B": {
+    "route": "practice",
+    "why": "practise",
+    "practice": "sc_payslips:try"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương tháng 6 cần những gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "để chạy lương tháng 6 tôi phải làm gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "muốn duyệt đợt lương tháng 6 thì làm gì",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "ai duyệt đợt lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "whoapproves"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "whoapproves"
+   },
+   "state": null
+  },
+  {
+   "text": "nên chạy lương tháng 6 không",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "có nên duyệt đợt lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "column:pay_runs"
+   },
+   "state": null
+  },
+  {
+   "text": "cho mình hỏi chạy lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi không biết chạy lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "before I approve the June run what should I check",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "weak",
+    "note": "whichMeant",
+    "choices": [
+     "guide",
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "checkfinal"
+   },
+   "state": null
+  },
+  {
+   "text": "if I run payroll now will it email people",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "to run payroll what do I do",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "whats the process to approve the june run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "procedure to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "guide to running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "instructions for running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "tips for running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "I need help approving the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "weak",
+    "note": "whichMeant",
+    "choices": [
+     "guide",
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "stuckwaiting"
+   },
+   "state": null
+  },
+  {
+   "text": "approve the June run or not",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "order_question",
+    "note": "doOrHow",
+    "choices": [
+     "payai",
+     "guide"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương cho Ai",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "AI run June payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "approve what is waiting for me",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "approve"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  }
+ ]
+}

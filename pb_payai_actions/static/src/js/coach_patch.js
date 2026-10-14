@@ -1,8 +1,11 @@
 /** @odoo-module **/
 /**
- * PAYAI P1 — when the helper drawer hosts the chat, IT answers the ⌘K
- * "Ask PayAI to…" row: open the drawer on the Ask tab and hand the text over
- * through the drawer's own hand-off (the same path "Ask about the data" uses).
+ * PAYAI P1 / ONECHAT OC2 — when the helper drawer hosts the chat, IT answers
+ * the ⌘K "Ask PayAI to…" row: open the drawer and send the typed sentence
+ * through the drawer's one way in (`openHelper`). The sentence is ROUTED like
+ * anything typed into the box — a question gets an answer, an order a plan —
+ * and it waits, queued, until the chat has mounted (handover §5.4). There is
+ * no tab to switch any more.
  */
 import { onMounted, onWillUnmount } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
@@ -14,14 +17,11 @@ patch(CoachHost.prototype, {
     setup() {
         super.setup(...arguments);
         this._payaiOpenHook = (text) => {
-            if (!this.askTab) {
+            if (!this.chat) {
                 return false;
             }
             const q = (text || "").trim();
-            this.state.open = true;
-            this.state.moment = null;
-            this.state.handoff = q ? { text: q, id: Date.now() } : null;
-            this.state.tab = "ask";
+            this.openHelper(q ? { text: q, send: true, origin: "palette" } : {});
             return true;
         };
         onMounted(() => {

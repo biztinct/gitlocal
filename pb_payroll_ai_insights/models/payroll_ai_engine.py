@@ -129,6 +129,14 @@ FOR NON-DATA QUESTIONS:
 ALWAYS respond with valid JSON. Never include markdown code fences around the JSON.
 """ + IDENTITY_RULES
 
+# ONECHAT OC2 — appended to every system prompt when the reader's language
+# (`env.lang`) is Vietnamese. Keys and codes stay as the template asks for
+# them, so a JSON answer still parses.
+VI_ANSWER_LINE = (
+    "\n\nAnswer in Vietnamese. Write every sentence meant for the person in "
+    "Vietnamese; keep JSON keys, codes and field names exactly as asked above."
+)
+
 INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one of these categories:
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
@@ -406,9 +414,16 @@ class PayrollAIEngine(models.Model):
         except UserError:
             raise
         except Exception as e:
+            # ONECHAT OC1 (handover R8): the exception is LOGGED, never shown.
+            # Its text can carry a provider's error body, a model name or a
+            # piece of the request — none of which is a sentence for the
+            # reader. The helper chat shows the guide's own answer instead when
+            # the router gave it one (`fallback_key`).
             _logger.exception("PayAI processing error: %s", str(e))
             return {
-                'response': f'I apologize, but I encountered an error: {str(e)}. Please try again.',
+                'response': _(
+                    'Something went wrong on my side. Please try again, or ask '
+                    'your administrator to check the assistant settings.'),
                 'chart': None,
                 'insights': [],
                 'follow_up_questions': [],
@@ -494,8 +509,18 @@ class PayrollAIEngine(models.Model):
             return "this product"
 
     def _system_prompt(self, template):
-        """A prompt template, branded for this database."""
-        return brand_prompt(template, self._brand_name())
+        """A prompt template, branded for this database.
+
+        ONECHAT OC2 (handover §5.5): the helper's language pill decides the
+        reply's language. The chat sends it as `env.lang`; none of the prompt
+        templates said which language to answer in, so a person reading the
+        drawer in Vietnamese got whatever language the model guessed from the
+        question. One line, only for Vietnamese — English stays the default
+        the templates were written for."""
+        prompt = brand_prompt(template, self._brand_name())
+        if str(self.env.lang or '').startswith('vi'):
+            prompt += VI_ANSWER_LINE
+        return prompt
 
     def _classify_intent(self, provider, message):
         """Classify the user's message intent.

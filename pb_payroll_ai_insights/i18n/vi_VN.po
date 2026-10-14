@@ -532,14 +532,14 @@ msgstr "Xin chào! Tôi là PayAI"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Hold the microphone and speak. When you let go, the recording goes to an outside company's speech service, which turns it into text. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
-msgstr "Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
+msgid "Tap the microphone and speak. When you tap Stop, the recording goes to an outside company's speech service, which turns it into text. Tap Cancel and nothing is sent. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
+msgstr "Bạn bấm vào micrô rồi nói. Khi bạn bấm Dừng, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Bấm Hủy bỏ thì không có gì được gửi đi. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
 
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Hold to speak"
-msgstr "Giữ để nói"
+msgid "Tap to speak"
+msgstr "Bấm để nói"
 
 #. module: pb_payroll_ai_insights
 #: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_x
@@ -1134,6 +1134,12 @@ msgstr "Tesseract OCR"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "This kind of recording cannot be used here. Please try typing."
+msgstr "Không dùng được loại bản ghi âm này ở đây. Bạn hãy thử gõ chữ."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
 msgid "That recording did not arrive in one piece."
 msgstr "Bản ghi âm đó về không nguyên vẹn."
 
@@ -1511,32 +1517,8 @@ msgstr "Cực"
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
 #: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Ask about your pay data"
-msgstr "Hỏi về dữ liệu lương của bạn"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Numbers, people, trends, or how to do something. Charts appear right here."
-msgstr "Con số, nhân sự, xu hướng, hoặc cách làm một việc. Biểu đồ hiện ngay tại đây."
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
 msgid "Ask about your payroll…"
 msgstr "Hỏi về bảng lương của bạn…"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Read aloud: on"
-msgstr "Đọc to: bật"
-
-#. module: pb_payroll_ai_insights
-#. odoo-javascript
-#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
-msgid "Read aloud: off"
-msgstr "Đọc to: tắt"
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript
@@ -1634,3 +1616,33 @@ msgstr "Cho tôi xem cơ cấu khấu trừ tháng này"
 #: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__card
 msgid "PayAI card"
 msgstr "Thẻ PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_engine.py:0
+msgid "Something went wrong on my side. Please try again, or ask your administrator to check the assistant settings."
+msgstr "Có lỗi ở phía tôi. Vui lòng thử lại, hoặc nhờ quản trị viên kiểm tra phần thiết lập trợ lý."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That conversation belongs to somebody else."
+msgstr "Cuộc trò chuyện này là của người khác."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That note cannot be recorded."
+msgstr "Không thể ghi lại ghi chú này."
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "From your pay data"
+msgstr "Từ dữ liệu lương của bạn"
+
+#. module: pb_payroll_ai_insights
+#. odoo-javascript
+#: code:addons/pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.js:0
+msgid "Here are the figures you asked for — they are on screen."
+msgstr "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình."

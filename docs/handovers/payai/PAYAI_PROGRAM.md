@@ -29,6 +29,7 @@ Retail" — by typing or speaking, while (a) capturing the inputs the wizard wou
 - **Mounting**: floating pill (`main_components`), hides when pb_learn Coach drawer hosts it; embedded copy is the
   Coach's "ask" tab (`pb_helper_tabs` → `ask`). Coach Guide tab = deterministic `learn.intent.ask`; its composer
   prompt says "never claim to have performed an action" (`learn_intent.py:545–561`) and hard-codes "Payobook" :547.
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 - **Only human-confirm precedent for an LLM change**: Formula Studio "Edit with PayAI" proposal card Apply/Discard
   (`studio.xml:3727–3733` → `apply_ai_formula` :14491 → `save_formula` :2559, versioned for undo). Server guard = ACL only.
 - **Pay run wizard Learn anchors** (`pb_payrun_wizard/static/src/xml/payrun_wizard.xml`): pw-rail, pw-scope, pw-scheme,

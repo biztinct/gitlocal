@@ -1013,11 +1013,15 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
 }
 
 // =============================================================================
-// LEARN v3 — the chat inside the helper drawer ("Ask" tab).
-// Flat and quiet: no gradient mesh, no glow. It borrows the drawer's tokens so
-// the three tabs read as one surface.
+// ONECHAT OC2 — THE ONE CHAT inside the helper drawer.
+// One stream, one composer, one card frame for every kind of turn: the
+// person's (right, soft indigo), PayAI's and the guide's (left, white, a 1 px
+// #E4E1F2 border, no shadow stack). Locked palette — indigo #5A4BB0, soft
+// #EDEAF8, ok #2E7D4F, warn #D97706, bad #DC2668 — no gradients, Lucide only.
+// New turns fade up in 160 ms; nothing moves under Reduce motion.
 // =============================================================================
 .payai-embed {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
@@ -1032,60 +1036,11 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.payai-embed-welcome {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    padding: 4px 2px;
-
-    b { font-size: 15px; font-weight: 800; }
-    p { margin: 0 0 4px; color: var(--vuf-muted, #6B7280); }
-}
-
-.payai-embed-mark {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--vuf-primary-soft, #EDEAF8);
-    color: var(--vuf-primary, #5A4BB0);
-
-    .lrn-ic { width: 18px; height: 18px; }
-}
-
-.payai-embed-chips {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 100%;
-}
-
-.payai-embed-chip {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 11px;
-    border: 1px solid var(--vuf-line, #E2E8F0);
-    border-radius: 10px;
-    background: var(--vuf-surface, #fff);
-    color: var(--vuf-ink, #1E1B2E);
-    font: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    text-align: left;
-    cursor: pointer;
-
-    .lrn-ic { margin-top: 1px; color: var(--vuf-primary, #5A4BB0); }
-    &:hover { border-color: var(--vuf-primary-light, #CBC2EE); background: var(--vuf-primary-soft, #F6F4FC); }
 }
 
 .payai-embed-msg {
@@ -1095,27 +1050,72 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     max-width: 100%;
 
     &.me {
+        position: relative;
         align-self: flex-end;
         max-width: 85%;
         padding: 8px 12px;
         border-radius: 14px 14px 4px 14px;
-        background: var(--vuf-primary, #5A4BB0);
-        color: #fff;
+        background: #EDEAF8;
+        color: #241F52;
     }
     &.ai {
         align-self: stretch;
-        padding: 10px 12px;
-        border: 1px solid var(--vuf-line, #E2E8F0);
+        padding: 11px 12px;
+        border: 1px solid #E4E1F2;
         border-radius: 14px 14px 14px 4px;
         background: var(--vuf-surface, #fff);
     }
+    // A turn the helper wrote carries its own frame (pb_learn coach.scss),
+    // so the outer one stands aside: one card, not a card in a card.
+    &.ai[data-kind="guide"], &.ai[data-kind="note"], &.ai[data-kind="practice"],
+    &.ai[data-kind="choose"], &.ai[data-kind="consent"], &.ai[data-kind="context"],
+    &.ai[data-kind="marker"] {
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+    &[data-new="1"] { animation: payai-turn-in .16s ease-out; }
+    // A PayAI plan card is its own frame too.
+    &.ai.payai-has-card { padding: 0; border: 0; background: transparent; }
 }
 
-.payai-embed-text { white-space: pre-wrap; line-height: 1.5; }
+@keyframes payai-turn-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.payai-embed-text { white-space: pre-wrap; line-height: 1.5; overflow-wrap: anywhere; }
+
+.payai-turn-src {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #5A4BB0;
+
+    .lrn-ic { width: 13px; height: 13px; }
+}
+
+.payai-spoken {
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--vuf-surface, #fff);
+    border-radius: 50%;
+    background: #5A4BB0;
+    color: #fff;
+
+    .lrn-ic { width: 11px; height: 11px; }
+}
 
 .payai-embed-chart {
     padding: 6px;
-    border: 1px solid var(--vuf-line-soft, #EDEAF8);
+    border: 1px solid #EDEAF8;
     border-radius: 10px;
 }
 
@@ -1126,20 +1126,25 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     li { margin-bottom: 3px; }
 }
 
+.payai-embed-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+
 .payai-embed-action {
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 7px 12px;
-    border: 0;
+    border: 1px solid #E4E1F2;
     border-radius: 9px;
-    background: var(--vuf-primary, #5A4BB0);
-    color: #fff;
+    background: var(--vuf-surface, #fff);
+    color: #5A4BB0;
     font: inherit;
     font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
+
+    &.pri { background: #5A4BB0; border-color: #5A4BB0; color: #fff; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
 }
 
 .payai-embed-link {
@@ -1150,7 +1155,7 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     padding: 2px 0;
     border: 0;
     background: none;
-    color: var(--vuf-primary, #5A4BB0);
+    color: #5A4BB0;
     font: inherit;
     font-size: 12px;
     font-weight: 700;
@@ -1160,12 +1165,51 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     &:hover { text-decoration: underline; }
 }
 
+// Three dots, indigo at 40 %, a pulse — no shimmer.
+.payai-embed-typing {
+    align-self: flex-start !important;
+    padding: 10px 14px !important;
+
+    .payai-dot {
+        background: rgba(90, 75, 176, .4);
+        animation: payai-pulse 1.2s infinite ease-in-out;
+    }
+}
+
+@keyframes payai-pulse {
+    0%, 80%, 100% { opacity: .35; transform: scale(.85); }
+    40%           { opacity: 1; transform: scale(1); }
+}
+
+.payai-jump {
+    position: absolute;
+    left: 50%;
+    bottom: 76px;
+    z-index: 2;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    color: #5A4BB0;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    box-shadow: 0 8px 20px -12px rgba(36, 31, 82, .5);
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+}
+
 .payai-embed-consent {
     margin: 0 12px 8px;
     padding: 10px 12px;
-    border: 1px solid var(--vuf-primary-light, #CBC2EE);
+    border: 1px solid #CBC2EE;
     border-radius: 12px;
-    background: var(--vuf-primary-soft, #F6F4FC);
+    background: #EDEAF8;
 
     p { margin: 4px 0 8px; font-size: 12px; color: var(--vuf-ink-soft, #4B4866); }
 }
@@ -1174,7 +1218,7 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
 
 .payai-embed-btn {
     padding: 6px 11px;
-    border: 1px solid var(--vuf-line, #E2E8F0);
+    border: 1px solid #E4E1F2;
     border-radius: 9px;
     background: var(--vuf-surface, #fff);
     font: inherit;
@@ -1182,28 +1226,33 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     font-weight: 700;
     cursor: pointer;
 
-    &.pri { background: var(--vuf-primary, #5A4BB0); border-color: var(--vuf-primary, #5A4BB0); color: #fff; }
+    &.pri { background: #5A4BB0; border-color: #5A4BB0; color: #fff; }
 }
 
+// The composer: sticky at the bottom, above the phone's home bar.
 .payai-embed-input {
     display: flex;
     align-items: flex-end;
     gap: 7px;
     padding: 10px 12px;
-    border-top: 1px solid var(--vuf-line, #E2E8F0);
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #E4E1F2;
+    background: var(--vuf-surface, #fff);
 
     textarea {
         flex: 1;
         min-width: 0;
+        min-height: 40px;
         max-height: 120px;
         padding: 9px 12px;
-        border: 1px solid var(--vuf-line, #E2E8F0);
+        border: 1px solid #E4E1F2;
         border-radius: 12px;
         font: inherit;
+        line-height: 1.4;
         resize: none;
         outline: none;
 
-        &:focus { border-color: var(--vuf-primary, #5A4BB0); }
+        &:focus { border-color: #5A4BB0; box-shadow: 0 0 0 3px rgba(90, 75, 176, .14); }
     }
     .payai-recording-indicator { flex: 1; }
 }
@@ -1211,24 +1260,197 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
 .payai-embed-icon {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     flex: 0 0 auto;
     border: 0;
     border-radius: 12px;
-    background: var(--vuf-primary-soft, #F6F4FC);
-    color: var(--vuf-primary, #5A4BB0);
+    background: #EDEAF8;
+    color: #5A4BB0;
     cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    transition: background .16s, color .16s;
 
-    .lrn-ic { width: 17px; height: 17px; }
-    &.send { background: var(--vuf-primary, #5A4BB0); color: #fff; }
+    .lrn-ic { width: 18px; height: 18px; }
+    &.send { background: #EDEAF8; color: #5A4BB0; }
+    &.send.ready { background: #5A4BB0; color: #fff; }
     &.rec { background: #DC2668; color: #fff; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
     &:disabled { opacity: .45; cursor: default; }
 }
 
-.payai-embed-foot {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 0 12px 10px;
+@media (max-width: 640px) {
+    .payai-embed-icon { width: 44px; height: 44px; }
 }
+
+// -----------------------------------------------------------------------------
+// ONECHAT OC3 — TAP TO TALK. The recording bar takes the box's place while
+// the microphone is open: "Starting…" (grey dot) until the recorder really
+// runs, then the red dot, five indigo level bars, the clock and Cancel. The
+// microphone itself turns into Stop (solid, square) in the same spot. After
+// Stop: "Turning your words into text…" with a soft opacity pulse; then the
+// words sit in the box (a soft indigo wash) and Send pulses once.
+// -----------------------------------------------------------------------------
+.payai-recbar {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 6px 6px 12px;
+    border: 1px solid #F3C4D6;
+    border-radius: 12px;
+    background: #FDF1F5;
+    color: #DC2668;
+
+    .payai-rec-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #DC2668;
+        flex: 0 0 auto;
+        animation: payai-recBlink 1.2s ease-in-out infinite;
+
+        &.wait { background: #A9A3C9; animation: none; }
+    }
+    .payai-rec-text {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: inherit;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .payai-rec-time {
+        margin-left: auto;
+        font-size: 11.5px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: #8A3A5C;
+        white-space: nowrap;
+    }
+
+    &.busy {
+        border-color: #E4E1F2;
+        background: #EDEAF8;
+        color: #5A4BB0;
+        animation: payai-busy 1.4s ease-in-out infinite;
+    }
+}
+
+@keyframes payai-busy {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .55; }
+}
+
+.payai-meter {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+    flex: 0 0 auto;
+
+    i {
+        display: block;
+        width: 3px;
+        min-height: 3px;
+        border-radius: 2px;
+        background: #5A4BB0;
+        transition: height 80ms linear;
+    }
+}
+
+.payai-recbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #F3C4D6;
+    border-radius: 9px;
+    background: var(--vuf-surface, #fff);
+    color: #8A3A5C;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+}
+
+.payai-embed-icon.mic.rec {
+    background: #DC2668;
+    color: #fff;
+
+    .lrn-ic { width: 15px; height: 15px; fill: currentColor; }
+}
+
+.payai-embed-icon.send.pulse { animation: payai-send-pulse .45s ease-out 1; }
+
+@keyframes payai-send-pulse {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+// The words that were heard, waiting for Send.
+.payai-embed-input textarea.heard { background: #F6F4FC; border-color: #CBC2EE; }
+
+.payai-embed .payai-voice-hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: -4px 12px 8px;
+}
+
+.payai-hear-as {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: #5A4BB0;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover { text-decoration: underline; }
+    &:disabled { opacity: .5; cursor: default; }
+}
+
+// The turn being read aloud: its own Stop, top right.
+.payai-stop-read {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    color: #5A4BB0;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payai-embed-msg[data-new="1"] { animation: none; }
+    .payai-embed-typing .payai-dot { animation: none; opacity: .6; }
+    .payai-embed-icon { transition: none; }
+    .payai-recbar .payai-rec-dot, .payai-recbar.busy, .payai-embed-icon.send.pulse { animation: none; }
+    .payai-meter i { transition: none; }
+}
+.lrn-still .payai-embed-msg[data-new="1"] { animation: none; }

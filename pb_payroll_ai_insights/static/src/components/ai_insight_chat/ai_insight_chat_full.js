@@ -6,6 +6,7 @@ import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
+import { markerOf } from "./ai_insight_chat";
 
 /**
  * AiInsightChatFull — Full-page PayAI chat client action.
@@ -159,7 +160,11 @@ export class AiInsightChatFull extends Component {
             });
             if (result.session_id) {
                 this.state.sessionId = result.session_id;
-                this.state.messages = result.messages || [];
+                // ONECHAT — the helper's markers (a guide answer, a practice
+                // turn, a note shown in the helper chat) are the helper's
+                // record of its own turns, not PayAI replies: this page does
+                // not draw them (it has no guide to show them again).
+                this.state.messages = (result.messages || []).filter((m) => !markerOf(m));
                 if (this.state.messages.length > 0) {
                     this.state.showSuggestions = false;
                     this._scrollToBottom();

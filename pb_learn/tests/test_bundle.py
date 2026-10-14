@@ -28,6 +28,9 @@ TOKEN_RE = re.compile(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}")
 # sentence. A sentence in this set is a translation gap being papered over.
 SAME_IN_BOTH = {
     "Payobook", "BHXH", "BHYT", "BHTN", "Hoa Sen Retail Co.", "Hà Nội",
+    # ONECHAT OC2 (owner decision Q3, 2026-10-14): the chat is called PayAI
+    # in both languages — a product name, like Payobook.
+    "PayAI",
     "TPHCM", "F&B", "HOASEN_RETAIL_END", "Excel", "SFTP", "Zoho People",
     # The Explorer's own name. pb_sidebar ships it untranslated and the cockpit
     # prints it untranslated, so translating it in the Journey would send a

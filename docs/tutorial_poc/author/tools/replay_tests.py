@@ -945,6 +945,10 @@ for addon, pkgname, modname, clsname in (
     # pure on both sides of the wire, so it runs here; the two methods that
     # read a company's switch SKIP.
     ("pb_learn", "pb_learn_tests", "test_feature_gate", "TestFeatureGate"),
+    # ONECHAT OC2 — the one chat's static facts (source only).
+    ("pb_learn", "pb_learn_tests", "test_onechat_ui", "TestOneChatUI"),
+    # ONECHAT OC4 — the Learn content follows the one chat (source only).
+    ("pb_learn", "pb_learn_tests", "test_onechat_content", "TestOneChatContent"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationSource"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationPayload"),
     ("pb_tenants", "pb_tenants.tests", "test_currency", "TestProvisioningCurrency"),

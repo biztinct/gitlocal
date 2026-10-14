@@ -5,6 +5,8 @@ from . import learn_content
 # predicates. Before learn_intent, whose answers interpolate live values.
 from . import learn_live
 from . import learn_intent
+# ONECHAT OC1 — the helper's router. Reads learn_intent's resolver, so after it.
+from . import learn_helper
 from . import learn_tenant_override
 from . import learn_progress
 # Phase D2. learn.question.record delegates the scrub to learn.intent.

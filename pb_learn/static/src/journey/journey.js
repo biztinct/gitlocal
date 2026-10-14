@@ -17,6 +17,7 @@
 import { Component, markup, onMounted, onPatched, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
 
 import { RT, T, tx, esc, ic, reduced, SP} from "../engine/runtime";
 /* The glossary pass (LEARNOS Phase 2). `gtx` is `tx` plus the hovercard
@@ -238,7 +239,9 @@ export class LearnJourney extends Component {
         // Product can measure completion at all (analysis §6).
         try {
             const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}");
-            const sessionLang = window.odoo?.session_info?.user_context?.lang || "";
+            // `user.lang` ("vi-VN"): the page's session info is deleted on load on
+            // this version, so the old read always fell back to English (ONECHAT OC2).
+            const sessionLang = String(user.lang || "").toLowerCase();
             this.state.lang = p.lang || (sessionLang.startsWith("vi") ? "vi" : "en");
             this.state.motion = p.motion || "auto";
         } catch {

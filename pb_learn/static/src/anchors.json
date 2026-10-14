@@ -622,7 +622,22 @@
     "helper-orb": {
       "screen": "dashboard",
       "file": "pb_learn/static/src/coach/coach.xml",
-      "desc": "The one helper button (LEARN v3), bottom-right on every screen. Opens the Guide / Ask / Practice drawer. Named by scenario sc_welcome's last step; it replaced the PayAI pill, which hides itself when this module is installed."
+      "desc": "The one PayAI button (ONECHAT), bottom-right on every screen. Opens the PayAI chat: one stream, one box, no tabs. Named by scenario sc_welcome's last step; it replaced the PayAI pill, which hides itself when this module is installed."
+    },
+    "helper-composer": {
+      "screen": "dashboard",
+      "file": "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml",
+      "also": [
+        "pb_learn/static/src/coach/coach.xml"
+      ],
+      "desc": "The one box of the PayAI chat (ONECHAT OC2): type a question or an order, Enter sends. The guide-only drawer (no PayAI for this person) draws the same box.",
+      "reserved": true
+    },
+    "helper-mic": {
+      "screen": "dashboard",
+      "file": "pb_payroll_ai_insights/static/src/components/ai_insight_chat/ai_insight_chat.xml",
+      "desc": "The microphone beside the PayAI box. Drawn only when the database has voice switched on and the person agreed; the words land in the box and wait for Send.",
+      "reserved": true
     },
     "pw-scheme": {
       "screen": "runpayroll",

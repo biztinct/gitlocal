@@ -46,8 +46,10 @@ rule) rather than only in a report:
 """
 
 from odoo import models, fields, api, _
+from odoo.exceptions import AccessError, UserError
 import json
 import logging
+import re
 
 from .ai_redaction import _PERSON_RE
 from .payroll_ai_consent import VOICE_FLAG, flag_on
@@ -66,6 +68,46 @@ MAP_CAP = 400
 # is about six of audio — several minutes of speech in Opus, and far past what
 # a held button produces.
 MAX_AUDIO_B64 = 8 * 1024 * 1024
+
+# ONECHAT OC3 — WHAT THE BROWSER MAY SAY IT RECORDED. Chrome and Firefox record
+# WebM/Opus, Safari and iOS record MP4; the file name the speech service sees
+# follows the real type (it reads the container from the name). Anything else
+# is refused with a plain sentence — the name is never built from client text.
+VOICE_FILES = {
+    'audio/webm': 'voice.webm',
+    'audio/mp4': 'voice.mp4',
+    'audio/ogg': 'voice.ogg',
+}
+
+# The two recognition languages. None (the default) means "let the service
+# tell": the provider then gets NO language argument at all (ledger OC15).
+VOICE_LANGS = ('en', 'vi')
+
+# The hint the speech service is given, in the helper's language: product
+# NOUNS only. Never a person's name (the hint goes out with every recording),
+# and never a decision verb — a hint that says "approve" makes the service
+# more likely to hear "approve" in noise (ledger OC14).
+VOICE_VOCAB = {
+    'en': 'Payobook, pay run, payslip, pay scheme, overtime, BHXH, BHYT, BHTN',
+    'vi': 'Payobook, đợt lương, phiếu lương, chương trình lương, tăng ca, BHXH, BHYT, BHTN',
+}
+
+# ONECHAT OC1 — THE MARKER. Every turn the one helper chat shows that did NOT
+# come from PayAI (a guide answer, Explain this screen, a practice turn, a
+# choice, a miss, the capability card, small talk, a short note) is recorded
+# in the person's conversation as ONE assistant row carrying this intent and
+# an AUTHORED label — never the question, never client text (ledger OC-R2).
+# Two things depend on it: the thread survives a reload, and PayAI's "last
+# thing I showed you" rule (`runner._is_latest`) stays true — a guide answer
+# after a plan means a spoken "go ahead" no longer confirms that plan
+# (ledger OC-R3). The marker carries no `task_id`, so it can never make an old
+# plan "latest".
+HELPER_NOTE = 'helper_note'
+NOTE_KINDS = ('guide', 'composed', 'explain', 'practice', 'choose', 'miss',
+              'capability', 'note', 'smalltalk')
+#: Kinds whose key is a chrome string (one of the router's own sentences).
+_CHROME_KINDS = ('choose', 'miss', 'note', 'smalltalk')
+_SLUG = re.compile(r'^[a-z0-9_]{1,64}$')
 
 
 class PayrollAIConversation(models.Model):
@@ -158,10 +200,18 @@ class PayrollAIConversation(models.Model):
             'card': json.dumps(card, default=str) if card else False,
         })
 
-    def get_history(self, limit=20):
-        """Get conversation history as list of dicts."""
+    def get_history(self, limit=20, skip_intents=()):
+        """Get conversation history as list of dicts.
+
+        `skip_intents` (ONECHAT OC1): leave these rows out BEFORE the limit is
+        applied — `rpc_send_message` builds the model's history without the
+        helper's markers, so a marker never takes the place of a real turn and
+        never reaches the model."""
         self.ensure_one()
-        messages = self.message_ids.sorted('create_date')[-limit:]
+        messages = self.message_ids
+        if skip_intents:
+            messages = messages.filtered(lambda m: (m.intent or '') not in skip_intents)
+        messages = messages.sorted('create_date')[-limit:]
         return [
             {
                 'role': msg.role,
@@ -253,8 +303,9 @@ class PayrollAIConversation(models.Model):
         # Save user message
         session.add_message('user', message)
 
-        # Get conversation history
-        history = session.get_history(limit=10)
+        # Get conversation history — without the helper's markers (ONECHAT
+        # OC1): what reaches the model is exactly what it was before them.
+        history = session.get_history(limit=10, skip_intents=(HELPER_NOTE,))
 
         # Process through AI engine.
         #
@@ -292,6 +343,120 @@ class PayrollAIConversation(models.Model):
             'drilldown_model': result.get('drilldown_model', ''),
             'action': result.get('action'),
             'card': result.get('card'),
+        }
+
+    # ------------------------------------------------------------------
+    # ONECHAT OC1 — ONE CONVERSATION
+    # ------------------------------------------------------------------
+    @api.model
+    def _own_session(self, session_id=None):
+        """The caller's OWN conversation, or AccessError.
+
+        `rpc_send_message` relies on the record rules alone, and the
+        managers' read-all rule (`rule_conversation_manager`) would let a
+        PayAI manager name a colleague's conversation. A marker written there
+        would change THAT person's "last thing I showed you" — so this door
+        checks the owner itself. No id → the caller's active conversation."""
+        if not session_id:
+            return self.get_or_create_session()
+        try:
+            session = self.browse(int(session_id)).exists()
+        except (TypeError, ValueError):
+            session = self.browse()
+        if not session or session.user_id != self.env.user:
+            raise AccessError(_('That conversation belongs to somebody else.'))
+        return session
+
+    @api.model
+    def _note_label(self, kind, key, screen_key=None):
+        """The AUTHORED words a marker carries, in the reader's language
+        (`env.lang`), or None when `key` names nothing of that kind. Looked up
+        in the content plane by key — the client sends a key, never words."""
+        Content = self.env['learn.content']
+        lang = self.env.lang or 'en_US'
+
+        def text(pair):
+            if not pair:
+                return ''
+            if isinstance(pair, str):
+                return pair
+            return pair.get('vi' if lang.startswith('vi') else 'en') or pair.get('en') or ''
+
+        if kind == 'guide':
+            if key and key.startswith('column:'):
+                col_key = key.split(':', 1)[1]
+                column = next((c for c in Content.columns() if c['key'] == col_key), None)
+                return text(column['label']) if column else None
+            intent = Content.intent(key) if key else None
+            return text(intent['label']) if intent else None
+        if kind == 'composed':
+            return Content.chrome_text('composedAnswer', lang) if not key else None
+        if kind == 'explain':
+            screen = Content.screen((key or '').split(':', 1)[-1])
+            if not screen:
+                return None
+            return '%s: %s' % (Content.chrome_text('explainScreen', lang), text(screen['name']))
+        if kind == 'practice':
+            if not key:
+                return Content.chrome_text('practiceMode', lang)
+            scenario = Content.scenario(key)
+            return text(scenario['name']) if scenario and not scenario.get('retired') else None
+        if kind == 'capability':
+            return Content.chrome_text('capTitle', lang) if not key else None
+        if kind in _CHROME_KINDS:
+            if not key or key not in Content.chrome():
+                return None
+            return Content.chrome_text(key, lang)
+        return None
+
+    @api.model
+    def rpc_note_turn(self, session_id, kind, key=None, source_kind=None, screen_key=None):
+        """Record one non-PayAI turn of the helper chat as a marker row.
+
+        NO TEXT PARAMETER, on purpose (ledger OC-R2): the label is looked up
+        here from the content plane by `key`, so a guide question — which the
+        guide never stores — cannot reach the conversation through this door
+        either, and nothing a browser types is ever written. `task_id` is
+        never written from any argument: the card is built here."""
+        session = self._own_session(session_id)
+        if kind not in NOTE_KINDS:
+            raise UserError(_('That note cannot be recorded.'))
+        key = key if isinstance(key, str) and key else None
+        if key is not None and (len(key) > 80 or not re.match(r'^[a-z0-9_:]+$', key, re.I)):
+            raise UserError(_('That note cannot be recorded.'))
+        for value in (source_kind, screen_key):
+            if value is not None and value is not False and (
+                    not isinstance(value, str) or not _SLUG.match(value)):
+                raise UserError(_('That note cannot be recorded.'))
+        if screen_key and not self.env['learn.content'].screen(screen_key):
+            raise UserError(_('That note cannot be recorded.'))
+        label = self._note_label(kind, key, screen_key)
+        if not label:
+            raise UserError(_('That note cannot be recorded.'))
+        card = {'kind': kind, 'key': key or '', 'source_kind': source_kind or '',
+                'screen_key': screen_key or ''}
+        message = session.add_message('assistant', label, intent=HELPER_NOTE, card=card)
+        return {'session_id': session.id, 'message_id': message.id}
+
+    @api.model
+    def rpc_helper_status(self, session_id=None):
+        """Everything the helper chat needs on mount, in one call.
+
+        `can_answer` — the assistant can answer at all here; `can_act` — PayAI
+        may act (pb_payai_actions supplies it); `voice_go_ahead` — the
+        company counts a spoken go-ahead (pb_payai_actions)."""
+        try:
+            session = self._own_session(session_id)
+        except AccessError:
+            session = self.get_or_create_session()
+        Helper = self.env['learn.helper']
+        return {
+            'session_id': session.id,
+            'voice': self.rpc_voice_status(),
+            'can_answer': bool(Helper._payai_available()),
+            'can_act': bool(Helper._can_act()),
+            'voice_go_ahead': False,
+            'icon_url': self.env['payroll.ai.config'].rpc_get_ai_icon_url(),
         }
 
     @api.model
@@ -351,11 +516,19 @@ class PayrollAIConversation(models.Model):
         Consent = self.env['payroll.ai.consent']
         enabled = flag_on(self.env, VOICE_FLAG)
         state = Consent.voice_state()
-        available = bool(enabled and self._speech_provider() is not None)
+        ready = self._speech_provider() is not None if enabled else False
+        available = bool(enabled and ready)
         return {
             'available': available and state != 'declined',
             'ask': available and state == 'unset',
             'consent': state,
+            # ONECHAT OC3 — so the More menu knows when "Use my voice" (after
+            # a past "no") can actually give the person a microphone.
+            'switch_on': bool(enabled),
+            'provider_ready': bool(ready),
+            # The service's hint words, so the browser can drop a transcript
+            # that is only the hint echoed back on silence (ledger OC14).
+            'vocab': dict(VOICE_VOCAB),
             # Server-rendered so it follows the READER's language through the
             # ordinary `_()` path — this module's copy contract since D1.
             'copy': {
@@ -364,20 +537,26 @@ class PayrollAIConversation(models.Model):
                 #
                 # The first draft said "nothing is sent until you press send",
                 # which is true of the TEXT and false of the RECORDING — the
-                # audio goes the moment the button is released, which is the
+                # audio goes the moment the person taps Stop, which is the
                 # whole reason this consent exists. A notice that is reassuring
                 # about the wrong half is worse than none.
+                #
+                # ONECHAT OC3: reworded for tap-to-talk (tap to start, tap
+                # Stop). What leaves, who gets it and when are unchanged; the
+                # recording now leaves on Stop, and Cancel sends nothing. Owner
+                # decision Q5: people who already said yes are not asked again.
                 'consent_body': _(
-                    "Hold the microphone and speak. When you let go, the "
+                    "Tap the microphone and speak. When you tap Stop, the "
                     "recording goes to an outside company's speech service, "
-                    "which turns it into text. The recording is audio: unlike "
-                    "text, we cannot take names out of it first. The text then "
-                    "waits in the box — nothing is asked or answered until you "
-                    "read it and press send. Say no and the microphone stays "
-                    "off. Everything else works the same."),
+                    "which turns it into text. Tap Cancel and nothing is sent. "
+                    "The recording is audio: unlike text, we cannot take names "
+                    "out of it first. The text then waits in the box — nothing "
+                    "is asked or answered until you read it and press send. Say "
+                    "no and the microphone stays off. Everything else works the "
+                    "same."),
                 'consent_yes': _('Yes, send my recordings'),
                 'consent_no': _('No, keep the microphone off'),
-                'hold_hint': _('Hold to speak'),
+                'tap_hint': _('Tap to speak'),
                 'check_hint': _('This is what I heard. Edit it, then press send.'),
                 'listen_label': _('Read answers aloud'),
                 'failed': _('I could not turn that into text. Please try typing.'),
@@ -412,13 +591,19 @@ class PayrollAIConversation(models.Model):
         return provider if hasattr(provider, 'transcribe_audio') else None
 
     @api.model
-    def rpc_transcribe_voice(self, audio_base64):
+    def rpc_transcribe_voice(self, audio_base64, lang=None, mime=None):
         """Audio in, TEXT OUT. This method never sends a message.
 
         Both gates are re-asked here and not only in the browser: this is
         reachable over RPC from anything holding a session, so the tenant flag
         and the user's consent are checked on the server, in that order, before
         a single byte is decoded.
+
+        ONECHAT OC3 — `lang` ('en' | 'vi', anything else = None) asks the
+        service for one language; None lets it tell, and then NO language is
+        passed at all (ledger OC15). `mime` names what the browser recorded;
+        only the types in VOICE_FILES are accepted, and the file name the
+        service sees comes from that table, never from the caller.
         """
         Consent = self.env['payroll.ai.consent']
         if not flag_on(self.env, VOICE_FLAG):
@@ -440,6 +625,12 @@ class PayrollAIConversation(models.Model):
                 len(audio_base64), MAX_AUDIO_B64)
             return {'error': _('That recording is too long. Try a shorter one.')}
 
+        lang = lang if lang in VOICE_LANGS else None
+        kind = str(mime or 'audio/webm').split(';')[0].strip().lower()
+        filename = VOICE_FILES.get(kind)
+        if not filename:
+            return {'error': _('This kind of recording cannot be used here. Please try typing.')}
+
         import base64
         try:
             audio_bytes = base64.b64decode(audio_base64 or '')
@@ -449,8 +640,14 @@ class PayrollAIConversation(models.Model):
         if not audio_bytes:
             return {'error': _('That recording was empty.')}
 
+        # The hint follows the language asked for, else the reader's.
+        hint_lang = lang or ('vi' if str(self.env.lang or '').startswith('vi') else 'en')
+        options = {'filename': filename, 'prompt': VOICE_VOCAB[hint_lang]}
+        if lang:
+            # Only when asked: omitted, the service detects the language.
+            options['language'] = lang
         try:
-            text = provider.transcribe_audio(audio_bytes)
+            text = provider.transcribe_audio(audio_bytes, **options)
         except Exception as exc:                                # noqa: BLE001
             # The provider's own words are not shown to the reader: an API
             # error string is not copy, and it can carry the request back.

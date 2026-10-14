@@ -8,6 +8,7 @@ branch 19.1, not pushed.
 A person types (or says) what they want in the PayAI pill or the helper's Ask tab, in English or Vietnamese. PayAI
 only ever does what that person could do on the screen themselves, and never anything on a screen that is switched
 off for them under Settings › Access and delegations.
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 
 **Look (green — nothing changes, no confirmation)**
 - Open any screen they can reach ("open the runs board", "mở Phiếu lương").
@@ -45,6 +46,7 @@ off for them under Settings › Access and delegations.
 8. Security fix first, on all databases (P0, done).
 Pre-decided: keep the OpenAI key; lives in the pill + Coach Ask tab; payobook.com first, tenants' switches off until
 asked; no "Odoo" in any string.
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 
 ## What is live where
 | | payobook | rize / payobook_template / abm / tenants |

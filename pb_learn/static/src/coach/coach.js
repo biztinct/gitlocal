@@ -61,8 +61,8 @@ import { hubScreenOf, openLearn, resolveLensReach, screenAtPlace, setReach, tabN
 /* The one sentence the drawer needs when the content plane itself failed to
    load — and so cannot supply it. Mirrors the `helperFailed` chrome key. */
 const LOAD_FAILED = {
-    en: "The guide could not load just now. Your screen is not affected. Close the helper and open it again, or use the Ask tab.",
-    vi: "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng trợ lý rồi mở lại, hoặc dùng tab Hỏi đáp.",
+    en: "The guide could not load just now. Your screen is not affected. Close PayAI and open it again.",
+    vi: "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng PayAI rồi mở lại.",
 };
 
 /* Shared with the Journey: one language preference for the whole system. */
@@ -71,7 +71,7 @@ const LOCAL_PREFS = "pbLearnPrefs";
 /* The only actions an answer may carry. Anything else is a bug, and the test
    compares the rendered HTML against exactly this set. */
 export const COACH_ACTIONS = new Set([
-    "c-close", "c-ask", "c-suggest", "c-show", "c-simpler", "c-lesson", "c-back",
+    "c-close", "c-suggest", "c-show", "c-simpler", "c-lesson",
     "c-lang",
     // Phase 1b. "Show me how" starts a scenario. It reaches no product method
     // either: the engine it hands off to points, waits and narrates, and the
@@ -93,18 +93,22 @@ export const COACH_ACTIONS = new Set([
     // one context key on it. It reaches no product method for the same reason
     // `c-lesson` does not: the only thing on the other side of it is a replica.
     "c-practice",
-    // LEARNOS Phase 6. "Continue" opens the station the server suggested —
-    // the same door `c-lesson` uses, with the key the bootstrap already sent.
-    // The SUGGESTION is a server computation over this learner's own progress
-    // rows; nothing about it reaches a product method or a language model.
-    "c-continue",
-    // LEARN v3 — one helper. "c-tab" switches between Guide me, Ask and
-    // Practice inside this drawer; "c-askdata" hands a question the guide
-    // could not answer to the Ask tab. Neither reaches a product method: the
-    // Ask tab is PayAI's own chat, which has its own server-side fences, and
-    // the hand-off only puts the question text into its box and presses its
-    // send — exactly what the learner would do by retyping it.
-    "c-tab", "c-askdata",
+    // ONECHAT OC2 — "Continue" (the next step), the tab strip and "ask the
+    // Ask tab instead" are gone: one chat, no tabs, no "Your next step"
+    // (owner ruling 2026-10-14). What replaced them:
+    //   c-say           send a sentence through the one composer path (the
+    //                   router, `learn.helper.route`), exactly as if typed;
+    //   c-practise-here "Let me practise this" on the context card;
+    //   c-choice        a chip of a "Which did you mean?" turn;
+    //   c-extra         "Explain how instead" / "Do it for me" under a turn;
+    //   c-again         "Show again" on a history marker;
+    //   c-more, c-readaloud, c-clear, c-clear-yes, c-clear-no, c-usevoice
+    //                   the header's More menu.
+    // None reaches a product method from here: a sentence goes to PayAI only
+    // through PayAI's own chat and its own server-side fences, the same path
+    // typing it takes.
+    "c-say", "c-practise-here", "c-choice", "c-extra", "c-again",
+    "c-more", "c-readaloud", "c-clear", "c-clear-yes", "c-clear-no", "c-usevoice",
     // LEARN v3 — the moment card above the helper button: a milestone note,
     // the month-end nudge, or a first-visit note. Each either opens something
     // this drawer already opens (a lesson, a walkthrough, "explain this
@@ -118,30 +122,41 @@ export const COACH_ACTIONS = new Set([
     "c-goto",
 ]);
 
-/* LEARN v3 — ONE HELPER, NOT TWO BUTTONS.
+/* ONECHAT OC2 — ONE CHAT, NO TABS.
 
-   The Coach and PayAI used to be two floating buttons stacked in the corner,
-   sharing no code and no memory. Now this drawer is the only launcher, and
-   PayAI's chat is drawn INSIDE it as the "Ask" tab.
+   The Coach and PayAI used to be two floating buttons, then one drawer with
+   three tabs. Now the drawer is ONE chat called PayAI: one stream of turns,
+   one composer, and the server's router (`learn.helper.route`) decides where
+   each sentence goes — PayAI's action path, PayAI's data answer, the guide,
+   Explain this screen, or practice. Nobody picks a tab.
 
-   Two registries carry that, and the dependency direction is the reason there
-   are two: neither module depends on the other, so neither may import the
-   other.
+   OWNERSHIP. The stream, the composer and the voice live in PayAI's embedded
+   chat (pb_payroll_ai_insights), because the plan cards, history, voice and
+   read-aloud already live there. The shell, the header, the guide's answers
+   and the practice doors stay HERE, handed to the chat as one `helper`
+   object — so pb_learn still never imports PayAI.
+
+   Registries, because neither module may import the other:
 
      pb_helper_host — this module says "the one helper is here". PayAI reads it
                       at mount time and, when it is set, draws no pill and no
-                      modal of its own (assets are all loaded before the web
-                      client mounts, so the answer is stable by then).
-     pb_helper_tabs — PayAI registers its embedded chat under "ask". Absent
-                      module, absent tab: the drawer shows two tabs and says
-                      nothing about a third. */
+                      modal of its own.
+     pb_helper_chat — PayAI registers its embedded chat under "main". Absent
+                      module (or a person without the group): this drawer
+                      draws its own small guide-only stream instead.
+     pb_helper_tabs — the old name ("ask"), read only as a fallback for one
+                      release, so a stale PayAI bundle still mounts. */
+export const HELPER_CHAT = "pb_helper_chat";
 export const HELPER_TABS = "pb_helper_tabs";
 export const HELPER_HOST = "pb_helper_host";
 registry.category(HELPER_HOST).add("orb", { module: "pb_learn" });
 
-/* Which tab the drawer opens on. Guide, always: the person pressed the button
-   because of the screen in front of them. */
-const TAB_ORDER = ["guide", "ask", "practice"];
+/* How long a practice turn ("Opening practice: …") stays readable before the
+   drawer closes and the practice opens. A beat, not a wait. */
+const PRACTICE_BEAT_MS = 600;
+/* At most this many chips on the context card and in a practice turn. */
+const MAX_CHIPS = 4;
+let TURN_SEQ = 0;
 
 /* LEARN v3 — moments. Screens this browser has already been told about, and
    the month the month-end nudge was skipped for (shared with the map). */
@@ -190,21 +205,17 @@ export class CoachHost extends Component {
             screen: null,        // content screen key, or null when off-map
             busy: false,
             question: "",
-            answer: null,        // the payload from learn.intent.ask
-            simpler: false,
-            history: [],         // {q, answered} — so "ask another" keeps context
             lang: RT.lang,
             // Phase D2 — question mining. `askConsent` is only ever set true
             // by the SERVER saying both that collection is on and that this
             // learner has not been asked yet.
             askConsent: false,
             pendingQ: null,      // {q, matched} held until a yes; dropped on a no
-            // LEARN v3 — the tab showing, and a question handed from the
-            // guide to the Ask tab. `handoff.id` changes on every hand-off so
-            // the Ask tab can tell a new question from a re-render.
-            tab: "guide",
-            handoff: null,
-            lastQ: "",
+            // ONECHAT OC2 — the guide-only stream, drawn when there is no
+            // PayAI chat for this person (module absent, or no access). Kept
+            // in memory for the page's life: across a close and across
+            // screens (a divider marks each new screen), never stored.
+            turns: [],
             // LEARN v3 — the one moment card showing, or null.
             moment: null,
             // LEARN REFRESH step 1 — the content plane failed to load, and a
@@ -219,25 +230,44 @@ export class CoachHost extends Component {
         // makes a tab switch re-render this component at all.
         this.place = useState(hubPlace);
         this._milestoneAt = 0;
-        // Passed to the Ask tab as a prop. A stable function, made once, so
-        // the tab is not re-rendered by a new identity on every drawer render.
+        // Passed to the chat as a prop. A stable function, made once, so the
+        // chat is not re-rendered by a new identity on every drawer render.
         this.closeHelper = () => this.close();
+        // ONECHAT OC2 — the header's More menu. `close` lives on the object so
+        // the Escape ladder in `_onKey` can call it as `this.menu.close()`.
+        this.menu = useState({ open: false, confirm: false, tick: 0 });
+        this.menu.close = () => {
+            this.menu.open = false;
+            this.menu.confirm = false;
+        };
+        // ONECHAT OC2 — the chat's handle (`attach`), and what was asked of
+        // it before it had mounted: the moment card's Explain, a ⌘K sentence,
+        // the header's Explain pressed during the mount. Flushed on attach.
+        this._api = null;
+        this._queue = [];
+        this._flushing = false;
+        // Built ONCE: its functions read reactive state at call time, so the
+        // identity never changes — and the `lang` prop is what re-renders the
+        // chat on a language flip (ledger OC16).
+        this.helper = this._makeHelper();
 
         this.bundle = null;
         this._onKey = this._onKey.bind(this);
-        // LEARN v3. Whether this person may use the Ask tab, asked once. A tab
-        // whose every question fails on an access rule is a dead end.
-        this.askAllowed = false;
+        this._onViewport = this._onViewport.bind(this);
+        // Whether this person may use the PayAI chat, asked once. A chat whose
+        // every question fails on an access rule is a dead end; without it the
+        // drawer draws its own guide-only stream.
+        this.chatAllowed = false;
 
         onWillStart(async () => {
             this._restoreLang();
             try {
-                const reg = registry.category(HELPER_TABS);
-                const groups = reg.contains("ask") ? (reg.get("ask").groups || []) : null;
-                this.askAllowed = groups === null ? false : !groups.length
+                const entry = this._chatEntry();
+                const groups = entry ? (entry.groups || []) : null;
+                this.chatAllowed = groups === null ? false : !groups.length
                     || (await Promise.all(groups.map((g) => user.hasGroup(g)))).some(Boolean);
             } catch {
-                this.askAllowed = false;
+                this.chatAllowed = false;
             }
             // Fetched once. The drawer must open instantly — a learner who is
             // stuck does not want to watch a spinner. Since Phase 1a the
@@ -319,6 +349,14 @@ export class CoachHost extends Component {
             // capture ever since. The removal has to match the phase or the
             // listener is never removed at all.
             document.addEventListener("keydown", this._onKey, true);
+            // ONECHAT OC2 — the phone's keyboard. `visualViewport` is the
+            // only honest measure of what is left above it (a plain `vh`
+            // includes the part the keyboard covers), so the bottom sheet
+            // sizes itself off the variables this sets (coach.scss).
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", this._onViewport);
+                this._onViewport();
+            }
             // LEARN v3. The corner holds one button now, so it sits in the
             // bottom slot. A body class rather than a runtime measurement:
             // coach.scss places the launcher off it.
@@ -338,6 +376,9 @@ export class CoachHost extends Component {
         });
         onWillUnmount(() => {
             document.removeEventListener("keydown", this._onKey, true);
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener("resize", this._onViewport);
+            }
             document.body.classList.remove("lrn-one-helper");
             // The card is on document.body, not in this component's tree.
             closeGlossary();
@@ -391,10 +432,9 @@ export class CoachHost extends Component {
             // LEARN v3. A moment belongs to the screen it was shown on.
             this.state.moment = null;
             setTimeout(() => this._pickMoment(), 900);
-            // A question asked about the previous screen is not an answer about
-            // this one. Clear rather than leave something subtly wrong on show.
-            this.state.answer = null;
-            this.state.simpler = false;
+            // ONECHAT OC2 — the conversation is NOT cleared any more: it is
+            // one thread across screens, and the chat marks the move with a
+            // context card ("On: Pay Run › Runs") instead.
         }
     }
 
@@ -422,6 +462,26 @@ export class CoachHost extends Component {
             if (glossaryOpen()) {
                 return;
             }
+            // ONECHAT OC2 — two rungs above "close the drawer", in this
+            // order. An open More menu closes first, and focus goes back to
+            // its button. Then a recording in progress is CANCELLED (nothing
+            // is sent for transcription) and the drawer stays open — the
+            // person pressed Escape to stop talking, not to leave. The
+            // `menu.close()` in the second rung is harmless when the menu is
+            // shut. This listener is document-capture (ledger OC11), so it
+            // runs before anything inside the drawer sees the key.
+            if (this.menu.open) {
+                ev.stopPropagation();
+                this.menu.close();
+                this._focusMore();
+                return;
+            }
+            if (this._api?.isRecording()) {
+                ev.stopPropagation();
+                this._api.cancelRecording();
+                this.menu.close();
+                return;
+            }
             // Only closes the Coach. The screen behind it keeps its own Escape.
             ev.stopPropagation();
             this.close();
@@ -431,8 +491,11 @@ export class CoachHost extends Component {
     toggle() {
         this.state.open = !this.state.open;
         this.state.moment = null;
+        this.menu.close();
         if (this.state.open) {
             this._log("coach_open");
+            // The chat focuses its own box when it mounts; the guide-only
+            // stream has its box here.
             setTimeout(() => this.inputRef.el?.focus(), 60);
         }
     }
@@ -563,51 +626,433 @@ export class CoachHost extends Component {
         } else if (act === "c-mewatch") {
             this.startScenario("sc_payslips", "watch", "");
         } else if (act === "c-fvexplain") {
-            this.state.open = true;
-            this._log("coach_open");
-            this.explainScreen();
+            // ONECHAT OC2 — through the queue: the chat has not mounted yet,
+            // so the answer is held until it attaches (ledger OC4).
+            this.openHelper({ explain: true });
         } else if (act === "c-fvwatch" && m.watch) {
             this.startScenario(m.watch, "watch", "");
         }
     }
 
-    // ------------------------------------------------------------ LEARN v3
-    /** PayAI's embedded chat, when that module is installed. */
-    get askTab() {
-        const reg = registry.category(HELPER_TABS);
-        return this.askAllowed && reg.contains("ask") ? reg.get("ask") : null;
+    // ------------------------------------------------------- ONECHAT OC2
+    /** The registered chat entry, whoever may use it (the group check is in
+     *  onWillStart). `pb_helper_chat/main`; the old `pb_helper_tabs/ask` name
+     *  is read only as a fallback — a three-line shim, removed next release. */
+    _chatEntry() {
+        const reg = registry.category(HELPER_CHAT);
+        if (reg.contains("main")) {
+            return reg.get("main");
+        }
+        const old = registry.category(HELPER_TABS);
+        return old.contains("ask") ? old.get("ask") : null;
     }
 
-    /** The tab strip. Reads `state.lang` so a language flip relabels it —
-     *  the strip is in the template, outside `bodyHTML`. */
-    get tabs() {
-        void this.state.lang;
-        const label = { guide: "tabGuide", ask: "tabAsk", practice: "tabPractice" };
-        const icon = { guide: "compass", ask: "message-circle", practice: "flask" };
-        return TAB_ORDER
-            .filter((k) => k !== "ask" || this.askTab)
-            .map((k) => ({ key: k, label: T(label[k]), icon: icon[k] }));
+    /** PayAI's embedded chat, when it is installed AND this person may use
+     *  it. Null means the drawer draws its own guide-only stream. */
+    get chat() {
+        return this.chatAllowed ? this._chatEntry() : null;
     }
 
-    setTab(key) {
-        if (!TAB_ORDER.includes(key) || (key === "ask" && !this.askTab)) {
+    /** THE ONE WAY IN from outside the drawer: the header's Explain, the
+     *  moment card's Explain, ⌘K, a suggested question. Opens the drawer and
+     *  queues the request until the chat has mounted and attached — before
+     *  that there is nothing to draw it in (ledger OC4). Without a chat the
+     *  guide-only stream takes it at once. */
+    openHelper(opts = {}) {
+        if (!this.state.open) {
+            this.state.open = true;
+            this.state.moment = null;
+            this._log("coach_open");
+        }
+        if (!this.chat) {
+            if (opts.explain) {
+                this._explainInto();
+            } else if (opts.text && opts.send) {
+                this.ask(opts.text);
+            } else if (opts.text) {
+                this.state.question = opts.text;
+            }
             return;
         }
-        this.state.tab = key;
-        this._log("coach_tab", key);
-        if (key === "guide") {
-            setTimeout(() => this.inputRef.el?.focus(), 60);
+        if (opts.explain || opts.text) {
+            this._queue.push(opts);
+        }
+        if (this._api) {
+            this._flush();
         }
     }
 
-    /** Hand the last question to the Ask tab and send it there. */
-    askData() {
-        const q = (this.state.lastQ || this.state.question || "").trim();
-        if (!this.askTab) {
+    /** Called by the chat once it has mounted (and loaded its history). */
+    _attach(api) {
+        this._api = api;
+        this._flush();
+    }
+
+    _detach(api) {
+        // `this._api === null`: the chat went away before it ever attached
+        // (the drawer closed while its history was loading).
+        if (!api || this._api === api || this._api === null) {
+            this._api = null;
+            this.menu.close();
+            // Whatever was still waiting for this chat (a ⌘K sentence, an
+            // Explain) was given up with it: never sent on a later open.
+            this._queue = [];
+        }
+    }
+
+    async _flush() {
+        if (this._flushing) {
             return;
         }
-        this.state.handoff = q ? { text: q, id: Date.now() } : null;
-        this.state.tab = "ask";
+        this._flushing = true;
+        try {
+            while (this._api && this._queue.length) {
+                const api = this._api;
+                const item = this._queue.shift();
+                if (item.explain) {
+                    await this._explainInto();
+                } else if (item.text && item.send) {
+                    await api.sendText(item.text, { origin: item.origin || "helper" });
+                } else if (item.text) {
+                    api.setDraft(item.text);
+                }
+            }
+        } finally {
+            this._flushing = false;
+        }
+    }
+
+    /** Explain this screen, drawn as a turn in whichever stream is showing. */
+    async _explainInto() {
+        const answer = await this.explainScreen();
+        if (this._api) {
+            await this._api.pushGuide(answer, { kind: "explain" });
+            return;
+        }
+        if (answer) {
+            this._pushTurn({ kind: "guide", answer });
+        } else {
+            this._pushTurn({ kind: "note", note: this._pair("coachNoScreen") });
+        }
+    }
+
+    /** A sentence, sent as if typed: through the router. */
+    _say(text, origin) {
+        const t = String(text || "").trim();
+        if (!t) {
+            return;
+        }
+        if (this.chat) {
+            this.openHelper({ text: t, send: true, origin: origin || "chip" });
+        } else {
+            this.ask(t);
+        }
+    }
+
+    // --------------------------------------------------- the helper object
+    /** What the chat is handed. Plain functions over this component's state,
+     *  read at call time, so the object never changes identity. Every
+     *  renderer takes the language explicitly: the chat passes its `lang`
+     *  prop, which is what re-renders past guide turns on a flip. */
+    _makeHelper() {
+        return {
+            T: (key, lang) => this._inLang(lang, () => T(key)),
+            text: (pair, lang) => this._inLang(lang, () => tx(pair)),
+            screen: () => this.state.screen,
+            screenLabelPair: () => ({
+                en: this._inLang("en", () => this.screenLabel),
+                vi: this._inLang("vi", () => this.screenLabel),
+            }),
+            covered: () => this.covered,
+            canExplain: () => this.covered,
+            answerHTML: (answer, lang, opts) =>
+                markup(this._inLang(lang, () => this._answerHTML(answer, opts || {}))),
+            // ONECHAT OC3 — the same answer as plain words, for read-back.
+            answerSpeech: (answer, lang) => this._inLang(lang, () => this._answerSpeech(answer)),
+            turnHTML: (turn, lang, opts) =>
+                markup(this._inLang(lang, () => this._turnHTML(turn, opts || {}))),
+            contextHTML: (lang, opts) =>
+                markup(this._inLang(lang, () => this._contextHTML(opts || {}))),
+            consentHTML: (lang) => markup(this._inLang(lang, () => this._consentHTML())),
+            chipsHTML: (chips, lang) => markup(this._inLang(lang, () => this._chipsHTML(chips, "c-extra"))),
+            pair: (key) => this._pair(key),
+            practiseChip: (answer) => this._practiseChip(answer),
+            scenarioName: (key) => {
+                const sc = this.sc.get(key);
+                return sc ? sc.name : null;
+            },
+            onGuideAnswer: (question, answer) => this._onGuideAnswer(question, answer),
+            explain: () => this.explainScreen(),
+            explainFor: (screenKey) => this._explainFor(screenKey),
+            answerFor: (key) => this._answerFor(key),
+            startPractice: (key, mode) => this.startScenario(key, mode, ""),
+            openPracticeMode: () => this.openPractice(),
+            attach: (api) => this._attach(api),
+            detach: (api) => this._detach(api),
+        };
+    }
+
+    /** Run `fn` with the runtime language set to `lang`. RT.lang already
+     *  follows the pill; this only makes a renderer's language explicit. */
+    _inLang(lang, fn) {
+        const want = lang === "vi" || lang === "en" ? lang : RT.lang;
+        const saved = RT.lang;
+        RT.lang = want;
+        try {
+            return fn();
+        } finally {
+            RT.lang = saved;
+        }
+    }
+
+    /** A chrome string in both languages, for a turn that re-renders on a flip. */
+    _pair(key) {
+        const v = (RT.chrome || {})[key];
+        const pair = v && typeof v === "object" ? { en: v.en || "", vi: v.vi || v.en || "" } : { en: key, vi: key };
+        pair.key = key;
+        return pair;
+    }
+
+    _turnId() {
+        TURN_SEQ += 1;
+        return `h${TURN_SEQ}`;
+    }
+
+    /** Push a helper turn into whichever stream is showing. */
+    _pushTurn(turn) {
+        if (this._api) {
+            return this._api.pushTurn(turn);
+        }
+        const t = Object.assign({ id: this._turnId(), screen: this.state.screen }, turn);
+        this.state.turns.push(t);
+        this._scrollFallback();
+        return t;
+    }
+
+    _findTurn(id) {
+        if (!id) {
+            return null;
+        }
+        if (this._api) {
+            return this._api.findTurn(id);
+        }
+        return this.state.turns.find((t) => t.id === id) || null;
+    }
+
+    _hasConversation() {
+        return this._api ? !this._api.isEmpty() : this.state.turns.length > 0;
+    }
+
+    async _answerFor(key) {
+        if (!key) {
+            return null;
+        }
+        try {
+            return await this.orm.call("learn.intent", "answer_for", [key, this.state.screen, RT.lang]);
+        } catch {
+            return null;
+        }
+    }
+
+    /** One guide answer by key — a "How it works" choice, "Explain how
+     *  instead". Never routed: the person already said which they meant. */
+    async _answerInto(key) {
+        const answer = await this._answerFor(key);
+        if (!answer) {
+            return;
+        }
+        if (this._api) {
+            await this._api.pushGuide(answer, { kind: "guide" });
+        } else {
+            this._pushTurn({ kind: "guide", answer });
+        }
+    }
+
+    /** The scenarios on THIS screen that can be practised. */
+    _screenTry() {
+        return this.screenScenarios.filter((sc) => (sc.modes || []).includes("try"));
+    }
+
+    /** "Practise this" under an answer: the scenario the answer teaches, if
+     *  the engine really offers Try for it (`_offers`), else nothing. The
+     *  Access walkthrough has no Try at all, so it can never be offered. */
+    _practiseChip(answer) {
+        const key = answer && answer["try"];
+        if (!this._offers(key, "try")) {
+            return null;
+        }
+        return { key, name: this.sc.get(key).name };
+    }
+
+    /** Practise one scenario: a practice turn first ("Opening practice: …"),
+     *  then the practice itself after a beat. Never "Do it live". */
+    _practiseFrom(key, mode) {
+        const m = mode || "try";
+        if (!this._offers(key, m)) {
+            return;
+        }
+        if (this._api) {
+            this._api.practise(key, m);
+            return;
+        }
+        const sc = this.sc.get(key);
+        this._pushTurn({ kind: "practice", practice: { key, mode: m, name: sc ? sc.name : "" } });
+        setTimeout(() => this.startScenario(key, m, ""), PRACTICE_BEAT_MS);
+    }
+
+    /** "Let me practise this" on the context card. */
+    _practiseHere() {
+        const own = this._screenTry();
+        if (own.length === 1) {
+            this._practiseFrom(own[0].key, "try");
+            return;
+        }
+        if (!own.length) {
+            return;
+        }
+        this._pushTurn({
+            kind: "practice",
+            practice: {
+                chips: own.slice(0, MAX_CHIPS).map((sc) => ({ key: sc.key, mode: "try", name: sc.name })),
+                sandbox: true,
+            },
+        });
+    }
+
+    _toggleSimpler(id) {
+        const turn = this._findTurn(id);
+        if (turn) {
+            turn.simpler = !turn.simpler;
+        }
+    }
+
+    /** A "Which did you mean?" chip. Resolved WITHOUT routing again. */
+    async _pickChoice(id, index) {
+        const turn = this._findTurn(id);
+        const choice = turn && (turn.choices || [])[index];
+        if (!choice || turn.picked !== undefined && turn.picked !== null) {
+            return;
+        }
+        turn.picked = index;
+        // PayAI was still answering, so nothing was sent: the choice stays
+        // open to press again rather than being used up for nothing.
+        if ((await this._runChip(choice, turn)) === false) {
+            turn.picked = null;
+        }
+    }
+
+    /** "Explain how instead" / "Do it for me" under a turn. */
+    async _extraChip(id, index) {
+        const turn = this._findTurn(id);
+        const chip = turn && (turn.extra || [])[index];
+        if (chip) {
+            await this._runChip(chip, turn);
+        }
+    }
+
+    /** Run a chip; false when nothing could be done (PayAI busy). A PayAI
+     *  chip re-sends the words of the turn it sits under: when those words
+     *  were SPOKEN, the send stays spoken (`turn.spoken`), so a plan made
+     *  from it still needs a tap where it names a person or an amount
+     *  (owner decision Q6). The flag only ever makes the send stricter. */
+    async _runChip(chip, turn) {
+        if (chip.route === "guide") {
+            await this._answerInto(chip.key);
+        } else if (chip.route === "practice") {
+            this._practiseFrom(chip.key, chip.mode || "try");
+        } else if (chip.route === "payai" && this._api) {
+            const text = typeof chip.text === "string" ? chip.text : tx(chip.label || "");
+            const spoken = !!(turn && turn.spoken);
+            return (await this._api.sendDirect({ text, askOnly: !!chip.ask_only, spoken })) !== false;
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    /** "Show again" on a history marker: the answer, drawn in place. */
+    async _expandMarker(id) {
+        const turn = this._findTurn(id);
+        if (!turn) {
+            return;
+        }
+        if (turn.expanded) {
+            turn.expanded = null;
+            return;
+        }
+        // `answer_for` takes an intent key, `column:<key>` and `screen:<key>`
+        // alike — exactly the keys a marker carries.
+        const answer = ["guide", "explain"].includes(turn.mkind) && turn.key
+            ? await this._answerFor(turn.key) : null;
+        if (answer && answer.matched) {
+            turn.expanded = answer;
+        }
+    }
+
+    _clearConversation() {
+        if (this._api) {
+            this._api.clear();
+        } else {
+            this.state.turns = [];
+        }
+        this.state.askConsent = false;
+        this.state.pendingQ = null;
+    }
+
+    _focusMore() {
+        setTimeout(() => {
+            const el = document.querySelector(".lrn-drawer [data-act='c-more']");
+            if (el) {
+                el.focus();
+            }
+        }, 0);
+    }
+
+    /** Arrow keys move through the More menu; Enter picks (a real button). */
+    onMenuKey(ev) {
+        if (!this.menu.open || !["ArrowDown", "ArrowUp", "Home", "End"].includes(ev.key)) {
+            return;
+        }
+        const items = Array.from(document.querySelectorAll(".lrn-menu [role^='menuitem']"));
+        if (!items.length) {
+            return;
+        }
+        ev.preventDefault();
+        const at = items.indexOf(document.activeElement);
+        let next = 0;
+        if (ev.key === "End") {
+            next = items.length - 1;
+        } else if (ev.key === "ArrowDown") {
+            next = at < 0 ? 0 : (at + 1) % items.length;
+        } else if (ev.key === "ArrowUp") {
+            next = at <= 0 ? items.length - 1 : at - 1;
+        }
+        items[next].focus();
+    }
+
+    _openMenu() {
+        this.menu.open = !this.menu.open;
+        this.menu.confirm = false;
+        if (this.menu.open) {
+            setTimeout(() => {
+                const first = document.querySelector(".lrn-menu [role^='menuitem']");
+                if (first) {
+                    first.focus();
+                }
+            }, 0);
+        }
+    }
+
+    /** The phone's keyboard: what is left of the screen above it. */
+    _onViewport() {
+        const vv = window.visualViewport;
+        if (!vv) {
+            return;
+        }
+        const root = document.documentElement;
+        root.style.setProperty("--lrn-vvh", `${Math.round(vv.height)}px`);
+        const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+        root.style.setProperty("--lrn-kb", `${kb}px`);
     }
 
     /** "On: <screen>" in the header. The content plane's name when it covers
@@ -682,43 +1127,41 @@ export class CoachHost extends Component {
         return reduced();
     }
 
-    /** Cross-fade key: a new screen OR a new tab re-mounts the body. */
-    get bodyKey() {
-        return `${this.state.screen || ""}|${this.place.lens}|${this.state.tab}`;
-    }
-
     /** "Take me there": the hub switches its own tab; the drawer stays. */
     goTab(lens) {
         const ok = switchLens(lens);
         this.state.gotoFailed = !ok;
         if (ok) {
-            this.state.answer = null;
             this._log("coach_goto", lens);
         }
     }
 
     close() {
         this.state.open = false;
-        // Reopening starts fresh. A stale answer from ten minutes and two
-        // screens ago is worse than the suggestions, because it looks like a
-        // reply to whatever the person is stuck on NOW.
-        this.state.answer = null;
-        this.state.simpler = false;
+        this.menu.close();
+        // A ⌘K sentence or an Explain still waiting for the chat to mount
+        // was given up when the person closed the drawer: it must not be
+        // sent on some later, unrelated open.
+        this._queue = [];
+        // ONECHAT OC2 — the conversation is KEPT across a close (the chat's
+        // turns live for the page's life; so does the guide-only stream).
+        // What does not survive is half-typed text in the guide-only box.
         this.state.question = "";
         // A question held pending a consent answer does not survive the
         // drawer closing. Closing without answering is not a yes, and text
         // kept across a close would eventually be stored against a question
         // the person had moved on from.
+        if (this.state.askConsent) {
+            this._dropConsent();
+        }
         this.state.askConsent = false;
         this.state.pendingQ = null;
-        // LEARN v3. Reopening starts on the Guide tab, for the same reason a
-        // stale answer is cleared: the person is asking about NOW.
-        this.state.tab = "guide";
-        this.state.handoff = null;
     }
 
+    // ------------------------------------------- the guide-only stream
     onInput(ev) {
         this.state.question = ev.target.value;
+        this._grow(ev.target);
     }
 
     onSubmit(ev) {
@@ -726,19 +1169,114 @@ export class CoachHost extends Component {
         this.ask(this.state.question);
     }
 
+    /** Enter sends, Shift+Enter is a new line — the chat's own rule. */
+    onComposerKey(ev) {
+        if (ev.key === "Enter" && !ev.shiftKey && !ev.isComposing) {
+            ev.preventDefault();
+            this.ask(this.state.question);
+        }
+    }
+
+    /** One to five lines, then it scrolls. */
+    _grow(el) {
+        if (!el || !el.style) {
+            return;
+        }
+        el.style.height = "auto";
+        el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+    }
+
+    _scrollFallback() {
+        setTimeout(() => {
+            const el = document.querySelector(".lrn-drawer .lrn-stream");
+            if (el) {
+                el.scrollTop = el.scrollHeight;
+            }
+        }, 30);
+    }
+
+    /** A divider for the screen the next turn is about, when it moved. */
+    _markScreen() {
+        const turns = this.state.turns;
+        const last = turns[turns.length - 1];
+        if (!last || last.screen !== this.state.screen) {
+            this.state.turns.push({
+                id: this._turnId(), kind: "context", live: false,
+                screen: this.state.screen,
+                label: { en: this._inLang("en", () => this.screenLabel),
+                         vi: this._inLang("vi", () => this.screenLabel) },
+            });
+        }
+    }
+
+    /** THE GUIDE-ONLY COMPOSER (no PayAI chat for this person). The same
+     *  router the chat uses decides; only its base layer answers here —
+     *  guide, explain, practice, capability, a note, or the honest miss. */
     async ask(question) {
         const q = (question || "").trim();
         if (!q || this.state.busy) {
             return;
         }
         this.state.busy = true;
-        this.state.simpler = false;
+        this.state.question = "";
+        this._markScreen();
+        this.state.turns.push({ id: this._turnId(), kind: "person", text: q, screen: this.state.screen });
+        this._scrollFallback();
         try {
-            const answer = await this.orm.call(
-                "learn.intent", "ask", [q, this.state.screen, RT.lang]);
-            this.state.answer = answer;
-            this.state.lastQ = q;
-            this.state.history.push({ q, answered: !!answer.matched });
+            const r = await this.orm.call("learn.helper", "route", [q], {
+                screen_key: this.state.screen, lang: RT.lang, session_id: null,
+            });
+            await this._fallbackDispatch(q, r || {});
+        } catch {
+            this._pushTurn({ kind: "note", note: this._pair("routeFailed") });
+        } finally {
+            this.state.busy = false;
+            this._scrollFallback();
+            setTimeout(() => this.inputRef.el?.focus(), 30);
+        }
+    }
+
+    async _fallbackDispatch(q, r) {
+        const route = r.route;
+        if (route === "guide" && r.answer) {
+            this._pushTurn({ kind: "guide", answer: r.answer, lead: r.lead || null });
+            await this._onGuideAnswer(q, r.answer);
+        } else if (route === "explain") {
+            await this._explainInto();
+        } else if (route === "practice") {
+            if (r.answer) {
+                this._pushTurn({ kind: "guide", answer: r.answer });
+            }
+            const p = r.practice || {};
+            this._pushTurn({ kind: "practice", practice: p, note: r.note || null });
+            if (p.key && (p.mode === "try" || !r.note)) {
+                setTimeout(() => this.startScenario(p.key, p.mode, ""), PRACTICE_BEAT_MS);
+            }
+        } else if (route === "choose") {
+            const choices = (r.choices || []).filter((c) => c.route !== "payai");
+            this._pushTurn({ kind: "choose", note: r.note || null, choices });
+        } else if (route === "miss" && r.answer && !r.note) {
+            this._pushTurn({ kind: "guide", answer: r.answer });
+            await this._onGuideAnswer(q, r.answer);
+        } else {
+            // A note (small talk, nothing waiting, no assistant here) — or a
+            // PayAI route, which this stream cannot take: say so plainly.
+            const note = r.note || this._pair("noPayai");
+            this._pushTurn({ kind: "note", note, suggest: r.suggest || [] });
+            if (route === "miss") {
+                await this._onGuideAnswer(q, r.answer || { matched: false });
+            }
+        }
+    }
+
+    /** What every guide answer does once it is on screen, whichever stream
+     *  drew it: the hit/miss count, and the consent-gated question store.
+     *  NEVER the question text in the log. */
+    async _onGuideAnswer(q, answer) {
+        if (!answer) {
+            return;
+        }
+        try {
             // NEVER the question text. health_learn logs the first 40
             // characters of an unanswered question, which is a good content
             // signal and a bad privacy decision: a help box on a payroll system
@@ -754,9 +1292,7 @@ export class CoachHost extends Component {
             this._log(answer.matched ? "coach_hit" : "coach_miss", answer.key || "");
             await this._maybeStore(q, !!answer.matched);
         } catch {
-            this.state.answer = null;
-        } finally {
-            this.state.busy = false;
+            // Measurement and mining must never break the answer on screen.
         }
     }
 
@@ -792,7 +1328,12 @@ export class CoachHost extends Component {
                 // is yes; a no drops it and it is never transmitted for
                 // storage at all.
                 this.state.pendingQ = { q, matched };
-                this.state.askConsent = true;
+                if (!this.state.askConsent) {
+                    this.state.askConsent = true;
+                    // ONECHAT OC2 — a turn in the stream, BELOW the answer it
+                    // rides along with (never a toll gate above it).
+                    this._pushTurn({ kind: "consent" });
+                }
             }
         } catch {
             // Consent plumbing must never break the answer it rides along
@@ -803,6 +1344,7 @@ export class CoachHost extends Component {
 
     async decideConsent(granted) {
         this.state.askConsent = false;
+        this._dropConsent();
         const pending = this.state.pendingQ;
         this.state.pendingQ = null;
         try {
@@ -825,30 +1367,47 @@ export class CoachHost extends Component {
      *  to. The event log gets the press, as it does for every other control.
      */
     async explainScreen() {
-        if (this.state.busy || !this.state.screen) {
-            return;
+        // ONECHAT OC2 — returns the answer; whoever asked draws it as a turn
+        // (`_explainInto`, or the chat's own route dispatch).
+        if (!this.state.screen) {
+            return null;
         }
-        this.state.busy = true;
-        this.state.simpler = false;
         try {
             const answer = await this.orm.call(
                 "learn.intent", "explain_screen", [this.state.screen, RT.lang]);
-            this.state.answer = answer;
             this._log(answer.matched ? "coach_hit" : "coach_miss",
                       answer.key || "");
+            return answer;
         } catch {
-            this.state.answer = null;
-        } finally {
-            this.state.busy = false;
+            return null;
         }
     }
 
-    async askIntent(key) {
+    /** "Show again" on an Explain marker: that screen's explanation. */
+    async _explainFor(screenKey) {
+        if (!screenKey) {
+            return null;
+        }
+        try {
+            return await this.orm.call("learn.intent", "explain_screen", [screenKey, RT.lang]);
+        } catch {
+            return null;
+        }
+    }
+
+    _dropConsent() {
+        if (this._api) {
+            this._api.dropTurns("consent");
+        } else {
+            this.state.turns = this.state.turns.filter((t) => t.kind !== "consent");
+        }
+    }
+
+    async askIntent(key, label) {
         // A suggested question is asked with its own label, so the transcript
-        // reads like a conversation rather than a menu selection.
-        const label = this._labelOf(key);
-        this.state.question = label;
-        await this.ask(label);
+        // reads like a conversation rather than a menu selection — and it
+        // goes through the router, exactly as if it had been typed.
+        this._say(label || this._labelOf(key), "suggest");
     }
 
     _labelOf(key) {
@@ -881,9 +1440,9 @@ export class CoachHost extends Component {
         }
         const found = flashRing(anchor);
         if (!found) {
-            this.state.answer = Object.assign({}, this.state.answer, {
-                pointFailed: true,
-            });
+            // Said in the stream, as its own short turn: the answer above it
+            // stays as it was.
+            this._pushTurn({ kind: "note", note: this._pair("pointNotHere") });
         } else {
             this.close();
         }
@@ -958,67 +1517,153 @@ export class CoachHost extends Component {
         // payload we already hold. Without this read the assignment in
         // toggleLang() changes a value nobody is watching. Do not "tidy" it
         // away: `tx()` below reads RT.lang, which OWL cannot see.
+        //
+        // ONECHAT OC2 — this is now the GUIDE-ONLY stream: drawn only when
+        // there is no PayAI chat for this person. The chat draws the same
+        // turns through `helper.turnHTML`, so both read as one surface.
         const lang = this.state.lang;
         void lang;
+        void this.place.lens;
         if (!this.state.ready) {
             // The content plane is what failed, so the sentence cannot come
             // from it: the one string this drawer carries itself.
             return markup(`<div class="lrn-cground off">${ic("info")}
                 <span>${esc(LOAD_FAILED[RT.lang] || LOAD_FAILED.en)}</span></div>`);
         }
-        const parts = [];
-        // LEARN v3 — the Practice tab. Everything on it opens a copy; nothing
-        // on it can reach a real record.
-        if (this.state.tab === "practice") {
-            parts.push(this._practiceHTML());
-            parts.push(this._practiceTryHTML());
-            parts.push(this._tourHTML());
-            return markup(parts.join(""));
+        const turns = this.state.turns;
+        if (!turns.length) {
+            // The banner only while nothing has been said, then it is gone.
+            return markup(`<p class="lrn-dhonest">${ic("shield-check")}<span>${esc(T("honestGuide"))}</span></p>
+                ${this._contextHTML({})}`);
         }
-        parts.push(this._groundedHTML());
+        return markup(turns.map((t) => this._turnHTML(t, {})).join(""));
+    }
+
+    /** ONE TURN, ONE VISUAL LANGUAGE. Every turn the helper itself writes —
+     *  a guide answer, a note, a practice turn, a choice, the consent card,
+     *  the screen divider, a history marker — is drawn here, for both
+     *  streams. PayAI's own answers and plan cards are drawn by its chat,
+     *  in the same card frame (ai_insight_chat.scss). */
+    _turnHTML(t, opts) {
+        if (!t) {
+            return "";
+        }
+        const id = esc(t.id || "");
+        switch (t.kind) {
+            case "person":
+                return `<div class="lrn-turn me" data-turn="${id}"><div class="lrn-tbubble">${esc(t.text)}</div></div>`;
+            case "guide": {
+                const lead = t.lead ? `<p class="lrn-tlead">${esc(tx(t.lead))}</p>` : "";
+                return `<div class="lrn-turn ai guide" data-turn="${id}">${lead}${this._answerHTML(t.answer, { simpler: t.simpler })}${this._chipsHTML(t.extra, "c-extra")}</div>`;
+            }
+            case "note":
+                return `<div class="lrn-turn ai note" data-turn="${id}" role="status">
+                    <div class="lrn-tnote">${ic("info")}<span>${esc(tx(t.note))}</span></div>${this._suggestFrom(t.suggest || [])}</div>`;
+            case "practice":
+                return `<div class="lrn-turn ai practice" data-turn="${id}">${this._practiceTurnHTML(t)}</div>`;
+            case "choose": {
+                const picked = t.picked !== undefined && t.picked !== null;
+                const chips = (t.choices || []).map((c, i) => `<button type="button" class="lrn-tchip${picked && t.picked === i ? " on" : ""}"
+                        data-act="c-choice" data-i="${i}"${picked ? " disabled" : ""}>${ic(c.route === "payai" ? "sparkles" : (c.route === "practice" ? "flask" : "compass"))}<span>${esc(tx(c.label))}</span></button>`).join("");
+                return `<div class="lrn-turn ai choose" data-turn="${id}">
+                    <p class="lrn-tlead">${esc(tx(t.note || this._pair("whichMeant")))}</p><div class="lrn-tchips">${chips}</div></div>`;
+            }
+            case "consent":
+                return `<div class="lrn-turn ai consent" data-turn="${id}">${this._consentHTML()}</div>`;
+            case "context":
+                if (t.live) {
+                    return `<div class="lrn-turn ctx" data-turn="${id}">${this._contextHTML(opts)}</div>`;
+                }
+                return `<div class="lrn-tdivider" data-turn="${id}"><span>${ic("map-pin")}${esc(T("onScreen"))}${SP}${esc(tx(t.label || ""))}</span></div>`;
+            case "marker":
+                return `<div class="lrn-turn ai marker" data-turn="${id}">${this._markerHTML(t)}</div>`;
+            default:
+                return "";
+        }
+    }
+
+    /** A turn the history brought back after a page load. The guide's answer
+     *  itself was never stored (only an authored label), so "Show again"
+     *  asks for it by key and draws it in place. */
+    _markerHTML(t) {
+        const again = ["guide", "explain"].includes(t.mkind) && !!t.key;
+        let line = "";
+        if (t.mkind === "guide") {
+            line = `${ic("compass")}<span>${esc(T("fromGuide"))}:${SP}${esc(t.label || "")}</span>`;
+        } else if (t.mkind === "composed") {
+            line = `${ic("sparkles")}<span>${esc(T("composedAgain"))}</span>`;
+        } else if (t.mkind === "explain") {
+            line = `${ic("scan-text")}<span>${esc(t.label || "")}</span>`;
+        } else if (t.mkind === "practice") {
+            line = `${ic("flask")}<span>${esc(t.label || "")}</span>`;
+        } else {
+            line = `${ic("info")}<span>${esc(t.label || "")}</span>`;
+        }
+        const btn = again ? `<button type="button" class="lrn-tagain" data-act="c-again"
+            aria-expanded="${t.expanded ? "true" : "false"}">${ic("rotate-ccw")}${esc(T("showAgain"))}</button>` : "";
+        const body = t.expanded ? `<div class="lrn-tmore">${this._answerHTML(t.expanded, { simpler: t.simpler })}</div>` : "";
+        return `<div class="lrn-tmarker">${line}${btn}</div>${body}`;
+    }
+
+    _practiceTurnHTML(t) {
+        const p = t.practice || {};
+        const note = t.note ? `<div class="lrn-tnote">${ic("info")}<span>${esc(tx(t.note))}</span></div>` : "";
+        if (p.key) {
+            const watchOnly = p.mode === "watch" && !!t.note;
+            const sentence = (p.mode === "watch" ? T("openingWatch") : T("openingPractice"))
+                .replace("{name}", tx(p.name || ""));
+            if (watchOnly) {
+                return `${note}<div class="lrn-tchips"><button type="button" class="lrn-tchip"
+                    data-act="c-scenario" data-key="${esc(p.key)}" data-mode="watch">${ic("play")}<span>${esc(tx(p.name || ""))}</span></button></div>`;
+            }
+            return `<div class="lrn-tpractice">${ic(p.mode === "watch" ? "play" : "flask")}<span>${esc(sentence)}</span></div>${note}`;
+        }
+        const chips = (p.chips || []).filter((c) => this._offers(c.key, c.mode || "try")).map((c) => `<button type="button" class="lrn-tchip"
+                data-act="c-scenario" data-key="${esc(c.key)}" data-mode="${esc(c.mode || "try")}">${ic("flask")}<span>${esc(tx(c.name || ""))}</span></button>`);
+        const sandbox = `<button type="button" class="lrn-tchip ghost" data-act="c-practice">${ic("flask")}<span>${esc(T("practiceOpen"))}</span></button>`;
+        if (p.sandbox_first) {
+            chips.unshift(sandbox);
+        } else {
+            chips.push(sandbox);
+        }
+        return `${note}<p class="lrn-tlead">${esc(T("practiceChipsLead"))}</p><div class="lrn-tchips">${chips.join("")}</div>`;
+    }
+
+    /** "Explain how instead" / "Do it for me" — one row of chips under a
+     *  turn; a `primary` chip is the solid button. */
+    _chipsHTML(chips, act) {
+        if (!chips || !chips.length) {
+            return "";
+        }
+        return `<div class="lrn-tchips">${chips.map((c, i) => `<button type="button"
+            class="lrn-tchip${c.primary ? " pri" : ""}" data-act="${act}" data-i="${i}">${ic(c.route === "guide" ? "compass" : "sparkles")}<span>${esc(tx(c.label))}</span></button>`).join("")}</div>`;
+    }
+
+    /** THE CONTEXT CARD — not stored. Shown when the stream is empty, and as
+     *  the newest item when the drawer opens on another screen than the last
+     *  turn's; it collapses to a one-line divider once something is sent.
+     *  No "Your next step", no "Practice mode" card, no "Take the tour"
+     *  card (ONECHAT OC2): the tour is a "Show me how" row on Home and a
+     *  sentence the router knows, practice is a chip and a menu item. */
+    _contextHTML(opts) {
+        void this.state.lang;
+        if (!this.state.ready) {
+            return `<div class="lrn-cground off">${ic("info")}<span>${esc(LOAD_FAILED[RT.lang] || LOAD_FAILED.en)}</span></div>`;
+        }
+        const parts = [this._groundedHTML()];
         if (this.state.gotoFailed) {
             parts.push(`<div class="lrn-cblock warn">${ic("info")}<span>${esc(T("hubTabGone"))}</span></div>`);
         }
-        if (this.state.answer) {
-            parts.push(this._answerHTML(this.state.answer));
-        } else if (this.screenInfo && this.screenInfo.hub) {
-            // LEARN REFRESH step 1 — a tab with no lesson yet. Never "no
-            // content": what this tab is for (in the grounded block above),
-            // the few things people come here to do, every tab on the page,
-            // then what can be asked anywhere.
+        const hub = !!(this.screenInfo && this.screenInfo.hub);
+        if (hub) {
             parts.push(this._oftenHTML());
-            parts.push(this._tabsHTML(true));
-            parts.push(this._nextStepHTML());
-            parts.push(this._notSureHTML());
-            parts.push(this._suggestHTML());
-        } else {
-            // LEARN v3 — the next step, with its reason, at the very top when
-            // the tenant has that switch on. Draws nothing when it is off.
-            parts.push(this._nextStepHTML());
-            // LEARNOS Phase 4 — the "not sure what to ask?" state. FIRST,
-            // because it is the offer that needs no vocabulary: somebody who
-            // cannot phrase the question can still press one button and be
-            // told what the screen is. The two offers below it need the
-            // learner to already know what they want.
-            parts.push(this._notSureHTML());
-            // ABOVE the suggested questions, and only when there are any. A
-            // walkthrough of the screen in front of you is a better first offer
-            // than a list of questions about it — and on the screens that have
-            // none, this draws nothing rather than an empty heading.
+        }
+        parts.push(this._notSureHTML(opts || {}));
+        if (!hub) {
             parts.push(this._scenarioHTML());
-            parts.push(this._suggestHTML());
-            // The sandbox used to sit LAST here. LEARN v3 gives it a tab of
-            // its own, so a single line points at it instead of a whole card.
-            // LEARN REFRESH step 1 — on a hub, the rest of the page, folded.
-            parts.push(this._tabsHTML(false));
         }
-        // BELOW the answer, deliberately. The person opened the drawer because
-        // they were stuck; the answer is what they came for, and a consent card
-        // above it is a toll gate on help. Asked once, either way.
-        if (this.state.askConsent) {
-            parts.push(this._consentHTML());
-        }
-        return markup(parts.join(""));
+        parts.push(this._tabsHTML(hub));
+        return `<div class="lrn-ctx">${parts.join("")}</div>`;
     }
 
     /** Asked once per learner, and only when the tenant has switched
@@ -1037,116 +1682,33 @@ export class CoachHost extends Component {
         </div>`;
     }
 
-    /** The opening offer, for the person who cannot phrase the question.
-     *
-     *  Drawn only on a screen the content plane covers, because that is the
-     *  only place `explain_screen` has a floor to build from — off the map it
-     *  would be a button whose one outcome is the miss the drawer is already
-     *  showing. Fail closed, and say nothing rather than offering nothing.
-     */
-    _notSureHTML() {
-        if (!this.covered) {
+    /** "Not sure what to ask?" — the opening offer, for the person who
+     *  cannot phrase the question: up to four of this screen's own
+     *  questions as chips (sent through the router, exactly as if typed),
+     *  "What can you do?" where PayAI may act, "Let me practise this" where
+     *  this screen has something to practise, then Explain this screen —
+     *  which needs no vocabulary at all. */
+    _notSureHTML(opts) {
+        const s = this.screenInfo;
+        const list = ((s ? s.suggest : (this.bundle?.global_suggest || [])) || []).slice(0, MAX_CHIPS);
+        const chips = list.map((i) => `<button type="button" class="lrn-cq" data-act="c-suggest"
+            data-key="${esc(i.key)}" data-label="${esc(tx(i.label))}">${ic("help-circle")}<span>${esc(tx(i.label))}</span></button>`);
+        if (opts && opts.canAct) {
+            chips.push(`<button type="button" class="lrn-cq" data-act="c-say"
+                data-text="${esc(T("whatCanYouDo"))}">${ic("sparkles")}<span>${esc(T("whatCanYouDo"))}</span></button>`);
+        }
+        if (this._screenTry().length) {
+            chips.push(`<button type="button" class="lrn-cq" data-act="c-practise-here">${ic("flask")}<span>${esc(T("letMePractise"))}</span></button>`);
+        }
+        const explain = this.covered ? `<button type="button" class="lrn-btn sm lrn-cexplain" data-act="c-explain"
+                title="${esc(T("explainHint"))}">${ic("scan-text")}${esc(T("explainScreen"))}</button>` : "";
+        if (!chips.length && !explain) {
             return "";
         }
         return `<div class="lrn-cnotsure">
             <div class="lrn-clabel">${esc(T("notSure"))}</div>
-            <button class="lrn-btn sm pri" data-act="c-explain"
-                    title="${esc(T("explainHint"))}"
-                >${ic("info")}${esc(T("explainScreen"))}</button>
-        </div>`;
-    }
-
-    /** "Continue" — the same suggestion the Journey's map makes, offered to
-     *  somebody who opened the drawer without a question.
-     *
-     *  SECOND, after "explain this screen", and the order is the argument: a
-     *  person standing on a screen they do not understand is asking about
-     *  THIS screen, and being sent somewhere else first would be answering a
-     *  question they did not ask. The suggestion is what to do afterwards.
-     *
-     *  Draws nothing when the flag is off, when the learner has finished
-     *  everything, or when the suggestion is the live capstone — that one
-     *  belongs on the map, where its briefing is, not behind a one-line
-     *  button on an unrelated screen. */
-    _continueHTML() {
-        const nb = (this.bundle && this.bundle.next_best) || {};
-        if (!nb.reason_key) {
-            return "";                       // the flag is off: draw nothing
-        }
-        // Finished everything: the sentence, and no button. Saying so in one
-        // line is the whole point — the alternative is a drawer that quietly
-        // stops offering anything and looks broken.
-        if (!nb.key || nb.kind === "none") {
-            return `<p class="lrn-note">${esc(tx(nb.reason || {}))}</p>`;
-        }
-        if (nb.kind !== "station") {
-            // The live capstone belongs on the map, where its briefing is —
-            // not behind a one-line button on an unrelated screen.
-            return "";
-        }
-        return `<button class="lrn-btn sm" data-act="c-continue"
-                data-key="${esc(nb.key)}" title="${esc(tx(nb.reason || {}))}"
-            >${ic("play")}${esc(T("nbTitle"))}</button>`;
-    }
-
-    /** LEARN v3 — the next step as a card of its own, top of the Guide tab.
-     *
-     *  Same suggestion, same flag, same `c-continue` door as before; what
-     *  changed is that the reason is READ, not hidden in a tooltip. The
-     *  button itself is `_continueHTML`, unchanged. */
-    _nextStepHTML() {
-        const nb = (this.bundle && this.bundle.next_best) || {};
-        if (!nb.reason_key) {
-            return "";
-        }
-        const station = (this.bundle.stations || []).find((s) => s.key === nb.key);
-        const title = station && nb.kind === "station" ? tx(station.name) : "";
-        const mins = station && station.duration_min
-            ? `<span class="lrn-cnext-min">${ic("clock")}${esc(String(station.duration_min))}${SP}${esc(T("min"))}</span>` : "";
-        return `<div class="lrn-cnext">
-            <div class="lrn-clabel">${esc(T("nextStep"))}</div>
-            ${title ? `<div class="lrn-cnext-t">${esc(title)}${mins}</div>` : ""}
-            <p class="lrn-note">${esc(tx(nb.reason || {}))}</p>
-            ${title ? this._continueHTML() : ""}
-        </div>`;
-    }
-
-    /** LEARN v3 — Practice tab: this screen's walkthroughs that can be TRIED
-     *  (or done with the engine waiting). Watch-only ones live on the Guide
-     *  tab; repeating them here would be two doors to one room. */
-    _practiceTryHTML() {
-        const rows = this.screenScenarios
-            .filter((sc) => (sc.modes || []).some((m) => m === "try" || m === "do"))
-            .map((sc) => `<div class="lrn-cscen">
-                <div class="lrn-cscentitle">${ic(sc.icon)}${esc(tx(sc.name))}</div>
-                <div class="lrn-cscenmodes">
-                    ${(sc.modes || []).filter((m) => m !== "watch").map((m) => `
-                        <button class="lrn-btn sm ${m === "try" ? "pri" : ""}"
-                                data-act="c-scenario" data-key="${esc(sc.key)}"
-                                data-mode="${esc(m)}"
-                                title="${esc(T(m === "try" ? "scTryHint" : "scDoHint"))}"
-                            >${esc(T(m === "try" ? "scTry" : "scDo"))}</button>`).join("")}
-                </div>
-            </div>`).join("");
-        if (!rows) {
-            return "";
-        }
-        return `<div class="lrn-cscens">
-            <div class="lrn-clabel">${esc(T("practiceTry"))}</div>
-            ${rows}
-        </div>`;
-    }
-
-    /** LEARN v3 — the product tour, reachable from any screen. */
-    _tourHTML() {
-        if (!this._offers("sc_welcome", "watch")) {
-            return "";
-        }
-        return `<div class="lrn-cpractice">
-            <div class="lrn-clabel">${esc(T("practiceTour"))}</div>
-            <p class="lrn-note">${esc(T("practiceTourLead"))}</p>
-            <button class="lrn-btn sm" data-act="c-scenario" data-key="sc_welcome"
-                    data-mode="watch">${ic("play")}${esc(T("scWatch"))}</button>
+            <div class="lrn-cchips">${chips.join("")}</div>
+            ${explain}
         </div>`;
     }
 
@@ -1159,24 +1721,6 @@ export class CoachHost extends Component {
         }
         openLearn(this.action, `station:${key}`);
         this.close();
-    }
-
-    /** The way into the free-roam sandbox, from wherever the learner is.
-     *
-     *  Drawn on EVERY screen, unlike the two offers above it: those need the
-     *  content plane to cover the screen, and this one needs nothing — the
-     *  practice company is the same twenty replicas whatever cockpit the
-     *  learner is standing on. It is also the honest answer to "can I just try
-     *  this somewhere safe", which is a question the drawer could not answer
-     *  before Phase 5.
-     */
-    _practiceHTML() {
-        return `<div class="lrn-cpractice">
-            <div class="lrn-clabel">${esc(T("practiceMode"))}</div>
-            <p class="lrn-note">${esc(T("practiceModeLead"))}</p>
-            <button class="lrn-btn sm" data-act="c-practice"
-                >${ic("flask")}${esc(T("practiceOpen"))}</button>
-        </div>`;
     }
 
     /** Open the Journey on the sandbox. Same door as `openLesson`, one key
@@ -1238,7 +1782,9 @@ export class CoachHost extends Component {
         if (!list.length) {
             return "";
         }
-        const label = { watch: "scWatch", try: "scTry", do: "scDo" };
+        // ONECHAT OC2 — "Practise", not "Try": one word for one promise
+        // across the drawer. "Do it live" keeps its own label, and only here.
+        const label = { watch: "scWatch", try: "scPractise", do: "scDo" };
         const hint = { watch: "scWatchHint", try: "scTryHint", do: "scDoHint" };
         const rows = list.map((sc) => `
             <div class="lrn-cscen">
@@ -1317,38 +1863,20 @@ export class CoachHost extends Component {
         </div>`;
     }
 
-    _suggestHTML() {
-        const s = this.screenInfo;
-        // Off the map, fall back to what the Coach can answer anywhere rather
-        // than showing nothing. "No lessons here yet" followed by silence is
-        // still a dead end.
-        const list = s ? s.suggest : (this.bundle?.global_suggest || []);
-        if (!list.length) {
-            return `<p class="lrn-note">${esc(T("noAnswerBody"))}</p>`;
+    _answerHTML(a, opts = {}) {
+        if (!a) {
+            return "";
         }
-        return `<div class="lrn-csuggest">
-            <div class="lrn-clabel">${esc(T("suggested"))}</div>
-            ${list.map((i) => `<button class="lrn-cq" data-act="c-suggest" data-key="${esc(i.key)}"
-                >${ic("help-circle")}${esc(tx(i.label))}</button>`).join("")}
-        </div>`;
-    }
-
-    _answerHTML(a) {
         if (!a.matched) {
-            // LEARN v3. A miss in the guide is often a question about the
-            // person's own numbers, which the Ask tab can look at. Offered only
-            // when that tab exists.
-            const handoff = this.askTab
-                ? `<p class="lrn-note">${esc(T("askDataLead"))}</p>
-                   <div class="lrn-ctools"><button class="lrn-btn sm pri" data-act="c-askdata"
-                       >${ic("message-circle")}${esc(T("askDataInstead"))}</button></div>`
-                : "";
+            // ONECHAT OC2 — no "ask the Ask tab instead" any more: the router
+            // already sent pay-figure questions to PayAI, so a miss here is a
+            // real miss, with what CAN be answered on this screen under it.
             return `<div class="lrn-cmiss">
                 <p><b>${esc(T("noAnswer"))}</b></p>
                 <p class="lrn-note">${esc(T("noAnswerBody"))}</p>
-                ${handoff}
             </div>${this._suggestFrom(a.suggest || [])}`;
         }
+        const simplerOn = !!opts.simpler && !!a.simpler;
         const blocks = (a.blocks || []).map((b) => this._blockHTML(b)).join("");
         const tools = [];
         if ((a.show_me || []).length) {
@@ -1356,58 +1884,94 @@ export class CoachHost extends Component {
                 >${ic("eye")}${esc(T("showMe"))}</button>`);
         }
         // LEARNOS Phase 4 — ANSWERS THAT TEACH. When a walkthrough covers the
-        // same ground, the answer offers it: Watch it happen, or Try it on the
-        // practice company. Not a new action — `c-scenario` is the control the
-        // "Show me how" rows have used since Phase 1b, so there is still
-        // exactly one path from this drawer into the scenario engine.
+        // same ground, the answer offers it: Watch it happen, or practise it
+        // on the practice company. Not a new action — `c-scenario` is the
+        // control the "Show me how" rows have used since Phase 1b, so there
+        // is still exactly one path from this drawer into the scenario engine.
         if (this._offers(a.watch, "watch")) {
             tools.push(`<button class="lrn-btn sm" data-act="c-scenario"
                 data-key="${esc(a.watch)}" data-mode="watch"
                 title="${esc(T("scWatchHint"))}"
                 >${ic("play")}${esc(T("scWatch"))}</button>`);
         }
+        // ONECHAT OC2 — "Practise this": ONE chip, only when the scenario the
+        // answer teaches really offers Try. It replaces the old "Try" button
+        // (one label, not two); a click draws a practice turn first, then
+        // opens the practice. "Do it live" is never offered under this word.
         if (this._offers(a["try"], "try")) {
-            tools.push(`<button class="lrn-btn sm" data-act="c-scenario"
+            tools.push(`<button class="lrn-btn sm pri" data-act="c-scenario"
                 data-key="${esc(a["try"])}" data-mode="try"
                 title="${esc(T("scTryHint"))}"
-                >${ic("flask")}${esc(T("scTry"))}</button>`);
+                >${ic("flask")}${esc(T("practiseThis"))}</button>`);
         }
         if (a.simpler) {
             tools.push(`<button class="lrn-btn sm" data-act="c-simpler"
-                >${ic("lightbulb")}${esc(this.state.simpler ? T("less") : T("simpler"))}</button>`);
+                >${ic("lightbulb")}${esc(simplerOn ? T("less") : T("simpler"))}</button>`);
         }
-        tools.push(`<button class="lrn-btn sm ghost" data-act="c-lesson"
-            >${ic("book-open")}${esc(T("openLesson"))}</button>`);
+        if (a.source_kind !== "capability") {
+            tools.push(`<button class="lrn-btn sm ghost" data-act="c-lesson"
+                >${ic("book-open")}${esc(T("openLesson"))}</button>`);
+        }
 
-        const simplerBlock = this.state.simpler && a.simpler
+        const simplerBlock = simplerOn
             ? `<div class="lrn-cblock p simpler">${gtx(a.simpler)}</div>` : "";
 
         // The learner is entitled to know which KIND of answer they are
-        // reading. Two are not a curated intent: a definition out of the
-        // column glossary, and — only when a tenant has switched the composer
-        // on — one a model wrote from this module's own material. The second
-        // badge is the more important of the two, because it is the only
-        // answer in the drawer that no author has read.
-        // Phase 4 adds a THIRD: an explanation the server assembled from this
-        // screen's own blurb, next step and column definitions. It is not a
-        // curated answer to a question anybody asked, so it says so.
-        const BADGES = {
-            column: ["book-open", "columnAnswer"],
+        // reading. ONECHAT OC2: every answer now names its source in one row
+        // at the top — "From the guide" for a curated intent; "About this
+        // column" for a definition out of the column glossary; "Composed from
+        // the guide" for one a model wrote from this module's own material
+        // (the only answer no author has read, so the most important label);
+        // "About this screen" for an explanation assembled from the screen's
+        // own blurb and columns. PayAI's answers say "From your pay data".
+        const SOURCES = {
+            column: ["book-open", "aboutColumn"],
             composed: ["sparkles", "composedAnswer"],
-            screen: ["info", "screenAnswer"],
+            screen: ["scan-text", "aboutScreen"],
+            capability: null,
         };
-        const badgeSpec = BADGES[a.source_kind];
-        const badge = badgeSpec
-            ? `<span class="lrn-chip b">${ic(badgeSpec[0])}${esc(T(badgeSpec[1]))}</span>`
+        const src = Object.prototype.hasOwnProperty.call(SOURCES, a.source_kind || "")
+            ? SOURCES[a.source_kind] : ["compass", "fromGuide"];
+        const badge = src
+            ? `<div class="lrn-csrc">${ic(src[0])}<span>${esc(T(src[1]))}</span></div>`
             : "";
         return `<div class="lrn-canswer">
             ${badge}
             <h4>${esc(tx(a.label))}</h4>
             ${simplerBlock || blocks}
-            ${a.pointFailed ? `<div class="lrn-cblock warn">${ic("info")}
-                ${esc(T("pointNotHere"))}</div>` : ""}
             <div class="lrn-ctools">${tools.join("")}</div>
         </div>`;
+    }
+
+    /** ONECHAT OC3 — an answer as the words read aloud after a spoken
+     *  question (handover §6.5): the heading, then the blocks as plain text.
+     *  Never the source line ("Grounded in …") and never the worked figures
+     *  (owner decision Q2 — figures stay on screen). The chat's `speechText`
+     *  then strips what markup is left, the vendor's name and any amount. */
+    _answerSpeech(a) {
+        if (!a) {
+            return "";
+        }
+        if (!a.matched) {
+            return [T("noAnswer"), T("noAnswerBody")].join(" ");
+        }
+        const plain = (html) => String(html || "").replace(/<[^>]*>/g, " ");
+        const parts = [tx(a.label)];
+        for (const b of a.blocks || []) {
+            if (b.kind === "source" || b.kind === "calc" || b.kind === "calc_kpi") {
+                continue;
+            }
+            if (b.kind === "steps") {
+                (b.steps || []).forEach((st, i) => {
+                    const line = String(tx(st.text) || "").trim();
+                    parts.push(`${i + 1}. ${line}${/[.!?]$/.test(line) ? "" : "."}`);
+                });
+            } else {
+                parts.push(plain(gtx(b.body)));
+            }
+        }
+        return parts.map((p) => String(p || "").replace(/\s+/g, " ").trim())
+            .filter(Boolean).join(" ");
     }
 
     _suggestFrom(list) {
@@ -1416,8 +1980,8 @@ export class CoachHost extends Component {
         }
         return `<div class="lrn-csuggest">
             <div class="lrn-clabel">${esc(T("canAnswer"))}</div>
-            ${list.map((i) => `<button class="lrn-cq" data-act="c-suggest" data-key="${esc(i.key)}"
-                >${ic("help-circle")}${esc(tx(i.label))}</button>`).join("")}
+            ${list.slice(0, MAX_CHIPS).map((i) => `<button class="lrn-cq" data-act="c-suggest" data-key="${esc(i.key)}"
+                data-label="${esc(tx(i.label))}">${ic("help-circle")}<span>${esc(tx(i.label))}</span></button>`).join("")}
         </div>`;
     }
 
@@ -1472,6 +2036,10 @@ export class CoachHost extends Component {
 
     // ------------------------------------------------------------ delegation
     onClick(ev) {
+        // A click anywhere outside the More menu closes it.
+        if (this.menu.open && !ev.target.closest(".lrn-menu, [data-act='c-more']")) {
+            this.menu.close();
+        }
         const el = ev.target.closest("[data-act]");
         if (!el) {
             return;
@@ -1481,18 +2049,20 @@ export class CoachHost extends Component {
             return;
         }
         ev.preventDefault();
+        const holder = el.closest("[data-turn]");
+        const turnId = holder ? holder.dataset.turn : "";
         if (act === "c-close") {
             this.close();
         } else if (act === "c-suggest") {
-            this.askIntent(el.dataset.key);
+            this.askIntent(el.dataset.key, el.dataset.label);
+        } else if (act === "c-say") {
+            this._say(el.dataset.text, "chip");
         } else if (act === "c-show") {
             this.showMe(el.dataset.anchor);
         } else if (act === "c-simpler") {
-            this.state.simpler = !this.state.simpler;
+            this._toggleSimpler(turnId);
         } else if (act === "c-lesson") {
             this.openLesson();
-        } else if (act === "c-back") {
-            this.state.answer = null;
         } else if (act === "c-lang") {
             this.toggleLang();
         } else if (act === "c-consent-yes") {
@@ -1500,23 +2070,85 @@ export class CoachHost extends Component {
         } else if (act === "c-consent-no") {
             this.decideConsent(false);
         } else if (act === "c-scenario") {
-            this.startScenario(el.dataset.key, el.dataset.mode, 0);
+            // Practise (Try) draws its practice turn first; Watch and Do it
+            // live start at once, as they always have.
+            if (el.dataset.mode === "try") {
+                this._practiseFrom(el.dataset.key, "try");
+            } else {
+                this.startScenario(el.dataset.key, el.dataset.mode, 0);
+            }
         } else if (act === "c-explain") {
-            this.explainScreen();
+            this.openHelper({ explain: true });
         } else if (act === "c-practice") {
             this.openPractice();
-        } else if (act === "c-continue") {
-            this.openSuggested(el.dataset.key);
-        } else if (act === "c-tab") {
-            this.setTab(el.dataset.tab);
-        } else if (act === "c-askdata") {
-            this.askData();
+        } else if (act === "c-practise-here") {
+            this._practiseHere();
+        } else if (act === "c-choice") {
+            this._pickChoice(turnId, Number(el.dataset.i));
+        } else if (act === "c-extra") {
+            this._extraChip(turnId, Number(el.dataset.i));
+        } else if (act === "c-again") {
+            this._expandMarker(turnId);
+        } else if (act === "c-more") {
+            this._openMenu();
+        } else if (act === "c-readaloud") {
+            if (this._api) {
+                this._api.toggleReadAloud();
+            }
+            this.menu.tick += 1;
+        } else if (act === "c-clear") {
+            this.menu.confirm = true;
+        } else if (act === "c-clear-yes") {
+            this._clearConversation();
+            this.menu.close();
+        } else if (act === "c-clear-no") {
+            this.menu.confirm = false;
+        } else if (act === "c-usevoice") {
+            if (this._api) {
+                this._api.reopenVoiceConsent();
+            }
+            this.menu.close();
         } else if (act === "c-goto") {
             this.goTab(el.dataset.lens);
         } else if (["c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater",
                     "c-mewatch", "c-meskip"].includes(act)) {
             this._momentAct(act);
         }
+    }
+
+    /** The header's More menu. BUILT HERE, as a string, so every control in
+     *  it is a declared `data-act` of this module (test_coach test_08) —
+     *  including the one door into practice mode the drawer still has. */
+    get menuHTML() {
+        void this.state.lang;
+        void this.menu.tick;
+        if (!this.menu.open) {
+            return markup("");
+        }
+        if (this.menu.confirm) {
+            return markup(`<div class="lrn-menu" role="menu" aria-label="${esc(T("clearConv"))}">
+                <p class="lrn-menuconfirm">${esc(T("clearConvConfirm"))}</p>
+                <div class="lrn-menurow">
+                    <button type="button" role="menuitem" class="lrn-btn sm pri lrn-bad" data-act="c-clear-yes">${ic("trash-2")}${esc(T("clearConvYes"))}</button>
+                    <button type="button" role="menuitem" class="lrn-btn sm ghost" data-act="c-clear-no">${esc(T("clearConvNo"))}</button>
+                </div>
+            </div>`);
+        }
+        const api = this._api;
+        const items = [];
+        if (api && api.ttsSupported()) {
+            const on = !!api.readAloudOn();
+            items.push(`<button type="button" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}"
+                class="lrn-menuitem" data-act="c-readaloud">${ic(on ? "volume-2" : "volume-x")}<span>${esc(T("readAloud"))}</span><span class="lrn-switch${on ? " on" : ""}" aria-hidden="true"></span></button>`);
+        }
+        if (this._hasConversation()) {
+            items.push(`<button type="button" role="menuitem" class="lrn-menuitem" data-act="c-clear">${ic("trash-2")}<span>${esc(T("clearConv"))}</span></button>`);
+        }
+        items.push(`<button type="button" role="menuitem" class="lrn-menuitem" data-act="c-practice">${ic("flask")}<span>${esc(T("practiceOpen"))}</span></button>`);
+        if (api && api.voiceDeclined()) {
+            items.push(`<button type="button" role="menuitem" class="lrn-menuitem" data-act="c-usevoice">${ic("mic")}<span>${esc(T("useVoice"))}</span></button>`);
+        }
+        return markup(`<div class="lrn-menu" role="menu" aria-label="${esc(T("more"))}">${items.join("")}</div>`);
     }
 
     /* ONE language preference, shared with the Journey.
@@ -1559,7 +2191,10 @@ export class CoachHost extends Component {
     _restoreLang() {
         try {
             const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}");
-            const sessionLang = window.odoo?.session_info?.user_context?.lang || "";
+            // `user.lang` (a browser locale, "vi-VN"): the old read of the
+            // page's session info found nothing on this version — it is
+            // deleted on load — so a Vietnamese user always started in English.
+            const sessionLang = String(user.lang || "").toLowerCase();
             RT.lang = p.lang || (sessionLang.startsWith("vi") ? "vi" : "en");
         } catch {
             RT.lang = "en";
@@ -1579,12 +2214,24 @@ export class CoachHost extends Component {
        in the template these stayed English while the answers beside them
        switched — and the honesty line is the last thing that should be
        readable in only one of the two languages this desk works in. */
-    get honestText() {
-        return T("honest");
+    get askPlaceholder() {
+        void this.state.lang;
+        return T("askPlaceholder");
     }
 
-    get askPlaceholder() {
-        return T("askPlaceholder");
+    get sendLabel() {
+        void this.state.lang;
+        return T("send");
+    }
+
+    get closeLabel() {
+        void this.state.lang;
+        return T("close");
+    }
+
+    get moreLabel() {
+        void this.state.lang;
+        return T("more");
     }
 
     /* The header's explain button. Two getters rather than T() in the
@@ -1606,6 +2253,7 @@ export class CoachHost extends Component {
     }
 
     get coachName() {
+        void this.state.lang;
         return T("coachName");
     }
 

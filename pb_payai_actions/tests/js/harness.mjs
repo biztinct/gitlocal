@@ -99,7 +99,8 @@ const KNOWN = {
     },
     get registry() { return pb.registry; },
     isMacOS: () => false,
-    user: { userId: 2, context: {} },
+    user: { userId: 2, context: {}, lang: "en-US", hasGroup: async () => true },
+    toRaw: (x) => x,
     featuresState: () => null,
     featureGate: () => ({ shown: true, locked: false, text: "" }),
     publishPlace: () => {},
@@ -136,8 +137,22 @@ function specToFile(spec) {
 
 const done = new Map();
 
-function transform(src, real) {
-    const rewrite = (names, spec) => {
+/** A relative spec ("../engine/runtime") as the bundler names it
+ *  ("@pb_learn/engine/runtime"), from the file that imports it — so a test
+ *  can list it in `real` like any other module. ONECHAT OC2: CoachHost's own
+ *  imports are relative. */
+function absoluteSpec(spec, fromFile) {
+    if (!fromFile || !/^\.\.?\//.test(spec)) { return spec; }
+    const target = path.resolve(path.dirname(fromFile), spec);
+    const rel = path.relative(ROOT, target).split(path.sep);
+    const at = rel.indexOf("static");
+    if (rel.length < 4 || at !== 1 || rel[2] !== "src") { return spec; }
+    return `@${rel[0]}/${rel.slice(3).join("/")}`;
+}
+
+function transform(src, real, fromFile) {
+    const rewrite = (names, rawSpec) => {
+        const spec = absoluteSpec(rawSpec, fromFile);
         if (real.includes(spec)) {
             return `import {${names}} from ${JSON.stringify(build(spec, real))};`;
         }
@@ -158,7 +173,7 @@ function build(spec, real) {
     const out = path.join(OUT, `${spec.replace(/[^\w]+/g, "_")}.mjs`);
     const url = pathToFileURL(out).href;
     done.set(spec, url);
-    fs.writeFileSync(out, transform(fs.readFileSync(file, "utf-8"), real));
+    fs.writeFileSync(out, transform(fs.readFileSync(file, "utf-8"), real, file));
     return url;
 }
 

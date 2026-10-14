@@ -6,6 +6,7 @@ helper ("Ask Payobook" button: Guide me / Ask / Practice tabs), walkthroughs
 (scenarios: Watch / Try / Do it live), practice tasks (missions), the practice
 company (replica), the welcome tour, glossary, suggested questions, and Ask
 Payobook's product knowledge (pb_payroll_ai_insights).
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 
 Content was written 2026-08-09/10. Since then the rail went 38 → 8 hubs, pay-run
 approval was replaced by the approval engine + one inbox, and ~a dozen areas

@@ -181,6 +181,45 @@ _ON_SCREEN_BONUS = 25
 # honest miss into an answer.
 _SCREENLESS_FLOOR = 55
 
+# ONECHAT OC1 — the five KINDS of match the scorer can make, by the base score
+# each one has always produced. The router (learn_helper.py) thresholds on the
+# kind and never on the number (ledger OC9); `probe` reports both.
+_KIND_OF_BASE = {100: 'exact', 80: 'contained', 60: 'reverse', 55: 'overlap2',
+                 40: 'overlap1'}
+#: Strongest first. `kind_rank(k) >= kind_rank('overlap2')` reads "overlap2 or
+#: better".
+KIND_ORDER = ('overlap1', 'overlap2', 'reverse', 'contained', 'exact')
+
+
+def kind_rank(kind):
+    """0 for no match, 1 for overlap1 … 5 for exact."""
+    return KIND_ORDER.index(kind) + 1 if kind in KIND_ORDER else 0
+
+
+# ONECHAT OC1 — THE ACCESS BOUNDARY (owner ruling 2026-10-13: nothing PayAI or
+# the helper offers may open Settings › Access and delegations for a person
+# who cannot open it). Mirrors pb_payai_actions `gate.ACCESS_LEARN`; pb_learn
+# never imports PayAI, so the two lists are kept equal by
+# `pb_payai_actions/tests/test_onechat_router.py`.
+ACCESS_LEARN = frozenset(('access', 'sc_access'))
+#: Intents that teach the Access home and nothing else.
+ACCESS_INTENTS = frozenset(('delegate',))
+#: The Access home's own anchors (pb_learn anchors.json "product" block).
+ACCESS_ANCHOR_PREFIX = 'ac-'
+#: Where the Access home is reached from: the Settings cog's left-menu entry.
+ACCESS_SIDEBAR_KEY = 'pb_settings.item_settings'
+
+
+def _access_target(target):
+    """True for a Show me target into the Access home: one of its anchors, or
+    the Access walkthrough (`scenario:sc_access[#step]`)."""
+    target = str(target or '')
+    if target.startswith(ACCESS_ANCHOR_PREFIX):
+        return True
+    if target.startswith('scenario:'):
+        return target.split(':', 1)[1].split('#', 1)[0] in ACCESS_LEARN
+    return False
+
 
 def _norm(text):
     """Lowercase, strip diacritics, fold đ, drop punctuation.
@@ -606,22 +645,33 @@ def explain_blocks(tree, screen_key, next_step):
 
 
 def explain_scenario_offer(tree, screen_key):
-    """(watch key, try key) for the first walkthrough offered on this screen.
+    """(watch key, try key) for the walkthroughs offered on this screen.
 
     The scenario is not narrated into a block. A sentence saying "there is a
     walkthrough of this" is a worse version of the button that starts one, and
     the button already exists — Phase 4 gave every answer optional
     `watch` / `try` keys for exactly this shape.
+
+    ONECHAT OC1: `watch` still comes from the FIRST scenario listed for the
+    screen, but `try` comes from the first listed scenario that HAS a Try.
+    Pay Runs lists the tour first (watch only) and "Read a pay run" second
+    (watch + try), so the old rule offered no practice on Pay Runs at all.
     """
+    watch, try_ = '', ''
+    first = True
     for scenario in tree.get('scenarios') or []:
         if scenario.get('retired'):
             continue
         if screen_key not in (scenario.get('screens') or []):
             continue
         modes = scenario.get('modes') or []
-        return (scenario['key'] if 'watch' in modes else '',
-                scenario['key'] if 'try' in modes else '')
-    return '', ''
+        if first:
+            watch = scenario['key'] if 'watch' in modes else ''
+            first = False
+        if 'try' in modes:
+            try_ = scenario['key']
+            break
+    return watch, try_
 
 
 def explain_prompt(screen_key, floor_text):
@@ -692,16 +742,24 @@ class LearnIntent(models.AbstractModel):
         return ambiguous
 
     @api.model
-    def _score(self, question, intent, screen_key, ambiguous=None):
-        """Exact > substring > reverse-substring > topic overlap.
+    def _score_kind(self, question, intent, ambiguous=None):
+        """(kind, base) for one intent: exact > substring > reverse-substring
+        > topic overlap, WITHOUT the on-screen bonus.
 
-        `ambiguous` is passed in by `_resolve_hook`, which computes it once per
+        ONECHAT OC1 split `_score` in two so the router can threshold on the
+        KIND of match and never on the number (ledger OC9): with the +25
+        on-screen bonus an "80" can be a two-word overlap, and one long word
+        reaches 65. `kind` is one of exact / contained / reverse / overlap2 /
+        overlap1, or None; `base` is 100 / 80 / 60 / 55 / 40 / 0 — exactly the
+        numbers `_score` has always produced before its bonus.
+
+        `ambiguous` is passed in by the callers, which compute it once per
         question rather than once per candidate — uncached it would otherwise
         walk every phrase in the module for every intent being scored.
         """
         nq = _norm(question)
         if not nq:
-            return 0
+            return None, 0
         phrases = intent.get('phrases') or []
         best = 0
         for phrase in phrases:
@@ -744,31 +802,49 @@ class LearnIntent(models.AbstractModel):
                     # length test would let any rare short word through.
                     if len(word) >= 6:
                         best = max(best, 40)
-        if best and screen_key and _covers_screen(intent, screen_key) \
-                and (intent.get('screens') or '*') != '*':
+        return _KIND_OF_BASE.get(best), best
+
+    @api.model
+    def _on_screen(self, intent, screen_key):
+        """Does this intent earn the on-screen bonus here? Only an intent that
+        names this screen — a `*` intent covers every screen and so says
+        nothing about this one."""
+        return bool(screen_key and _covers_screen(intent, screen_key)
+                    and (intent.get('screens') or '*') != '*')
+
+    @api.model
+    def _score(self, question, intent, screen_key, ambiguous=None):
+        """Exact > substring > reverse-substring > topic overlap, plus the
+        on-screen bonus. Results are unchanged since ONECHAT OC1 split the
+        kind out into `_score_kind`."""
+        _kind, best = self._score_kind(question, intent, ambiguous)
+        if best and self._on_screen(intent, screen_key):
             best += _ON_SCREEN_BONUS
         return best
 
     @api.model
-    def _resolve_hook(self, question, screen_key, candidates):
-        """THE SEAM.
-
-        Returns an intent key from `candidates`, or None. An LLM implementation
-        replaces the body and keeps the contract: it may CHOOSE from the
-        candidates, it may not author a reply. Everything the learner reads
-        stays a block someone wrote and a test can check.
+    def _resolve_scored(self, question, screen_key, candidates, ambiguous=None):
+        """[(score, kind, on_screen, key)], best first, floors and the
+        tie-at-floor rule applied exactly as `_resolve_hook` has always applied
+        them. An empty list is a miss. ONECHAT OC1: the router reads the KIND
+        out of this; `_resolve_hook` reads the first key and nothing else.
         """
-        ambiguous = self._ambiguous_words()
-        scored = [(self._score(question, i, screen_key, ambiguous), i['key'])
-                  for i in candidates]
+        if ambiguous is None:
+            ambiguous = self._ambiguous_words()
+        scored = []
+        for intent in candidates:
+            kind, base = self._score_kind(question, intent, ambiguous)
+            on_screen = bool(base) and self._on_screen(intent, screen_key)
+            score = base + (_ON_SCREEN_BONUS if on_screen else 0)
+            scored.append((score, kind, on_screen, intent['key']))
         # Off the map the bar is higher — see _SCREENLESS_FLOOR. Applied here
         # rather than inside `_score` so that the scores themselves stay
         # comparable between the two cases and only the ACCEPTANCE changes.
         floor = _SCORE_FLOOR if screen_key else _SCREENLESS_FLOOR
         scored = [s for s in scored if s[0] >= floor]
         if not scored:
-            return None
-        scored.sort(key=lambda s: (-s[0], s[1]))
+            return []
+        scored.sort(key=lambda s: (-s[0], s[3]))
         # A TIE AT THE FLOOR IS A COIN TOSS WEARING A BADGE.
         #
         # The sort's second key is the intent KEY, so two candidates on the
@@ -787,8 +863,24 @@ class LearnIntent(models.AbstractModel):
         # or 100 are both real matches — one of them is a good answer, and
         # refusing to pick would throw away an answer rather than a guess.
         if len(scored) > 1 and scored[0][0] == floor and scored[1][0] == floor:
-            return None
-        return scored[0][1]
+            return []
+        return scored
+
+    @api.model
+    def _resolve_hook(self, question, screen_key, candidates):
+        """THE SEAM.
+
+        Returns an intent key from `candidates`, or None. An LLM implementation
+        replaces the body and keeps the contract: it may CHOOSE from the
+        candidates, it may not author a reply. Everything the learner reads
+        stays a block someone wrote and a test can check.
+
+        ONECHAT OC1: the scoring moved to `_resolve_scored` (which the router's
+        `probe` also reads); this keeps its contract — the first key or None.
+        """
+        scored = self._resolve_scored(question, screen_key, candidates,
+                                      self._ambiguous_words())
+        return scored[0][3] if scored else None
 
     @api.model
     def resolve(self, question, screen_key=None):
@@ -802,6 +894,199 @@ class LearnIntent(models.AbstractModel):
         candidates = [i for i in Content.intents()
                       if not screen_key or _covers_screen(i, screen_key)]
         return self._resolve_hook(question, screen_key, candidates)
+
+    # ==================================================================
+    # ONECHAT OC1 — the router's view of the resolver
+    # ==================================================================
+    # `probe` answers "which intent, and HOW did it match" without composing
+    # anything and without building an answer. The router (learn_helper.py)
+    # decides on the KIND (exact / contained / reverse / overlap2 / overlap1),
+    # never on the score: the on-screen bonus makes an "80" a two-word overlap
+    # on one screen and a phrase match on another (ledger OC9). `ask()` is not
+    # touched — its miss payload keeps its three keys (ledger OC3).
+    @api.model
+    def probe(self, question, screen_key=None, exclude=None):
+        """{key, score, kind, on_screen, scope, source} or None.
+
+        Order: the advice guard (→ `compliance`, kind exact, source advice);
+        the screen pass (candidates covering this screen, floor 20 — exactly
+        what `resolve` does); when that found nothing of kind overlap2 or
+        better, a SCREENLESS pass over every intent at floor 55 ("what is BHXH"
+        asked on Pay Runs, ledger OC2); then a weak screen-pass hit; then the
+        column glossary (source column, kind overlap1). Reads only.
+
+        `exclude` — intent keys to leave out (the router drops the `practice`
+        intent when the sentence never mentions practice: its unaccented
+        phrase "lam thu" is also the start of "làm thủ tục").
+        """
+        Content = self.env['learn.content']
+        if _is_advice(question):
+            if Content.intent('compliance'):
+                return {'key': 'compliance', 'score': 100, 'kind': 'exact',
+                        'on_screen': False, 'scope': 'any', 'source': 'advice'}
+            return None
+        ambiguous = self._ambiguous_words()
+        intents = [i for i in Content.intents() if i['key'] not in (exclude or ())]
+        weak = None
+        if screen_key:
+            candidates = [i for i in intents if _covers_screen(i, screen_key)]
+            scored = self._resolve_scored(question, screen_key, candidates, ambiguous)
+            if scored:
+                score, kind, on_screen, key = scored[0]
+                hit = {'key': key, 'score': score, 'kind': kind,
+                       'on_screen': on_screen, 'scope': 'screen', 'source': 'intent'}
+                if kind_rank(kind) >= kind_rank('overlap2'):
+                    return hit
+                weak = hit
+        scored = self._resolve_scored(question, None, intents, ambiguous)
+        if scored and kind_rank(scored[0][1]) >= kind_rank('overlap2'):
+            score, kind, _on, key = scored[0]
+            return {'key': key, 'score': score, 'kind': kind, 'on_screen': False,
+                    'scope': 'any', 'source': 'intent'}
+        if weak:
+            return weak
+        column = self._match_column(question, screen_key)
+        if column:
+            return {'key': 'column:%s' % column['key'], 'score': 0,
+                    'kind': 'overlap1', 'on_screen': True, 'scope': 'screen',
+                    'source': 'column'}
+        return None
+
+    @api.model
+    def answer_for(self, key, screen_key=None, lang=None):
+        """The same hit payload `ask()` returns for this intent — for chips,
+        "Show again", the PayAI-error fallback and the router. Also takes
+        `column:<key>` (a column definition) and `screen:<key>` (Explain this
+        screen). Access-filtered (`_access_filter`). Unknown key, or an intent
+        that renders no blocks here → the honest miss payload."""
+        key = str(key or '')
+        Content = self.env['learn.content']
+        answer = None
+        if key.startswith('column:'):
+            col_key = key.split(':', 1)[1]
+            column = next((c for c in Content.columns() if c['key'] == col_key), None)
+            if column:
+                answer = self._column_answer(column, column.get('screen') or screen_key)
+        elif key.startswith('screen:'):
+            floor = self._explain_floor(key.split(':', 1)[1])
+            answer = floor or None
+        elif Content.intent(key):
+            answer = self._answer(key, screen_key)
+            if answer and answer.get('blocks'):
+                answer['matched'] = True
+            else:
+                answer = None
+        if not answer:
+            return self._miss_payload(screen_key)
+        return self._access_filter(answer, screen_key)
+
+    # ---------------------------------------------- the Access boundary
+    @api.model
+    def _access_visible(self):
+        """Can this person open Settings › Access and delegations?
+
+        The Access home has no left-menu entry of its own: it is a tab of the
+        Settings cog (`pb_settings.item_settings`). So "can see Access" is
+        "the Settings entry is OPEN on this person's own left menu", read from
+        the one rule the menu is drawn from (`pb.sidebar.item.visibility_for`,
+        the same reading PayAI's `gate.screen_state` makes — lent roles
+        included): the entry 'on' (not 'locked', not 'hidden') and its block
+        'on'.
+
+        NOT `learn.runtime._station_reach`: that one answers "is it on the
+        rail", and the cog is `restricted` — shown LOCKED to everybody outside
+        the access team — so it said "visible" to everyone (ledger OC30).
+        Absent module, absent entry or an unreadable menu → not visible.
+        """
+        try:
+            item = self.env.ref(ACCESS_SIDEBAR_KEY, raise_if_not_found=False)
+            if not item or 'pb.sidebar.item' not in self.env:
+                return False
+            row = item.sudo()
+            vis = self.env['pb.sidebar.item'].visibility_for(self.env.user) or {}
+            if (vis.get('items') or {}).get(row.id) != 'on':
+                return False
+            section = row.section_id.id if row.section_id else None
+            if section and (vis.get('sections') or {}).get(section, 'hidden') != 'on':
+                return False
+            return True
+        except Exception:                                     # noqa: BLE001
+            _logger.info("Learn coach: Access reach unreadable", exc_info=True)
+            return False
+
+    @api.model
+    def _access_filter(self, answer, screen_key=None):
+        """Drop every offer into the Access home from an answer this person
+        could not follow (owner ruling 2026-10-13; PayAI's `gate.ACCESS_LEARN`
+        mirrored as `ACCESS_LEARN` here — pb_learn never imports PayAI).
+
+        The Watch / Try keys, a `scenario:sc_access` Show me, the Access
+        screen's own anchors — and for the `delegate` intent, which is ONLY
+        about the Access home, the honest miss instead of the answer. Works on
+        a copy: the content tree is shared and must never be written."""
+        if not isinstance(answer, dict) or not answer.get('matched'):
+            return answer
+        if self._access_visible():
+            return answer
+        if answer.get('key') in ACCESS_INTENTS:
+            return self._miss_payload(screen_key)
+        out = dict(answer)
+        for mode in ('watch', 'try'):
+            if out.get(mode) in ACCESS_LEARN:
+                out[mode] = ''
+        out['show_me'] = [t for t in (out.get('show_me') or [])
+                          if not _access_target(t)]
+        return out
+
+    # ------------------------------------------------ practice matching
+    @api.model
+    def _scenario_ambiguous_words(self, scenarios):
+        owner, ambiguous = {}, set()
+        for sc in scenarios:
+            words = set()
+            for phrase in sc.get('phrases') or []:
+                words |= _topic_words(phrase)
+            for word in words:
+                if owner.setdefault(word, sc['key']) != sc['key']:
+                    ambiguous.add(word)
+        return ambiguous
+
+    @api.model
+    def practice_probe(self, topic, screen_key=None):
+        """{key, kind, score, modes} for the walkthrough a "let me practise
+        <topic>" names, or None (no hit, a hit weaker than overlap2, or two
+        different scenarios tied at the top — the router then offers chips).
+
+        Scored with the intents' own kinds over each non-retired scenario's
+        authored `phrases` (data.js `match:[…]`, emitted by gen_learn_data);
+        kinds overlap2 and better, or a single overlap1 no other scenario
+        shares; the on-screen bonus breaks ranking ties only. Reads only."""
+        scenarios = [s for s in self.env['learn.content'].scenarios()
+                     if not s.get('retired') and s.get('phrases')]
+        if not scenarios or not _norm(topic):
+            return None
+        ambiguous = self._scenario_ambiguous_words(scenarios)
+        scored, weak = [], []
+        for sc in scenarios:
+            kind, base = self._score_kind(topic, sc, ambiguous)
+            if not kind:
+                continue
+            bonus = _ON_SCREEN_BONUS if screen_key in (sc.get('screens') or []) else 0
+            row = (base + bonus, kind, sc['key'], list(sc.get('modes') or []))
+            (scored if kind_rank(kind) >= kind_rank('overlap2') else weak).append(row)
+        if not scored and len(weak) == 1:
+            # ONE long word only one walkthrough uses ("let me practise
+            # importing the month" → sc_import, on "import"): the topic of a
+            # practise request is a few words, and a word no other scenario
+            # shares names the scenario. Two such hits are a question.
+            scored = weak
+        if not scored:
+            return None
+        scored.sort(key=lambda s: (-s[0], s[2]))
+        if len(scored) > 1 and scored[0][0] == scored[1][0]:
+            return None
+        score, kind, key, modes = scored[0]
+        return {'key': key, 'kind': kind, 'score': score, 'modes': modes}
 
     # ------------------------------------------------------- capability
     @api.model
@@ -996,6 +1281,20 @@ class LearnIntent(models.AbstractModel):
         if composed:
             return composed
 
+        # Kept inline (test_composer::test_03b reads the ORDER off this
+        # body); `_miss_payload` below is the same three keys for the router.
+        return {
+            'matched': False,
+            'capability': self._capability(screen_key),
+            'suggest': self._suggestions(screen_key),
+        }
+
+    @api.model
+    def _miss_payload(self, screen_key=None):
+        """The honest miss, EXACTLY the three keys `ask()` returns
+        (test_composer::test_02b). The ONECHAT router returns this object
+        untouched inside its own reply and never adds a score or a kind to it
+        (ledger OC3)."""
         return {
             'matched': False,
             'capability': self._capability(screen_key),
@@ -1213,7 +1512,9 @@ class LearnIntent(models.AbstractModel):
         if not blocks:
             return None
         watch, try_ = explain_scenario_offer(tree, screen_key)
-        return {
+        # ONECHAT OC1: the offers pass the Access boundary like every other
+        # answer the helper draws (`_access_filter`).
+        return self._access_filter({
             'key': 'screen:%s' % screen_key,
             'label': _chrome_pair(Content, 'explainScreen'),
             'simpler': '',
@@ -1225,7 +1526,7 @@ class LearnIntent(models.AbstractModel):
             'try': try_,
             'practice_key': '',
             'source_kind': 'screen',
-        }
+        }, screen_key)
 
     @api.model
     def _explain_wire_text(self, screen_key, lang):

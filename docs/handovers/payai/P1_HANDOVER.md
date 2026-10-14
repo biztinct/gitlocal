@@ -191,6 +191,7 @@ The client never decides a tier or a right; it renders what it is given and call
   open_walkthrough; `openHub` import :13, `hubPlace` :12); `closePanel`.
 - `AiInsightChatEmbedded extends AiInsightChat` :723–775 — own template, `embedded=true`, props `close?, handoff?`;
   registered `pb_helper_tabs` → `ask` :777–782 with `groups:["pb_payroll_ai_insights.group_payai_user"]`.
+> ONECHAT update (2026-10-14): the helper drawer is now ONE chat called PayAI — no Guide me / Ask / Practice tabs and no "Your next step"; a router decides where each sentence goes (`docs/handovers/onechat/ONECHAT_HANDOVER.md`).
 - `ai_insight_chat.xml`: the two variants do NOT share markup. Floating: messages loop :88 (`payai-message
   payai-msg-<role>`, text :109, chart :112–123, insights :126–138, "Show me" :144–149 `payai-coach-action`,
   follow-ups :152–161). Embedded: loop :323 (`payai-embed-msg me|ai`), action button :345–351 `payai-embed-action`.

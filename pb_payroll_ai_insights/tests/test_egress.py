@@ -593,18 +593,23 @@ class TestEgressSeams(TransactionCase):
              and a reader who knows that would reasonably assume this one is;
           4. "nothing is sent until you press send" is scoped to the TEXT. The
              first draft said it flat, which is true of the transcript and
-             false of the recording — the audio goes when the button is
-             released, which is the whole reason the card exists. A notice
-             that is reassuring about the wrong half is worse than none.
+             false of the recording — the audio goes when the person taps
+             Stop, which is the whole reason the card exists. A notice that is
+             reassuring about the wrong half is worse than none.
+
+        ONECHAT OC3 — reworded for tap-to-talk (handover §6.7): tap to start,
+        tap Stop to send, and a fifth claim — Cancel sends nothing. Owner
+        decision Q5: the change is not new substance, nobody is asked again.
         """
         catalogue = _po_map(self.po_src or '')
-        body = [s for s in catalogue if 'Hold the microphone and speak' in s]
+        body = [s for s in catalogue if 'Tap the microphone and speak' in s]
         self.assertTrue(body, "the voice consent body is not in the catalogue")
         english = body[0]
-        for claim in ('When you let go, the recording goes',
+        for claim in ('When you tap Stop, the recording goes',
                       "outside company's speech service",
                       'cannot take names out of it',
-                      'The text then waits in the box'):
+                      'The text then waits in the box',
+                      'Tap Cancel and nothing is sent'):
             self.assertIn(claim, english,
                           "the consent card no longer says: %s" % claim)
         self.assertNotIn('Nothing is sent until', english,
@@ -614,7 +619,7 @@ class TestEgressSeams(TransactionCase):
         # an assertion that only knows the lower-case form is a test about
         # where the full stops are.
         vietnamese = catalogue[english].lower()
-        for claim in ('khi bạn thả tay, bản ghi âm sẽ được gửi',
+        for claim in ('khi bạn bấm dừng, bản ghi âm sẽ được gửi',
                       'công ty bên ngoài',
                       'không thể bỏ tên riêng',
                       'nằm chờ trong ô nhập'):

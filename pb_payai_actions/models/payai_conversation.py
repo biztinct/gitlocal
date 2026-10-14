@@ -118,14 +118,46 @@ class PayrollAIConversation(models.Model):
     # was confirmed by this person.
     @api.model
     def rpc_send_message(self, message, session_id=None, screen=None, resolve=None,
-                         voice=False):
+                         voice=False, ask_only=False):
         """`voice` — the message was spoken (the transcript landed in the box
         and the person pressed send). It decides only two things: the plan is
         read back on the device, and a spoken "go ahead" may count when the
-        company allows it."""
+        company allows it.
+
+        `ask_only` (ONECHAT OC1, handover E2/§4.9) — the helper's router read
+        this sentence as a QUESTION: PayAI answers it and never plans from it
+        (`PayrollAIEngine.process_message`). It can only take the command path
+        away, never add one; a client that does not send it gets today's
+        behaviour. The base module's `rpc_send_message` does not know the
+        word, so only this module's chat patch ever sends it."""
         return super(PayrollAIConversation, self.with_context(
-            payai_voice=bool(voice))).rpc_send_message(
+            payai_voice=bool(voice), payai_ask_only=bool(ask_only))).rpc_send_message(
                 message, session_id=session_id, screen=screen, resolve=resolve)
+
+    @api.model
+    def rpc_helper_status(self, session_id=None):
+        """ONECHAT OC1 — what only the command path knows: whether a spoken
+        go-ahead counts in this company (`can_act` is the router's own hook,
+        read by the base)."""
+        out = super().rpc_helper_status(session_id)
+        out['voice_go_ahead'] = bool(self.env.company.payai_voice_go_ahead)
+        return out
+
+    def action_clear(self):
+        """Clear conversation (ONECHAT OC1, handover E3): the plans and
+        questions still waiting in it stop for good — they were already
+        harmless (a cleared chat has no "last thing I showed you"), and now
+        the audit says so too. The runner's bookkeeping, written as the
+        runner writes it (PA18); only this person's own rows in this
+        conversation."""
+        for conv in self:
+            if conv.user_id != self.env.user:
+                continue
+            self.env['payai.task'].sudo().search([
+                ('user_id', '=', self.env.user.id), ('session_id', '=', conv.id),
+                ('state', 'in', ('planned', 'clarify')),
+            ]).write({'state': 'expired'})
+        return super().action_clear()
 
     def _payai_call(self, fn, task_id, *args):
         token = set_lang(self.env.lang or self.env.user.lang)

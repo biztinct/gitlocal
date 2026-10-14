@@ -152,13 +152,21 @@ class OpenAIProvider(BaseAIProvider):
             _logger.error(f"OpenAI vision error: {e}")
             raise
 
-    def transcribe_audio(self, audio_bytes, language='en'):
+    def transcribe_audio(self, audio_bytes, language=None, filename='voice_recording.webm',
+                         prompt=None):
         """
         Transcribe audio to text using OpenAI Whisper API.
 
         Args:
-            audio_bytes: Raw audio file bytes (webm, mp3, wav, etc.)
-            language: Language hint for Whisper (default: 'en')
+            audio_bytes: Raw audio file bytes (webm, mp4, ogg, ...)
+            language: 'en' / 'vi' to force one language. ONECHAT OC3: None
+                (the default) sends NO language at all, so the service
+                detects it — forcing English turned Vietnamese speech into
+                garbled English (ledger OC15).
+            filename: what the service is told the file is called; it reads
+                the container from the extension (WebM from Chrome, MP4 from
+                Safari). The caller picks it from a fixed table.
+            prompt: a short hint of product words (nouns only), or None.
 
         Returns:
             str: Transcribed text
@@ -169,16 +177,20 @@ class OpenAIProvider(BaseAIProvider):
 
             # Wrap bytes in a file-like object with a name
             audio_file = io.BytesIO(audio_bytes)
-            audio_file.name = "voice_recording.webm"
+            audio_file.name = filename or "voice_recording.webm"
 
-            response = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                language=language,
-            )
+            kwargs = {"model": "whisper-1", "file": audio_file}
+            if language:
+                kwargs["language"] = language
+            if prompt:
+                kwargs["prompt"] = prompt
+            response = client.audio.transcriptions.create(**kwargs)
             text = response.text.strip()
-            _logger.info("PayAI Whisper: transcribed %d bytes → '%s'",
-                         len(audio_bytes), text[:80])
+            # COUNTS ONLY. The transcript is what a person said — often a
+            # colleague's name and their pay — and a log line is kept far
+            # longer than the answer it led to (ledger OC6).
+            _logger.info("PayAI Whisper: transcribed %d bytes into %d characters",
+                         len(audio_bytes), len(text))
             return text
         except Exception as e:
             _logger.error("PayAI Whisper transcription error: %s", e)

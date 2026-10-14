@@ -15,3 +15,5 @@ from . import payroll_ai_conversation
 from . import payroll_ai_dashboard
 from . import payroll_ai_pulse
 from . import payroll_ai_report
+# ONECHAT OC1 — what the helper's router may know about the assistant.
+from . import learn_helper

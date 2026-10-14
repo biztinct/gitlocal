@@ -22,14 +22,16 @@
              with no icon at all. Same symbols, injected wherever it mounts. -->
         <t t-call="pb_learn.IconSprite"/>
 
-        <!-- LEARN v3 — THE ONE HELPER. The only floating control in the corner:
-             PayAI's pill stands down when this module is installed and its
-             chat is the Ask tab below. `helper-orb` is the tour's last stop. -->
+        <!-- THE ONE HELPER. The only floating control in the corner: PayAI's
+             pill stands down when this module is installed and its chat is
+             the drawer below (ONECHAT: one chat, called PayAI). `helper-orb`
+             is the tour's last stop. -->
         <button class="lrn-fab" t-on-click="toggle" data-coach="helper-orb"
                 t-att-class="{ open: state.open }"
                 t-att-aria-expanded="state.open"
                 aria-haspopup="dialog"
-                t-att-title="state.open ? '' : launcherTitle">
+                t-att-title="state.open ? '' : launcherTitle"
+                t-att-aria-label="state.open ? closeLabel : launcherLabel">
             <span class="lrn-fabcore" aria-hidden="true">
                 <svg class="lrn-ic"><use t-attf-href="#lrn-i-#{state.open ? 'x' : 'sparkles'}"/></svg>
             </span>
@@ -42,7 +44,7 @@
         <div class="lrn-momenthost" t-if="state.moment and !state.open" t-out="momentHTML"/>
 
         <aside class="lrn-drawer" t-if="state.open" role="dialog"
-               t-att-class="{ 'lrn-still': isStill }"
+               t-att-class="{ 'lrn-still': isStill, 'lrn-has-chat': !!chat }"
                t-att-aria-label="coachName">
             <header class="lrn-dhead">
                 <span class="lrn-dtitle">
@@ -59,62 +61,63 @@
                      fire and cost three rounds to notice, while data-act has worked
                      from the first build — so use the path that is already proven
                      rather than the one that should work. -->
-                <!-- LEARNOS Phase 4 — "Explain this screen". In the HEADER
-                     rather than in the body, because it has to be reachable
-                     while an answer is already showing: the commonest use is
-                     "that was not what I meant, what IS this screen". It
-                     disappears off the map, where it would have nothing to
-                     explain. Same delegated data-act path as its neighbours. -->
-                <button t-if="covered" class="lrn-btn sm ghost" data-act="c-explain"
-                        t-att-title="explainHintText" t-att-aria-label="explainLabel">
-                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                <!-- "Explain this screen" stays in the HEADER (LEARNOS Phase 4):
+                     it has to be reachable while an answer is already showing.
+                     ONECHAT OC2: its answer lands in the one stream, like
+                     everything else. -->
+                <button t-if="covered" class="lrn-btn sm ghost lrn-hbtn" data-act="c-explain"
+                        t-att-title="explainLabel" t-att-aria-label="explainLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-scan-text"/></svg>
                 </button>
-                <button class="lrn-btn sm ghost" data-act="c-lang">
+                <button class="lrn-btn sm ghost lrn-langpill" data-act="c-lang">
                     <span t-esc="langLabel"/>
                 </button>
-                <button class="lrn-btn sm ghost" data-act="c-close" aria-label="Close">
+                <!-- ONECHAT OC2 — More: read answers aloud, clear the
+                     conversation, practice mode, use my voice. The menu is
+                     built in coach.js so every control in it is a declared
+                     data-act; arrows move through it, Escape closes it first. -->
+                <span class="lrn-menuhost" t-on-keydown="onMenuKey">
+                    <button class="lrn-btn sm ghost lrn-hbtn" data-act="c-more"
+                            aria-haspopup="menu" t-att-aria-expanded="menu.open ? 'true' : 'false'"
+                            t-att-aria-label="moreLabel" t-att-title="moreLabel">
+                        <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-ellipsis"/></svg>
+                    </button>
+                    <t t-out="menuHTML"/>
+                </span>
+                <button class="lrn-btn sm ghost lrn-hbtn" data-act="c-close"
+                        t-att-aria-label="closeLabel" t-att-title="closeLabel">
                     <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-x"/></svg>
                 </button>
             </header>
 
-            <!-- The standing promise, on screen rather than in a policy doc. -->
-            <p class="lrn-dhonest">
-                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-shield-check"/></svg>
-                <span t-esc="honestText"/>
-            </p>
-
-            <!-- LEARN v3 — Guide me / Ask / Practice. Same delegated data-act
-                 path as every other control in the drawer. -->
-            <nav class="lrn-dtabs" role="tablist">
-                <t t-foreach="tabs" t-as="tab" t-key="tab.key">
-                    <button type="button" role="tab" class="lrn-dtab" data-act="c-tab"
-                            t-att-data-tab="tab.key"
-                            t-att-aria-selected="state.tab === tab.key ? 'true' : 'false'">
-                        <svg class="lrn-ic" aria-hidden="true"><use t-attf-href="#lrn-i-#{tab.icon}"/></svg>
-                        <span t-esc="tab.label"/>
+            <!-- ONECHAT OC2 — ONE CHAT. No tab strip, no "Your next step".
+                 PayAI's embedded chat draws the stream and the composer and
+                 is handed this drawer's guide, context card and practice
+                 doors through `helper`. The `lang` prop is what re-renders
+                 it on a language flip (helper never changes identity). It is
+                 mounted while the drawer is open and unmounted on close, so a
+                 recording in progress is discarded with it. -->
+            <t t-if="chat">
+                <t t-component="chat.Component" helper="helper" lang="state.lang"
+                   screen="state.screen || ''" place="placeKey" close="closeHelper"/>
+            </t>
+            <!-- No PayAI chat for this person: the same router, guide-only,
+                 in a stream of this drawer's own. No microphone here (voice
+                 needs the assistant's speech service). -->
+            <t t-else="">
+                <div class="lrn-dbody lrn-stream" t-out="bodyHTML" aria-live="polite"/>
+                <form class="lrn-dask lrn-composer" t-on-submit="onSubmit">
+                    <textarea t-ref="input" rows="1" data-coach="helper-composer"
+                              t-att-value="state.question" t-on-input="onInput"
+                              t-on-keydown="onComposerKey" t-att-disabled="state.busy"
+                              t-att-placeholder="askPlaceholder" t-att-aria-label="askPlaceholder"/>
+                    <button class="lrn-btn sm pri lrn-send" type="submit"
+                            t-att-disabled="state.busy or !state.question.trim()"
+                            t-att-aria-label="sendLabel" t-att-title="sendLabel">
+                        <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
                     </button>
-                </t>
-            </nav>
-
-            <!-- The Ask tab is PayAI's chat, mounted here instead of in a
-                 modal of its own. It brings its own input box. -->
-            <div class="lrn-dask-tab" t-if="state.tab === 'ask' and askTab">
-                <t t-component="askTab.Component" close="closeHelper" handoff="state.handoff"/>
-            </div>
-
-            <!-- Keyed on screen + tab: a tab switch re-mounts the body, and
-                 the mount is the cross-fade (coach.scss, ≤200 ms, none under
-                 Reduce motion). -->
-            <div class="lrn-dbody" t-if="state.tab !== 'ask'" t-key="bodyKey" t-out="bodyHTML"/>
-
-            <form class="lrn-dask" t-if="state.tab === 'guide'" t-on-submit="onSubmit">
-                <input type="text" t-ref="input" t-att-value="state.question"
-                       t-on-input="onInput" t-att-disabled="state.busy"
-                       t-att-placeholder="askPlaceholder" t-att-aria-label="askPlaceholder"/>
-                <button class="lrn-btn sm pri" type="submit" t-att-disabled="state.busy">
-                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
-                </button>
-            </form>
+                </form>
+            </t>
         </aside>
     </div>
 </t>

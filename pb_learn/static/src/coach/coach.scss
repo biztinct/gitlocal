@@ -577,9 +577,11 @@ body.lrn-one-helper .lrn-drawer {
     border-radius: 18px;
 }
 
-/* The Ask tab draws charts, so it gets more room. Same custom-property route
-   as the base rule: Sass must not see the min(). */
-body.lrn-one-helper .lrn-drawer:has(.lrn-dask-tab) {
+/* ONECHAT OC2 — the one chat draws charts and plan cards, so the drawer is
+   480 px whenever the chat is mounted, and a fixed height so the stream
+   scrolls and the composer stays put. Same custom-property route as the base
+   rule: Sass must not see the min(). */
+body.lrn-one-helper .lrn-drawer.lrn-has-chat {
     --lrn-dw: min(480px, calc(100vw - 44px));
     height: var(--lrn-dh);
 }
@@ -613,81 +615,6 @@ body.lrn-one-helper .lrn-drawer:has(.lrn-dask-tab) {
         white-space: nowrap;
         text-overflow: ellipsis;
     }
-}
-
-/* Guide me / Ask / Practice — a segmented control, one solid choice. */
-.lrn-dtabs {
-    display: flex;
-    gap: 4px;
-    padding: 10px 12px 2px;
-}
-
-.lrn-dtab {
-    flex: 1 1 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 6px;
-    border: 0;
-    border-radius: 10px;
-    background: var(--vuf-primary-soft, #F6F4FC);
-    color: var(--vuf-ink-soft, #4B4866);
-    font: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .15s, color .15s;
-
-    .lrn-ic { width: 15px; height: 15px; }
-
-    &:hover { background: var(--vuf-primary-soft2, #EDEAF8); }
-    &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
-
-    &[aria-selected="true"] {
-        background: var(--vuf-primary, #5A4BB0);
-        color: #fff;
-    }
-}
-
-/* The Ask tab hosts PayAI's chat; it owns its own scroll and input. */
-.lrn-dask-tab {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-/* The next step, with its reason, top of the Guide tab. */
-.lrn-cnext {
-    margin-bottom: 12px;
-    padding: 12px;
-    border: 1px solid var(--vuf-primary-soft2, #EDEAF8);
-    border-left: 4px solid var(--vuf-primary, #5A4BB0);
-    border-radius: 12px;
-    background: var(--vuf-primary-soft, #F6F4FC);
-
-    .lrn-note { margin: 2px 0 8px; }
-}
-
-.lrn-cnext-t {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.lrn-cnext-min {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: auto;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--vuf-muted, #6B7280);
-
-    .lrn-ic { width: 12px; height: 12px; }
 }
 
 @media (max-width: 640px) {
@@ -942,3 +869,359 @@ body.lrn-one-helper:has(.pw-root) .lrn-hmoment { bottom: 152px; }
     .lrn-hoftenbtn, .lrn-htabbtn, .lrn-htabgo { transition: none; }
 }
 .lrn-still .lrn-dbody, .lrn-still .lrn-dplace { animation: none; }
+
+/* =============================================================================
+   ONECHAT OC2 — ONE CHAT. One stream of turns, one composer, one header.
+   The same frame for every kind of turn, whoever wrote it: the guide, PayAI,
+   a practice turn, a note. Locked palette — indigo #5A4BB0, soft #EDEAF8,
+   ok #2E7D4F, warn #D97706, bad #DC2668 — Lucide icons only, no gradients,
+   no emoji. New turns fade up in 160 ms; nothing moves under Reduce motion.
+   Declared LAST so it wins over the older drawer rules above it.
+   ========================================================================== */
+
+/* -- header: Explain, language, More, Close -------------------------------- */
+.lrn-dhead .lrn-hbtn {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 9px;
+
+    .lrn-ic { width: 17px; height: 17px; }
+}
+.lrn-dhead .lrn-langpill {
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #5A4BB0;
+}
+.lrn-dhead .lrn-hbtn:focus-visible,
+.lrn-dhead .lrn-langpill:focus-visible {
+    outline: 2px solid #5A4BB0;
+    outline-offset: 2px;
+}
+
+.lrn-menuhost { position: relative; display: inline-flex; }
+
+.lrn-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 5;
+    width: 248px;
+    padding: 6px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid #E4E1F2;
+    border-radius: 12px;
+    box-shadow: 0 16px 36px -16px rgba(36, 31, 82, .45);
+    animation: lrn-turn-in .16s ease-out;
+}
+.lrn-menuitem {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 8px 9px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--vuf-ink, #1E1B2E);
+    text-align: left;
+    cursor: pointer;
+
+    .lrn-ic { width: 16px; height: 16px; flex: 0 0 auto; color: #5A4BB0; }
+    span:first-of-type { flex: 1 1 auto; }
+    &:hover, &:focus-visible { background: #EDEAF8; outline: none; }
+}
+.lrn-switch {
+    position: relative;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 18px;
+    border-radius: 999px;
+    background: #E4E1F2;
+    transition: background .16s;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform .16s;
+    }
+    &.on { background: #5A4BB0; }
+    &.on::after { transform: translateX(12px); }
+}
+.lrn-menuconfirm { margin: 4px 6px 8px; font-size: 12.5px; line-height: 1.45; }
+.lrn-menurow { display: flex; gap: 6px; padding: 0 4px 4px; }
+.lrn-btn.lrn-bad { background: #DC2668; border-color: #DC2668; color: #fff; }
+
+/* -- the banner: only while the stream is empty ---------------------------- */
+.lrn-has-chat .lrn-dhonest,
+.lrn-stream .lrn-dhonest {
+    margin: 0 0 10px;
+    border-radius: 10px;
+    background: #EDEAF8;
+    color: #3F338A;
+}
+
+/* -- the stream ------------------------------------------------------------- */
+.lrn-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.lrn-turn {
+    animation: lrn-turn-in .16s ease-out;
+
+    &.me {
+        align-self: flex-end;
+        max-width: 85%;
+    }
+    &.ai {
+        padding: 11px 12px;
+        background: var(--vuf-surface, #fff);
+        border: 1px solid #E4E1F2;
+        border-radius: 14px 14px 14px 4px;
+    }
+    &.note {
+        padding: 8px 11px;
+        border-color: #E4E1F2;
+        background: #FAF9FE;
+    }
+    &.consent { padding: 0; border: 0; background: transparent; }
+    &.consent .lrn-cconsent { margin-top: 0; }
+    &.ctx { padding: 0; }
+    .lrn-ctools { margin-top: 10px; }
+}
+.lrn-tbubble {
+    padding: 8px 12px;
+    border-radius: 14px 14px 4px 14px;
+    background: #EDEAF8;
+    color: #241F52;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.lrn-tlead {
+    margin: 0 0 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #3F338A;
+}
+.lrn-tnote {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12.5px;
+    color: var(--vuf-ink, #1E1B2E);
+
+    .lrn-ic { width: 15px; height: 15px; margin-top: 2px; flex: 0 0 auto; color: #5A4BB0; }
+}
+.lrn-turn.note .lrn-csuggest { margin-top: 9px; }
+.lrn-tpractice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+
+    .lrn-ic { width: 16px; height: 16px; margin-top: 1px; flex: 0 0 auto; color: #5A4BB0; }
+}
+.lrn-tchips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+.lrn-tchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 5px 11px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5A4BB0;
+    cursor: pointer;
+    transition: background .16s, border-color .16s;
+
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; }
+    &:hover { background: #EDEAF8; border-color: #CBC2EE; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+    &.pri { background: #5A4BB0; border-color: #5A4BB0; color: #fff; }
+    &.ghost { border-style: dashed; }
+    &.on { background: #EDEAF8; border-color: #5A4BB0; }
+    &:disabled { cursor: default; opacity: .55; }
+    &.on:disabled { opacity: 1; }
+}
+.lrn-tdivider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vuf-muted, #6B7280);
+
+    &::before, &::after {
+        content: "";
+        flex: 1 1 auto;
+        height: 1px;
+        background: #E4E1F2;
+    }
+    span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .lrn-ic { width: 12px; height: 12px; }
+}
+.lrn-tmarker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--vuf-ink-soft, #4B4866);
+
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; color: #5A4BB0; }
+    > span { flex: 1 1 auto; min-width: 0; }
+}
+.lrn-turn.marker { padding: 8px 11px; }
+.lrn-tagain {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: transparent;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #5A4BB0;
+    cursor: pointer;
+
+    .lrn-ic { width: 12px; height: 12px; }
+    &:hover { background: #EDEAF8; }
+}
+.lrn-tmore { margin-top: 10px; padding-top: 10px; border-top: 1px solid #F1F0F7; }
+
+/* The source of an answer, in one quiet row above it. */
+.lrn-csrc {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: #5A4BB0;
+
+    .lrn-ic { width: 13px; height: 13px; }
+}
+
+/* -- the context card -------------------------------------------------------- */
+.lrn-ctx {
+    padding: 12px;
+    border: 1px solid #E4E1F2;
+    border-radius: 14px;
+    background: var(--vuf-surface, #fff);
+    animation: lrn-turn-in .16s ease-out;
+
+    .lrn-cground {
+        p.lrn-note {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    }
+    .lrn-cscens { margin: 12px 0 0; }
+    .lrn-hub { margin-top: 12px; }
+}
+.lrn-cchips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .lrn-cq { margin-bottom: 0; }
+}
+.lrn-cnotsure .lrn-cexplain {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* -- the guide-only composer (no PayAI chat for this person) --------------- */
+.lrn-composer {
+    align-items: flex-end;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+
+    textarea {
+        flex: 1;
+        min-width: 0;
+        min-height: 38px;
+        max-height: 120px;
+        padding: 9px 12px;
+        border: 1px solid #E4E1F2;
+        border-radius: 12px;
+        font: inherit;
+        line-height: 1.4;
+        resize: none;
+        outline: none;
+
+        &:focus { border-color: #5A4BB0; }
+    }
+    .lrn-send {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border-radius: 12px;
+        background: #5A4BB0;
+        border-color: #5A4BB0;
+        color: #fff;
+    }
+}
+
+@keyframes lrn-turn-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* -- phone: the bottom sheet, sized off what the keyboard leaves ------------
+   `--lrn-vvh` / `--lrn-kb` come from window.visualViewport (coach.js
+   `_onViewport`); a plain vh would put the composer under the keyboard. */
+@media (max-width: 640px) {
+    body.lrn-one-helper .lrn-drawer.lrn-has-chat,
+    body.lrn-one-helper .lrn-drawer {
+        --lrn-sheet-h: min(88dvh, calc(var(--lrn-vvh, 88vh) - 96px));
+        left: 0;
+        right: 0;
+        width: auto;
+        bottom: calc(var(--lrn-kb, 0px) + 72px);
+        max-height: var(--lrn-sheet-h);
+        border-radius: 18px 18px 0 0;
+    }
+    body.lrn-one-helper .lrn-drawer.lrn-has-chat { height: var(--lrn-sheet-h); }
+    .lrn-menu { width: 232px; }
+    .lrn-tchip { min-height: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-turn, .lrn-ctx, .lrn-menu { animation: none; }
+    .lrn-switch, .lrn-switch::after, .lrn-tchip { transition: none; }
+}
+.lrn-still .lrn-turn, .lrn-still .lrn-ctx, .lrn-still .lrn-menu { animation: none; }

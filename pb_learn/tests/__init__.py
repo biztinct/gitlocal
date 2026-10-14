@@ -32,3 +32,9 @@ from . import test_refresh_paths
 # PAYAI FIX-1 — a lesson step about an optional feature (PayAI) shows only
 # where the reader's company has it; the ten minutes belong to the offer.
 from . import test_feature_gate
+# ONECHAT OC1 — the helper's router (base layer) and the resolver seams it reads.
+from . import test_helper_route
+# ONECHAT OC2 — the one chat: no tabs, no next step, PayAI by name (source).
+from . import test_onechat_ui
+# ONECHAT OC4 — Learn content follows the one PayAI chat (keys, lessons, phrases).
+from . import test_onechat_content

@@ -1256,6 +1256,42 @@ def _writes(step):
 INPUT_KINDS = ('text', 'number')
 
 
+def _phrase_norm(text):
+    """The router's `_norm` (pb_learn learn_intent.py): lower case, marks
+    folded, đ → d, punctuation → space. Two phrases that normalise alike are
+    the same trigger."""
+    import unicodedata
+    s = (text or '').lower().replace('đ', 'd')
+    s = unicodedata.normalize('NFD', s)
+    s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+    return ' '.join(re.sub(r'[^a-z0-9\s]+', ' ', s).split())
+
+
+def _scenario_phrases(sc):
+    """ONECHAT OC1 — a scenario's practise phrases: the authored `match`
+    list (EN, VI with marks, VI without), then its name in both languages —
+    the name is what a practice chip is labelled with, so it must find its
+    own scenario."""
+    phrases = [p for p in (sc.get('match') or []) if isinstance(p, str) and p.strip()]
+    for lab in (en_of(sc['name']), vi_of(sc['name'])):
+        if lab and lab not in phrases:
+            phrases.append(lab)
+    return phrases
+
+
+def _check_scenario_phrases(key, phrases, owner, problems):
+    """A phrase that appears on TWO scenarios would make "let me practise
+    <it>" a coin toss between them — refused, like a duplicate key."""
+    for phrase in phrases:
+        norm = _phrase_norm(phrase)
+        if not norm:
+            continue
+        other = owner.setdefault(norm, key)
+        if other != key:
+            problems.append('scenario %s: match phrase %r is also a phrase of %s'
+                            % (key, phrase, other))
+
+
 def content_scenarios(data, bi):
     scenarios = data.get('scenarios') or []
     screens = set(data['screenCtx'])
@@ -1270,6 +1306,7 @@ def content_scenarios(data, bi):
     replica = _replica_anchors()
     problems, seen = [], set()
     out = []
+    phrase_owner = {}
 
     # THE INPUT TABLE ITSELF, before any step is read. A declared field the
     # replica does not draw is worse than a missing one: the generator would
@@ -1348,8 +1385,14 @@ def content_scenarios(data, bi):
             # LEARN REFRESH step 2: kept in the content, off the map and out
             # of every offer. Progress rows for it keep their meaning.
             'retired': bool(sc.get('retired')),
+            # ONECHAT OC1 — what "let me practise <topic>" is matched against
+            # (pb_learn learn.intent.practice_probe). Authored `match:[…]`,
+            # both languages in one bag like an intent's, plus the name.
+            'phrases': _scenario_phrases(sc),
             'steps': [],
         }
+        if not sc.get('retired'):
+            _check_scenario_phrases(key, node['phrases'], phrase_owner, problems)
 
         step_keys = set()
         for i, step in enumerate(sc.get('steps') or []):
