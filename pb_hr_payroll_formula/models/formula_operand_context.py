@@ -229,6 +229,7 @@ def operand_contexts(excel_formula):
             key = normalize_ref(match.group(0))
             if not key:
                 continue
+            comparison_operand = False
 
             # ---- operator adjacency, both sides -------------------------
             # Adjacency rather than one regex over the pair, because a regex
@@ -244,8 +245,10 @@ def operand_contexts(excel_formula):
                 if op in _ARITH_OPS:
                     add(key, CTX_ARITH)
                 elif op in _ORDER_OPS:
+                    comparison_operand = True
                     add(key, CTX_NUMCMP)
                 elif op in _EQ_OPS:
+                    comparison_operand = True
                     far = pos + len(op) if not forward else pos
                     if _operand_is_literal(source, scan, far if forward else pos - 1,
                                            forward):
@@ -254,7 +257,10 @@ def operand_contexts(excel_formula):
                         add(key, CTX_NUMCMP)
 
             # ---- consumed by a typed function ---------------------------
-            if any(s <= start and end <= e for s, e in numeric_spans):
+            # SUM(IF(status="S/0", amount, 0)) consumes the comparison's
+            # boolean result. It does not consume status as a number. Direct
+            # arithmetic on another occurrence still adds CTX_ARITH above.
+            if not comparison_operand and any(s <= start and end <= e for s, e in numeric_spans):
                 add(key, CTX_ARITH)
             if any(s <= start and end <= e for s, e in text_spans):
                 add(key, CTX_TEXTFN)

@@ -9,6 +9,7 @@ from odoo.exceptions import UserError, ValidationError
 
 from ..formula_engine.tax_workbook import HEADERS, read_tax_map
 from ..formula_engine.header_detector import HeaderDetector
+from ..models.formula_operand_context import operand_contexts
 from ..models.payroll_tax_table import _APPLY_KEY, _APPLY_TOKEN, stamp
 
 
@@ -157,6 +158,13 @@ class TestCountryTaxMapping(TransactionCase):
         header, start, details = HeaderDetector(s).detect_header_row()
         self.assertEqual((header, start), (6, 7))
         self.assertTrue(details['declared_header'])
+
+    def test_numeric_total_does_not_count_its_text_condition(self):
+        contexts = operand_contexts('=ROUND(SUM(IF(AND(J30="S/0",B30>0),B30,0)),0)')
+        self.assertEqual(contexts['J'], {'strcmp'})
+        self.assertIn('arith', contexts['B'])
+        contexts = operand_contexts('=SUM(IF(J30="S/0",B30,0))+J30*2')
+        self.assertEqual(contexts['J'], {'strcmp', 'arith'})
 
     def test_proposal_stamp_changes_when_draft_values_move(self):
         t = self.table()

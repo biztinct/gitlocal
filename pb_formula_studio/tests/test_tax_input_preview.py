@@ -28,3 +28,12 @@ class TestTaxInputPreview(TransactionCase):
         self.assertEqual(values, {'A': 'S/0', 'B': '0017', 'C': 100.0})
         sample.input_values_json = json.dumps({'PTKPSTATUS': 'Unknown', 'EMPKEY': '0017'})
         self.assertEqual(studio._compute(config, sample.id)['values']['C'], 'Review tax status')
+        tax = config.rule_ids.filtered(lambda r: r.code == 'TAXTEST')
+        tax.excel_formula = '=SUM(IF(A1="S/0",100,0))'
+        self.assertFalse([p for p in studio.get_problems(config.id)['problems']
+                          if p['kind'] == 'refinformula'])
+        Rule.create({'config_id': config.id, 'name': 'Invalid arithmetic', 'code': 'BADTEXTMATH',
+                     'column_type': 'formula', 'forced_column_letter': 'D',
+                     'excel_formula': '=A1+1'})
+        self.assertTrue([p for p in studio.get_problems(config.id)['problems']
+                         if p['kind'] == 'refinformula'])

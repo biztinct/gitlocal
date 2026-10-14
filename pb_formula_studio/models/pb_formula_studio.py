@@ -5110,6 +5110,8 @@ class PbFormulaStudio(models.AbstractModel):
         # A formula that names itself is a cycle, already reported above — so the
         # reader is always some OTHER column (refs are kept per rule to say so).
         refs_by_rule = {}
+        from odoo.addons.pb_hr_payroll_formula.models import formula_operand_context
+        numeric_refs_by_rule = {}
         for r in rules:
             if r.column_type != 'formula':
                 continue
@@ -5119,6 +5121,9 @@ class PbFormulaStudio(models.AbstractModel):
                 if code:
                     cols.add(code)
             refs_by_rule[r.id] = cols
+            numeric_refs_by_rule[r.id] = {
+                ref for ref, contexts in formula_operand_context.operand_contexts(r.excel_formula).items()
+                if formula_operand_context.CTX_ARITH in contexts}
         # MAPFIX B4 — the rail and the mapping board must never disagree about how
         # much is left to do, so checks (c) and (d) below stopped carrying their own
         # notion of "unrouted" and read the ONE definition instead. Between them they
@@ -5142,9 +5147,10 @@ class PbFormulaStudio(models.AbstractModel):
             letter = (r.column_letter or '').strip().upper()
             names = {n for n in (code, letter) if n}
             is_read = any(names & refs for rid, refs in refs_by_rule.items() if rid != r.id)
+            is_read_as_number = any(names & refs for rid, refs in numeric_refs_by_rule.items() if rid != r.id)
 
             # (b) a people/reference column feeding a calculation
-            if is_read and (role != 'payroll' or r.is_text_component):
+            if is_read and (role != 'payroll' or (r.is_text_component and is_read_as_number)):
                 _add('refinformula', 'error',
                      _("%s (%s) is used in a calculation") % (r.name or '', r.column_letter),
                      (_("This column is filed as %s rather than pay, yet another "
