@@ -159,6 +159,24 @@ class TestCountryTaxMapping(TransactionCase):
         t.slab_ids[-1].tax_rate = .06
         self.assertNotEqual(before, t._stamp())
 
+    def test_large_bounds_allow_binary_rounding_but_detect_a_rupiah_change(self):
+        table = self.table()
+        table.slab_ids[0].income_to = 550000000
+        rule = self.env['hr.formula.rule'].create({
+            'name': 'Large cap', 'code': 'LARGECAP', 'config_id': self.config.id,
+            'column_type': 'constant', 'constant_value': 550000000.000001,
+            'tax_table_id': table.id, 'tax_field': 'upper', 'tax_band_sequence': 1})
+        self.assertTrue(rule.tax_aligned)
+        rule.constant_value = 550000001
+        self.assertFalse(rule.tax_aligned)
+
+    def test_eight_decimal_rate_change_changes_scheme_stamp(self):
+        rule = self.bind(self.table())
+        before = self.config._content_hash()
+        rule.constant_value = .05000001
+        self.assertAlmostEqual(rule.constant_value, .05000001, places=8)
+        self.assertNotEqual(before, self.config._content_hash())
+
     def test_cockpit_country_filter_never_returns_vietnam_for_indonesia(self):
         if 'pb.statutory' not in self.env:
             self.skipTest('Statutory cockpit is not installed')

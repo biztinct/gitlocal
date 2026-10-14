@@ -24,6 +24,12 @@ def stamp(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def same_number(left, right):
+    # Odoo float rounding adds a few binary ULPs at billion-rupiah magnitudes.
+    # Keep the tolerance much smaller than a currency unit or a rate digit.
+    return math.isclose(left, right, rel_tol=1e-14, abs_tol=1e-9)
+
+
 def notice(answer):
     return {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
         'title': _('Statutory tables'), 'message': answer['message'],
@@ -278,7 +284,7 @@ class TaxMappedRule(models.Model):
             slot = rule.tax_parameter_code if rule.tax_field == 'parameter' else rule.tax_band_sequence
             value = rule.tax_table_id._values().get((slot, rule.tax_field)) if rule.tax_table_id else None
             rule.tax_expected_value = value or 0
-            rule.tax_aligned = value is not None and abs(rule.constant_value - value) <= 1e-8
+            rule.tax_aligned = value is not None and same_number(rule.constant_value, value)
 
     @api.constrains('tax_table_id', 'config_id', 'column_type', 'tax_field', 'tax_band_sequence', 'tax_parameter_code')
     def _check_tax_binding(self):
@@ -348,7 +354,7 @@ class TaxMappedConfig(models.Model):
         plan = self._tax_refresh_plan(asof)
         changed = 0
         for row in plan:
-            if row['before'] != row['after'] or row['old_table_id'] != row['table_id']:
+            if not same_number(row['before'], row['after']) or row['old_table_id'] != row['table_id']:
                 self.env['hr.formula.rule'].browse(row['rule_id']).with_context(
                     formula_version_reason='legislation').write({
                         'constant_value': row['after'], 'tax_table_id': row['table_id']})

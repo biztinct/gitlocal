@@ -560,7 +560,7 @@ class HrFormulaRule(models.Model):
     constant_value = fields.Float(
         string='Constant Value',
         default=0.0,
-        digits=(16, 6),  # Allow up to 6 decimal places for percentages like 0.015
+        digits=(20, 8),  # Match the fractional precision of country tax rates.
         help="Fixed value for constant columns"
     )
 

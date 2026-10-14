@@ -78,7 +78,7 @@ class HrFormulaConfig(models.Model):
                 continue
             formula = Rule._normalize_excel_formula(rule.excel_formula or '') \
                 or ''
-            constant = round(float(rule.constant_value or 0.0), 6)
+            constant = round(float(rule.constant_value or 0.0), 8)
             parts.append((code, rule.column_type or '', formula, constant))
         tables = []
         for table in self.rate_table_ids:

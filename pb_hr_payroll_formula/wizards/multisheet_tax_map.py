@@ -7,6 +7,7 @@ from odoo.exceptions import UserError
 
 from ..formula_engine.tax_workbook import read_tax_map, SHEET
 from ..formula_engine.excel_semantics import coerce_number
+from ..models.payroll_tax_table import same_number
 
 
 class TaxMappedPreview(models.TransientModel):
@@ -67,8 +68,7 @@ class TaxMappedImport(models.TransientModel):
         values = self.env.context.get('payroll_tax_numeric_literals') or {}
         key = '%s!%s' % (component.source_sheet, component.constant_cell_ref)
         if key in values:
-            # The workbook cell was already validated as a typed number.
-            # Never re-interpret 0.003 as a locale-formatted thousands string.
+            # Use the validated numeric cell, independently of display text.
             return values[key]
         return super()._import_constant_number(component)
 
@@ -89,7 +89,10 @@ class TaxMappedImport(models.TransientModel):
             if table:
                 keys = ['effective_from', 'effective_to', 'method', 'basis']
                 metadata_matches = all(str(table[k] or '') == str(group[k] or '') for k in keys)
-                if table._values() != mapped_values or not metadata_matches:
+                existing_values = table._values()
+                values_match = set(existing_values) == set(mapped_values) and all(
+                    same_number(existing_values[k], mapped_values[k]) for k in mapped_values)
+                if not values_match or not metadata_matches:
                     raise UserError(_('Workbook values differ from edition %s. Use a new version; an import cannot overwrite a database edition.', table.display_name))
             else:
                 vals = {k: group[k] for k in ['code', 'country_code', 'version', 'effective_from', 'effective_to', 'method', 'basis']}
@@ -111,7 +114,7 @@ class TaxMappedImport(models.TransientModel):
                 if len(previews) != 1:
                     raise UserError(_('Include the mapped constant %s!%s before importing.', entry['sheet'], entry['cell']))
                 rule = self.config_id.rule_ids.filtered(lambda r: r.code == previews.generated_code)
-                if len(rule) != 1 or abs(rule.constant_value - entry['value']) > 1e-8:
+                if len(rule) != 1 or not same_number(rule.constant_value, entry['value']):
                     raise UserError(_('The imported statutory constant %s!%s does not match its workbook value.', entry['sheet'], entry['cell']))
                 rule.write({'tax_table_id': table.id, 'tax_field': entry['field'],
                             'tax_band_sequence': entry['slot'] if entry['field'] != 'parameter' else 0,
