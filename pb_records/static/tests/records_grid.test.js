@@ -97,6 +97,7 @@ test("Employee Id can move ahead of Person and becomes the pinned first column",
     st.columns[2] = { ...st.columns[2], label: "Employee Id" };
     await mountGrid(st);
     await click('[data-column-id="f:hr.employee:barcode"] .rd-kebab');
+    await animationFrame();
     await click(".rd-menu button:first-child");
     await animationFrame();
     expect(queryAllTexts(".rd-head .lb").slice(0, 4))
@@ -144,6 +145,7 @@ test("identity-column menus move in both directions and stop at the first and la
     const st = state(1);
     await mountGrid(st);
     await click('[data-column-id="@department"] .rd-kebab');
+    await animationFrame();
     await click(".rd-menu button:first-child");
     await animationFrame();
     expect(queryAllTexts(".rd-head .lb")[0]).toBe("Department");
