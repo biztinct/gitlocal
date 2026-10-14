@@ -21,6 +21,7 @@ from odoo.exceptions import UserError, ValidationError
 from ..formula_engine import excel_semantics
 from ..models import column_role_classifier
 from ..models import component_code
+from ..models import formula_operand_context
 
 _logger = logging.getLogger(__name__)
 
@@ -730,6 +731,11 @@ class MultiSheetImportWizard(models.TransientModel):
                 contract_component_map = ctx.get('contract_component_map', {})
                 requires_new_contract_map = ctx.get('requires_new_contract_map', {})
                 text_component_map = ctx.get('text_component_map', {})
+                same_sheet_reads = set()
+                for formula_info in formula_columns.values():
+                    expression = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
+                    if '!' not in expression:
+                        same_sheet_reads.update(formula_operand_context.operand_contexts(expression))
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -758,7 +764,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     # Check if this column is referenced by main sheet
                     is_referenced = self._is_column_referenced(
                         sheet_line.sheet_name, col_letter, idx + 1, cross_sheet_refs
-                    )
+                    ) or col_letter in same_sheet_reads
 
                     # Get sample value
                     sample = self._get_sample_value(

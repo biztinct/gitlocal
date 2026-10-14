@@ -50,9 +50,9 @@ class TestCountryTaxMapping(TransactionCase):
             s.cell(r, 1, pair[0])
             s.cell(r, 2, pair[1]).font = Font(color='0000FF')
         s.append([])
-        s.append(['Employee ID', 'Gross income', 'Monthly tax'])
-        s.append(['EXAMPLE1', 5500000, '=ROUND(IF(B7<=$B$1,B7*$B$2,B7*$B$4),0)'])
-        s.append(['EXAMPLE2', 5400000, '=ROUND(IF(B8<=$B$1,B8*$B$2,B8*$B$4),0)'])
+        s.append(['Employee ID', 'Gross income', 'Monthly tax', 'PTKP status'])
+        s.append(['EXAMPLE1', 5500000, '=IF(D7="S/0",ROUND(IF(B7<=$B$1,B7*$B$2,B7*$B$4),0),0)', 'S/0'])
+        s.append(['EXAMPLE2', 5400000, '=IF(D8="S/0",ROUND(IF(B8<=$B$1,B8*$B$2,B8*$B$4),0),0)', 'M/0'])
         m = w.create_sheet('Tax Map')
         m.append(HEADERS)
         for slot, field, cell in [(1, 'upper', 'B1'), (1, 'rate', 'B2'), (2, 'upper', 'B3'), (2, 'rate', 'B4')]:
@@ -79,6 +79,8 @@ class TestCountryTaxMapping(TransactionCase):
         self.assertEqual(set(rules.mapped('tax_source_cell')), {'B1', 'B2', 'B3', 'B4'})
         self.assertTrue(all(rules.mapped('tax_aligned')))
         self.assertEqual(rules.tax_table_id.state, 'draft')
+        status = self.config.rule_ids.filtered(lambda r: r.original_column_letter == 'D')
+        self.assertEqual(status.column_role, 'payroll')
         self.assertFalse(self.config.rule_ids.filtered(lambda r: r.name == 'Table Code'))
         # Same edition and same cells round-trip without duplicate source tables.
         wizard.action_execute_import()
