@@ -135,6 +135,13 @@ class TestCountryTaxMapping(TransactionCase):
         w['Payroll']['B4'] = 5
         with self.assertRaises(ValueError):
             read_tax_map(w)
+        w['Payroll']['B4'] = '=1/20'
+        with self.assertRaises(ValueError):
+            read_tax_map(w)
+        w['Payroll']['B4'] = .05
+        w['Tax Map']['K5'] = 'B2'
+        with self.assertRaises(ValueError):
+            read_tax_map(w)
 
     def test_declared_header_overrides_tax_table_headings(self):
         from openpyxl.workbook.defined_name import DefinedName
@@ -145,13 +152,6 @@ class TestCountryTaxMapping(TransactionCase):
         header, start, details = HeaderDetector(s).detect_header_row()
         self.assertEqual((header, start), (6, 7))
         self.assertTrue(details['declared_header'])
-        w['Payroll']['B4'] = '=1/20'
-        with self.assertRaises(ValueError):
-            read_tax_map(w)
-        w['Payroll']['B4'] = .05
-        w['Tax Map']['K5'] = 'B2'
-        with self.assertRaises(ValueError):
-            read_tax_map(w)
 
     def test_proposal_stamp_changes_when_draft_values_move(self):
         t = self.table()
