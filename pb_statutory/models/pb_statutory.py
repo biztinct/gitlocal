@@ -249,6 +249,8 @@ class PbStatutory(models.AbstractModel):
             tax_tables.append({
                 'id': t.id, 'model': t._name, 'name': t.name, 'code': t.code,
                 'year': t.effective_from.year, 'slabs': len(t.slab_ids),
+                'items': len(t.parameter_ids) if t.method == 'parameters' else len(t.slab_ids),
+                'unit': 'constants' if t.method == 'parameters' else 'brackets',
                 'personal': 0, 'dependent': 0, 'active': t.state == 'published',
                 'country': t.country_code, 'edition': '%s · %s · %s' % (t.version, t.basis, t.state),
             })

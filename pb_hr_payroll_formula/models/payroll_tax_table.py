@@ -45,7 +45,7 @@ class PayrollTaxTable(models.Model):
     code = fields.Char(required=True, index=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda s: s.env.company, index=True)
     country_code = fields.Selection(_COUNTRY, required=True, index=True)
-    version = fields.Char(required=True, default='2026-08')
+    version = fields.Char(required=True, default=lambda s: fields.Date.context_today(s).strftime('%Y-%m'))
     effective_from = fields.Date(required=True, default=fields.Date.today)
     effective_to = fields.Date()
     method = fields.Selection([('progressive', 'Progressive marginal bands'),

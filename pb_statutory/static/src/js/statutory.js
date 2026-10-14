@@ -114,6 +114,7 @@ export class PbStatutory extends Component {
             this.state.kind = "policy";
             this.state.ledger = null;
             this.state.drawer = null;
+            this.state.view = "tax";
         }
         await this.load();
     }

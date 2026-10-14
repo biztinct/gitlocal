@@ -143,9 +143,9 @@
             <div class="ppl-roster">
               <div t-foreach="filteredTax" t-as="t" t-key="t.model + ':' + t.id" class="ppl-card" t-on-click="() => this.openTax(t)">
                 <div class="ppl-av"><t t-out="ic('sigma',20)"/></div>
-                <div class="ppl-id"><div class="nm" t-esc="t.name"/><div class="jb"><t t-esc="t.code"/> · <t t-esc="t.slabs"/> brackets</div></div>
+                <div class="ppl-id"><div class="nm" t-esc="t.name"/><div class="jb"><t t-esc="t.code"/> · <t t-esc="t.items === undefined ? t.slabs : t.items"/> <t t-esc="t.unit or 'brackets'"/></div></div>
                 <div class="ppl-period sta-totals"><t t-esc="t.edition"/></div>
-                <div class="ppl-meta"><span class="pbim-badge info"><t t-esc="t.country"/> · <t t-esc="t.year"/></span> <span t-attf-class="pbim-badge {{ t.active ? 'ok' : 'muted' }}"><t t-esc="t.active ? 'Active' : (t.model === 'hr.payroll.tax.table' ? 'Draft' : 'Archived')"/></span></div>
+                <div class="ppl-meta"><span class="pbim-badge info"><t t-esc="t.country"/> · <t t-esc="t.year"/></span> <span t-attf-class="pbim-badge {{ t.active ? 'ok' : 'muted' }}"><t t-esc="t.model === 'hr.payroll.tax.table' ? (t.active ? 'Published' : 'Draft') : (t.active ? 'Active' : 'Archived')"/></span></div>
               </div>
               <div t-if="!filteredTax.length" class="pbim-empty">No tax tables.</div>
             </div>
