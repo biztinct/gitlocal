@@ -1,5 +1,6 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
-"""MEHOME M1 — source gates (handover tests 1, 10-source, 11, 12).
+"""MEHOME M1 — source gates (handover tests 1, 10-source, 11, 12; M2 adds its
+three card templates to every gate here, M2 tests 7 and 8).
 
 These read files, not the database. Test 1 walks every addons directory on the
 server (not just this module's parent): on the bench only two modules are
@@ -24,7 +25,9 @@ _PO = os.path.join(_HERE, 'i18n', 'vi_VN.po')
 
 #: The templates this program added (their xml ids in this module).
 NEW_TEMPLATES = ('portal_my_home_ess', 'portal_docs_entry_pbme', 'pbme_top',
-                 'pbme_need_sentence', 'pbme_bento', 'pbme_need_row')
+                 'pbme_need_sentence', 'pbme_bento', 'pbme_need_row',
+                 # M2: the three hero cards
+                 'pbme_card_pay', 'pbme_card_leave', 'pbme_card_week')
 
 #: Every model the home reads softly (M-R3) — none is a dependency.
 OPTIONAL_MODELS = ('pb.ess.workforce', 'pb.payroll.calendar', 'pb.my.training',
