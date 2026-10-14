@@ -139,11 +139,10 @@ const sources=[
  'Only SDL is automated in this template. CPF, SHG fund eligibility, opt-outs and contribution amounts must be reviewed separately.',
  'Bonus, leave encashment, tax clearance, benefits, approval matrix, statutory filing and bank export are outside this monthly template.',
 ];
-sources.forEach((v,i)=>{
- payroll.getRange(`AF${3+i}`).values=[[v]];
- payroll.getRange(`AF${3+i}:AL${3+i}`).merge();
- payroll.getRange(`AF${3+i}:AL${3+i}`).format={wrapText:true,rowHeight:35};
-});
+// The importer uses merged cells above the payroll header as categories.
+// Keep provenance in a native input-cell note so it cannot become a category.
+wb.notes.add({id:'Payroll:C4',target:{cell:{sheetName:'Payroll',sheetId:payroll.sheetId,address:'C4'}},
+ authorId:'',createdAt:'',body:{plainText:sources.join('\n')}});
 wb.recalculate();
 const comparisons=[];
 for(let i=0;i<cases.length;i++){
@@ -179,7 +178,7 @@ wb.recalculate();
 const scan=await wb.inspect({kind:'match',searchTerm:'#REF!|#DIV/0!|#VALUE!|#NAME\\?|#N/A|#NUM!|#NULL!',options:{useRegex:true,maxResults:10},maxChars:1500});
 console.log(scan.ndjson);
 await(await SpreadsheetFile.exportXlsx(wb)).save(`${outputDir}/Rize_Singapore_Payroll_Configuration_Aug2026.xlsx`);
-for(const [sheetName,range,name]of [['Payroll','A1:L10','configuration'],['Payroll','AH12:AL20','calculations'],['Payroll','AF1:AL10','sources'],['Tax Map','A1:L4','tax-map']]){
+for(const [sheetName,range,name]of [['Payroll','A1:L10','configuration'],['Payroll','AH11:AL20','calculations'],['Tax Map','A1:L4','tax-map']]){
  const preview=await wb.render({sheetName,range,scale:1.4,format:'png'});
  await fs.writeFile(`${outputDir}/${name}.png`,new Uint8Array(await preview.arrayBuffer()));
 }
