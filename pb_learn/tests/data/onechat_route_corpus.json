@@ -2442,6 +2442,289 @@
     "note": "nothingToCancel"
    },
    "state": "plan_red"
+  },
+  {
+   "text": "hey, can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "and can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok can I run June payroll for Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "so can I run June payroll for Retail",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "um can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "well, can I approve this run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok so can I approve this run",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "quick question can I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "approve"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "so should I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "hey, could I run payroll now",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "okay so could we run payroll for June",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "so is the June run approved",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "ok what is net pay",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "any idea how I approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "Ok, what is Net Pay?",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "so can you approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "hey, run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "ok approve the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "ok so",
+   "screen": "payruns",
+   "P": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "B": {
+    "route": "note",
+    "why": "smalltalk",
+    "note": "smalltalk"
+   },
+   "state": null
   }
  ]
 }

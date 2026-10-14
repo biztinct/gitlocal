@@ -329,3 +329,13 @@ Corpus: 137 → 167 rows (30 added, all observed offline; no existing row change
 `simulate_resolver.py` every property holds; `client_fix.test.mjs` 1/1; `replay_tests.py` 215 pass /
 2 fail — the same 2 "bridge suite did not run" environment failures as at HEAD. Server tests
 (including the new real-user Access class) run at the clone stage.
+
+## Review 2 repair (ledger OC35)
+
+| Finding | Fix | Test |
+|---|---|---|
+| A question with an opening word ("hey, can I …", "so should I …", "ok what is …", "quick question …", "any idea how …") reached PayAI's AI planning call on payobook (major) | `_drop_openers()` drops filler / greeting words (and the commas between them) before the question shapes, the definition shape and the order lead; never "please". Only-filler sentences ("ok so") are small talk | 19 corpus rows (the reviewer's 14 + Title Case, polite-request and order controls); offline `test_shapes_after_opening_words` (no `command_ai`, `ask_only` on every PayAI route, no model call, P and B) |
+
+Corpus 167 → 186 rows (19 added, observed; no existing row changed). Offline suite 34 OK;
+`check_contract.py` 73 checks; `gen_learn_data.py --check` clean; `simulate_resolver.py` every property
+holds; `client_fix.test.mjs` 82 passed. Server tests run at the clone stage. No manifest bump.

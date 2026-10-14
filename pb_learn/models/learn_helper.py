@@ -228,7 +228,7 @@ def order_task(text):
     if has_marks(t) or _Q_VI.search(_norm(t)):
         folded = _ORDER_LEAD_VI.sub('', _norm(t))
         return ' '.join(_PARTICULARS_VI.sub(' ', folded).split()), 'vi'
-    t = _ORDER_LEAD_EN.sub('', t)
+    t = _ORDER_LEAD_EN.sub('', _drop_openers(t) or t)
     t = re.split(r"\s+(?:for|of)\s+(?=[A-Z])", t)[0]
     words = []
     for i, word in enumerate(t.split()):
@@ -291,17 +291,50 @@ def is_howto(text):
     return howto_kind(text) is not None
 
 
+#: Spoken / typed openers in front of a question that do not change it ("so
+#: can I …", "hey, could we …", "ok so is …", "quick question can I …").
+#: Never "please" / "pls": they make a polite request, not a question.
+_Q_OPENERS = frozenset(('so', 'ok', 'okay', 'oke', 'hey', 'hi', 'hello', 'um', 'umm',
+                        'uh', 'uhm', 'hmm', 'hm', 'er', 'erm', 'ah', 'oh', 'well', 'and',
+                        'also', 'right', 'alright', 'actually', 'anyway', 'now'))
+_Q_OPENER_PAIRS = frozenset((('quick', 'question'), ('any', 'idea'),
+                             ('just', 'wondering'), ('one', 'question')))
+_OPENER_PUNCT = re.compile(r"^[\s,;:.!…\-]+")
+
+
+def _drop_openers(t):
+    """The sentence without the filler / greeting words in front of it (and
+    the commas between them): what the question shapes match from. OC1
+    review — "so can I approve the June run" is the same question as "can I
+    approve the June run", never an order."""
+    while True:
+        t = _OPENER_PUNCT.sub('', t)
+        m = re.match(r"([^\W\d_]+)(?:[\s,;:.!…\-]+([^\W\d_]+))?", t, re.U)
+        if not m:
+            return t
+        first = m.group(1).lower()
+        second = (m.group(2) or '').lower()
+        if (first, second) in _Q_OPENER_PAIRS:
+            t = t[m.end(2):]
+        elif first in _Q_OPENERS and len(t) > len(m.group(1)):
+            t = t[len(m.group(1)):]
+        else:
+            return t
+
+
 def is_question(text):
     """Q — an information question, by the router's own lead words (a polite
-    request — "can you / could you / please …" — is NOT a question)."""
+    request — "can you / could you / please …" — is NOT a question). Filler
+    and greeting words in front ("so", "ok", "hey,", "um") are dropped first."""
     t = clean(text)
     if not t:
         return False
     if is_howto(t):
         return True
-    if _Q_LEAD_EN.match(t):
+    core = _drop_openers(t) or t
+    if _Q_LEAD_EN.match(core):
         return True
-    if t.endswith(('?', '？')) and not _POLITE_LEAD.match(t):
+    if t.endswith(('?', '？')) and not _POLITE_LEAD.match(core):
         return True
     return bool(_Q_VI.search(_norm(t)))
 
@@ -326,7 +359,7 @@ def name_ref(text):
     common noun ("của công ty") — in a "… là gì" question only when that
     word is written with a capital."""
     t = clean(text)
-    definition = bool(_DEF_SHAPE_EN.match(t))
+    definition = bool(_DEF_SHAPE_EN.match(_drop_openers(t) or t))
     words = re.findall(r"[^\W\d_]+(?:'s)?", t, re.U)
     for i, word in enumerate(words[1:], start=1):
         possessive = word.endswith("'s")
@@ -450,7 +483,7 @@ def is_smalltalk(text):
         return True
     folded = _norm(t)
     words = folded.split()
-    if not words or all(w in _FILLER for w in words):
+    if not words or all(w in _FILLER or w in _Q_OPENERS for w in words):
         return True
     return bool(_GREETING.match(folded) or _THANKS.match(folded) or _ACK.match(folded))
 

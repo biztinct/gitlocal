@@ -286,6 +286,33 @@ class TestOrderAndShape(unittest.TestCase):
         self.assertEqual(H.order_task('giúp tôi chạy lương tháng 6 cho Retail'),
                          ('chay luong', 'vi'))
 
+    def test_shapes_after_opening_words(self):
+        """OC1 review (ledger OC35): filler / greeting words in front of a
+        question never turn it into an order, and never make a polite request
+        a question."""
+        q = H.is_question
+        for text in ('hey, can I approve the June run', 'and can I approve the June run',
+                     'ok can I run June payroll for Retail', 'um can I approve the June run',
+                     'well, can I approve this run', 'ok so can I approve this run',
+                     'quick question can I approve the June run', 'so should I approve the June run',
+                     'hey, could I run payroll now', 'okay so could we run payroll for June',
+                     'so is the June run approved', 'ok what is net pay',
+                     'any idea how I approve the June run', 'Um, so... can I approve it?'):
+            self.assertTrue(q(text), text)
+            for mode in ('P', 'B'):
+                out, env = route(mode, text)
+                self.assertNotEqual(out['why'], 'command_ai', (mode, text))
+                if out['route'] == 'payai':
+                    self.assertTrue(out.get('ask_only'), (mode, text))
+                if env.provider is not None:
+                    self.assertEqual(env.provider.calls, [], (mode, text))
+        for text in ('so can you approve the June run', 'ok please approve this run',
+                     'hey, run payroll', 'so', 'okay'):
+            self.assertFalse(q(text), text)
+        self.assertEqual(H.order_task('hey, run June payroll for Retail'), ('run payroll', 'en'))
+        for text in ('ok so', 'um, ok', 'hey so'):
+            self.assertTrue(H.is_smalltalk(text), text)
+
 
 class _Recorder:
     """A provider that records composer calls and always says NO_ANSWER."""
