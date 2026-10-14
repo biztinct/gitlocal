@@ -19,7 +19,7 @@
 import { Component, markup, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
-import { rpc } from "@web/core/network/rpc";
+import { rpc, RPCError } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { openHub } from "@pb_hub/js/hub_nav";
 import { useService } from "@web/core/utils/hooks";
@@ -27,6 +27,38 @@ import { AiInsightChat } from "@pb_payroll_ai_insights/components/ai_insight_cha
 import { runPayroll, stashPrefill } from "@pb_payrun_wizard/js/run_driver";
 
 export const PAYAI_HOOKS = "pb_payai";
+
+/**
+ * P3:crit-7 — what to say when a task call did not come back with a card.
+ *
+ *  - The server ANSWERED with an error (an RPCError: an access refusal, a
+ *    check that raised, an engine fault). The request's transaction was rolled
+ *    back and the engine never commits on its own, so nothing was done: say
+ *    so, with the server's own reason when it is one written for people
+ *    (an `odoo.exceptions.*` message), never a raw technical one.
+ *  - No answer at all (connection lost, request aborted, or the card could
+ *    not be drawn after the reply). For a typed approve / send back / turn
+ *    down the decision may already be recorded and cannot be taken back, so
+ *    say only what is known; pressing again is safe because the server
+ *    answers a finished task with what already happened.
+ *  - Anything else keeps the plain "Nothing was done" wording.
+ */
+export function payaiCallFailedText(error, method, card) {
+    const answered = Boolean(error) && (error instanceof RPCError
+        || error.name === "RPC_ERROR" || error.type === "server");
+    if (answered) {
+        const data = error.data || {};
+        const reason = String(data.name || error.exceptionName || "").startsWith("odoo.exceptions.")
+            ? String(data.message || error.message || "").trim() : "";
+        return reason
+            ? _t("Nothing was done. %s", reason)
+            : _t("That did not go through on the server. Nothing was done; try again in a moment.");
+    }
+    if (method === "rpc_confirm_task" && card && card.tier === "decide") {
+        return _t("I could not hear back from the server, so I cannot tell yet whether it went through. Press the button again to see what happened. It will not be done twice.");
+    }
+    return _t("That did not reach the server. Nothing was done; try again in a moment.");
+}
 
 // Lucide (ISC) — the shapes the cards use. Stroke icons, currentColor.
 const ICONS = {
@@ -110,10 +142,22 @@ export class PayaiCountdown extends Component {
  * checks the word again: this only spares a round trip. A wrong word comes
  * back as an inline hint under the box, never a toast.
  */
+// Python's whitespace (`str.isspace`, what the server's `split()` cuts on) —
+// NOT JS `\s`, which also counts U+FEFF and misses U+001C–001F and U+0085.
+const PY_SPACE = /[\t\n\v\f\r\x1c-\x1f \x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/u;
+
 export function normWord(word) {
-    // P4: marks fold away too ("duyet" = "DUYỆT"), as on the server.
-    return String(word || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d").trim().split(/\s+/).join(" ").toUpperCase();
+    // P4: marks fold away too ("duyet" = "DUYỆT"). FIX-1 (P4:vi-13): the
+    // SERVER's rule, step for step (`runner._norm_word` → `resolve.fold`):
+    // NFKD (full-width "ＤＵＹỆＴ" is "duyet"), every mark dropped, lower-case
+    // (a dotless "ı" stays itself, as it does there), đ → d, then Python's
+    // whitespace split. The server drops combining-class marks only; `\p{M}`
+    // drops those and a few spacing marks no confirm word contains, so the
+    // button can never stay dark for a word the server would take. The
+    // shared table `tests/js/word_fold_cases.json` pins both sides.
+    return String(word || "").normalize("NFKD").replace(/\p{M}/gu, "")
+        .toLowerCase().replace(/đ/g, "d")
+        .split(PY_SPACE).filter(Boolean).join(" ");
 }
 
 /** P4 — the typed word matches any word the card accepts (the person's own
@@ -201,6 +245,32 @@ function doorKind(row) {
     return "mission";
 }
 
+/**
+ * FIX-1b — where a ⌘K row leads, by identifier only (its action's tag, xmlid,
+ * lens, focus). The server's one deny-list (`gate.door_denied`) matches on it
+ * as well as on the row id, so a door into Settings › Access and delegations
+ * is never stored, however a module names its row. Never a destination: a
+ * door still opens only through `pb_hub_palette.run(id)` (PA19).
+ */
+function doorTarget(row) {
+    let action = (row && row.action) || null;
+    if (!action) {
+        try {
+            const reg = registry.category("pb_hub_palette");
+            const raw = reg.content && reg.content[String(row.id || "")];
+            action = (raw && raw[1] && raw[1].action) || null;
+        } catch {
+            action = null;
+        }
+    }
+    if (!action || typeof action !== "object") { return {}; }
+    const out = {};
+    for (const key of ["tag", "xmlid", "lens", "focus"]) {
+        if (typeof action[key] === "string" && action[key]) { out[key] = action[key]; }
+    }
+    return out;
+}
+
 function svg(name) {
     const body = ICONS[name] || ICONS.info;
     return markup(`<svg class="payai-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`);
@@ -259,7 +329,7 @@ patch(AiInsightChat.prototype, {
                 args: [this.state.sessionId, rows.filter((r) => !r.anyQuery).map((r) => ({
                     id: r.id, label: String(r.label || ""), sublabel: String(r.sublabel || ""),
                     group: String(r.group || ""), groups: r.groups || [],
-                    restricted: !!r.restricted, kind: doorKind(r),
+                    restricted: !!r.restricted, kind: doorKind(r), target: doorTarget(r),
                 }))],
                 kwargs: {},
             }, { silent: true });
@@ -509,9 +579,7 @@ patch(AiInsightChat.prototype, {
             this._payaiApply(msg, out && out.card);
         } catch (e) {
             if (msg.card) { msg.card.busy = false; }
-            this.notification.add(
-                _t("That did not reach the server. Nothing was done; try again in a moment."),
-                { type: "warning" });
+            this.notification.add(payaiCallFailedText(e, method, msg.card), { type: "warning" });
         }
     },
 
@@ -669,15 +737,52 @@ patch(AiInsightChat.prototype, {
             this.payaiAsk(chip.ask);
             return;
         }
-        if (msg.card.picked) { return; }
-        msg.card.picked = chip.value;
-        this._payaiResolve = {
-            task_id: msg.card.task_id,
-            slot: msg.card.chip_slot,
+        const card = msg.card;
+        if (this.payaiChipOff(card, chip)) { return; }
+        // P3:crit-6 — a Remind chip is answered by a one-off note BELOW the
+        // card and the card's offer stays open: each holder is a chip of its
+        // own and only the one tapped is used up. Any other chip answers the
+        // card once, so one pick still closes them all.
+        const several = card.chip_action === "remind";
+        if (several) {
+            card.picked_values = [...(card.picked_values || []), chip.value];
+        } else {
+            card.picked = chip.value;
+        }
+        const resolve = {
+            task_id: card.task_id,
+            slot: card.chip_slot,
             value: chip.value,
-            action: msg.card.chip_action || undefined,
+            action: card.chip_action || undefined,
         };
-        this.sendSuggestion(chip.label);
+        this._payaiResolve = resolve;
+        const before = this.state.messages.length;
+        return Promise.resolve(this.sendSuggestion(chip.label)).then(() => {
+            // Not sent (the chat was busy): the answer must not ride along
+            // with whatever the person types next.
+            if (this._payaiResolve === resolve) { this._payaiResolve = null; }
+            // No card came back (the connection dropped): the chip is
+            // pressable again instead of dead for good.
+            if (this.state.messages.slice(before).some((m) => m.card)) { return; }
+            if (several) {
+                card.picked_values = (card.picked_values || []).filter((v) => v !== chip.value);
+            } else if (card.picked === chip.value) {
+                card.picked = false;
+            }
+        });
+    },
+
+    /** The chip was used: Remind chips one by one, any other chip all at once. */
+    payaiChipOff(card, chip) {
+        if (card.chip_action === "remind") {
+            return (card.picked_values || []).includes(chip.value);
+        }
+        return Boolean(card.picked);
+    },
+
+    payaiChipOn(card, chip) {
+        if (!chip.value) { return false; }
+        return card.picked === chip.value || (card.picked_values || []).includes(chip.value);
     },
 
     /** ⌘K "Ask PayAI to…" — open the pill and send the typed text. */

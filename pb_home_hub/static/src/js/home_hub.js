@@ -133,8 +133,13 @@ export class PbHomeHub extends Component {
                 // Pulse lens that has changed since it shipped.
                 { key: "pulse", icon: "activity", label: _t("Pulse"),
                   Component: PbDashboard, wantsArrival: true },
+                // `wantsArrival` for the same reason (PAYAI FIX-1, P4:link-1):
+                // a door may open the inbox ON one request
+                // (`pb_focus: "request:42"`). Without it the lens is mounted
+                // with `embedded` only and the link never reaches it.
                 { key: "approvals", icon: "inbox", label: _t("Approvals"),
-                  Component: PbInbox, groups: APPROVAL_GATE },
+                  Component: PbInbox, groups: APPROVAL_GATE,
+                  wantsArrival: true },
                 // Bolted-on lenses sit after the two this hub ships — what
                 // needs you first, everything else after.
                 ...this.extraLenses(),

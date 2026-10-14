@@ -391,20 +391,71 @@ class PbApprovalInbox(models.AbstractModel):
     @api.model
     def _readable(self, request_id, scope='me'):
         """The request, read as myself — or, in a wider queue, as the reader
-        of my own people's business. Never a permission to decide."""
-        request = self.env['biz.approval.request'].browse(int(request_id))
+        of my own people's business. Never a permission to decide.
+
+        A STALE OR FORBIDDEN ID ANSWERS IN A SENTENCE (PAYAI FIX-1, P4:link-4).
+        A door on an old PayAI card, or a hand-edited link, can name a request
+        that has since been deleted or that this person may not read. The
+        ORM's own refusals name the model and the record ("Record does not
+        exist or has been deleted… biz.approval.request(42,)", the record-rule
+        text), and the drawer prints whatever it is given. `exists()` is a
+        plain id lookup — it reads nothing about the request — so it comes
+        first, and a read refusal is re-worded, still as an AccessError."""
+        request = self.env['biz.approval.request'].browse(
+            int(request_id or 0)).exists()
+        if not request:
+            raise UserError(_("That request no longer exists."))
         scope = scope if scope in SCOPES else 'me'
         if scope == 'me':
-            request.check_access('read')
-            return request
+            return self._may_read(request)
         Request, domain = self._scoped(scope)
         found = Request.search(domain + [('id', '=', request.id)], limit=1)
         if not found:
-            # not in the wider queue either: answer the ordinary way, so the
-            # refusal is the ORM's own and says the same thing it always did
-            request.check_access('read')
-            return request
+            # not in the wider queue either: answer the ordinary way, as
+            # myself, with the same plain refusal
+            return self._may_read(request)
         return found
+
+    def _may_read(self, request):
+        """`request`, when I may read it as myself; else a plain refusal."""
+        try:
+            request.check_access('read')
+        except AccessError:
+            raise AccessError(_("You cannot open this request.")) from None
+        return request
+
+    @api.model
+    def locate_request(self, request_id, scope='me'):
+        """WHICH PILE A REQUEST LIVES IN (PAYAI FIX-1, P4:link-3).
+
+        A door may open the inbox ON one request — a PayAI card after a
+        decision points at a request that is now approved, sent back or
+        turned down. Opening its drawer over "All I can see", which does not
+        list it, leaves the reader on the wrong pile when they close it. The
+        piles are the ones `list_requests` builds, read the same way: "My
+        turn" is an open seat of mine on the waiting step, then by state.
+        Navigation only — the drawer re-reads the request with my rights."""
+        scope = scope if scope in SCOPES else 'me'
+        request = self._readable(request_id, scope)
+        if scope != 'me':
+            # A wider queue that no longer holds it (it was there only while
+            # it waited on my seat, and I have since decided): the pile is
+            # read in my own queue, where `_readable` just let me read it.
+            Request, domain = self._scoped(scope)
+            if not Request.search_count(domain + [('id', '=', request.id)]):
+                scope = 'me'
+        if self._is_mine(request):
+            tab = 'mine'
+        elif request.state in ('pending', 'blocked'):
+            tab = 'all'
+        elif request.state == 'returned':
+            tab = 'returned'
+        elif request.state in ('approved', 'applied', 'rejected', 'cancelled'):
+            tab = 'done'
+        else:
+            # not sent in yet: no pile lists it
+            tab = False
+        return {'id': request.id, 'tab': tab, 'scope': scope}
 
     @api.model
     def get_request(self, request_id, scope='me'):

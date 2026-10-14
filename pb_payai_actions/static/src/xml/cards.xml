@@ -96,8 +96,8 @@
         <div class="payai-card__chips" t-if="card.chips and card.chips.length">
           <t t-foreach="card.chips" t-as="chip" t-key="chip_index">
             <button type="button"
-                    t-attf-class="payai-chip {{ card.picked === chip.value and chip.value ? 'is-on' : '' }}"
-                    t-att-disabled="card.picked ? 'disabled' : false"
+                    t-attf-class="payai-chip {{ this.payaiChipOn(card, chip) ? 'is-on' : '' }}"
+                    t-att-disabled="this.payaiChipOff(card, chip) ? 'disabled' : false"
                     t-on-click="() => this.payaiPick(msg, chip)">
               <span t-esc="chip.label"/>
               <small t-if="chip.sublabel" t-esc="chip.sublabel"/>

@@ -34,20 +34,44 @@ import { RequestDrawer } from "@pb_approval_config/js/request_drawer";
 import { initials, money, when } from "@pb_approval_config/js/sentence";
 
 /**
- * PAYAI P4 — a door may open the inbox ON one request: the arrival context
- * carries `pb_focus: "request:<id>"` (or `"request:<id>:<scope>"` when the
- * request was found under "My team" / "Everyone"). Anything else in
- * `pb_focus` ("queue", "month:2026-06") is another screen's word and is left
- * alone. Navigation only: the drawer re-reads the request with the person's
- * own rights, exactly as a click on its card would.
+ * PAYAI P4 — a door may open the inbox ON one request: the arrival carries
+ * `pb_focus: "request:<id>"` (or `"request:<id>:<scope>"` when the request was
+ * found under "My team" / "Everyone"). Anything else in `pb_focus` ("queue",
+ * "month:2026-06") is another screen's word and is left alone. Navigation
+ * only: the drawer re-reads the request with the person's own rights, exactly
+ * as a click on its card would.
+ *
+ * Takes either an action context (`pb_focus`) or the hub's arrival payload
+ * (`focus`, see `inboxArrival`).
  */
 const FOCUS_SCOPES = ["me", "team", "org"];
 export function focusRequest(context) {
-    const raw = context && context.pb_focus;
+    const raw = context && (context.pb_focus || context.focus);
     const m = /^request:(\d+)(?::(me|team|org))?$/.exec(String(raw || ""));
     if (!m) { return null; }
     const scope = FOCUS_SCOPES.includes(m[2]) ? m[2] : "me";
     return { id: Number(m[1]), scope };
+}
+
+/**
+ * PAYAI FIX-1 (P4:link-1) — WHERE THE DEEP LINK REACHES THE INBOX.
+ *
+ * As the Home hub's Approvals lens, the inbox is handed the hub's arrival
+ * payload as the `arrival` prop (the lens says `wantsArrival`, exactly like
+ * Pulse); as the standalone client action, its own `action.context`. Those
+ * two and nothing else. The action service's current action is NOT a source:
+ * on this version it is a Promise, and while a lens is being set up it is
+ * still the PREVIOUS screen's action — the deep link silently did nothing.
+ *
+ * The object returned is the one a "consumed once" guard keys on, so it must
+ * keep its identity: the hub builds its arrival payload once per visit.
+ */
+export function inboxArrival(props) {
+    const arrival = props && props.arrival;
+    if (arrival && arrival.focus) { return arrival; }
+    const own = props && props.action && props.action.context;
+    if (own && own.pb_focus) { return own; }
+    return null;
 }
 // One arrival opens one drawer: a lens re-mounted later (tab away and back)
 // does not pop the same request open again.
@@ -59,6 +83,8 @@ export class PbInbox extends Component {
     static props = {
         embedded: { type: Boolean, optional: true },
         action: { type: Object, optional: true },
+        // The Home hub's deep link (`wantsArrival`): `{ lens, focus }`.
+        arrival: { type: Object, optional: true },
         // WHOSE QUEUE THIS IS. "me" is everything I am part of; "team" is
         // everything waiting about somebody who works for me — the Workforce
         // screen a manager used to have, now the same inbox as everything
@@ -98,17 +124,16 @@ export class PbInbox extends Component {
         });
 
         this.onEscape = this.onEscape.bind(this);
-        const arrival = this._arrivalContext();
+        const arrival = inboxArrival(this.props);
         const focus = focusRequest(arrival);
-        if (focus && FOCUS_SCOPES.includes(focus.scope)) {
-            this.state.scope = focus.scope;
-        }
         onWillStart(async () => {
-            await this.load();
-            if (focus && arrival && !_consumedFocus.has(arrival)) {
+            // Find the pile first, so the list is read ONCE, on the tab and
+            // scope where the request really is.
+            if (focus && !_consumedFocus.has(arrival)) {
                 _consumedFocus.add(arrival);
-                await this.openFocused(focus.id);
+                await this.locateFocused(focus);
             }
+            await this.load();
         });
         onMounted(() => {
             window.addEventListener("keydown", this.onEscape,
@@ -120,24 +145,32 @@ export class PbInbox extends Component {
         });
     }
 
-    /** The context this inbox was opened with: its own action (standalone),
-     *  else the hub's action it is a lens of. */
-    _arrivalContext() {
-        const own = this.props.action && this.props.action.context;
-        if (own && own.pb_focus) { return own; }
-        const current = this.actionService && this.actionService.currentAction;
-        return (current && current.context) || null;
-    }
-
-    /** Open one request's drawer — on "My turn" when it is waiting for me,
-     *  else on "All I can see" (where a not-yours request is listed). */
-    async openFocused(requestId) {
-        if (!requestId) { return; }
-        if (!this.cards.some((card) => card.id === requestId)) {
-            this.state.tab = "all";
-            await this.load();
+    /**
+     * Open one request's drawer on the tab and scope that list it — "My turn"
+     * when it is waiting for me, else "All I can see", "Sent back" or
+     * "Finished" (P4:link-3: a decided request is not in flight any more).
+     * The server says which pile; a request that is gone or not mine to read
+     * is a notice, never a drawer over the wrong list (P4:link-4).
+     */
+    async locateFocused(focus) {
+        let where = null;
+        try {
+            where = await this.orm.call(
+                "pb.approval.inbox", "locate_request", [focus.id, focus.scope]);
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                || _t("This request could not be opened."), { type: "warning" });
+            return;
         }
-        this.state.openId = requestId;
+        if (!where || !where.tab) {
+            this.notif.add(_t("This request could not be opened."),
+                           { type: "warning" });
+            return;
+        }
+        if (FOCUS_SCOPES.includes(where.scope)) { this.state.scope = where.scope; }
+        this.state.tab = where.tab;
+        this.state.openId = where.id;
     }
 
     onEscape(ev) {
