@@ -113,7 +113,7 @@ parsed = probe._parse_source_file((root / 'monthly-probe.xlsx').read_bytes(), 'm
 assert parsed['multisheet'] and len(parsed['rows']) == 8, parsed.keys()
 Wizard = env['pb.payrun.wizard'].with_company(config.company_id)
 preflight = Wizard.preflight_spreadsheet(config.id, base64.b64encode((root / 'monthly-probe.xlsx').read_bytes()).decode(), 'monthly-probe.xlsx')
-assert preflight['ok'] and preflight['columns'] == 25 and preflight['fed'] == 25 and not preflight['missing'], preflight
+assert preflight['ok'] and len(preflight['fed']) == 25 and not preflight['missing'] and preflight['employees_col'], preflight
 def sample_input(rule, value):
     # People/bank fields travel beside calculation inputs in a real run.
     # Preserve them as the typed parser delivered them, rather than passing
@@ -205,6 +205,6 @@ print(json.dumps({'database': env.cr.dbname, 'config_id': config.id, 'state': co
     'components': len(config.rule_ids), 'inputs': len(inputs_cols), 'mapped_constants': len(statutory),
     'monthly_rows_tested': 8, 'formula_checks': formula_checks, 'tests': test_results,
     'client_controls': len(source_controls) * 8,
-    'monthly_preflight': {'columns': preflight['columns'], 'fed': preflight['fed'], 'missing': len(preflight['missing'])},
+    'monthly_preflight': {'columns': preflight['columns'], 'fed': len(preflight['fed']), 'missing': len(preflight['missing'])},
     'health': health['counts'], 'treatment_review': board['review_count'],
     'type_conflicts': board['role_conflict_count'], 'attachments': attachment_ids}))
