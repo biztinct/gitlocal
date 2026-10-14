@@ -405,6 +405,53 @@ async function recorderSuite() {
         unmount(chat);
     }
 
+    // Cancel / Escape during 'Starting…' (the browser still asking): the bar
+    // goes at once and Escape is not caught again (leftover review item 8)
+    reset();
+    {
+        const { host, chat } = await openChat();
+        let grant;
+        mic.pending = { promise: new Promise((r) => { grant = r; }) };
+        autoStart = false;
+        tap(chat);
+        lift(chat);
+        await tick(2);
+        check(chat.state.micStarting && chat.api.isRecording(), "tap → 'Starting…' while the browser asks");
+        chat.cancelRecording();
+        check(!chat.state.micStarting && !chat.state.isRecording && !chat.api.isRecording(),
+              "Cancel during 'Starting…': the recording bar goes at once",
+              JSON.stringify({ starting: chat.state.micStarting, rec: chat.state.isRecording }));
+        let stopped = 0;
+        host._onKey({ key: "Escape", target: { tagName: "DIV" }, stopPropagation() { stopped += 1; }, preventDefault: noop });
+        check(host.state.open === false && stopped === 1, "… and the next Escape closes the drawer (not caught by the recorder)");
+        host.state.open = true;
+        grant(makeStream());
+        await tick(5);
+        check(recorders.length === 0 && mic.streams.slice(-1)[0].track.stopped && !chat.state.micStarting,
+              "the late permission gives the microphone straight back; nothing records");
+        check(rpcs("rpc_transcribe_voice").length === 0, "… and nothing is uploaded");
+        // Escape with the recorder built but not yet started
+        mic.pending = null;
+        tap(chat);
+        lift(chat);
+        await tick(5);
+        check(recorders.length === 1 && chat.state.micStarting, "a second tap builds the recorder ('Starting…')");
+        host._onKey({ key: "Escape", target: { tagName: "DIV" }, stopPropagation: noop, preventDefault: noop });
+        check(!chat.state.micStarting && !chat.api.isRecording() && host.state.open === true,
+              "Escape during 'Starting…' cancels, the bar goes, the drawer stays");
+        recorders[0].fireStart();           // the start the browser was still to report
+        check(!chat.state.isRecording && !chat.api.isRecording(), "… a start reported after the cancel is ignored");
+        await tick(15);
+        check(!chat.state.isRecording && !chat.state.micStarting && rpcs("rpc_transcribe_voice").length === 0,
+              "a start reported after the cancel never shows 'Listening' and sends nothing",
+              JSON.stringify({ rec: chat.state.isRecording, starting: chat.state.micStarting }));
+        // and the microphone still works afterwards
+        autoStart = true;
+        const sent = await record(chat, 1500, "how do I run payroll");
+        check(sent && chat.state.inputText === "how do I run payroll", "the microphone works normally after a cancel");
+        unmount(chat);
+    }
+
     // a recorder that fails to build releases the stream
     reset();
     {
@@ -679,6 +726,47 @@ async function readBackSuite() {
         const out = speechText(said);
         check(out === keep, `"${said}" is read as "${keep}"`, out);
     }
+    // Leftover review item 6 (owner decision Q2): NO amount is spoken, in any
+    // currency or format — and no part of one (a scale word, a sign).
+    const W = "an amount shown on screen";
+    for (const [said, keep] of [
+        ["Total net pay is ₫18.6 bn this month.", `Total net pay is ${W} this month.`],
+        ["Tổng lương thực nhận là 65.8 tỷ.", `Tổng lương thực nhận là ${W}.`],
+        ["Net pay is 1,234,567.", `Net pay is ${W}.`],
+        ["Lương 500.000 đồng.", `Lương ${W}.`],
+        ["Lương 500.000.", `Lương ${W}.`],
+        ["Bonus 500k for Lan.", `Bonus ${W} for Lan.`],
+        ["Phụ cấp 2 triệu cho Lan.", `Phụ cấp ${W} cho Lan.`],
+        ["Pay 18.6 bn VND today.", `Pay ${W} today.`],
+        ["It costs $1.2m a month.", `It costs ${W} a month.`],
+        ["Net 12.5 million.", `Net ${W}.`],
+        ["Cost 18.6bn, up from 17,9 tỷ.", `Cost ${W}, up from ${W}.`],
+        ["VND 18,6 tỷ", W],
+        ["500 vnd and 300đ and đ200.", `${W} and ${W} and ${W}.`],
+        ["Lương 5tr và 3 Triệu.", `Lương ${W} và ${W}.`],
+        ["Lương 20 triệu 500 nghìn.", `Lương ${W}.`],
+        ["Pay 1 000 000 VND.", `Pay ${W}.`],
+        ["Pay 1\u00a0000\u00a0000 VND.", `Pay ${W}.`],
+        ["Net pay is 12000000.", `Net pay is ${W}.`],
+    ]) {
+        const out = speechText(said);
+        check(out === keep && !/\d/.test(out.replace(/June|\d+%/g, "")), `"${said}" → "${keep}"`, out);
+    }
+    // Leftover review item 7: a HEAD COUNT is read, whatever its size.
+    for (const said of [
+        "The June run has 1,000 people.",
+        "Đợt lương tháng 6 có 1.000 người.",
+        "Có 12.345 nhân viên trong đợt này.",
+        "2,500 employees and 1,200 payslips.",
+        "The run pays 1 200 staff.",
+        "Net pay rose 4.5% in June 2026 for 3 people.",
+    ]) {
+        check(speechText(said) === said, `a head count is read: "${said}"`, speechText(said));
+    }
+    check(speechText("1,234 people were paid 1,234,567 VND.") === `1,234 people were paid ${W}.`,
+          "the count is read, the money next to it is not");
+    check(speechText("Nhóm 1.000 người nhận 2 triệu.") === `Nhóm 1.000 người nhận ${W}.`,
+          "… in Vietnamese too");
     check(speechText("x".repeat(900)).length <= 600, "at most 600 characters are read");
     speech.spoken = [];
     chat.speak("Net pay is 12,000,000 for June.");

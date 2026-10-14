@@ -139,33 +139,69 @@ export function isPhantomTranscript(text, vocab) {
     return false;
 }
 
-/* An amount, as an answer or a plan writes one: digits grouped in threes
-   ("12,000,000", "5.000.000"), a long number (five digits or more), or a
-   number next to a currency word. Years ("June 2026") and small counts
-   ("3 people") are not amounts. */
-const NOT_WORD = "(?![\\wÀ-ỹ])";
-const AMOUNT_RE = new RegExp("(^|[^\\d.,])(" + [
-    // "$1,200", "VND 500.000"
-    "(?:[$€£₫]|(?:VND|VNĐ|USD|SGD)" + NOT_WORD + ")\\s?\\d[\\d.,]*",
-    // "500,000 VND", "5 triệu", "500.000đ"
-    "\\d[\\d.,]*(?:\\s?(?:[₫$€£]|(?:VND|VNĐ|USD|SGD|đồng|dong|triệu|trieu|tỷ|ty|nghìn|ngàn|million|billion|đ)" + NOT_WORD + "))+",
-    // "12,000,000", "5.000.000"
-    "\\d{1,3}(?:[.,]\\d{3})+(?:[.,]\\d+)?(?!\\d)",
-    // "1500000"
-    "\\d{5,}(?:[.,]\\d+)?",
-].join("|") + ")", "gi");
+/* ONECHAT — NO AMOUNT IS EVER SPOKEN (owner decision Q2), in any currency or
+   format, and a HEAD COUNT is still read ("1,000 people", "1.000 người").
+   One matcher finds every number together with what can sit around it:
+     a currency sign or code before or after it, either case where it is a
+     code ("₫", "VND", "vnd", "đ", "RM200", "S$950", "MYR 950", "950 THB");
+     a scale word after it, with or without a space ("18.6 bn", "65.8 tỷ",
+     "2 triệu", "5tr", "500k", "$1.2m", "12.5 million");
+     the number itself grouped in threes by "," "." or a space ("1,234,567",
+     "500.000", "1 000 000"), or long (five digits or more).
+   A sign or a scale word makes it money. A grouped or long number on its
+   own is money too — unless the next word counts people or payslips
+   ("1,000 people", "12.345 nhân viên"): that is a head count and is read.
+   Years ("June 2026"), small counts ("3 people", "200 checks") and
+   percentages are read. Case matters for the short signs — "RM" and "Rp"
+   are signs, "perform 200" is not (ledger OC58). No look-behind (OC49). */
+const NOT_WORD = "(?![A-Za-z0-9À-ỹ])";
+/** A word in any letter case, as a character class per letter. */
+function anyCase(word) {
+    return Array.from(word).map((ch) => {
+        const lo = ch.toLowerCase();
+        const up = ch.toUpperCase();
+        return lo === up ? ch.replace(/[.$]/g, "\\$&") : `[${lo}${up}]`;
+    }).join("");
+}
+const CODES = ["VND", "VNĐ", "USD", "SGD", "MYR", "THB", "INR", "IDR", "KHR", "EUR", "GBP",
+               "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND", "PHP"];
+const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|[$€£₫฿₹៛₱¥₩₭]|đ|(?:"
+    + CODES.map(anyCase).join("|") + ")" + NOT_WORD + ")";
+/* After the number the Vietnamese word for the currency counts as a sign. */
+const MONEY_SIGN_AFTER = "(?:" + MONEY_SIGN + "|(?:"
+    + ["đồng", "dong"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
+/* Scale words. The one-letter ones only straight after the digits ("500k",
+   "1.2m"); the words with or without a space ("18.6 bn", "5tr", "2 triệu"). */
+const SCALE_TIGHT = "(?:[kKmM]" + NOT_WORD + ")";
+const SCALE_WORD = "(?:(?:" + ["bn", "billion", "billions", "million", "millions", "mn", "mil",
+    "thousand", "thousands", "lakh", "lakhs", "crore", "crores", "triệu", "trieu", "tr",
+    "tỷ", "tỉ", "ty", "nghìn", "ngàn", "nghin", "ngan"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
+const AMOUNT_NUM = "(?:\\d{1,3}(?:[.,]\\d{3})+(?:[.,]\\d+)?|\\d{1,3}(?: \\d{3})+|\\d+(?:[.,]\\d+)?)(?!\\d)";
+const AMOUNT_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ])"
+    + "(?:(" + MONEY_SIGN + ")\\s?)?"
+    + "(" + AMOUNT_NUM + ")"
+    + "(" + SCALE_TIGHT + "?(?:\\s?" + SCALE_WORD + ")*)"
+    + "(?:\\s?(" + MONEY_SIGN_AFTER + "))?"
+    + NOT_WORD, "g");
+/* What a head count is counting: read, never withheld. */
+const COUNT_RE = new RegExp("^\\s*(?:" + ["people", "persons", "person", "employees", "employee",
+    "staff", "workers", "worker", "members", "member", "payslips", "payslip", "heads",
+    "người", "nhân viên", "nhân sự", "lao động", "phiếu lương"].map(anyCase).join("|") + ")" + NOT_WORD);
 
-/* ONECHAT OC3 review — MONEY: a currency sign or code WITH the number next
-   to it, either side, sign included ("RM200", "S$950", "฿800", "Rp900",
-   "MYR 950", "950 THB"). Any size: a plan's value is the scheme's symbol plus
-   the number, and values under 1,000 have no separator (ledger OC58). Case
-   matters — "RM" and "Rp" are signs, "perform 200" is not. */
-const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|[$€£₫฿₹៛₱¥₩₭]|(?:"
-    + ["VND", "VNĐ", "USD", "SGD", "MYR", "THB", "INR", "IDR", "KHR", "EUR", "GBP",
-       "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND"].join("|") + ")(?![A-Za-z]))";
-const MONEY_NUM = "\\d(?:[\\d.,]*\\d)?";
-const MONEY_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ])(" + MONEY_SIGN + "\\s?" + MONEY_NUM
-    + "|" + MONEY_NUM + "\\s?" + MONEY_SIGN + "(?![A-Za-z0-9]))", "g");
+/** True when a number found by AMOUNT_RE is money, not a count or a year. */
+function isAmount(sign, num, scale, signAfter, rest) {
+    if (sign || signAfter) {
+        return true;
+    }
+    if (COUNT_RE.test(rest)) {
+        return false;
+    }
+    if (scale && scale.trim()) {
+        return true;
+    }
+    // grouped in threes ("1,000", "500.000", "1 000 000"), or five digits on
+    return /^\d{1,3}(?:[.,\s]\d{3})+/.test(num) || /^\d{5,}/.test(num);
+}
 
 /** The words handed to the device's synthesiser (handover §6.5): markup and
  *  markdown out, the brand filter (never "Odoo" spoken — the same rewrite
@@ -179,9 +215,13 @@ export function speechText(text, opts = {}) {
         .replace(/[*_#\x60>|~]+/g, " ");
     say = debrandSpoken(say, opts.brand);
     const word = opts.amount || "an amount shown on screen";
-    say = say.replace(MONEY_RE, (_m, lead) => `${lead}${word}`);
-    say = say.replace(AMOUNT_RE, (_m, lead) => `${lead}${word}`);
-    say = say.replace(/\s+/g, " ").trim();
+    say = say.replace(/\s+/g, " ");
+    say = say.replace(AMOUNT_RE, (m, lead, sign, num, scale, signAfter, at, all) => (
+        isAmount(sign, num, scale, signAfter, all.slice(at + m.length)) ? `${lead}${word}` : m));
+    // "20 triệu 500 nghìn" is ONE amount, said once.
+    const said = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    say = say.replace(new RegExp(`${said}(?:\\s+${said})+`, "g"), word);
+    say = say.trim();
     if (say.length > SPEECH_CAP) {
         const cut = say.slice(0, SPEECH_CAP);
         const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "), cut.lastIndexOf("! "));
@@ -902,12 +942,23 @@ export class AiInsightChat extends Component {
         this._recStartedAt = 0;
         this._recStoppedAt = 0;
         this._dropKeptAudio();
+        this._mediaRecorder = null;
+        // Which start this is: a cancel while the browser is still asking
+        // moves it on, so a permission granted late gives its microphone
+        // straight back without touching a newer recording.
+        const start = (this._startSeq = (this._startSeq || 0) + 1);
         this.state.micStarting = true;
         this.state.voiceError = "";
         this.state.voiceHint = "";
         let stream = null;
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            if (start !== this._startSeq) {
+                // Cancelled while the browser was asking (the bar has gone
+                // already): nothing records, this microphone is given back.
+                stream.getTracks().forEach((t) => t.stop());
+                return;
+            }
             this._recordingStream = stream;
             if (this._discarded || this._recCancelled) {
                 // Closed or cancelled while the browser was asking: nothing
@@ -917,13 +968,14 @@ export class AiInsightChat extends Component {
                 return;
             }
             this._audioChunks = [];
-            this._mediaRecorder = new MediaRecorder(stream, { mimeType: type });
+            const recorder = new MediaRecorder(stream, { mimeType: type });
+            this._mediaRecorder = recorder;
 
             this._mediaRecorder.ondataavailable = (e) => {
                 if (e.data && e.data.size > 0) this._audioChunks.push(e.data);
             };
 
-            this._mediaRecorder.onstart = () => this._onRecorderStart();
+            this._mediaRecorder.onstart = () => this._onRecorderStart(recorder);
             // The recorder failed on its own (the device went away): nothing
             // is sent, the microphone is given back, and the person is told.
             this._mediaRecorder.onerror = () => {
@@ -963,6 +1015,10 @@ export class AiInsightChat extends Component {
             this._startMeter(stream);
             this._mediaRecorder.start();
         } catch (err) {
+            if (start !== this._startSeq) {
+                // A start the person already cancelled: nothing to say.
+                return;
+            }
             // (b) ANY failure after the browser handed over the microphone
             // gives it straight back — no red dot left in the tab strip.
             this._releaseMicrophone();
@@ -973,8 +1029,13 @@ export class AiInsightChat extends Component {
         }
     }
 
-    /** The recorder is really running: NOW say "Listening". */
-    _onRecorderStart() {
+    /** The recorder is really running: NOW say "Listening" — unless it was
+     *  cancelled (or replaced) before the browser reported the start; then
+     *  its own `onstop` gives the microphone back. */
+    _onRecorderStart(recorder) {
+        if (recorder && (recorder !== this._mediaRecorder || recorder.state !== "recording")) {
+            return;
+        }
         this._recStartedAt = Date.now();
         this.state.micStarting = false;
         this.state.isRecording = true;
@@ -1065,7 +1126,21 @@ export class AiInsightChat extends Component {
         this._recCancelled = true;
         this._audioChunks = [];
         this._dropKeptAudio();
+        const live = !!(this._mediaRecorder && this._mediaRecorder.state === "recording");
         this._stopRecording();
+        if (this.state.micStarting) {
+            // "Starting…" ends NOW — the bar goes and Escape is the drawer's
+            // again. With the recorder built, its own `onstop` gives the
+            // microphone back; with the browser still asking, this start is
+            // moved on, so a late "allow" hands its microphone straight back.
+            this._stopWanted = false;
+            if (!live) {
+                this._startSeq = (this._startSeq || 0) + 1;
+                this._recCancelled = false;
+                this._releaseMicrophone();
+            }
+            this.state.micStarting = false;
+        }
     }
 
     _stopRecording() {
@@ -1681,11 +1756,22 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         if (!this.props.helper) {
             return _t("Ask about your payroll…");
         }
-        return this.state.status.can_act ? this.t("askAny") : this.t("askAnyNoAct");
+        // Only what THIS database can do: pay figures are promised only where
+        // the assistant service is set up (`can_answer`); without it the
+        // chat answers how things work, as the guide-only stream does.
+        const st = this.state.status;
+        if (st.can_act) {
+            return this.t("askAny");
+        }
+        return st.can_answer ? this.t("askAnyNoAct") : this.t("askPlaceholder");
     }
 
     get bannerText() {
-        return this.state.status.can_act ? this.t("honestAct") : this.t("honestAsk");
+        const st = this.state.status;
+        if (st.can_act) {
+            return this.t("honestAct");
+        }
+        return st.can_answer ? this.t("honestAsk") : this.t("honestGuide");
     }
 
     get ttsLabel() {
@@ -1817,6 +1903,19 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         }
     }
 
+    /** The marker for a practice or note turn the drawer pushed itself;
+     *  the turn is returned as pushed. Not for the question-collection card:
+     *  it rides along with the answer it follows, which has its marker. (The
+     *  router's "Tap Do it…" notes never come this way — see `_dispatch`.) */
+    _markTurn(turn) {
+        if (turn && turn.kind === "practice") {
+            this._marker("practice", (turn.practice && turn.practice.key) || null);
+        } else if (turn && turn.kind === "note" && turn.note && turn.note.key) {
+            this._marker("note", turn.note.key);
+        }
+        return turn;
+    }
+
     /** Which marker a guide answer gets. */
     async _markGuide(answer) {
         if (!answer) {
@@ -1916,6 +2015,7 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         const h = this.props.helper;
         if (!r || !r.route) {
             this._pushHelper({ kind: "note", note: h.pair("routeFailed") });
+            await this._marker("note", "routeFailed");
             return;
         }
         switch (r.route) {
@@ -2058,11 +2158,21 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         const ready = (fn) => Promise.resolve(this._ready).catch(() => {}).then(fn);
         return {
             pushGuide: (answer, opts) => ready(() => this._pushGuide(answer, opts)),
-            pushNote: (note) => ready(() => this._pushHelper({ kind: "note", note })),
-            pushTurn: (turn) => this._pushHelper(Object.assign({}, turn)),
+            pushNote: (note) => ready(() => this._markTurn(this._pushHelper({ kind: "note", note }))),
+            // A turn the drawer draws by itself (the practice chips of "Let
+            // me practise this", "That control is not on this screen") is a
+            // non-PayAI turn like any other: it writes its marker (OC-R3).
+            pushTurn: (turn) => this._markTurn(this._pushHelper(Object.assign({}, turn))),
             sendText: (text, opts) => ready(() => this.sendText(text, opts)),
-            sendDirect: ({ text, askOnly }) => ready(() => (this.state.isLoading ? null
-                : this.sendMessage({ text, askOnly: !!askOnly }))),
+            // False when PayAI is still answering: nothing was sent, and the
+            // chip that asked stays usable (the drawer un-picks a choice).
+            sendDirect: ({ text, askOnly }) => ready(async () => {
+                if (this.state.isLoading) {
+                    return false;
+                }
+                await this.sendMessage({ text, askOnly: !!askOnly });
+                return true;
+            }),
             practise: (key, mode) => this.practise(key, mode),
             findTurn: (id) => this.findTurn(id),
             dropTurns: (kind) => {

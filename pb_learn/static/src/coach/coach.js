@@ -689,9 +689,14 @@ export class CoachHost extends Component {
     }
 
     _detach(api) {
-        if (!api || this._api === api) {
+        // `this._api === null`: the chat went away before it ever attached
+        // (the drawer closed while its history was loading).
+        if (!api || this._api === api || this._api === null) {
             this._api = null;
             this.menu.close();
+            // Whatever was still waiting for this chat (a ⌘K sentence, an
+            // Explain) was given up with it: never sent on a later open.
+            this._queue = [];
         }
     }
 
@@ -929,7 +934,11 @@ export class CoachHost extends Component {
             return;
         }
         turn.picked = index;
-        await this._runChip(choice);
+        // PayAI was still answering, so nothing was sent: the choice stays
+        // open to press again rather than being used up for nothing.
+        if ((await this._runChip(choice)) === false) {
+            turn.picked = null;
+        }
     }
 
     /** "Explain how instead" / "Do it for me" under a turn. */
@@ -941,6 +950,7 @@ export class CoachHost extends Component {
         }
     }
 
+    /** Run a chip; false when nothing could be done (PayAI busy). */
     async _runChip(chip) {
         if (chip.route === "guide") {
             await this._answerInto(chip.key);
@@ -948,8 +958,11 @@ export class CoachHost extends Component {
             this._practiseFrom(chip.key, chip.mode || "try");
         } else if (chip.route === "payai" && this._api) {
             const text = typeof chip.text === "string" ? chip.text : tx(chip.label || "");
-            await this._api.sendDirect({ text, askOnly: !!chip.ask_only });
+            return (await this._api.sendDirect({ text, askOnly: !!chip.ask_only })) !== false;
+        } else {
+            return false;
         }
+        return true;
     }
 
     /** "Show again" on a history marker: the answer, drawn in place. */
@@ -1121,6 +1134,10 @@ export class CoachHost extends Component {
     close() {
         this.state.open = false;
         this.menu.close();
+        // A ⌘K sentence or an Explain still waiting for the chat to mount
+        // was given up when the person closed the drawer: it must not be
+        // sent on some later, unrelated open.
+        this._queue = [];
         // ONECHAT OC2 — the conversation is KEPT across a close (the chat's
         // turns live for the page's life; so does the guide-only stream).
         // What does not survive is half-typed text in the guide-only box.

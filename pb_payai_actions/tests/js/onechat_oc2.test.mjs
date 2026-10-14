@@ -151,6 +151,8 @@ await load("@pb_payai_actions/js/coach_patch",
             "@pb_payroll_ai_insights/components/ai_insight_chat/ai_insight_chat",
             "@pb_learn/engine/runtime", "@pb_learn/engine/glossary"]);
 
+const fullMod = await load("@pb_payroll_ai_insights/components/ai_insight_chat/ai_insight_chat_full",
+                           ["@pb_payroll_ai_insights/components/ai_insight_chat/ai_insight_chat"]);
 const { RT } = runtime;
 const { CoachHost, COACH_ACTIONS } = coachMod;
 const { AiInsightChat, AiInsightChatEmbedded, _resetPageMemory, markerOf } = chatMod;
@@ -611,7 +613,152 @@ async function shellSuite() {
     check(acts.length && acts.every((a) => COACH_ACTIONS.has(a)), "every data-act drawn is in COACH_ACTIONS", acts.join(","));
 }
 
-for (const suite of [spokenSuite, dispatchSuite, bypassSuite, langSuite, storeSuite, queueSuite, shellSuite]) {
+
+// ======================================================= leftover review
+async function leftoverSuite() {
+    console.log("OC2/OC3 leftover review findings");
+
+    // 1. the full-page PayAI chat never draws the helper's markers as replies
+    reset();
+    historyRows = [
+        { role: "user", content: "how many employees do we have", intent: "", card: null },
+        { role: "assistant", content: "You have 42 employees.", intent: "payroll_data", card: null },
+        { role: "assistant", content: "Approve a request", intent: "helper_note",
+          card: { kind: "guide", key: "approve", source_kind: "", screen_key: "payruns" } },
+        { role: "assistant", content: "Practice mode", intent: "helper_note",
+          card: { kind: "practice", key: "", source_kind: "", screen_key: "" } },
+    ];
+    const full = mountFull(fullMod.AiInsightChatFull, {}, {});
+    await tick(5);
+    check(full.state.messages.length === 2 && !full.state.messages.some((m) => m.intent === "helper_note"),
+          "1. the full-page chat leaves out the helper's markers", JSON.stringify(full.state.messages.map((m) => m.content)));
+    check(full.state.messages.some((m) => m.content === "You have 42 employees."), "… and keeps PayAI's own replies");
+    historyRows = [historyRows[2]];
+    const fullOnlyMarkers = mountFull(fullMod.AiInsightChatFull, {}, {});
+    await tick(5);
+    check(fullOnlyMarkers.state.messages.length === 0 && fullOnlyMarkers.state.showSuggestions === true,
+          "… a thread of markers only shows the full page's welcome");
+    historyRows = [];
+
+    // 2. the banner and the placeholder promise only what this database can do
+    {
+        const { chat } = await openChat();
+        chat.state.status = { can_act: false, can_answer: false, voice_go_ahead: false };
+        check(chat.bannerText === CONTENT.chrome.honestGuide.en && chat.placeholder === CONTENT.chrome.askPlaceholder.en,
+              "2. no assistant service: the banner and the box speak only of this screen",
+              JSON.stringify([chat.bannerText, chat.placeholder]));
+        check(!/pay figures/i.test(chat.bannerText + chat.placeholder), "… and promise no pay figures");
+        chat.state.status = { can_act: false, can_answer: true, voice_go_ahead: false };
+        check(chat.bannerText === CONTENT.chrome.honestAsk.en && chat.placeholder === CONTENT.chrome.askAnyNoAct.en,
+              "… with the service: pay figures are offered");
+        chat.state.status = { can_act: true, can_answer: true, voice_go_ahead: false };
+        check(chat.bannerText === CONTENT.chrome.honestAct.en && chat.placeholder === CONTENT.chrome.askAny.en,
+              "… and where PayAI may act, the act wording");
+        unmount(chat);
+    }
+
+    // 3. a ⌘K sentence given up on is never sent on a later, unrelated open
+    _resetPageMemory();
+    reset();
+    {
+        const host = makeHost();
+        routeAnswer = () => ({ route: "payai", why: "command" });
+        host._payaiOpenHook("open the runs board");
+        check(host.state.open === true && host._queue.length === 1, "3. ⌘K opens the drawer and waits for the chat");
+        host.close();                       // given up before the chat mounted
+        host.toggle();                      // later: opened with ?, nothing typed
+        const chat = makeChat(host);
+        await chat._historyReady;
+        await tick(30);
+        check(routes().length === 0 && rpcs("rpc_send_message").length === 0,
+              "… closed before the chat mounted: the sentence is NOT sent on the next open",
+              JSON.stringify(routes().map((c) => c.args[0])));
+        unmount(chat);
+        // the chat mounted, then closed before its history landed
+        reset();
+        host.state.open = false;
+        host._payaiOpenHook("open the runs board");
+        const early = makeChat(host);
+        unmount(early);                     // the drawer closed while loading
+        host.state.open = false;
+        await tick(10);
+        host.toggle();
+        const later = makeChat(host);
+        await later._historyReady;
+        await tick(30);
+        check(routes().length === 0 && rpcs("rpc_send_message").length === 0 && host._queue.length === 0,
+              "… unmounted before attach: the queue is emptied, nothing sent later");
+        // and a ⌘K sentence that WAS waited for is still sent once
+        reset();
+        host._payaiOpenHook("open the runs board");
+        await tick(30);
+        check(routes().length === 1 && rpcs("rpc_send_message").length === 1, "… a ⌘K sentence with the chat open is routed once");
+        unmount(later);
+    }
+
+    // 4. every non-PayAI turn the chat shows writes its marker
+    {
+        const { host, chat } = await openChat();
+        reset();
+        host.state.screen = "runpayroll";   // two scenarios to practise here
+        host._practiseHere();
+        await tick(5);
+        const chipsTurn = chat.state.messages.filter((m) => m.kind === "practice").slice(-1)[0];
+        check(chipsTurn && chipsTurn.practice && chipsTurn.practice.chips && chipsTurn.practice.chips.length >= 2,
+              "4. Let me practise this draws the practice chips");
+        check(rpcs("rpc_note_turn").filter((c) => c.args[1] === "practice").length === 1,
+              "… and writes a practice marker", JSON.stringify(rpcs("rpc_note_turn").map((c) => c.args.slice(1, 3))));
+        host.state.screen = "payruns";
+        reset();
+        host.showMe("no-such-control");
+        await tick(5);
+        check(chat.state.messages.slice(-1)[0].kind === "note"
+              && rpcs("rpc_note_turn").some((c) => c.args[1] === "note" && c.args[2] === "pointNotHere"),
+              "… 'That control is not on this screen' writes a note marker",
+              JSON.stringify(rpcs("rpc_note_turn").map((c) => c.args.slice(1, 3))));
+        reset();
+        routeAnswer = () => null;           // the router did not answer
+        chat.state.inputText = "anything";
+        await chat.submitComposer();
+        check(rpcs("rpc_note_turn").some((c) => c.args[1] === "note" && c.args[2] === "routeFailed"),
+              "… the 'did not go through' note writes one too");
+        reset();
+        chat.api.pushTurn({ kind: "consent" });
+        await tick(5);
+        check(chat.state.messages.slice(-1)[0].kind === "consent" && rpcs("rpc_note_turn").length === 0,
+              "… the question-collection card is not a marker of its own (it rides with its answer)");
+        unmount(chat);
+    }
+
+    // 5. a "Which did you mean?" chip pressed while PayAI is busy stays usable
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => ({ route: "choose", why: "weak", note: { en: "Which did you mean?", vi: "…", key: "whichMeant" },
+                               choices: [{ label: { en: "Approve a request", vi: "Duyệt" }, route: "guide", key: "approve" },
+                                         { label: { en: "Ask about your pay data", vi: "Hỏi" }, route: "payai",
+                                           text: "can I approve", ask_only: true }] });
+        chat.state.inputText = "approve?";
+        await chat.submitComposer();
+        const turn = chat.state.messages.filter((m) => m.kind === "choose").slice(-1)[0];
+        chat.state.isLoading = true;        // PayAI still answering something else
+        await host._pickChoice(turn.id, 1);
+        check(rpcs("rpc_send_message").length === 0 && (turn.picked === null || turn.picked === undefined),
+              "5. pressed while busy: nothing sent, and the choice is NOT used up", String(turn.picked));
+        check(!/disabled/.test(String(host.helper.turnHTML(turn, "en"))), "… its chips are still pressable");
+        chat.state.isLoading = false;
+        await host._pickChoice(turn.id, 1);
+        check(rpcs("rpc_send_message").length === 1 && rpcs("rpc_send_message")[0].args[0] === "can I approve"
+              && turn.picked === 1, "… pressed again once PayAI is free: sent once, then used");
+        await host._pickChoice(turn.id, 0);
+        check(rpcs("rpc_send_message").length === 1 && !ormLog.some((c) => c.method === "answer_for"),
+              "… and only once (the other chip is dead after a real pick)");
+        unmount(chat);
+    }
+}
+
+for (const suite of [spokenSuite, dispatchSuite, bypassSuite, langSuite, storeSuite, queueSuite, shellSuite,
+                     leftoverSuite]) {
     try {
         await suite();
     } catch (e) {
