@@ -90,6 +90,9 @@ for rule in config.rule_ids:
     show = rule.column_letter in earning_cols | deduction_cols | {'Y', 'Z', 'AA', 'AB', 'AP', 'AQ', 'BT'} and not rule.tax_table_id
     if rule.appears_on_payslip != show:
         rule.appears_on_payslip = show
+    display = {'money': 'currency', 'rate': 'percentage', 'integer': 'integer'}.get(rule.value_kind, 'number')
+    if rule.number_format != display:
+        rule.number_format = display
     if rule.column_type == 'input':
         # The compact monthly workbook has different letters. Bind by heading.
         rule.set_source_binding('excel', 'Payroll|%s' % rule.name)
@@ -133,6 +136,8 @@ for i, raw in enumerate(parsed['rows']):
                 # real run. Keep them in the sample too so the preview shows
                 # the literal client values, rather than an empty placeholder.
                 inputs[rule.code] = probe._normalize_rule_input_value(rule, raw_value)
+        elif rule.column_role != 'payroll':
+            inputs[rule.code] = ''
     expected = {by_col[source.cell(30, c).column_letter].code: cached.cell(30+i, c).value for c in formula_cols}
     name = 'Template example %s' % (i+1)
     sample = config.sample_data_ids.filtered(lambda s: s.name == name)
@@ -167,6 +172,11 @@ placeholder = config.sample_data_ids.filtered(lambda s: s.name == 'Sample employ
 placeholder.write({'active': False})
 test_results = config.run_sample_tests()
 assert test_results['passed'] == 6 and not test_results['failed']
+blueprint = env['pb.blueprint.studio']
+checks = blueprint.bp_run_checks(config.id)
+assert checks.get('ok'), checks
+finished = blueprint.bp_finish(config.id)
+assert finished.get('ok'), finished
 board = config.value_kind_board()
 assert not board['review_count'] and not board['role_conflict_count']
 assert len(config.rule_ids.filtered('tax_table_id')) == 292
