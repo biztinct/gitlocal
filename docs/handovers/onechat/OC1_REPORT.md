@@ -339,3 +339,18 @@ Corpus: 137 → 167 rows (30 added, all observed offline; no existing row change
 Corpus 167 → 186 rows (19 added, observed; no existing row changed). Offline suite 34 OK;
 `check_contract.py` 73 checks; `gen_learn_data.py --check` clean; `simulate_resolver.py` every property
 holds; `client_fix.test.mjs` 82 passed. Server tests run at the clone stage. No manifest bump.
+
+## Clone stage (run 21, 2026-10-14 04:07–04:10 UTC)
+Staged with `onechat_stage.sh` (git archive HEAD `ce5a1a7c8` + working-tree overlay of pb_payai_actions,
+pb_learn, pb_payroll_ai_insights — the worktree was clean, so the overlay equals HEAD) into
+`/tmp/payai_fix1stage`; `fix1_test.sh 21 pb_learn,pb_payroll_ai_insights,pb_payai_actions
+/pb_learn,/pb_payroll_ai_insights,/pb_payai_actions` on `p0clone`, port 8099, unit `onechat-test-21`.
+```
+pb_learn: 336 tests 63.81s 31596 queries                (was 316 at FIX-1 run 6)
+pb_payai_actions: 294 tests 83.50s 77344 queries        (was 277)
+pb_payroll_ai_insights: 136 tests 3.56s 2502 queries    (was 128)
+1 failed, 0 error(s) of 672 tests
+FAIL: TestQuestionMining.test_07b_the_cron_exists_and_points_at_the_job   ← PA55 (cron inactive on p0clone), in both baselines
+```
+The three OneChat server files all ran, none skipped, all green: `test_helper_route` 16,
+`test_onechat_conversation` 6, `test_onechat_router` 13. No failure caused by OC1; no repair round needed.
