@@ -140,7 +140,7 @@ export class AiInsightChatFull extends Component {
                 args: [chartConfig],
                 kwargs: {},
             });
-            this.notification.add(_t("Chart pinned to dashboard! 📌"), { type: "success" });
+            this.notification.add(_t("Chart pinned to the dashboard."), { type: "success" });
         } catch (error) {
             this.notification.add(_t("Failed to pin chart"), { type: "danger" });
         }
