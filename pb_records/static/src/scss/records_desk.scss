@@ -295,6 +295,8 @@ $rd-w-data: 194px;
         }
     }
     .rd-menu-sep { height: 1px; background: var(--pbim-line-2); margin: 4px 6px; }
+    .rd-hcell:has(.rd-menu) { z-index: 5; }
+    .rd-c-first .rd-menu { left: 4px; right: auto; }
 
     .rd-body { position: relative; }
     .rd-rows { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
