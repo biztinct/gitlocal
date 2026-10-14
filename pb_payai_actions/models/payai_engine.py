@@ -42,13 +42,32 @@ class PayrollAIEngine(models.Model):
         return result
 
     @api.model
+    def _ask_only_skips(self, message, context):
+        """True when the command path is skipped for this message: the
+        helper's router sent it with `ask_only` (a question), no card chip
+        answer rides with it (`payai_resolve`), and — re-read now, because
+        things can change between routing and sending — it is neither a
+        go-ahead nor the answer to a typed question still open. It can only
+        ever REMOVE the command path (handover R11)."""
+        if not self.env.context.get('payai_ask_only') or (context or {}).get('payai_resolve'):
+            return False
+        if runner.go_ahead_words(message):
+            return False
+        return runner._open_question(runner.Ctx(self, context)) is None
+
+    @api.model
     def process_message(self, message, conversation_history=None, context=None):
         context = context or {}
         if not tier_on(self.env, 'look'):
             return self._drop_access_learn(
                 super().process_message(message, conversation_history, context))
         try:
-            out = runner.handle(self, message, context)
+            if self._ask_only_skips(message, context):
+                # ONECHAT OC1 (E2): the router read this as a question and
+                # nothing is waiting for it — answer it, never plan from it.
+                out = None
+            else:
+                out = runner.handle(self, message, context)
         except AccessError:
             raise
         except Exception:                               # noqa: BLE001

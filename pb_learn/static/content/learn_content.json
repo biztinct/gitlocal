@@ -13,6 +13,10 @@
       "en": "The guide has no answer for that. The Ask tab can look at your own pay data.",
       "vi": "Tài liệu hướng dẫn chưa có câu trả lời cho câu này. Thẻ Hỏi đáp có thể xem dữ liệu lương của chính bạn."
     },
+    "askPayData": {
+      "en": "Ask about your pay data",
+      "vi": "Hỏi về dữ liệu lương của bạn"
+    },
     "askPlaceholder": {
       "en": "Ask about this screen…",
       "vi": "Hỏi về màn hình này…"
@@ -48,6 +52,38 @@
     "cancelAct": {
       "en": "Go back",
       "vi": "Quay lại"
+    },
+    "cannotActHere": {
+      "en": "I can't do things for you here — ask me how instead.",
+      "vi": "Ở đây tôi không làm thay bạn được — hãy hỏi tôi cách làm."
+    },
+    "capAct": {
+      "en": "Prepare work for you. I show you the plan first, and nothing changes until you tap Do it.",
+      "vi": "Chuẩn bị công việc cho bạn. Tôi cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn bấm Thực hiện."
+    },
+    "capAnswer": {
+      "en": "Answer how-to questions from the guide.",
+      "vi": "Trả lời câu hỏi cách làm, theo tài liệu hướng dẫn."
+    },
+    "capData": {
+      "en": "Answer questions about your pay figures.",
+      "vi": "Trả lời câu hỏi về số liệu lương của bạn."
+    },
+    "capExplain": {
+      "en": "Explain this screen: what it is for and what its numbers mean.",
+      "vi": "Giải thích màn hình này: dùng để làm gì và các con số có nghĩa gì."
+    },
+    "capPractise": {
+      "en": "Open a safe practice copy, so you can try a task first.",
+      "vi": "Mở một bản thực hành an toàn, để bạn thử làm trước."
+    },
+    "capTitle": {
+      "en": "What I can do here",
+      "vi": "Những gì tôi làm được ở đây"
+    },
+    "capVoice": {
+      "en": "Listen when you speak. You check the words, then press Send.",
+      "vi": "Nghe khi bạn nói. Bạn kiểm tra lại câu chữ, rồi bấm Gửi."
     },
     "cardFold": {
       "en": "Fold the card to see the screen",
@@ -193,6 +229,18 @@
       "en": "Debrief",
       "vi": "Tổng kết"
     },
+    "doItForMe": {
+      "en": "Do it for me",
+      "vi": "Làm giúp tôi"
+    },
+    "doItNow": {
+      "en": "Do it now",
+      "vi": "Làm ngay"
+    },
+    "doOrHow": {
+      "en": "Do you want me to do it, or see how it works?",
+      "vi": "Bạn muốn tôi làm luôn, hay xem cách làm?"
+    },
     "employees": {
       "en": "employees",
       "vi": "nhân viên"
@@ -208,6 +256,10 @@
     "explainHint": {
       "en": "What this screen is, what to do next, and what its numbers mean.",
       "vi": "Màn hình này là gì, nên làm gì tiếp, và các con số ở đây nghĩa là gì."
+    },
+    "explainHowInstead": {
+      "en": "Explain how instead",
+      "vi": "Giải thích cách làm"
     },
     "explainScreen": {
       "en": "Explain this screen",
@@ -253,6 +305,14 @@
       "en": "Getting the guide ready…",
       "vi": "Đang chuẩn bị phần hướng dẫn…"
     },
+    "hereIsHow": {
+      "en": "Here is how you do it.",
+      "vi": "Đây là cách bạn làm."
+    },
+    "hereIsHowOrPrepare": {
+      "en": "Here is how. Or I can prepare it for you.",
+      "vi": "Đây là cách làm. Hoặc tôi có thể chuẩn bị sẵn cho bạn."
+    },
     "honest": {
       "en": "Ask me to do something and I show you the plan first. I only ever do what you could do yourself on the screen.",
       "vi": "Bạn nhờ tôi làm một việc, tôi cho bạn xem kế hoạch trước. Tôi chỉ làm những gì bạn tự làm được trên màn hình."
@@ -264,6 +324,10 @@
     "howInstead": {
       "en": "What to do instead:",
       "vi": "Nên làm gì thay thế:"
+    },
+    "howItWorks": {
+      "en": "How it works",
+      "vi": "Cách hoạt động"
     },
     "hubAllTabs": {
       "en": "All tabs in",
@@ -637,6 +701,10 @@
       "en": "Nothing written here covers that question. Here is what I can answer on this screen.",
       "vi": "Không có nội dung nào ở đây bao phủ câu hỏi đó. Đây là những gì tôi trả lời được trên màn hình này."
     },
+    "noPayai": {
+      "en": "Questions about pay figures need the assistant service, which is not set up here. Ask your administrator to set it up, or ask me how something works.",
+      "vi": "Câu hỏi về số liệu lương cần dịch vụ trợ lý, mà ở đây chưa được thiết lập. Hãy nhờ quản trị viên thiết lập, hoặc hỏi tôi cách làm một việc."
+    },
     "notSure": {
       "en": "Not sure what to ask?",
       "vi": "Chưa biết nên hỏi gì?"
@@ -648,6 +716,14 @@
     "notVisibleBody": {
       "en": "This screen is not in your menu yet, so you cannot open it. You can still read what it does. You can also read what to ask for if you need it.",
       "vi": "Màn hình này chưa có trong menu của bạn nên bạn chưa mở được. Bạn vẫn đọc được rằng nó dùng để làm gì. Bạn cũng đọc được rằng mình cần xin quyền gì nếu cần tới nó."
+    },
+    "nothingToCancel": {
+      "en": "Nothing is waiting, so there is nothing to cancel.",
+      "vi": "Không có việc nào đang chờ, nên không có gì để huỷ."
+    },
+    "nothingWaiting": {
+      "en": "Nothing is waiting for your go-ahead.",
+      "vi": "Không có việc nào đang chờ bạn đồng ý."
     },
     "of": {
       "en": "of",
@@ -1005,6 +1081,10 @@
       "en": "Skip",
       "vi": "Bỏ qua"
     },
+    "smalltalk": {
+      "en": "Happy to help. Ask me how to do something, or about this screen.",
+      "vi": "Rất sẵn lòng. Hãy hỏi tôi cách làm một việc, hoặc hỏi về màn hình này."
+    },
     "source": {
       "en": "Grounded in:",
       "vi": "Căn cứ:"
@@ -1133,6 +1213,10 @@
       "en": "Take me there",
       "vi": "Đưa tôi tới đó"
     },
+    "tapCancel": {
+      "en": "To stop, tap Cancel on the plan card.",
+      "vi": "Muốn dừng, hãy bấm Hủy bỏ trên thẻ kế hoạch."
+    },
     "teamEmpty": {
       "en": "Nobody in this company works on payroll yet.",
       "vi": "Công ty chưa có ai làm việc với bảng lương."
@@ -1229,6 +1313,10 @@
       "en": "Try again",
       "vi": "Thử lại"
     },
+    "typeWordOnCard": {
+      "en": "Type {word} in the box on the card.",
+      "vi": "Hãy gõ {word} vào ô trên thẻ."
+    },
     "undoShown": {
       "en": "Undo it",
       "vi": "Hoàn tác"
@@ -1236,6 +1324,10 @@
     "verify": {
       "en": "What to check first",
       "vi": "Cần kiểm tra gì trước"
+    },
+    "watchOnlyNote": {
+      "en": "This one can be watched, not practised.",
+      "vi": "Phần này chỉ xem được, chưa thực hành được."
     },
     "welcomeBody": {
       "en": "Want a 2-minute look around first? I will show you the screens you use most.",
@@ -1272,6 +1364,10 @@
     "whenUse": {
       "en": "When to use it",
       "vi": "Khi nào dùng"
+    },
+    "whichMeant": {
+      "en": "Which did you mean?",
+      "vi": "Ý bạn là việc nào?"
     },
     "whoCan": {
       "en": "Who can:",
@@ -11985,6 +12081,24 @@
         "en": "Take the tour",
         "vi": "Đi một vòng Payobook"
       },
+      "phrases": [
+        "the tour",
+        "a tour",
+        "a quick tour",
+        "look around",
+        "around payobook",
+        "the whole product",
+        "the product tour",
+        "đi một vòng",
+        "xem một vòng",
+        "tham quan payobook",
+        "giới thiệu sản phẩm",
+        "di mot vong",
+        "xem mot vong",
+        "gioi thieu san pham",
+        "Take the tour",
+        "Đi một vòng Payobook"
+      ],
       "retired": false,
       "screens": [
         "dashboard",
@@ -12219,6 +12333,25 @@
         "en": "Run a pay run",
         "vi": "Chạy một đợt lương"
       },
+      "phrases": [
+        "run payroll",
+        "run the payroll",
+        "run a pay run",
+        "start a pay run",
+        "compute payroll",
+        "process payroll",
+        "pay my staff",
+        "chạy lương",
+        "chạy bảng lương",
+        "chạy một đợt lương",
+        "tính lương",
+        "chay luong",
+        "chay bang luong",
+        "chay mot dot luong",
+        "tinh luong",
+        "Run a pay run",
+        "Chạy một đợt lương"
+      ],
       "retired": false,
       "screens": [
         "runpayroll"
@@ -12489,6 +12622,25 @@
         "en": "Read a pay run and its payslips",
         "vi": "Đọc một đợt lương và các phiếu lương"
       },
+      "phrases": [
+        "read payslips",
+        "read the payslips",
+        "check payslips",
+        "check the payslips",
+        "read a pay run",
+        "review a pay run",
+        "read a payslip",
+        "đọc phiếu lương",
+        "xem phiếu lương",
+        "kiểm tra phiếu lương",
+        "đọc đợt lương",
+        "doc phieu luong",
+        "xem phieu luong",
+        "kiem tra phieu luong",
+        "doc dot luong",
+        "Read a pay run and its payslips",
+        "Đọc một đợt lương và các phiếu lương"
+      ],
       "retired": false,
       "screens": [
         "payruns",
@@ -12723,6 +12875,21 @@
         "en": "Explore the formula engine",
         "vi": "Khám phá bộ máy công thức"
       },
+      "phrases": [
+        "formula engine",
+        "the formulas",
+        "explore formulas",
+        "edit a formula",
+        "the formula grid",
+        "bộ máy công thức",
+        "công thức lương",
+        "khám phá công thức",
+        "bo may cong thuc",
+        "cong thuc luong",
+        "kham pha cong thuc",
+        "Explore the formula engine",
+        "Khám phá bộ máy công thức"
+      ],
       "retired": false,
       "screens": [
         "formula"
@@ -13181,6 +13348,25 @@
         "en": "Load a month's pay data",
         "vi": "Tải dữ liệu lương của một tháng"
       },
+      "phrases": [
+        "import pay data",
+        "load pay data",
+        "import a file",
+        "import the month",
+        "upload the pay file",
+        "load the month's file",
+        "import data",
+        "nhập dữ liệu lương",
+        "tải dữ liệu lương",
+        "nhập tệp lương",
+        "tải tệp lên",
+        "nhap du lieu luong",
+        "tai du lieu luong",
+        "nhap tep luong",
+        "tai tep len",
+        "Load a month's pay data",
+        "Tải dữ liệu lương của một tháng"
+      ],
       "retired": false,
       "screens": [
         "import",
@@ -13433,6 +13619,25 @@
         "en": "Add your first employee",
         "vi": "Thêm nhân viên đầu tiên"
       },
+      "phrases": [
+        "add an employee",
+        "add a new employee",
+        "add employee",
+        "add a person",
+        "add staff",
+        "new employee",
+        "create an employee",
+        "thêm nhân viên",
+        "thêm người mới",
+        "tạo nhân viên",
+        "tạo hồ sơ nhân viên",
+        "them nhan vien",
+        "them nguoi moi",
+        "tao nhan vien",
+        "tao ho so nhan vien",
+        "Add your first employee",
+        "Thêm nhân viên đầu tiên"
+      ],
       "retired": false,
       "screens": [
         "employees"
@@ -13598,6 +13803,10 @@
         "en": "Map mid-cycle pay to end-cycle",
         "vi": "Ánh xạ lương giữa kỳ sang cuối kỳ"
       },
+      "phrases": [
+        "Map mid-cycle pay to end-cycle",
+        "Ánh xạ lương giữa kỳ sang cuối kỳ"
+      ],
       "retired": true,
       "screens": [
         "formula",
@@ -13701,6 +13910,20 @@
         "en": "Set up a new pay scheme",
         "vi": "Thiết lập một chương trình lương mới"
       },
+      "phrases": [
+        "set up a pay scheme",
+        "new pay scheme",
+        "create a pay scheme",
+        "the guided setup",
+        "thiết lập chương trình lương",
+        "chương trình lương mới",
+        "tạo chương trình lương",
+        "thiet lap chuong trinh luong",
+        "chuong trinh luong moi",
+        "tao chuong trinh luong",
+        "Set up a new pay scheme",
+        "Thiết lập một chương trình lương mới"
+      ],
       "retired": false,
       "screens": [
         "blueprint",
@@ -13971,6 +14194,20 @@
         "en": "Follow a number through Mapping",
         "vi": "Lần theo một con số qua Ánh xạ"
       },
+      "phrases": [
+        "follow a number",
+        "mapping",
+        "map a source",
+        "where a number comes from",
+        "lần theo con số",
+        "ánh xạ",
+        "nguồn của con số",
+        "lan theo con so",
+        "anh xa",
+        "nguon cua con so",
+        "Follow a number through Mapping",
+        "Lần theo một con số qua Ánh xạ"
+      ],
       "retired": false,
       "screens": [
         "mapping",
@@ -14196,6 +14433,20 @@
         "en": "Fix figures that do not add up",
         "vi": "Sửa số liệu không khớp"
       },
+      "phrases": [
+        "fix figures",
+        "figures that do not add up",
+        "component treatment",
+        "net pay does not add up",
+        "sửa số liệu",
+        "số liệu không khớp",
+        "cách tính thành phần",
+        "sua so lieu",
+        "so lieu khong khop",
+        "cach tinh thanh phan",
+        "Fix figures that do not add up",
+        "Sửa số liệu không khớp"
+      ],
       "retired": false,
       "screens": [
         "treatment",
@@ -14349,6 +14600,20 @@
         "en": "Change an approval route",
         "vi": "Đổi một lộ trình phê duyệt"
       },
+      "phrases": [
+        "approval route",
+        "change an approval route",
+        "approval matrix",
+        "who signs off",
+        "lộ trình phê duyệt",
+        "đổi lộ trình phê duyệt",
+        "ma trận phê duyệt",
+        "lo trinh phe duyet",
+        "doi lo trinh phe duyet",
+        "ma tran phe duyet",
+        "Change an approval route",
+        "Đổi một lộ trình phê duyệt"
+      ],
       "retired": false,
       "screens": [
         "matrix",
@@ -14551,6 +14816,20 @@
         "en": "Bulk update employee records",
         "vi": "Cập nhật hàng loạt hồ sơ nhân viên"
       },
+      "phrases": [
+        "bulk update",
+        "update records",
+        "update employee records",
+        "records desk",
+        "cập nhật hàng loạt",
+        "cập nhật hồ sơ",
+        "sửa hồ sơ nhân viên",
+        "cap nhat hang loat",
+        "cap nhat ho so",
+        "sua ho so nhan vien",
+        "Bulk update employee records",
+        "Cập nhật hàng loạt hồ sơ nhân viên"
+      ],
       "retired": false,
       "screens": [
         "records"
@@ -14750,6 +15029,20 @@
         "en": "Pay people in another currency",
         "vi": "Trả lương bằng một đồng tiền khác"
       },
+      "phrases": [
+        "another currency",
+        "pay in another currency",
+        "foreign currency",
+        "two currencies",
+        "đồng tiền khác",
+        "trả lương bằng ngoại tệ",
+        "ngoại tệ",
+        "dong tien khac",
+        "tra luong bang ngoai te",
+        "ngoai te",
+        "Pay people in another currency",
+        "Trả lương bằng một đồng tiền khác"
+      ],
       "retired": false,
       "screens": [
         "schemes",
@@ -14910,6 +15203,19 @@
         "en": "Read your pay bands",
         "vi": "Đọc các khoảng lương"
       },
+      "phrases": [
+        "pay bands",
+        "read pay bands",
+        "salary bands",
+        "khoảng lương",
+        "dải lương",
+        "khung lương",
+        "khoang luong",
+        "dai luong",
+        "khung luong",
+        "Read your pay bands",
+        "Đọc các khoảng lương"
+      ],
       "retired": false,
       "screens": [
         "paybands"
@@ -15035,6 +15341,20 @@
         "en": "Run a pay review",
         "vi": "Thực hiện một đợt xét lương"
       },
+      "phrases": [
+        "pay review",
+        "a pay review",
+        "salary review",
+        "pay rises",
+        "xét lương",
+        "đợt xét lương",
+        "xét tăng lương",
+        "xet luong",
+        "dot xet luong",
+        "xet tang luong",
+        "Run a pay review",
+        "Thực hiện một đợt xét lương"
+      ],
       "retired": false,
       "screens": [
         "payreview"
@@ -15282,6 +15602,19 @@
         "en": "Try next year in the Decision Room",
         "vi": "Thử trước năm sau ở Phòng quyết định"
       },
+      "phrases": [
+        "decision room",
+        "plan next year",
+        "next year's cost",
+        "phòng quyết định",
+        "kế hoạch năm sau",
+        "chi phí năm sau",
+        "phong quyet dinh",
+        "ke hoach nam sau",
+        "chi phi nam sau",
+        "Try next year in the Decision Room",
+        "Thử trước năm sau ở Phòng quyết định"
+      ],
       "retired": false,
       "screens": [
         "decisionroom"
@@ -15430,6 +15763,24 @@
         "en": "Open a role and ask for its request",
         "vi": "Mở một vị trí và nhờ gửi đề xuất"
       },
+      "phrases": [
+        "open a role",
+        "start hiring",
+        "hire someone",
+        "hiring request",
+        "a new role",
+        "ask for a hire",
+        "mở vị trí",
+        "tuyển dụng",
+        "đề xuất tuyển dụng",
+        "tuyển người",
+        "mo vi tri",
+        "tuyen dung",
+        "de xuat tuyen dung",
+        "tuyen nguoi",
+        "Open a role and ask for its request",
+        "Mở một vị trí và nhờ gửi đề xuất"
+      ],
       "retired": false,
       "screens": [
         "hiring",
@@ -15673,6 +16024,20 @@
         "en": "Work a role's board",
         "vi": "Làm việc trên bảng của một vị trí"
       },
+      "phrases": [
+        "role board",
+        "move a candidate",
+        "candidates",
+        "share a candidate",
+        "bảng ứng viên",
+        "chuyển ứng viên",
+        "chia sẻ ứng viên",
+        "bang ung vien",
+        "chuyen ung vien",
+        "chia se ung vien",
+        "Work a role's board",
+        "Làm việc trên bảng của một vị trí"
+      ],
       "retired": false,
       "screens": [
         "hiringrole",
@@ -15887,6 +16252,19 @@
         "en": "Get ready for a new joiner",
         "vi": "Chuẩn bị cho nhân viên mới"
       },
+      "phrases": [
+        "new joiner",
+        "onboarding",
+        "someone starting soon",
+        "chuẩn bị cho người mới",
+        "người mới vào làm",
+        "đón nhân viên mới",
+        "chuan bi cho nguoi moi",
+        "nguoi moi vao lam",
+        "don nhan vien moi",
+        "Get ready for a new joiner",
+        "Chuẩn bị cho nhân viên mới"
+      ],
       "retired": false,
       "screens": [
         "joiners"
@@ -15989,6 +16367,20 @@
         "en": "See someone out, and settle them",
         "vi": "Tiễn một người nghỉ, và quyết toán"
       },
+      "phrases": [
+        "someone leaving",
+        "see someone out",
+        "final settlement",
+        "a leaver",
+        "nghỉ việc",
+        "quyết toán",
+        "người nghỉ việc",
+        "nghi viec",
+        "quyet toan",
+        "nguoi nghi viec",
+        "See someone out, and settle them",
+        "Tiễn một người nghỉ, và quyết toán"
+      ],
       "retired": false,
       "screens": [
         "exits"
@@ -16186,6 +16578,19 @@
         "en": "End a trial with a decision",
         "vi": "Kết thúc thử việc bằng một quyết định"
       },
+      "phrases": [
+        "end a trial",
+        "probation",
+        "trial period",
+        "kết thúc thử việc",
+        "hết thử việc",
+        "đánh giá thử việc",
+        "ket thuc thu viec",
+        "het thu viec",
+        "danh gia thu viec",
+        "End a trial with a decision",
+        "Kết thúc thử việc bằng một quyết định"
+      ],
       "retired": false,
       "screens": [
         "probation"
@@ -16287,6 +16692,19 @@
         "en": "A day in Workforce",
         "vi": "Một ngày ở Lực lượng lao động"
       },
+      "phrases": [
+        "a day in workforce",
+        "who is in today",
+        "workforce today",
+        "một ngày ở lực lượng lao động",
+        "ai đi làm hôm nay",
+        "hôm nay ai làm",
+        "mot ngay o luc luong lao dong",
+        "ai di lam hom nay",
+        "hom nay ai lam",
+        "A day in Workforce",
+        "Một ngày ở Lực lượng lao động"
+      ],
       "retired": false,
       "screens": [
         "wftoday"
@@ -16388,6 +16806,23 @@
         "en": "Time, leave and overtime",
         "vi": "Chấm công, nghỉ phép và tăng ca"
       },
+      "phrases": [
+        "approve overtime",
+        "overtime",
+        "time and leave",
+        "leave requests",
+        "timesheets",
+        "duyệt tăng ca",
+        "tăng ca",
+        "nghỉ phép",
+        "chấm công",
+        "duyet tang ca",
+        "tang ca",
+        "nghi phep",
+        "cham cong",
+        "Time, leave and overtime",
+        "Chấm công, nghỉ phép và tăng ca"
+      ],
       "retired": false,
       "screens": [
         "wftime",
@@ -16521,6 +16956,23 @@
         "en": "Close the week",
         "vi": "Chốt tuần"
       },
+      "phrases": [
+        "close the week",
+        "lock the week",
+        "close a week",
+        "lock a week",
+        "week close",
+        "send the week to payroll",
+        "chốt tuần",
+        "khoá tuần",
+        "khóa tuần",
+        "đóng tuần",
+        "chot tuan",
+        "khoa tuan",
+        "dong tuan",
+        "Close the week",
+        "Chốt tuần"
+      ],
       "retired": false,
       "screens": [
         "wfclose"
@@ -16672,6 +17124,19 @@
         "en": "Access, and handing it over",
         "vi": "Quyền truy cập, và bàn giao"
       },
+      "phrases": [
+        "hand over my access",
+        "delegate access",
+        "give someone access",
+        "quyền truy cập",
+        "bàn giao quyền",
+        "uỷ quyền",
+        "quyen truy cap",
+        "ban giao quyen",
+        "uy quyen",
+        "Access, and handing it over",
+        "Quyền truy cập, và bàn giao"
+      ],
       "retired": false,
       "screens": [
         "access"
@@ -16796,6 +17261,19 @@
         "en": "File the month's government reports",
         "vi": "Nộp các báo cáo nhà nước của tháng"
       },
+      "phrases": [
+        "government reports",
+        "file the reports",
+        "monthly filings",
+        "báo cáo nhà nước",
+        "nộp báo cáo",
+        "khai báo hằng tháng",
+        "bao cao nha nuoc",
+        "nop bao cao",
+        "khai bao hang thang",
+        "File the month's government reports",
+        "Nộp các báo cáo nhà nước của tháng"
+      ],
       "retired": false,
       "screens": [
         "govreports",
@@ -33410,5 +33888,5 @@
       }
     }
   ],
-  "version": "62cceff7fe06"
+  "version": "7b1859b316ca"
 }

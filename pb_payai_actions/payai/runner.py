@@ -294,8 +294,18 @@ def only_thanks(text):
 
 
 #: P2 latency: the last sentences the model routed, per person (process-local).
+#: ONECHAT OC1 (handover R9): keyed by database, person, conversation AND the
+#: redacted words, and the value keeps the model's slot texts WITH their
+#: placeholders ("[person-2]") — names are restored from the CURRENT mapping on
+#: every use. A cleared chat restarts the placeholder numbering, so a value
+#: holding real names would have handed an old person's name to the same
+#: redacted words; one holding placeholders cannot.
 _LRU = OrderedDict()
 _LRU_MAX = 256
+
+
+def _restored(texts, mapping):
+    return {key: restore_names(val, mapping) for key, val in (texts or {}).items()}
 
 
 # --------------------------------------------------------------- context
@@ -417,11 +427,13 @@ def ask_model(ctx, message):
     if not tools:
         return None
     safe, mapping = _redact(ctx, message)
-    lru_key = (ctx.user.id, ' '.join(safe.lower().split()))
+    lru_key = (ctx.env.cr.dbname, ctx.user.id,
+               ctx.conversation.id if ctx.conversation else 0,
+               ' '.join(safe.lower().split()))
     hit = _LRU.get(lru_key)
     if hit is not None and hit[0] in {t['name'] for t in tools}:
         _LRU.move_to_end(lru_key)
-        return hit[0], dict(hit[1])
+        return hit[0], _restored(hit[1], mapping)
     brand = ctx.engine._brand_name()
     messages = [
         {'role': 'system', 'content': TOOLS_PROMPT.replace('%(brand)s', brand)},
@@ -448,13 +460,14 @@ def ask_model(ctx, message):
         if isinstance(val, (int, float)) and not isinstance(val, bool):
             val = T(val)
         if isinstance(val, str) and val.strip():
-            # Placeholders back to names: the RESOLVER needs the words, and
-            # it runs here, on this server, as the person.
-            texts[slot.key] = restore_names(val.strip()[:160], mapping)
+            # Kept WITH placeholders (R9); names come back below, from the
+            # current mapping — the RESOLVER needs the words, and it runs
+            # here, on this server, as the person.
+            texts[slot.key] = val.strip()[:160]
     _LRU[lru_key] = (name, dict(texts))
     while len(_LRU) > _LRU_MAX:
         _LRU.popitem(last=False)
-    return name, texts
+    return name, _restored(texts, mapping)
 
 
 # ---------------------------------------------------------------- tasks

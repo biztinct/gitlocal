@@ -269,7 +269,8 @@
       "files": [
         "pb_learn/models/learn_intent.py",
         "pb_learn/models/learn_runtime.py",
-        "pb_learn/models/learn_question.py"
+        "pb_learn/models/learn_question.py",
+        "pb_learn/models/learn_helper.py"
       ],
       "expect": [
         "hr.ai.provider.config",

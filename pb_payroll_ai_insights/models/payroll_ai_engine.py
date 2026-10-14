@@ -406,9 +406,16 @@ class PayrollAIEngine(models.Model):
         except UserError:
             raise
         except Exception as e:
+            # ONECHAT OC1 (handover R8): the exception is LOGGED, never shown.
+            # Its text can carry a provider's error body, a model name or a
+            # piece of the request — none of which is a sentence for the
+            # reader. The helper chat shows the guide's own answer instead when
+            # the router gave it one (`fallback_key`).
             _logger.exception("PayAI processing error: %s", str(e))
             return {
-                'response': f'I apologize, but I encountered an error: {str(e)}. Please try again.',
+                'response': _(
+                    'Something went wrong on my side. Please try again, or ask '
+                    'your administrator to check the assistant settings.'),
                 'chart': None,
                 'insights': [],
                 'follow_up_questions': [],

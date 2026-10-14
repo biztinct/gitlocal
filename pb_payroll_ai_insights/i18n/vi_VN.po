@@ -1634,3 +1634,21 @@ msgstr "Cho tôi xem cơ cấu khấu trừ tháng này"
 #: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_message__card
 msgid "PayAI card"
 msgstr "Thẻ PayAI"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_engine.py:0
+msgid "Something went wrong on my side. Please try again, or ask your administrator to check the assistant settings."
+msgstr "Có lỗi ở phía tôi. Vui lòng thử lại, hoặc nhờ quản trị viên kiểm tra phần thiết lập trợ lý."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That conversation belongs to somebody else."
+msgstr "Cuộc trò chuyện này là của người khác."
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "That note cannot be recorded."
+msgstr "Không thể ghi lại ghi chú này."
