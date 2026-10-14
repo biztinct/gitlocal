@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
+    <!-- ONECHAT — PayAI's answer drawn from the safe block tree
+         (`richBlocks` in ai_insight_chat.js): bold, italic, code, lists and
+         line breaks. EVERY piece is printed with t-esc — never t-out — so
+         nothing the model writes becomes a tag, a link or an image. The
+         inline templates are written on one line: this file keeps its
+         whitespace, and a stray space between two pieces would show. -->
+    <t t-name="pb_payroll_ai_insights.RichLine"><t t-foreach="line" t-as="sp" t-key="sp_index"><code t-if="sp.code" class="payai-rich-code" t-esc="sp.text"/><strong t-elif="sp.b and sp.i"><em t-esc="sp.text"/></strong><strong t-elif="sp.b" t-esc="sp.text"/><em t-elif="sp.i" t-esc="sp.text"/><t t-else="" t-esc="sp.text"/></t></t>
+    <t t-name="pb_payroll_ai_insights.RichLines"><t t-foreach="lines" t-as="line" t-key="line_index"><br t-if="line_index"/><t t-call="pb_payroll_ai_insights.RichLine"/></t></t>
+    <t t-name="pb_payroll_ai_insights.RichList">
+        <ol t-if="lst.kind === 'ol'" class="payai-rich-list" t-att-start="lst.start"><li t-foreach="lst.items" t-as="item" t-key="item_index"><t t-set="lines" t-value="item.lines"/><t t-call="pb_payroll_ai_insights.RichLines"/><t t-foreach="item.subs or []" t-as="sub" t-key="sub_index"><t t-call="pb_payroll_ai_insights.RichSubList"/></t></li></ol>
+        <ul t-else="" class="payai-rich-list"><li t-foreach="lst.items" t-as="item" t-key="item_index"><t t-set="lines" t-value="item.lines"/><t t-call="pb_payroll_ai_insights.RichLines"/><t t-foreach="item.subs or []" t-as="sub" t-key="sub_index"><t t-call="pb_payroll_ai_insights.RichSubList"/></t></li></ul>
+    </t>
+    <t t-name="pb_payroll_ai_insights.RichSubList">
+        <ol t-if="sub.kind === 'ol'" class="payai-rich-list" t-att-start="sub.start"><li t-foreach="sub.items" t-as="si" t-key="si_index"><t t-set="lines" t-value="si.lines"/><t t-call="pb_payroll_ai_insights.RichLines"/></li></ol>
+        <ul t-else="" class="payai-rich-list"><li t-foreach="sub.items" t-as="si" t-key="si_index"><t t-set="lines" t-value="si.lines"/><t t-call="pb_payroll_ai_insights.RichLines"/></li></ul>
+    </t>
+    <t t-name="pb_payroll_ai_insights.RichText">
+        <t t-foreach="rich" t-as="blk" t-key="blk_index">
+            <p t-if="blk.kind === 'p'" class="payai-rich-p"><t t-set="lines" t-value="blk.lines"/><t t-call="pb_payroll_ai_insights.RichLines"/></p>
+            <t t-else=""><t t-set="lst" t-value="blk"/><t t-call="pb_payroll_ai_insights.RichList"/></t>
+        </t>
+    </t>
     <t t-name="pb_payroll_ai_insights.AiInsightChat">
       <!-- LEARN v3: when the helper is installed this chat lives in its Ask
            tab, and this floating copy draws nothing. -->
@@ -106,7 +128,7 @@
 
                         <!-- Message Content -->
                         <div class="payai-msg-content">
-                            <div class="payai-msg-text" t-esc="msg.content"/>
+                            <div class="payai-msg-text" t-att-class="{'payai-rich': msg.role !== 'user'}"><t t-if="msg.role === 'user'" t-esc="msg.content"/><t t-else=""><t t-set="rich" t-value="richOf(msg.content)"/><t t-call="pb_payroll_ai_insights.RichText"/></t></div>
 
                             <!-- Chart (if present) -->
                             <t t-if="msg.chart">
@@ -339,7 +361,7 @@
                                   t-att-aria-label="t('spoken', 'Spoken')" t-att-title="t('spoken', 'Spoken')">
                                 <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-mic"/></svg>
                             </span>
-                            <div class="payai-embed-text" t-esc="msg.content"/>
+                            <div class="payai-embed-text" t-att-class="{'payai-rich': msg.role !== 'user'}"><t t-if="msg.role === 'user'" t-esc="msg.content"/><t t-else=""><t t-set="rich" t-value="richOf(msg.content)"/><t t-call="pb_payroll_ai_insights.RichText"/></t></div>
                             <t t-if="msg.chart">
                                 <div class="payai-embed-chart">
                                     <ChartRenderer chartConfig="msg.chart" height="'220px'"

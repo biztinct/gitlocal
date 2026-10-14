@@ -153,8 +153,11 @@ export function isPhantomTranscript(text, vocab) {
    Then, by context (`isAmount`): a sign or a scale word → money; a count
    word after it ("people", "payslips", "runs", "checks", "người", "đợt"),
    a percent sign, or a date shape ("15/6", "2026-06-15") → read; decimals
-   ("25.75") → money; a year (1900–2099) → read; any other number of three
-   digits or more ("950", "4500") → money; one or two digits → read.
+   ("25.75") → money; a year (1900–2099) → read; a plain number right after
+   an id label ("run 681", "payslip #1234", "employee ID 00451", "mã 4500")
+   → read, unless a money word stands before the label ("each employee
+   950"); any other number of three digits or more ("950", "4500") → money;
+   one or two digits → read.
    Values the plan card marks as money (its `value` / `figures` rows) are
    withheld word for word first (`opts.money`). Case matters for the short
    signs — "RM" and "Rp" are signs, "perform 200 checks" is not (ledger
@@ -175,9 +178,12 @@ const CODES = ["VND", "VNĐ", "USD", "SGD", "MYR", "THB", "INR", "IDR", "KHR", "
                "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND", "PHP", "CHF", "CAD"];
 const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|S\\/\\.?|Ks?(?=\\d)|[$€£₫฿₹៛₱¥₩₭]|đ|(?:"
     + CODES.map(anyCase).join("|") + ")" + NOT_LETTER + ")";
-/* After the number the Vietnamese word for the currency counts as a sign. */
+/* After the number a currency's own word counts as a sign too ("500 đồng",
+   "50 dollars", "20 đô la"). */
 const MONEY_SIGN_AFTER = "(?:" + MONEY_SIGN + "|(?:"
-    + ["đồng", "dong"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
+    + ["đồng", "dong", "đô la", "đô", "dollars", "dollar", "bucks", "euros", "euro", "pounds",
+       "cents", "cent", "rupees", "rupee", "rupiah", "ringgit", "baht", "riels", "riel", "kyats",
+       "kyat", "kip", "pesos", "peso", "yen", "yuan"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
 /* Scale words. The one-letter ones only straight after the digits ("500k",
    "1.2m"); the words with or without a space ("18.6 bn", "5tr", "2 triệu"). */
 const SCALE_TIGHT = "(?:[kKmM]" + NOT_WORD + ")";
@@ -214,9 +220,59 @@ const COUNT_RE = new RegExp("^\\s*(?:(?:" + ["more", "new", "active", "other", "
     + COUNT_NOUNS.map(anyCase).join("|") + ")" + NOT_WORD);
 const PERCENT_RE = new RegExp("^\\s?(?:%|" + ["percent", "per cent", "phần trăm"].map(anyCase).join("|")
     + NOT_WORD + ")");
+/* What an id or a reference is called. The plain number straight after one
+   is read ("run 681", "payslip #1234", "employee ID 00451", "room 305",
+   "mã 4500", "đợt lương 681"), unless a money word stands just before the
+   label ("each employee 950", "lương nhân viên 950", "pay to employee 950" —
+   but "pay run 681" is a pay run). A grouped or decimal figure after a label
+   stays money ("payslip 1,234"); only "version" takes dots ("version 19.0"). */
+const ID_LABELS = ["phiếu lương", "đợt lương", "nhân viên", "payslip", "slip", "employee", "run",
+    "id", "no.", "number", "code", "step", "version", "line", "row", "page", "room", "ext",
+    "mã", "số", "đợt", "phiếu", "bước", "dòng", "trang", "phòng"];
+const ID_LABEL_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ])(" + ID_LABELS.map(anyCase).join("|")
+    + ")\\.?\\s*[#:]?\\s*$");
+const ID_HASH_RE = /#\s*$/;
+const MONEY_WORDS = ["pay", "pays", "paid", "paying", "give", "gives", "gave", "giving", "grant",
+    "grants", "each", "every", "per", "total", "totals", "cost", "costs", "bonus", "bonuses",
+    "salary", "salaries", "wage", "wages", "allowance", "allowances", "net", "gross", "amount",
+    "amounts", "owe", "owes", "owed", "charge", "charges", "fee", "fees", "price", "rate", "worth",
+    "earn", "earns", "earned", "budget", "deduct", "deducts", "deduction", "refund", "transfer",
+    "mỗi", "trả", "tổng", "thưởng", "tiền", "chi", "phí", "lương", "phụ cấp", "khấu trừ", "giá",
+    "mức", "nhận", "chuyển"];
+const MONEY_FILLERS = ["the", "a", "an", "this", "that", "his", "her", "their", "its", "to", "for",
+    "of", "cho", "của"];
+const MONEY_BEFORE_RE = new RegExp("(?:^|[^A-Za-z0-9À-ỹ])(" + MONEY_WORDS.map(anyCase).join("|")
+    + ")((?:\\s+(?:" + MONEY_FILLERS.map(anyCase).join("|") + "))*)\\s*$");
 
-/** True when a number found by AMOUNT_RE is money, not a count, a date or a
- *  year. `before` is the text before the number's own lead character. */
+/** The id label the text before a number ends with, when it is not money
+ *  context: "run", "#", "mã" …; else null. */
+function idLabelBefore(head) {
+    let start;
+    let label;
+    const m = ID_LABEL_RE.exec(head);
+    if (m) {
+        start = m.index + m[1].length;
+        label = m[2].toLowerCase();
+    } else if (ID_HASH_RE.test(head)) {
+        start = head.lastIndexOf("#");
+        label = "#";
+    } else {
+        return null;
+    }
+    const money = MONEY_BEFORE_RE.exec(head.slice(0, start));
+    if (money) {
+        // "pay run 681", "pay slip 1234": the run, not a payment.
+        const payRun = /^pays?$/i.test(money[1]) && !money[2] && (label === "run" || label === "slip");
+        if (!payRun) {
+            return null;
+        }
+    }
+    return label;
+}
+
+/** True when a number found by AMOUNT_RE is money, not a count, a date, a
+ *  year or an id. `before` is the text before the number's own lead
+ *  character. */
 function isAmount(lead, sign, num, scale, signAfter, rest, before) {
     if (sign || signAfter) {
         return true;
@@ -227,8 +283,25 @@ function isAmount(lead, sign, num, scale, signAfter, rest, before) {
     if (scale && scale.trim()) {
         return true;
     }
-    // A date or a time: "15/6", "15/06/2026", "2026-06-15", "10:30".
+    // A date or a time: "15/6", "15/06/2026", "2026-06-15", "10:30",
+    // "15.06.2026", "2026.06.15".
     if (/^[/:-]\d/.test(rest) || (/[/:-]$/.test(lead) && /\d$/.test(before))) {
+        return false;
+    }
+    // A dotted date only with a real day, month and year — "1.50.000" (a
+    // lakh written with dots) is not one.
+    const dmy = /^(\d{1,2})\.(\d{1,2})$/.exec(num);
+    const ymd = /^(?:19|20)\d\d\.(\d{1,2})$/.exec(num);
+    const tail = /^\.(\d{1,4})(?!\d)/.exec(rest);
+    const day = (d) => Number(d) >= 1 && Number(d) <= 31;
+    const month = (m) => Number(m) >= 1 && Number(m) <= 12;
+    if (tail && ((dmy && day(dmy[1]) && month(dmy[2]) && /^(?:\d{2}|(?:19|20)\d\d)$/.test(tail[1]))
+                 || (ymd && month(ymd[1]) && tail[1].length <= 2 && day(tail[1])))) {
+        return false;
+    }
+    const label = idLabelBefore(before + lead);
+    // "version 19.0", "version 2.1"
+    if (label === "version" && /^\d+(?:\.\d+)*$/.test(num)) {
         return false;
     }
     // grouped in threes ("1,000", "500.000", "1 000 000")
@@ -241,6 +314,10 @@ function isAmount(lead, sign, num, scale, signAfter, rest, before) {
     }
     // a year ("June 2026", "năm 2031")
     if (/^(?:19|20)\d\d$/.test(num)) {
+        return false;
+    }
+    // an id after its label ("run 681", "employee ID 00451", "mã 4500")
+    if (label && /^\d+$/.test(num)) {
         return false;
     }
     // any other bare number of three digits or more ("950", "4500")
@@ -278,7 +355,13 @@ export function speechText(text, opts = {}) {
         .replace(/<[^>]*>/g, " ")
         .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&quot;/g, "\u0022").replace(/&#39;/g, "'")
-        .replace(/[*_#\x60>|~]+/g, " ");
+        // the answer's list bullets and "---" rules are not words
+        .replace(/^[ \t]*(?:[-+•][ \t]+|([-*_])(?:[ \t]*\1){2,}[ \t]*$)/gm, " ")
+        // markdown marks out: stars and backticks hug their words
+        // ("**Dữ liệu lương**:" → "Dữ liệu lương:"); a "#" is kept before
+        // digits ("payslip #1234")
+        .replace(/[*\x60]+/g, "")
+        .replace(/[_>|~]+|#+(?!\d)/g, " ");
     say = debrandSpoken(say, opts.brand);
     const word = opts.amount || "an amount shown on screen";
     say = say.replace(/\s+/g, " ");
@@ -289,6 +372,8 @@ export function speechText(text, opts = {}) {
     // "20 triệu 500 nghìn" is ONE amount, said once.
     const said = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     say = say.replace(new RegExp(`${said}(?:\\s+${said})+`, "g"), word);
+    // The rest of an odd grouping goes with it ("1.50.000" → never ".000").
+    say = say.replace(new RegExp(`${said}(?:[.,]\\d+)+`, "g"), word);
     say = say.trim();
     if (say.length > SPEECH_CAP) {
         const cut = say.slice(0, SPEECH_CAP);
@@ -353,6 +438,157 @@ export function markerOf(row) {
         };
     }
     return null;
+}
+
+/* ONECHAT — PayAI's free-text answers arrive as light markdown ("**Home ›
+   Approvals**", "1. **Dữ liệu lương**: …"). They are drawn from a TREE OF
+   PLAIN STRINGS (`richBlocks`), never from HTML: the templates
+   (pb_payroll_ai_insights.RichText) print every piece with t-esc, so nothing
+   the model writes can become a tag, a link, an image or a script — "<img
+   src=x onerror=…>" is shown as those characters. The whitelist:
+     **bold**, *italic*, ***both***, `code`;
+     numbered ("1." / "1)") and bulleted ("-", "*", "+", "•") lists, one
+     indented level under an item, an indented line continuing an item;
+     "#" headings drawn as a bold line; "---" between paragraphs;
+     line breaks and blank-line paragraphs.
+   Anything else ("5 * 3", a lone "**", "[text](url)") stays as written.
+   Shape: [{kind: "p", lines}, {kind: "ol"|"ul", start, items: [{lines,
+   subs: [{kind, start, items: [{lines}]}]}]}], a line = [{text, b, i,
+   code}]. No look-behind (older Safari, OC49). */
+const RICH_OL = /^([ \t]*)(\d{1,3})[.)][ \t]+(.*)$/;
+const RICH_UL = /^([ \t]*)[-*+•][ \t]+(.*)$/;
+const RICH_H = /^[ \t]{0,3}#{1,6}[ \t]+(.*?)[ \t]*#*[ \t]*$/;
+const RICH_RULE = /^[ \t]*([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
+const RICH_CODE = /`([^`\n]+)`/g;
+/* At one position: *** before ** before *; the inside never starts or ends
+   with a space or a star. */
+const RICH_EMPH = /\*\*\*([^\s*](?:[^*]*?[^\s*])?)\*\*\*|\*\*([^\s*](?:[\s\S]*?[^\s*])?)\*\*|\*([^\s*](?:[^*]*?[^\s*])?)\*/;
+const RICH_WORD = /[A-Za-z0-9À-ỹ]/;
+const RICH_CACHE = new Map();
+const RICH_CACHE_MAX = 300;
+
+function richPush(out, text, f) {
+    if (!text) {
+        return;
+    }
+    const last = out[out.length - 1];
+    if (last && last.b === !!f.b && last.i === !!f.i && last.code === !!f.code) {
+        last.text += text;
+    } else {
+        out.push({ text: String(text), b: !!f.b, i: !!f.i, code: !!f.code });
+    }
+}
+
+function richEmph(out, s, f) {
+    let rest = s;
+    while (rest) {
+        const m = RICH_EMPH.exec(rest);
+        if (!m) {
+            richPush(out, rest, f);
+            return;
+        }
+        const end = m.index + m[0].length;
+        // A single star inside a word ("Rate*Hours*1.5") is not italic.
+        if (m[3] !== undefined && ((m.index > 0 && RICH_WORD.test(rest[m.index - 1]))
+                                   || (end < rest.length && RICH_WORD.test(rest[end])))) {
+            richPush(out, rest.slice(0, m.index + 1), f);
+            rest = rest.slice(m.index + 1);
+            continue;
+        }
+        richPush(out, rest.slice(0, m.index), f);
+        if (m[1] !== undefined) {
+            richPush(out, m[1], { ...f, b: true, i: true });
+        } else if (m[2] !== undefined) {
+            richEmph(out, m[2], { ...f, b: true });
+        } else {
+            richPush(out, m[3], { ...f, i: true });
+        }
+        rest = rest.slice(end);
+    }
+}
+
+/** One line of text → its pieces, [{text, b, i, code}]. */
+export function richInline(text, flags = {}) {
+    const out = [];
+    const s = String(text || "");
+    let at = 0;
+    RICH_CODE.lastIndex = 0;
+    let m;
+    while ((m = RICH_CODE.exec(s))) {
+        richEmph(out, s.slice(at, m.index), flags);
+        richPush(out, m[1], { ...flags, code: true });
+        at = m.index + m[0].length;
+    }
+    richEmph(out, s.slice(at), flags);
+    return out;
+}
+
+/** A PayAI answer → the block tree the RichText template draws. */
+export function richBlocks(text) {
+    const src = String(text || "").replace(/\r\n?/g, "\n");
+    if (RICH_CACHE.has(src)) {
+        return RICH_CACHE.get(src);
+    }
+    const blocks = [];
+    let para = null;
+    let list = null;
+    const indentOf = (ws) => ws.replace(/\t/g, "    ").length;
+    for (const raw of src.split("\n")) {
+        if (!raw.trim() || RICH_RULE.test(raw)) {
+            para = null;
+            list = null;
+            continue;
+        }
+        const ol = RICH_OL.exec(raw);
+        const ul = !ol && RICH_UL.exec(raw);
+        if (ol || ul) {
+            const kind = ol ? "ol" : "ul";
+            const start = ol ? Number(ol[2]) : 1;
+            const item = { lines: [richInline(ol ? ol[3] : ul[2])], subs: [] };
+            if (list && list.items.length && indentOf(ol ? ol[1] : ul[1]) >= 2) {
+                const parent = list.items[list.items.length - 1];
+                let sub = parent.subs[parent.subs.length - 1];
+                if (!sub || sub.kind !== kind) {
+                    sub = { kind, start, items: [] };
+                    parent.subs.push(sub);
+                }
+                sub.items.push({ lines: item.lines });
+                continue;
+            }
+            if (!list || list.kind !== kind) {
+                list = { kind, start, items: [] };
+                blocks.push(list);
+            }
+            para = null;
+            list.items.push(item);
+            continue;
+        }
+        const h = RICH_H.exec(raw);
+        if (list && !h && /^[ \t]{2,}/.test(raw) && list.items.length) {
+            // An indented line continues the item above it.
+            const last = list.items[list.items.length - 1];
+            const sub = last.subs[last.subs.length - 1];
+            const into = sub ? sub.items[sub.items.length - 1] : last;
+            into.lines.push(richInline(raw.trim()));
+            continue;
+        }
+        list = null;
+        if (h) {
+            blocks.push({ kind: "p", lines: [richInline(h[1], { b: true })] });
+            para = null;
+            continue;
+        }
+        if (!para) {
+            para = { kind: "p", lines: [] };
+            blocks.push(para);
+        }
+        para.lines.push(richInline(raw.trim()));
+    }
+    if (RICH_CACHE.size >= RICH_CACHE_MAX) {
+        RICH_CACHE.delete(RICH_CACHE.keys().next().value);
+    }
+    RICH_CACHE.set(src, blocks);
+    return blocks;
 }
 
 /**
@@ -1623,6 +1859,12 @@ export class AiInsightChat extends Component {
                 this.chatBodyRef.el.scrollTop = this.chatBodyRef.el.scrollHeight;
             }
         }, 100);
+    }
+
+    /** A PayAI answer as the safe block tree (`richBlocks`) the RichText
+     *  template draws — bold, lists and line breaks, never HTML. */
+    richOf(text) {
+        return richBlocks(text);
     }
 
     formatTimestamp(ts) {

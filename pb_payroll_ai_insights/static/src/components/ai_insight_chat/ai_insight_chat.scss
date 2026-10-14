@@ -1086,6 +1086,31 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
 
 .payai-embed-text { white-space: pre-wrap; line-height: 1.5; overflow-wrap: anywhere; }
 
+// ONECHAT — a PayAI answer drawn from its safe block tree (RichText):
+// paragraphs, lists, bold, code. The line breaks are real <br>s, so the
+// pre-wrap of a plain answer is not needed here.
+.payai-msg-text.payai-rich,
+.payai-embed-text.payai-rich,
+.payai-full-msg-text.payai-rich {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    .payai-rich-p { margin: 0 0 8px; }
+    .payai-rich-list { margin: 0 0 8px; padding-left: 20px; }
+    .payai-rich-list .payai-rich-list { margin: 4px 0 0; }
+    li { margin: 0 0 4px; }
+    li:last-child { margin-bottom: 0; }
+    > :last-child { margin-bottom: 0; }
+    strong { font-weight: 700; }
+    .payai-rich-code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92em;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(16, 24, 40, 0.06);
+        color: inherit;
+    }
+}
+
 .payai-turn-src {
     display: inline-flex;
     align-items: center;

@@ -6,7 +6,7 @@ import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
-import { markerOf } from "./ai_insight_chat";
+import { markerOf, richBlocks } from "./ai_insight_chat";
 
 /**
  * AiInsightChatFull — Full-page PayAI chat client action.
@@ -181,6 +181,11 @@ export class AiInsightChatFull extends Component {
                 this.chatBodyRef.el.scrollTop = this.chatBodyRef.el.scrollHeight;
             }
         }, 100);
+    }
+
+    /** A PayAI answer as the safe block tree the RichText template draws. */
+    richOf(text) {
+        return richBlocks(text);
     }
 
     formatTimestamp(ts) {
