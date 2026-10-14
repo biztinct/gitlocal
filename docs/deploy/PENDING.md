@@ -21,4 +21,4 @@ demo database) first and check it there. The other databases (`rize`,
 
 | Date | Module → version | What changed | Waiting on |
 |---|---|---|---|
-| — | — | Nothing pending: batch of 2026-10-14 brought payobook, rize, payobook_template, abm and p0clone to the combined repository versions (`deploy_status.py` clean; ABM jobs inactive). Indonesia payroll/tax handover: `2026-10-14-indonesia-tax-mapping.md` | — |
+| 2026-10-14 | pb_me_portal → 19.0.2.1.0, pb_import_kit → 19.0.1.22.0 | MEHOME: the employee home (/my) redesign — greeting + sentence, Pay / Leave / This week cards, Needs you, grouped tiles with icons, Inter on the portal, VI (`docs/handovers/mehome/`). Normal tier: upgraded on payobook, asset purge + version bump done. No new stored field. | Owner's walk on payobook.com; then the batch (rize, payobook_template, abm — abm jobs off after) |
