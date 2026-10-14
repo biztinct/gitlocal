@@ -95,8 +95,9 @@
   }
   function fieldCard(key,where){
     const f=D.fields(S.country).find(function(v){return v.key===key;});
-    const reason=f.context?'Saved context · read-only':where==='available'?(f.suggestion==='time'?'Suggested for Time':'Saved employee context'):'Monthly input';
-    return '<div class="field-card" draggable="true" data-field="'+key+'" data-lane="'+where+'" tabindex="0" aria-label="'+esc(f.label)+', '+(where==='adjustments'?'Monthly adjustments':where)+'"><span class="grip">'+icon('grip')+'</span><div class="field-text"><strong>'+esc(f.label)+'</strong><small>'+esc(reason)+'</small></div><span class="unit">'+esc(f.unit)+'</span><button class="button icon" data-action="field-menu" data-key="'+key+'" aria-label="Move '+esc(f.label)+'">'+icon('more')+'</button>'
+    const suggested=f.suggestion||f.kind,isTime=f.unit==='Days'||f.unit==='Hours';
+    const reason=f.context?'Saved context · read-only':where==='available'?'Suggested for '+(suggested==='time'?'Time':'Monthly adjustments'):(where===suggested?'Suggested · ':'Custom placement · ')+(isTime?'Time quantity':'Monthly amount');
+    return '<div class="field-card" draggable="true" data-field="'+key+'" data-lane="'+where+'" tabindex="0" title="'+esc(f.why)+'" aria-label="'+esc(f.label)+', '+(where==='adjustments'?'Monthly adjustments':where)+'"><span class="grip">'+icon('grip')+'</span><div class="field-text"><strong>'+esc(f.label)+'</strong><small>'+esc(reason)+'</small></div><span class="unit">'+esc(f.unit)+'</span><button class="button icon" data-action="field-menu" data-key="'+key+'" aria-label="Move '+esc(f.label)+'">'+icon('more')+'</button>'
       +(S.fieldMenu===key?'<div class="field-menu" role="menu">'+['time','adjustments','available'].filter(function(t){return t!==where;}).map(function(t){return '<button data-action="move-field" data-key="'+key+'" data-to="'+t+'">'+icon(t==='available'?'minus':t==='time'?'clock':'table')+(t==='available'?'Remove from workbook':'Move to '+(t==='time'?'Time':'Monthly adjustments'))+'</button>';}).join('')+'<button data-action="field-up" data-key="'+key+'">'+icon('back')+'Move earlier</button><button data-action="field-down" data-key="'+key+'">'+icon('arrow')+'Move later</button></div>':'')+'</div>';
   }
   function layoutView(){
@@ -157,11 +158,21 @@
     return modalFrame('', '', '<div class="success-body"><div class="success-symbol">'+icon('check')+'</div><h2>'+s.count+' '+(s.count===1?'change':'changes')+' '+(monthly?'ready for '+monthLabel():'saved')+'</h2><p>'+(monthly?'The selected inputs are saved in this preview’s pay month. Download again to see the latest monthly values.':'Your employee and contract workbook now reflects the confirmed changes. Download it again to see the updated records.')+'</p><div class="receipt">'+icon('shield')+s.people+' '+(s.people===1?'employee':'employees')+' · '+s.blanks+' blank cells ignored · Identity unchanged</div></div>',
       '<span class="small muted">Sample data updated in this preview only.</span><div class="row">'+button('View history','show-history','')+button(monthly?'Continue Pay Run':'Done',monthly?'continue-run':'close-modal','primary')+'</div>',false,'Import complete');
   }
+  function missingTime(){
+    const ctx=context('monthly');
+    return ctx.records.map(function(r){const paid=W.monthValue(ctx,r,{key:'paidDays'}),standard=W.monthValue(ctx,r,{key:'standardDays'});const fields=[];if(W.blank(paid))fields.push('Paid days');if(!(Number(standard)>0))fields.push('Standard working days');return {record:r,fields:fields};}).filter(function(r){return r.fields.length;});
+  }
+  function coverageModal(){
+    const rows=missingTime();
+    return modalFrame('Complete the time inputs first',rows.length+' '+(rows.length===1?'employee needs':'employees need')+' attendance inputs before this month can be computed.',
+      rows.map(function(item){return '<div class="issue">'+icon('calendar')+'<div><strong>'+esc(item.record.name)+' · '+item.record.id+'</strong><p>Provide '+esc(item.fields.join(' and '))+'. Download the latest workbook, complete the missing inputs and reimport it.</p></div></div>';}).join(''),
+      '<span class="small muted">Calendar suggestions do not confirm attendance.</span><div class="row">'+button('Back to Pay Run','return-payrun','')+button(icon('download')+'Download updated month','download-monthly','primary')+'</div>',false,'Pay Run · '+monthLabel());
+  }
   function renderOverlay(focus){
     root.inert=!!S.modal;
     if(!S.modal){overlay.innerHTML='';document.body.style.overflow='';return;}
     document.body.style.overflow='hidden';
-    overlay.innerHTML=S.modal==='upload'?uploadModal():S.modal==='review'?reviewModal():S.modal==='success'?successModal():S.modal==='layout-preview'?modalFrame('Your monthly workbook','This preview updates as you move columns. Save the layout before downloading.',workbookPreview('monthly',true),'<span class="small muted">Employee ID is fixed on both worksheets.</span>'+button('Close preview','close-modal','primary'),true,'Live preview'):modalFrame('Ready to compute','This is the end of the input workflow preview.','<div class="success-body"><div class="success-symbol">'+icon('check')+'</div><h2>Your monthly inputs are ready</h2><p>In the application, this continues to payroll computation and the usual checks and approval workflow.</p></div>','<span class="small muted">No payslips or payroll payments are created by this preview.</span>'+button('Back to templates','finish-run','primary'),false,'Pay Run · '+monthLabel());
+    overlay.innerHTML=S.modal==='upload'?uploadModal():S.modal==='review'?reviewModal():S.modal==='success'?successModal():S.modal==='coverage'?coverageModal():S.modal==='layout-preview'?modalFrame('Your monthly workbook','This preview updates as you move columns. Save the layout before downloading.',workbookPreview('monthly',true),'<span class="small muted">Employee ID is fixed on both worksheets.</span>'+button('Close preview','close-modal','primary'),true,'Live preview'):modalFrame('Ready to compute','This is the end of the input workflow preview.','<div class="success-body"><div class="success-symbol">'+icon('check')+'</div><h2>Your monthly inputs are ready</h2><p>In the application, this continues to payroll computation and the usual checks and approval workflow.</p></div>','<span class="small muted">No payslips or payroll payments are created by this preview.</span>'+button('Back to templates','finish-run','primary'),false,'Pay Run · '+monthLabel());
     if(focus)overlay.querySelector('.dialog').focus();
   }
   function openModal(kind,modal,fromRun){S.lastFocus=document.activeElement;S.kind=kind;S.fromRun=!!fromRun;S.modal=modal||'upload';S.fieldMenu=null;renderOverlay(true);}
@@ -265,7 +276,8 @@
     else if(a==='resolve-current'||a==='resolve-incoming')resolveIssue(Number(el.dataset.index),a==='resolve-current'?'current':'incoming');
     else if(a==='apply')applyChanges();
     else if(a==='show-history'){closeModal();S.page='history';render();}
-    else if(a==='continue-run'){S.modal='computed';renderOverlay(true);}
+    else if(a==='continue-run'){S.modal=missingTime().length?'coverage':'computed';renderOverlay(true);}
+    else if(a==='return-payrun'){closeModal();S.page='payrun';render();}
     else if(a==='finish-run'){closeModal();S.page='downloads';render();}
     else if(a==='reset'){S.models[S.country]=D.seed(S.country);closeModal();render();toast('Sample records and monthly inputs reset. Your saved layout is kept.');}
   }

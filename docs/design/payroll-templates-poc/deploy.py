@@ -20,7 +20,8 @@ for path in paths:
 
 stage = "/tmp/payroll-templates-poc-" + head[:12]
 subprocess.run(["ssh", HOST, "mkdir", "-p", stage], check=True)
-subprocess.run(["scp", *map(str, paths), HOST + ":" + stage + "/"], check=True)
+subprocess.run(["rsync", "-az", "--timeout=30", *map(str, paths),
+                HOST + ":" + stage + "/"], check=True, timeout=60)
 remote = r'''
 import pathlib, subprocess, shutil, hashlib, json, datetime
 stage=pathlib.Path(STAGE)
