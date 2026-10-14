@@ -757,8 +757,171 @@ async function leftoverSuite() {
     }
 }
 
+// ================================================= whole-program review
+async function reviewSuite() {
+    console.log("whole-program review: M2 and minors");
+    const lastSend = () => rpcs("rpc_send_message").slice(-1)[0] || { kwargs: {} };
+    const say = async (chat, words) => {
+        transcript = words;
+        chat._boxBeforeRecording = chat.state.inputText;
+        chat._audioChunks = [new Blob(["x"])];
+        await chat._transcribe();
+    };
+    const CHOOSE = { route: "choose", why: "order_question", note: { en: "Do it, or see how?", vi: "…", key: "doOrHow" },
+                     choices: [{ label: { en: "Do it now", vi: "Làm ngay" }, route: "payai", text: "approve the June run" },
+                               { label: { en: "How it works", vi: "…" }, route: "guide", key: "approve" }] };
+    const OFFER = { route: "guide", why: "guide_offer", answer: ANSWERS.howrun,
+                    lead: { en: "Here is how. Or I can prepare it for you.", vi: "…" },
+                    extra_chips: [{ label: { en: "Do it for me", vi: "Làm giúp tôi" }, route: "payai",
+                                    text: "run payroll for Lan", primary: true }] };
+    const WEAK = { route: "choose", why: "weak", note: { en: "Which did you mean?", vi: "…", key: "whichMeant" },
+                   choices: [{ label: { en: "Approve a request", vi: "Duyệt" }, route: "guide", key: "approve" },
+                             { label: { en: "Ask about your pay data", vi: "Hỏi" }, route: "payai",
+                               text: "what does Lan earn", ask_only: true }] };
+
+    // M2.1 a spoken sentence → "Do it now" keeps the spoken mark
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => CHOOSE;
+        await say(chat, "approve the June run or not");
+        await chat.submitComposer();
+        const turn = chat.state.messages.filter((m) => m.kind === "choose").slice(-1)[0];
+        check(turn && turn.spoken === true, "M2.1 the choice turn remembers the words were spoken");
+        await host._pickChoice(turn.id, 0);
+        check(rpcs("rpc_send_message").length === 1 && lastSend().kwargs.voice === true
+              && lastSend().args[0] === "approve the June run",
+              "M2.1 Do it now re-sends the heard words with voice:true", JSON.stringify(lastSend().kwargs));
+        check(routes().length === 1, "M2.1 … without routing again");
+        unmount(chat);
+    }
+    // M2.2 the same, typed → never spoken
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => CHOOSE;
+        chat.state.inputText = "approve the June run or not";
+        await chat.submitComposer();
+        const turn = chat.state.messages.filter((m) => m.kind === "choose").slice(-1)[0];
+        check(turn && turn.spoken === false, "M2.2 a typed sentence's choice turn is not spoken");
+        await host._pickChoice(turn.id, 0);
+        check(rpcs("rpc_send_message").length === 1 && !lastSend().kwargs.voice,
+              "M2.2 Do it now after typing → no voice", JSON.stringify(lastSend().kwargs));
+        unmount(chat);
+    }
+    // M2.3 "Do it for me" under a spoken guide answer
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => OFFER;
+        await say(chat, "run payroll for Lan");
+        await chat.submitComposer();
+        const offer = chat.state.messages.filter((m) => m.kind === "guide").slice(-1)[0];
+        await host._extraChip(offer.id, 0);
+        check(lastSend().kwargs.voice === true && lastSend().args[0] === "run payroll for Lan",
+              "M2.3 Do it for me after speaking → voice:true", JSON.stringify(lastSend().kwargs));
+        unmount(chat);
+    }
+    // M2.4 "Ask about your pay data" under a spoken sentence: spoken AND ask_only
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => WEAK;
+        await say(chat, "what does Lan earn");
+        await chat.submitComposer();
+        const turn = chat.state.messages.filter((m) => m.kind === "choose").slice(-1)[0];
+        await host._pickChoice(turn.id, 1);
+        check(lastSend().kwargs.voice === true && lastSend().kwargs.ask_only === true,
+              "M2.4 Ask about your pay data after speaking → voice:true and ask_only", JSON.stringify(lastSend().kwargs));
+        unmount(chat);
+    }
+    // M2.5 a chip under a PayAI reply to spoken words stays spoken; the drawer
+    // can never make a send spoken by itself
+    {
+        const { host, chat } = await openChat();
+        reset();
+        routeAnswer = () => ({ route: "payai", why: "command",
+                               extra_chips: [{ label: { en: "Ask about your pay data", vi: "…" }, route: "payai",
+                                               text: "what does Lan earn", ask_only: true }] });
+        sendAnswer = () => ({ session_id: 7, response: "PayAI says.", intent: "general" });
+        await say(chat, "what does Lan earn");
+        await chat.submitComposer();
+        const reply = chat.state.messages.filter((m) => m.role === "assistant" && m.extra).slice(-1)[0];
+        check(reply && reply.spoken === true, "M2.5 the PayAI reply remembers its words were spoken");
+        reset();
+        await host._extraChip(reply.id, 0);
+        check(lastSend().kwargs.voice === true, "M2.5 … and its chip re-sends them spoken", JSON.stringify(lastSend().kwargs));
+        reset();
+        await chat.api.sendDirect({ text: "approve the June run", spoken: "yes" });
+        await chat.api.sendDirect({ text: "approve the June run" });
+        check(rpcs("rpc_send_message").length === 2 && rpcs("rpc_send_message").every((c) => !c.kwargs.voice),
+              "M2.5 sendDirect is spoken only for spoken === true");
+        unmount(chat);
+    }
+
+    // Minor 1 — the retired hand-off is gone (it skipped the router and ask_only)
+    check(!AiInsightChatEmbedded.props.includes("handoff?") && !("_takeHandoff" in AiInsightChatEmbedded.prototype),
+          "minor 1: no handoff prop and no _takeHandoff");
+
+    // Minor 2 — "followup" pressed while PayAI is answering does nothing
+    {
+        const { chat } = await openChat();
+        reset();
+        const msg = { id: "c-x", card: { task_id: 5, kind: "clarify", actions: [] } };
+        const act = { id: "followup", label: "June", slot: "period", value: "6" };
+        chat.state.isLoading = true;
+        await chat.payaiAct(msg, act);
+        check(chat._payaiResolve === null || chat._payaiResolve === undefined,
+              "minor 2: pressed while busy → no answer is kept for later");
+        check(rpcs("rpc_send_message").length === 0, "minor 2: … and nothing is sent");
+        chat.state.isLoading = false;
+        routeAnswer = () => ({ route: "payai", why: "question", ask_only: true });
+        chat.state.inputText = "how many people are in the June run";
+        await chat.submitComposer();
+        check(rpcs("rpc_send_message").length === 1 && !lastSend().kwargs.resolve && lastSend().kwargs.ask_only === true,
+              "minor 2: the next typed sentence is routed, never sent as the card's answer", JSON.stringify(lastSend().kwargs));
+        reset();
+        await chat.payaiAct(msg, act);
+        check(rpcs("rpc_send_message").length === 1 && lastSend().kwargs.resolve
+              && lastSend().kwargs.resolve.task_id === 5 && lastSend().kwargs.resolve.value === "6",
+              "minor 2: pressed again once free → it answers the card", JSON.stringify(lastSend().kwargs));
+        check(chat._payaiResolve === null, "minor 2: … and the answer is used up");
+        unmount(chat);
+    }
+
+    // Minor 3 — the can-act banner names the button
+    {
+        const { chat } = await openChat();
+        chat.state.status = { can_act: true, can_answer: true, voice_go_ahead: false };
+        check(/nothing changes until you tap Do it\.$/.test(chat.bannerText), "minor 3: EN banner says tap Do it", chat.bannerText);
+        check(/cho tới khi bạn bấm Thực hiện\.$/.test(CONTENT.chrome.honestAct.vi), "minor 3: VI banner says bấm Thực hiện",
+              CONTENT.chrome.honestAct.vi);
+        check(!/say so|đồng ý\./.test(CONTENT.chrome.honestAct.en + CONTENT.chrome.honestAct.vi), "minor 3: the old wording is gone");
+        unmount(chat);
+    }
+
+    // Minor 4 — Clear conversation: no toast on top of the drawer's own confirm
+    {
+        const { chat } = await openChat();
+        const toasts = [];
+        chat.notification = { add: (m) => toasts.push(String(m)) };
+        chat.state.sessionId = 7;
+        chat.state.messages.push({ id: "c-y", role: "user", content: "hi" });
+        await chat.clearHistory();
+        check(toasts.length === 0 && chat.state.messages.length === 0, "minor 4: the drawer clears without a toast", JSON.stringify(toasts));
+        unmount(chat);
+        const pill = mountFull(AiInsightChat, {}, { services: { orm } });
+        await tick(5);
+        const pillToasts = [];
+        pill.notification = { add: (m) => pillToasts.push(String(m)) };
+        pill.state.sessionId = 7;
+        await pill.clearHistory();
+        check(pillToasts.length === 1, "minor 4: the floating pill still confirms with its toast", JSON.stringify(pillToasts));
+    }
+}
+
 for (const suite of [spokenSuite, dispatchSuite, bypassSuite, langSuite, storeSuite, queueSuite, shellSuite,
-                     leftoverSuite]) {
+                     leftoverSuite, reviewSuite]) {
     try {
         await suite();
     } catch (e) {

@@ -378,8 +378,8 @@
       "vi": "Đây là cách làm. Hoặc tôi có thể chuẩn bị sẵn cho bạn."
     },
     "honestAct": {
-      "en": "Ask me anything, or ask me to do something. I always show you the plan first, and nothing changes until you say so.",
-      "vi": "Hãy hỏi tôi bất cứ điều gì, hoặc nhờ tôi làm một việc. Tôi luôn cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn đồng ý."
+      "en": "Ask me anything, or ask me to do something. I always show you the plan first, and nothing changes until you tap Do it.",
+      "vi": "Hãy hỏi tôi bất cứ điều gì, hoặc nhờ tôi làm một việc. Tôi luôn cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn bấm Thực hiện."
     },
     "honestAsk": {
       "en": "Ask me about this screen, how to do something, or your pay figures.",
@@ -34241,5 +34241,5 @@
       }
     }
   ],
-  "version": "b9ceb8eb9e71"
+  "version": "0d8616ee7c35"
 }

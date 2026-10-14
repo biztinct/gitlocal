@@ -2990,6 +2990,328 @@
     "practice": "sc_payslips:try"
    },
    "state": null
+  },
+  {
+   "text": "chạy lương tháng 6 cần những gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "để chạy lương tháng 6 tôi phải làm gì",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "muốn duyệt đợt lương tháng 6 thì làm gì",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "ai duyệt đợt lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true,
+    "fallback_key": "whoapproves"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "whoapproves"
+   },
+   "state": null
+  },
+  {
+   "text": "nên chạy lương tháng 6 không",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "có nên duyệt đợt lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "column:pay_runs"
+   },
+   "state": null
+  },
+  {
+   "text": "cho mình hỏi chạy lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "data",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "no_payai",
+    "note": "noPayai"
+   },
+   "state": null
+  },
+  {
+   "text": "tôi không biết chạy lương tháng 6",
+   "screen": "payruns",
+   "P": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_strong",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "before I approve the June run what should I check",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "weak",
+    "note": "whichMeant",
+    "choices": [
+     "guide",
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "checkfinal"
+   },
+   "state": null
+  },
+  {
+   "text": "if I run payroll now will it email people",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "to run payroll what do I do",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "whats the process to approve the june run",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "procedure to run payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "guide to running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "instructions for running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "tips for running payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "question",
+    "ask_only": true
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "I need help approving the June run",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "weak",
+    "note": "whichMeant",
+    "choices": [
+     "guide",
+     "payai"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "weak",
+    "answer": "stuckwaiting"
+   },
+   "state": null
+  },
+  {
+   "text": "approve the June run or not",
+   "screen": "payruns",
+   "P": {
+    "route": "choose",
+    "why": "order_question",
+    "note": "doOrHow",
+    "choices": [
+     "payai",
+     "guide"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
+  },
+  {
+   "text": "chạy lương cho Ai",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "howrun"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "howrun"
+   },
+   "state": null
+  },
+  {
+   "text": "AI run June payroll",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command_ai"
+   },
+   "B": {
+    "route": "miss",
+    "why": "guide"
+   },
+   "state": null
+  },
+  {
+   "text": "approve what is waiting for me",
+   "screen": "payruns",
+   "P": {
+    "route": "payai",
+    "why": "command",
+    "extra_chips": [
+     "approve"
+    ]
+   },
+   "B": {
+    "route": "guide",
+    "why": "guide_imperative",
+    "answer": "approve"
+   },
+   "state": null
   }
  ]
 }

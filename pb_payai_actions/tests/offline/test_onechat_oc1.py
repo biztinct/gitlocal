@@ -315,6 +315,58 @@ class TestOrderAndShape(unittest.TestCase):
         for text in ('ok so', 'um, ok', 'hey so'):
             self.assertTrue(H.is_smalltalk(text), text)
 
+    #: Whole-program review M1: question shapes that used to become plans.
+    M1_QUESTIONS = (
+        'chạy lương tháng 6 cần những gì', 'để chạy lương tháng 6 tôi phải làm gì',
+        'muốn duyệt đợt lương tháng 6 thì làm gì', 'ai duyệt đợt lương tháng 6',
+        'nên chạy lương tháng 6 không', 'có nên duyệt đợt lương tháng 6',
+        'cho mình hỏi chạy lương tháng 6', 'tôi không biết chạy lương tháng 6',
+        'chay luong thang 6 can nhung gi', 'ai duyet dot luong thang 6',
+        'before I approve the June run what should I check',
+        'if I run payroll now will it email people', 'to run payroll what do I do',
+        'whats the process to approve the june run', 'procedure to run payroll',
+        'guide to running payroll', 'instructions for running payroll',
+        'tips for running payroll', 'I need help approving the June run',
+        'approve the June run or not')
+    #: … and orders that must stay orders.
+    M1_ORDERS = ('approve the June run', 'chạy lương tháng 6 cho Bán lẻ',
+                 'Run June payroll for Retail', 'duyệt đợt lương tháng 6',
+                 'chạy lương cho Ai', 'run payroll for Ai', 'approve what is waiting for me',
+                 'send payslips to everyone who should get them')
+
+    def test_m1_question_shapes_never_become_plans(self):
+        for text in self.M1_QUESTIONS:
+            out, env = route('P', text)
+            self.assertIn(out['route'], ('guide', 'payai', 'choose'), text)
+            if out['route'] == 'payai':
+                self.assertNotEqual(out['why'], 'command', text)
+                self.assertTrue(out.get('ask_only'), text)
+            if out['route'] == 'choose' and out['why'] == 'order_question':
+                self.assertEqual(out['note']['key'], 'doOrHow', text)
+            self.assertEqual(env.provider.calls if env.provider else [], [], text)
+        for text in self.M1_ORDERS:
+            out, _ = route('P', text)
+            self.assertEqual((out['route'], out['why']), ('payai', 'command'), text)
+            self.assertFalse(H.is_question(text), text)
+        self.assertFalse(H.is_question('AI run June payroll'))
+
+    def test_m2_a_spoken_chip_can_only_be_stricter(self):
+        """Review M2: a PayAI chip under a spoken turn re-sends its words with
+        voice=True. That marks the plan spoken (Q6: a tap for a person or an
+        amount) — and it could only ever LOOSEN something if a chip's words
+        were a go-ahead (a spoken go-ahead may confirm). No route ever puts a
+        go-ahead word on a PayAI chip."""
+        seen = 0
+        for row in CORPUS + [{'text': t, 'screen': 'payruns'} for t in self.M1_QUESTIONS]:
+            out, _ = route('P', row['text'], row.get('screen'), row.get('state'))
+            for chip in (out.get('extra_chips') or []) + (out.get('choices') or []):
+                if chip.get('route') != 'payai':
+                    continue
+                seen += 1
+                self.assertFalse(RUNNER.go_ahead_words(chip.get('text') or ''), (row['text'], chip))
+                self.assertFalse(H.whole_word_class(chip.get('text') or ''), (row['text'], chip))
+        self.assertGreater(seen, 3)
+
 
 class _Recorder:
     """A provider that records composer calls and always says NO_ANSWER."""

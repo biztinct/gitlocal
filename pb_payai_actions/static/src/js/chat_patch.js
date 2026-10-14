@@ -23,7 +23,7 @@ import { rpc, RPCError } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { openHub } from "@pb_hub/js/hub_nav";
 import { useService } from "@web/core/utils/hooks";
-import { AiInsightChat } from "@pb_payroll_ai_insights/components/ai_insight_chat/ai_insight_chat";
+import { AiInsightChat, moneyOfCard } from "@pb_payroll_ai_insights/components/ai_insight_chat/ai_insight_chat";
 import { runPayroll, stashPrefill } from "@pb_payrun_wizard/js/run_driver";
 
 export const PAYAI_HOOKS = "pb_payai";
@@ -368,7 +368,7 @@ patch(AiInsightChat.prototype, {
             fresh.fresh = false;
             this._payaiSupersede(fresh);
             this._payaiAutoRun(fresh);
-            if (fresh.card.speak) { this._payaiSpeak(fresh.card.speak, fresh.id); }
+            if (fresh.card.speak) { this._payaiSpeak(fresh.card.speak, fresh.id, fresh.card); }
             if (fresh.card.drive) { this._payaiDrive(fresh); }
         }
         return out;
@@ -410,8 +410,9 @@ patch(AiInsightChat.prototype, {
     /** The plan's own read-back (only ever on a spoken request). ONECHAT
      *  OC3: through the chat's one `speak`, so it gets the same filter (no
      *  amounts, no vendor name), the voice of its own language and the Stop
-     *  control on its card. */
-    _payaiSpeak(text, turnId) {
+     *  control on its card. The card's own money rows (`value`, `figures`)
+     *  are withheld word for word, whatever their format. */
+    _payaiSpeak(text, turnId, card) {
         try {
             if (typeof window !== "undefined" && window.speechSynthesis) {
                 window.speechSynthesis.cancel();
@@ -419,7 +420,7 @@ patch(AiInsightChat.prototype, {
         } catch {
             // nothing to stop
         }
-        this.speak(String(text || ""), turnId);
+        this.speak(String(text || ""), turnId, { money: moneyOfCard(card) });
     },
 
     /** A newer card for the same request: the older one stops offering buttons.
@@ -552,10 +553,17 @@ patch(AiInsightChat.prototype, {
                 this._payaiDoorFailed();
             }
         } else if (act.id === "followup" && msg.card && msg.card.task_id && !auto) {
-            this._payaiResolve = {
+            // PayAI is still answering: nothing is sent and nothing is kept
+            // for later — the next typed sentence must never go out as this
+            // card's answer. The button stays pressable.
+            if (this.state.isLoading) { return; }
+            const resolve = {
                 task_id: msg.card.task_id, slot: act.slot, value: act.value, action: act.action,
             };
-            this.sendSuggestion(act.label);
+            this._payaiResolve = resolve;
+            return Promise.resolve(this.sendSuggestion(act.label)).then(() => {
+                if (this._payaiResolve === resolve) { this._payaiResolve = null; }
+            });
         }
     },
 

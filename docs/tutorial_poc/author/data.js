@@ -390,7 +390,7 @@ const I18N = {
        person can read it (owner decision Q3). The banner has three forms:
        a company where PayAI may act, one where it can only answer, and a
        database with no assistant at all (the guide alone). */
-    honestAct: "Ask me anything, or ask me to do something. I always show you the plan first, and nothing changes until you say so.",
+    honestAct: "Ask me anything, or ask me to do something. I always show you the plan first, and nothing changes until you tap Do it.",
     honestAsk: "Ask me about this screen, how to do something, or your pay figures.",
     honestGuide: "Ask me how anything on this screen works.",
     askAny: "Ask a question, or tell me what to do…",
@@ -819,7 +819,7 @@ const I18N = {
     capPractise: "Mở một bản thực hành an toàn, để bạn thử làm trước.",
     capVoice: "Nghe khi bạn nói. Bạn kiểm tra lại câu chữ, rồi bấm Gửi.",
     /* -- ONECHAT OC2: the one chat -------------------------------------- */
-    honestAct: "Hãy hỏi tôi bất cứ điều gì, hoặc nhờ tôi làm một việc. Tôi luôn cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn đồng ý.",
+    honestAct: "Hãy hỏi tôi bất cứ điều gì, hoặc nhờ tôi làm một việc. Tôi luôn cho bạn xem kế hoạch trước, và không có gì thay đổi cho tới khi bạn bấm Thực hiện.",
     honestAsk: "Hãy hỏi tôi về màn hình này, cách làm một việc, hoặc số liệu lương của bạn.",
     honestGuide: "Hãy hỏi tôi bất cứ phần nào trên màn hình này hoạt động ra sao.",
     askAny: "Đặt câu hỏi, hoặc bảo tôi cần làm gì…",

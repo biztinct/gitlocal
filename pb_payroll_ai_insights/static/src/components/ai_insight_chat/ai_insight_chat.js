@@ -140,21 +140,29 @@ export function isPhantomTranscript(text, vocab) {
 }
 
 /* ONECHAT — NO AMOUNT IS EVER SPOKEN (owner decision Q2), in any currency or
-   format, and a HEAD COUNT is still read ("1,000 people", "1.000 người").
+   format, and a HEAD COUNT or a DATE is still read ("1,000 people",
+   "1.000 người", "June 2026", "tháng 6", "15/6").
    One matcher finds every number together with what can sit around it:
-     a currency sign or code before or after it, either case where it is a
-     code ("₫", "VND", "vnd", "đ", "RM200", "S$950", "MYR 950", "950 THB");
+     a currency sign or code before or after it, glued or spaced, a code in
+     any case ("₫", "VND", "vnd950", "USD1,200", "đ", "RM200", "S$950",
+     "MYR 950", "950 THB", "K950,000");
      a scale word after it, with or without a space ("18.6 bn", "65.8 tỷ",
      "2 triệu", "5tr", "500k", "$1.2m", "12.5 million");
-     the number itself grouped in threes by "," "." or a space ("1,234,567",
-     "500.000", "1 000 000"), or long (five digits or more).
-   A sign or a scale word makes it money. A grouped or long number on its
-   own is money too — unless the next word counts people or payslips
-   ("1,000 people", "12.345 nhân viên"): that is a head count and is read.
-   Years ("June 2026"), small counts ("3 people", "200 checks") and
-   percentages are read. Case matters for the short signs — "RM" and "Rp"
-   are signs, "perform 200" is not (ledger OC58). No look-behind (OC49). */
+     the number itself, grouped in threes by "," "." or a space ("1,234,567",
+     "500.000", "1 000 000") or not.
+   Then, by context (`isAmount`): a sign or a scale word → money; a count
+   word after it ("people", "payslips", "runs", "checks", "người", "đợt"),
+   a percent sign, or a date shape ("15/6", "2026-06-15") → read; decimals
+   ("25.75") → money; a year (1900–2099) → read; any other number of three
+   digits or more ("950", "4500") → money; one or two digits → read.
+   Values the plan card marks as money (its `value` / `figures` rows) are
+   withheld word for word first (`opts.money`). Case matters for the short
+   signs — "RM" and "Rp" are signs, "perform 200 checks" is not (ledger
+   OC58). No look-behind (OC49): the character before a number is captured. */
 const NOT_WORD = "(?![A-Za-z0-9À-ỹ])";
+/* A code may be glued to its digits ("USD1,200"); only a LETTER after it
+   makes it part of a longer word ("usda", "VNDirect"). */
+const NOT_LETTER = "(?![A-Za-zÀ-ỹ])";
 /** A word in any letter case, as a character class per letter. */
 function anyCase(word) {
     return Array.from(word).map((ch) => {
@@ -164,9 +172,9 @@ function anyCase(word) {
     }).join("");
 }
 const CODES = ["VND", "VNĐ", "USD", "SGD", "MYR", "THB", "INR", "IDR", "KHR", "EUR", "GBP",
-               "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND", "PHP"];
-const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|[$€£₫฿₹៛₱¥₩₭]|đ|(?:"
-    + CODES.map(anyCase).join("|") + ")" + NOT_WORD + ")";
+               "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND", "PHP", "CHF", "CAD"];
+const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|S\\/\\.?|Ks?(?=\\d)|[$€£₫฿₹៛₱¥₩₭]|đ|(?:"
+    + CODES.map(anyCase).join("|") + ")" + NOT_LETTER + ")";
 /* After the number the Vietnamese word for the currency counts as a sign. */
 const MONEY_SIGN_AFTER = "(?:" + MONEY_SIGN + "|(?:"
     + ["đồng", "dong"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
@@ -177,30 +185,88 @@ const SCALE_WORD = "(?:(?:" + ["bn", "billion", "billions", "million", "millions
     "thousand", "thousands", "lakh", "lakhs", "crore", "crores", "triệu", "trieu", "tr",
     "tỷ", "tỉ", "ty", "nghìn", "ngàn", "nghin", "ngan"].map(anyCase).join("|") + ")" + NOT_WORD + ")";
 const AMOUNT_NUM = "(?:\\d{1,3}(?:[.,]\\d{3})+(?:[.,]\\d+)?|\\d{1,3}(?: \\d{3})+|\\d+(?:[.,]\\d+)?)(?!\\d)";
-const AMOUNT_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ])"
+/* The character before a number: start, or anything but a letter or digit —
+   and a "," / "." only when no digit stands before it, so the tail of
+   "12,000,000" is never matched on its own. */
+const AMOUNT_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ.,]|(?:^|[^0-9])[.,])"
     + "(?:(" + MONEY_SIGN + ")\\s?)?"
     + "(" + AMOUNT_NUM + ")"
     + "(" + SCALE_TIGHT + "?(?:\\s?" + SCALE_WORD + ")*)"
     + "(?:\\s?(" + MONEY_SIGN_AFTER + "))?"
     + NOT_WORD, "g");
-/* What a head count is counting: read, never withheld. */
-const COUNT_RE = new RegExp("^\\s*(?:" + ["people", "persons", "person", "employees", "employee",
-    "staff", "workers", "worker", "members", "member", "payslips", "payslip", "heads",
-    "người", "nhân viên", "nhân sự", "lao động", "phiếu lương"].map(anyCase).join("|") + ")" + NOT_WORD);
+/* What a count is counting: read, never withheld ("1,000 people", "3 runs",
+   "200 checks", "12 phiếu lương"). One describing word may sit between
+   ("40 more people", "5 đợt mới" is after, so not needed). */
+const COUNT_NOUNS = ["people", "persons", "person", "employees", "employee", "staff", "workers",
+    "worker", "members", "member", "payslips", "payslip", "heads", "runs", "run", "checks", "check",
+    "items", "item", "requests", "request", "rows", "row", "lines", "line", "steps", "step",
+    "days", "day", "hours", "hour", "minutes", "minute", "weeks", "week", "months", "month",
+    "years", "year", "times", "errors", "error", "flags", "flag", "files", "file", "changes",
+    "change", "approvals", "approval", "approvers", "approver", "lessons", "lesson", "questions",
+    "question", "records", "record", "entries", "entry", "companies", "company", "departments",
+    "department", "divisions", "division", "teams", "team", "schemes", "scheme", "components",
+    "component", "slips", "slip",
+    "người", "nhân viên", "nhân sự", "lao động", "phiếu lương", "phiếu", "đợt", "ngày", "giờ",
+    "phút", "tuần", "tháng", "năm", "lần", "yêu cầu", "dòng", "bước", "mục", "công ty",
+    "phòng ban", "bài học", "câu hỏi", "hồ sơ"];
+const COUNT_RE = new RegExp("^\\s*(?:(?:" + ["more", "new", "active", "other", "extra", "open",
+    "pending", "draft", "unpaid", "paid", "missing"].map(anyCase).join("|") + ")\\s+)?(?:"
+    + COUNT_NOUNS.map(anyCase).join("|") + ")" + NOT_WORD);
+const PERCENT_RE = new RegExp("^\\s?(?:%|" + ["percent", "per cent", "phần trăm"].map(anyCase).join("|")
+    + NOT_WORD + ")");
 
-/** True when a number found by AMOUNT_RE is money, not a count or a year. */
-function isAmount(sign, num, scale, signAfter, rest) {
+/** True when a number found by AMOUNT_RE is money, not a count, a date or a
+ *  year. `before` is the text before the number's own lead character. */
+function isAmount(lead, sign, num, scale, signAfter, rest, before) {
     if (sign || signAfter) {
         return true;
     }
-    if (COUNT_RE.test(rest)) {
+    if (COUNT_RE.test(rest) || PERCENT_RE.test(rest)) {
         return false;
     }
     if (scale && scale.trim()) {
         return true;
     }
-    // grouped in threes ("1,000", "500.000", "1 000 000"), or five digits on
-    return /^\d{1,3}(?:[.,\s]\d{3})+/.test(num) || /^\d{5,}/.test(num);
+    // A date or a time: "15/6", "15/06/2026", "2026-06-15", "10:30".
+    if (/^[/:-]\d/.test(rest) || (/[/:-]$/.test(lead) && /\d$/.test(before))) {
+        return false;
+    }
+    // grouped in threes ("1,000", "500.000", "1 000 000")
+    if (/^\d{1,3}(?:[.,\s]\d{3})+/.test(num)) {
+        return true;
+    }
+    // decimals ("25.75", "18,6")
+    if (/[.,]/.test(num)) {
+        return true;
+    }
+    // a year ("June 2026", "năm 2031")
+    if (/^(?:19|20)\d\d$/.test(num)) {
+        return false;
+    }
+    // any other bare number of three digits or more ("950", "4500")
+    return num.length >= 3;
+}
+
+/** Withhold the values a plan card marks as money, word for word. */
+function withholdMarked(text, money, word) {
+    let out = text;
+    for (const raw of money || []) {
+        const v = String(raw || "").trim();
+        if (!v || !/\d/.test(v)) {
+            continue;
+        }
+        out = out.split(v).join(word);
+    }
+    return out;
+}
+
+/** The plan card's money rows (value / amount / figures) — what the server
+ *  marks as an amount — as the strings shown on the card. */
+export function moneyOfCard(card) {
+    const rows = (card && Array.isArray(card.slots)) ? card.slots : [];
+    return rows.filter((r) => r && ["value", "amount", "money", "figures"].includes(r.key))
+        .map((r) => String(r.value_label || ""))
+        .filter((v) => /\d/.test(v));
 }
 
 /** The words handed to the device's synthesiser (handover §6.5): markup and
@@ -216,8 +282,10 @@ export function speechText(text, opts = {}) {
     say = debrandSpoken(say, opts.brand);
     const word = opts.amount || "an amount shown on screen";
     say = say.replace(/\s+/g, " ");
+    say = withholdMarked(say, opts.money, word);
     say = say.replace(AMOUNT_RE, (m, lead, sign, num, scale, signAfter, at, all) => (
-        isAmount(sign, num, scale, signAfter, all.slice(at + m.length)) ? `${lead}${word}` : m));
+        isAmount(lead, sign, num, scale, signAfter, all.slice(at + m.length), all.slice(0, at))
+            ? `${lead}${word}` : m));
     // "20 triệu 500 nghìn" is ONE amount, said once.
     const said = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     say = say.replace(new RegExp(`${said}(?:\\s+${said})+`, "g"), word);
@@ -578,6 +646,9 @@ export class AiInsightChat extends Component {
                     fresh: !!result.card,
                     // ONECHAT OC2 — "Explain how instead", under the card.
                     extra: o.extraChips && o.extraChips.length ? o.extraChips : null,
+                    // Whether the words this answers were spoken: a chip
+                    // under it that re-sends them stays spoken.
+                    spoken: !!o.spoken,
                     timestamp: new Date().toISOString(),
                 });
                 // ONECHAT OC3 — a SPOKEN turn is always read back; a typed
@@ -733,7 +804,11 @@ export class AiInsightChat extends Component {
             this.state.messages = [];
             this.state.sessionId = null;
             this.state.showSuggestions = true;
-        this.notification.add(_t("Chat history cleared"), { type: "info" });
+            // The drawer confirms in place, in the pill's language; a toast
+            // in the account's language on top of it would say it twice.
+            if (!this.constructor.embedded) {
+                this.notification.add(_t("Chat history cleared"), { type: "info" });
+            }
         } catch (error) {
             console.error("Clear history error:", error);
         }
@@ -1381,7 +1456,9 @@ export class AiInsightChat extends Component {
         }
     }
 
-    speak(text, turnId) {
+    /** `extra.money`: values the plan card marks as money, withheld word
+     *  for word (`moneyOfCard`). */
+    speak(text, turnId, extra = {}) {
         if (!this.ttsSupported || !text) {
             return;
         }
@@ -1392,6 +1469,7 @@ export class AiInsightChat extends Component {
         const say = speechText(text, {
             amount: this.t("amountOnScreen", "an amount shown on screen"),
             brand: "Payobook",
+            money: (extra && extra.money) || [],
         });
         if (!say) {
             return;
@@ -1610,19 +1688,19 @@ function rawOf(x) {
  * Props: `helper` (from the drawer: guide, context card, practice doors —
  * one object, never re-created), `lang` (the pill: what re-renders past
  * turns in the other language), `screen` / `place` (where the person is),
- * `close`. `handoff` is the retired Ask-tab hand-off, still accepted.
+ * `close`. (The retired Ask tab's `handoff` prop is gone: it sent with
+ * `sendSuggestion`, which skips the router and `ask_only`.)
  */
 export class AiInsightChatEmbedded extends AiInsightChat {
     static template = "pb_payroll_ai_insights.AiInsightChatEmbedded";
     static embedded = true;
-    static props = ["helper?", "lang?", "screen?", "place?", "close?", "handoff?"];
+    static props = ["helper?", "lang?", "screen?", "place?", "close?"];
 
     setup() {
         super.setup();
         this.state.isOpen = true;
         this.state.status = { can_act: false, can_answer: false, voice_go_ahead: false };
         this.state.awayFromBottom = false;
-        this._handoffId = null;
         this._ready = Promise.resolve();
         this.api = this._makeApi();
         onMounted(() => {
@@ -1634,11 +1712,9 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                 }
                 this._noteScreen(this.props.screen);
             });
-            this._takeHandoff(this.props.handoff);
             setTimeout(() => this.inputRef.el?.focus(), 80);
         });
         onWillUpdateProps((next) => {
-            this._takeHandoff(next.handoff);
             if ((next.screen || "") !== (this.props.screen || "")) {
                 this._noteScreen(next.screen);
             }
@@ -2026,8 +2102,10 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                 });
                 return;
             case "guide":
+                // `spoken` stays on the turn: its chips ("Do it for me")
+                // re-send these very words (`sendDirect`).
                 this._readHelper(this._pushHelper({ kind: "guide", answer: r.answer, lead: r.lead || null,
-                                                    extra: r.extra_chips || null }), spoken);
+                                                    extra: r.extra_chips || null, spoken: !!spoken }), spoken);
                 await h.onGuideAnswer(text, r.answer);
                 await this._markGuide(r.answer);
                 return;
@@ -2039,7 +2117,7 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                 return;
             case "choose":
                 this._readHelper(this._pushHelper({ kind: "choose", note: r.note || h.pair("whichMeant"),
-                                                    choices: r.choices || [] }), spoken);
+                                                    choices: r.choices || [], spoken: !!spoken }), spoken);
                 await this._marker("choose", (r.note && r.note.key) || "whichMeant");
                 return;
             case "miss":
@@ -2166,11 +2244,14 @@ export class AiInsightChatEmbedded extends AiInsightChat {
             sendText: (text, opts) => ready(() => this.sendText(text, opts)),
             // False when PayAI is still answering: nothing was sent, and the
             // chip that asked stays usable (the drawer un-picks a choice).
-            sendDirect: ({ text, askOnly }) => ready(async () => {
+            // `spoken`: the chip re-sends words that were heard (the turn it
+            // sits under says so) — kept, so a plan from them still needs a
+            // tap (Q6). Never set for anything typed.
+            sendDirect: ({ text, askOnly, spoken }) => ready(async () => {
                 if (this.state.isLoading) {
                     return false;
                 }
-                await this.sendMessage({ text, askOnly: !!askOnly });
+                await this.sendMessage({ text, askOnly: !!askOnly, spoken: spoken === true });
                 return true;
             }),
             practise: (key, mode) => this.practise(key, mode),
@@ -2249,21 +2330,6 @@ export class AiInsightChatEmbedded extends AiInsightChat {
     jumpToLatest() {
         this.state.awayFromBottom = false;
         this._scrollToBottom(true);
-    }
-
-    // ----------------------------------------------------------- hand-off
-    async _takeHandoff(handoff) {
-        if (!handoff || !handoff.text || handoff.id === this._handoffId) {
-            return;
-        }
-        this._handoffId = handoff.id;
-        try {
-            await this._historyReady;
-        } catch {
-            // A history that failed to load still leaves an empty chat to
-            // ask in.
-        }
-        await this.sendSuggestion(handoff.text);
     }
 
     /** "Show me" opens a lesson, which closes the whole drawer. */

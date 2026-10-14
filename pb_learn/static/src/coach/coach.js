@@ -936,7 +936,7 @@ export class CoachHost extends Component {
         turn.picked = index;
         // PayAI was still answering, so nothing was sent: the choice stays
         // open to press again rather than being used up for nothing.
-        if ((await this._runChip(choice)) === false) {
+        if ((await this._runChip(choice, turn)) === false) {
             turn.picked = null;
         }
     }
@@ -946,19 +946,24 @@ export class CoachHost extends Component {
         const turn = this._findTurn(id);
         const chip = turn && (turn.extra || [])[index];
         if (chip) {
-            await this._runChip(chip);
+            await this._runChip(chip, turn);
         }
     }
 
-    /** Run a chip; false when nothing could be done (PayAI busy). */
-    async _runChip(chip) {
+    /** Run a chip; false when nothing could be done (PayAI busy). A PayAI
+     *  chip re-sends the words of the turn it sits under: when those words
+     *  were SPOKEN, the send stays spoken (`turn.spoken`), so a plan made
+     *  from it still needs a tap where it names a person or an amount
+     *  (owner decision Q6). The flag only ever makes the send stricter. */
+    async _runChip(chip, turn) {
         if (chip.route === "guide") {
             await this._answerInto(chip.key);
         } else if (chip.route === "practice") {
             this._practiseFrom(chip.key, chip.mode || "try");
         } else if (chip.route === "payai" && this._api) {
             const text = typeof chip.text === "string" ? chip.text : tx(chip.label || "");
-            return (await this._api.sendDirect({ text, askOnly: !!chip.ask_only })) !== false;
+            const spoken = !!(turn && turn.spoken);
+            return (await this._api.sendDirect({ text, askOnly: !!chip.ask_only, spoken })) !== false;
         } else {
             return false;
         }

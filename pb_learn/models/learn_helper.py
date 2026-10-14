@@ -110,13 +110,40 @@ _POLITE_LEAD = re.compile(
     r"^(?:(?:can|could|would|will)\s+you|please|pls|kindly)\b", re.I)
 _Q_LEAD_EN = re.compile(
     r"^(?:how|what|where|why|when|which|who|whose|"
+    r"whats|hows|wheres|whos|whens|whys|"
     r"can\s+(?:i|we)|could\s+(?:i|we)|may\s+(?:i|we)|do\s+(?:i|we)|does|did|"
     r"is|are|am\s+i|should|will(?!\s+you\b)|would\s+(?:i|we)|"
     r"tell\s+me\s+(?:how|what|why|where))\b", re.I)
-#: Folded Vietnamese question shapes (là gì, thế nào, ở đâu, … không / chưa).
+#: A question word asked INSIDE a sentence, after a clause ("before I approve
+#: the June run what should I check", "to run payroll what do I do"): the
+#: question word, an auxiliary and its subject, in question order. "approve
+#: what is waiting" (no subject after the auxiliary) stays an order.
+_Q_INNER_EN = re.compile(
+    r"\b(?:what|how|which|who|where|why|when)\s+"
+    r"(?:should|do|does|did|can|could|would|will|must|shall)\s+"
+    r"(?:i|we|you|they|it|he|she|the|this|that|my|our|people|everyone)\b", re.I)
+#: A condition, then a yes/no question ("if I run payroll now will it email
+#: people", "after I approve, does it go to the bank"). Never "can you /
+#: will you" (a polite request) and never "do it" (an order).
+_Q_COND_EN = re.compile(
+    r"^(?:if|before|after|once|when|whether)\b.*?\b(?:"
+    r"(?:will|would|can|could|should)\s+(?:it|this|that|they|there|i|we|anyone|"
+    r"everyone|people|he|she)|"
+    r"(?:does|did|is|are|was)\s+(?:it|this|that|they|there|i|we|you|anyone|"
+    r"everyone|people|he|she)|"
+    r"do\s+(?:i|we|you|they))\s+\w", re.I)
+#: "approve the June run or not" — asking whether, not ordering.
+_Q_TAIL_EN = re.compile(r"\bor\s+not[\s?.!]*$", re.I)
+#: Folded Vietnamese question shapes (là gì, thế nào, ở đâu, … không / chưa,
+#: gì / làm gì, ai …, nên … không, có nên, cho tôi hỏi, không biết).
 _Q_VI = re.compile(
     r"\b(?:lam sao|the nao|nhu the nao|o dau|la gi|tai sao|vi sao|khi nao|"
-    r"bao gio)\b|\bco the\b.*\bkhong$|\bco\b.*\bkhong$|\bduoc khong$|\bchua$")
+    r"bao gio|gi)\b|\bco the\b.*\bkhong$|\bco\b.*\bkhong$|\bduoc khong$|\bchua$|"
+    r"\bnen\b.*\bkhong$|\bco nen\b|"
+    r"\bcho (?:(?:toi|minh|em|anh|chi) )?hoi\b|\b(?:khong|chua) biet\b")
+#: "ai duyệt đợt lương tháng 6" (WHO approves) — folded "ai" in front, or
+#: "là ai" / "do ai". Never the English "AI" written in capitals.
+_Q_WHO_VI = re.compile(r"^ai\b|\b(?:la|do) ai\b")
 
 # -- H: a how-to request (a question about doing, never an order) --------
 # Two families. PROCEDURE ("how do I", "show me how", "chỉ tôi cách") asks for
@@ -130,7 +157,11 @@ _H_PROC_EN = re.compile(
     r"show\s+me\s+how|show\s+me\s+the\s+steps|teach\s+me|walk\s+me\s+through|"
     r"guide\s+me|(?:what\s+are\s+)?the\s+steps\s+(?:to|for)|steps\s+(?:to|for)|"
     r"what\s+are\s+the\s+steps|explain\s+how|how\s+(?:do|can|should|would)\s+(?:i|we)|"
-    r"how\s+to|where\s+(?:do|can)\s+(?:i|we))\b", re.I)
+    r"how\s+to|where\s+(?:do|can)\s+(?:i|we)|"
+    r"(?:(?:what(?:'s|s|\s+is)\s+)?(?:a|the)\s+)?"
+    r"(?:procedure|guide|instructions|tips|checklist)\s+(?:to|for|on)|"
+    # "process" alone is also the order "process June salaries".
+    r"(?:what(?:'s|s|\s+is)\s+)?(?:a|the)\s+process\s+(?:to|for|of))\b", re.I)
 _H_DEF_EN = re.compile(
     _POLITE_HEAD + r"(?:where\s+(?:is|are)|what\s+(?:is|are)|what\s+does\b.*\bmean)\b",
     re.I)
@@ -143,7 +174,10 @@ _H_DEF_EN = re.compile(
 _H_PROC_EN_INNER = re.compile(
     r"\b(?:show\s+me\s+how|teach\s+me\s+how|walk\s+me\s+through|explain\s+how|"
     r"how\s+(?:do|can|should|would)\s+(?:i|we)|how\s+to|"
-    r"(?:the\s+)?steps\s+(?:to|for))\b", re.I)
+    r"(?:the\s+)?steps\s+(?:to|for)|"
+    r"the\s+(?:procedure|process)\s+(?:to|for)|(?:procedure|instructions|tips)\s+(?:to|for)|"
+    r"what\s+(?:should|do|must|shall)\s+(?:i|we)\s+(?:do|check|need|prepare|know|review)|"
+    r"need\s+(?:some\s+)?help\s+(?:with\s+)?\w+ing)\b", re.I)
 #: … and a definition / place asked through a lead ("I want to know what net
 #: pay is", "can you tell me where the bank file is").
 _H_DEF_EN_INNER = re.compile(
@@ -151,7 +185,7 @@ _H_DEF_EN_INNER = re.compile(
 #: Folded Vietnamese how-to shapes (chỉ tôi cách, hướng dẫn, các bước, …).
 _H_PROC_VI = re.compile(
     r"\b(?:chi (?:toi |minh |em )?cach|huong dan|cach(?: de)?|cac buoc|lam sao|"
-    r"lam the nao)\b")
+    r"lam the nao|lam gi|can (?:nhung )?gi|(?:khong|chua) biet)\b")
 _H_DEF_VI = re.compile(r"\b(?:o dau|la gi|nghia la)\b")
 
 #: The lead of a how-to request, taken off to find its TOPIC: "show me how to
@@ -173,6 +207,15 @@ _H_LEAD_EN_INNER = re.compile(
 _H_LEAD_VI = re.compile(
     r"^(?:cho toi xem |chi (?:toi |minh |em )?|huong dan (?:toi |minh |em )?|"
     r"lam sao (?:de )?|lam the nao (?:de )?|cac buoc (?:de )?|cach (?:de )?)+(?P<topic>.+)$")
+#: A Vietnamese how-to asked around its task ("để chạy lương tôi phải làm
+#: gì", "chạy lương cần những gì", "tôi không biết chạy lương"): the words
+#: in front of and after the task, taken off to find it.
+_H_HEAD_VI = re.compile(
+    r"^(?:(?:neu |de |muon |toi muon |minh muon )+|"
+    r"(?:toi |minh |em )?(?:khong|chua) biet (?:cach )?)")
+_H_TAIL_VI = re.compile(
+    r"(?:\s+(?:thi|toi|minh|em))*(?:\s+(?:phai|can|nen|se))?\s+"
+    r"(?:lam gi|lam the nao|lam nhu the nao|(?:nhung )?gi)$")
 
 
 def howto_kind(text):
@@ -203,6 +246,10 @@ def howto_canonical(text):
     m = _H_LEAD_VI.match(_norm(t))
     if m:
         return 'lam sao %s' % m.group('topic')
+    folded = _norm(t)
+    topic = _H_TAIL_VI.sub('', _H_HEAD_VI.sub('', folded)).strip()
+    if topic and topic != folded:
+        return 'lam sao %s' % ' '.join(_PARTICULARS_VI.sub(' ', topic).split())
     return ''
 
 
@@ -336,6 +383,10 @@ def is_question(text):
         return True
     if t.endswith(('?', '？')) and not _POLITE_LEAD.match(core):
         return True
+    if _Q_INNER_EN.search(core) or _Q_COND_EN.match(core) or _Q_TAIL_EN.search(core):
+        return True
+    if _Q_WHO_VI.search(_norm(t)) and not core.startswith('AI'):
+        return True
     return bool(_Q_VI.search(_norm(t)))
 
 
@@ -399,6 +450,11 @@ def data_signal(text, question=None):
     t = clean(text)
     if howto_kind(t) == 'proc':
         return False
+    or_not = _Q_TAIL_EN.search(t)
+    if or_not:
+        # "approve the June run or not" asks whether to DO it — the order's
+        # own month is no figure question.
+        t, question = t[:or_not.start()].rstrip(' ,'), False
     q = is_question(t) if question is None else question
     folded = _norm(t)
     qty = bool(_QTY_EN.search(t) or _QTY_VI.search(folded))
@@ -1013,7 +1069,10 @@ class LearnHelper(models.AbstractModel):
                     if routed:
                         return routed
                 return self._out('payai', 'command_ai', fallback_key=self._fallback(probe))
-            how = self._order_probe(t, screen_key, probe)
+        if not q or (not self._can_act() and _Q_TAIL_EN.search(t)):
+            # An order — or one asked "… or not" where nothing can be done
+            # for the person: here is how they do it.
+            how = self._order_probe(_Q_TAIL_EN.sub('', t).rstrip(' ,'), screen_key, probe)
             if how and how.get('kind') in ('exact', 'contained'):
                 routed = self._guide('guide_imperative', how, screen_key,
                                      lead=self._pair('hereIsHow'))
@@ -1086,9 +1145,17 @@ class LearnHelper(models.AbstractModel):
     @api.model
     def _order_question(self, text, probe):
         """Step 10: a short order asked as a question ("Run payroll?")."""
-        if not text.endswith(('?', '？')) or len(text.split()) > 4 or not self._can_act():
+        or_not = _Q_TAIL_EN.search(text)
+        if or_not:
+            # "approve the June run or not": the order, asked as a question.
+            bare = text[:or_not.start()].rstrip(' ,?？')
+            if len(bare.split()) > 6 or not self._can_act():
+                return None
+            probe = self._order_probe(bare, None, probe)
+        elif not text.endswith(('?', '？')) or len(text.split()) > 4 or not self._can_act():
             return None
-        bare = text.rstrip('?？ ').strip()
+        else:
+            bare = text.rstrip('?？ ').strip()
         if not bare or not self._command_key(bare):
             return None
         choices = [{'label': self._pair('doItNow'), 'route': 'payai', 'text': bare}]

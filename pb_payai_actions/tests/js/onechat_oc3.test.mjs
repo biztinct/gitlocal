@@ -767,6 +767,75 @@ async function readBackSuite() {
           "the count is read, the money next to it is not");
     check(speechText("Nhóm 1.000 người nhận 2 triệu.") === `Nhóm 1.000 người nhận ${W}.`,
           "… in Vietnamese too");
+    // Whole-program review M3: money decided by CONTEXT — a sign or code
+    // (glued or spaced, any case), decimals, or a bare number of three digits
+    // or more is withheld; a count, a percent, a date or a year is read.
+    const WITHHELD = [
+        ["Change it to USD1,200.", `Change it to ${W}.`],
+        ["Change it to VND950,000.", `Change it to ${W}.`],
+        ["Change it to VND12,000,000.", `Change it to ${W}.`],
+        ["Change it to SGD950.", `Change it to ${W}.`],
+        ["Change it to MYR950.", `Change it to ${W}.`],
+        ["Change it to K950,000.", `Change it to ${W}.`],
+        ["Change it to Ks950,000.", `Change it to ${W}.`],
+        ["Change it to usd1,200.", `Change it to ${W}.`],
+        ["Change it to vnd950000.", `Change it to ${W}.`],
+        ["Change it to Usd 950.", `Change it to ${W}.`],
+        ["Change it to 950usd.", `Change it to ${W}.`],
+        ["Change it to CHF950.", `Change it to ${W}.`],
+        ["Change it to S/.950.", `Change it to ${W}.`],
+        ["Change it to 950.", `Change it to ${W}.`],
+        ["Change it to 4500.", `Change it to ${W}.`],
+        ["Set the allowance to 9800 for Lan.", `Set the allowance to ${W} for Lan.`],
+        ["Overtime rate 25.75 an hour.", `Overtime rate ${W} an hour.`],
+        ["Phụ cấp 950 cho Lan.", `Phụ cấp ${W} cho Lan.`],
+        ["Lương 4500 mỗi tháng.", `Lương ${W} mỗi tháng.`],
+        ["Đổi thành 18,5.", `Đổi thành ${W}.`],
+        ["Bonus of 1250 per person.", `Bonus of ${W} per person.`],
+        ["From 950 to 1100.", `From ${W} to ${W}.`],
+        ["It is -950 now.", `It is -${W} now.`],
+        ["Meal allowance 0.5.", `Meal allowance ${W}.`],
+    ];
+    const READ = [
+        "The June run has 1,000 people.",
+        "12 payslips are waiting.",
+        "There are 3 runs this month.",
+        "We perform 200 checks for 3 people.",
+        "I will run June 2026 payroll for Retail.",
+        "Chạy lương tháng 6 năm 2031.",
+        "The run for 2031 is ready.",
+        "Payday is 15/6.",
+        "Payday is 15/06/2026.",
+        "Payday is 2026-06-15.",
+        "It closes at 10:30.",
+        "Net pay rose 4.5% in June.",
+        "Net pay rose 150% in June.",
+        "250 employees and 1,200 payslips.",
+        "40 more people joined.",
+        "Có 120 người trong đợt này.",
+        "Có 5 đợt lương đang chờ.",
+        "It takes 2 days.",
+        "Step 3 of 5.",
+        "Send it to 3 people.",
+        "The run took 1.5 hours.",
+        "Tháng 6 có 22 ngày làm việc.",
+    ];
+    for (const [said, keep] of WITHHELD) {
+        const out = speechText(said);
+        check(out === keep, `M3 withheld: "${said}"`, out);
+    }
+    for (const said of READ) {
+        check(speechText(said) === said, `M3 read: "${said}"`, speechText(said));
+    }
+    check(WITHHELD.length + READ.length >= 40, "M3: the table has at least 40 cases", String(WITHHELD.length + READ.length));
+    // … and what the plan card marks as money is withheld word for word.
+    const { moneyOfCard } = chatMod;
+    const card = { slots: [{ key: "person", value_label: "Lan Nguyen" },
+                            { key: "value", value_label: "12 thousand dong" },
+                            { key: "period", value_label: "June 2026" }] };
+    check(JSON.stringify(moneyOfCard(card)) === '["12 thousand dong"]', "moneyOfCard reads only the money rows");
+    check(speechText("Set Meal allowance for Lan Nguyen to 12 thousand dong in June 2026.", { money: moneyOfCard(card) })
+          === `Set Meal allowance for Lan Nguyen to ${W} in June 2026.`, "a value the card marks as money is never read");
     check(speechText("x".repeat(900)).length <= 600, "at most 600 characters are read");
     speech.spoken = [];
     chat.speak("Net pay is 12,000,000 for June.");
