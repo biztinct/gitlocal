@@ -21,4 +21,4 @@ demo database) first and check it there. The other databases (`rize`,
 
 | Date | Module → version | What changed | Waiting on |
 |---|---|---|---|
-| 2026-10-14 | pb_me_portal → 19.0.2.1.0, pb_import_kit → 19.0.1.22.0 | MEHOME: the employee home (/my) redesign — greeting + sentence, Pay / Leave / This week cards, Needs you, grouped tiles with icons, Inter on the portal, VI (`docs/handovers/mehome/`). Normal tier: upgraded on payobook, asset purge + version bump done. No new stored field. | Owner's walk on payobook.com; then the batch (rize, payobook_template, abm — abm jobs off after) |
+| 2026-10-14/15 | pb_me_portal → 19.0.2.1.1, pb_import_kit → 19.0.1.22.0 | MEHOME: the employee home (/my) redesign — greeting + sentence, Pay / Leave / This week cards, Needs you, grouped tiles with icons, Inter on the portal, VI (`docs/handovers/mehome/`). Normal tier: upgraded on payobook, asset purge + version bump done. No new stored field. | Owner's walk on payobook.com; then the batch (rize, payobook_template, abm — abm jobs off after) |
