@@ -29,3 +29,6 @@ from . import test_reachability
 from . import test_learn_hub
 # LEARN REFRESH step 5 — final station set, role paths, folded keys.
 from . import test_refresh_paths
+# PAYAI FIX-1 — a lesson step about an optional feature (PayAI) shows only
+# where the reader's company has it; the ten minutes belong to the offer.
+from . import test_feature_gate

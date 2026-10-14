@@ -113,10 +113,49 @@ export function composeScreens(content, runtime) {
     });
 }
 
+/** PAYAI FIX-1 (P4:crit-2). Does this step belong in the lesson for a reader
+ *  with `features` (`learn.runtime.bootstrap().features`)?
+ *
+ *  The content plane is one file every database serves, so a step that
+ *  teaches a feature living in an optional module says so — `requires` hides
+ *  the whole step, `tip_requires` only its tip — and this is where the
+ *  reader's answer is applied. FAILS CLOSED: an older bootstrap with no
+ *  `features` hides every gated step. The server mirror is
+ *  `learn_runtime.step_shown` / `gate_steps`; keep the two the same. */
+export function stepShown(step, features) {
+    const need = step && step.requires;
+    return !need || !!(features && features[need]);
+}
+
+/** The steps a reader with `features` sees, tips gated too. Never writes to
+ *  the shared tree: a step whose tip is dropped is a copy. */
+export function gateSteps(steps, features) {
+    return (steps || []).filter((st) => stepShown(st, features)).map((st) =>
+        st.tip_requires && !(features && features[st.tip_requires])
+            ? Object.assign({}, st, { tip: "" })
+            : st);
+}
+
+/** A station with every lesson's steps gated. Copies only a station that has
+ *  a gated step, so every other station stays the shared object it is. */
+function gateStation(s, features) {
+    const gated = (s.lessons || []).some((l) => (l.steps || []).some(
+        (st) => st.requires || st.tip_requires));
+    if (!gated) {
+        return s;
+    }
+    return Object.assign({}, s, {
+        lessons: s.lessons.map((l) =>
+            Object.assign({}, l, { steps: gateSteps(l.steps, features) })),
+    });
+}
+
 /** The Journey's station list: static content + whether this reader can
  *  actually reach the screen each station teaches. */
 export function composeStations(content, runtime) {
     const rt = (runtime && runtime.visible_stations) || {};
+    const features = (runtime && runtime.features) || {};
     return (content.stations || []).map((s) =>
-        Object.assign({}, s, rt[s.key] || { visible: true, missing: false }));
+        Object.assign({}, gateStation(s, features),
+            rt[s.key] || { visible: true, missing: false }));
 }

@@ -598,6 +598,32 @@ def _step_lines(step, data):
     return rows
 
 
+# PAYAI FIX-1 (P4:crit-2). A lesson step that teaches a feature living in an
+# OPTIONAL module says so: `requires: "<feature>"` drops the whole step and
+# `tip_requires: "<feature>"` drops only its tip, wherever the feature is off.
+# The content plane is ONE file every database serves, so without this a step
+# about PayAI's Do it reached databases where PayAI cannot do anything.
+# The names are the keys of `learn.runtime.FEATURE_SWITCHES`
+# (pb_learn/models/learn_runtime.py); a name not listed here is a typo that
+# would hide a step everywhere, so it stops the generator instead.
+STEP_FEATURES = ('payai_prepare', 'payai_decide')
+
+
+def _step_gates(sw, step):
+    out = {}
+    for key in ('requires', 'tip_requires'):
+        name = step.get(key)
+        if not name:
+            continue
+        if name not in STEP_FEATURES:
+            raise SystemExit('%s: %s %r is not one of %s'
+                             % (sw, key, name, ', '.join(STEP_FEATURES)))
+        if key == 'tip_requires' and not en_of(step.get('tip')):
+            raise SystemExit('%s: tip_requires on a step with no tip' % sw)
+        out[key] = name
+    return out
+
+
 def content_lesson(lkey, lesson, data, bi):
     where = 'lesson %s' % lkey
     node = {
@@ -615,7 +641,7 @@ def content_lesson(lkey, lesson, data, bi):
     for i, step in enumerate(lesson['steps']):
         sw = '%s step %d' % (where, i)
         moment = step.get('moment') or {}
-        node['steps'].append({
+        node['steps'].append(dict({
             'kicker': bi.p('%s kicker' % sw, step.get('kicker')),
             'title': bi.p('%s title' % sw, step['title']),
             'body': bi.p('%s body' % sw, step['body']),
@@ -637,7 +663,9 @@ def content_lesson(lkey, lesson, data, bi):
                 # change shape while the delivery does.
                 'note': '',
             } for j, (role, label, value) in enumerate(_step_lines(step, data))],
-        })
+        # Only on the steps that carry one, so every other step keeps the
+        # exact shape it always had.
+        }, **_step_gates(sw, step)))
     quiz = lesson.get('quiz')
     if quiz:
         node['quizzes'].append({

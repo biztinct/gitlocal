@@ -3094,14 +3094,19 @@ const LESSONS = {
       },
       {
         /* PAYAI P4 — "Ask PayAI to do it": the plan card, Do it, and the
-           ten-minute way back, on the board where the run then shows up. */
+           ten-minute way back, on the board where the run then shows up.
+           PAYAI FIX-1 (P4:crit-2): `requires` — this step is shown only where
+           PayAI may prepare work for this company (pb_payai_actions installed
+           AND its "PayAI may prepare" switch on). Learn content is one file
+           served to EVERY database, and most of them have no PayAI hands. */
+        requires: "payai_prepare",
         screen: "payruns", anchor: "pk-card",
         kicker: B("Ask PayAI", "Nhờ PayAI"),
         title: B("Or ask PayAI, and read its plan first", "Hoặc nhờ PayAI, và đọc kế hoạch trước"),
-        body: B("Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? <b>Withdraw</b> on the card brings it back to Draft for 10 minutes, while nobody has decided.",
-                "Gõ <b>Gửi duyệt bảng lương tháng 6</b> cho PayAI. PayAI trả lời bằng một <b>thẻ kế hoạch</b>: đợt lương, số người và thực nhận, và ai duyệt tiếp theo. Chưa có gì xảy ra cho tới khi bạn bấm <b>Thực hiện</b>. Gửi nhầm? Nút <b>Rút lại</b> trên thẻ đưa nó về Nháp trong 10 phút, khi chưa ai quyết định."),
-        tip: B("Running payroll works the same way: the plan card names the period, the scheme and the people, and Undo deletes the draft run for 10 minutes.",
-               "Chạy lương cũng vậy: thẻ kế hoạch ghi kỳ lương, chương trình lương và số người, và Hoàn tác xoá đợt lương nháp trong 10 phút."),
+        body: B("Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? For 10 minutes, while nobody has decided, <b>Withdraw</b> on the card brings it back to Draft.",
+                "Gõ <b>Gửi duyệt đợt lương tháng 6</b> cho PayAI. PayAI trả lời bằng một <b>thẻ kế hoạch</b>: đợt lương, số người và thực nhận, và ai duyệt tiếp theo. Chưa có gì xảy ra cho tới khi bạn bấm <b>Thực hiện</b>. Gửi nhầm? Trong 10 phút, khi chưa ai quyết định, nút <b>Thu hồi</b> trên thẻ đưa nó về Nháp."),
+        tip: B("Running payroll works the same way: the plan card names the period, the scheme and the people, and for 10 minutes Undo deletes the draft run.",
+               "Chạy lương cũng vậy: thẻ kế hoạch ghi kỳ lương, chương trình lương và số người, và trong 10 phút, Hoàn tác xoá đợt lương nháp."),
       },
     ],
     quiz: {
@@ -3732,7 +3737,10 @@ const LESSONS = {
         title: B("Approving is a signature, and it moves real money", "Phê duyệt là một chữ ký, và nó làm tiền thật dịch chuyển"),
         body: B("<b>Approve</b> records your name, the time, and exactly the facts above. It moves all 48 payslips one step closer to being paid, together — there is no way to approve some of them. Finance approval comes after you and reads totals. If a wrong line is going to be caught, this is one of the last places.",
                 "<b>Phê duyệt</b> ghi lại tên bạn, thời điểm, và đúng các dữ kiện ở trên. Nó đưa cả 48 phiếu lương tiến thêm một bước tới lúc được chi, tất cả cùng lúc — không có cách nào duyệt một phần. Bước Tài chính phê duyệt sau bạn đọc các con số tổng. Nếu một dòng sai còn có thể bị bắt, đây là một trong những nơi cuối cùng."),
-        /* PAYAI P4 — the typed word, for an approver who asks PayAI. */
+        /* PAYAI P4 — the typed word, for an approver who asks PayAI.
+           PAYAI FIX-1 (P4:crit-2): `tip_requires` — the step stays, only this
+           tip is dropped where PayAI may not decide for this company. */
+        tip_requires: "payai_decide",
         tip: B("PayAI can record this for you, but only when you type it. Ask \"Approve the June Retail run\": the card shows the figures and who comes next, then waits for you to type APPROVE. A tap or a spoken yes never counts.",
                "PayAI có thể ghi quyết định này cho bạn, nhưng chỉ khi bạn gõ. Hỏi \"Duyệt bảng lương tháng 6 Bán lẻ\": thẻ hiện số liệu và người tiếp theo, rồi chờ bạn gõ DUYỆT. Bấm nút hay nói \"có\" đều không được tính."),
         consequence: B("Affects the whole run: it moves to Finance approval. Reversible: <b>stoppable, not undoable</b> — a later step can still send it back or turn it down; after Done, a correction is a retro line. Verify first: the payslips with the most overtime opened, a few ordinary ones sampled, and a one-sentence reason for the change on last month.",

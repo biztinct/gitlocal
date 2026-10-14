@@ -209,12 +209,6 @@ _learn = _fake_pkg("odoo.addons.pb_learn")
 _addons.pb_learn = _learn
 _learn_models = _fake_pkg("odoo.addons.pb_learn.models")
 _learn.models = _learn_models
-# The REAL module, imported whole. Its pure functions — explain_blocks,
-# build_corpus and the two prompt builders — are what LEARNOS Phase 4's offline
-# replay exercises, and they are exercised in the file that ships them.
-_learn_models.learn_intent = load_pure(
-    "pb_learn/models/learn_intent.py",
-    "odoo.addons.pb_learn.models.learn_intent")
 # LEARNOS Phase 6 — the "what next" decision table and the streak counter.
 # LIFTED rather than imported: learn_runtime.py defines an Odoo model and
 # imports pytz and a sibling model file, while the two rules under test are
@@ -222,7 +216,12 @@ _learn_models.learn_intent = load_pure(
 # the pulse's `json` is — lift() compiles the functions alone and does not run
 # the imports above them.
 _runtime_ns = lift("pb_learn", "models/learn_runtime.py",
-                   "choose_next", "reading_order", "streak_days")
+                   "choose_next", "reading_order", "streak_days",
+                   # PAYAI FIX-1 — the lesson-step feature gate.
+                   # learn_intent imports `gate_steps` from here, so this
+                   # block has to run BEFORE learn_intent is loaded.
+                   "FEATURE_SWITCHES", "FEATURE_LOOK_SWITCH", "FEATURE_ANY_COMPANY",
+                   "step_shown", "gate_steps")
 _runtime_ns["timedelta"] = __import__("datetime").timedelta
 # The one constant it borrows from its neighbour, rather than re-typing the
 # prefix that decides whether a mission's progress row can be found at all.
@@ -230,6 +229,12 @@ _runtime_ns["MISSION_PREFIX"] = lift(
     "pb_learn", "models/learn_progress.py", "MISSION_PREFIX")["MISSION_PREFIX"]
 _learn_models.learn_runtime = _fake_pkg(
     "odoo.addons.pb_learn.models.learn_runtime", **_runtime_ns)
+# The REAL module, imported whole. Its pure functions — explain_blocks,
+# build_corpus and the two prompt builders — are what LEARNOS Phase 4's offline
+# replay exercises, and they are exercised in the file that ships them.
+_learn_models.learn_intent = load_pure(
+    "pb_learn/models/learn_intent.py",
+    "odoo.addons.pb_learn.models.learn_intent")
 
 _payai = _fake_pkg("odoo.addons.pb_payroll_ai_insights")
 _addons.pb_payroll_ai_insights = _payai
@@ -936,6 +941,10 @@ for addon, pkgname, modname, clsname in (
     # builders are pure over the content tree, so the floor really is replayed
     # here for three screens in both languages rather than only described.
     ("pb_learn", "pb_learn_tests", "test_explain", "TestExplainScreen"),
+    # PAYAI FIX-1 (P4:crit-2, P4:link-6) — the lesson-step feature gate is
+    # pure on both sides of the wire, so it runs here; the two methods that
+    # read a company's switch SKIP.
+    ("pb_learn", "pb_learn_tests", "test_feature_gate", "TestFeatureGate"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationSource"),
     ("pb_dashboard", "pb_dashboard_tests", "test_activation", "TestActivationPayload"),
     ("pb_tenants", "pb_tenants.tests", "test_currency", "TestProvisioningCurrency"),

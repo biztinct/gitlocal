@@ -54,6 +54,59 @@ SKILL_TREE_FLAG = 'pb_learn.skill_tree_enabled'
 STREAK_WINDOW_DAYS = 60
 STREAK_CAP = 7
 
+# PAYAI FIX-1 (P4:crit-2). A lesson step that teaches a feature living in an
+# OPTIONAL module carries `requires: "<feature>"` (the whole step) or
+# `tip_requires: "<feature>"` (only its tip). The content plane is one file
+# that EVERY database serves, so without a gate a step about PayAI's Do it
+# reached databases where PayAI cannot do anything — the learner was taught a
+# button that does not exist for them.
+#
+# feature -> the `res.company` switch that turns it on. A field that is not
+# there means the module that defines it is not installed, which is "off".
+# The generator refuses any other name (gen_learn_data.STEP_FEATURES).
+FEATURE_SWITCHES = {
+    'payai_prepare': 'payai_tier_prepare',     # pb_payai_actions
+    'payai_decide': 'payai_tier_decide',       # pb_payai_actions
+}
+#: PayAI's chat reads a request at all only where the "PayAI can look"
+#: switch is on in the reader's current company (pb_payai_actions
+#: models/payai_engine.py `process_message`: look off → no plan card, no Do
+#: it). Every PayAI feature is off without it.
+FEATURE_LOOK_SWITCH = 'payai_tier_look'
+#: Features PayAI judges on the RECORD's company (pb_payai_actions gate.py
+#: `switch_per_record` / `tier_on_somewhere`: approve, send back, turn down
+#: are allowed when the switch is on in ANY company the person works in, then
+#: asked again on the request's own company). Every other feature is read on
+#: the current company, as PayAI's gate reads it (`tier_on`).
+FEATURE_ANY_COMPANY = frozenset(('payai_decide',))
+
+
+def step_shown(step, features):
+    """Does this step belong in the lesson for a reader with `features`?
+
+    Fails CLOSED: no features answer (None, an older bootstrap) hides every
+    gated step, because a missing step is a shorter lesson and a wrong one is
+    a lesson that teaches something that is not there.
+    """
+    need = step.get('requires')
+    return not need or bool((features or {}).get(need))
+
+
+def gate_steps(steps, features):
+    """The steps a reader with `features` sees, tips gated too. Pure.
+
+    Never writes to the shared tree: a step whose tip is dropped is a COPY.
+    """
+    out = []
+    for step in steps or []:
+        if not step_shown(step, features):
+            continue
+        need = step.get('tip_requires')
+        if need and not (features or {}).get(need):
+            step = dict(step, tip='')
+        out.append(step)
+    return out
+
 
 # ---------------------------------------------------------------------------
 # THE TWO DECISIONS, AS PURE FUNCTIONS
@@ -584,6 +637,42 @@ class LearnRuntime(models.AbstractModel):
             'display': '%d+' % STREAK_CAP if count > STREAK_CAP else str(count),
         }
 
+    # --------------------------------------------- features (PAYAI FIX-1)
+    @api.model
+    def features(self):
+        """`{feature: bool}` for THIS reader, read the way PayAI decides.
+
+        - nothing at all unless "PayAI can look" is on in the current company
+          (`FEATURE_LOOK_SWITCH`: without it the chat never reaches PayAI's
+          requests);
+        - a per-record feature (`FEATURE_ANY_COMPANY`, deciding approvals):
+          on when its switch is on in ANY company the reader works in, as
+          PayAI's gate asks (`tier_on_somewhere`) — the Approvals inbox lists
+          every one of them, whatever the top bar shows;
+        - every other feature: the switch on `env.company` (`tier_on`).
+
+        A switch whose field does not exist is off (the module that owns it
+        is not installed). Content may only HIDE a step on this answer, never
+        unlock anything — PayAI re-asks its own gate on every request.
+        """
+        def on(company, field):
+            return bool(company and field in company._fields and company[field])
+
+        company = self.env.company
+        if not on(company, FEATURE_LOOK_SWITCH):
+            return {key: False for key in FEATURE_SWITCHES}
+        # Only switches are read, on the companies the reader works in —
+        # the same read PayAI's own gate does for them.
+        user = self.env.user.sudo()
+        companies = user.company_ids or user.company_id
+        out = {}
+        for key, field in FEATURE_SWITCHES.items():
+            if key in FEATURE_ANY_COMPANY:
+                out[key] = any(on(c, field) for c in companies)
+            else:
+                out[key] = on(company, field)
+        return out
+
     # ------------------------------------------------------------ the call
     @api.model
     def bootstrap(self):
@@ -667,4 +756,8 @@ class LearnRuntime(models.AbstractModel):
             # LEARN v3 — the learner's path, every path, and the month-end
             # date when the pay calendar has one coming up.
             'path': self.env['learn.path'].bootstrap_extra(),
+            # PAYAI FIX-1 (P4:crit-2) — which optional features this reader's
+            # company has, so a lesson step about one of them is drawn only
+            # where it is true (content_loader.js `gateSteps`).
+            'features': self.features(),
         }

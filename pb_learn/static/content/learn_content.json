@@ -25583,6 +25583,7 @@
                 "en": "PayAI can record this for you, but only when you type it. Ask \"Approve the June Retail run\": the card shows the figures and who comes next, then waits for you to type APPROVE. A tap or a spoken yes never counts.",
                 "vi": "PayAI có thể ghi quyết định này cho bạn, nhưng chỉ khi bạn gõ. Hỏi \"Duyệt bảng lương tháng 6 Bán lẻ\": thẻ hiện số liệu và người tiếp theo, rồi chờ bạn gõ DUYỆT. Bấm nút hay nói \"có\" đều không được tính."
               },
+              "tip_requires": "payai_decide",
               "title": {
                 "en": "Approving is a signature, and it moves real money",
                 "vi": "Phê duyệt là một chữ ký, và nó làm tiền thật dịch chuyển"
@@ -26296,8 +26297,8 @@
             {
               "anchor": "pk-card",
               "body": {
-                "en": "Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? <b>Withdraw</b> on the card brings it back to Draft for 10 minutes, while nobody has decided.",
-                "vi": "Gõ <b>Gửi duyệt bảng lương tháng 6</b> cho PayAI. PayAI trả lời bằng một <b>thẻ kế hoạch</b>: đợt lương, số người và thực nhận, và ai duyệt tiếp theo. Chưa có gì xảy ra cho tới khi bạn bấm <b>Thực hiện</b>. Gửi nhầm? Nút <b>Rút lại</b> trên thẻ đưa nó về Nháp trong 10 phút, khi chưa ai quyết định."
+                "en": "Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? For 10 minutes, while nobody has decided, <b>Withdraw</b> on the card brings it back to Draft.",
+                "vi": "Gõ <b>Gửi duyệt đợt lương tháng 6</b> cho PayAI. PayAI trả lời bằng một <b>thẻ kế hoạch</b>: đợt lương, số người và thực nhận, và ai duyệt tiếp theo. Chưa có gì xảy ra cho tới khi bạn bấm <b>Thực hiện</b>. Gửi nhầm? Trong 10 phút, khi chưa ai quyết định, nút <b>Thu hồi</b> trên thẻ đưa nó về Nháp."
               },
               "consequence": "",
               "kicker": {
@@ -26309,10 +26310,11 @@
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "requires": "payai_prepare",
               "screen": "payruns",
               "tip": {
-                "en": "Running payroll works the same way: the plan card names the period, the scheme and the people, and Undo deletes the draft run for 10 minutes.",
-                "vi": "Chạy lương cũng vậy: thẻ kế hoạch ghi kỳ lương, chương trình lương và số người, và Hoàn tác xoá đợt lương nháp trong 10 phút."
+                "en": "Running payroll works the same way: the plan card names the period, the scheme and the people, and for 10 minutes Undo deletes the draft run.",
+                "vi": "Chạy lương cũng vậy: thẻ kế hoạch ghi kỳ lương, chương trình lương và số người, và trong 10 phút, Hoàn tác xoá đợt lương nháp."
               },
               "title": {
                 "en": "Or ask PayAI, and read its plan first",
@@ -33408,5 +33410,5 @@
       }
     }
   ],
-  "version": "ead583531ac7"
+  "version": "62cceff7fe06"
 }

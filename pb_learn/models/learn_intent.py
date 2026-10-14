@@ -42,6 +42,8 @@ import unicodedata
 
 from odoo import api, models
 
+from .learn_runtime import gate_steps
+
 _logger = logging.getLogger(__name__)
 
 # Words that carry no topic. Without this, "what should I do to pay less BHXH"
@@ -445,7 +447,7 @@ def _covers_screen(intent, screen_key):
 #
 # TREAT THE TREE AS IMMUTABLE. It is one shared dict per worker process (see
 # learn_content.py), so nothing below may write to it.
-def _corpus_screen_part(tree, screen, lang):
+def _corpus_screen_part(tree, screen, lang, features=None):
     parts = ['SCREEN: %s — %s' % (_one(screen['name'], lang),
                                   _one(screen.get('blurb'), lang))]
     next_step = _wire_leaf(screen.get('next_step'),
@@ -458,7 +460,9 @@ def _corpus_screen_part(tree, screen, lang):
         parts.append('STATION: %s — %s' % (_one(station['name'], lang),
                                            _one(station.get('summary'), lang)))
         for lesson in station.get('lessons') or []:
-            for step in lesson.get('steps') or []:
+            # PAYAI FIX-1 (P4:crit-2): a step about a feature this reader's
+            # company does not have is not material for an answer either.
+            for step in gate_steps(lesson.get('steps'), features):
                 parts.append('- %s: %s' % (_one(step['title'], lang),
                                            _one(step.get('body'), lang)))
         for mistake in (station.get('outline') or {}).get('mistakes') or []:
@@ -466,7 +470,7 @@ def _corpus_screen_part(tree, screen, lang):
     return parts
 
 
-def corpus_sections(tree, screen_key, lang):
+def corpus_sections(tree, screen_key, lang, features=None):
     """{section name: [lines]} — everything WE have written about one screen.
 
     Read from the static content plane and nothing else. Every value that
@@ -478,7 +482,7 @@ def corpus_sections(tree, screen_key, lang):
                    if s['key'] == screen_key), None) if screen_key else None
     out = {name: [] for name in _CORPUS_SECTIONS}
     if screen:
-        out['screen'] = _corpus_screen_part(tree, screen, lang)
+        out['screen'] = _corpus_screen_part(tree, screen, lang, features)
         out['columns'] = [
             'COLUMN %s: %s' % (_one(col['label'], lang),
                                _wire_leaf(col['body'], None, lang))
@@ -498,7 +502,7 @@ def corpus_sections(tree, screen_key, lang):
     return out
 
 
-def build_corpus(tree, screen_key, lang, cap=None):
+def build_corpus(tree, screen_key, lang, cap=None, features=None):
     """The corpus as one string, truncated at a SECTION boundary.
 
     A slice at `cap` characters cuts through whatever entry happens to be
@@ -511,7 +515,7 @@ def build_corpus(tree, screen_key, lang, cap=None):
     """
     cap = _CORPUS_CAP if cap is None else cap
     kept, dropped, size = [], [], 0
-    sections = corpus_sections(tree, screen_key, lang)
+    sections = corpus_sections(tree, screen_key, lang, features)
     for name in _CORPUS_SECTIONS:
         body = '\n'.join(sections.get(name) or [])
         if not body:
@@ -1086,7 +1090,10 @@ class LearnIntent(models.AbstractModel):
         content plane. The model-scope check still sees exactly one model, and
         `corpus-builder-is-pure` covers the half that moved.
         """
-        return build_corpus(self.env['learn.content'].tree(), screen_key, lang)
+        # `features` is a few booleans about the company (PAYAI FIX-1), never
+        # a record: it only takes steps OUT of the material.
+        return build_corpus(self.env['learn.content'].tree(), screen_key, lang,
+                            features=self.env['learn.runtime'].features())
 
     @api.model
     def _compose(self, question, screen_key, lang=None):
