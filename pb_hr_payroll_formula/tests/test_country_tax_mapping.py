@@ -46,7 +46,7 @@ class TestCountryTaxMapping(TransactionCase):
         s = w.active
         s.title = 'Payroll'
         # Four distinct constants, then a single employee header and formula.
-        for r, pair in enumerate([('Cap 1', 5400000), ('Rate 1', 0), ('Cap 2', 0), ('Rate 2', .05)], 1):
+        for r, pair in enumerate([('Cap 1', 5400000), ('Rate 1', 0), ('Cap 2', 0), ('Rate 2', .003)], 1):
             s.cell(r, 1, pair[0])
             s.cell(r, 2, pair[1]).font = Font(color='0000FF')
         s.append([])

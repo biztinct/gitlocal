@@ -373,6 +373,9 @@ class MultiSheetImportWizard(models.TransientModel):
     def _use_color_import(self):
         return self.config_id.use_color_coded_excel_import
 
+    def _import_constant_number(self, component):
+        return excel_semantics.coerce_number(component.sample_value)
+
     def action_analyze_file(self):
         """Analyze uploaded Excel file and populate sheet list."""
         self.ensure_one()
@@ -3062,7 +3065,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 # in the completion notice so the officer can fix it.
                 if comp.column_type == 'constant':
                     if comp.sample_value:
-                        number = excel_semantics.coerce_number(comp.sample_value)
+                        number = self._import_constant_number(comp)
                         if number is None:
                             rule_vals['constant_value'] = 0.0
                             unparseable_constants.append(

@@ -6,6 +6,7 @@ from odoo import fields, models, _
 from odoo.exceptions import UserError
 
 from ..formula_engine.tax_workbook import read_tax_map, SHEET
+from ..formula_engine.excel_semantics import coerce_number
 
 
 class TaxMappedPreview(models.TransientModel):
@@ -47,6 +48,10 @@ class TaxMappedImport(models.TransientModel):
     def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns, data_sheet=None):
         constants = super()._collect_constants_for_sheet(formula_sheet, sheet_data, formula_columns, data_sheet)
         mapped = {v['cell']: v for g in self._tax_map_groups() for v in g['values'] if v['sheet'] == formula_sheet.title}
+        if not mapped:
+            return constants
+        # Blue section titles are labels, not zero-valued constants.
+        constants = [c for c in constants if coerce_number(formula_sheet[c['original_cell']].value) is not None]
         found = {c['original_cell']: c for c in constants}
         for cell, entry in mapped.items():
             if formula_sheet[cell].row >= sheet_data['data_start_row']:
@@ -58,11 +63,23 @@ class TaxMappedImport(models.TransientModel):
                                   'original_cell': cell, 'row': formula_sheet[cell].row})
         return constants
 
+    def _import_constant_number(self, component):
+        values = self.env.context.get('payroll_tax_numeric_literals') or {}
+        key = '%s!%s' % (component.source_sheet, component.constant_cell_ref)
+        if key in values:
+            # The workbook cell was already validated as a typed number.
+            # Never re-interpret 0.003 as a locale-formatted thousands string.
+            return values[key]
+        return super()._import_constant_number(component)
+
     def action_execute_import(self):
         groups = self._tax_map_groups()
         if groups and self.config_id.state not in ('draft', 'testing'):
             raise UserError(_('Import mapped statutory values into a draft or testing configuration.'))
-        result = super().action_execute_import()
+        typed_values = {'%s!%s' % (v['sheet'], v['cell']): v['value']
+                        for g in groups for v in g['values']}
+        result = super(TaxMappedImport, self.with_context(
+            payroll_tax_numeric_literals=typed_values)).action_execute_import()
         Table = self.env['hr.payroll.tax.table']
         for group in groups:
             table = Table.search([('company_id', '=', self.config_id.company_id.id),
@@ -95,7 +112,7 @@ class TaxMappedImport(models.TransientModel):
                     raise UserError(_('Include the mapped constant %s!%s before importing.', entry['sheet'], entry['cell']))
                 rule = self.config_id.rule_ids.filtered(lambda r: r.code == previews.generated_code)
                 if len(rule) != 1 or abs(rule.constant_value - entry['value']) > 1e-8:
-                    raise UserError(_('The imported statutory constant does not match its workbook value.'))
+                    raise UserError(_('The imported statutory constant %s!%s does not match its workbook value.', entry['sheet'], entry['cell']))
                 rule.write({'tax_table_id': table.id, 'tax_field': entry['field'],
                             'tax_band_sequence': entry['slot'] if entry['field'] != 'parameter' else 0,
                             'tax_parameter_code': entry['slot'] if entry['field'] == 'parameter' else False,
