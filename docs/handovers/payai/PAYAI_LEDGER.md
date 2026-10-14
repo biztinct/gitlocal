@@ -78,3 +78,14 @@ https://claude.ai/artifact/3t8BLmEm28WzzQehS5BsKa (file copy `docs/design/payai-
 | PA57 | 2026-10-13 | PA41 again: another session's combined deploy (`/tmp/pb-role-reason-combined-20261013-codex`, 2026-10-12 20:11 UTC) shipped the UNREVIEWED P4 ship (`6327ca99b`) to payobook and its shared modules (pb_approval_config, pb_learn, pb_payrun_wizard, pb_audit, om_hr_payroll, pb_payroll_ai_insights) to ALL four DBs — the very `-u` cascade P4:crit-1 warned about. abm crons stayed off (0/69). | A bumped manifest in the shared tree IS a deploy request to other sessions. For FIX-1: implementers never bump; the main loop bumps in the ship commit and deploys in the same sitting. Check `latest_version` on all DBs before every deploy. |
 | PA58 | 2026-10-14 | A module that ships `i18n/<module>.pot` loads ONLY the msgids present in the .pot: PoFileReader merges the .pot into the .po and polib marks every .po entry missing from the .pot obsolete — silently (pb_approval_config: ~88 older rows already dead, 798 flat vs 710 merged). | Every new code string in such a module needs a .pot entry as well as the .po line; run the gate with the .pot beside the .po. |
 | PA59 | 2026-10-14 | Natural-language fix rounds do not converge if verifiers may report any new edge case: each guard added for one sentence breaks another (FIX-1 send-back guard, period→scheme move, fold collisions). | Verifiers report only (a) the finding's own repro and (b) regressions vs HEAD; anything failing at HEAD too goes to a "later" list. Prefer narrowing/reverting an over-reaching guard to adding rules. |
+
+## PA60 — a parallel deploy swept HALF-FIXED working-tree files live (2026-10-12 20:36–20:43 UTC)
+Found at the FIX-1 ship (2026-10-14): 9 FIX-1 files (inbox.js, home_hub.js, learn_intent.py, content_loader.js,
+payai_task.py, cards.xml, tests/js/*) were already byte-identical live, and others (runner.py, learn_runtime.py…)
+carried mid-flight versions — mtimes 20:36–20:43 UTC, inside another session's `pb-mandatory-fields-combined-20261013-codex`
+deploy window. That deploy copies from the working tree, not from `git archive`, so it ships whatever an agent has
+on disk at that moment. Same family as PA41/PA57 but worse: unreviewed, mid-edit files. Rule: before any PayAI ship,
+dry-run `rsync -rcn --delete` staged-commit → live per module and diff against `git diff <last-ship> HEAD --name-only`;
+anything unexpected is either our swept WIP (ship over it) or someone else's live-only work (stop and ask).
+FIX-1 shipped as 6a9ae6363 (pb_payai_actions 19.0.4.1.0, -u payobook only; 9 other modules files-only), backup
+/tmp/payobook_pre_fix1_*.dump, all 10 modules byte-identical, asset purge + web.assets.version bump ×4 DBs.
