@@ -65,3 +65,4 @@ from . import test_settings_door
 
 # Formula Studio cards — viewport-aware side rails with small-screen drawers.
 from . import test_studio_responsive_rails
+from . import test_tax_input_preview

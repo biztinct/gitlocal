@@ -2137,6 +2137,7 @@ class PbFormulaStudio(models.AbstractModel):
     def _compute(self, config, sample_id):
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
         by_code = {r.code: r.column_letter for r in rules}
+        typed_rules = {r.code: r for r in rules}
         values = {}
         try:
             sample = self.env['hr.formula.sample.data'].browse(int(sample_id))
@@ -2154,10 +2155,14 @@ class PbFormulaStudio(models.AbstractModel):
         for code, v in values.items():
             col = by_code.get(code)
             if col:
+                rule = typed_rules[code]
+                if rule.is_text_component or rule.value_kind in ('text', 'identifier', 'date', 'boolean'):
+                    out[col] = v
+                    continue
                 try:
                     out[col] = float(v)
                 except (TypeError, ValueError):
-                    out[col] = 0.0
+                    out[col] = v if isinstance(v, str) else 0.0
         return {'sample_id': int(sample_id), 'values': out}
 
     @api.model
