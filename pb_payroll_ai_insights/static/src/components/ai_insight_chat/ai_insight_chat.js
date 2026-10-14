@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onMounted, onWillUnmount, onWillUpdateProps, toRaw } from "@odoo/owl";
+import { Component, useState, useRef, useEffect, onMounted, onWillUnmount, onWillUpdateProps, toRaw } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
@@ -77,9 +77,19 @@ const PHANTOMS = [
     /^cam on (cac ban )?(da )?(xem|theo doi)( video)?$/,
 ];
 
+/** The hint's terms, folded, as word lists ("pay run" → ["pay", "run"]). */
+function hintTerms(hint) {
+    return String(hint || "").split(",").map((t) => foldWords(t).split(" ").filter(Boolean))
+        .filter((t) => t.length);
+}
+
 /** True when a transcript is not something a person said: one of the
- *  service's filler lines, or four or more words in a row from the hint it
- *  was given (it echoes the hint on silence — ledger OC14). */
+ *  service's filler lines, or the hint it was given read back (it echoes the
+ *  hint on silence — ledger OC14). An echo is WHOLE hint terms: either
+ *  nothing but hint terms (three or more), or five or more of them in the
+ *  hint's own order with nothing in between. A question that merely names a
+ *  few product terms side by side ("tính tăng ca BHXH BHYT thế nào", "how is
+ *  overtime BHXH BHYT BHTN worked out") is a real question (ledger OC57). */
 export function isPhantomTranscript(text, vocab) {
     const said = foldWords(text);
     if (!said) {
@@ -90,14 +100,40 @@ export function isPhantomTranscript(text, vocab) {
     }
     const words = said.split(" ");
     for (const hint of Object.values(vocab || {})) {
-        const h = foldWords(hint).split(" ").filter(Boolean);
-        for (let i = 0; i + 4 <= words.length; i++) {
-            const run = words.slice(i, i + 4).join(" ");
-            for (let j = 0; j + 4 <= h.length; j++) {
-                if (h.slice(j, j + 4).join(" ") === run) {
-                    return true;
+        const terms = hintTerms(hint);
+        if (!terms.length) {
+            continue;
+        }
+        let found = 0;
+        let other = 0;
+        let run = 0;
+        let longest = 0;
+        let last = -2;
+        for (let i = 0; i < words.length;) {
+            // the longest hint term starting here
+            let hit = -1;
+            let size = 0;
+            terms.forEach((term, k) => {
+                if (term.length > size && term.every((w, n) => words[i + n] === w)) {
+                    hit = k;
+                    size = term.length;
                 }
+            });
+            if (hit < 0) {
+                other += 1;
+                run = 0;
+                last = -2;
+                i += 1;
+                continue;
             }
+            found += 1;
+            run = hit === last + 1 ? run + 1 : 1;
+            longest = Math.max(longest, run);
+            last = hit;
+            i += size;
+        }
+        if ((other === 0 && found >= 3) || longest >= 5) {
+            return true;
         }
     }
     return false;
@@ -119,6 +155,18 @@ const AMOUNT_RE = new RegExp("(^|[^\\d.,])(" + [
     "\\d{5,}(?:[.,]\\d+)?",
 ].join("|") + ")", "gi");
 
+/* ONECHAT OC3 review — MONEY: a currency sign or code WITH the number next
+   to it, either side, sign included ("RM200", "S$950", "฿800", "Rp900",
+   "MYR 950", "950 THB"). Any size: a plan's value is the scheme's symbol plus
+   the number, and values under 1,000 have no separator (ledger OC58). Case
+   matters — "RM" and "Rp" are signs, "perform 200" is not. */
+const MONEY_SIGN = "(?:[A-Z]{1,2}\\$|RM|Rp|Rs\\.?|[$€£₫฿₹៛₱¥₩₭]|(?:"
+    + ["VND", "VNĐ", "USD", "SGD", "MYR", "THB", "INR", "IDR", "KHR", "EUR", "GBP",
+       "AUD", "NZD", "HKD", "JPY", "CNY", "LAK", "MMK", "BND"].join("|") + ")(?![A-Za-z]))";
+const MONEY_NUM = "\\d(?:[\\d.,]*\\d)?";
+const MONEY_RE = new RegExp("(^|[^A-Za-z0-9À-ỹ])(" + MONEY_SIGN + "\\s?" + MONEY_NUM
+    + "|" + MONEY_NUM + "\\s?" + MONEY_SIGN + "(?![A-Za-z0-9]))", "g");
+
 /** The words handed to the device's synthesiser (handover §6.5): markup and
  *  markdown out, the brand filter (never "Odoo" spoken — the same rewrite
  *  the screen uses when the debranding layer is installed), NO AMOUNTS
@@ -131,6 +179,7 @@ export function speechText(text, opts = {}) {
         .replace(/[*_#\x60>|~]+/g, " ");
     say = debrandSpoken(say, opts.brand);
     const word = opts.amount || "an amount shown on screen";
+    say = say.replace(MONEY_RE, (_m, lead) => `${lead}${word}`);
     say = say.replace(AMOUNT_RE, (_m, lead) => `${lead}${word}`);
     say = say.replace(/\s+/g, " ").trim();
     if (say.length > SPEECH_CAP) {
@@ -221,6 +270,14 @@ export class AiInsightChat extends Component {
         this.actionService = useService("action");
         this.chatBodyRef = useRef("chatBody");
         this.inputRef = useRef("chatInput");
+        // ONECHAT OC3 review — words just landed and the box is back on the
+        // page after the redraw: focus it (see `_land`, ledger OC56).
+        this._wantBoxFocus = false;
+        useEffect((ready) => {
+            if (ready) {
+                this._focusBox();
+            }
+        }, () => [Boolean(this._wantBoxFocus && this.inputRef.el)]);
 
         this.state = useState({
             isOpen: false,
@@ -1150,13 +1207,24 @@ export class AiInsightChat extends Component {
         setTimeout(() => {
             this.state.sendPulse = false;
         }, 700);
-        setTimeout(() => {
-            const el = this.inputRef.el;
-            if (el) {
-                el.focus();
-                el.selectionStart = el.selectionEnd = el.value.length;
-            }
-        }, 0);
+        // The box is NOT on the page yet: "Turning your words into text…"
+        // stands in its place until `voiceBusy` clears, and the page redraws
+        // a frame later. So the focus is WANTED here and given by the effect
+        // below once the box is really there (ledger OC56); the timeout
+        // covers a box that never left the page.
+        this._wantBoxFocus = true;
+        setTimeout(() => this._focusBox(), 0);
+    }
+
+    /** Focus the box, cursor at the end — once, and only while wanted. */
+    _focusBox() {
+        const el = this.inputRef.el;
+        if (!this._wantBoxFocus || !el) {
+            return;
+        }
+        this._wantBoxFocus = false;
+        el.focus();
+        el.selectionStart = el.selectionEnd = el.value.length;
     }
 
     get hearAsLabel() {

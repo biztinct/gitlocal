@@ -157,12 +157,16 @@ pb.stub = (spec) => {
             if (name === "onWillUpdateProps") {
                 return (fn) => pb.hookCtx.current && pb.hookCtx.current.update.push(fn);
             }
+            if (name === "useEffect") {
+                return (fn, deps) => pb.hookCtx.current
+                    && pb.hookCtx.current.effects.push({ fn, deps, last: undefined });
+            }
             return inner[name];
         },
     });
 };
 function mountFull(Cls, props = {}, env = {}) {
-    const hooks = { willStart: [], mounted: [], unmount: [], update: [] };
+    const hooks = { willStart: [], mounted: [], unmount: [], update: [], effects: [] };
     pb.hookCtx.current = hooks;
     const comp = new Cls(props, env);
     comp.setup();
@@ -170,6 +174,17 @@ function mountFull(Cls, props = {}, env = {}) {
     comp.__hooks = hooks;
     for (const fn of hooks.mounted) { fn(); }
     return comp;
+}
+/** What OWL does after a mount or a patch: each `useEffect` whose
+ *  dependencies changed runs with them. */
+function redraw(comp) {
+    for (const eff of comp.__hooks.effects) {
+        const now = eff.deps();
+        if (!eff.last || now.some((d, i) => d !== eff.last[i])) {
+            eff.last = now;
+            eff.fn(...now);
+        }
+    }
 }
 function unmount(comp) {
     for (const fn of comp.__hooks.unmount) { fn(); }
@@ -451,6 +466,17 @@ async function recorderSuite() {
         check(!isPhantomTranscript("go ahead", VOCAB) && !isPhantomTranscript("chạy lương thế nào", VOCAB)
               && !isPhantomTranscript("thank you", VOCAB),
               "real sentences pass (go ahead, chạy lương thế nào, thank you)");
+        // OC3 review: whole hint terms, not four loose words across terms
+        for (const real of ["chương trình lương tăng ca là gì", "tính tăng ca BHXH BHYT thế nào",
+                            "đợt lương phiếu lương tháng 6 đâu", "how is overtime BHXH BHYT BHTN worked out",
+                            "how do I run payroll", "pay run payslip"]) {
+            check(!isPhantomTranscript(real, VOCAB), `a real question passes: "${real}"`);
+        }
+        for (const echo of ["Payobook, đợt lương, phiếu lương, chương trình lương, tăng ca, BHXH, BHYT, BHTN",
+                            "BHXH, BHYT, BHTN.", "pay run, payslip, pay scheme, overtime, BHXH and more",
+                            "Đợt lương, phiếu lương, chương trình lương, tăng ca, BHXH. Cảm ơn"]) {
+            check(isPhantomTranscript(echo, VOCAB), `the echoed hint is dropped: "${echo}"`);
+        }
         unmount(chat);
     }
 
@@ -464,6 +490,43 @@ async function recorderSuite() {
         check(chat.state.inputText === "how do I run payroll", "the words land in the box");
         check(routes().length === 0 && rpcs("rpc_send_message").length === 0, "… and nothing is routed or sent until Send");
         check(box.focused > 0, "focus goes to the box (cursor at the end), never to Send");
+        unmount(chat);
+    }
+
+    // OC3 review: the box is off the page while the words are turned into
+    // text, so focus waits for the redraw that puts it back (ledger OC56)
+    reset();
+    {
+        const { chat } = await openChat();
+        chat.state.inputText = "";
+        chat.inputRef.el = null;            // "Turning your words into text…" is drawn
+        await record(chat, 1500, "how do I run payroll");
+        await tick(2);
+        check(chat.state.inputText === "how do I run payroll" && box.focused === 0 && chat._wantBoxFocus === true,
+              "words landed while the box is off the page: focus is wanted, not lost");
+        chat.inputRef.el = box;             // the redraw puts the box back
+        redraw(chat);
+        check(box.focused === 1 && box.selectionStart === box.value.length, "… the redraw focuses the box, cursor at the end");
+        redraw(chat);
+        await tick(2);
+        check(box.focused === 1 && chat._wantBoxFocus === false, "… once only");
+        // Hear it as … goes through the same busy bar
+        chat.inputRef.el = null;
+        transcripts.push("chạy lương thế nào");
+        await chat.hearAs("vi");
+        await tick(2);
+        chat.inputRef.el = box;
+        redraw(chat);
+        check(box.focused === 2, "'Hear it as …' gives focus back to the box after the redraw too");
+        chat.inputRef.el = box;
+        unmount(chat);
+    }
+    reset();
+    {
+        const { chat } = await openChat();
+        chat.state.inputText = "";
+        await record(chat, 1500, "how do I run payroll");
+        await tick(2);
         check(chat.state.hearAs === "vi", "'Hear it as Tiếng Việt' is offered for an English hearing");
         // Hear it as Tiếng Việt: the SAME recording, lang vi, replaces the words
         transcripts.push("chạy lương thế nào");
@@ -601,6 +664,21 @@ async function readBackSuite() {
     const month = speechText("I will run June 2031 payroll for Retail, 3 people.");
     check(month === "I will run June 2031 payroll for Retail, 3 people.", "years and small counts are not amounts", month);
     check(!/\d{3}/.test(speechText("Lương 12.000.000 VND, 5 triệu đồng, $1,200, 1500000")), "VND, triệu, $ and long numbers are not read");
+    // OC3 review: any currency sign or code, any size, sign included
+    for (const [said, keep] of [
+        ["I will change Meal allowance for Lan to RM200.", "I will change Meal allowance for Lan to an amount shown on screen."],
+        ["Pay ฿800 now.", "Pay an amount shown on screen now."],
+        ["Bonus ₹500, Rp900 and MYR 950.", "Bonus an amount shown on screen, an amount shown on screen and an amount shown on screen."],
+        ["Set it to 950 THB.", "Set it to an amount shown on screen."],
+        ["Change it to RM1,200.50 for Lan.", "Change it to an amount shown on screen for Lan."],
+        ["Change it to S$950 for Lan.", "Change it to an amount shown on screen for Lan."],
+        ["Change it to US$75 and ៛4000.", "Change it to an amount shown on screen and an amount shown on screen."],
+        ["Lương 500.000₫ và 300 VND.", "Lương an amount shown on screen và an amount shown on screen."],
+        ["We perform 200 checks for 3 people in June 2026.", "We perform 200 checks for 3 people in June 2026."],
+    ]) {
+        const out = speechText(said);
+        check(out === keep, `"${said}" is read as "${keep}"`, out);
+    }
     check(speechText("x".repeat(900)).length <= 600, "at most 600 characters are read");
     speech.spoken = [];
     chat.speak("Net pay is 12,000,000 for June.");
