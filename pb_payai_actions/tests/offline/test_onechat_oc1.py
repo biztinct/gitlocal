@@ -47,6 +47,8 @@ class _Task:
         self.tier = tier
         self.action_key = action_key
         self.id = 7
+        # OC3: the router reads the task's params for the Q6 tap rule.
+        self.params_json = '{}'
 
     def __bool__(self):
         return True

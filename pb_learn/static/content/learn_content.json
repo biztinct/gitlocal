@@ -13,6 +13,10 @@
       "en": "about",
       "vi": "khoảng"
     },
+    "amountOnScreen": {
+      "en": "an amount shown on screen",
+      "vi": "một số tiền hiển thị trên màn hình"
+    },
     "answering": {
       "en": "PayAI is answering",
       "vi": "PayAI đang trả lời"
@@ -353,6 +357,18 @@
       "en": "Grounded in this screen:",
       "vi": "Căn cứ trên màn hình này:"
     },
+    "hearAsEn": {
+      "en": "Hear it as English",
+      "vi": "Nghe lại bằng tiếng Anh"
+    },
+    "hearAsVi": {
+      "en": "Hear it as Tiếng Việt",
+      "vi": "Nghe lại bằng Tiếng Việt"
+    },
+    "heardNothing": {
+      "en": "I didn't hear anything. Tap the microphone and try again.",
+      "vi": "Tôi chưa nghe thấy gì. Bấm vào micrô rồi thử lại."
+    },
     "helperFailed": {
       "en": "The guide could not load just now. Your screen is not affected. Close PayAI and open it again.",
       "vi": "Phần hướng dẫn chưa tải được lúc này. Màn hình của bạn không bị ảnh hưởng. Hãy đóng PayAI rồi mở lại."
@@ -505,6 +521,10 @@
       "en": "Workforce",
       "vi": "Lực lượng lao động"
     },
+    "listening": {
+      "en": "Listening",
+      "vi": "Đang nghe"
+    },
     "live.allGatesDone": {
       "en": "Done — every step on its route has said yes.",
       "vi": "Hoàn tất — mọi bước trên lộ trình phê duyệt đã đồng ý."
@@ -641,9 +661,33 @@
       "en": "Match…",
       "vi": "Khớp…"
     },
+    "micCancel": {
+      "en": "Cancel",
+      "vi": "Hủy bỏ"
+    },
+    "micCannot": {
+      "en": "This browser could not start the microphone.",
+      "vi": "Trình duyệt web này không bật được micrô."
+    },
+    "micDenied": {
+      "en": "Microphone access is blocked. Allow it in your browser settings, then try again.",
+      "vi": "Micrô đang bị chặn. Hãy cho phép micrô trong phần cài đặt của trình duyệt web, rồi thử lại."
+    },
     "micStart": {
       "en": "Speak instead of typing",
       "vi": "Nói thay vì gõ"
+    },
+    "micStarting": {
+      "en": "Starting…",
+      "vi": "Đang bật…"
+    },
+    "micStop": {
+      "en": "Stop",
+      "vi": "Dừng"
+    },
+    "micUnsupported": {
+      "en": "This browser cannot record here.",
+      "vi": "Trình duyệt web này không ghi âm được ở đây."
     },
     "min": {
       "en": "min",
@@ -788,6 +832,10 @@
     "noPayai": {
       "en": "Questions about pay figures need the assistant service, which is not set up here. Ask your administrator to set it up, or ask me how something works.",
       "vi": "Câu hỏi về số liệu lương cần dịch vụ trợ lý, mà ở đây chưa được thiết lập. Hãy nhờ quản trị viên thiết lập, hoặc hỏi tôi cách làm một việc."
+    },
+    "noViVoice": {
+      "en": "This device has no Vietnamese voice, so answers are shown, not read.",
+      "vi": "Thiết bị này không có giọng đọc tiếng Việt, nên câu trả lời chỉ hiển thị, không đọc to."
     },
     "notSure": {
       "en": "Not sure what to ask?",
@@ -1237,6 +1285,10 @@
       "en": "Step",
       "vi": "Bước"
     },
+    "stopReading": {
+      "en": "Stop reading",
+      "vi": "Dừng đọc"
+    },
     "streakHint": {
       "en": "Days in a row with at least one lesson opened. Miss a day and it starts again.",
       "vi": "Số ngày liên tiếp bạn mở ít nhất một bài học. Nghỉ một ngày thì đếm lại từ đầu."
@@ -1318,8 +1370,8 @@
       "vi": "Không rời khỏi Payobook"
     },
     "swVoiceBody": {
-      "en": "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send.",
-      "vi": "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi."
+      "en": "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send. Recordings go to the speech service only to be turned into text.",
+      "vi": "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi. Bản ghi âm chỉ được gửi tới dịch vụ chuyển giọng nói để đổi thành chữ."
     },
     "swVoiceLeaves": {
       "en": "Sends the recording to a speech service.",
@@ -1440,6 +1492,10 @@
     "tierSilver": {
       "en": "Finished, second try",
       "vi": "Đã xong ở lần thử thứ hai"
+    },
+    "transcribing": {
+      "en": "Turning your words into text…",
+      "vi": "Đang chuyển lời nói thành chữ…"
     },
     "tryAgain": {
       "en": "Try again",
@@ -34028,5 +34084,5 @@
       }
     }
   ],
-  "version": "ce6d4e37542a"
+  "version": "f88ca1442696"
 }

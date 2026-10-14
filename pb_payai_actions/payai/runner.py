@@ -756,6 +756,13 @@ def run(ctx, key, texts, utterance, task=None, pinned=None):
     task = task or _new_task(ctx, action, utterance, texts)
     ctx.task = task
     data = _params(task)
+    if ctx.voice:
+        # ONECHAT OC3 (owner decision Q6): the request — or a later answer to
+        # its question — was SPOKEN. Kept on the task for good: a plan that
+        # names a person or an amount from a spoken sentence then always
+        # needs a tap (`spoken_needs_tap`), even where a spoken go-ahead
+        # counts. Written with the params below, never a new column.
+        data['spoken'] = True
     pinned = dict(pinned or data.get('pinned') or {})
 
     ok, reason = gate.allowed(ctx.env, ctx.user, action)
@@ -1395,8 +1402,10 @@ def _plan(ctx, action, task, params, data):
             # Red: the read-back already says the word must be typed.
             card['speak'] = out['speak']
         else:
-            tail = _lt('Tap Do it or say go ahead.') if ctx.env.company.payai_voice_go_ahead \
-                else _lt('Tap Do it to go ahead.')
+            # Q6: a spoken plan naming a person or an amount needs a tap, so
+            # the read-back never offers "or say go ahead" for it.
+            say = ctx.env.company.payai_voice_go_ahead and not spoken_needs_tap(action, data)
+            tail = _lt('Tap Do it or say go ahead.') if say else _lt('Tap Do it to go ahead.')
             card['speak'] = '%s %s' % (out['speak'], T(tail))
     return _finish(ctx, task, 'planned', card)
 
@@ -1457,6 +1466,46 @@ def word_ok(action, word):
     """The typed word is one of the Action's words, in either language."""
     said = _norm_word(word)
     return bool(said) and any(said == _norm_word(w) for w in action.confirm_words())
+
+
+#: ONECHAT OC3 (Q6) — slot kinds that carry a person's name or an amount.
+#: A misheard name picks a real but different employee (`tok_match`), and a
+#: misheard number is a different amount: the read-back is not enough, so
+#: such a plan, when it was spoken, waits for a tap.
+_AMOUNT_SLOTS = ('value', 'amount', 'money')
+
+
+def spoken_needs_tap(action, data):
+    """True when the plan came from a spoken sentence AND names a person
+    (a resolved person, or named people) or an amount (a value slot).
+    Pure: reads only the task's own params (`_params(task)`)."""
+    data = data if isinstance(data, dict) else {}
+    if not data.get('spoken') or action is None:
+        return False
+    params = data.get('params') or {}
+    for slot in getattr(action, 'slots', ()) or ():
+        res = params.get(slot.key)
+        if not isinstance(res, dict) or res.get('status', 'resolved') != 'resolved':
+            continue
+        value = res.get('value')
+        if slot.kind == 'person' and value:
+            return True
+        if slot.kind == 'people':
+            named = value if isinstance(value, dict) else {}
+            if named.get('employee_ids') or named.get('names'):
+                return True
+        if slot.kind in _AMOUNT_SLOTS and value is not None \
+                and not (isinstance(value, str) and not value.strip()):
+            # 0 is an amount too ("set the allowance to 0").
+            return True
+    return False
+
+
+def _spoken_tap_card(ctx, task):
+    """Q6: "go ahead" said over a spoken plan that names a person or an
+    amount — nothing happens; the plan card keeps its Do it."""
+    return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
+        'Tap Do it — I heard a name or an amount, so I need your tap.'), tone='info')
 
 
 def _needs_typing(ctx, task, action, how='tap'):
@@ -1537,6 +1586,10 @@ def confirm(ctx, task_id, how='tap', word=None, note=None):
             return _note_card(ctx, task, _lt('Tap Do it to go ahead'), _lt(
                 'A spoken go-ahead is switched off here, so I did nothing. Tap Do it '
                 'on the plan card if it is right.'))
+        if task.state == 'planned' and spoken_needs_tap(action, _params(task)):
+            # ONECHAT OC3 (owner decision Q6), server-enforced: never by
+            # voice, whatever the company switch says.
+            return _spoken_tap_card(ctx, task)
         if not _is_latest(ctx, task):
             return _not_latest_card(ctx)
     if task.state != 'planned':

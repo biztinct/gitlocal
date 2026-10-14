@@ -532,14 +532,14 @@ msgstr "Xin chào! Tôi là PayAI"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Hold the microphone and speak. When you let go, the recording goes to an outside company's speech service, which turns it into text. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
-msgstr "Bạn giữ nút micrô rồi nói. Khi bạn thả tay, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
+msgid "Tap the microphone and speak. When you tap Stop, the recording goes to an outside company's speech service, which turns it into text. Tap Cancel and nothing is sent. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
+msgstr "Bạn bấm vào micrô rồi nói. Khi bạn bấm Dừng, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Bấm Hủy bỏ thì không có gì được gửi đi. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
 
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Hold to speak"
-msgstr "Giữ để nói"
+msgid "Tap to speak"
+msgstr "Bấm để nói"
 
 #. module: pb_payroll_ai_insights
 #: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__grid_x
@@ -1130,6 +1130,12 @@ msgstr "Nhiệt độ"
 #: model:ir.model.fields.selection,name:pb_payroll_ai_insights.selection__payroll_ai_config__provider_type__tesseract
 msgid "Tesseract OCR"
 msgstr "Tesseract OCR"
+
+#. module: pb_payroll_ai_insights
+#. odoo-python
+#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
+msgid "This kind of recording cannot be used here. Please try typing."
+msgstr "Không dùng được loại bản ghi âm này ở đây. Bạn hãy thử gõ chữ."
 
 #. module: pb_payroll_ai_insights
 #. odoo-python

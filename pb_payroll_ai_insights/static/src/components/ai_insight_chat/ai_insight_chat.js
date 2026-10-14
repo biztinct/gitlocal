@@ -25,6 +25,151 @@ const TTS_PREF = "payaiReadAloud";
    Vietnamese answer is read by a Vietnamese voice whatever the pill says. */
 const VI_MARKS = /[ăâđêôơưàáạảãèéẹẻẽìíịỉĩòóọỏõùúụủũỳýỵỷỹ]/i;
 
+/* ONECHAT OC3 — the microphone's timings and thresholds (handover §6.2). */
+const HOLD_MS = 400;              // a press held longer stops on release
+const MIN_RECORDING_MS = 700;     // shorter than this is never uploaded
+const SILENT_LEVEL = 0.02;        // RMS the loudest moment must pass
+const METER_MS = 80;              // the level meter reads ~12 times a second
+const VOICES_WAIT_MS = 1000;      // how long to wait for the device's voices
+const SPEECH_CAP = 600;           // characters read aloud, at most
+
+/* What this page's speech has already done: primed once inside a tap (iOS),
+   the "no Vietnamese voice" notice shown once. */
+const SPEECH = { primed: false, noViShown: false };
+
+/** The recording format this browser can make, best first, or null: then
+ *  the microphone is not drawn ("This browser cannot record here"). WebM/Opus
+ *  is Chrome and Firefox; MP4 is Safari and iOS. */
+export function pickRecordingType() {
+    const MR = typeof globalThis !== "undefined" ? globalThis.MediaRecorder : undefined;
+    const media = typeof navigator !== "undefined" && navigator.mediaDevices;
+    if (!MR || !media || typeof media.getUserMedia !== "function"
+            || typeof MR.isTypeSupported !== "function") {
+        return null;
+    }
+    for (const type of ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]) {
+        try {
+            if (MR.isTypeSupported(type)) {
+                return type;
+            }
+        } catch {
+            // try the next one
+        }
+    }
+    return null;
+}
+
+/** Lower case, no marks, no punctuation, one space. */
+function foldWords(text) {
+    return String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d").replace(/Đ/g, "d").toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+/* What the speech service writes when it heard nothing (folded): the closing
+   lines of the videos it learned from. Never a real question. */
+const PHANTOMS = [
+    /^(thank you|thanks) (so much )?for watching( and listening)?$/,
+    /^(please )?(like (and|&) )?subscribe( to (the|my|our) channel)?$/,
+    /^subtitles? (by|from)\b/,
+    /^(hay )?(dang ky|subscribe) (cho )?kenh\b/,
+    /^hay subscribe cho kenh\b/,
+    /^cam on (cac ban )?(da )?(xem|theo doi)( video)?$/,
+];
+
+/** True when a transcript is not something a person said: one of the
+ *  service's filler lines, or four or more words in a row from the hint it
+ *  was given (it echoes the hint on silence — ledger OC14). */
+export function isPhantomTranscript(text, vocab) {
+    const said = foldWords(text);
+    if (!said) {
+        return true;
+    }
+    if (PHANTOMS.some((re) => re.test(said))) {
+        return true;
+    }
+    const words = said.split(" ");
+    for (const hint of Object.values(vocab || {})) {
+        const h = foldWords(hint).split(" ").filter(Boolean);
+        for (let i = 0; i + 4 <= words.length; i++) {
+            const run = words.slice(i, i + 4).join(" ");
+            for (let j = 0; j + 4 <= h.length; j++) {
+                if (h.slice(j, j + 4).join(" ") === run) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/* An amount, as an answer or a plan writes one: digits grouped in threes
+   ("12,000,000", "5.000.000"), a long number (five digits or more), or a
+   number next to a currency word. Years ("June 2026") and small counts
+   ("3 people") are not amounts. */
+const NOT_WORD = "(?![\\wÀ-ỹ])";
+const AMOUNT_RE = new RegExp("(^|[^\\d.,])(" + [
+    // "$1,200", "VND 500.000"
+    "(?:[$€£₫]|(?:VND|VNĐ|USD|SGD)" + NOT_WORD + ")\\s?\\d[\\d.,]*",
+    // "500,000 VND", "5 triệu", "500.000đ"
+    "\\d[\\d.,]*(?:\\s?(?:[₫$€£]|(?:VND|VNĐ|USD|SGD|đồng|dong|triệu|trieu|tỷ|ty|nghìn|ngàn|million|billion|đ)" + NOT_WORD + "))+",
+    // "12,000,000", "5.000.000"
+    "\\d{1,3}(?:[.,]\\d{3})+(?:[.,]\\d+)?(?!\\d)",
+    // "1500000"
+    "\\d{5,}(?:[.,]\\d+)?",
+].join("|") + ")", "gi");
+
+/** The words handed to the device's synthesiser (handover §6.5): markup and
+ *  markdown out, the brand filter (never "Odoo" spoken — the same rewrite
+ *  the screen uses when the debranding layer is installed), NO AMOUNTS
+ *  (owner decision Q2), at most SPEECH_CAP characters, cut at a sentence. */
+export function speechText(text, opts = {}) {
+    let say = String(text || "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">").replace(/&quot;/g, "\u0022").replace(/&#39;/g, "'")
+        .replace(/[*_#\x60>|~]+/g, " ");
+    say = debrandSpoken(say, opts.brand);
+    const word = opts.amount || "an amount shown on screen";
+    say = say.replace(AMOUNT_RE, (_m, lead) => `${lead}${word}`);
+    say = say.replace(/\s+/g, " ").trim();
+    if (say.length > SPEECH_CAP) {
+        const cut = say.slice(0, SPEECH_CAP);
+        const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "), cut.lastIndexOf("! "));
+        say = end > SPEECH_CAP / 2 ? cut.slice(0, end + 1) : cut;
+    }
+    return say;
+}
+
+/** The screen's own brand rewrite when the debranding layer is installed
+ *  (looked up at run time, so this module never depends on it); else the
+ *  vendor's name becomes the product's. */
+function debrandSpoken(text, brand) {
+    let out = String(text || "");
+    try {
+        const loader = globalThis.odoo && globalThis.odoo.loader;
+        const mod = loader && loader.modules && loader.modules.get
+            && loader.modules.get("@biz_debrand/js/biz_debrand_runtime");
+        if (mod && typeof mod.debrandText === "function") {
+            out = String(mod.debrandText(out));
+        }
+    } catch {
+        // the fallback below still applies
+    }
+    return out.replace(/\bodoo\b/gi, brand || "Payobook");
+}
+
+/** A voice for `lang` ("vi-VN" / "en-US") from the device's list, or null. */
+export function pickVoice(voices, lang) {
+    const want = String(lang || "").toLowerCase().replace("_", "-");
+    const base = want.split("-")[0];
+    const norm = (v) => String((v && v.lang) || "").toLowerCase().replace("_", "-");
+    const list = Array.from(voices || []);
+    return list.find((v) => norm(v) === want)
+        || list.find((v) => norm(v).split("-")[0] === base)
+        || null;
+}
+
 /* The kinds of turn the one chat records as a content-free marker in the
    person's conversation (`rpc_note_turn`, ONECHAT OC1). Mirrors the server's
    NOTE_KINDS; a history row with one of them is drawn as a marker. */
@@ -101,6 +246,12 @@ export class AiInsightChat extends Component {
             voiceHint: "",          // "this is what I heard" — shown once
             voiceError: "",
             ttsOn: false,
+            // ONECHAT OC3 — tap to talk.
+            micStarting: false,     // tapped; the recorder has not started
+            level: 0,               // the live level meter, 0..1
+            hearAs: null,           // "vi" | "en": offer to hear it again
+            speakingId: null,       // the turn being read aloud (its Stop)
+            sendPulse: false,       // one pulse on Send when words land
         });
         // ONECHAT OC2 — WHERE THE WORDS IN THE BOX CAME FROM (§6.3). A send
         // is "spoken" only when the text sent is exactly what was heard into
@@ -112,6 +263,22 @@ export class AiInsightChat extends Component {
         // Escape / Cancel while recording: the recorder's `onstop` drops the
         // audio instead of sending it for transcription.
         this._recCancelled = false;
+        // ONECHAT OC3 — Stop tapped before the recorder started (the browser
+        // still asking for the microphone): applied the moment it starts.
+        this._stopWanted = false;
+        this._recType = null;
+        this._recStartedAt = 0;
+        this._recStoppedAt = 0;
+        this._peak = 0;
+        this._meterRan = false;
+        this._audioCtx = null;
+        this._meterTimer = null;
+        this._pressAt = 0;
+        this._pressStarted = false;
+        // The last recording, kept in this browser only for "Hear it as …".
+        this._keptAudio = null;
+        this._landedText = null;
+        this._landedBefore = "";
 
         // Voice recording state
         this._mediaRecorder = null;
@@ -158,6 +325,7 @@ export class AiInsightChat extends Component {
             // nobody has open.
             this._discarded = true;
             this._audioChunks = [];
+            this._keptAudio = null;
             this._releaseMicrophone();
             this._stopSpeaking();
         });
@@ -208,6 +376,13 @@ export class AiInsightChat extends Component {
         // next send TYPED (§6.3): a spoken go-ahead must be exactly what was
         // heard, untouched.
         this._heard = null;
+        // New typing stops anything being read aloud, and the words are no
+        // longer the ones heard: "Hear it as …" goes, with the recording.
+        this._stopSpeaking();
+        if (this._keptAudio && this.state.inputText !== this._landedText) {
+            this._dropKeptAudio();
+            this.state.voiceHint = "";
+        }
     }
 
     async sendSuggestion(text) {
@@ -255,6 +430,8 @@ export class AiInsightChat extends Component {
         // the next thing typed.
         this.state.voiceHint = "";
         this.state.voiceError = "";
+        // Sent: the kept recording is not needed any more (§6.6).
+        this._dropKeptAudio();
 
         if (o.pushPerson !== false) {
             this._pushMessage({
@@ -289,8 +466,8 @@ export class AiInsightChat extends Component {
             // ONECHAT OC2 — PayAI could not answer, and the router knew the
             // guide's answer to this: show that instead of an error.
             if (!(result.intent === "error" && o.fallbackKey
-                    && await this._fallbackAnswer(o.fallbackKey))) {
-                this._pushMessage({
+                    && await this._fallbackAnswer(o.fallbackKey, o.spoken))) {
+                const reply = this._pushMessage({
                     role: "assistant",
                     content: result.response || "",
                     chart: result.chart || null,
@@ -306,14 +483,17 @@ export class AiInsightChat extends Component {
                     extra: o.extraChips && o.extraChips.length ? o.extraChips : null,
                     timestamp: new Date().toISOString(),
                 });
-                if (this.state.ttsOn) {
+                // ONECHAT OC3 — a SPOKEN turn is always read back; a typed
+                // one only when "Read answers aloud" is on. A plan's own
+                // read-back (`card.speak`, pb_payai_actions) replaces this.
+                if ((this.state.ttsOn || o.spoken) && !(result.card && result.card.speak)) {
                     // On the device. See the note above `ttsSupported`.
-                    this.speak(this._readable(result));
+                    this.speak(this._readable(result), reply && reply.id);
                 }
             }
         } catch (error) {
             console.error("PayAI error:", error);
-            if (!(o.fallbackKey && await this._fallbackAnswer(o.fallbackKey))) {
+            if (!(o.fallbackKey && await this._fallbackAnswer(o.fallbackKey, o.spoken))) {
                 this._pushMessage({
                     role: "assistant",
                     content: _t("That did not work. An administrator can check the AI service under PayAI settings."),
@@ -481,13 +661,14 @@ export class AiInsightChat extends Component {
     }
 
     // ------------------------------------------------------------------
-    // VOICE  (LEARNOS Phase 6)
+    // VOICE  (LEARNOS Phase 6; tap to talk since ONECHAT OC3)
     //
-    // HOLD TO TALK, AND THE TRANSCRIPT LANDS IN THE BOX. It does not send.
+    // TAP TO TALK, AND THE TRANSCRIPT LANDS IN THE BOX. It does not send
+    // (owner decision Q1: the words wait for a tap on Send).
     // The old flow recorded, transcribed and submitted in one gesture, so the
     // first time anybody saw what had been heard was in the transcript of a
     // question already answered — and on a payroll help box that sentence is
-    // often a colleague's name and their pay. Now: hold, speak, release, READ
+    // often a colleague's name and their pay. Now: tap, speak, tap Stop, READ
     // it, then press send like any other question. The server cannot submit
     // either (`rpc_transcribe_voice` returns text and has no send path in it),
     // so this is not a discipline the frontend keeps on its own.
@@ -511,7 +692,15 @@ export class AiInsightChat extends Component {
     }
 
     get voiceOffered() {
-        return !!(this.state.voice.available || this.state.voice.ask);
+        // ONECHAT OC3 — and a browser that can record here: otherwise the
+        // microphone is absent, not broken (§6.2 (c)).
+        return !!((this.state.voice.available || this.state.voice.ask) && this.recordingType);
+    }
+
+    /** Voice is on for this person, but this browser cannot record: said
+     *  once in the hint line, so the missing microphone is explained. */
+    get voiceUnsupported() {
+        return !!((this.state.voice.available || this.state.voice.ask) && !this.recordingType);
     }
 
     get voiceCopy() {
@@ -540,33 +729,58 @@ export class AiInsightChat extends Component {
         this.state.voice.available = !!granted;
     }
 
-    // --- press and hold -------------------------------------------------
+    // --- tap to talk (ONECHAT OC3) ----------------------------------------
+    //
+    // TAP TO START, TAP STOP. Press-and-hold still works: a press held longer
+    // than HOLD_MS stops on release. Space or Enter on the focused microphone
+    // toggles. "Listening" — the red dot, the level meter, the clock — shows
+    // only once the recorder has really started (`onstart`): before that the
+    // microphone says "Starting…", so nobody speaks into a recorder that is
+    // not running yet (a clipped first word turns "Don't go ahead" into "go
+    // ahead"). A stop asked for before that moment is remembered and applied
+    // the moment it starts (`_stopWanted`), so no silent sixty-second
+    // recording is ever sent.
     onMicPointerDown(ev) {
         if (ev && ev.button !== undefined && ev.button !== 0) {
             return;
         }
+        if (this.state.isRecording || this.state.micStarting) {
+            // The second tap: Stop.
+            this._pressStarted = false;
+            this._endTalk();
+            return;
+        }
+        this._pressAt = Date.now();
+        this._pressStarted = true;
         this._beginTalk();
     }
 
     onMicPointerUp() {
-        this._endTalk();
+        // A press HELD past HOLD_MS is press-and-hold: letting go stops it.
+        // A quick tap leaves the recorder running until the next tap.
+        if (this._pressStarted && Date.now() - (this._pressAt || 0) > HOLD_MS) {
+            this._endTalk();
+        }
+        this._pressStarted = false;
     }
 
-    /** THE KEYBOARD IS A FIRST-CLASS GESTURE, not an afterthought: a
-     *  press-and-hold control that only answers to a mouse is a control some
-     *  people cannot use at all. Space/Enter down starts, up stops, and the
-     *  repeat guard stops the operating system's key-repeat from restarting
-     *  the recorder forty times a second. */
+    /** Space / Enter on the focused microphone toggles it. The repeat guard
+     *  stops the operating system's key-repeat from toggling it forty times a
+     *  second. */
     onMicKeyDown(ev) {
         if (ev.key !== " " && ev.key !== "Enter") {
             return;
         }
         ev.preventDefault();
-        if (this._keyHeld) {
+        if (ev.repeat || this._keyHeld) {
             return;
         }
         this._keyHeld = true;
-        this._beginTalk();
+        if (this.state.isRecording || this.state.micStarting) {
+            this._endTalk();
+        } else {
+            this._beginTalk();
+        }
     }
 
     onMicKeyUp(ev) {
@@ -575,11 +789,15 @@ export class AiInsightChat extends Component {
         }
         ev.preventDefault();
         this._keyHeld = false;
-        this._endTalk();
+    }
+
+    /** This browser can record (and in which format), or null. */
+    get recordingType() {
+        return pickRecordingType();
     }
 
     _beginTalk() {
-        if (this.state.voiceBusy || this.state.isRecording) {
+        if (this.state.voiceBusy || this.state.isRecording || this.state.micStarting) {
             return;
         }
         if (this.state.voice.ask) {
@@ -594,83 +812,211 @@ export class AiInsightChat extends Component {
     }
 
     _endTalk() {
+        if (this.state.micStarting) {
+            // Not started yet (the browser is still asking for the
+            // microphone): remembered, applied the moment it starts.
+            this._stopWanted = true;
+            return;
+        }
         if (this.state.isRecording) {
             this._stopRecording();
         }
     }
 
     async _startRecording() {
+        const type = this.recordingType;
+        if (!type) {
+            this.state.voiceError = this.t("micUnsupported", "This browser cannot record here.");
+            return;
+        }
+        // Opening the microphone first stops anything being read aloud, and
+        // inside this tap (a user gesture) primes the device's speech so a
+        // later read-back is allowed (iOS).
+        this._stopSpeaking();
+        this._primeSpeech();
+        // What was in the box when the person started speaking decides
+        // whether the words that come back are "spoken" (§6.3).
+        this._boxBeforeRecording = this.state.inputText;
+        this._recCancelled = false;
+        this._stopWanted = false;
+        this._recType = type;
+        this._peak = 0;
+        this._meterRan = false;
+        this._recStartedAt = 0;
+        this._recStoppedAt = 0;
+        this._dropKeptAudio();
+        this.state.micStarting = true;
+        this.state.voiceError = "";
+        this.state.voiceHint = "";
+        let stream = null;
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this._recordingStream = stream;
+            if (this._discarded || this._recCancelled) {
+                // Closed or cancelled while the browser was asking: nothing
+                // records, the microphone is given straight back.
+                this._recCancelled = false;
+                this._releaseMicrophone();
+                return;
+            }
             this._audioChunks = [];
-            this._mediaRecorder = new MediaRecorder(stream, {
-                mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-                    ? 'audio/webm;codecs=opus' : 'audio/webm',
-            });
+            this._mediaRecorder = new MediaRecorder(stream, { mimeType: type });
 
             this._mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) this._audioChunks.push(e.data);
+                if (e.data && e.data.size > 0) this._audioChunks.push(e.data);
+            };
+
+            this._mediaRecorder.onstart = () => this._onRecorderStart();
+            // The recorder failed on its own (the device went away): nothing
+            // is sent, the microphone is given back, and the person is told.
+            this._mediaRecorder.onerror = () => {
+                this._recCancelled = true;
+                this._audioChunks = [];
+                this._stopRecording();
+                this._releaseMicrophone();
+                this.state.voiceError = this.t("micCannot", "This browser could not start the microphone.");
             };
 
             this._mediaRecorder.onstop = () => {
+                const cancelled = this._recCancelled;
+                this._recCancelled = false;
+                this._recStoppedAt = this._recStoppedAt || Date.now();
                 this._releaseMicrophone();
-                if (this._recCancelled) {
-                    // Escape or Cancel: this recording is dropped, not sent.
-                    this._recCancelled = false;
-                    this._audioChunks = [];
-                    return;
-                }
                 if (this._discarded) {
                     // The drawer went away while this was recording. Nothing
                     // is sent, and the buffer is already empty.
                     this._audioChunks = [];
                     return;
                 }
+                if (cancelled) {
+                    // Escape or Cancel: this recording is dropped, not sent.
+                    this._audioChunks = [];
+                    return;
+                }
+                if (!this._heardEnough()) {
+                    // Too short, or silence: never uploaded (ledger OC14).
+                    this._audioChunks = [];
+                    this.state.voiceHint = this.t("heardNothing",
+                        "I didn't hear anything. Tap the microphone and try again.");
+                    return;
+                }
                 this._transcribe();
             };
 
-            // What was in the box when the person started speaking decides
-            // whether the words that come back are "spoken" (§6.3).
-            this._boxBeforeRecording = this.state.inputText;
-            this._recCancelled = false;
+            this._startMeter(stream);
             this._mediaRecorder.start();
-            this.state.isRecording = true;
-            this.state.recordingDuration = 0;
-            this.state.voiceError = "";
-            this.state.voiceHint = "";
-
-            this._recordingTimer = setInterval(() => {
-                this.state.recordingDuration++;
-                // A HARD CEILING. A key that sticks, or a pointer released
-                // outside the window, must not leave the microphone open and
-                // then post ten minutes of an open-plan office.
-                if (this.state.recordingDuration >= MAX_RECORDING_SECONDS) {
-                    this._endTalk();
-                }
-            }, 1000);
         } catch (err) {
-            console.error("Microphone access denied:", err);
-            this.notification.add(
-                "Microphone access denied. Please allow microphone in browser settings.",
-                { type: "warning" }
-            );
+            // (b) ANY failure after the browser handed over the microphone
+            // gives it straight back — no red dot left in the tab strip.
+            this._releaseMicrophone();
+            console.warn("PayAI: the microphone did not start", err && err.name);
+            this.state.voiceError = err && err.name === "NotAllowedError"
+                ? this.t("micDenied", "Microphone access is blocked. Allow it in your browser settings, then try again.")
+                : this.t("micCannot", "This browser could not start the microphone.");
         }
     }
 
-    /** Escape while recording, or Cancel: stop, and send nothing. */
+    /** The recorder is really running: NOW say "Listening". */
+    _onRecorderStart() {
+        this._recStartedAt = Date.now();
+        this.state.micStarting = false;
+        this.state.isRecording = true;
+        this.state.recordingDuration = 0;
+        this._recordingTimer = setInterval(() => {
+            this.state.recordingDuration++;
+            // A HARD CEILING. A key that sticks, or a pointer released
+            // outside the window, must not leave the microphone open and
+            // then post ten minutes of an open-plan office.
+            if (this.state.recordingDuration >= MAX_RECORDING_SECONDS) {
+                this._endTalk();
+            }
+        }, 1000);
+        if (this._stopWanted) {
+            // (a) Stop was tapped while the browser was still asking.
+            this._stopWanted = false;
+            this._stopRecording();
+        }
+    }
+
+    /** Long enough, and loud enough at least once, to be worth sending. A
+     *  meter that never ran (no Web Audio here) cannot say "silent". */
+    _heardEnough() {
+        const started = this._recStartedAt || 0;
+        const length = started ? (this._recStoppedAt || Date.now()) - started : 0;
+        if (length < MIN_RECORDING_MS) {
+            return false;
+        }
+        return !this._meterRan || this._peak >= SILENT_LEVEL;
+    }
+
+    /** The live level meter: an AnalyserNode on the same stream, read a
+     *  dozen times a second. It also remembers the loudest moment, which is
+     *  how a silent recording is told apart (ledger OC14). */
+    _startMeter(stream) {
+        try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) {
+                return;
+            }
+            const ctx = new AC();
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 512;
+            ctx.createMediaStreamSource(stream).connect(analyser);
+            this._audioCtx = ctx;
+            const buf = new Uint8Array(analyser.fftSize);
+            const read = () => {
+                if (!this._audioCtx) {
+                    return;
+                }
+                analyser.getByteTimeDomainData(buf);
+                let sum = 0;
+                for (let i = 0; i < buf.length; i++) {
+                    const v = (buf[i] - 128) / 128;
+                    sum += v * v;
+                }
+                const rms = Math.sqrt(sum / buf.length);
+                this._meterRan = true;
+                if (this.state.isRecording) {
+                    this._peak = Math.max(this._peak, rms);
+                }
+                this.state.level = Math.min(1, rms * 4);
+                this._meterTimer = setTimeout(read, METER_MS);
+            };
+            read();
+        } catch (e) {
+            this._audioCtx = null;
+        }
+    }
+
+    /** Five bars, heights in percent, from the live level. */
+    get levelBars() {
+        const level = this.state.level || 0;
+        return [0.55, 0.85, 1, 0.8, 0.6].map((w) => Math.round(18 + 82 * Math.min(1, level * w)));
+    }
+
+    get recordingClock() {
+        const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+        return `${fmt(this.state.recordingDuration || 0)} / ${fmt(MAX_RECORDING_SECONDS)}`;
+    }
+
+    /** Escape while recording, or Cancel: stop, and send nothing. Works while
+     *  the browser is still asking for the microphone too. */
     cancelRecording() {
-        if (!this.state.isRecording) {
+        if (!this.state.isRecording && !this.state.micStarting) {
             return;
         }
         this._recCancelled = true;
         this._audioChunks = [];
+        this._dropKeptAudio();
         this._stopRecording();
     }
 
     _stopRecording() {
+        this._recStoppedAt = Date.now();
         if (this._mediaRecorder && this._mediaRecorder.state === 'recording') {
             this._mediaRecorder.stop();
+        } else if (this.state.micStarting) {
+            this._stopWanted = true;
         }
         this.state.isRecording = false;
         if (this._recordingTimer) {
@@ -684,11 +1030,27 @@ export class AiInsightChat extends Component {
             this._recordingStream.getTracks().forEach((t) => t.stop());
             this._recordingStream = null;
         }
+        // (g) the level meter's audio context goes AFTER the tracks.
+        if (this._audioCtx) {
+            const ctx = this._audioCtx;
+            this._audioCtx = null;
+            try {
+                ctx.close();
+            } catch {
+                // already closed
+            }
+        }
+        if (this._meterTimer) {
+            clearTimeout(this._meterTimer);
+            this._meterTimer = null;
+        }
         if (this._recordingTimer) {
             clearInterval(this._recordingTimer);
             this._recordingTimer = null;
         }
         this.state.isRecording = false;
+        this.state.micStarting = false;
+        this.state.level = 0;
     }
 
     /** Audio out, TEXT INTO THE ASK BAR. Nothing is added to the transcript
@@ -698,26 +1060,74 @@ export class AiInsightChat extends Component {
         if (this._discarded || this._audioChunks.length === 0) {
             return;
         }
-        const audioBlob = new Blob(this._audioChunks, { type: 'audio/webm' });
+        const type = String(this._recType || "audio/webm").split(";")[0];
+        const audioBlob = new Blob(this._audioChunks, { type });
         this._audioChunks = [];
+        // Kept in this browser's memory only, for "Hear it as …" — dropped on
+        // Send, Cancel, a new recording, an edit, close and unmount.
+        this._keptAudio = { blob: audioBlob, type };
+        await this._sendForText(audioBlob, type, null, true);
+    }
+
+    /** "Hear it as Tiếng Việt / English": the SAME recording again, in the
+     *  other language. Replaces only what was heard, and only while the box
+     *  still holds exactly what landed. */
+    async hearAs(lang) {
+        const kept = this._keptAudio;
+        if (!kept || this.state.voiceBusy || (lang !== "en" && lang !== "vi")) {
+            return;
+        }
+        await this._sendForText(kept.blob, kept.type, lang, false);
+    }
+
+    async _sendForText(blob, type, lang, fresh) {
         this.state.voiceBusy = true;
+        this.state.voiceError = "";
+        this.state.voiceHint = "";
+        this.state.hearAs = null;
         try {
-            const base64 = await this._toBase64(audioBlob);
+            const base64 = await this._toBase64(blob);
+            if (this._discarded) {
+                return;
+            }
             const result = await rpc("/web/dataset/call_kw", {
                 model: "payroll.ai.conversation",
                 method: "rpc_transcribe_voice",
-                args: [base64], kwargs: this._rpcContext(),
+                args: [base64],
+                kwargs: { lang: lang || null, mime: type, ...this._rpcContext() },
             }, { silent: true });
+            if (this._discarded) {
+                return;
+            }
             if (!result || result.error) {
                 this.state.voiceError = (result && result.error)
                     || this.voiceCopy.failed || "";
                 return;
             }
             const heard = (result.text || "").trim();
-            if (!heard) {
-                this.state.voiceError = this.voiceCopy.failed || "";
+            if (!heard || isPhantomTranscript(heard, this.state.voice.vocab)) {
+                // The service invents words on silence and echoes its own
+                // hint (ledger OC14): nothing reaches the box.
+                this._dropKeptAudio();
+                this.state.voiceHint = this.t("heardNothing",
+                    "I didn't hear anything. Tap the microphone and try again.");
                 return;
             }
+            this._land(heard, fresh);
+        } catch (error) {
+            console.error("PayAI voice error:", error);
+            this.state.voiceError = this.voiceCopy.failed || "";
+        } finally {
+            this.state.voiceBusy = false;
+        }
+    }
+
+    /** The words land in the box, highlighted by the hint; focus stays in
+     *  the box with the cursor at the end (never on Send: a keyboard user who
+     *  toggled the microphone with Space would otherwise send half a
+     *  sentence with the next key press). */
+    _land(heard, fresh) {
+        if (fresh) {
             // Appended, not replaced: somebody who typed half a question and
             // then spoke the rest meant both halves — and that mixed text is
             // TYPED. Only words heard into an empty box are spoken (§6.3).
@@ -725,20 +1135,40 @@ export class AiInsightChat extends Component {
             const existing = this.state.inputText.trim();
             this.state.inputText = existing ? existing + " " + heard : heard;
             this._heard = before || existing ? null : heard;
-            this.state.voiceHint = this.voiceCopy.check_hint || "";
-            setTimeout(() => {
-                const el = this.inputRef.el;
-                if (el) {
-                    el.focus();
-                    el.selectionStart = el.selectionEnd = el.value.length;
-                }
-            }, 0);
-        } catch (error) {
-            console.error("PayAI voice error:", error);
-            this.state.voiceError = this.voiceCopy.failed || "";
-        } finally {
-            this.state.voiceBusy = false;
+            this._landedBefore = existing;
+        } else {
+            // A re-hearing: only the heard part changes.
+            const before = this._landedBefore || "";
+            this.state.inputText = before ? before + " " + heard : heard;
+            this._heard = before ? null : heard;
         }
+        this._landedText = this.state.inputText;
+        this.state.hearAs = this._keptAudio ? (VI_MARKS.test(heard) ? "en" : "vi") : null;
+        this.state.voiceHint = this.voiceCopy.check_hint || "";
+        // One pulse on Send: the next step is right there.
+        this.state.sendPulse = true;
+        setTimeout(() => {
+            this.state.sendPulse = false;
+        }, 700);
+        setTimeout(() => {
+            const el = this.inputRef.el;
+            if (el) {
+                el.focus();
+                el.selectionStart = el.selectionEnd = el.value.length;
+            }
+        }, 0);
+    }
+
+    get hearAsLabel() {
+        return this.state.hearAs === "vi"
+            ? this.t("hearAsVi", "Hear it as Tiếng Việt")
+            : this.t("hearAsEn", "Hear it as English");
+    }
+
+    _dropKeptAudio() {
+        this._keptAudio = null;
+        this._landedText = null;
+        this.state.hearAs = null;
     }
 
     /** CHUNKED. `String.fromCharCode(...bytes)` spreads one argument per byte,
@@ -763,6 +1193,12 @@ export class AiInsightChat extends Component {
     // on the device, so the answer never leaves the browser — which is what
     // makes "the spoken reply is inside the trust boundary" true rather than
     // merely asserted. Documented as a deviation in the Phase 6 report.
+    //
+    // ONECHAT OC3 — every string handed to the synthesiser goes through
+    // `speechText`: markup and markdown out, the brand filter, and NO
+    // AMOUNTS (owner decision Q2 — the figures stay on screen). The voice is
+    // picked from the text's own language; a device with no Vietnamese voice
+    // reads nothing and says so once.
 
     get ttsSupported() {
         return typeof window !== "undefined" && "speechSynthesis" in window;
@@ -788,21 +1224,114 @@ export class AiInsightChat extends Component {
         }
     }
 
-    speak(text) {
+    /** Inside the first microphone tap: an empty utterance, so the device
+     *  allows a later read-back that no tap started (iOS). Once a page. */
+    _primeSpeech() {
+        if (SPEECH.primed || !this.ttsSupported) {
+            return;
+        }
+        SPEECH.primed = true;
+        try {
+            window.speechSynthesis.speak(new window.SpeechSynthesisUtterance(""));
+        } catch {
+            // nothing to prime
+        }
+    }
+
+    speak(text, turnId) {
         if (!this.ttsSupported || !text) {
             return;
         }
-        try {
-            this._stopSpeaking();
-            const utterance = new window.SpeechSynthesisUtterance(String(text));
-            // From the TEXT, not the page: the old read of the page's session
-            // info found nothing on this version, so every answer was read
-            // in English (ledger OC5).
-            utterance.lang = VI_MARKS.test(String(text)) ? "vi-VN" : "en-US";
-            window.speechSynthesis.speak(utterance);
-        } catch (e) {
-            console.warn("PayAI speech synthesis failed:", e);
+        if (this.state.isRecording || this.state.micStarting) {
+            // Never read aloud into an open microphone.
+            return;
         }
+        const say = speechText(text, {
+            amount: this.t("amountOnScreen", "an amount shown on screen"),
+            brand: "Payobook",
+        });
+        if (!say) {
+            return;
+        }
+        const lang = VI_MARKS.test(say) ? "vi-VN" : "en-US";
+        this._withVoices((voices) => {
+            if (this._discarded || this.state.isRecording || this.state.micStarting) {
+                return;
+            }
+            const voice = pickVoice(voices, lang);
+            if (!voice && lang === "vi-VN") {
+                // No Vietnamese voice here: an English voice reading
+                // Vietnamese is noise. Shown, not read — said once.
+                if (!SPEECH.noViShown) {
+                    SPEECH.noViShown = true;
+                    this.state.voiceHint = this.t("noViVoice",
+                        "This device has no Vietnamese voice, so answers are shown, not read.");
+                }
+                return;
+            }
+            try {
+                this._stopSpeaking();
+                const utterance = new window.SpeechSynthesisUtterance(say);
+                // From the TEXT, not the page: the old read of the page's
+                // session info found nothing on this version, so every answer
+                // was read in English (ledger OC5).
+                utterance.lang = lang;
+                if (voice) {
+                    utterance.voice = voice;
+                }
+                const id = turnId || "reading";
+                const done = () => {
+                    if (this.state.speakingId === id) {
+                        this.state.speakingId = null;
+                    }
+                };
+                utterance.onend = done;
+                utterance.onerror = done;
+                this.state.speakingId = id;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.warn("PayAI speech synthesis failed:", e);
+            }
+        });
+    }
+
+    /** The device's voices — they load late in Chrome (`voiceschanged`). */
+    _withVoices(fn) {
+        const synth = window.speechSynthesis;
+        let list = [];
+        try {
+            list = synth.getVoices() || [];
+        } catch {
+            list = [];
+        }
+        if (list.length || !synth.addEventListener) {
+            return fn(list);
+        }
+        let done = false;
+        const once = () => {
+            if (done) {
+                return;
+            }
+            done = true;
+            try {
+                synth.removeEventListener("voiceschanged", once);
+            } catch {
+                // nothing to remove
+            }
+            let later = [];
+            try {
+                later = synth.getVoices() || [];
+            } catch {
+                later = [];
+            }
+            fn(later);
+        };
+        synth.addEventListener("voiceschanged", once);
+        setTimeout(once, VOICES_WAIT_MS);
+    }
+
+    stopReading() {
+        this._stopSpeaking();
     }
 
     _stopSpeaking() {
@@ -812,6 +1341,9 @@ export class AiInsightChat extends Component {
             }
         } catch {
             // Nothing to cancel.
+        }
+        if (this.state) {
+            this.state.speakingId = null;
         }
     }
 
@@ -1042,6 +1574,12 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         };
         if (st.icon_url) {
             this.state.aiIconUrl = st.icon_url;
+        }
+        // Voice is on for this person but this browser cannot record: the
+        // missing microphone is explained once a page, never nagged.
+        if (this.voiceUnsupported && !SPEECH.unsupportedShown) {
+            SPEECH.unsupportedShown = true;
+            this.state.voiceHint = this.t("micUnsupported", "This browser cannot record here.");
         }
     }
 
@@ -1280,6 +1818,10 @@ export class AiInsightChatEmbedded extends AiInsightChat {
     }
 
     async _routeAndDispatch(text, { spoken }) {
+        // Sent: the kept recording ("Hear it as …") goes, and so does any
+        // reading still under way (§6.5, §6.6).
+        this._dropKeptAudio();
+        this._stopSpeaking();
         this._collapseContext();
         this._pushMessage({ role: "user", content: text, spoken: !!spoken,
                             chart: null, insights: [], timestamp: new Date().toISOString() });
@@ -1316,34 +1858,35 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                 });
                 return;
             case "guide":
-                this._pushHelper({ kind: "guide", answer: r.answer, lead: r.lead || null,
-                                   extra: r.extra_chips || null });
+                this._readHelper(this._pushHelper({ kind: "guide", answer: r.answer, lead: r.lead || null,
+                                                    extra: r.extra_chips || null }), spoken);
                 await h.onGuideAnswer(text, r.answer);
                 await this._markGuide(r.answer);
                 return;
             case "explain":
-                await this._pushGuide(await h.explain(), { kind: "explain" });
+                await this._pushGuide(await h.explain(), { kind: "explain", spoken });
                 return;
             case "practice":
                 await this._practiceRoute(r);
                 return;
             case "choose":
-                this._pushHelper({ kind: "choose", note: r.note || h.pair("whichMeant"),
-                                   choices: r.choices || [] });
+                this._readHelper(this._pushHelper({ kind: "choose", note: r.note || h.pair("whichMeant"),
+                                                    choices: r.choices || [] }), spoken);
                 await this._marker("choose", (r.note && r.note.key) || "whichMeant");
                 return;
             case "miss":
                 if (r.note) {
-                    this._pushHelper({ kind: "note", note: r.note, suggest: r.suggest || [] });
+                    this._readHelper(this._pushHelper({ kind: "note", note: r.note, suggest: r.suggest || [] }), spoken);
                 } else {
-                    this._pushHelper({ kind: "guide", answer: r.answer || { matched: false, suggest: r.suggest || [] } });
+                    this._readHelper(this._pushHelper({ kind: "guide", answer: r.answer || { matched: false, suggest: r.suggest || [] } }), spoken);
                 }
                 await h.onGuideAnswer(text, r.answer || { matched: false });
                 await this._marker("miss", (r.note && r.note.key) || "noAnswer");
                 return;
             case "note":
             default: {
-                this._pushHelper({ kind: "note", note: r.note || h.pair("smalltalk"), suggest: r.suggest || [] });
+                this._readHelper(this._pushHelper({ kind: "note", note: r.note || h.pair("smalltalk"),
+                                                    suggest: r.suggest || [] }), spoken);
                 // A note ABOUT the plan card ("Tap Do it…") must not make the
                 // plan "not the last thing I showed you" (OC-R3).
                 if (r.why !== "tap_card") {
@@ -1391,15 +1934,15 @@ export class AiInsightChatEmbedded extends AiInsightChat {
     async _pushGuide(answer, opts = {}) {
         const h = this.props.helper;
         if (!answer) {
-            this._pushHelper({ kind: "note", note: h.pair("coachNoScreen") });
+            this._readHelper(this._pushHelper({ kind: "note", note: h.pair("coachNoScreen") }), opts.spoken);
             await this._marker("note", "coachNoScreen");
             return;
         }
-        this._pushHelper({ kind: "guide", answer });
+        this._readHelper(this._pushHelper({ kind: "guide", answer }), opts.spoken);
         await this._markGuide(answer);
     }
 
-    async _fallbackAnswer(key) {
+    async _fallbackAnswer(key, spoken) {
         const h = this.props.helper;
         if (!h || !key) {
             return false;
@@ -1408,9 +1951,37 @@ export class AiInsightChatEmbedded extends AiInsightChat {
         if (!answer || !answer.matched) {
             return false;
         }
-        this._pushHelper({ kind: "guide", answer });
+        this._readHelper(this._pushHelper({ kind: "guide", answer }), spoken);
         await this._markGuide(answer);
         return true;
+    }
+
+    /** ONECHAT OC3 — read a helper turn back (§6.5): always after a SPOKEN
+     *  sentence, else only with "Read answers aloud" on. A guide answer is
+     *  read as plain words (no source line, no worked figures); a note or a
+     *  choice reads its line. A practice turn is not read — the practice
+     *  opens and the drawer closes. */
+    _readHelper(turn, spoken) {
+        const h = this.props.helper;
+        if (!turn || !h || !(spoken || this.state.ttsOn)) {
+            return;
+        }
+        const lang = this.props.lang;
+        let text = "";
+        if (turn.kind === "guide") {
+            text = h.answerSpeech ? h.answerSpeech(turn.answer, lang) : "";
+            if (turn.lead) {
+                text = `${this.pick(turn.lead)} ${text}`;
+            }
+        } else if (turn.kind === "note") {
+            text = this.pick(turn.note);
+        } else if (turn.kind === "choose") {
+            const labels = (turn.choices || []).map((c) => this.pick(c.label)).filter(Boolean);
+            text = [this.pick(turn.note), labels.join(". ")].filter(Boolean).join(" ");
+        }
+        if (text) {
+            this.speak(text, turn.id);
+        }
     }
 
     // --------------------------------------------------------------- api
@@ -1444,7 +2015,8 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                 this.state.voiceAsking = true;
             },
             cancelRecording: () => this.cancelRecording(),
-            isRecording: () => !!this.state.isRecording,
+            // "Starting…" counts: Escape then cancels before anything records.
+            isRecording: () => !!(this.state.isRecording || this.state.micStarting),
         };
     }
 

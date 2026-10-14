@@ -11,3 +11,5 @@ from . import test_p0_gates
 from . import test_onechat_conversation
 # ONECHAT OC2 — the pill decides the answer language.
 from . import test_onechat_prompt
+# ONECHAT OC3 — voice: recognition language, formats, the hint, the log.
+from . import test_onechat_voice

@@ -69,6 +69,29 @@ MAP_CAP = 400
 # a held button produces.
 MAX_AUDIO_B64 = 8 * 1024 * 1024
 
+# ONECHAT OC3 — WHAT THE BROWSER MAY SAY IT RECORDED. Chrome and Firefox record
+# WebM/Opus, Safari and iOS record MP4; the file name the speech service sees
+# follows the real type (it reads the container from the name). Anything else
+# is refused with a plain sentence — the name is never built from client text.
+VOICE_FILES = {
+    'audio/webm': 'voice.webm',
+    'audio/mp4': 'voice.mp4',
+    'audio/ogg': 'voice.ogg',
+}
+
+# The two recognition languages. None (the default) means "let the service
+# tell": the provider then gets NO language argument at all (ledger OC15).
+VOICE_LANGS = ('en', 'vi')
+
+# The hint the speech service is given, in the helper's language: product
+# NOUNS only. Never a person's name (the hint goes out with every recording),
+# and never a decision verb — a hint that says "approve" makes the service
+# more likely to hear "approve" in noise (ledger OC14).
+VOICE_VOCAB = {
+    'en': 'Payobook, pay run, payslip, pay scheme, overtime, BHXH, BHYT, BHTN',
+    'vi': 'Payobook, đợt lương, phiếu lương, chương trình lương, tăng ca, BHXH, BHYT, BHTN',
+}
+
 # ONECHAT OC1 — THE MARKER. Every turn the one helper chat shows that did NOT
 # come from PayAI (a guide answer, Explain this screen, a practice turn, a
 # choice, a miss, the capability card, small talk, a short note) is recorded
@@ -493,11 +516,19 @@ class PayrollAIConversation(models.Model):
         Consent = self.env['payroll.ai.consent']
         enabled = flag_on(self.env, VOICE_FLAG)
         state = Consent.voice_state()
-        available = bool(enabled and self._speech_provider() is not None)
+        ready = self._speech_provider() is not None if enabled else False
+        available = bool(enabled and ready)
         return {
             'available': available and state != 'declined',
             'ask': available and state == 'unset',
             'consent': state,
+            # ONECHAT OC3 — so the More menu knows when "Use my voice" (after
+            # a past "no") can actually give the person a microphone.
+            'switch_on': bool(enabled),
+            'provider_ready': bool(ready),
+            # The service's hint words, so the browser can drop a transcript
+            # that is only the hint echoed back on silence (ledger OC14).
+            'vocab': dict(VOICE_VOCAB),
             # Server-rendered so it follows the READER's language through the
             # ordinary `_()` path — this module's copy contract since D1.
             'copy': {
@@ -506,20 +537,26 @@ class PayrollAIConversation(models.Model):
                 #
                 # The first draft said "nothing is sent until you press send",
                 # which is true of the TEXT and false of the RECORDING — the
-                # audio goes the moment the button is released, which is the
+                # audio goes the moment the person taps Stop, which is the
                 # whole reason this consent exists. A notice that is reassuring
                 # about the wrong half is worse than none.
+                #
+                # ONECHAT OC3: reworded for tap-to-talk (tap to start, tap
+                # Stop). What leaves, who gets it and when are unchanged; the
+                # recording now leaves on Stop, and Cancel sends nothing. Owner
+                # decision Q5: people who already said yes are not asked again.
                 'consent_body': _(
-                    "Hold the microphone and speak. When you let go, the "
+                    "Tap the microphone and speak. When you tap Stop, the "
                     "recording goes to an outside company's speech service, "
-                    "which turns it into text. The recording is audio: unlike "
-                    "text, we cannot take names out of it first. The text then "
-                    "waits in the box — nothing is asked or answered until you "
-                    "read it and press send. Say no and the microphone stays "
-                    "off. Everything else works the same."),
+                    "which turns it into text. Tap Cancel and nothing is sent. "
+                    "The recording is audio: unlike text, we cannot take names "
+                    "out of it first. The text then waits in the box — nothing "
+                    "is asked or answered until you read it and press send. Say "
+                    "no and the microphone stays off. Everything else works the "
+                    "same."),
                 'consent_yes': _('Yes, send my recordings'),
                 'consent_no': _('No, keep the microphone off'),
-                'hold_hint': _('Hold to speak'),
+                'tap_hint': _('Tap to speak'),
                 'check_hint': _('This is what I heard. Edit it, then press send.'),
                 'listen_label': _('Read answers aloud'),
                 'failed': _('I could not turn that into text. Please try typing.'),
@@ -554,13 +591,19 @@ class PayrollAIConversation(models.Model):
         return provider if hasattr(provider, 'transcribe_audio') else None
 
     @api.model
-    def rpc_transcribe_voice(self, audio_base64):
+    def rpc_transcribe_voice(self, audio_base64, lang=None, mime=None):
         """Audio in, TEXT OUT. This method never sends a message.
 
         Both gates are re-asked here and not only in the browser: this is
         reachable over RPC from anything holding a session, so the tenant flag
         and the user's consent are checked on the server, in that order, before
         a single byte is decoded.
+
+        ONECHAT OC3 — `lang` ('en' | 'vi', anything else = None) asks the
+        service for one language; None lets it tell, and then NO language is
+        passed at all (ledger OC15). `mime` names what the browser recorded;
+        only the types in VOICE_FILES are accepted, and the file name the
+        service sees comes from that table, never from the caller.
         """
         Consent = self.env['payroll.ai.consent']
         if not flag_on(self.env, VOICE_FLAG):
@@ -582,6 +625,12 @@ class PayrollAIConversation(models.Model):
                 len(audio_base64), MAX_AUDIO_B64)
             return {'error': _('That recording is too long. Try a shorter one.')}
 
+        lang = lang if lang in VOICE_LANGS else None
+        kind = str(mime or 'audio/webm').split(';')[0].strip().lower()
+        filename = VOICE_FILES.get(kind)
+        if not filename:
+            return {'error': _('This kind of recording cannot be used here. Please try typing.')}
+
         import base64
         try:
             audio_bytes = base64.b64decode(audio_base64 or '')
@@ -591,8 +640,14 @@ class PayrollAIConversation(models.Model):
         if not audio_bytes:
             return {'error': _('That recording was empty.')}
 
+        # The hint follows the language asked for, else the reader's.
+        hint_lang = lang or ('vi' if str(self.env.lang or '').startswith('vi') else 'en')
+        options = {'filename': filename, 'prompt': VOICE_VOCAB[hint_lang]}
+        if lang:
+            # Only when asked: omitted, the service detects the language.
+            options['language'] = lang
         try:
-            text = provider.transcribe_audio(audio_bytes)
+            text = provider.transcribe_audio(audio_bytes, **options)
         except Exception as exc:                                # noqa: BLE001
             # The provider's own words are not shown to the reader: an API
             # error string is not copy, and it can carry the request back.

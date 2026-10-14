@@ -259,12 +259,12 @@
                     </t>
                     <!-- THE MICROPHONE IS ABSENT, NOT DISABLED, when voice is
                          switched off for this tenant, unavailable on this
-                         database, or refused by this user. Hold to talk: the
-                         press is the recording, the release transcribes, and
-                         the text lands in the box above for the learner to
-                         read before anything is sent. -->
+                         database, or refused by this user. Tap to talk (ONECHAT
+                         OC3): tap to start, tap again to stop (a held press
+                         stops on release); the text lands in the box above for
+                         the learner to read before anything is sent. -->
                     <t t-if="voiceOffered">
-                        <button t-att-class="'payai-mic-btn ' + (state.isRecording ? 'recording' : '')"
+                        <button t-att-class="'payai-mic-btn ' + ((state.isRecording or state.micStarting) ? 'recording' : '')"
                                 t-on-pointerdown="onMicPointerDown"
                                 t-on-pointerup="onMicPointerUp"
                                 t-on-pointerleave="onMicPointerUp"
@@ -272,7 +272,7 @@
                                 t-on-keydown="onMicKeyDown"
                                 t-on-keyup="onMicKeyUp"
                                 t-att-disabled="state.isLoading || state.voiceBusy"
-                                t-att-title="voiceCopy.hold_hint || 'Hold to speak'">
+                                t-att-title="voiceCopy.tap_hint || 'Tap to speak'">
                             <i t-att-class="state.voiceBusy ? 'fa fa-spinner fa-spin' : 'fa fa-microphone'"/>
                         </button>
                     </t>
@@ -320,6 +320,13 @@
                     <div t-att-class="'payai-embed-msg ' + (msg.role === 'user' ? 'me' : 'ai')"
                          t-att-data-kind="msg.kind || msg.role" t-att-data-turn="msg.id"
                          t-att-data-new="msg.isNew ? '1' : '0'">
+                        <!-- ONECHAT OC3 — the turn being read aloud carries its
+                             own Stop. -->
+                        <button type="button" class="payai-stop-read" t-if="state.speakingId and state.speakingId === msg.id"
+                                t-on-click="stopReading" t-att-aria-label="t('stopReading', 'Stop reading')">
+                            <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-volume-x"/></svg>
+                            <t t-esc="t('stopReading', 'Stop reading')"/>
+                        </button>
                         <t t-if="msg.kind and props.helper">
                             <t t-out="helperTurn(msg)"/>
                         </t>
@@ -417,49 +424,86 @@
                 </div>
             </t>
 
-            <div class="payai-embed-input">
-                <t t-if="state.isRecording">
-                    <div class="payai-recording-indicator">
-                        <span class="payai-rec-dot"/>
-                        <span class="payai-rec-text"><t t-esc="t('recording', 'Recording')"/> <t t-esc="formatRecordingTime()"/></span>
+            <div class="payai-embed-input" t-att-data-voice="state.isRecording ? 'listening' : (state.micStarting ? 'starting' : (state.voiceBusy ? 'busy' : ''))">
+                <!-- ONECHAT OC3 — TAP TO TALK. While the microphone is open the
+                     recording bar takes the box's place: "Starting…" until the
+                     recorder really runs, then the red dot, the live level
+                     meter, the clock, Cancel (sends nothing) and Stop (sends
+                     the recording to be turned into text). The words then wait
+                     in the box for Send — never sent by themselves. -->
+                <t t-if="state.isRecording or state.micStarting">
+                    <div class="payai-recbar" role="status" aria-live="polite">
+                        <span t-att-class="'payai-rec-dot' + (state.isRecording ? '' : ' wait')" aria-hidden="true"/>
+                        <span class="payai-rec-text" t-esc="state.isRecording ? t('listening', 'Listening') : t('micStarting', 'Starting…')"/>
+                        <span class="payai-meter" aria-hidden="true">
+                            <t t-foreach="levelBars" t-as="bar" t-key="bar_index">
+                                <i t-att-style="'height:' + (state.isRecording ? bar : 18) + '%'"/>
+                            </t>
+                        </span>
+                        <span class="payai-rec-time" t-esc="recordingClock"/>
+                        <button type="button" class="payai-recbtn"
+                                t-on-click="() => this.cancelRecording()"
+                                t-att-aria-label="t('micCancel', 'Cancel')" t-att-title="t('micCancel', 'Cancel')">
+                            <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-x"/></svg>
+                            <span t-esc="t('micCancel', 'Cancel')"/>
+                        </button>
+                    </div>
+                </t>
+                <t t-elif="state.voiceBusy">
+                    <div class="payai-recbar busy" role="status" aria-live="polite">
+                        <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-mic"/></svg>
+                        <span class="payai-rec-text" t-esc="t('transcribing', 'Turning your words into text…')"/>
                     </div>
                 </t>
                 <t t-else="">
                     <textarea t-ref="chatInput" rows="1" data-coach="helper-composer"
+                              t-att-class="state.hearAs ? 'heard' : ''"
                               t-att-placeholder="placeholder"
                               t-att-aria-label="placeholder"
                               t-att-value="state.inputText"
                               t-on-input="onInputChange"
                               t-on-keydown="onInputKeydown"/>
                 </t>
+                <!-- One microphone. While it is open the SAME button is Stop
+                     (square, solid): the place you tapped is the place you tap
+                     again, and a press held past 400 ms stops on release. -->
                 <t t-if="voiceOffered">
                     <button type="button" data-coach="helper-mic"
-                            t-att-class="'payai-embed-icon ' + (state.isRecording ? 'rec' : '')"
+                            t-att-class="'payai-embed-icon mic' + ((state.isRecording or state.micStarting) ? ' rec' : '')"
                             t-on-pointerdown="onMicPointerDown"
                             t-on-pointerup="onMicPointerUp"
                             t-on-pointerleave="onMicPointerUp"
                             t-on-pointercancel="onMicPointerUp"
                             t-on-keydown="onMicKeyDown"
                             t-on-keyup="onMicKeyUp"
-                            t-att-disabled="state.isLoading || state.voiceBusy"
-                            t-att-aria-label="t('micStart', 'Speak instead of typing')"
-                            t-att-title="voiceCopy.hold_hint || t('micStart', 'Speak instead of typing')">
-                        <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-mic"/></svg>
+                            t-on-contextmenu.prevent="() => {}"
+                            t-att-disabled="(state.isLoading or state.voiceBusy) and !(state.isRecording or state.micStarting)"
+                            t-att-aria-pressed="(state.isRecording or state.micStarting) ? 'true' : 'false'"
+                            t-att-aria-label="(state.isRecording or state.micStarting) ? t('micStop', 'Stop') : t('micStart', 'Speak instead of typing')"
+                            t-att-title="(state.isRecording or state.micStarting) ? t('micStop', 'Stop') : (voiceCopy.tap_hint || t('micStart', 'Speak instead of typing'))">
+                        <svg class="lrn-ic" aria-hidden="true"><use t-att-href="(state.isRecording or state.micStarting) ? '#lrn-i-square' : '#lrn-i-mic'"/></svg>
                     </button>
                 </t>
                 <button type="button" class="payai-embed-icon send"
-                        t-att-class="{ ready: !!state.inputText.trim() and !state.isLoading }"
+                        t-att-class="{ ready: !!state.inputText.trim() and !state.isLoading, pulse: state.sendPulse }"
                         t-on-click="() => this.submitComposer()"
-                        t-att-disabled="state.isLoading || state.isRecording || !state.inputText.trim()"
+                        t-att-disabled="state.isLoading || state.isRecording || state.micStarting || state.voiceBusy || !state.inputText.trim()"
                         t-att-aria-label="t('send', 'Send')" t-att-title="t('send', 'Send')">
                     <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-send"/></svg>
                 </button>
             </div>
-            <t t-if="state.voiceHint">
-                <div class="payai-voice-hint" t-esc="state.voiceHint"/>
+            <t t-if="state.voiceHint or state.hearAs">
+                <div class="payai-voice-hint" aria-live="polite">
+                    <span t-if="state.voiceHint" t-esc="state.voiceHint"/>
+                    <button type="button" class="payai-hear-as" t-if="state.hearAs"
+                            t-on-click="() => this.hearAs(state.hearAs)" t-att-disabled="state.voiceBusy">
+                        <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-languages"/></svg>
+                        <t t-esc="hearAsLabel"/>
+                    </button>
+                </div>
             </t>
             <t t-if="state.voiceError">
-                <div class="payai-voice-error" t-esc="state.voiceError"/>
+                <div class="payai-voice-error" role="alert" t-esc="state.voiceError"/>
             </t>
         </div>
     </t>

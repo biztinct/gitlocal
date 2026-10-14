@@ -2267,6 +2267,12 @@ msgstr "Bấm Thực hiện hoặc nói \"tiến hành\"."
 #. module: pb_payai_actions
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap Do it — I heard a name or an amount, so I need your tap."
+msgstr "Hãy bấm Thực hiện — tôi nghe thấy một cái tên hoặc một số tiền, nên cần bạn bấm để xác nhận."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
 msgid "Tap Do it to go ahead"
 msgstr "Bấm Thực hiện để tiếp tục"
 

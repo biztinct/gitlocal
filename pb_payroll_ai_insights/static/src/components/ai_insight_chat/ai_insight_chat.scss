@@ -1285,9 +1285,172 @@ body:has(.pw-root) .payai-floating-pill { display: none; }
     .payai-embed-icon { width: 44px; height: 44px; }
 }
 
+// -----------------------------------------------------------------------------
+// ONECHAT OC3 — TAP TO TALK. The recording bar takes the box's place while
+// the microphone is open: "Starting…" (grey dot) until the recorder really
+// runs, then the red dot, five indigo level bars, the clock and Cancel. The
+// microphone itself turns into Stop (solid, square) in the same spot. After
+// Stop: "Turning your words into text…" with a soft opacity pulse; then the
+// words sit in the box (a soft indigo wash) and Send pulses once.
+// -----------------------------------------------------------------------------
+.payai-recbar {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 6px 6px 12px;
+    border: 1px solid #F3C4D6;
+    border-radius: 12px;
+    background: #FDF1F5;
+    color: #DC2668;
+
+    .payai-rec-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #DC2668;
+        flex: 0 0 auto;
+        animation: payai-recBlink 1.2s ease-in-out infinite;
+
+        &.wait { background: #A9A3C9; animation: none; }
+    }
+    .payai-rec-text {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: inherit;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .payai-rec-time {
+        margin-left: auto;
+        font-size: 11.5px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: #8A3A5C;
+        white-space: nowrap;
+    }
+
+    &.busy {
+        border-color: #E4E1F2;
+        background: #EDEAF8;
+        color: #5A4BB0;
+        animation: payai-busy 1.4s ease-in-out infinite;
+    }
+}
+
+@keyframes payai-busy {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .55; }
+}
+
+.payai-meter {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+    flex: 0 0 auto;
+
+    i {
+        display: block;
+        width: 3px;
+        min-height: 3px;
+        border-radius: 2px;
+        background: #5A4BB0;
+        transition: height 80ms linear;
+    }
+}
+
+.payai-recbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #F3C4D6;
+    border-radius: 9px;
+    background: var(--vuf-surface, #fff);
+    color: #8A3A5C;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+}
+
+.payai-embed-icon.mic.rec {
+    background: #DC2668;
+    color: #fff;
+
+    .lrn-ic { width: 15px; height: 15px; fill: currentColor; }
+}
+
+.payai-embed-icon.send.pulse { animation: payai-send-pulse .45s ease-out 1; }
+
+@keyframes payai-send-pulse {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+// The words that were heard, waiting for Send.
+.payai-embed-input textarea.heard { background: #F6F4FC; border-color: #CBC2EE; }
+
+.payai-embed .payai-voice-hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: -4px 12px 8px;
+}
+
+.payai-hear-as {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: #5A4BB0;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover { text-decoration: underline; }
+    &:disabled { opacity: .5; cursor: default; }
+}
+
+// The turn being read aloud: its own Stop, top right.
+.payai-stop-read {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    color: #5A4BB0;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .payai-embed-msg[data-new="1"] { animation: none; }
     .payai-embed-typing .payai-dot { animation: none; opacity: .6; }
     .payai-embed-icon { transition: none; }
+    .payai-recbar .payai-rec-dot, .payai-recbar.busy, .payai-embed-icon.send.pulse { animation: none; }
+    .payai-meter i { transition: none; }
 }
 .lrn-still .payai-embed-msg[data-new="1"] { animation: none; }

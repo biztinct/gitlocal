@@ -154,8 +154,12 @@ class LearnHelper(models.AbstractModel):
             # picks one by the request's language; the note carries both).
             en = getattr(action, 'confirm_word', '') or ''
             word = {'en': en, 'vi': getattr(action, 'confirm_word_vi', '') or en}
+        # ONECHAT OC3 (owner decision Q6): a spoken plan naming a person or
+        # an amount always needs a tap — the note must not offer "say go
+        # ahead" for it (the runner refuses it).
+        needs_tap = runner.spoken_needs_tap(action, runner._params(task))
         return {'tier': task.tier, 'word': word,
-                'voice_go_ahead': bool(self.env.company.payai_voice_go_ahead)}
+                'voice_go_ahead': bool(self.env.company.payai_voice_go_ahead) and not needs_tap}
 
     @api.model
     def _tap_note(self, plan):

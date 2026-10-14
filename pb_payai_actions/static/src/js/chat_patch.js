@@ -368,7 +368,7 @@ patch(AiInsightChat.prototype, {
             fresh.fresh = false;
             this._payaiSupersede(fresh);
             this._payaiAutoRun(fresh);
-            if (fresh.card.speak) { this._payaiSpeak(fresh.card.speak); }
+            if (fresh.card.speak) { this._payaiSpeak(fresh.card.speak, fresh.id); }
             if (fresh.card.drive) { this._payaiDrive(fresh); }
         }
         return out;
@@ -407,7 +407,11 @@ patch(AiInsightChat.prototype, {
         return Boolean(this._payaiResolve) || super._bypassRouter(...arguments);
     },
 
-    _payaiSpeak(text) {
+    /** The plan's own read-back (only ever on a spoken request). ONECHAT
+     *  OC3: through the chat's one `speak`, so it gets the same filter (no
+     *  amounts, no vendor name), the voice of its own language and the Stop
+     *  control on its card. */
+    _payaiSpeak(text, turnId) {
         try {
             if (typeof window !== "undefined" && window.speechSynthesis) {
                 window.speechSynthesis.cancel();
@@ -415,7 +419,7 @@ patch(AiInsightChat.prototype, {
         } catch {
             // nothing to stop
         }
-        this.speak(String(text || ""));
+        this.speak(String(text || ""), turnId);
     },
 
     /** A newer card for the same request: the older one stops offering buttons.

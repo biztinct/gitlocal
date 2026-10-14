@@ -229,7 +229,11 @@ class TestOneChatUI(TransactionCase):
             'aboutColumn', 'practiseThis', 'letMePractise', 'openingPractice', 'openingWatch',
             'practiceChipsLead', 'whatCanYouDo', 'showAgain', 'composedAgain', 'jumpLatest',
             'spoken', 'routeFailed', 'pinDashboard', 'figuresOnScreen', 'helperFailed', 'scPractise',
-            'swVoiceTitle', 'swVoiceBody')
+            'swVoiceTitle', 'swVoiceBody',
+            # ONECHAT OC3 — speaking to PayAI.
+            'micStarting', 'listening', 'micStop', 'micCancel', 'transcribing', 'heardNothing',
+            'hearAsVi', 'hearAsEn', 'micDenied', 'micCannot', 'micUnsupported', 'noViVoice',
+            'amountOnScreen', 'stopReading')
         for key in new_keys:
             pair = chrome.get(key)
             self.assertTrue(pair and pair.get('en') and pair.get('vi'), 'chrome %s is missing a language' % key)

@@ -426,6 +426,23 @@ const I18N = {
     routeFailed: "That did not go through. Please try again in a moment.",
     pinDashboard: "Pin to dashboard",
     figuresOnScreen: "Here are the figures you asked for — they are on screen.",
+    /* -- ONECHAT OC3: speaking to PayAI ----------------------------------
+       Tap the microphone, speak, tap Stop. The words wait in the box until
+       Send (owner decision Q1). Amounts are never read aloud (Q2). */
+    micStarting: "Starting…",
+    listening: "Listening",
+    micStop: "Stop",
+    micCancel: "Cancel",
+    transcribing: "Turning your words into text…",
+    heardNothing: "I didn't hear anything. Tap the microphone and try again.",
+    hearAsVi: "Hear it as Tiếng Việt",
+    hearAsEn: "Hear it as English",
+    micDenied: "Microphone access is blocked. Allow it in your browser settings, then try again.",
+    micCannot: "This browser could not start the microphone.",
+    micUnsupported: "This browser cannot record here.",
+    noViVoice: "This device has no Vietnamese voice, so answers are shown, not read.",
+    amountOnScreen: "an amount shown on screen",
+    stopReading: "Stop reading",
     /* -- LEARN v3: one helper ---------------------------------------------
        The Coach and PayAI used to be two floating buttons that knew nothing
        about each other. They are now one button with three tabs. The Ask
@@ -533,7 +550,7 @@ const I18N = {
     swComposeBody: "When no written answer fits a question, your AI service writes one from the lesson text only. These answers are marked so readers can tell.",
     swComposeLeaves: "Sends lesson text to your AI service. Never employee or pay data.",
     swVoiceTitle: "Talk to PayAI",
-    swVoiceBody: "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send.",
+    swVoiceBody: "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send. Recordings go to the speech service only to be turned into text.",
     swVoiceLeaves: "Sends the recording to a speech service.",
     swCollectTitle: "Learn from the questions people ask",
     swCollectBody: "Keeps questions for 180 days so we can see what the lessons miss. Each person also agrees in the helper. Names and amounts are removed first.",
@@ -845,6 +862,21 @@ const I18N = {
     routeFailed: "Việc này chưa thực hiện được. Vui lòng thử lại sau giây lát.",
     pinDashboard: "Ghim vào bảng điều khiển",
     figuresOnScreen: "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình.",
+    /* -- ONECHAT OC3: nói với PayAI ------------------------------------- */
+    micStarting: "Đang bật…",
+    listening: "Đang nghe",
+    micStop: "Dừng",
+    micCancel: "Hủy bỏ",
+    transcribing: "Đang chuyển lời nói thành chữ…",
+    heardNothing: "Tôi chưa nghe thấy gì. Bấm vào micrô rồi thử lại.",
+    hearAsVi: "Nghe lại bằng Tiếng Việt",
+    hearAsEn: "Nghe lại bằng tiếng Anh",
+    micDenied: "Micrô đang bị chặn. Hãy cho phép micrô trong phần cài đặt của trình duyệt web, rồi thử lại.",
+    micCannot: "Trình duyệt web này không bật được micrô.",
+    micUnsupported: "Trình duyệt web này không ghi âm được ở đây.",
+    noViVoice: "Thiết bị này không có giọng đọc tiếng Việt, nên câu trả lời chỉ hiển thị, không đọc to.",
+    amountOnScreen: "một số tiền hiển thị trên màn hình",
+    stopReading: "Dừng đọc",
     /* -- LEARN v3: one helper -------------------------------------------- */
     orbLabel: "Hỏi PayAI",
     orbHint: "PayAI: trợ giúp cho màn hình này. Bấm ? ở bất kỳ màn hình nào.",
@@ -941,7 +973,7 @@ const I18N = {
     swComposeBody: "Khi không có câu trả lời viết sẵn, dịch vụ AI của bạn soạn một câu trả lời chỉ từ nội dung bài học. Các câu trả lời này được đánh dấu để người đọc phân biệt.",
     swComposeLeaves: "Gửi nội dung bài học tới dịch vụ AI của bạn. Không bao giờ gửi dữ liệu nhân viên hay lương.",
     swVoiceTitle: "Nói chuyện với PayAI",
-    swVoiceBody: "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi.",
+    swVoiceBody: "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi. Bản ghi âm chỉ được gửi tới dịch vụ chuyển giọng nói để đổi thành chữ.",
     swVoiceLeaves: "Gửi bản ghi âm tới dịch vụ nhận dạng giọng nói.",
     swCollectTitle: "Học hỏi từ câu hỏi của mọi người",
     swCollectBody: "Lưu câu hỏi trong 180 ngày để biết bài học còn thiếu gì. Mỗi người cũng phải đồng ý trong trợ lý. Tên riêng và số tiền được loại bỏ trước.",

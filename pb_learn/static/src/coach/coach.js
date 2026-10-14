@@ -762,6 +762,8 @@ export class CoachHost extends Component {
             canExplain: () => this.covered,
             answerHTML: (answer, lang, opts) =>
                 markup(this._inLang(lang, () => this._answerHTML(answer, opts || {}))),
+            // ONECHAT OC3 — the same answer as plain words, for read-back.
+            answerSpeech: (answer, lang) => this._inLang(lang, () => this._answerSpeech(answer)),
             turnHTML: (turn, lang, opts) =>
                 markup(this._inLang(lang, () => this._turnHTML(turn, opts || {}))),
             contextHTML: (lang, opts) =>
@@ -1917,6 +1919,37 @@ export class CoachHost extends Component {
             ${simplerBlock || blocks}
             <div class="lrn-ctools">${tools.join("")}</div>
         </div>`;
+    }
+
+    /** ONECHAT OC3 — an answer as the words read aloud after a spoken
+     *  question (handover §6.5): the heading, then the blocks as plain text.
+     *  Never the source line ("Grounded in …") and never the worked figures
+     *  (owner decision Q2 — figures stay on screen). The chat's `speechText`
+     *  then strips what markup is left, the vendor's name and any amount. */
+    _answerSpeech(a) {
+        if (!a) {
+            return "";
+        }
+        if (!a.matched) {
+            return [T("noAnswer"), T("noAnswerBody")].join(" ");
+        }
+        const plain = (html) => String(html || "").replace(/<[^>]*>/g, " ");
+        const parts = [tx(a.label)];
+        for (const b of a.blocks || []) {
+            if (b.kind === "source" || b.kind === "calc" || b.kind === "calc_kpi") {
+                continue;
+            }
+            if (b.kind === "steps") {
+                (b.steps || []).forEach((st, i) => {
+                    const line = String(tx(st.text) || "").trim();
+                    parts.push(`${i + 1}. ${line}${/[.!?]$/.test(line) ? "" : "."}`);
+                });
+            } else {
+                parts.push(plain(gtx(b.body)));
+            }
+        }
+        return parts.map((p) => String(p || "").replace(/\s+/g, " ").trim())
+            .filter(Boolean).join(" ");
     }
 
     _suggestFrom(list) {

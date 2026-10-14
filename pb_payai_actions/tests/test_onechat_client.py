@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ONECHAT OC2 — the one chat's browser halves, run in node.
+"""ONECHAT OC2 / OC3 — the one chat's browser halves, run in node.
 
 `tests/js/onechat_oc2.test.mjs` loads the REAL drawer (pb_learn coach.js with
 its runtime and glossary), the REAL embedded chat (pb_payroll_ai_insights) and
@@ -28,10 +28,23 @@ JS_DIR = os.path.join(HERE, 'js')
 class TestOneChatClient(TransactionCase):
 
     def test_01_the_one_chat_runs_in_node(self):
+        self._run_suite('onechat_oc2.test.mjs')
+
+    def test_02_voice_runs_in_node(self):
+        """ONECHAT OC3 — handover §11 3.4 (tap to talk: Starting… then
+        Listening only after the recorder starts, stop-before-start, a failed
+        recorder gives the microphone back, the format fallback, the meter's
+        audio context closed after the tracks, short / silent recordings and
+        filler never uploaded or landed, Escape cancels, close sends nothing,
+        Hear it as …) and 3.5 (read-back: a mic tap stops speech, the voice
+        follows the text, the brand filter, no figures or amounts read)."""
+        self._run_suite('onechat_oc3.test.mjs')
+
+    def _run_suite(self, name):
         node = shutil.which('node')
         if not node:
             self.skipTest('node is not installed here; run '
-                          'pb_payai_actions/tests/js/onechat_oc2.test.mjs by hand.')
+                          'pb_payai_actions/tests/js/%s by hand.' % name)
         version = subprocess.run([node, '--version'], capture_output=True, text=True,
                                  check=False).stdout.strip()
         major = re.match(r'v(\d+)', version)
@@ -43,7 +56,7 @@ class TestOneChatClient(TransactionCase):
                 self.skipTest('%s is not beside pb_payai_actions on this addons path' % module)
         env = dict(os.environ, PB_SRC_ROOT=root)
         out = subprocess.run(
-            [node, os.path.join(JS_DIR, 'onechat_oc2.test.mjs')],
+            [node, os.path.join(JS_DIR, name)],
             capture_output=True, text=True, timeout=180, env=env, check=False)
         self.assertEqual(out.returncode, 0, out.stdout[-4000:] + out.stderr[-2000:])
         self.assertRegex(out.stdout, r'\d+ passed, 0 failed')
