@@ -124,7 +124,15 @@ for i, raw in enumerate(parsed['rows']):
         original = cached.cell(30 + i, c).value
         if original is not None:
             expected = '000001' if i == 0 and name == 'Employee ID' else original
-            assert inputs.get(rule.code) == expected, (i, name, inputs.get(rule.code), expected)
+            raw_value = raw.get('Payroll|%s' % name)
+            assert raw_value == expected, (i, name, raw_value, expected)
+            if rule.column_role == 'payroll':
+                assert inputs.get(rule.code) == expected, (i, name, inputs.get(rule.code), expected)
+            else:
+                # Profile/identity columns travel beside the calculation in a
+                # real run. Keep them in the sample too so the preview shows
+                # the literal client values, rather than an empty placeholder.
+                inputs[rule.code] = probe._normalize_rule_input_value(rule, raw_value)
     expected = {by_col[source.cell(30, c).column_letter].code: cached.cell(30+i, c).value for c in formula_cols}
     name = 'Template example %s' % (i+1)
     sample = config.sample_data_ids.filtered(lambda s: s.name == name)
