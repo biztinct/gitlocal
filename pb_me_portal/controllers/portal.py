@@ -12,11 +12,17 @@ is read via sudo — the route boundary is the PII gate, not field ACLs.
 
 import base64
 import json
+import logging
 
 from odoo import http, _
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
+
+_logger = logging.getLogger(__name__)
+
+#: The routes that render `portal.portal_my_home` (stock `home()`).
+_PBME_HOME_PATHS = ('/my', '/my/home')
 
 _UPLOAD_MIME_OK = ('image/png', 'image/jpeg', 'application/pdf')
 _UPLOAD_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
@@ -56,6 +62,20 @@ class PbMePortal(CustomerPortal):
             values['pbme_employee_only'] = request.env.user._pb_employee_only()
         except Exception:               # noqa: BLE001
             values['pbme_employee_only'] = False
+        # MEHOME: the employee home's facts, computed eagerly because the
+        # stock counters only arrive after render (M1). Only on the home page
+        # itself — every other portal page calls this method too. A failure
+        # is logged and leaves the stock page, never a 500.
+        values['pbme_home'] = None
+        try:
+            if request.httprequest.path in _PBME_HOME_PATHS:
+                emp = self._ess_employee()
+                if emp:
+                    values['pbme_home'] = request.env['pb.me.home'].get_home_data(emp)
+        except Exception:               # noqa: BLE001
+            _logger.warning('pb_me_portal: the employee home could not be '
+                            'built for user %s', request.env.uid, exc_info=True)
+            values['pbme_home'] = None
         return values
 
     # -------------------------------------------------- home portal cards

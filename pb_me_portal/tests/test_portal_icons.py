@@ -21,6 +21,14 @@ _TEMPLATES = os.path.join(_HERE, 'views', 'portal_templates.xml')
 # a path that appears in the 'download' branch and nowhere else in ess_icon
 _DOWNLOAD_ONLY_PATH = 'M12 15V3'
 
+# MEHOME: the one call site whose name comes from the tile registry
+# (`pb.me.home` TILES). Still a t-value — a plain str, never a branded body —
+# and every name the registry holds is checked against ess_icon's branches by
+# test_me_home_source.test_11_every_icon_name_is_drawn.
+_REGISTRY_CALL_SITES = {
+    """<t t-set="icon" t-value="pbme_tile['icon']"/>""",
+}
+
 
 def _read_templates():
     with open(_TEMPLATES, encoding='utf-8') as fh:
@@ -51,6 +59,8 @@ class TestPortalIcons(TransactionCase):
         call_sites = re.findall(r'<t t-set="icon"[^>]*/>', arch)
         self.assertTrue(call_sites, "the portal must still draw icons")
         for site in call_sites:
+            if site in _REGISTRY_CALL_SITES:
+                continue
             self.assertRegex(
                 site, r"""t-value="'[a-z-]+'\"""",
                 "an icon name must be a plain string literal: %s" % site)

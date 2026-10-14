@@ -186,7 +186,215 @@
 
 // An employee-only person's My Payobook: the stock customer cards (invoices,
 // projects, tasks, timesheets) are not theirs. Flag set by the controller.
-.pbme-employee .o_portal_index_card:has(> a[href^="/my/invoices"], > a[href^="/my/projects"],
-                                        > a[href^="/my/tasks"], > a[href^="/my/timesheets"]) {
+.pbme-home.pbme-employee .o_portal_index_card:has(> a[href^="/my/invoices"], > a[href^="/my/projects"],
+                                                  > a[href^="/my/tasks"], > a[href^="/my/timesheets"]) {
     display: none !important;
+}
+
+// =====================================================================
+//  MEHOME — the employee home (/my). Scoped to `.pbme-home`, which the
+//  template sets only for a person with an employee record; the stock page
+//  everyone else sees is untouched. Build target: the "Bento" mock-up.
+//  Tokens only (--pbim-*), no gradients, Lucide badges, quiet colour.
+// =====================================================================
+
+// the tinted canvas the white cards sit on (page-wide, this page only)
+#wrap.o_portal_wrap:has(.pbme-home) { background: $pbim-bg; }
+
+.pbme-home {
+    @include pbim-root-vars;
+    container-type: inline-size;
+    color: var(--pbim-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: 12px;
+
+    // the stock spinner and the emptied stock category rows (the tiles have
+    // moved into their sections)
+    .o_portal_doc_spinner { display: none !important; }
+    &.pbme-ready .o_portal_docs > .o_portal_category:not(:has(.o_portal_index_card)) { display: none; }
+    &.pbme-ready .o_portal_docs { margin: 0; }
+    [data-pbme-hidden] { display: none !important; }
+
+    // ---------- top line ----------
+    .pbme-top {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        gap: 18px; flex-wrap: wrap; padding: 10px 4px 22px;
+    }
+    .pbme-top-main { min-width: 0; flex: 1 1 420px; }
+    .pbme-eyebrow {
+        font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+        color: var(--pbim-primary);
+    }
+    .pbme-eyebrow-date::before { content: "\00b7"; margin: 0 7px; }
+    .pbme-greet {
+        font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05;
+        margin: 8px 0 0; color: var(--pbim-ink);
+        em { font-style: normal; color: var(--pbim-primary); }
+        em::after { content: "."; }
+    }
+    .pbme-line {
+        font-size: 15px; color: var(--pbim-muted); margin: 10px 0 0; max-width: 62ch; line-height: 1.5;
+        b { color: var(--pbim-ink); font-weight: 700; }
+    }
+    .pbme-who {
+        display: flex; align-items: center; gap: 12px; min-width: 0; max-width: 100%;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 6px 18px 6px 6px; box-shadow: var(--pbim-sh);
+    }
+    .pbme-who-av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--pbim-soft); flex: none; }
+    .pbme-who-txt { min-width: 0; }
+    .pbme-who-n { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-who-r { font-size: 11.5px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-who-job + .pbme-who-co::before { content: "\00b7"; margin: 0 5px; }
+
+    // ---------- badges (tiles + needs rows) ----------
+    .pbme-badge {
+        display: inline-grid; place-items: center; flex: none; align-self: center;
+        width: 38px; height: 38px; border-radius: 11px;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        // the status-pill look .pbme gives the same class elsewhere never
+        // applies here (different scope), but be explicit
+        padding: 0; font-size: inherit; text-transform: none;
+        .pbme-ic { width: 18px; height: 18px; }
+    }
+    .pbme-badge--indigo { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbme-badge--green  { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbme-badge--blue   { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+    .pbme-badge--amber  { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-badge--rose   { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbme-badge--teal   { background: var(--pbim-teal-soft); color: var(--pbim-teal); }
+    .pbme-badge--pink   { background: var(--pbim-pink-soft); color: var(--pbim-pink); }
+    .pbme-badge--slate  { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+
+    // ---------- the tile itself (the platform's markup, restyled) ----------
+    .o_portal_index_card > a {
+        display: flex; align-items: center; gap: 12px !important;
+        color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s, box-shadow .15s, transform .15s;
+        > div:last-child { min-width: 0; flex: 1; }
+        .fs-5 {
+            font-size: 13.5px !important; font-weight: 700 !important; line-height: 1.3 !important;
+            color: var(--pbim-ink); margin-bottom: 2px !important;
+        }
+        .opacity-75 {
+            opacity: 1 !important; font-size: 12px; color: var(--pbim-muted); line-height: 1.4;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+
+    // ---------- bento ----------
+    .pbme-bento {
+        display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 14px; align-items: stretch;
+    }
+    .pbme-b {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 20px; box-shadow: var(--pbim-sh); padding: 18px 20px;
+        min-width: 0; display: flex; flex-direction: column;
+    }
+    .pbme-lab {
+        display: flex; align-items: center; gap: 8px; margin: 0;
+        font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted);
+        .pbme-ic { width: 15px; height: 15px; }
+    }
+    .pbme-count {
+        margin-left: auto; min-width: 22px; padding: 2px 8px; border-radius: 999px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0; text-align: center;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+    }
+
+    // Needs you
+    .pbme-b-needs { grid-column: span 5; }
+    .pbme-needs { display: flex; flex-direction: column; margin-top: 8px; }
+    .pbme-need {
+        display: flex; align-items: center; gap: 12px; padding: 9px 6px; margin: 0 -6px;
+        border-radius: 12px; text-decoration: none; color: var(--pbim-text);
+        border-bottom: 1px solid var(--pbim-line-2);
+        transition: background-color .15s;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: var(--pbim-bg); color: var(--pbim-text); }
+        &:hover .pbme-need-go { color: var(--pbim-primary); transform: translateX(2px); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+        .pbme-badge { width: 32px; height: 32px; border-radius: 10px; .pbme-ic { width: 16px; height: 16px; } }
+    }
+    .pbme-need-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .pbme-need-body b { font-size: 13.5px; font-weight: 700; color: var(--pbim-ink); }
+    .pbme-need-d { font-size: 12px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-need-go { color: var(--pbim-primary-light); display: inline-grid; transition: color .15s, transform .15s; }
+    .pbme-quiet {
+        display: flex; align-items: center; gap: 8px; margin: 14px 0 2px;
+        font-size: 13px; color: var(--pbim-muted);
+        .pbme-ic { color: var(--pbim-slate); }
+    }
+
+    // Me strip — the five tiles as compact rows inside one card
+    .pbme-b-me { grid-column: span 7; padding: 10px 12px; justify-content: center; }
+    .pbme-me-body {
+        display: flex; flex-wrap: wrap; gap: 4px 6px;
+        > .o_portal_index_card { flex: 1 1 150px; width: auto; max-width: none; min-width: 0; padding: 0; margin: 0; }
+        > .o_portal_index_card > a {
+            background: transparent !important; padding: 10px 12px !important; border-radius: 14px !important;
+            &:hover { background: var(--pbim-bg) !important; }
+            // a short line, allowed to wrap: the strip is a row of four or
+            // five, and "Details and cha…" reads worse than two lines
+            .opacity-75 { white-space: normal; }
+        }
+    }
+
+    // Sections below
+    .pbme-sec { margin-top: 28px; }
+    .pbme-sec-h {
+        font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+        color: var(--pbim-muted); margin: 0 4px 10px;
+    }
+    .pbme-sec-body {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 18px;
+        > .o_portal_index_card { width: auto; max-width: none; padding: 0; margin: 0; }
+        > .o_portal_index_card > a {
+            background: transparent !important; padding: 10px 8px !important; border-radius: 12px !important;
+            .pbme-badge { width: 34px; height: 34px; border-radius: 10px; .pbme-ic { width: 16px; height: 16px; } }
+            &:hover { background: var(--pbim-surface) !important; box-shadow: var(--pbim-sh); }
+        }
+    }
+
+    // Sections and the Me strip appear once the tiles are in them (the
+    // tiles stay visible in the stock grid until then — never a blank page);
+    // a section with no tile, or only hidden / not-yet-counted ones, is not
+    // drawn at all.
+    .pbme-sec, .pbme-b-me { display: none; }
+    &.pbme-ready {
+        .pbme-sec { display: block; }
+        .pbme-b-me { display: flex; }
+        .pbme-sec.is-empty, .pbme-b-me.is-empty { display: none; }
+        .pbme-sec:not(:has(.o_portal_index_card:not(.d-none):not([data-pbme-hidden]))) { display: none; }
+        .pbme-b-me:not(:has(.o_portal_index_card:not(.d-none):not([data-pbme-hidden]))) { display: none; }
+        // the Needs card takes the whole row when the Me strip is not drawn
+        .pbme-bento:not(:has(.pbme-b-me .o_portal_index_card:not(.d-none):not([data-pbme-hidden]))) .pbme-b-needs { grid-column: 1 / -1; }
+    }
+    &:not(.pbme-ready) .pbme-b-needs { grid-column: 1 / -1; }
+}
+
+// narrower page: the two cards stack, sections keep their auto-fill grid
+@container (max-width: 900px) {
+    .pbme-home .pbme-b-needs, .pbme-home .pbme-b-me { grid-column: 1 / -1; }
+}
+// phone (≤ 700 px): one column, smaller greeting, the who pill under it
+@container (max-width: 700px) {
+    .pbme-home .pbme-greet { font-size: 30px; }
+    .pbme-home .pbme-top { padding: 4px 0 16px; }
+    .pbme-home .pbme-bento { display: flex; flex-direction: column; }
+}
+@media (max-width: 700px) {
+    .pbme-home .pbme-greet { font-size: 30px; }
+    .pbme-home .pbme-top { padding: 4px 0 16px; }
+    .pbme-home .pbme-bento { display: flex; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbme-home .o_portal_index_card > a,
+    .pbme-home .pbme-need,
+    .pbme-home .pbme-need-go { transition: none; }
+    .pbme-home .pbme-need:hover .pbme-need-go { transform: none; }
 }

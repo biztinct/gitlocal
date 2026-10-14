@@ -813,3 +813,522 @@ msgstr "ví dụ: Chứng chỉ bằng cấp"
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_documents
 msgid "expires"
 msgstr "hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "1 course due within a week"
+msgstr "1 khóa học đến hạn trong tuần này"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "1 course past its date"
+msgstr "1 khóa học đã quá hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "1 day missing on your timesheet"
+msgstr "Bảng công thiếu 1 ngày"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "1 document expired"
+msgstr "1 tài liệu đã hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_docs_entry_pbme
+msgid "1 expired, upload the renewal"
+msgstr "1 đã hết hạn, hãy tải bản gia hạn lên"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_docs_entry_pbme
+msgid "1 expiring soon"
+msgstr "1 sắp hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "1 overtime request waiting"
+msgstr "1 yêu cầu tăng ca đang chờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "<b>1 day</b> is missing on your timesheet."
+msgstr "Bảng công của bạn đang thiếu <b>1 ngày</b>."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "<b>1 shift</b> is waiting for your OK."
+msgstr "<b>1 ca làm</b> đang chờ bạn xác nhận."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "<b>1 thing</b> needs you."
+msgstr "<b>1 việc</b> đang chờ bạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "<b>A course</b> is due within a week."
+msgstr "<b>Một khóa học</b> đến hạn trong tuần này."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "<b>A course</b> is past its date."
+msgstr "<b>Một khóa học</b> đã quá hạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid ""
+"<span class=\"pbme-need-body\"><b>Profile change approved</b><span "
+"class=\"pbme-need-d\">HR updated your details</span></span>"
+msgstr ""
+"<span class=\"pbme-need-body\"><b>Thay đổi hồ sơ đã được duyệt</b><span "
+"class=\"pbme-need-d\">Phòng nhân sự đã cập nhật thông tin của "
+"bạn</span></span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid ""
+"<span class=\"pbme-need-body\"><b>Profile change with HR</b><span "
+"class=\"pbme-need-d\">They will confirm it shortly</span></span>"
+msgstr ""
+"<span class=\"pbme-need-body\"><b>Thay đổi hồ sơ đang ở phòng nhân "
+"sự</b><span class=\"pbme-need-d\">Họ sẽ sớm xác nhận</span></span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid ""
+"<span class=\"pbme-need-body\"><b>Something needs you</b><span class=\"pbme-"
+"need-d\">Open it to see what</span></span>"
+msgstr ""
+"<span class=\"pbme-need-body\"><b>Có việc đang chờ bạn</b><span "
+"class=\"pbme-need-d\">Mở ra để xem</span></span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid ""
+"<span class=\"pbme-need-body\"><b>Your goals are waiting to be set</b><span "
+"class=\"pbme-need-d\">Agree them with your manager</span></span>"
+msgstr ""
+"<span class=\"pbme-need-body\"><b>Mục tiêu của bạn đang chờ được "
+"đặt</b><span class=\"pbme-need-d\">Thống nhất với quản lý của "
+"bạn</span></span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">Fill in the hours</span>"
+msgstr "<span class=\"pbme-need-d\">Điền số giờ làm</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">Finish them to stay compliant</span>"
+msgstr "<span class=\"pbme-need-d\">Hoàn thành để đảm bảo tuân thủ</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">For this week and next</span>"
+msgstr "<span class=\"pbme-need-d\">Cho tuần này và tuần sau</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">Open My training to carry on</span>"
+msgstr "<span class=\"pbme-need-d\">Mở Đào tạo của tôi để học tiếp</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">Upload the renewal for HR</span>"
+msgstr "<span class=\"pbme-need-d\">Tải bản gia hạn lên cho phòng nhân sự</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">Upload the renewal so HR can verify it</span>"
+msgstr ""
+"<span class=\"pbme-need-d\">Tải bản gia hạn lên để phòng nhân sự xác "
+"minh</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "<span class=\"pbme-need-d\">With your manager</span>"
+msgstr "<span class=\"pbme-need-d\">Đang chờ quản lý của bạn</span>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "A document <b>needs renewing.</b>"
+msgstr "Một tài liệu <b>cần được gia hạn.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "A document expires in"
+msgstr "Một tài liệu hết hạn sau"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "A document expires today"
+msgstr "Một tài liệu hết hạn hôm nay"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "A document expires tomorrow"
+msgstr "Một tài liệu hết hạn ngày mai"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "A document has <b>expired.</b>"
+msgstr "Một tài liệu <b>đã hết hạn.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Afternoon,"
+msgstr "Chào buổi chiều,"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Certificates, IDs and permits"
+msgstr "Chứng chỉ, giấy tờ tùy thân và giấy phép"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "Confirm 1 shift"
+msgstr "Xác nhận 1 ca làm"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Details and changes"
+msgstr "Thông tin và yêu cầu thay đổi"
+
+#. module: pb_me_portal
+#: model:ir.model,name:pb_me_portal.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Evening,"
+msgstr "Chào buổi tối,"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Find anyone, see the teams"
+msgstr "Tìm bất kỳ ai, xem các nhóm"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "Growth"
+msgstr "Phát triển"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "HR <b>approved</b> your profile change."
+msgstr "Phòng nhân sự <b>đã duyệt</b> thay đổi hồ sơ của bạn."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Hand in your notice"
+msgstr "Nộp đơn nghỉ việc"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Interviews and roles you asked for"
+msgstr "Các buổi phỏng vấn và vị trí bạn đề xuất"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Laptop, phone, accounts"
+msgstr "Máy tính, điện thoại, tài khoản"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "Me"
+msgstr "Tôi"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "More"
+msgstr "Khác"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Morning,"
+msgstr "Chào buổi sáng,"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "Needs you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "Nothing needs you right now"
+msgstr "Hiện không có việc gì chờ bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Nothing needs you right now."
+msgstr "Hiện không có việc gì chờ bạn."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Password, devices, sessions"
+msgstr "Mật khẩu, thiết bị, phiên đăng nhập"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Pay, cover, awards"
+msgstr "Lương, bảo hiểm, phần thưởng"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "People"
+msgstr "Mọi người"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Put a name forward for a role"
+msgstr "Giới thiệu ứng viên cho một vị trí"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Recorded, approved, and at which rate"
+msgstr "Đã ghi nhận, đã duyệt và theo hệ số nào"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Say thank you to a colleague"
+msgstr "Gửi lời cảm ơn tới đồng nghiệp"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Scheduled against worked, day by day"
+msgstr "Giờ theo lịch so với giờ đã làm, từng ngày"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Sign-in & security"
+msgstr "Đăng nhập và bảo mật"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "This week and next, in full"
+msgstr "Đầy đủ tuần này và tuần sau"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_bento
+msgid "Time"
+msgstr "Thời gian"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "What you and your manager agreed"
+msgstr "Những gì bạn và quản lý đã thống nhất"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "What you are working towards"
+msgstr "Những gì bạn đang hướng tới"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "What you may spend on a course"
+msgstr "Số tiền bạn có thể dùng cho khóa học"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Who shows you the ropes"
+msgstr "Người hướng dẫn bạn làm quen"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Who still has a course to finish"
+msgstr "Ai còn khóa học chưa hoàn thành"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Your courses and their tests"
+msgstr "Các khóa học và bài kiểm tra của bạn"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Your first weeks, step by step"
+msgstr "Những tuần đầu của bạn, từng bước một"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "Your goals are <b>waiting to be set.</b>"
+msgstr "Mục tiêu của bạn <b>đang chờ được đặt.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Your next pay lands <b>today.</b>"
+msgstr "Kỳ lương tới sẽ về <b>hôm nay.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Your next pay lands <b>tomorrow.</b>"
+msgstr "Kỳ lương tới sẽ về <b>ngày mai.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Your next pay lands in"
+msgstr "Kỳ lương tới sẽ về sau"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "Your overtime request is <b>waiting with your manager.</b>"
+msgstr "Yêu cầu tăng ca của bạn <b>đang chờ quản lý duyệt.</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "Your payslips, time off and documents, all in one place."
+msgstr "Phiếu lương, ngày nghỉ và tài liệu của bạn, tất cả ở một nơi."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "Your profile change is <b>with HR.</b>"
+msgstr "Thay đổi hồ sơ của bạn <b>đang ở phòng nhân sự.</b>"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Your tax, period by period"
+msgstr "Thuế của bạn, theo từng kỳ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "are due within a week."
+msgstr "đến hạn trong tuần này."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "are missing on your timesheet."
+msgstr "bị thiếu trên bảng công của bạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "are past their date."
+msgstr "đã quá hạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "are waiting for your OK."
+msgstr "đang chờ bạn xác nhận."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "are waiting with your manager."
+msgstr "đang chờ quản lý của bạn duyệt."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "courses"
+msgstr "khóa học"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "courses due within a week"
+msgstr "khóa học đến hạn trong tuần này"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "courses past their date"
+msgstr "khóa học đã quá hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "days missing on your timesheet"
+msgstr "ngày bị thiếu trên bảng công"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "days."
+msgstr "ngày."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "documents"
+msgstr "tài liệu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "documents expire soon"
+msgstr "tài liệu sắp hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "documents expired"
+msgstr "tài liệu đã hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_docs_entry_pbme
+msgid "expired, upload the renewals"
+msgstr "đã hết hạn, hãy tải bản gia hạn lên"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_docs_entry_pbme
+msgid "expiring soon"
+msgstr "sắp hết hạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "have expired."
+msgstr "đã hết hạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "need renewing."
+msgstr "cần được gia hạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "need you."
+msgstr "đang chờ bạn."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "overtime requests"
+msgstr "yêu cầu tăng ca"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+msgid "overtime requests waiting"
+msgstr "yêu cầu tăng ca đang chờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_row
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_need_sentence
+msgid "shifts"
+msgstr "ca làm"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_top
+msgid "things"
+msgstr "việc"

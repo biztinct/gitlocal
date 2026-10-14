@@ -27,7 +27,7 @@ Every route re-resolves the employee from the session user (C18.26); no route
 accepts an employee_id for own-data pages (safety rail 3).
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.4.2',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -57,6 +57,8 @@ accepts an employee_id for own-data pages (safety rail 3).
         'web.assets_frontend': [
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_me_portal/static/src/scss/me_portal.scss',
+            # MEHOME: moves each /my tile into its section (no OWL)
+            'pb_me_portal/static/src/interactions/me_home.js',
         ],
         'web.assets_backend': [
             'pb_me_portal/static/src/js/ess_home.js',
