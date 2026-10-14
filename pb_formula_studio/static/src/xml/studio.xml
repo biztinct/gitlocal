@@ -837,6 +837,7 @@
           <!-- outline (grid: always a drawer · cards: drawer below the md breakpoint) -->
           <div t-attf-class="pbfs-outline {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.outlineDrawer ? 'open' : '' }} {{ state.outlineCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-components">
             <button class="pbfs-panel-restore" t-on-click="() => this.togglePanel('outline')" title="Expand Components" aria-label="Expand Components"><span>›</span><span class="pbfs-panel-label">Components</span></button>
+            <div class="ol-toolbar">
             <div class="ol-head">
               <span class="t">Components</span>
               <div class="ol-actions">
@@ -883,6 +884,7 @@
                 <button t-att-class="!focusRelated ? 'on' : ''" t-on-click="() => this.setFocus('all')">All</button>
                 <button t-att-class="focusRelated ? 'on' : ''" t-on-click="() => this.setFocus('related')">Related</button>
               </div>
+            </div>
             </div>
             <t t-foreach="lensAll ? visibleGroups : payrollGroups" t-as="grp" t-key="grp">
               <t t-set="grpItems" t-value="groupItems(grp)"/>
@@ -1491,6 +1493,7 @@
           <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->
           <div t-attf-class="pbfs-test {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.previewDrawer ? 'open' : '' }} {{ state.previewCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-preview">
             <button class="pbfs-panel-restore" t-on-click="() => this.togglePanel('preview')" title="Expand Live preview" aria-label="Expand Live preview"><span>‹</span><span class="pbfs-panel-label">Live preview</span></button>
+            <div class="tp-toolbar">
             <div class="tp-head">
               <span class="t">Live preview</span>
               <button class="ol-act pbfs-panel-collapse" t-on-click="() => this.togglePanel('preview')" title="Collapse Live preview" aria-label="Collapse Live preview">›</button>
@@ -1523,6 +1526,7 @@
                       title="Pin this sample as an extra value row in the grid">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
               </button>
+            </div>
             </div>
             <div t-if="extraPinnedPreviews.length" class="tp-pins">
               <span t-foreach="extraPinnedPreviews" t-as="ex" t-key="ex.sample_id" class="tp-pinchip">
