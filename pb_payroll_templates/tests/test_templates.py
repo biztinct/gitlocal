@@ -84,6 +84,14 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual(self.contract.wage,1000)
         res=self.apply(review);self.assertFalse(res['pending']);self.assertEqual(self.contract.wage,1200)
 
+    def test_employee_name_editable_identity_locked(self):
+        wb=self.export('records');ws=wb['Employee records']
+        self.assertEqual(ws['A1'].value,'Employee ID');self.assertEqual(ws['B1'].value,'Email')
+        self.assertTrue(ws['A2'].protection.locked);self.assertTrue(ws['B2'].protection.locked)
+        self.assertEqual(ws['C2'].value,self.emp.name);self.assertFalse(ws['C2'].protection.locked)
+        ws['C2']='Workbook renamed'
+        r=self.review(wb,'records');self.assertFalse(r['issues']);self.assertEqual(len(r['changes']),1)
+
     def test_id_and_email_cannot_change(self):
         for label,value in [('Employee ID','000002'),('Email','other@example.test')]:
             wb=self.export('records');self.set_value(wb,'Employee records',label,value)

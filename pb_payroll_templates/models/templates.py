@@ -270,7 +270,8 @@ class PayrollTemplates(models.AbstractModel):
         layout = self._layout(cfg, catalog)
         monthly = self._current(cfg, period, people)
         by_id = {c['id']: c for c in catalog}
-        columns = {'Employee records': [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable')} for fid, c in cards.items()]} if mode == 'records' else {TABS[k]: [by_id[i] for i in layout[k]] for k in TABS}
+        ordered_cards = sorted(cards.items(), key=lambda pair: pair[0] != 'f:hr.employee:name')
+        columns = {'Employee records': [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable')} for fid, c in ordered_cards]} if mode == 'records' else {TABS[k]: [by_id[i] for i in layout[k]] for k in TABS}
         snapshot = {'mode': mode, 'period': period, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'employees': {}}
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
@@ -280,7 +281,7 @@ class PayrollTemplates(models.AbstractModel):
         wb.remove(wb.active)
         for sheet_name, cols in columns.items():
             ws = wb.create_sheet(sheet_name)
-            identity = ['Employee ID', 'Employee name'] + (['Email'] if mode == 'records' else [])
+            identity = ['Employee ID', 'Email'] if mode == 'records' else ['Employee ID', 'Employee name']
             headers = identity + [c['label'] for c in cols] + ['_row']
             ws.append(headers)
             for ci, cell in enumerate(ws[1], 1):
@@ -305,7 +306,7 @@ class PayrollTemplates(models.AbstractModel):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
                     vals.append(value)
-                ws.append([person['code'], e.name] + ([person['email']] if mode == 'records' else []) + vals + [person['row']])
+                ws.append([person['code'], person['email'] if mode == 'records' else e.name] + vals + [person['row']])
                 for ci, cell in enumerate(ws[ws.max_row], 1):
                     if isinstance(cell.value, str):
                         cell.data_type = 's'  # Excel must never execute imported text.
@@ -315,7 +316,7 @@ class PayrollTemplates(models.AbstractModel):
                     cell.protection = Protection(locked=not editable)
                     cell.font = Font(name='Calibri', color='241F52' if editable else '63718A')
             ws.column_dimensions[get_column_letter(len(headers))].hidden = True
-            ws.freeze_panes = ('D2' if mode == 'records' else 'C2')
+            ws.freeze_panes = 'C2'
             ws.auto_filter.ref = 'A1:%s%s' % (get_column_letter(len(headers) - 1), max(1, ws.max_row))
             ws.protection.sheet = True
             ws.protection.autoFilter = False
@@ -399,7 +400,8 @@ class PayrollTemplates(models.AbstractModel):
                         issues.append(_('Duplicate field column: %s') % fid)
                     ids[fid] = ci
             expected = {c['id'] for c in cols}
-            if set(ids) != expected or not all(h in header for h in ('Employee ID', 'Employee name', '_row')):
+            identity_headers = ('Employee ID', 'Email', '_row') if mode == 'records' else ('Employee ID', 'Employee name', '_row')
+            if set(ids) != expected or not all(h in header for h in identity_headers):
                 issues.append(_('The columns in %s changed. Start with a fresh download.') % sheet_name)
                 continue
             seen = set()
