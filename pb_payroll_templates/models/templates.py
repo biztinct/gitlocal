@@ -16,6 +16,7 @@ from datetime import date, datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+from odoo.addons.pb_hr_payroll_formula.models.pay_period import default_standard_work_days
 
 LIMIT = 10000
 TABS = {'time': 'Time', 'adjustments': 'Monthly adjustments'}
@@ -104,8 +105,10 @@ class PayrollTemplates(models.AbstractModel):
         return str(employee.barcode or employee.employee_id or '').strip()
 
     def _cards(self, cfg):
+        variable_ids = set(cfg.rule_ids.filtered(lambda r: r.value_kind == 'quantity' or VARIABLE.search(r.name or '')).ids)
         return {k: v for k, v in self.env['pb.records.desk']._cards(cfg.id).items()
-                if v.get('field') not in IDENTITY}
+                if v.get('field') not in IDENTITY and not (
+                    v.get('group') == 'component' and (v.get('component') or {}).get('id') in variable_ids)}
 
     def _identity_rules(self, cfg):
         found = {}
@@ -227,7 +230,7 @@ class PayrollTemplates(models.AbstractModel):
         start, end = self._period(period)
         batches = self.env['hr.payroll.import.batch'].sudo().search([
             ('formula_config_id', '=', cfg.id), ('date_from', '=', start), ('date_to', '=', end),
-            ('company_id', '=', self.env.company.id)], order='id')
+            ('company_id', '=', self.env.company.id), ('state', '=', 'done')], order='id')
         catalog = self._catalog(cfg)
         probe = self.env['hr.payroll.import.batch'].new({'formula_config_id': cfg.id})
         for line in batches.mapped('import_line_ids').filtered(lambda l: l.employee_id.id in result):
@@ -299,6 +302,9 @@ class PayrollTemplates(models.AbstractModel):
                 vals = []
                 for c in cols:
                     value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode == 'monthly' else values.get(c['id'])
+                    if mode == 'monthly' and value is None and not c.get('readonly') and re.search(r'standard.*days|standard working days', c['label'], re.I):
+                        start, end = self._period(period)
+                        value = default_standard_work_days(start, end)
                     vals.append(value)
                 ws.append([person['code'], e.name] + ([person['email']] if mode == 'records' else []) + vals + [person['row']])
                 for ci, cell in enumerate(ws[ws.max_row], 1):
@@ -521,7 +527,7 @@ class PayrollTemplates(models.AbstractModel):
         rows = self.env['pb.payroll.workbook.exchange'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id),
             ('kind', '=', 'applied')], limit=30)
-        return [{'id': r.id, 'when': str(r.create_date), 'by': r.owner_id.name,
+        return [{'id': r.id, 'when': str(r.write_date), 'by': r.owner_id.name,
                  'filename': r.payload.get('filename'), 'mode': r.payload.get('mode'),
                  'period': r.payload.get('period'), 'count': len(r.payload.get('selected', [])),
                  'pending': r.payload.get('result', {}).get('pending', False)} for r in rows]
@@ -538,7 +544,17 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         current = self._current(cfg, period, people)
         catalog = self._catalog(cfg)
-        by_rule = {c.get('component', {}).get('id'): fid for fid, c in cards.items() if c.get('component')}
+        time_ids = set(self._layout(cfg, catalog)['time'])
+        mandatory = [c for c in catalog if c['id'] in time_ids and not c.get('readonly')
+                     and re.search(r'paid.?days|working.?days|standard.*days|period.?days|days.?worked|ngày công', c['label'], re.I)]
+        missing = []
+        for employee in people:
+            for c in mandatory:
+                value = current[employee.id].get(c['id'])
+                if value is None or value == '' or (re.search(r'standard|period|working', c['label'], re.I) and float(value) <= 0):
+                    missing.append('%s · %s' % (employee.name, c['label']))
+        if missing:
+            raise UserError(_('Complete the required Time inputs before computing payroll:\n%s') % '\n'.join(missing[:20]))
         headers = ['Employee ID', 'employee_code', 'Employee name', 'employee_name', 'email']
         identity_cols = []
         for rid, kind in self._identity_rules(cfg).items():
