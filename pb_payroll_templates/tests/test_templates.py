@@ -210,6 +210,23 @@ class TestPayrollTemplates(TransactionCase):
             with self.assertRaisesRegex(UserError,'Recurring salary is missing'):
                 self.api._engine_file(self.cfg,'2026-10')
 
+    def test_saved_monthly_batch_refreshes_recurring_salary(self):
+        batch=self.env['hr.payroll.import.batch'].create({'name':'Monthly recompute',
+            'formula_config_id':self.cfg.id,'company_id':self.env.company.id,
+            'one_time':True,'date_from':'2026-10-01','date_to':'2026-10-31',
+            'import_filename':'Payobook-month-2026-10.xlsx'})
+        raw={'Payroll|Salary':0,'Payroll|Paid days':20,'Payroll|Monthly bonus':0}
+        provenance={}
+        values=batch._transform_data_to_formula_inputs(raw,contract=self.contract,
+            employee=self.emp,provenance=provenance)
+        self.assertEqual(values[self.salary.code],1000)
+        self.assertEqual(values[self.bonus.code],0)
+        self.assertEqual(raw['Payroll|Salary'],0)
+        self.assertEqual(provenance[self.salary.code]['src'],'contract_field')
+        batch.import_filename='ordinary-upload.xlsx'
+        ordinary=batch._transform_data_to_formula_inputs(raw,contract=self.contract,employee=self.emp)
+        self.assertEqual(ordinary[self.salary.code],0)
+
     def test_missing_time_blocks_computation(self):
         with self.assertRaises(UserError):self.api._engine_file(self.cfg,'2026-10')
 

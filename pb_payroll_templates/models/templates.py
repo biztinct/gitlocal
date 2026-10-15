@@ -679,6 +679,54 @@ class TemplatePayrun(models.AbstractModel):
 class TemplateBatch(models.Model):
     _inherit = 'hr.payroll.import.batch'
 
+    def _template_period(self):
+        if len(self) != 1 or not self.one_time or not self.formula_config_id or not self.date_from:
+            return None
+        period = fields.Date.to_date(self.date_from).strftime('%Y-%m')
+        if self.import_filename != 'Payobook-month-%s.xlsx' % period:
+            return None
+        start, end = self.env['pb.payroll.templates']._period(period)
+        return period if self.date_from == start and self.date_to == end else None
+
+    def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None,
+                                         provenance=None, topup_data=None):
+        # The persisted batch outlives the initial upload's context. Recompute
+        # must join current recurring records again, rather than reusing the
+        # original generated workbook's salary/allowance snapshot.
+        period = self._template_period()
+        if not period or not employee:
+            return super()._transform_data_to_formula_inputs(raw_data, contract=contract,
+                employee=employee, provenance=provenance, topup_data=topup_data)
+        cfg = self.formula_config_id
+        if employee.company_id != self.company_id or cfg.company_id != self.company_id:
+            raise UserError(_('The monthly payroll records belong to a different company.'))
+        facade = self.env['pb.payroll.templates'].with_company(self.company_id)
+        catalog = facade._catalog(cfg)
+        cards = facade._cards(cfg)
+        saved = facade._record_values(cfg, employee, cards)[employee.id]
+        raw_data = dict(raw_data or {})
+        joined = []
+        salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
+        for c in catalog:
+            if not (c.get('readonly') and c.get('record_id')):
+                continue
+            value = saved.get(c['record_id'])
+            if c['id'] in salary_keys and value in (None, ''):
+                raise UserError(_('Recurring salary is missing for %s. Update the employee / contract records before recomputing payroll.') % employee.name)
+            for key in c['source_keys']:
+                raw_data[key] = value
+            joined.append(c)
+        monthly_codes = [c['code'] for c in catalog if not c.get('readonly')]
+        contextual = self.with_context(pb_template_engine=True, pb_template_monthly_codes=monthly_codes)
+        result = super(TemplateBatch, contextual)._transform_data_to_formula_inputs(
+            raw_data, contract=contract, employee=employee, provenance=provenance, topup_data=topup_data)
+        if provenance is not None:
+            for c in joined:
+                fid = c['record_id']
+                kind = 'contract_component' if fid.startswith('c:') else 'contract_field' if fid.startswith('f:hr.contract:') else 'employee_field' if fid.startswith('f:hr.employee:') else 'bank_account'
+                provenance[c['code']] = {'src': kind, 'key': fid, 'via': 'monthly_records'}
+        return result
+
     def _mapped_record_value(self, mapping, contract=None, employee=None):
         if (self.env.context.get('pb_template_engine') and mapping
                 and mapping.component_id.code in self.env.context.get('pb_template_monthly_codes', [])):
