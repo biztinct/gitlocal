@@ -374,7 +374,7 @@ class TestMeHomeCards(TransactionCase):
         tokens = 'pb_import_kit/static/src/scss/import_tokens.scss'
         self.assertIn(fonts, front)
         self.assertLess(front.index(fonts), front.index(tokens))
-        self.assertEqual(manifest['version'], '19.0.3.3.0')
+        self.assertEqual(manifest['version'], '19.0.3.4.0')
         kit = get_module_path('pb_import_kit')
         self.assertTrue(os.path.isfile(os.path.join(kit, 'static', 'fonts', 'InterVariable.woff2')))
         self.assertTrue(os.path.isfile(os.path.join(kit, 'static', 'fonts', 'Inter-OFL.txt')))

@@ -1775,6 +1775,42 @@ msgid "What the company announced"
 msgstr "Những gì công ty đã thông báo"
 
 #. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Expenses"
+msgstr "Chi phí"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Claim back what you paid for"
+msgstr "Yêu cầu hoàn lại khoản bạn đã chi"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Business trips"
+msgstr "Công tác"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Request a trip and follow its approval"
+msgstr "Đề xuất chuyến công tác và theo dõi phê duyệt"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Project time"
+msgstr "Giờ theo dự án"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Your hours by project, week by week"
+msgstr "Giờ làm của bạn theo dự án, từng tuần"
+
+#. module: pb_me_portal
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
 msgid "Clocked in since"
 msgstr "Đã vào ca từ"

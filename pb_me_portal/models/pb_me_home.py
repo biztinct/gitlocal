@@ -100,14 +100,20 @@ _TILE_ROWS = (
     ('/my/compensation', 'me', 'gift', 'pink', {}),
     # TIERS T3a: every request the person made, in one list
     ('/my/requests', 'me', 'list-checks', 'teal', {}),
+    # ETP E1: pb_me_expense's claims (soft — the row is inert without it)
+    ('/my/expenses', 'me', 'receipt', 'green', {}),
     # --- Time ---
     # TIERS T3b: pb_ess_workforce's Clock page (drawn only when the company
     # has the switch on)
     ('/my/work/clock', 'time', 'timer', 'green', {}),
     ('/my/work/schedule', 'time', 'calendar', 'indigo', {}),
     ('/my/work/timesheet', 'time', 'clock', 'blue', {}),
+    # ETP E3: pb_me_project_time's week grid (soft — inert without it)
+    ('/my/project-time', 'time', 'clipboard-list', 'indigo', {}),
     ('/my/work/overtime', 'time', 'timer', 'amber', {}),
     ('/my/holidays', 'time', 'sun', 'teal', {}),
+    # ETP E2: pb_me_trip's business trips (soft — inert without it)
+    ('/my/trips', 'time', 'plane', 'pink', {}),
     # its door is the Leave card (M2); the tile is not drawn from M1 on
     ('/my/work/leave', 'time', 'umbrella', 'green', {'hidden': True}),
     # --- Growth ---
@@ -175,6 +181,12 @@ _TILE_WORDS = {
                        'text': _lt('Start and end your day')},
     '/my/notices': {'title': _lt('Notices'),
                     'text': _lt('What the company announced')},
+    '/my/expenses': {'title': _lt('Expenses'),
+                     'text': _lt('Claim back what you paid for')},
+    '/my/trips': {'title': _lt('Business trips'),
+                  'text': _lt('Request a trip and follow its approval')},
+    '/my/project-time': {'title': _lt('Project time'),
+                         'text': _lt('Your hours by project, week by week')},
 }
 
 
