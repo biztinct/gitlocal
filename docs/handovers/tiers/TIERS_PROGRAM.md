@@ -45,6 +45,11 @@ system already get a *portal* account automatically, but it is stored on `hr.emp
   biz_access 19.0.1.6.0, pb_zoho_bridge 19.0.1.2.0, pb_demo 19.0.1.13.0, pb_ess_workforce 19.0.1.1.0 (T2b by Fable:
   the two workforce writes under sudo + the hand-given-permission exclusion, ledger T22). Deployed payobook-first
   2026-10-15; live walk = flip ess2.demo to Employee through the new switch.
+- **T3a LIVE on payobook 2026-10-15 evening** (pb_ask_hr 19.0.1.0.0, pb_me_portal 19.0.3.2.0; ninth rail entry
+  "Ask HR" kept by the owner; live walk ASK-00001 end to end). **T3b BUILT, tested, committed, NOT deployed**
+  (owner freeze 20:32 Sydney; recipe in `docs/deploy/PENDING.md`). **T3c** (Fable, small): buddy stand-in guard
+  (pb_onboarding 19.0.1.1.1), tokened training-claim links (pb_training 19.0.1.2.5). **T4 plan** in `T4_PLAN.md`
+  with `tools/tiers_switchover.py` (dry-run / apply / rollback / backfill).
 - **T3 split** (2026-10-15): **T3a** = Ask HR (new module `pb_ask_hr`) + My requests + home hooks
   (`T3A_HANDOVER.md`, Opus); **T3b** = clock in/out on the portal (pb_ess_workforce) + notices on the home (glue
   `pb_me_portal_comm` over pb_hr_comm's delivery rows) + the "Left for T3" list in `T2_REPORT.md` §3 (colleague

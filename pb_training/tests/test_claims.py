@@ -932,3 +932,22 @@ class TestTheWords(ClaimCase):
         for number in ('5,000,000', '4,500,000', '500,000'):
             self.assertIn(number, problem.replace('\u202f', ','),
                           '%s is missing from the refusal' % number)
+
+
+# =========================================================================
+#  TIERS T3c — download links work for an employee login (ledger T20)
+# =========================================================================
+@tagged('post_install', '-at_install')
+class TestT3cTokenedLinks(ClaimCase):
+
+    def test_t3c_claim_links_carry_the_attachment_token(self):
+        claim = self._claim()
+        row = claim.sudo()._payload()
+        for key, att in (('invoice_url', claim.invoice_attachment_id),
+                         ('certificate_url', claim.certificate_attachment_id)):
+            self.assertTrue(att, key)
+            self.assertIn('/web/content/%s?download=true&access_token='
+                          % att.id, row[key])
+            self.assertIn(att.sudo().access_token, row[key])
+        self.assertEqual(
+            self.Claim._tokened_url(self.env['ir.attachment']), '')

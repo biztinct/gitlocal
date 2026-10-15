@@ -638,6 +638,17 @@ class PbTrainingClaim(models.Model):
     # =====================================================================
     #  what a screen reads
     # =====================================================================
+    @api.model
+    def _tokened_url(self, attachment):
+        """A download link that works for an employee login too (TIERS T3c,
+        ledger T20): a portal account has no ACL on attachments, so the link
+        carries the attachment's own access token. One link for everyone."""
+        if not attachment:
+            return ''
+        att = attachment.sudo()
+        token = att.access_token or att.generate_access_token()[0]
+        return '/web/content/%s?download=true&access_token=%s' % (att.id, token)
+
     def _payload(self):
         """One claim, as a row on a board or a card on a phone."""
         self.ensure_one()
@@ -665,12 +676,9 @@ class PbTrainingClaim(models.Model):
             'refuse_note': self.refuse_note or '',
             'has_invoice': bool(self.invoice_attachment_id),
             'has_certificate': bool(self.certificate_attachment_id),
-            'invoice_url': '/web/content/%s?download=true'
-                           % self.invoice_attachment_id.id
-                           if self.invoice_attachment_id else '',
-            'certificate_url': '/web/content/%s?download=true'
-                               % self.certificate_attachment_id.id
-                               if self.certificate_attachment_id else '',
+            'invoice_url': self._tokened_url(self.invoice_attachment_id),
+            'certificate_url': self._tokened_url(
+                self.certificate_attachment_id),
             'incentive_id': self.incentive_id.id,
             'submitted_on': fields.Datetime.to_string(self.submitted_on) or '',
         }

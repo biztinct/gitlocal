@@ -391,6 +391,13 @@ class HrEmployeeBuddy(models.Model):
             raise UserError(_("That person could not be found."))
         if temp and temp.id == self.id:
             raise UserError(_("Nobody can stand in for themselves."))
+        # TIERS T3c: a stand-in is an active colleague in the joiner's own
+        # company. The portal route checks the offered list; this is the
+        # model's own floor so no caller can reach past it.
+        temp_sudo = temp.sudo()
+        if temp and (not temp_sudo.active or
+                     temp_sudo.company_id != self.sudo().company_id):
+            raise UserError(_("Pick a stand-in from the same company."))
         start = fields.Date.to_date(date_from) if date_from else \
             fields.Date.today()
         end = fields.Date.to_date(date_to) if date_to else False

@@ -321,9 +321,21 @@ class PbOnboardingPortal(CustomerPortal):
         if joiner_id not in mine.ids:
             return request.redirect('/my/buddy')
         joiner = request.env['hr.employee'].sudo().browse(joiner_id)
+        # TIERS T3c: the stand-in must be one of the people this page OFFERS
+        # (own team, own company, active) — the same re-derived boundary as
+        # the joiner above. A crafted temp_id used to reach any employee.
+        try:
+            temp_id = int(post.get('temp_id') or 0)
+        except (TypeError, ValueError):
+            temp_id = 0
+        if temp_id and temp_id not in {
+                o['id'] for o in self._handover_options(emp)}:
+            return request.redirect(
+                '/my/buddy?problem=%s' % quote(
+                    'Pick a stand-in from your own team.'))
         try:
             joiner.set_temp_buddy(
-                post.get('temp_id') or False,
+                temp_id or False,
                 post.get('date_from') or False,
                 post.get('date_to') or False)
         except Exception as err:        # noqa: BLE001 — say what went wrong
