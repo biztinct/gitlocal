@@ -30,7 +30,8 @@ def business_counts():
 
 def scalar_copy(record):
     return {k: v for k, v in record.copy_data()[0].items()
-            if record._fields[k].type not in ('many2one', 'one2many', 'many2many')}
+            if k in target[record._name]._fields
+            and record._fields[k].type not in ('many2one', 'one2many', 'many2many')}
 
 
 before = business_counts()
@@ -69,7 +70,9 @@ with Registry('payobook').cursor() as source_cr:
     else:
         vals = scalar_copy(source)
         vals.update(name='Rize Singapore Payroll', code=code, company_id=company.id,
-                    state='draft', is_demo=False)
+                    state='draft')
+        if 'is_demo' in target['hr.formula.config']._fields:
+            vals['is_demo'] = False
         config = target['hr.formula.config'].create(vals)
         table_vals = scalar_copy(tables)
         table_vals.update(company_id=company.id, state='draft', parameter_ids=[
@@ -85,7 +88,9 @@ with Registry('payobook').cursor() as source_cr:
                     'create_uid', 'write_uid'}:
                     assert not source_rule[k], ('Unreviewed rule relation', k)
             rv = scalar_copy(source_rule)
-            rv.update(config_id=config.id, is_demo=False)
+            rv.update(config_id=config.id)
+            if 'is_demo' in target['hr.formula.rule']._fields:
+                rv['is_demo'] = False
             if source_rule.category_id:
                 category = target['hr.salary.rule.category'].search([
                     ('code', '=', source_rule.category_id.code)])
