@@ -160,6 +160,10 @@ class TestPayrollTemplates(TransactionCase):
         run=self.env['hr.payslip.run'].browse(result['run_id'])
         self.assertEqual(run.pb_formula_config_id,self.cfg)
 
+    def test_draft_configuration_cannot_compute(self):
+        self.cfg.state='draft'
+        with self.assertRaises(UserError):self.api._engine_file(self.cfg,'2026-10')
+
     def test_formula_and_invalid_number_are_refused(self):
         for value in ('=1+1','abc'):
             wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',value)

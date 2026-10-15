@@ -179,8 +179,9 @@ class PayrollTemplates(models.AbstractModel):
         people = self._roster(cfg, period)
         catalog = self._catalog(cfg)
         cards = self._cards(cfg)
-        return {'configs': [{'id': c.id, 'name': c.name, 'country': c.country_code} for c in configs],
+        return {'configs': [{'id': c.id, 'name': c.name, 'country': c.country_code, 'state': c.state} for c in configs],
                 'config_id': cfg.id, 'name': cfg.name, 'country': cfg.country_code,
+                'state': cfg.state,
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'record_columns': len(cards), 'fields': catalog,
                 'layout': self._layout(cfg, catalog),
@@ -537,6 +538,8 @@ class PayrollTemplates(models.AbstractModel):
         change formula bindings. Recurring fields come freshly from records.
         """
         import openpyxl
+        if cfg.state != 'active':
+            raise UserError(_('Activate this payroll configuration before using its monthly inputs in Pay Run.'))
         people = self._roster(cfg, period)
         cards = self._cards(cfg)
         records = self._record_values(cfg, people, cards)

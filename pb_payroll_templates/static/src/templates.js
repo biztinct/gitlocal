@@ -109,6 +109,7 @@ export class PayrollTemplates extends Component {
     openRecords(){return this.action.doAction('pb_records.action_pb_records_desk',{additionalContext:{records_config_id:this.state.configId}});}
     openConfigurations(){return this.action.doAction('pb_formula_studio.action_pb_formula_studio');}
     openPayRun(){
+        if(this.state.data.state!=='active'||!this.state.data.people){this.notif.add('Activate this configuration and assign employees before starting a pay run.',{type:'warning'});return;}
         const [y,m]=this.state.period.split('-').map(Number),last=new Date(y,m,0).getDate();
         return this.action.doAction('pb_payrun_wizard.action_pb_payrun_wizard',{additionalContext:{pb_payai_prefill:{from_templates:true,formula_config_id:this.state.configId,date_start:`${this.state.period}-01`,date_end:`${this.state.period}-${last}`}}});
     }
