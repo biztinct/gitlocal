@@ -20,6 +20,22 @@ mail_debranding): those never touch email **subjects**, the bare word
      Opt out by setting config parameter
      `biz_mail_debrand.disable_digest = 0` before install/upgrade.
 
+3. **Test/demo recipients are never mailed** (`models/blocked_recipients.py`):
+   - Config parameter `biz_mail_debrand.blocked_domains` (comma/space
+     separated). An entry blocks the domain and all its sub-domains
+     (`local` blocks `x@payobook.local`; `*.`/`@` prefixes are ignored).
+   - Parameter absent → the reserved, never-deliverable domains
+     (`example.com/.net/.org`, `example`, `invalid`, `local`, `localhost`,
+     `test`). Set it to `none` to block nothing.
+   - `_send()`: a mail whose EVERY recipient is blocked is closed as
+     `cancel` ("Not sent: test or demo address.") before stock sending —
+     stock `_send` would otherwise leave it `outgoing` and the queue would
+     retry it for ever. Its email notifications go to `canceled`.
+   - `_prepare_outgoing_list()`: mixed mail keeps the real recipients and
+     loses only the blocked ones.
+   - Why: the demo database holds thousands of made-up addresses; each
+     send bounced back into the owner's inbox (2026-10-03).
+
 ## Brand resolution (no hardcoded name)
 
 First non-empty config parameter wins:
