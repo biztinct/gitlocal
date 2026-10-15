@@ -154,6 +154,12 @@ class TestPayrollTemplates(TransactionCase):
         normal=self.env['hr.payroll.import.batch'].new({'formula_config_id':self.cfg.id})
         self.assertEqual(normal._mapped_record_value(mapping,contract=self.contract,employee=self.emp),1000)
 
+    def test_selected_scheme_wins_over_stale_demo_division(self):
+        result=self.env['pb.payrun.wizard'].prepare_run({'name':'Workbook selected scheme check','formula_config_id':self.cfg.id,'templates_monthly':True,'division':'retail','date_start':'2089-12-01','date_end':'2089-12-31'})
+        self.assertEqual(result['formula_config_id'],self.cfg.id)
+        run=self.env['hr.payslip.run'].browse(result['run_id'])
+        self.assertEqual(run.pb_formula_config_id,self.cfg)
+
     def test_formula_and_invalid_number_are_refused(self):
         for value in ('=1+1','abc'):
             wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',value)

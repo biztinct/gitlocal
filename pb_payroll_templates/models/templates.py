@@ -590,6 +590,14 @@ class TemplatePayrun(models.AbstractModel):
     _inherit = 'pb.payrun.wizard'
 
     @api.model
+    def prepare_run(self, vals):
+        if vals.get('templates_monthly'):
+            # A division left over from the demo defaults must not replace
+            # the explicitly selected configuration with Retail's scheme.
+            vals = dict(vals, division=False)
+        return super().prepare_run(vals)
+
+    @api.model
     def spreadsheet_gate(self, vals=None):
         if (vals or {}).get('templates_monthly'):
             self._require_runner()

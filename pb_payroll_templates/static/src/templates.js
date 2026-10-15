@@ -132,6 +132,7 @@ patch(PayrunWizard.prototype,{
     _applyPrefill(pre){
         if(!pre.from_templates)return super._applyPrefill(pre);
         this.state.form.templates_monthly=true;
+        this.state.form.division=null;
         this.state.form.date_start=pre.date_start;this.state.form.date_end=pre.date_end;
         const card=this.schemeCards.find(c=>c.id===pre.formula_config_id);if(card)this.pickScheme(card);
     },
