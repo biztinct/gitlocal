@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, useEffect, onMounted, onWillUnmount, onWillUpdateProps, toRaw } from "@odoo/owl";
+import { Component, reactive, useState, useRef, useEffect, onMounted, onWillUnmount, onWillUpdateProps, toRaw } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
@@ -591,6 +591,77 @@ export function richBlocks(text) {
     return blocks;
 }
 
+/** The live part of the recording bar: the level meter and the clock.
+ *
+ * ITS OWN COMPONENT SO ONLY IT REDRAWS (fix 2026-10-16, "the screen flickers
+ * while I record"). The meter changes ~12 times a second and the clock every
+ * second. When both lived in the chat's own `state`, every change redrew the
+ * WHOLE chat, and OWL re-inserts every `t-out` markup block whose value is a
+ * new Markup object (VHtml.patch compares the objects, not the text) — so the
+ * past helper turns and every card icon were torn out and put back a dozen
+ * times a second. The chat now writes `rec` through a plain `reactive()` it
+ * never reads while rendering, so only this component is subscribed. */
+export class PayaiRecMeter extends Component {
+    static template = "pb_payroll_ai_insights.RecMeter";
+    static props = {
+        rec: Object,
+        live: { type: Boolean, optional: true },
+        clockOnly: { type: Boolean, optional: true },
+    };
+
+    setup() {
+        this.rec = useState(this.props.rec);
+    }
+
+    get bars() {
+        return levelBarsFor(this.props.live ? this.rec.level : 0);
+    }
+
+    get clock() {
+        return recordingClockFor(this.rec.duration);
+    }
+
+    get shortClock() {
+        return formatSeconds(this.rec.duration);
+    }
+}
+
+function formatSeconds(s) {
+    const n = s || 0;
+    return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
+}
+
+/** Five bars, heights in percent, from a live level 0..1. */
+function levelBarsFor(level) {
+    const l = level || 0;
+    return [0.55, 0.85, 1, 0.8, 0.6].map((w) => Math.round(18 + 82 * Math.min(1, l * w)));
+}
+
+function recordingClockFor(seconds) {
+    return `${formatSeconds(seconds)} / ${formatSeconds(MAX_RECORDING_SECONDS)}`;
+}
+
+/** Same text as last time → the SAME Markup object, so OWL leaves the DOM
+ *  alone on a redraw (see PayaiRecMeter). Keyed per owner object (a turn, or
+ *  the chat itself) and slot. */
+const STABLE_MARKUP = new WeakMap();
+function stableMarkup(owner, slot, value) {
+    if (!owner || typeof owner !== "object") {
+        return value;
+    }
+    let slots = STABLE_MARKUP.get(owner);
+    if (!slots) {
+        slots = new Map();
+        STABLE_MARKUP.set(owner, slots);
+    }
+    const prev = slots.get(slot);
+    if (prev !== undefined && String(prev) === String(value)) {
+        return prev;
+    }
+    slots.set(slot, value);
+    return value;
+}
+
 /**
  * AiInsightChat — Floating pill → Centered modal chat for PayAI.
  * Renders as a persistent bottom-right pill that expands into a
@@ -598,7 +669,7 @@ export function richBlocks(text) {
  */
 export class AiInsightChat extends Component {
     static template = "pb_payroll_ai_insights.AiInsightChat";
-    static components = { ChartRenderer };
+    static components = { ChartRenderer, PayaiRecMeter };
     // LEARN v3. True only for the copy drawn inside the helper drawer.
     static embedded = false;
 
@@ -632,7 +703,6 @@ export class AiInsightChat extends Component {
             showSuggestions: true,
             aiIconUrl: false,
             isRecording: false,
-            recordingDuration: 0,
             // LEARNOS Phase 6 — voice.
             //
             // `voice.available` decides whether a microphone is DRAWN at all.
@@ -648,11 +718,14 @@ export class AiInsightChat extends Component {
             ttsOn: false,
             // ONECHAT OC3 — tap to talk.
             micStarting: false,     // tapped; the recorder has not started
-            level: 0,               // the live level meter, 0..1
             hearAs: null,           // "vi" | "en": offer to hear it again
             speakingId: null,       // the turn being read aloud (its Stop)
             sendPulse: false,       // one pulse on Send when words land
         });
+        // The live level (0..1) and the seconds recorded. NOT in `state`: the
+        // chat never reads these while rendering, only PayaiRecMeter does, so
+        // a meter tick redraws the meter and nothing else (no flicker).
+        this.rec = reactive({ level: 0, duration: 0 });
         // ONECHAT OC2 — WHERE THE WORDS IN THE BOX CAME FROM (§6.3). A send
         // is "spoken" only when the text sent is exactly what was heard into
         // an EMPTY box: any edit, or typing before speaking, makes it typed.
@@ -1355,13 +1428,13 @@ export class AiInsightChat extends Component {
         this._recStartedAt = Date.now();
         this.state.micStarting = false;
         this.state.isRecording = true;
-        this.state.recordingDuration = 0;
+        this.rec.duration = 0;
         this._recordingTimer = setInterval(() => {
-            this.state.recordingDuration++;
+            this.rec.duration++;
             // A HARD CEILING. A key that sticks, or a pointer released
             // outside the window, must not leave the microphone open and
             // then post ten minutes of an open-plan office.
-            if (this.state.recordingDuration >= MAX_RECORDING_SECONDS) {
+            if (this.rec.duration >= MAX_RECORDING_SECONDS) {
                 this._endTalk();
             }
         }, 1000);
@@ -1413,7 +1486,7 @@ export class AiInsightChat extends Component {
                 if (this.state.isRecording) {
                     this._peak = Math.max(this._peak, rms);
                 }
-                this.state.level = Math.min(1, rms * 4);
+                this.rec.level = Math.min(1, rms * 4);
                 this._meterTimer = setTimeout(read, METER_MS);
             };
             read();
@@ -1422,15 +1495,14 @@ export class AiInsightChat extends Component {
         }
     }
 
-    /** Five bars, heights in percent, from the live level. */
+    /** Five bars, heights in percent, from the live level. (The screen draws
+     *  them through PayaiRecMeter; these stay for callers and tests.) */
     get levelBars() {
-        const level = this.state.level || 0;
-        return [0.55, 0.85, 1, 0.8, 0.6].map((w) => Math.round(18 + 82 * Math.min(1, level * w)));
+        return levelBarsFor(this.rec.level);
     }
 
     get recordingClock() {
-        const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-        return `${fmt(this.state.recordingDuration || 0)} / ${fmt(MAX_RECORDING_SECONDS)}`;
+        return recordingClockFor(this.rec.duration);
     }
 
     /** Escape while recording, or Cancel: stop, and send nothing. Works while
@@ -1498,7 +1570,7 @@ export class AiInsightChat extends Component {
         }
         this.state.isRecording = false;
         this.state.micStarting = false;
-        this.state.level = 0;
+        this.rec.level = 0;
     }
 
     /** Audio out, TEXT INTO THE ASK BAR. Nothing is added to the transcript
@@ -1814,10 +1886,7 @@ export class AiInsightChat extends Component {
     }
 
     formatRecordingTime() {
-        const s = this.state.recordingDuration;
-        const mins = Math.floor(s / 60);
-        const secs = s % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+        return formatSeconds(this.rec.duration);
     }
 
     // --- Helpers ---
@@ -2136,18 +2205,24 @@ export class AiInsightChatEmbedded extends AiInsightChat {
     /** Draw a helper turn through the drawer's renderer (one visual
      *  language with the guide-only stream). Reads `lang` so a flip
      *  re-renders every past turn from the payload it holds. */
+    //
+    // STABLE MARKUP: each of these returns the previous Markup object when the
+    // text is unchanged, so a redraw for any other reason (typing, a status
+    // change) leaves the turn's DOM in place instead of re-inserting it.
     helperTurn(msg) {
-        return this.props.helper.turnHTML(msg, this.props.lang, { canAct: this.state.status.can_act });
+        return stableMarkup(toRaw(msg), "turn",
+            this.props.helper.turnHTML(msg, this.props.lang, { canAct: this.state.status.can_act }));
     }
 
     contextCard() {
         void this.props.screen;
         void this.props.place;
-        return this.props.helper.contextHTML(this.props.lang, { canAct: this.state.status.can_act });
+        return stableMarkup(toRaw(this.state), "context",
+            this.props.helper.contextHTML(this.props.lang, { canAct: this.state.status.can_act }));
     }
 
     extraChips(msg) {
-        return this.props.helper.chipsHTML(msg.extra, this.props.lang);
+        return stableMarkup(toRaw(msg), "chips", this.props.helper.chipsHTML(msg.extra, this.props.lang));
     }
 
     /** "From your pay data" over a PayAI figures answer. */

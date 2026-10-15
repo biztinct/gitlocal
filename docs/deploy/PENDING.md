@@ -31,6 +31,7 @@ The completed tiers rollout does not overwrite or take over that work.
 
 | Date | Module → version | What changed | Status |
 |---|---|---|---|
+| 2026-10-16 | pb_payroll_ai_insights, pb_payai_actions (screen files only, versions unchanged) | PayAI flicker while recording: the level meter and clock now redraw on their own (PayaiRecMeter), and unchanged helper turns and card icons keep their drawn copy instead of being re-inserted on every redraw. Looks-only tier on payobook: files + asset purge + `orm_signaling_assets` + `web.assets.version`, no restart; live check: 43 screen changes in 5 s of recording, none of them turns or icons (was 681 in 0.4 s). | Asset purge + version bump on rize, payobook_template, abm (no -u needed) |
 | 2026-10-16 | biz_access → 19.0.1.6.1 | TIERS follow-up: the Employee/Staff switch refuses a person with a permission given by hand (mirrors `tools/tiers_switchover.py`). `-u biz_access` on all five databases in one run, asset purge + version bump each; abm jobs re-checked. | Deployed on all five 2026-10-16 (this session) |
 
 ## Completed batch — 16 October 2026

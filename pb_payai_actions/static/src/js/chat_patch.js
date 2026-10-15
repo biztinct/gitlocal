@@ -277,9 +277,19 @@ function doorTarget(row) {
     return out;
 }
 
+/** ONE Markup object per icon name, made once. OWL re-inserts a `t-out`
+ *  block whenever it is handed a NEW Markup object, even with the same text,
+ *  so a fresh `markup()` per call made every card icon flicker on each redraw
+ *  of the chat (fix 2026-10-16; see PayaiRecMeter in ai_insight_chat.js). */
+const SVG_CACHE = new Map();
 function svg(name) {
-    const body = ICONS[name] || ICONS.info;
-    return markup(`<svg class="payai-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`);
+    const key = ICONS[name] ? name : "info";
+    let out = SVG_CACHE.get(key);
+    if (!out) {
+        out = markup(`<svg class="payai-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[key]}</svg>`);
+        SVG_CACHE.set(key, out);
+    }
+    return out;
 }
 
 patch(AiInsightChat.prototype, {

@@ -22,6 +22,20 @@
             <t t-else=""><t t-set="lst" t-value="blk"/><t t-call="pb_payroll_ai_insights.RichList"/></t>
         </t>
     </t>
+    <!-- The recording bar's live part (PayaiRecMeter): the only thing that
+         redraws while the microphone listens. -->
+    <t t-name="pb_payroll_ai_insights.RecMeter">
+        <t t-if="props.clockOnly"><t t-esc="shortClock"/></t>
+        <t t-else="">
+            <span class="payai-meter" aria-hidden="true">
+                <t t-foreach="bars" t-as="bar" t-key="bar_index">
+                    <i t-att-style="'height:' + bar + '%'"/>
+                </t>
+            </span>
+            <span class="payai-rec-time" t-esc="clock"/>
+        </t>
+    </t>
+
     <t t-name="pb_payroll_ai_insights.AiInsightChat">
       <!-- LEARN v3: when the helper is installed this chat lives in its Ask
            tab, and this floating copy draws nothing. -->
@@ -231,7 +245,7 @@
                 <t t-if="state.isRecording">
                     <div class="payai-recording-indicator">
                         <span class="payai-rec-dot"/>
-                        <span class="payai-rec-text">Recording <t t-esc="formatRecordingTime()"/></span>
+                        <span class="payai-rec-text"><t t-esc="t('listening', 'Listening')"/> <PayaiRecMeter rec="rec" clockOnly="true"/></span>
                     </div>
                 </t>
                 <t t-else="">
@@ -419,12 +433,8 @@
                     <div class="payai-recbar" role="status" aria-live="polite">
                         <span t-att-class="'payai-rec-dot' + (state.isRecording ? '' : ' wait')" aria-hidden="true"/>
                         <span class="payai-rec-text" t-esc="state.isRecording ? t('listening', 'Listening') : t('micStarting', 'Starting…')"/>
-                        <span class="payai-meter" aria-hidden="true">
-                            <t t-foreach="levelBars" t-as="bar" t-key="bar_index">
-                                <i t-att-style="'height:' + (state.isRecording ? bar : 18) + '%'"/>
-                            </t>
-                        </span>
-                        <span class="payai-rec-time" t-esc="recordingClock"/>
+                        <!-- Meter + clock redraw on their own (no flicker). -->
+                        <PayaiRecMeter rec="rec" live="state.isRecording"/>
                         <button type="button" class="payai-recbtn"
                                 t-on-click="() => this.cancelRecording()"
                                 t-att-aria-label="t('micCancel', 'Cancel')" t-att-title="t('micCancel', 'Cancel')">

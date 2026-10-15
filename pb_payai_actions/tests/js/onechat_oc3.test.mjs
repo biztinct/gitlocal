@@ -367,6 +367,15 @@ async function recorderSuite() {
         check(chat.recordingClock === "0:00 / 1:00", "the clock reads 0:00 / 1:00", chat.recordingClock);
         await tick(100);
         check(chat.levelBars.length === 5 && chat.levelBars.some((b) => b > 18), "five live level bars move", JSON.stringify(chat.levelBars));
+        // The flicker fix (2026-10-16): the meter and the clock live outside
+        // the chat's own state, so a tick cannot redraw the whole chat.
+        check(!("level" in chat.state) && !("recordingDuration" in chat.state) && chat.rec.level > 0,
+              "the meter writes its own store, not the chat's state");
+        // … and an unchanged turn / icon hands back the SAME markup object,
+        // which OWL leaves in place on any redraw.
+        const turn = { id: "flk", kind: "note", note: { en: "Happy to help.", vi: "Rất sẵn lòng.", key: "x" } };
+        check(chat.helperTurn(turn) === chat.helperTurn(turn), "an unchanged helper turn is not rebuilt");
+        check(chat.payaiSvg("pencil") === chat.payaiSvg("pencil"), "a card icon is not rebuilt");
         // a quick tap leaves it running; the next tap stops it
         clock += 1500;
         tap(chat);
@@ -707,7 +716,7 @@ async function recorderSuite() {
         tap(chat);
         lift(chat);
         await listening(chat);
-        chat.state.recordingDuration = 59;
+        chat.rec.duration = 59;
         clock += 60_000;
         await new Promise((r) => setTimeout(r, 1100));
         await tick(15);

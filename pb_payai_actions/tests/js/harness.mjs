@@ -83,6 +83,7 @@ globalThis.__pb = pb;
 const KNOWN = {
     Component: StubComponent,
     useState: (x) => x,
+    reactive: (x) => x,
     useRef: () => ({ el: null }),
     useEffect: () => {},
     markup: (x) => x,
