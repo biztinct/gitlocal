@@ -563,6 +563,7 @@ export class PbFormulaStudio extends Component {
         onWillStart(async () => {
             const a = this.props.action || {};
             const cfgId = (a.params && a.params.config_id) || (a.context && a.context.config_id);
+            const openWiz = (a.params && a.params.open_wizard) || (a.context && a.context.open_wizard);
             // Load the requested scheme first. Loading the company's default
             // before following an explicit link wastes a full set of RPCs.
             if ((a.params && a.params.pbfs_readonly)
@@ -570,7 +571,7 @@ export class PbFormulaStudio extends Component {
                 this.state.auditMode = true;
                 this.state.canEdit = false;
             }
-            await this.load(cfgId);
+            await this.loadInitial(cfgId, openWiz);
             try {
                 const s = await this.orm.call("pb.formula.studio", "ai_status", []);
                 this.state.aiLlm = s.llm; this.state.aiModel = s.model;
@@ -580,7 +581,6 @@ export class PbFormulaStudio extends Component {
                 await this.openWizard();
             }
             // arriving from a config row → open that config's Settings surface
-            const openWiz = (a.params && a.params.open_wizard) || (a.context && a.context.open_wizard);
             // COLROLES P4 — arriving from an import that produced people columns:
             // open the structure AND its people-mapping board, which is the next
             // thing that has to happen and the thing nobody ever found on their own.
@@ -675,6 +675,23 @@ export class PbFormulaStudio extends Component {
             }
             requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); });
         });
+    }
+
+    async loadInitial(configId, openWizard) {
+        if (configId || openWizard) {
+            return this.load(configId);
+        }
+        // A menu entry lands on the configuration picker. Fetching the default
+        // scheme's components, sample calculation and graph behind that picker
+        // made every visit pay for a payroll the reader had not chosen.
+        this.state.configSwitcherOpen = true;
+        await this._loadCsBoard();
+        this.state.canEdit = !!this.state.csBoard.can_edit && !this.state.auditMode;
+        if (this.state.csBoard.ok && !this.state.csBoard.cards.length) {
+            this.state.empty = true;
+            this.state.loaded = true;
+            this.state.configSwitcherOpen = false;
+        }
     }
 
     async load(configId) {
@@ -4324,13 +4341,24 @@ export class PbFormulaStudio extends Component {
         this.state.configSwitcherOpen = true;
         if (!this.state.csBoard) this._loadCsBoard();   // lazy — refetched on clone
     }
-    closeConfigSwitcher() { this.state.configSwitcherOpen = false; }
+    async closeConfigSwitcher() {
+        // On first entry there is no workspace behind the picker yet. Only
+        // load the default if the reader explicitly dismisses the picker.
+        if (!this.state.config.id && !this.state.empty) await this.load();
+        this.state.configSwitcherOpen = false;
+    }
     async refreshCsBoard() { await this._loadCsBoard(); }
     async chooseConfig(id) {
         this.state.configSwitcherOpen = false;
         if (id === (this.state.config && this.state.config.id)) return;
         this.state.selectedId = null;
-        await this.load(id);
+        try {
+            await this.load(id);
+        } catch (error) {
+            // First entry has no previous workspace to restore on failure.
+            this.state.configSwitcherOpen = true;
+            throw error;
+        }
         this.state.view = "cards";
     }
     onCsSearch(ev) { this.state.csQuery = ev.target.value; }

@@ -68,3 +68,61 @@ test("refreshing the same payroll after a save keeps the workspace visible", asy
     await pending;
     expect(studio.state.loaded).toBe(true);
 });
+
+test("menu entry loads the picker without computing an unselected payroll", async () => {
+    const studio = fixture(() => { throw new Error("Unexpected payroll read"); });
+    studio.state.config = {};
+    studio.state.loaded = false;
+    studio._loadCsBoard = async () => {
+        studio.state.csBoard = { ok: true, cards: [{ id: 2 }], can_edit: false };
+    };
+    await PbFormulaStudio.prototype.loadInitial.call(studio);
+    expect(studio.state.configSwitcherOpen).toBe(true);
+    expect(studio.state.config).toEqual({});
+    expect(studio.state.canEdit).toBe(false);
+});
+
+test("explicit payroll links and the creation flow still load their target", async () => {
+    const loaded = [];
+    const studio = { load: async id => loaded.push(id) };
+    await PbFormulaStudio.prototype.loadInitial.call(studio, 7);
+    await PbFormulaStudio.prototype.loadInitial.call(studio, undefined, true);
+    expect(loaded).toEqual([7, undefined]);
+});
+
+test("a tenant with no payroll schemes keeps its create-first screen", async () => {
+    const studio = fixture(() => { throw new Error("Unexpected payroll read"); });
+    studio._loadCsBoard = async () => {
+        studio.state.csBoard = { ok: true, cards: [], can_edit: true };
+    };
+    await PbFormulaStudio.prototype.loadInitial.call(studio);
+    expect(studio.state.empty).toBe(true);
+    expect(studio.state.loaded).toBe(true);
+    expect(studio.state.configSwitcherOpen).toBe(false);
+});
+
+test("closing the initial picker loads a workspace before dismissing it", async () => {
+    const data = deferred();
+    const studio = fixture((model, method) => method === "get_studio_data"
+        ? data.promise : Promise.resolve(null));
+    studio.state.config = {};
+    studio.state.loaded = false;
+    const pending = PbFormulaStudio.prototype.closeConfigSwitcher.call(studio);
+    expect(studio.state.configSwitcherOpen).toBe(true);
+    data.resolve(payload());
+    await pending;
+    expect(studio.state.loaded).toBe(true);
+    expect(studio.state.configSwitcherOpen).toBe(false);
+    expect(studio.state.config.id).toBe(2);
+});
+
+test("a failed first selection returns to the picker for another attempt", async () => {
+    const studio = fixture(() => Promise.reject(new Error("Connection lost")));
+    studio.state.loaded = false;
+    studio.state.config = {};
+    const error = await PbFormulaStudio.prototype.chooseConfig.call(studio, 2)
+        .catch(error => error.message);
+    expect(error).toBe("Connection lost");
+    expect(studio.state.configSwitcherOpen).toBe(true);
+    expect(studio.state.loaded).toBe(false);
+});

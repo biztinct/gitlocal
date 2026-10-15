@@ -5,7 +5,7 @@ Formula Evaluator - Evaluates converted Python formulas at runtime.
 
 import math
 from typing import Dict, List, Any, Optional, Tuple
-from collections import defaultdict
+from collections import defaultdict, deque
 import logging
 
 from . import excel_semantics
@@ -328,6 +328,13 @@ class FormulaEvaluator:
         """
         # Build dependency graph
         code_to_rule = {r.code: r for r in rules}
+        # Resolve each reference once, rather than scanning the entire ORM
+        # recordset for every dependency. Large imported schemes have thousands
+        # of references (including legacy names that match nothing).
+        # Preserve the old first-match rule and column-letter-before-code order.
+        letter_to_code = {}
+        for rule in rules:
+            letter_to_code.setdefault(getattr(rule, 'column_letter', ''), rule.code)
         dependencies = defaultdict(set)
         dependents = defaultdict(set)
 
@@ -341,32 +348,19 @@ class FormulaEvaluator:
                         if not dep_ref:
                             continue
 
-                        # Find rule with this column letter OR code
-                        # Try matching by column_letter first, then by code
-                        found = False
-                        for r in rules:
-                            if getattr(r, 'column_letter', '') == dep_ref:
-                                dependencies[rule.code].add(r.code)
-                                dependents[r.code].add(rule.code)
-                                found = True
-                                break
-
-                        # If not found by column_letter, try matching by code
-                        if not found:
-                            for r in rules:
-                                if getattr(r, 'code', '') == dep_ref:
-                                    dependencies[rule.code].add(r.code)
-                                    dependents[r.code].add(rule.code)
-                                    break
+                        dep_code = letter_to_code.get(dep_ref, dep_ref)
+                        if dep_code in code_to_rule:
+                            dependencies[rule.code].add(dep_code)
+                            dependents[dep_code].add(rule.code)
 
         # Kahn's algorithm for topological sort
         # Start with rules that have no dependencies
         in_degree = {r.code: len(dependencies[r.code]) for r in rules}
-        queue = [r for r in rules if in_degree[r.code] == 0]
+        queue = deque(r for r in rules if in_degree[r.code] == 0)
         sorted_rules = []
 
         while queue:
-            rule = queue.pop(0)
+            rule = queue.popleft()
             sorted_rules.append(rule)
 
             for dep_code in dependents[rule.code]:
