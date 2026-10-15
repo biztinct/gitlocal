@@ -60,9 +60,28 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual([s.title for s in wb if s.sheet_state=='visible'],['Time','Monthly adjustments'])
         for s in ('Time','Monthly adjustments'):
             self.assertEqual(wb[s]['A2'].value,'000001')
-            self.assertTrue(wb[s]['A2'].protection.locked)
+            self.assertFalse(wb[s].protection.sheet)
             self.assertEqual(wb[s].freeze_panes,'C2')
         self.assertEqual(self.review(wb)['changes'],[])
+
+    def test_empty_monthly_tabs_are_unprotected(self):
+        with patch.object(type(self.api),'_roster',return_value=self.emp.browse()):
+            wb=self.export()
+        for sheet in ('Time','Monthly adjustments'):
+            self.assertEqual(wb[sheet].max_row,1)
+            self.assertFalse(wb[sheet].protection.sheet)
+
+    def test_unprotected_monthly_identity_still_validated(self):
+        for sheet in ('Time','Monthly adjustments'):
+            wb=self.export()
+            self.assertFalse(wb[sheet].protection.sheet)
+            self.set_value(wb,sheet,'Employee ID','000002')
+            self.set_value(wb,'Monthly adjustments','Monthly bonus',50)
+            review=self.review(wb)
+            self.assertTrue(review['issues'])
+            with self.assertRaises(UserError):self.apply(review)
+        self.assertFalse(self.env['pb.payroll.month.inputs'].search([
+            ('config_id','=',self.cfg.id)]))
 
     def test_zero_blank_and_selected_period(self):
         wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',70)
@@ -86,6 +105,7 @@ class TestPayrollTemplates(TransactionCase):
 
     def test_employee_name_editable_identity_locked(self):
         wb=self.export('records');ws=wb['Employee records']
+        self.assertTrue(ws.protection.sheet)
         self.assertEqual(ws['A1'].value,'Employee ID');self.assertEqual(ws['B1'].value,'Email')
         self.assertTrue(ws['A2'].protection.locked);self.assertTrue(ws['B2'].protection.locked)
         self.assertEqual(ws['C2'].value,self.emp.name);self.assertFalse(ws['C2'].protection.locked)

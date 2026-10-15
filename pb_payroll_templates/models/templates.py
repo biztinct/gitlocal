@@ -318,7 +318,12 @@ class PayrollTemplates(models.AbstractModel):
             ws.column_dimensions[get_column_letter(len(headers))].hidden = True
             ws.freeze_panes = 'C2'
             ws.auto_filter.ref = 'A1:%s%s' % (get_column_letter(len(headers) - 1), max(1, ws.max_row))
-            ws.protection.sheet = True
+            # Monthly workbooks are working sheets: Excel must allow normal
+            # editing/pasting, including empty exports and additional rows.
+            # Identity, read-only context and roster membership are enforced
+            # by review() against the server-owned download snapshot.
+            # Employee-record workbooks retain their protected ID/email cells.
+            ws.protection.sheet = mode == 'records'
             ws.protection.autoFilter = False
             ws.protection.sort = False
         exchange = self._exchange(cfg, 'export', snapshot)
