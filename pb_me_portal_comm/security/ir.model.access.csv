@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_me_notice_read_user,Notice read: staff,model_pb_me_notice_read,base.group_user,1,1,1,0
+access_pb_me_notice_read_hr,Notice read: HR,model_pb_me_notice_read,hr.group_hr_user,1,1,1,1

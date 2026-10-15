@@ -127,7 +127,7 @@ class PbRnrPortal(CustomerPortal):
         if not emp:
             return request.redirect('/my')
         Wall = request.env['pb.rnr.wall'].sudo()
-        wall = Wall.get_wall()
+        wall = self._rnr_portal_photos(Wall.get_wall())
         team = self._team(emp)
         values = {
             'page_name': 'recognition',
@@ -188,6 +188,26 @@ class PbRnrPortal(CustomerPortal):
         return [{'id': e.id, 'name': e.name or ''}
                 for e in rows if e.id not in skip]
 
+    def _rnr_portal_photos(self, wall):
+        """The wall's faces for an employee page (TIERS T3b D5).
+
+        `get_wall` also feeds the backend wall, which keeps
+        `/web/image/hr.employee`; an employee login gets the placeholder from
+        that URL, so on `/my/recognition` every story and winner is pointed
+        at pb_me_portal's photo route (the grey silhouette for a person the
+        reader may not see — another company, or archived)."""
+        Home = request.env['pb.me.home']
+        Emp = request.env['hr.employee'].sudo()
+        for story in wall.get('stories') or []:
+            if story.get('nominee_id'):
+                story['avatar'] = Home._colleague_photo_url(
+                    Emp.browse(story['nominee_id']).exists())
+        for row in (wall.get('winners') or {}).get('rows') or []:
+            if row.get('employee_id'):
+                row['avatar'] = Home._colleague_photo_url(
+                    Emp.browse(row['employee_id']).exists())
+        return wall
+
     def _waiting_for_me(self, emp):
         """A manager's own step. The record is found FROM the session person —
         `nominee_id.parent_id = me` — so there is no id to forge on the way in.
@@ -225,7 +245,8 @@ class PbRnrPortal(CustomerPortal):
             'id': rec.id,
             'nominee': nominee.name or '',
             'initials': initials(nominee.name or ''),
-            'avatar': ('/web/image/hr.employee/%s/avatar_128' % nominee.id
+            # TIERS T3b D5: the photo route an employee login can load
+            'avatar': (request.env['pb.me.home']._colleague_photo_url(nominee)
                        if nominee else ''),
             'nominator': nominator.name or '',
             'value': val.name or '',

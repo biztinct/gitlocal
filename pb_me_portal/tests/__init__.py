@@ -7,3 +7,4 @@ from . import test_me_home_cards
 from . import test_portal_only
 from . import test_portal_accounts
 from . import test_my_requests
+from . import test_t3b_photos

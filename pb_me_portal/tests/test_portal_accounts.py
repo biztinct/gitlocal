@@ -299,8 +299,16 @@ class TestEmployeeLoginPages(HttpCase):
         self.assertEqual(photo.status_code, 200)
         self.assertTrue(photo.headers.get('Content-Type', '').startswith('image/'),
                         photo.headers.get('Content-Type'))
+        # TIERS T3b D5 widened the route: a colleague of the same company is
+        # now served (what hr.employee.public exists for); another company's
+        # person is still a 404 (the full matrix is T3b.8, test_t3b_photos.py)
         theirs = self.url_open('/my/photo/%s/avatar_128' % self.other_emp.id,
                                timeout=60)
+        self.assertEqual(theirs.status_code, 200)
+        far_co = self.env['res.company'].sudo().create({'name': 'T2 Far Co'})
+        far = self.env['hr.employee'].sudo().create(
+            {'name': 'T2 Far Person', 'company_id': far_co.id})
+        theirs = self.url_open('/my/photo/%s/avatar_128' % far.id, timeout=60)
         self.assertEqual(theirs.status_code, 404)
         odd = self.url_open('/my/photo/%s/image_1920' % self.share_emp.id,
                             timeout=60)

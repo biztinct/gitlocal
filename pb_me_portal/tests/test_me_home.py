@@ -314,8 +314,9 @@ class TestMeHome(TransactionCase):
     # ---------------------------------------------- payload shape (facts only)
     def test_payload_shape(self):
         data = self._home()
+        # TIERS T3b: `extra_cards` (the registry other modules add cards to)
         self.assertEqual(set(data), {'person', 'pay', 'leave', 'week',
-                                     'needs_you', 'docs', 'tiles'})
+                                     'needs_you', 'docs', 'extra_cards', 'tiles'})
         self.assertEqual(set(data['person']), {
             'name', 'short_name', 'daypart', 'job', 'company', 'avatar_url', 'date'})
         self.assertIn(data['person']['daypart'], ('morning', 'afternoon', 'evening'))

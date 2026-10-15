@@ -98,8 +98,13 @@ class PbPayPortal(CustomerPortal):
         ], limit=1)
         if not row or not row.letter_id.attachment_id:
             return request.redirect('/my/pay')
+        # TIERS T3b D6 (ledger T20): an employee login reaches
+        # /web/content only with the attachment's own access token — one
+        # code path for every kind of login, after the ownership check above
+        att = row.letter_id.attachment_id.sudo()
+        token = att.generate_access_token()[0]
         return request.redirect(
-            '/web/content/%s?download=true' % row.letter_id.attachment_id.id)
+            '/web/content/%s?download=true&access_token=%s' % (att.id, token))
 
     # ------------------------------------------------------------- the read
     def _pay_values(self, employee, company):

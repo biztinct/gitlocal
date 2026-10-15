@@ -552,6 +552,44 @@
     .pbme-week-h { font-size: 12.5px; color: var(--pbim-muted); }
     .pbme-week-worked::before { content: "\00b7"; margin: 0 6px; }
 
+    // (T3b) the clock line: the same state as the Clock page, one tap away.
+    // Clocked in = a green dot that breathes and a live "3 h 12 m"; out = a
+    // quiet grey dot. The button is the card's primary only when nothing
+    // else (shifts to confirm) is.
+    .pbme-clock {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px;
+        margin-top: 12px; padding: 9px 10px 9px 12px; border-radius: 12px;
+        background: var(--pbim-bg); border: 1px solid var(--pbim-line-2);
+        &.is-in { background: var(--pbim-green-soft); border-color: transparent; }
+    }
+    .pbme-clock-dot {
+        position: relative; width: 9px; height: 9px; border-radius: 50%; flex: none;
+        background: var(--pbim-slate); opacity: .55;
+    }
+    .pbme-clock.is-in .pbme-clock-dot {
+        background: var(--pbim-green); opacity: 1;
+        &::after {
+            content: ""; position: absolute; inset: -4px; border-radius: 50%;
+            background: var(--pbim-green); opacity: .25;
+            animation: pbme-breathe 4.8s ease-in-out infinite;
+        }
+    }
+    .pbme-clock-txt {
+        flex: 1 1 140px; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px;
+        font-size: 12.5px; color: var(--pbim-muted);
+        b { font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+    }
+    .pbme-clock-el { font-variant-numeric: tabular-nums; }
+    .pbme-clock-el::before { content: "\00b7"; margin-right: 6px; }
+    .pbme-clock.is-in .pbme-clock-el { color: var(--pbim-green); font-weight: 700; }
+    .pbme-clock-form { margin: 0; }
+    .pbme-clock-btn { min-height: 34px; padding: 6px 12px; }
+    .pbme-clock-btn.is-pressing { opacity: .7; }
+
+    // (T3b) cards other modules add (`_pbme_extra_cards`): full width under
+    // Needs you, before the Me strip
+    .pbme-b-extra { grid-column: 1 / -1; }
+
     // Needs you
     .pbme-needs { display: flex; flex-direction: column; margin-top: 8px; }
     .pbme-need {
@@ -637,6 +675,7 @@
     .pbme-bento > .pbme-b:nth-child(3) { animation-delay: 120ms; }
     .pbme-bento > .pbme-b:nth-child(4) { animation-delay: 180ms; }
     .pbme-bento > .pbme-b:nth-child(5) { animation-delay: 240ms; }
+    .pbme-bento > .pbme-b:nth-child(n+6) { animation-delay: 300ms; }
     .pbme-bar { animation: pbme-bar-grow 480ms cubic-bezier(.2, .7, .3, 1) 340ms both; }
     .pbme-ring { animation: pbme-ring-fill 600ms cubic-bezier(.3, .7, .3, 1) 400ms both; }
 }
@@ -653,6 +692,7 @@
 @keyframes pbme-ring-fill { from { --pbme-pct: 0%; } }
 @keyframes pbme-reveal { to { visibility: visible; } }
 @keyframes pbme-rq-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pbme-breathe { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.6); opacity: 0; } }
 
 // desktop (≥ 1000 px): Pay 1–5 × rows 1–3, Leave 6–8 and This week 9–12 ×
 // rows 1–2, Needs you 6–12 × row 3, the Me strip full width under it
@@ -669,6 +709,11 @@
     .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-pay   { grid-column: 1 / 6;  grid-row: 1 / 2; }
     .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-needs { grid-column: 6 / 13; grid-row: 1 / 2; }
     .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-me    { grid-column: 1 / 13; grid-row: 2 / 3; }
+    // (T3b) extra cards take the row(s) after Needs you; the Me strip then
+    // follows them instead of holding row 4 (auto-placement in DOM order)
+    .pbme-home .pbme-b-extra { grid-column: 1 / 13; }
+    .pbme-home .pbme-bento.pbme-bento--extra .pbme-b-me,
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week.pbme-bento--extra .pbme-b-me { grid-row: auto; }
 }
 // 700–1000 px with one of Leave / This week absent: Needs you takes the
 // whole row rather than leave a hole beside it
@@ -688,6 +733,7 @@
     .pbme-home .pbme-b-week { order: 3; }
     .pbme-home .pbme-b-leave { order: 4; }
     .pbme-home .pbme-b-me { order: 5; }
+    .pbme-home .pbme-b-extra { order: 5; }
     .pbme-home .pbme-pay-big .oe_currency_value { font-size: 34px; }
     .pbme-home .pbme-pay-act, .pbme-home .pbme-pay-act .pbme-btn,
     .pbme-home .pbme-week-foot .pbme-btn { flex: 1 1 auto; min-height: 44px; }
@@ -695,6 +741,7 @@
     .pbme-home .pbme-week { gap: 3px; }
     .pbme-home .pbme-day { padding: 7px 1px 6px; }
     .pbme-home .pbme-day-s { font-size: 9px; padding: 2px 1px; }
+    .pbme-home .pbme-clock-btn { min-height: 44px; }
 }
 @media (max-width: 700px) {
     .pbme-home .pbme-greet { font-size: 30px; }
@@ -705,6 +752,7 @@
     .pbme-home .pbme-b-week { order: 3; }
     .pbme-home .pbme-b-leave { order: 4; }
     .pbme-home .pbme-b-me { order: 5; }
+    .pbme-home .pbme-b-extra { order: 5; }
     .pbme-home .pbme-pay-big .oe_currency_value { font-size: 34px; }
     .pbme-home .pbme-pay-act, .pbme-home .pbme-pay-act .pbme-btn,
     .pbme-home .pbme-week-foot .pbme-btn { flex: 1 1 auto; min-height: 44px; }
@@ -712,6 +760,7 @@
     .pbme-home .pbme-week { gap: 3px; }
     .pbme-home .pbme-day { padding: 7px 1px 6px; }
     .pbme-home .pbme-day-s { font-size: 9px; padding: 2px 1px; }
+    .pbme-home .pbme-clock-btn { min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -725,7 +774,8 @@
     // shows the tiles when the scripts fail
     .pbme-home .pbme-bento > .pbme-b,
     .pbme-home .pbme-bar,
-    .pbme-home .pbme-ring { animation: none; }
+    .pbme-home .pbme-ring,
+    .pbme-home .pbme-clock-dot::after { animation: none; }
     .pbme .pbme-rq-month { animation: none; }
     .pbme .pbme-rq-row, .pbme .pbme-rq-go, .pbme .pbme-chip { transition: none; }
 }

@@ -121,6 +121,7 @@ class PbRnrWall(models.AbstractModel):
                 continue
             emp = Nom._person(rec.nominee_id)
             rows.append({
+                'employee_id': emp.id,
                 'name': emp.name or '',
                 'initials': initials(emp.name or ''),
                 'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,

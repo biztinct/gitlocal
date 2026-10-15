@@ -49,6 +49,11 @@ from odoo.tools.translate import LazyGettext, LazyTranslate
 _logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__)
 
+#: Where a photo the reader may not see points instead (TIERS T3b): the
+#: platform's own grey silhouette, a static file anyone may load — never a
+#: broken image, never somebody's face.
+PHOTO_PLACEHOLDER = '/base/static/img/avatar_grey.png'
+
 #: The sections of the page, top to bottom. `me` is the strip inside the bento.
 GROUPS = ('me', 'time', 'growth', 'people', 'more')
 
@@ -96,6 +101,9 @@ _TILE_ROWS = (
     # TIERS T3a: every request the person made, in one list
     ('/my/requests', 'me', 'list-checks', 'teal', {}),
     # --- Time ---
+    # TIERS T3b: pb_ess_workforce's Clock page (drawn only when the company
+    # has the switch on)
+    ('/my/work/clock', 'time', 'timer', 'green', {}),
     ('/my/work/schedule', 'time', 'calendar', 'indigo', {}),
     ('/my/work/timesheet', 'time', 'clock', 'blue', {}),
     ('/my/work/overtime', 'time', 'timer', 'amber', {}),
@@ -117,6 +125,8 @@ _TILE_ROWS = (
     ('/my/refer', 'people', 'user-plus', 'teal', {}),
     ('/my/hiring', 'people', 'briefcase', 'amber', {}),
     ('/my/training/team', 'people', 'graduation-cap', 'pink', {}),
+    # TIERS T3b: pb_me_portal_comm's notice board (soft — inert without it)
+    ('/my/notices', 'people', 'megaphone', 'amber', {}),
     # --- More (stock + anything unknown) ---
     ('/my/security', 'more', 'shield', 'slate', {}),
     ('/my/addresses', 'more', 'map-pin', 'slate', {}),
@@ -161,6 +171,10 @@ _TILE_WORDS = {
                      'text': _lt('Everything you asked for, and where it is')},
     '/my/ask-hr': {'title': _lt('Ask HR'),
                    'text': _lt('Questions and answers')},
+    '/my/work/clock': {'title': _lt('Clock in / out'),
+                       'text': _lt('Start and end your day')},
+    '/my/notices': {'title': _lt('Notices'),
+                    'text': _lt('What the company announced')},
 }
 
 
@@ -270,6 +284,8 @@ class PbMeHome(models.AbstractModel):
             'pb.ess.workforce', lambda W: self._pbme_week(W, monday)))
         needs, docs = self._pbme_timed(
             'needs_you', lambda: self._pbme_needs(emp, today, monday, now))
+        extra_cards = self._pbme_timed(
+            'extra_cards', lambda: self._pbme_extra_cards_safe(emp))
         return {
             'person': person,
             'pay': pay,
@@ -277,8 +293,37 @@ class PbMeHome(models.AbstractModel):
             'week': week,
             'needs_you': needs,
             'docs': docs,
+            'extra_cards': extra_cards,
             'tiles': [dict(self.tile_meta(url), url=url) for url in TILES],
         }
+
+    # ========================================================= extra cards
+    @api.model
+    def _pbme_extra_cards_safe(self, emp):
+        """The extra cards, isolated: a broken card loses the extras, never
+        the home (its own savepoint; the failure is logged)."""
+        try:
+            with self.env.cr.savepoint(flush=False):
+                cards = self._pbme_extra_cards(emp) or []
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_me_portal: an extra home card failed',
+                            exc_info=True)
+            return []
+        return [c for c in cards
+                if isinstance(c, dict) and c.get('key') and c.get('template')]
+
+    @api.model
+    def _pbme_extra_cards(self, emp):
+        """Hook (TIERS T3b): cards other modules add to the home's bento.
+
+        Return a list of ``{'key', 'template', 'data'}``: ``template`` is the
+        xml id of a QWeb template that draws ONE ``<section class="pbme-b
+        pbme-b-extra …">`` from ``card['data']`` (the bento calls it with
+        ``card`` in scope). Cards are drawn after Needs you, full width on a
+        desktop, in list order. Every override must call ``super()`` and
+        append; the facts are the caller's, read under sudo keyed on ``emp``
+        (T-R11)."""
+        return []
 
     # ============================================================== person
     @api.model
@@ -341,6 +386,39 @@ class PbMeHome(models.AbstractModel):
             'avatar_url': self._photo_url(emp, 'avatar_128'),
             'date': local_now.date(),
         }
+
+    @api.model
+    def _pbme_photo_allowed(self, employee):
+        """May the CALLER see ``employee``'s photo? (TIERS T3b, D5.)
+
+        Their own employee record, or an ACTIVE employee of one of the
+        companies the caller's own employee records belong to — what stock's
+        `hr.employee.public` exists for. Nobody else: not another company, not
+        an archived colleague, not anybody for a login with no employee.
+        The one rule: `/my/photo` asks it, and so does `_colleague_photo_url`."""
+        if not employee or self.env.user._is_public():
+            return False
+        employee = employee.sudo()[:1]
+        own = self.env['hr.employee'].sudo().search(
+            [('user_id', '=', self.env.uid)])
+        if not own:
+            return False
+        if employee in own:
+            return True
+        return bool(employee.active and employee.company_id
+                    and employee.company_id in own.company_id)
+
+    @api.model
+    def _colleague_photo_url(self, employee, size='avatar_128'):
+        """A colleague's photo for a `/my` page (TIERS T3b, D5): the same
+        `/my/photo` route as `_photo_url` when the reader may see that face,
+        else the platform's grey silhouette — so a page never draws a broken
+        image for an archived or other-company person, and never their face."""
+        if not employee:
+            return ''
+        if not self._pbme_photo_allowed(employee):
+            return PHOTO_PLACEHOLDER
+        return self._photo_url(employee.sudo()[:1], size)
 
     @api.model
     def _photo_url(self, employee, size='avatar_128'):
@@ -501,7 +579,21 @@ class PbMeHome(models.AbstractModel):
             'scheduled_h': scheduled,
             'worked_h': self._pbme_worked_h(Ess, monday),
             'url': '/my/work/schedule',
+            'clock': self._pbme_clock(Ess),
         }
+
+    @api.model
+    def _pbme_clock(self, Ess):
+        """The clock line on the This week card (TIERS T3b): pb_ess_workforce's
+        own `get_my_clock`, read softly (a facade without it, or a failure,
+        gives ``None`` and the card draws no clock line). Only when the
+        company has the switch on."""
+        def read(W):
+            if not hasattr(W, 'get_my_clock'):
+                return None
+            clock = W.get_my_clock()
+            return clock if clock and clock.get('enabled') else None
+        return self.optional(Ess._name, read)
 
     @api.model
     def _pbme_worked_h(self, Ess, monday):

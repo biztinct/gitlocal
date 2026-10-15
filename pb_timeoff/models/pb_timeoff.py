@@ -198,9 +198,12 @@ class PbTimeoff(models.AbstractModel):
             # …and the certificate, if one came with it. Names only: this
             # card is a queue, and an officer who wants the file opens the
             # request.
+            # TIERS T3b D6 (ledger T20): the attachment's own access token,
+            # the one link shape that opens for every kind of login
             'papers': [
                 {'id': att.id, 'name': att.name or _('Attachment'),
-                 'url': '/web/content/%s?download=true' % att.id}
+                 'url': '/web/content/%s?download=true&access_token=%s' % (
+                     att.id, att.sudo().generate_access_token()[0])}
                 for att in lv.supported_attachment_ids[:4]
             ] if 'supported_attachment_ids' in lv._fields else [],
         }

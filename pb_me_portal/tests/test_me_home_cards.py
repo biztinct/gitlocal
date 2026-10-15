@@ -374,7 +374,7 @@ class TestMeHomeCards(TransactionCase):
         tokens = 'pb_import_kit/static/src/scss/import_tokens.scss'
         self.assertIn(fonts, front)
         self.assertLess(front.index(fonts), front.index(tokens))
-        self.assertEqual(manifest['version'], '19.0.3.2.0')
+        self.assertEqual(manifest['version'], '19.0.3.3.0')
         kit = get_module_path('pb_import_kit')
         self.assertTrue(os.path.isfile(os.path.join(kit, 'static', 'fonts', 'InterVariable.woff2')))
         self.assertTrue(os.path.isfile(os.path.join(kit, 'static', 'fonts', 'Inter-OFL.txt')))
@@ -432,4 +432,9 @@ class TestMeHomeCardsPage(HttpCase):
         doc = lxml_html.fromstring(page)
         slots = doc.xpath('//*[@data-pbme-slot]/@data-pbme-slot')
         self.assertEqual(slots[0], 'pay')
-        self.assertEqual(slots[-2:], ['needs', 'me'])
+        # TIERS T3b: cards other modules add (`_pbme_extra_cards`, e.g. the
+        # notice board's) sit between Needs you and the Me strip
+        self.assertEqual(slots[-1], 'me')
+        extra = len(self.env['pb.me.home'].with_user(user)._pbme_extra_cards_safe(
+            self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)))
+        self.assertEqual(slots[-2 - extra], 'needs')

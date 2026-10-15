@@ -452,8 +452,25 @@ class PbOnboardingPortal(CustomerPortal):
             'job': _('HR business partner'),
             'dept': '',
             'phone': '',
-            'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+            'avatar': self._ob_user_photo(user),
         }
+
+    def _ob_user_photo(self, user):
+        """The HR partner's face for an employee login (TIERS T3b D5).
+
+        `/web/image/res.users` answers an employee login the placeholder, so
+        the user's own employee record is drawn through pb_me_portal's photo
+        route — preferring one in a company the reader works in. A partner
+        with no employee record gets the grey silhouette, never a broken
+        image."""
+        Home = request.env['pb.me.home']
+        emps = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)])
+        mine = self._ess_own_employees().company_id if hasattr(
+            self, '_ess_own_employees') else request.env['res.company']
+        emp = emps.filtered(lambda e: e.company_id in mine)[:1] or emps[:1]
+        return Home._colleague_photo_url(emp) if emp else \
+            '/base/static/img/avatar_grey.png'
 
     def _team_strip(self, emp):
         """The manager and the people beside them — a face, not a directory."""

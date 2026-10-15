@@ -15,7 +15,8 @@ shift PULSE (somebody has to be asked).
 WHAT IS HERE
 ------------
   * A "My Work" section of the existing /my portal (four pages, portal-auth):
-    My Schedule, My Timesheet, My Leave, My Overtime.
+    My Schedule, My Timesheet, My Leave, My Overtime — and (TIERS T3b) a
+    Clock page: clock in / out with one tap, for every employee login.
   * `hr.shift.planning` acknowledgment — `ack_state` / `acked_at` / `ack_token`,
     minted at publish, confirmable from the portal OR from a login-less token
     URL mailed to the employee (`/work/ack/<token>`).
@@ -47,7 +48,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
      double-submit guard is a salted daily hash, and the Today tile refuses to
      render an aggregate below the anonymity floor SERVER-side.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -71,6 +72,8 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
         'security/pb_ess_workforce_security.xml',
         'views/portal_templates.xml',
         'views/ack_templates.xml',
+        # TIERS T3b: the per-company "clock in from the self-service pages"
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
         # The same LEAN frontend bundle pb_me_portal established: pbim tokens
@@ -83,6 +86,9 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
         # that could take the whole bundle down — W74).
         'web.assets_frontend': [
             'pb_ess_workforce/static/src/scss/ess_workforce.scss',
+            # TIERS T3b: the live timer, the ring and the location ask on the
+            # Clock page and the home's clock button
+            'pb_ess_workforce/static/src/interactions/clock.js',
         ],
     },
     'installable': True,

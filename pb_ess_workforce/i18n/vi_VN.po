@@ -441,6 +441,7 @@ msgstr "Bảng chấm công của tôi"
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_schedule
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
 msgid "My Work"
 msgstr "Công việc của tôi"
 
@@ -943,5 +944,186 @@ msgstr "ví dụ: máy quét thẻ không ghi nhận lúc tôi đến"
 #. module: pb_ess_workforce
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_overtime
 #: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
 msgid "h"
 msgstr "h"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Clocking in from these pages is switched off for your company. Use your usual device."
+msgstr "Chấm công vào/ra trên các trang này đã bị tắt cho công ty của bạn. Hãy dùng thiết bị chấm công thường ngày."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "You are still clocked in from %(day)s at %(time)s. Clock out now, then ask your manager to fix that day."
+msgstr "Bạn vẫn đang trong ca từ %(day)s lúc %(time)s. Hãy ra ca ngay, rồi nhờ quản lý sửa lại ngày đó."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,field_description:pb_ess_workforce.field_res_config_settings__pb_ess_portal_clock
+msgid "Employees can clock in from their self-service pages"
+msgstr "Nhân viên có thể chấm công vào/ra từ trang tự phục vụ"
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields,help:pb_ess_workforce.field_res_config_settings__pb_ess_portal_clock
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.res_config_settings_view_form_portal_clock
+msgid "When off, the Clock page and the home button are hidden; devices and the field app still work."
+msgstr "Khi tắt, trang Chấm công và nút trên trang chủ sẽ bị ẩn; thiết bị chấm công và ứng dụng hiện trường vẫn hoạt động."
+
+#. module: pb_ess_workforce
+#: model:ir.model.fields.selection,name:pb_ess_workforce.selection__hr_attendance__pb_entry_source__portal
+msgid "Self-service"
+msgstr "Tự phục vụ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_work_breadcrumbs
+msgid "Clock in / out"
+msgstr "Vào ca / Ra ca"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_home_work
+msgid "Start and end your day"
+msgstr "Bắt đầu và kết thúc ngày làm việc"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.work_nav
+msgid "<span>Clock</span>"
+msgstr "<span>Chấm công</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Start and end your day here. Your hours reach your timesheet straight away."
+msgstr "Bắt đầu và kết thúc ngày làm việc tại đây. Giờ làm của bạn vào bảng chấm công ngay lập tức."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "You are clocked in. Have a good day."
+msgstr "Bạn đã vào ca. Chúc một ngày làm việc tốt lành."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "You are clocked out. Your hours are on your timesheet."
+msgstr "Bạn đã ra ca. Giờ làm đã có trên bảng chấm công."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "That was already done a moment ago, so nothing changed."
+msgstr "Việc này vừa được thực hiện xong, nên không có gì thay đổi."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<b>That did not go through.</b>"
+msgstr "<b>Thao tác chưa thực hiện được.</b>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<span>Try again in a minute. If it keeps happening, ask your manager for a fix on your timesheet.</span>"
+msgstr "<span>Hãy thử lại sau một phút. Nếu vẫn lỗi, hãy nhờ quản lý sửa trên bảng chấm công.</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Open my timesheet"
+msgstr "Mở bảng chấm công của tôi"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Clocking in here is off for your company"
+msgstr "Công ty của bạn đã tắt chấm công tại đây"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Use your usual device or the field app. Your hours still reach your timesheet, and you can check them there."
+msgstr "Hãy dùng thiết bị chấm công thường ngày hoặc ứng dụng hiện trường. Giờ làm vẫn vào bảng chấm công, và bạn có thể xem ở đó."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Your clock"
+msgstr "Chấm công của bạn"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "m"
+msgstr "phút"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "since"
+msgstr "từ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Clock out"
+msgstr "Ra ca"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<span class=\"pbew-clockbtn__word\">Clock in</span><span class=\"pbew-clockbtn__hint\">Tap to start your day</span>"
+msgstr "<span class=\"pbew-clockbtn__word\">Vào ca</span><span class=\"pbew-clockbtn__hint\">Chạm để bắt đầu ngày làm việc</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Ask for a fix"
+msgstr "Yêu cầu sửa"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<i class=\"pbew-livedot\" aria-hidden=\"true\"/>You are clocked in. The timer keeps going until you clock out."
+msgstr "<i class=\"pbew-livedot\" aria-hidden=\"true\"/>Bạn đang trong ca. Đồng hồ tiếp tục chạy cho đến khi bạn ra ca."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Last clocked out today at"
+msgstr "Lần ra ca gần nhất hôm nay lúc"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Last clocked out on"
+msgstr "Lần ra ca gần nhất vào"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "at"
+msgstr "lúc"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Not clocked in yet. Your first tap starts today's count."
+msgstr "Bạn chưa vào ca. Lần chạm đầu tiên sẽ bắt đầu tính giờ hôm nay."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<span>Your company keeps the place of each punch. If you say no when your browser asks, the punch still goes through.</span>"
+msgstr "<span>Công ty của bạn lưu vị trí của mỗi lần chấm công. Nếu bạn từ chối khi trình duyệt hỏi, lần chấm công vẫn được ghi nhận.</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "In at"
+msgstr "Vào lúc"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid ", out at"
+msgstr ", ra lúc"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "Nothing recorded yet today"
+msgstr "Hôm nay chưa có giờ nào được ghi nhận"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "<span class=\"pbew-strip__t\">Last 7 days</span>"
+msgstr "<span class=\"pbew-strip__t\">7 ngày qua</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_clock
+msgid "See the full timesheet"
+msgstr "Xem toàn bộ bảng chấm công"

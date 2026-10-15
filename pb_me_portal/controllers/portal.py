@@ -133,16 +133,18 @@ class PbMePortal(CustomerPortal):
     @http.route(['/my/photo/<int:employee_id>/<string:size>'], type='http',
                 auth='user', methods=['GET'])
     def portal_my_photo(self, employee_id, size, **kw):
-        """The person's OWN photo, for every kind of login (ledger T14).
+        """A photo an employee may see, for every kind of login (ledger T14).
 
         `/web/image/hr.employee*` answers the placeholder to an employee login
-        (no ACL on the employee). This route reads the image under sudo, but
-        only for the session user's own employee record — anything else is a
-        404, never somebody else's face."""
+        (no ACL on the employee). This route reads the image under sudo, for
+        the session user's own employee record or — TIERS T3b D5 — an ACTIVE
+        colleague of one of the companies the person's own employee records
+        belong to (`pb.me.home._pbme_photo_allowed`, the one rule). Anything
+        else is a 404: never another company's face, never an archived one."""
         if size not in _PHOTO_SIZES:
             return request.not_found()
-        emp = self._ess_own_employees().filtered(lambda e: e.id == employee_id)
-        if not emp:
+        emp = request.env['hr.employee'].sudo().browse(employee_id).exists()
+        if not emp or not request.env['pb.me.home']._pbme_photo_allowed(emp):
             return request.not_found()
         stream = request.env['ir.binary']._get_image_stream_from(
             emp[:1], field_name=size)

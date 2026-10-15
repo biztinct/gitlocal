@@ -196,7 +196,11 @@ class HrEmployee(models.Model):
             'dept': self.department_id.name if self.department_id else '',
             'email': self.work_email or '',
             'phone': self.work_phone or '',
-            'avatar': '/web/image/hr.employee/%s/avatar_128' % self.id,
+            # TIERS T3b D5: the photo route an employee login can load
+            # (`/web/image/hr.employee*` answers them the placeholder); the
+            # grey silhouette for a person the reader may not see
+            'avatar': self.env['pb.me.home']._colleague_photo_url(
+                self, 'avatar_128'),
         }
 
     # ------------------------------------------------------------- the button

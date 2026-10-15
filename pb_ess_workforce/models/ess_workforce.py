@@ -31,8 +31,16 @@ A punch fix is an ``hr.attendance.correction`` created AS THE REAL USER, with
 what "themselves" means). A leave is a plain ``hr.leave`` in the normal chain.
 Neither writes a punch, an approval state or a payroll figure — this module owns
 no state machine (W12).
+
+THE ONE PUNCH (TIERS T3b)
+-------------------------
+``clock_toggle`` is the single place this module creates a punch: stock's own
+``_attendance_action_change`` on the sudo own-employee, after
+``_require_own_employee`` (ledger T-R11), behind a per-company switch and a
+60-second debounce. The row it creates is tagged ``pb_entry_source='portal'``.
 """
 
+import logging
 from datetime import datetime, time, timedelta
 
 import pytz
@@ -53,6 +61,18 @@ _OPEN_LEAVE_STATES = ('confirm', 'validate1')
 # thousands of rows, but an unbounded search on a portal route is a denial of
 # service waiting for the one record that proves otherwise.
 _LIST_CAP = 120
+
+# TIERS T3b — clock in / out from My Payobook.
+#: Per-company switch (D3): '1' = on, '0' = off; UNSET = ON. A parameter, never
+#: a column on res.company (no new stored field on an existing model).
+CLOCK_PARAM = 'pb_ess_workforce.portal_clock.%s'
+#: A second press inside this window never creates a second row: it answers
+#: "already" with the current state (a double tap, a double submit, a reload).
+CLOCK_DEBOUNCE_SECONDS = 60
+#: The strip under the button: today and the six days before it.
+CLOCK_WEEK_DAYS = 7
+
+_logger = logging.getLogger(__name__)
 
 
 class PbEssWorkforce(models.AbstractModel):
@@ -594,3 +614,222 @@ class PbEssWorkforce(models.AbstractModel):
                 [('employee_id', '=', emp.id),
                  ('state', 'in', ('draft', 'submitted'))]),
         }
+
+    # ================================================================== clock
+    # TIERS T3b — clock in / out from My Payobook (handover T3B_HANDOVER.md
+    # §1, D1–D3). The punch is STOCK's own method, `_attendance_action_change`
+    # (hr_attendance/models/hr_employee.py:208-245, no group check), called on
+    # the sudo own-employee AFTER `_require_own_employee` — exactly how stock's
+    # public kiosk routes call it (hr_attendance/controllers/main.py:193-211).
+    # `sudo()` keeps env.uid, so `create_uid` is the employee login.
+    @api.model
+    def portal_clock_enabled(self, company=None):
+        """Is "clock in from My Payobook" on for ``company`` (default: the
+        caller's own employee's company)? ON when the parameter is unset (D3).
+
+        Exception-safe: templates call it (the nav pill, the home tile), and a
+        page must never 500 on a switch — a failure answers False."""
+        try:
+            if not company:
+                emp = self._own_employee()
+                company = emp.company_id if emp else self.env.company
+            company = company[:1]
+            raw = self.env['ir.config_parameter'].sudo().get_param(
+                CLOCK_PARAM % company.id)
+            return (raw or '1').strip().lower() not in ('0', 'false', 'off')
+        except Exception:               # noqa: BLE001 — a switch never 500s a page
+            _logger.warning('pb_ess_workforce: could not read the clock switch',
+                            exc_info=True)
+            return False
+
+    @api.model
+    def _clock_minutes(self, att, now):
+        """Minutes one attendance row counts for: stock's own `worked_hours`
+        once it is closed (the figure payroll and the timesheet use — it
+        leaves out the lunch break of a fixed working schedule), the live
+        elapsed time while it is open."""
+        if att.check_out:
+            return int(round((att.worked_hours or 0.0) * 60))
+        return max(0, int((now - att.check_in).total_seconds() // 60))
+
+    @api.model
+    def get_my_clock(self, now=None):
+        """The caller's clock: state, since when, today and the last 7 days.
+
+        Every value is JSON-safe (the `/my/work/clock/state` route returns this
+        dict as is). Times are on the employee's wall clock (`_tzinfo`).
+        """
+        emp = self._require_own_employee()
+        now = now or fields.Datetime.now()
+        tzinfo = self._tzinfo(emp)
+        local_now = pytz.UTC.localize(now).astimezone(tzinfo)
+        today = local_now.date()
+        first = today - timedelta(days=CLOCK_WEEK_DAYS - 1)
+        start_utc = tzinfo.localize(datetime.combine(first, time.min)).astimezone(
+            pytz.UTC).replace(tzinfo=None)
+
+        Att = self.env['hr.attendance'].sudo()
+        own = [('employee_id', '=', emp.id)]
+        rows = Att.search(own + [('check_in', '>=', start_utc),
+                                 ('check_in', '<=', now)],
+                          order='check_in asc', limit=_LIST_CAP)
+        open_att = Att.search(own + [('check_out', '=', False)],
+                              order='check_in desc', limit=1)
+        last = Att.search(own, order='check_in desc', limit=1)
+
+        def local(dt):
+            return pytz.UTC.localize(dt).astimezone(tzinfo)
+
+        days = {}
+        for att in rows:
+            day = local(att.check_in).date()
+            cell = days.setdefault(day, {'minutes': 0, 'first_in': None,
+                                         'last_out': None, 'source': None,
+                                         'open': False})
+            cell['minutes'] += self._clock_minutes(att, now)
+            if cell['first_in'] is None:
+                cell['first_in'] = att.check_in
+                cell['source'] = att.pb_entry_source or 'device' \
+                    if 'pb_entry_source' in att._fields else 'device'
+            if att.check_out:
+                cell['last_out'] = max(cell['last_out'] or att.check_out,
+                                       att.check_out)
+            else:
+                cell['open'] = True
+
+        week = []
+        for i in range(CLOCK_WEEK_DAYS):
+            d = first + timedelta(days=i)
+            cell = days.get(d) or {}
+            week.append({
+                'day': d.strftime('%a'),
+                'iso': d.isoformat(),
+                'minutes': cell.get('minutes', 0),
+                'first_in': self._hhmm(cell['first_in'], tzinfo)
+                if cell.get('first_in') else '',
+                'last_out': self._hhmm(cell['last_out'], tzinfo)
+                if cell.get('last_out') else '',
+                'source': cell.get('source') or '',
+                'open': bool(cell.get('open')),
+                'is_today': d == today,
+            })
+        today_minutes = week[-1]['minutes']
+        open_minutes = self._clock_minutes(open_att, now) if open_att else 0
+
+        since = since_label = since_date = ''
+        since_ms = 0
+        since_days_ago = 0
+        if open_att:
+            since_local = local(open_att.check_in)
+            since = since_local.isoformat()
+            since_label = since_local.strftime('%H:%M')
+            since_date = since_local.date().isoformat()
+            since_ms = int(pytz.UTC.localize(open_att.check_in).timestamp() * 1000)
+            since_days_ago = (today - since_local.date()).days
+
+        last_punch = {}
+        if last:
+            if last.check_out:
+                kind, when = 'out', last.check_out
+            else:
+                kind, when = 'in', last.check_in
+            when_local = local(when)
+            last_punch = {
+                'kind': kind,
+                'when': when_local.strftime('%H:%M'),
+                'iso': when_local.isoformat(),
+                'date': when_local.date().isoformat(),
+                'is_today': when_local.date() == today,
+            }
+
+        company = emp.company_id
+        tracking = bool(company and 'attendance_device_tracking' in company._fields
+                        and company.attendance_device_tracking)
+        return {
+            'enabled': self.portal_clock_enabled(company),
+            'state': 'in' if open_att else 'out',
+            'since': since,
+            'since_label': since_label,
+            'since_date': since_date,
+            'since_ms': since_ms,
+            'since_days_ago': since_days_ago,
+            'open_attendance_id': open_att.id or False,
+            'open_minutes': open_minutes,
+            'today_minutes': today_minutes,
+            # today's closed rows only — the browser adds the live part
+            'today_closed_minutes': today_minutes - (
+                open_minutes if open_att and since_days_ago == 0 else 0),
+            'week': week,
+            'week_minutes': sum(d['minutes'] for d in week),
+            'week_max': max([d['minutes'] for d in week] + [0]),
+            'last_punch': last_punch,
+            # stock's own switch: location, address and browser are only kept
+            # when the company turned on "Device & Location Tracking"
+            'tracking': tracking,
+            'server_now_ms': int(pytz.UTC.localize(now).timestamp() * 1000),
+            'today': today.isoformat(),
+        }
+
+    @api.model
+    def _clock_coords(self, lat, lng):
+        """Both coordinates as floats inside the globe, or None — a refused or
+        garbled browser location is never an error (D3)."""
+        try:
+            la, lo = float(lat), float(lng)
+        except (TypeError, ValueError):
+            return None
+        if not (-90.0 <= la <= 90.0 and -180.0 <= lo <= 180.0):
+            return None
+        if la == 0.0 and lo == 0.0:
+            return None
+        return la, lo
+
+    @api.model
+    def clock_toggle(self, lat=None, lng=None, accuracy=None, nonce=None,
+                     ip_address=None, browser=None):
+        """Clock the CALLER in, or out — whichever they are not.
+
+        ``nonce`` is accepted from the form and not stored: the debounce below
+        is what makes a double submit harmless. ``accuracy`` has no stock
+        field and is not stored either. ``ip_address`` / ``browser`` come from
+        the route (never from the form) and, like the coordinates, are kept
+        only when the company's "Device & Location Tracking" is on — stock's
+        own rule for its systray and kiosk punches.
+        """
+        emp = self._require_own_employee()
+        if not self.portal_clock_enabled(emp.company_id):
+            raise UserError(_(
+                "Clocking in from these pages is switched off for your "
+                "company. Use your usual device."))
+        now = fields.Datetime.now()
+        Att = self.env['hr.attendance'].sudo()
+        last = Att.search([('employee_id', '=', emp.id)],
+                          order='check_in desc', limit=1)
+        if last:
+            last_at = max(last.check_in, last.check_out or last.check_in)
+            if (now - last_at).total_seconds() < CLOCK_DEBOUNCE_SECONDS:
+                return dict(self.get_my_clock(now=now), already=True,
+                            punched=False)
+
+        geo = {'mode': 'systray'}
+        company = emp.company_id
+        if company and 'attendance_device_tracking' in company._fields \
+                and company.attendance_device_tracking:
+            coords = self._clock_coords(lat, lng)
+            if coords:
+                geo['latitude'], geo['longitude'] = coords
+            if ip_address:
+                geo['ip_address'] = str(ip_address)[:64]
+            if browser:
+                geo['browser'] = str(browser)[:64]
+
+        was_in = emp.sudo().attendance_state == 'checked_in'
+        att = emp.sudo()._attendance_action_change(geo)
+        punched = 'out' if was_in else 'in'
+        # Tag the row WE created. A check-out closes whatever row is open —
+        # possibly a device check-in — and re-labelling that row would strip
+        # the device punch of its delete guard (`_is_device_row`), so a
+        # check-out only ever confirms a row that is already ours.
+        if punched == 'in' and 'pb_entry_source' in att._fields:
+            att.sudo().write({'pb_entry_source': 'portal'})
+        return dict(self.get_my_clock(), already=False, punched=punched)

@@ -19,6 +19,7 @@ redirect loop or a 500 (T1).
 from odoo import _, http
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.http import request
+from odoo.tools.misc import format_date
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 _ERRORS = (AccessError, UserError, ValidationError, ValueError)
@@ -157,6 +158,77 @@ class PbEssWorkforcePortal(CustomerPortal):
             'ot': data,
             'flash': self._flash(kw),
         })
+
+    # ===================================================== Clock in / out
+    # TIERS T3b (handover §1). The page works without a single script: the
+    # big round button is a plain form POST, the toggle answers with a
+    # redirect, and the page says what happened (`?done=in|out|already`).
+    # The script adds the live timer, the ring and the location ask.
+    _CLOCK_DONE = ('in', 'out', 'already')
+
+    def _clock_page(self, clock, done=None, error=None):
+        stale = ''
+        if clock.get('state') == 'in' and clock.get('since_days_ago', 0) >= 1:
+            # ONE sentence, one msgid (W80.2): the day and the time are values
+            stale = _("You are still clocked in from %(day)s at %(time)s. Clock "
+                      "out now, then ask your manager to fix that day.",
+                      day=format_date(request.env, clock.get('since_date'),
+                                      date_format='EEEE d MMMM'),
+                      time=clock.get('since_label') or '')
+        return request.render('pb_ess_workforce.portal_my_work_clock', {
+            'page_name': 'work_clock',
+            'clock': clock,
+            'done': done if done in self._CLOCK_DONE else None,
+            'error': error,
+            'stale': stale,
+        })
+
+    @http.route(['/my/work/clock'], type='http', auth='user', website=True)
+    def portal_my_work_clock(self, done=None, **kw):
+        try:
+            clock = self._ess().get_my_clock()
+        except UserError:
+            return self._no_employee_page('work_clock')
+        return self._clock_page(clock, done=done)
+
+    @http.route(['/my/work/clock/toggle'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_my_work_clock_toggle(self, **post):
+        """Clock the session's own employee in or out. No employee id is read
+        from the form (there is none to read); `lat` / `lng` / `accuracy` /
+        `nonce` are the only fields, and the facade decides what is kept.
+
+        Never raises past the route: a refusal (switched off, a closed day, a
+        missing check-in) renders the Clock page with the reason and the next
+        step. The punch runs in a savepoint so a refusal half way leaves
+        nothing behind."""
+        httpreq = request.httprequest
+        try:
+            with request.env.cr.savepoint():
+                res = self._ess().clock_toggle(
+                    post.get('lat'), post.get('lng'), post.get('accuracy'),
+                    post.get('nonce'),
+                    ip_address=httpreq.remote_addr,
+                    browser=(httpreq.user_agent.browser
+                             if httpreq.user_agent else None))
+        except _ERRORS as e:
+            message = (e.args and e.args[0]) or str(e)
+            try:
+                clock = self._ess().get_my_clock()
+            except UserError:
+                return self._no_employee_page('work_clock')
+            return self._clock_page(clock, error=message)
+        done = 'already' if res.get('already') else (res.get('punched') or 'already')
+        return request.redirect('/my/work/clock?done=%s' % done)
+
+    @http.route(['/my/work/clock/state'], type='jsonrpc', auth='user')
+    def portal_my_work_clock_state(self, **kw):
+        """The same facts as the page, for the timer to re-sync after the tab
+        was in the background (another device may have clocked out)."""
+        try:
+            return self._ess().get_my_clock()
+        except _ERRORS:
+            return {'enabled': False, 'state': 'out'}
 
     # ===================================================== the shift pulse
     def _pulse_prompt(self):

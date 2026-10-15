@@ -210,3 +210,249 @@
         &:hover { color: var(--pbim-primary-strong); }
     }
 }
+
+// ---------------------------------------------------------------------------
+// TIERS T3b — Clock in / out (/my/work/clock) and the clock line on the home.
+//
+// The hero is one round button (Deputy / When I Work's single tap): primary
+// at rest ("Clock in"), a white face with a live timer inside a closed green
+// ring once in. The ring's arc is an SVG circle with pathLength 100, so
+// "closed" is dash-offset 0 and "open" is 100 — the first press animates it
+// closed, a clock-out unwinds it. The breathing halo is the only loop on the
+// page and it stops under reduced motion. Flat colours only (no gradients).
+// ---------------------------------------------------------------------------
+.pbme.pbew {
+    .pbew-toast {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--pbim-green-soft); color: var(--pbim-green);
+        border-radius: var(--pbim-r-sm); padding: 11px 14px; margin-bottom: 16px;
+        font-size: 13.5px; font-weight: 700;
+        animation: pbew-toast-in 360ms cubic-bezier(.2, .7, .3, 1) both;
+    }
+    .pbew-toast__ic {
+        width: 26px; height: 26px; border-radius: 50%; flex: none;
+        display: inline-grid; place-items: center;
+        background: var(--pbim-surface); color: var(--pbim-green);
+    }
+    .pbew-alert {
+        display: flex; gap: 12px; align-items: flex-start;
+        background: var(--pbim-rose-soft); color: var(--pbim-text);
+        border-radius: var(--pbim-r-sm); padding: 13px 15px; margin-bottom: 16px;
+        font-size: 13.5px;
+    }
+    .pbew-alert__ic { color: var(--pbim-rose); flex: none; padding-top: 1px; }
+    .pbew-alert__body {
+        display: flex; flex-direction: column; gap: 3px;
+        b { color: var(--pbim-ink); }
+        .pbme-lab-link { margin-top: 4px; align-self: flex-start; }
+    }
+    .pbew-alert__why { color: var(--pbim-ink); }
+    .pbme-lab-link {
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary); text-decoration: none;
+        &:hover { color: var(--pbim-primary-hover); text-decoration: underline; text-underline-offset: 3px; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; border-radius: 4px; }
+    }
+
+    // ---------- the stage ----------
+    .pbew-clock {
+        display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: 22px; align-items: stretch;
+    }
+    .pbew-clock__stage {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 16px; text-align: center;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh);
+        padding: 34px 22px 26px;
+    }
+    .pbew-clock__form { margin: 0; }
+    .pbew-clock__side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+    // ---------- the button ----------
+    .pbew-clockbtn {
+        --pbew-size: 244px;
+        --pbew-arc: var(--pbim-primary);
+        position: relative; width: var(--pbew-size); height: var(--pbew-size);
+        border: 0; padding: 0; border-radius: 50%; background: transparent;
+        cursor: pointer; display: grid; place-items: center;
+        -webkit-tap-highlight-color: transparent;
+        &:focus-visible { outline: 3px solid var(--pbim-primary); outline-offset: 6px; }
+        &:disabled { cursor: progress; }
+    }
+    .pbew-ring {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        transform: rotate(-90deg); overflow: visible; z-index: 1;
+    }
+    .pbew-ring__track { fill: none; stroke: var(--pbim-line); stroke-width: 3.5; }
+    .pbew-ring__arc {
+        fill: none; stroke: var(--pbew-arc); stroke-width: 3.5; stroke-linecap: round;
+        stroke-dasharray: 100; stroke-dashoffset: 100;
+        transition: stroke-dashoffset 900ms cubic-bezier(.45, 0, .2, 1), stroke .3s, opacity .2s;
+    }
+    // an empty arc with round caps still draws a dot: hidden at rest
+    .pbew-clockbtn.is-out:not(:hover):not(.is-pressing):not(.is-just-out) .pbew-ring__arc { opacity: 0; }
+    .pbew-ring__breath {
+        position: absolute; inset: 14px; border-radius: 50%; z-index: 0;
+        background: var(--pbim-green-soft); opacity: 0; pointer-events: none;
+    }
+    .pbew-clockbtn__face {
+        position: absolute; inset: 14px; border-radius: 50%; z-index: 2;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+        background: var(--pbim-primary); color: #fff;
+        box-shadow: 0 10px 30px -12px var(--pbim-primary), var(--pbim-sh);
+        transition: background-color .2s, transform .15s, box-shadow .2s;
+    }
+    .pbew-clockbtn:hover .pbew-clockbtn__face { background: var(--pbim-primary-hover); }
+    .pbew-clockbtn:active .pbew-clockbtn__face { transform: scale(.975); }
+    .pbew-clockbtn__ic {
+        width: 60px; height: 60px; border-radius: 50%;
+        display: grid; place-items: center; background: rgba(255, 255, 255, .16);
+    }
+    .pbew-clockbtn__word { font-size: 27px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+    .pbew-clockbtn__hint { font-size: 12.5px; font-weight: 600; opacity: .85; }
+
+    // at rest the hover previews the arc that a press will close
+    .pbew-clockbtn.is-out:hover .pbew-ring__arc { stroke-dashoffset: 92; }
+
+    // clocked in: white face, live timer, closed green ring, breathing halo
+    .pbew-clockbtn.is-in {
+        --pbew-arc: var(--pbim-green);
+        .pbew-ring__arc { stroke-dashoffset: 0; }
+        .pbew-clockbtn__face {
+            background: var(--pbim-surface); color: var(--pbim-ink);
+            box-shadow: var(--pbim-sh-lg);
+        }
+        &:hover .pbew-clockbtn__face { background: var(--pbim-bg); }
+        .pbew-ring__breath { animation: pbew-breathe 4.8s ease-in-out infinite; }
+    }
+    .pbew-clockbtn__timer {
+        display: flex; align-items: baseline; gap: 8px;
+        font-size: 15px; font-weight: 700; color: var(--pbim-muted);
+        b { font-size: 46px; font-weight: 800; letter-spacing: -.04em; color: var(--pbim-ink);
+            font-variant-numeric: tabular-nums; margin-right: 2px; }
+    }
+    .pbew-clockbtn__since { font-size: 13px; font-weight: 600; color: var(--pbim-muted); }
+    .pbew-clockbtn__cta {
+        display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+        padding: 6px 14px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 13px; font-weight: 700; color: var(--pbim-primary);
+        transition: border-color .15s, background-color .15s;
+    }
+    .pbew-clockbtn.is-in:hover .pbew-clockbtn__cta { border-color: var(--pbim-primary-light); background: var(--pbim-soft); }
+
+    // the moments: the press closes the ring, the page that comes back from
+    // a clock-in finishes closing it, a clock-out unwinds it
+    .pbew-clockbtn.is-pressing .pbew-ring__arc { stroke-dashoffset: 0; }
+    .pbew-clockbtn.is-in.is-pressing .pbew-ring__arc { stroke-dashoffset: 100; stroke: var(--pbim-slate); }
+    .pbew-clockbtn.is-pressing .pbew-clockbtn__face { transform: scale(.975); }
+    .pbew-clockbtn.is-just-in .pbew-ring__arc { animation: pbew-ring-close 1100ms cubic-bezier(.45, 0, .2, 1) both; }
+    .pbew-clockbtn.is-just-in .pbew-clockbtn__face { animation: pbew-face-pop 520ms cubic-bezier(.2, .7, .3, 1.2) 700ms both; }
+    .pbew-clockbtn.is-just-out .pbew-ring__arc { animation: pbew-ring-open 900ms cubic-bezier(.45, 0, .2, 1) both; }
+
+    // ---------- the line under it ----------
+    .pbew-clock__status { min-height: 22px; font-size: 14px; color: var(--pbim-muted);
+        p { margin: 0; }
+        b { color: var(--pbim-ink); }
+    }
+    .pbew-clock__live { display: inline-flex; align-items: center; gap: 9px; }
+    .pbew-livedot {
+        width: 9px; height: 9px; border-radius: 50%; background: var(--pbim-green); flex: none;
+        box-shadow: 0 0 0 4px var(--pbim-green-soft);
+    }
+    .pbew-clock__warn {
+        display: flex; align-items: flex-start; gap: 8px; text-align: left; max-width: 46ch;
+        color: var(--pbim-ink); .pbew-ic { color: var(--pbim-amber); flex: none; margin-top: 2px; }
+    }
+    .pbew-clock__warn + .pbme-lab-link { display: inline-block; margin-top: 6px; }
+    .pbew-clock__geo {
+        display: flex; align-items: flex-start; gap: 7px; margin: 0; max-width: 44ch;
+        font-size: 12px; color: var(--pbim-muted); text-align: left;
+        .pbew-ic { flex: none; margin-top: 1px; }
+    }
+
+    // ---------- today ----------
+    .pbew-today { display: flex; flex-direction: column; gap: 4px; }
+    .pbew-today__l {
+        font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .pbew-today__v {
+        display: flex; align-items: baseline; gap: 8px; font-size: 14px; font-weight: 700; color: var(--pbim-muted);
+        b { font-size: 36px; font-weight: 800; letter-spacing: -.03em; color: var(--pbim-ink);
+            font-variant-numeric: tabular-nums; margin-right: 2px; }
+    }
+    .pbew-today__sub { font-size: 13px; color: var(--pbim-muted); b { color: var(--pbim-ink); } }
+
+    // ---------- the 7-day strip ----------
+    .pbew-strip { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .pbew-strip__h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .pbew-strip__t {
+        font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted);
+    }
+    .pbew-strip__sum { font-size: 13px; color: var(--pbim-muted);
+        b { font-size: 15px; color: var(--pbim-ink); font-variant-numeric: tabular-nums; } }
+    .pbew-strip__days {
+        list-style: none; margin: 0; padding: 0;
+        display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;
+    }
+    .pbew-strip__d { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+    .pbew-strip__bar {
+        position: relative; width: 100%; max-width: 34px; height: 96px;
+        border-radius: 8px; background: var(--pbim-bg); overflow: hidden;
+        i {
+            position: absolute; left: 0; right: 0; bottom: 0; height: var(--pbew-h, 0%);
+            min-height: 3px; border-radius: 8px 8px 4px 4px;
+            background: var(--pbim-primary-light); transform-origin: 50% 100%;
+            animation: pbew-bar-grow 520ms cubic-bezier(.2, .7, .3, 1) both;
+        }
+    }
+    .pbew-strip__d:nth-child(2) i { animation-delay: 40ms; }
+    .pbew-strip__d:nth-child(3) i { animation-delay: 80ms; }
+    .pbew-strip__d:nth-child(4) i { animation-delay: 120ms; }
+    .pbew-strip__d:nth-child(5) i { animation-delay: 160ms; }
+    .pbew-strip__d:nth-child(6) i { animation-delay: 200ms; }
+    .pbew-strip__d:nth-child(7) i { animation-delay: 240ms; }
+    .pbew-strip__d.is-today i { background: var(--pbim-primary); }
+    .pbew-strip__d.is-open i { background: var(--pbim-green); }
+    .pbew-strip__d.is-zero i { height: 3px; background: var(--pbim-line); }
+    .pbew-strip__v { font-size: 11.5px; font-weight: 700; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbew-strip__d.is-zero .pbew-strip__v { color: var(--pbim-muted); }
+    .pbew-strip__n {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase;
+        color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    }
+    .pbew-strip__d.is-today .pbew-strip__n { color: var(--pbim-primary); }
+    .pbew-strip .pbme-lab-link { margin-top: auto; align-self: flex-start; }
+
+    .pbew-clock-off { margin-top: 4px; }
+
+    @media (max-width: 900px) {
+        .pbew-clock { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+        .pbew-clockbtn { --pbew-size: 216px; }
+        .pbew-clockbtn__timer b { font-size: 40px; }
+        .pbew-clock__stage { padding: 26px 14px 20px; }
+        .pbew-strip__bar { height: 76px; }
+    }
+}
+
+@keyframes pbew-toast-in { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes pbew-breathe {
+    0%, 100% { transform: scale(1); opacity: .9; }
+    50% { transform: scale(1.075); opacity: .25; }
+}
+@keyframes pbew-ring-close { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes pbew-ring-open { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 100; } }
+@keyframes pbew-face-pop { 0% { transform: scale(.96); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+@keyframes pbew-bar-grow { from { transform: scaleY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .pbme.pbew .pbew-toast,
+    .pbme.pbew .pbew-ring__breath,
+    .pbme.pbew .pbew-clockbtn .pbew-ring__arc,
+    .pbme.pbew .pbew-clockbtn .pbew-clockbtn__face,
+    .pbme.pbew .pbew-strip__bar i { animation: none !important; transition: none !important; }
+}

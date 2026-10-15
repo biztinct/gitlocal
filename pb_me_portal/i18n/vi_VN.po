@@ -1749,3 +1749,62 @@ msgstr "đang chờ bạn"
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
 msgid "with someone"
 msgstr "đang chờ người khác"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Clock in / out"
+msgstr "Vào ca / Ra ca"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Start and end your day"
+msgstr "Bắt đầu và kết thúc ngày làm việc"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Notices"
+msgstr "Thông báo"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "What the company announced"
+msgstr "Những gì công ty đã thông báo"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Clocked in since"
+msgstr "Đã vào ca từ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "h"
+msgstr "giờ"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "m"
+msgstr "phút"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "<b>Not clocked in</b>"
+msgstr "<b>Chưa vào ca</b>"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Clock out"
+msgstr "Ra ca"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
+msgid "Clock in"
+msgstr "Vào ca"

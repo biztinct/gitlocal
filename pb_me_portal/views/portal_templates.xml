@@ -181,7 +181,8 @@
        data-pbme-group, and an empty section is never drawn. -->
   <template id="pbme_bento" name="Employee home: cards and sections">
     <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
-    <div t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week') if c)">
+    <t t-set="pbme_extra" t-value="pbme_home.get('extra_cards') or []"/>
+    <div t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week', pbme_extra and 'pbme-bento--extra') if c)">
       <t t-call="pb_me_portal.pbme_card_pay"/>
       <t t-call="pb_me_portal.pbme_card_leave"/>
       <t t-call="pb_me_portal.pbme_card_week"/>
@@ -197,6 +198,7 @@
         </div>
         <p t-else="" class="pbme-quiet"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>Nothing needs you right now</p>
       </section>
+      <t t-foreach="pbme_extra" t-as="card"><t t-call="{{ card['template'] }}"/></t>
       <section class="pbme-b pbme-b-me" data-pbme-slot="me" aria-labelledby="pbme-me-h">
         <h2 class="visually-hidden" id="pbme-me-h">Me</h2>
         <div class="pbme-me-body" data-pbme-section="me"/>
@@ -320,6 +322,37 @@
     <t t-set="pbme_wk" t-value="pbme_home.get('week')"/>
     <section t-if="pbme_wk" class="pbme-b pbme-b-week" data-pbme-slot="week" aria-labelledby="pbme-week-h">
       <h2 class="pbme-lab" id="pbme-week-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="15"/></t>This week<span t-if="pbme_wk['pending']" class="pbme-pill pbme-pill--amber"><t t-out="pbme_wk['pending']"/> to confirm</span></h2>
+      <t t-set="pbme_clock" t-value="pbme_wk.get('clock')"/>
+      <div t-if="pbme_clock" t-att-class="'pbme-clock is-%s' % pbme_clock['state']" data-pbew-live=""
+           t-att-data-state="pbme_clock['state']"
+           t-att-data-since-ms="pbme_clock.get('since_ms') or 0"
+           t-att-data-server-now-ms="pbme_clock.get('server_now_ms') or 0"
+           t-att-data-today-closed="pbme_clock.get('today_closed_minutes') or 0"
+           t-att-data-since-today="'1' if pbme_clock.get('since_days_ago', 0) == 0 else '0'">
+        <t t-set="pbme_open_m" t-value="pbme_clock.get('open_minutes') or 0"/>
+        <span class="pbme-clock-dot" aria-hidden="true"/>
+        <span class="pbme-clock-txt">
+          <t t-if="pbme_clock['state'] == 'in'">
+            <b>Clocked in since <t t-out="pbme_clock.get('since_label')"/></b>
+            <span class="pbme-clock-el"><span t-att-class="'' if pbme_open_m &gt;= 60 else 'd-none'" data-pbew-hwrap=""><span data-pbew-h="" t-out="pbme_open_m // 60"/> h </span><span data-pbew-m="" t-out="pbme_open_m % 60"/> m</span>
+          </t>
+          <t t-else="">
+            <b>Not clocked in</b>
+            <span t-if="pbme_clock.get('today_minutes', 0) &gt;= 60" class="pbme-clock-el">Today <t t-out="env['pb.me.home'].fmt_num(pbme_clock['today_minutes'] / 60.0)"/> h</span>
+            <span t-elif="pbme_clock.get('today_minutes')" class="pbme-clock-el">Today <t t-out="pbme_clock['today_minutes']"/> m</span>
+          </t>
+        </span>
+        <form action="/my/work/clock/toggle" method="post" class="pbme-clock-form" data-pbew-clock-form=""
+              t-att-data-tracking="'1' if pbme_clock.get('tracking') else '0'">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <input type="hidden" name="lat" value=""/>
+          <input type="hidden" name="lng" value=""/>
+          <input type="hidden" name="accuracy" value=""/>
+          <input type="hidden" name="nonce" value=""/>
+          <button t-if="pbme_clock['state'] == 'in'" type="submit" class="pbme-btn pbme-btn--out pbme-clock-btn"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-out'"/><t t-set="isz" t-value="15"/></t>Clock out</button>
+          <button t-else="" type="submit" t-att-class="'pbme-btn pbme-clock-btn %s' % ('pbme-btn--out' if pbme_wk['pending'] else 'pbme-btn--pri')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-in'"/><t t-set="isz" t-value="15"/></t>Clock in</button>
+        </form>
+      </div>
       <ol class="pbme-week">
         <t t-foreach="pbme_wk['days']" t-as="d">
           <li t-att-class="'pbme-day is-%s%s' % (d['state'], ' is-today' if d['is_today'] else '')" t-att-title="d.get('shift') or None">
@@ -463,6 +496,10 @@
       <t t-elif="icon == 'plus'"><path d="M5 12h14"/><path d="M12 5v14"/></t>
       <t t-elif="icon == 'heart'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></t>
       <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></t>
+      <t t-elif="icon == 'megaphone'"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></t>
+      <t t-elif="icon == 'log-in'"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></t>
+      <t t-elif="icon == 'image'"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></t>
+      <t t-elif="icon == 'arrow-right'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></t>
       <t t-elif="icon == 'inbox'"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></t>
       <t t-else=""><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></t>
     </svg>
