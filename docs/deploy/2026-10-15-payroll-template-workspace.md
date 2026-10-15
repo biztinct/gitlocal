@@ -6,6 +6,12 @@ configuration card and in Formula Studio. The native configuration form also
 has a Templates button. Pay Run offers the selected month's download and a
 link back to the layout. The standalone HTML preview remains a separate POC.
 
+**Rollout completed:** after the owner's approval, installed and verified on
+rize, payobook_template, abm and p0clone as well. See the
+[approved batch report](2026-10-15-payroll-template-rollout.md) for all five
+database results and the live Rize workbook checks. The demo-only deployment
+scope below describes the initial implementation stage.
+
 Implementation starts at `a8c6413ae`; final functional/build commit is
 `c9725d4e7`. Other sessions' mail, access, portal, onboarding and demo work was
 preserved and excluded from these commits. Each deployment re-read the branch
