@@ -144,7 +144,10 @@ with Registry('payobook').cursor() as source_cr:
         prefs = ('effective_from', 'calendar_json', 'tax_json', 'situations_json')
         dest_bp.write({k: source_bp[k] for k in prefs})
         for task in ('mapping', 'payslip'):
-            assert blueprint.bp_task_set(config.id, task, 'configured').get('ok')
+            status = source_bp.optional_status()[task]['status']
+            if status in ('configured', 'skipped'):
+                task_result = blueprint.bp_task_set(config.id, task, status)
+                assert task_result.get('ok'), (task, task_result)
         checks = blueprint.bp_run_checks(config.id)
         assert checks.get('ok'), checks
         assert blueprint.bp_finish(config.id).get('ok')
