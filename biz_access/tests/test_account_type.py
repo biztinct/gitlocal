@@ -225,3 +225,27 @@ class TestAccountType(TransactionCase):
         again = self.mgr.set_account_type(self.share.id, 'staff')
         self.assertIn('already has a full login', again['message'])
         self.assertEqual(len(self._audit(self.share)), 1)
+
+    # TIERS T4 follow-up — a permission given by hand keeps the full login
+    def test_t4_a_permission_given_by_hand_keeps_the_full_login(self):
+        by_hand = self._login('byhand', [self.g_user,
+                                         self.env.ref('hr.group_hr_user')])
+        self.Emp.create({'name': 'ZZ T4 By Hand', 'user_id': by_hand.id})
+        why = self.mgr._switch_refusal(by_hand, 'employee')
+        self.assertIn('by hand', why)
+        self.assertIn(self.env.ref('hr.group_hr_user').full_name, why)
+        preview = self.mgr._account_switch_preview(by_hand)
+        self.assertFalse(preview['allowed'])
+        with self.assertRaises(UserError):
+            self.mgr.set_account_type(by_hand.id, 'employee')
+        self.assertFalse(by_hand.share)
+
+        multi = self._login('multi', [self.g_user, self.env.ref(
+            'base.group_multi_company')])
+        self.Emp.create({'name': 'ZZ T4 Multi', 'user_id': multi.id})
+        self.assertEqual(self.mgr._switch_refusal(multi, 'employee'), '')
+
+        # A group that came through a role is not "by hand": the role ends
+        # with the switch, and the switch is still offered.
+        self.env['pb.access'].sudo()._assign_role(self.role, self.plain)
+        self.assertFalse(self.mgr._hand_given_groups(self.plain))

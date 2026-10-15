@@ -108,7 +108,39 @@ class PbAccessAccountType(models.AbstractModel):
                          n=counts['open_seats'], name=name)
             if counts['roles'] and self._roles_route_live():
                 return _("Remove their roles first.")
+            by_hand = self._hand_given_groups(user)
+            if by_hand:
+                return _("%(name)s was given a permission by hand (%(groups)s). "
+                         "Remove it on their record first.",
+                         name=name,
+                         groups=', '.join(by_hand.mapped('full_name')[:3]))
         return ''
+
+    # Direct groups that are not a backend permission: multi-company only
+    # widens what a person sees of their own world. (The field check-in groups
+    # are deliberately NOT here — a driver needs a full login for /driver.)
+    HARMLESS_GROUPS = ('base.group_multi_company',)
+
+    def _hand_given_groups(self, user):
+        """Direct groups outside the ordinary internal-user permission.
+
+        Roles hand out groups through their own bookkeeping; anything else on
+        the person's record was ticked by hand by an administrator, and a
+        switch to an employee login would silently strip it (TIERS T4 plan,
+        ledger T22). The bulk migration tool refuses these people; this is the
+        same refusal on the screen, so the two can never disagree."""
+        user = user.sudo()
+        base_user = self.env.ref('base.group_user', raise_if_not_found=False)
+        if not base_user:
+            return self.env['res.groups']
+        allowed = base_user | base_user.all_implied_ids
+        for xmlid in self.HARMLESS_GROUPS:
+            group = self.env.ref(xmlid, raise_if_not_found=False)
+            if group:
+                allowed |= group
+        # Groups a role gave them are not "by hand": they end with the role.
+        allowed |= self._switch_sources(user)._groups()
+        return user.group_ids - allowed
 
     def _account_switch_preview(self, user):
         """What the Employee / Staff switch on the passport offers."""
