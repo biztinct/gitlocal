@@ -542,8 +542,7 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         current = self._current(cfg, period, people)
         catalog = self._catalog(cfg)
-        time_ids = set(self._layout(cfg, catalog)['time'])
-        mandatory = [c for c in catalog if c['id'] in time_ids and not c.get('readonly')
+        mandatory = [c for c in catalog if not c.get('readonly')
                      and re.search(r'paid.?days|working.?days|standard.*days|period.?days|days.?worked|ngày công', c['label'], re.I)]
         missing = []
         for employee in people:
@@ -625,7 +624,8 @@ class TemplatePayrun(models.AbstractModel):
             raw, _ids = facade._engine_file(cfg, period)
             # Always regenerate on the server. The browser's file is never the
             # authority for confirmed monthly values, or for recurring salary.
-            return super(TemplatePayrun, self.with_context(pb_template_engine=True)).attach_spreadsheet(
+            monthly_codes = [c['code'] for c in facade._catalog(cfg) if not c.get('readonly')]
+            return super(TemplatePayrun, self.with_context(pb_template_engine=True, pb_template_monthly_codes=monthly_codes)).attach_spreadsheet(
                 run_id, config_id, base64.b64encode(raw).decode(), filename,
                 date_start, date_end, one_time=True)
         return super().attach_spreadsheet(run_id, config_id, file_b64, filename,
@@ -634,6 +634,19 @@ class TemplatePayrun(models.AbstractModel):
 
 class TemplateBatch(models.Model):
     _inherit = 'hr.payroll.import.batch'
+
+    def _mapped_record_value(self, mapping, contract=None, employee=None):
+        if (self.env.context.get('pb_template_engine') and mapping
+                and mapping.component_id.code in self.env.context.get('pb_template_monthly_codes', [])):
+            return None
+        return super()._mapped_record_value(mapping, contract=contract, employee=employee)
+
+    def _contract_component_amounts(self, contract):
+        amounts = super()._contract_component_amounts(contract)
+        if self.env.context.get('pb_template_engine'):
+            monthly = {self._normalize_header_key(c) for c in self.env.context.get('pb_template_monthly_codes', [])}
+            return {k: v for k, v in amounts.items() if k not in monthly}
+        return amounts
 
     def _parse_source_file(self, file_content, filename, connector=None,
                            single_sheet_fallback=False):

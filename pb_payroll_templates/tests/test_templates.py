@@ -145,6 +145,15 @@ class TestPayrollTemplates(TransactionCase):
         d=self.api.workspace(self.cfg.id,'2026-10')
         self.assertIn('rule:%s'%self.paid.id,d['layout']['time'])
 
+    def test_monthly_zero_cannot_fall_back_to_old_record(self):
+        self.map_field(self.bonus,'hr.contract','wage')
+        self.cfg.source_priority='records,excel,api'
+        probe=self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True,pb_template_monthly_codes=[self.bonus.code]).new({'formula_config_id':self.cfg.id})
+        mapping=self.env['hr.payslip.import.mapping'].search([('component_id','=',self.bonus.id)],limit=1)
+        self.assertIsNone(probe._mapped_record_value(mapping,contract=self.contract,employee=self.emp))
+        normal=self.env['hr.payroll.import.batch'].new({'formula_config_id':self.cfg.id})
+        self.assertEqual(normal._mapped_record_value(mapping,contract=self.contract,employee=self.emp),1000)
+
     def test_formula_and_invalid_number_are_refused(self):
         for value in ('=1+1','abc'):
             wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',value)

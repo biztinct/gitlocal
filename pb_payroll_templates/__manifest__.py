@@ -3,6 +3,7 @@
     'summary': 'Current employee records and reviewed monthly workbooks',
     'version': '19.0.1.0.0',
     'license': 'LGPL-3',
+    'author': 'Payobook',
     'depends': ['pb_records', 'pb_payrun_wizard', 'pb_formula_studio'],
     'data': ['views/templates.xml'],
     'assets': {'web.assets_backend': [
