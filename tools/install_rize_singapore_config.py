@@ -18,7 +18,7 @@ from odoo.modules.registry import Registry
 assert env.cr.dbname == 'rize'
 company = env['res.company'].search([('name', '=', 'Rize Farms')])
 assert len(company) == 1
-target = env(context=dict(env.context, allowed_company_ids=company.ids)).with_company(company)
+target = env(context=dict(env.context, allowed_company_ids=company.ids))
 code = 'RIZE_SINGAPORE_PAYROLL'
 assert not target['hr.formula.config'].with_context(active_test=False).search([('code', '=', code)])
 
