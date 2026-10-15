@@ -45,6 +45,11 @@ export class WorkbookReview extends Component {
             await this.props.onApplied(this.state.result);
         }catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
     }
+    async useCurrent(){
+        this.state.busy=true;this.state.error='';
+        try{await this.props.onApplied({ok:true,written:0,pending:false});this.state.result={written:0,pending:false};}
+        catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
+    }
 }
 
 export class PayrollTemplates extends Component {
@@ -60,11 +65,13 @@ export class PayrollTemplates extends Component {
     }
     ic=ic;
     async load(){
+        const sequence=this.loadSequence=(this.loadSequence||0)+1;
         this.state.busy=true;this.state.error='';
         try{
             const d=await this.orm.call('pb.payroll.templates','workspace',[Number(this.state.configId),this.state.period]);
+            if(sequence!==this.loadSequence)return;
             this.state.data=d;this.state.configId=d.config_id||0;this.state.layout=JSON.parse(JSON.stringify(d.layout));this.state.dirty=false;
-        }catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
+        }catch(e){if(sequence===this.loadSequence)this.state.error=message(e);}finally{if(sequence===this.loadSequence)this.state.busy=false;}
     }
     get config(){return this.state.data?.configs.find(c=>c.id===Number(this.state.configId))||{};}
     get fields(){return Object.fromEntries((this.state.data?.fields||[]).map(f=>[f.id,f]));}

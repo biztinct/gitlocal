@@ -72,7 +72,7 @@
         </t>
         <div class="pt-error" t-if="state.error" role="alert" t-esc="state.error"/>
       </div>
-      <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close" t-att-disabled="state.busy" t-esc="state.result ? 'Done' : 'Cancel'"/><button t-if="!state.result" class="btn btn-primary" t-on-click="confirm" t-att-disabled="state.busy or !state.selected.length or props.data.issues.length"><t t-if="state.busy">Saving…</t><t t-else="">Confirm <t t-esc="state.selected.length"/> changes</t></button></t>
+      <t t-set-slot="footer"><button class="btn btn-secondary" t-on-click="props.close" t-att-disabled="state.busy" t-esc="state.result ? 'Done' : 'Cancel'"/><button t-if="!state.result and props.data.mode === 'monthly' and !props.data.changes.length and !props.data.issues.length" class="btn btn-primary" t-on-click="useCurrent" t-att-disabled="state.busy">Use current monthly inputs</button><button t-elif="!state.result" class="btn btn-primary" t-on-click="confirm" t-att-disabled="state.busy or !state.selected.length or props.data.issues.length"><t t-if="state.busy">Saving…</t><t t-else="">Confirm <t t-esc="state.selected.length"/> changes</t></button></t>
     </Dialog>
   </t>
 
@@ -84,5 +84,7 @@
     <xpath expr="//div[@data-coach='pw-paydata']/div[1]/p[1]" position="after"><div class="pt-payrun-doors"><button class="pw-btn pw-btn--sm" t-on-click="downloadMonthlyTemplate">↓ Download this month’s template</button><button class="pt-link" t-on-click="openPayrollTemplates">Configure columns →</button><small>One workbook · Time + Monthly adjustments · Review before applying</small></div></xpath>
     <xpath expr="//t[@t-if='state.sheet.file_name']" position="attributes"><attribute name="t-if">state.sheet.file_name and !state.sheet.templateFile</attribute></xpath>
     <xpath expr="//div[hasclass('pw-cov')]" position="before"><div class="pt-note" t-if="state.sheet.templateFile">Confirmed monthly inputs are ready. Employee and contract records are read fresh when the run starts.</div></xpath>
+    <xpath expr="//div[@class='pw-cov']" position="attributes"><attribute name="t-if">!state.sheet.templateFile</attribute></xpath>
+    <xpath expr="//div[hasclass('pw-covlist')]" position="attributes"><attribute name="t-if">!state.sheet.templateFile</attribute></xpath>
   </t>
 </templates>
