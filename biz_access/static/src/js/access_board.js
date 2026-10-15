@@ -172,6 +172,9 @@ export class PbAccessBoard extends Component {
             passportFailed: "",
             addingPerson: null,          // { name, email }
             addingPersonBusy: false,
+            // Employee | Staff (TIERS T2): { id, name, to, roles_ending, reason }
+            switching: null,
+            switchingBusy: false,
 
             // the screens lens
             screens: null,             // the menu with its gates, or null
@@ -588,6 +591,71 @@ export class PbAccessBoard extends Component {
         }
     }
 
+    // ----------------------------------------------------- Employee | Staff
+    /**
+     * TIERS T2 — WHICH KIND OF LOGIN. An employee login is a portal account:
+     * self-service pages only, no backend, no roles. A full login opens the backend
+     * and carries roles. The server decides whether a switch is allowed and
+     * says why not (`header.switch`); this file only draws that answer and
+     * asks for the confirmation.
+     */
+    get kindOptions() {
+        return [
+            { key: "employee", icon: "user", label: _t("Employee") },
+            { key: "staff", icon: "briefcase", label: _t("Staff") },
+        ];
+    }
+
+    openSwitch(head, to) {
+        if (!head || !head.switch || head.kind === to || !head.switch.allowed) {
+            return;
+        }
+        this.state.switching = {
+            id: head.id, name: head.name, to,
+            roles_ending: head.switch.roles_ending || 0, reason: "",
+        };
+    }
+
+    closeSwitch() {
+        if (!this.state.switchingBusy) { this.state.switching = null; }
+    }
+
+    onSwitchReason(ev) {
+        if (this.state.switching) { this.state.switching.reason = ev.target.value; }
+    }
+
+    /** ONE expression per sentence (R34). */
+    switchTitle(sw) {
+        const who = this.callName(sw.name);
+        return sw.to === "employee"
+            ? _t("Make %s an employee?", who)
+            : _t("Make %s staff?", who);
+    }
+
+    switchRolesLine(n) {
+        return n === 1 ? _t("1 role ends today.") : _t("%s roles end today.", n);
+    }
+
+    async confirmSwitch() {
+        const sw = this.state.switching;
+        if (!sw || this.state.switchingBusy) { return; }
+        this.state.switchingBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "set_account_type", [
+                sw.id, sw.to, sw.reason || "",
+            ]);
+            this.state.switching = null;
+            this.notif.add(res.message, { type: "success" });
+            await this.reload();
+        } catch (e) {
+            this.notif.add(
+                this._msg(e, _t("The kind of login could not be changed.")),
+                { type: "danger" });
+        } finally {
+            this.state.switchingBusy = false;
+        }
+    }
+
     /**
      * "The menu, as Mai sees it" — the name somebody would actually SAY.
      *
@@ -608,6 +676,9 @@ export class PbAccessBoard extends Component {
 
     /** ONE expression per sentence, so the spaces survive (R34). */
     seesLine(head) {
+        if (head.kind === "employee") {
+            return _t("Employee login — uses the self-service pages only.");
+        }
         if (!head.of_y) { return _t("There is no left menu on this system."); }
         if (head.is_admin) {
             return _t("Sees all %s entries on the left menu — they are an "
@@ -628,6 +699,9 @@ export class PbAccessBoard extends Component {
     }
 
     personNote(row) {
+        // the "Employee" chip beside the name already says it; a second word
+        // here squeezed the chip on a narrow list
+        if (row.kind === "employee") { return ""; }
         if (!row.role_count && !row.lent_count) { return _t("No roles"); }
         const roles = row.role_count === 1
             ? _t("1 role") : _t("%s roles", row.role_count);
@@ -1762,6 +1836,7 @@ export class PbAccessBoard extends Component {
     onKeyDown(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.addingPerson) { this.closeAddPerson(); return; }
+        if (this.state.switching) { this.closeSwitch(); return; }
         if (this.state.composer) { this.closeComposer(); return; }
         if (this.state.granting) { this.state.granting = null; return; }
         if (this.state.delegating) { this.state.delegating = false; return; }

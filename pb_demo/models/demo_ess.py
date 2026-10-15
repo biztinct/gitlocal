@@ -61,27 +61,46 @@ class PbDemoGenerator(models.TransientModel):
                 gids.append(g.id)
         return gids
 
-    def _ensure_demo_login(self, login, name, company, manager=False):
-        """Idempotent by login; passwordless (C18.14). Refreshes groups/company
-        on an existing user so a regen re-asserts the demo state.
+    def _ensure_demo_login(self, login, name, company, manager=False,
+                           internal=None):
+        """Idempotent by login; passwordless (C18.14). Refreshes the company on
+        an existing user so a regen re-asserts the demo state.
+
+        WHICH KIND OF LOGIN (TIERS T2). A NEW demo login is an EMPLOYEE login —
+        a portal account, `base.group_portal` only — unless it is the manager
+        (`manager=True`, who decides things on the backend) or the caller says
+        `internal=True` (the field-check-in drivers: `/driver` needs a full
+        account until TIERS T3). An EXISTING login keeps its kind: a regen
+        never turns a full login into an employee login or back. The live demo
+        logins are switched on the Access screen (Employee / Staff), not here;
+        an existing full login has its internal groups re-asserted exactly as
+        before, an existing employee login has its groups left alone.
 
         `tz` is set explicitly, and it is not cosmetic — see `_link_user_employee`
         for what a tz-less demo login does to the employee behind it.
         """
         Users = self.env['res.users'].sudo().with_context(
             no_reset_password=True, mail_create_nosubscribe=True)
-        gids = self._ess_group_ids(manager)
         user = Users.with_context(active_test=False).search(
             [('login', '=', login)], limit=1)
         vals = {
             'name': name, 'email': login,
             'company_id': company.id, 'company_ids': [(6, 0, [company.id])],
-            'group_ids': [(6, 0, gids)], 'active': True,
+            'active': True,
             'tz': _DEMO_TZ,
         }
         if user:
+            if not user.share:
+                vals['group_ids'] = [(6, 0, self._ess_group_ids(manager))]
             user.write(vals)   # NO password — stays passwordless
             return user
+        if internal is None:
+            internal = manager
+        if internal:
+            vals['group_ids'] = [(6, 0, self._ess_group_ids(manager))]
+        else:
+            portal = self.env.ref('base.group_portal')
+            vals['group_ids'] = [(6, 0, portal.ids)]
         vals['login'] = login
         return Users.create(vals)   # NO password field (C18.14)
 

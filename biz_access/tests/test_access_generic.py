@@ -229,7 +229,8 @@ class TestNoProductNameInTheGenericLayer(TransactionCase):
         """Every `_( … )` and every `string=`/`help=` in the models."""
         for name in ('access_common.py', 'pb_role_ability.py',
                      'pb_role_profile.py', 'pb_access_delegation.py',
-                     'pb_access_facade.py', 'pb_sidebar_item_ext.py'):
+                     'pb_access_facade.py', 'pb_sidebar_item_ext.py',
+                     'account_type.py'):
             src = _src('models', name)
             # Strip full-line comments and docstrings: engineering prose is
             # allowed to name anything it likes.

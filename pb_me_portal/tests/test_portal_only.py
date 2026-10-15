@@ -128,7 +128,34 @@ class TestPortalOnlyRule(TransactionCase):
         self.assertTrue(self.plain._pb_holds_role())
         self.assertFalse(self.plain._pb_portal_only())
 
-    # T1.5
+    # T1.5 — since TIERS T2 a share user WITH an employee is portal-only
+    # (test_portal_accounts T2.1); one WITHOUT an employee still is not.
+    def test_t2b_a_permission_given_by_hand_keeps_the_backend(self):
+        """Ledger T22: a direct group outside base.group_user's closure keeps
+        the backend (an HR user without payroll was fenced by T1); the
+        harmless multi-company group does not count."""
+        internal = self.env.ref('base.group_user')
+        Users = self.env['res.users'].with_context(no_reset_password=True)
+        Emp = self.env['hr.employee']
+        by_hand = Users.create({
+            'name': 'T2b HR By Hand', 'login': 'test_t2b_by_hand',
+            'group_ids': [(6, 0, [internal.id,
+                                  self.env.ref('hr.group_hr_user').id])]})
+        Emp.create({'name': 'T2b HR By Hand', 'user_id': by_hand.id,
+                    'company_id': self.env.company.id})
+        self.assertTrue(by_hand._pb_holds_backend_group())
+        self.assertFalse(by_hand._pb_portal_only())
+
+        multi = Users.create({
+            'name': 'T2b Multi', 'login': 'test_t2b_multi',
+            'group_ids': [(6, 0, [internal.id,
+                                  self.env.ref('base.group_multi_company').id])]})
+        Emp.create({'name': 'T2b Multi', 'user_id': multi.id,
+                    'company_id': self.env.company.id})
+        self.assertFalse(multi._pb_holds_backend_group())
+        self.assertTrue(multi._pb_portal_only())
+        self.assertFalse(self.plain._pb_holds_backend_group())
+
     def test_t1_5_admin_share_and_public_are_not_portal_only(self):
         share = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'T1 Portal Account', 'login': 'test_t1_rule_share',

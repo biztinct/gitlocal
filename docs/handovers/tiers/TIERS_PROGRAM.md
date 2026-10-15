@@ -41,8 +41,12 @@ system already get a *portal* account automatically, but it is stored on `hr.emp
 ## Status
 - **T1 LIVE on payobook 2026-10-15** (pb_me_portal 19.0.2.2.0, pb_me_portal_website 19.0.1.0.0; report
   `T1_REPORT.md`; live walk: ess2.demo bounced + links gone; ess1/ess5 are team leads in the demo data, ledger T13).
-- **T2 handover written 2026-10-15** (`T2_HANDOVER.md`): decisions D1–D6, touches pb_me_portal, biz_access,
-  pb_zoho_bridge, pb_demo; pb_ess_workforce's two writes become a 20-minute follow-up **T2b** after the report.
+- **T2 built 2026-10-15** (`T2_HANDOVER.md`, `T2_REPORT.md`): decisions D1–D6; pb_me_portal 19.0.3.1.0,
+  biz_access 19.0.1.6.0, pb_zoho_bridge 19.0.1.2.0, pb_demo 19.0.1.13.0, pb_ess_workforce 19.0.1.1.0 (T2b by Fable:
+  the two workforce writes under sudo + the hand-given-permission exclusion, ledger T22). Deployed payobook-first
+  2026-10-15; live walk = flip ess2.demo to Employee through the new switch.
+- **T3 next**: Ask HR, My requests, clock in/out on the portal, announcements; plus the "Left for T3" list in
+  `T2_REPORT.md` §3 (colleague photos, tokenless downloads, write buttons of the neighbour pages).
 
 ## Verified plumbing (do not re-derive; line numbers checked 2026-10-15)
 - Rule: `pb_me_portal/models/ess_landing.py:36-57` `_pb_employee_only()` (internal, not admin/system, an

@@ -316,11 +316,22 @@ class PbMeHome(models.AbstractModel):
             'daypart': self._pbme_daypart(local_now),
             'job': emp.job_title or emp.job_id.name or '',
             'company': emp.company_id.name or '',
-            # the public twin: readable by every internal user, unlike
-            # hr.employee itself for a person without HR rights
-            'avatar_url': '/web/image/hr.employee.public/%s/avatar_128' % emp.id,
+            'avatar_url': self._photo_url(emp, 'avatar_128'),
             'date': local_now.date(),
         }
+
+    @api.model
+    def _photo_url(self, employee, size='avatar_128'):
+        """Where the browser fetches the person's OWN photo (TIERS T2, ledger
+        T14) — `/my/photo/<id>/<size>`, for every kind of login.
+
+        `/web/image/hr.employee*` answers the placeholder to an employee login
+        (a share account has no ACL on either employee model); the route reads
+        the image under sudo after an own-employee guard. One code path, so an
+        internal person's page and an employee login's page draw the same."""
+        if not employee:
+            return ''
+        return '/my/photo/%s/%s' % (employee.id, size)
 
     # ================================================================= pay
     @api.model

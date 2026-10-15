@@ -2352,3 +2352,17 @@ $pbva-areas: (
 .pbva-edit-history { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--pbim-line, #E6E8F0); padding: 16px 0; }
 .pbva-edit-history small { color: var(--pbim-muted); }
 @media (max-width: 700px) { .pbva-edit-diff { grid-template-columns: 1fr; } .pbva-edit-history { align-items: flex-start; flex-direction: column; } }
+// TIERS T2 — the Employee | Staff switch under the passport header. It reuses
+// the lens bar's segmented control (`.pbva-tabs` / `.pbva-tab`); only the row
+// and the disabled state are new. No new colour.
+.pbim.pbva .pbva-kind {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 18px;
+
+    .pbva-kind-seg .pbva-tab.is-on { cursor: default; }
+    .pbva-kind-seg .pbva-tab:disabled { opacity: .45; cursor: not-allowed; }
+    .pbva-kind-why { margin: 0; }
+}

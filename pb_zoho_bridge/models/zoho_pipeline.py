@@ -605,6 +605,7 @@ class PbZohoPipeline(models.AbstractModel):
         existing = Users.search([('login', '=', email)], limit=1)
         if existing:
             employee.sudo().pb_portal_user_id = existing.id
+            self._link_employee_login(employee, existing)
             _logger.info('pb_zoho_bridge: %s already has an account', email)
             return False
         portal = self.env.ref('base.group_portal', raise_if_not_found=False)
@@ -620,8 +621,37 @@ class PbZohoPipeline(models.AbstractModel):
                 'group_ids': [(6, 0, [portal.id])],
             })
         employee.sudo().pb_portal_user_id = user.id
+        self._link_employee_login(employee, user)
         summary['logins'] += 1
         return user
+
+    def _link_employee_login(self, employee, user):
+        """TIERS T2 D1 (ledger T-R10): an EMPLOYEE login is the employee's
+        login — `hr.employee.user_id` — so every My Payobook page finds them.
+
+        Only a share account (an employee login), only when the employee has
+        no login yet, and only when that account is not already somebody
+        else's in this company (hr allows one employee per user per company).
+        An existing INTERNAL account on the same address stays on
+        `pb_portal_user_id` only: whose full account it is, is HR's call.
+        hr's `_sync_user` runs on the write; the account was made from this
+        employee's own name and work email, so nothing visible changes.
+        """
+        emp = employee.sudo()
+        if emp.user_id or not user or not user.share:
+            return False
+        taken = self.env['hr.employee'].sudo().with_context(
+            active_test=False).search_count([
+                ('user_id', '=', user.id),
+                ('company_id', '=', emp.company_id.id),
+                ('id', '!=', emp.id)], limit=1)
+        if taken:
+            _logger.info('pb_zoho_bridge: account %s already belongs to '
+                         'another employee — employee %s keeps it on the '
+                         'joiner field only', user.id, emp.id)
+            return False
+        emp.write({'user_id': user.id})
+        return True
 
     # ==================================================== extension points
     def _after_onboard(self, case, rec):

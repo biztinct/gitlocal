@@ -47,7 +47,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
      double-submit guard is a salted daily hash, and the Today tile refuses to
      render an aggregate below the anonymity floor SERVER-side.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

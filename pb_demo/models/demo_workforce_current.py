@@ -1213,8 +1213,10 @@ class PbDemoGenerator(models.TransientModel):
         for spec in _DRIVERS:
             try:
                 with self.env.cr.savepoint():
+                    # a FULL login: `/driver` (field check-in) needs one
+                    # until TIERS T3 brings clock-in to My Payobook
                     user = self._ensure_demo_login(
-                        spec['login'], spec['name'], company)
+                        spec['login'], spec['name'], company, internal=True)
                     dept = Dept.search([('name', '=', spec['dept']),
                                         ('company_id', '=', company.id)], limit=1)
                     domain = [('is_demo', '=', True), ('active', '=', True),

@@ -105,7 +105,10 @@ class PbAccessDelegation(models.Model):
     origin = fields.Selection(
         [('delegation', 'Delegated'),
          ('board', 'Granted on the roles board'),
-         ('board_removal', 'Removed on the roles board')],
+         ('board_removal', 'Removed on the roles board'),
+         # TIERS T2: Employee / Staff switched on the People lens. A new
+         # selection VALUE, not a new column (the field is stored as text).
+         ('account_switch', 'Account type changed')],
         string='How it happened', required=True, default='delegation',
         index=True, readonly=True)
 

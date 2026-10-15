@@ -13,9 +13,13 @@ change-detection both need somewhere honest to stand:
   * `pb_zoho_status` — the last employment status word we were told. Without it
     every push would look like a status change, and every push would open a
     journey.
-  * `pb_portal_user_id` — the account made for them on arrival. It is NOT
-    `user_id`: that field is for internal users, and a joiner who has not
-    started gets a portal account and nothing more.
+  * `pb_portal_user_id` — the account made for them on arrival: a portal
+    account (an employee login) and nothing more. Since TIERS T2 (ledger
+    T-R10, "one link") that account is ALSO set as `user_id` once it exists,
+    because `user_id` is the employee's login whatever its type and every My
+    Payobook page finds the person through it. `pb_portal_user_id` is kept
+    as is (other code reads it); an existing internal account on the same
+    address is recorded here only, never moved onto `user_id`.
 
 `send_credentials()` is separate from creating the account ON PURPOSE (ruling
 D6). The account is ready three weeks early; the email arrives on day one,

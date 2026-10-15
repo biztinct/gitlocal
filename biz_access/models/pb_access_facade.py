@@ -499,10 +499,20 @@ class PbAccess(models.AbstractModel):
         return profile
 
     def _internal_user(self, user_id):
+        """The person every ROLE operation acts on: an internal login only.
+
+        A share account (an employee login, TIERS T2) can never hold a role —
+        `pb.role.assignment._check_safe` refuses it too."""
+        return self._login_user(user_id, allow_share=False)
+
+    def _login_user(self, user_id, allow_share=False):
+        """Any login the board may look at. `allow_share` admits an employee
+        login (TIERS T2) — used by the passport's READ paths only, never by a
+        role write."""
         user = self.env['res.users'].browse(int(user_id or 0))
         if not user.exists():
             raise UserError(_("That person does not have a login here."))
-        if user.sudo().share:
+        if user.sudo().share and not allow_share:
             raise UserError(_(
                 "%s has an employee login only. Roles are for people who work "
                 "inside this application.", user.sudo().name or ''))
@@ -1195,18 +1205,30 @@ class PbAccess(models.AbstractModel):
     # `_person` — not by leaving the picker off the screen. A picker that is
     # absent is a picker somebody can call around.
 
-    def _person(self, user_id):
+    def _person(self, user_id, allow_share=False):
         """The person being looked at, and the refusal when it is not allowed.
 
         An empty id means "me", so the lens can open without knowing who it is
-        about yet.
+        about yet. `allow_share` (the passport's reads only, TIERS T2) lets the
+        lens open an employee login, which has a passport but no roles.
         """
         uid = int(user_id or 0) or self.env.uid
         if uid != self.env.uid and not self.can_manage():
             raise AccessError(_(
                 "You can look at your own access here. Looking at somebody "
                 "else's is something the access team does."))
-        return self._internal_user(uid)
+        return self._login_user(uid, allow_share=allow_share)
+
+    def _employee_user_ids(self, users):
+        """Which of these logins belong to an employee record — {user id}.
+
+        Searched on `hr.employee`, not read from `res.users.employee_ids`: that
+        field follows the companies of the moment, and the people lens is the
+        whole company group (the same reason pb_me_portal searches)."""
+        if not users or 'hr.employee' not in self.env:
+            return set()
+        return set(self.env['hr.employee'].sudo().search(
+            [('user_id', 'in', users.ids)]).user_id.ids)
 
     def _job_titles(self, users):
         """What people do, where the system knows — {user id: job title}.
@@ -1273,11 +1295,19 @@ class PbAccess(models.AbstractModel):
             return [self._person_row(
                 me, self._holders_by_profile(
                     self.env['pb.role.profile'].visible()),
-                self._lent_counts(), self._job_titles(me))]
+                self._lent_counts(), self._job_titles(me),
+                self._employee_user_ids(me))]
 
         needle = fold(search)
+        # EVERY INTERNAL LOGIN, AND EVERY EMPLOYEE LOGIN (TIERS T2). A share
+        # account appears only when it belongs to an employee record — an
+        # agency or vendor portal login is not a colleague and never shows.
+        employed = self.env['hr.employee'].sudo().search(
+            [('user_id', '!=', False), ('user_id.share', '=', True)]).user_id \
+            if 'hr.employee' in self.env else self.env['res.users']
         users = self.env['res.users'].sudo().search(
-            [('active', '=', True), ('share', '=', False)])
+            ['&', ('active', '=', True),
+             '|', ('share', '=', False), ('id', 'in', employed.ids)])
         users = visible_people(users, self.env)
         if needle:
             users = users.filtered(
@@ -1289,8 +1319,10 @@ class PbAccess(models.AbstractModel):
 
         me = self.env.uid
         users = users.sorted(lambda u: (u.id != me, fold(u.name), u.id))
-        return [self._person_row(u, holders, lent, titles)
-                for u in users[:PEOPLE_CAP]]
+        shown = users[:PEOPLE_CAP]
+        with_employee = self._employee_user_ids(shown)
+        return [self._person_row(u, holders, lent, titles, with_employee)
+                for u in shown]
 
     @api.model
     def create_user(self, name=None, email=None):
@@ -1366,8 +1398,10 @@ class PbAccess(models.AbstractModel):
             'message': message,
         }
 
-    def _person_row(self, user, holders, lent, titles):
+    def _person_row(self, user, holders, lent, titles, with_employee=None):
         user = user.sudo()
+        if with_employee is None:
+            with_employee = self._employee_user_ids(user)
         return {
             'id': user.id,
             'name': user.name or '',
@@ -1378,6 +1412,9 @@ class PbAccess(models.AbstractModel):
                                if user.id in ids]),
             'lent_count': lent.get(user.id, 0),
             'is_me': user.id == self.env.uid,
+            # TIERS T2: an employee login (share account) or a full one
+            'kind': 'employee' if user.share else 'staff',
+            'has_employee': user.id in with_employee,
         }
 
     # ============================================================ the passport
@@ -1478,29 +1515,51 @@ class PbAccess(models.AbstractModel):
 
     @api.model
     def passport(self, user_id=None):
-        """One person's access, whole: their menu, their roles, and why."""
+        """One person's access, whole: their menu, their roles, and why.
+
+        AN EMPLOYEE LOGIN HAS A PASSPORT TOO (TIERS T2) — the header, the
+        Employee / Staff switch, and nothing else: no left menu (a share
+        account cannot open the backend) and no roles (it cannot hold one).
+        """
         self._require()
-        user = self._person(user_id)
+        user = self._person(user_id, allow_share=True)
+        titles = self._job_titles(user)
+        header = {
+            'id': user.id,
+            'name': user.sudo().name or '',
+            'login': user.sudo().login or '',
+            'title': titles.get(user.id, ''),
+            'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+            'is_me': user.id == self.env.uid,
+            'kind': 'employee' if user.sudo().share else 'staff',
+            'has_employee': user.id in self._employee_user_ids(user),
+            'switch': self._account_switch_preview(user),
+        }
+        if user.sudo().share:
+            header.update(sees_x=0, of_y=0, locked_n=0, role_count=0,
+                          lent_count=0, is_admin=False)
+            return {
+                'header': header,
+                'rail': [],
+                'roles': [],
+                'equivalent_roles': [],
+                'any_gated': False,
+                'can_manage': self.can_manage(),
+            }
         rows, on, total, locked = self._rail_as_seen_by(user)
         roles = self._roles_of(user)
-        titles = self._job_titles(user)
+        header.update({
+            'sees_x': on,
+            'of_y': total,
+            'locked_n': locked,
+            'role_count': len(roles),
+            'lent_count': len([r for r in roles if r['source'] == 'lent']),
+            'is_admin': bool(safe(
+                lambda: user.sudo().has_group('base.group_system'), False,
+                'whether somebody is an administrator')),
+        })
         return {
-            'header': {
-                'id': user.id,
-                'name': user.sudo().name or '',
-                'login': user.sudo().login or '',
-                'title': titles.get(user.id, ''),
-                'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
-                'sees_x': on,
-                'of_y': total,
-                'locked_n': locked,
-                'role_count': len(roles),
-                'lent_count': len([r for r in roles if r['source'] == 'lent']),
-                'is_me': user.id == self.env.uid,
-                'is_admin': bool(safe(
-                    lambda: user.sudo().has_group('base.group_system'), False,
-                    'whether somebody is an administrator')),
-            },
+            'header': header,
             'rail': rows,
             'roles': roles,
             'any_gated': self._any_gated(),
@@ -1509,9 +1568,12 @@ class PbAccess(models.AbstractModel):
 
     @api.model
     def surface_access(self, rows=None, user_id=None):
-        """Whether one person can open each registered granular surface."""
+        """Whether one person can open each registered granular surface.
+
+        Read beside the passport, so an employee login is admitted (TIERS T2)
+        and simply opens nothing: it holds no backend group."""
         self._require()
-        user = self._person(user_id)
+        user = self._person(user_id, allow_share=True)
         held = set(user.sudo().all_group_ids.ids)
         _sections, rail_items = self._rail()
         owners = {}

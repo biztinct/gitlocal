@@ -323,9 +323,12 @@ class PbEssWorkforce(models.AbstractModel):
         """File an attendance correction FOR MYSELF and submit it.
 
         The employee is forced server-side, and this is the only place in the
-        module that creates one. It is created AS THE REAL USER so the chain's
-        own ``_approval_can`` sees a truthful ``create_uid`` — which is also what
-        stops the filer from later approving it (safety rail 2, C18.27).
+        module that creates one. The create runs under ``sudo()`` AFTER
+        ``_require_own_employee`` (TIERS T2b, ledger T-R11): an employee login
+        (a portal account) holds no ACL on corrections. ``sudo()`` keeps
+        ``env.uid``, so the chain's own ``_approval_can`` still sees a truthful
+        ``create_uid`` — which is what stops the filer from later approving it
+        (safety rail 2, C18.27).
         """
         emp = self._require_own_employee()
         d = fields.Date.to_date(day)
@@ -360,10 +363,10 @@ class PbEssWorkforce(models.AbstractModel):
             # the employee is reporting "this day is wrong, look at it", which
             # is a legitimate request — it stays a DRAFT for the officer to
             # complete, rather than being refused at the door.
-            corr = self.env['hr.attendance.correction'].create(vals)
+            corr = self.env['hr.attendance.correction'].sudo().create(vals)
             return {'ok': True, 'id': corr.id, 'state': corr.state}
-        corr = self.env['hr.attendance.correction'].create(vals)
-        corr.action_submit()     # as the real user — the chain's own gate
+        corr = self.env['hr.attendance.correction'].sudo().create(vals)
+        corr.action_submit()     # env.uid is still the filer — the chain's own gate
         return {'ok': True, 'id': corr.id, 'state': corr.state}
 
     @api.model
@@ -477,15 +480,28 @@ class PbEssWorkforce(models.AbstractModel):
 
     @api.model
     def apply_leave(self, type_id, date_from, date_to, note=False):
-        """Create MY OWN leave, in the normal chain, as the real user.
+        """Create MY OWN leave, in the normal chain.
 
-        No sudo anywhere in this method: core ``hr.leave`` already lets an
-        employee file for themselves, and its own validation (overlap, balance,
-        working calendar) is exactly the validation this request must face. The
-        employee is forced the same way the correction's is.
+        The create runs under ``sudo()`` AFTER ``_require_own_employee``
+        (TIERS T2b, ledger T-R11): an employee login (a portal account) holds no
+        ACL on ``hr.leave``. ``sudo()`` keeps ``env.uid``, so ``create_uid`` is
+        the employee and the chain's own gates see the truthful filer. Core
+        ``hr.leave``'s own validation (overlap, balance, working calendar) still
+        runs. Because sudo no longer scopes the leave type by company, the type
+        is checked against the ones ``get_my_leave`` offers this person.
+        The employee is forced the same way the correction's is.
         """
         emp = self._require_own_employee()
         if not type_id:
+            raise UserError(_("Choose a leave type."))
+        co = emp.company_id.id or self.env.company.id
+        offered = self.env['hr.leave.type'].sudo().search(
+            ['|', ('company_id', '=', False), ('company_id', '=', co)])
+        try:
+            type_id = int(type_id)
+        except (TypeError, ValueError):
+            type_id = 0
+        if type_id not in offered.ids:
             raise UserError(_("Choose a leave type."))
         if not (date_from and date_to):
             raise UserError(_("Pick the first and the last day."))
@@ -495,9 +511,9 @@ class PbEssWorkforce(models.AbstractModel):
             raise UserError(_("Those dates could not be read."))
         if dt < df:
             raise UserError(_("The last day cannot be before the first."))
-        leave = self.env['hr.leave'].create({
+        leave = self.env['hr.leave'].sudo().create({
             'employee_id': emp.id,           # FORCED (I-H3)
-            'holiday_status_id': int(type_id),
+            'holiday_status_id': type_id,
             'request_date_from': df,
             'request_date_to': dt,
             'name': (note or '').strip() or _('Requested from My Work'),

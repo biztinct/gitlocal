@@ -8,6 +8,16 @@ accepts an employee_id parameter for own-data pages (safety rail 3): a crafted i
 can never reach another person's profile, documents or slips. Private employee
 fields (private_phone/email, emergency_*) are HR-group-scoped, so the OWN record
 is read via sudo — the route boundary is the PII gate, not field ACLs.
+
+EMPLOYEE LOGINS (TIERS T2, ledger T-R11). An employee login is a portal/share
+account: it holds no backend ACL at all, so every write and read below runs
+under `sudo()` AFTER an explicit ownership guard ("the record's employee is
+`_ess_employee()`", or the session's own employee for a create, passed
+explicitly). `sudo()` keeps `env.user`, so `create_uid`, chatter authorship and
+approval seats still name the employee. ONE code path serves internal and
+share users alike — no `if share:` branch anywhere in this file. Photos go
+through `/my/photo/<id>/<size>` and document downloads carry the attachment's
+access token, for the same reason (ledger T14).
 """
 
 import base64
@@ -16,8 +26,10 @@ import logging
 
 from odoo import http, _
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
+from odoo.fields import Domain
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 _logger = logging.getLogger(__name__)
 
@@ -26,6 +38,13 @@ _PBME_HOME_PATHS = ('/my', '/my/home')
 
 _UPLOAD_MIME_OK = ('image/png', 'image/jpeg', 'application/pdf')
 _UPLOAD_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
+
+#: The photo sizes `/my/photo` serves (the two the pages draw).
+_PHOTO_SIZES = ('avatar_128', 'avatar_256')
+
+#: The payslip states the employee sees — om_hr_payroll's own portal filter
+#: (`om_hr_payroll/controllers/portal.py` `_get_payslips_domain`), kept as is.
+_PAYSLIP_STATES = ('done', 'cancel')
 
 
 class PbMePortal(CustomerPortal):
@@ -41,6 +60,19 @@ class PbMePortal(CustomerPortal):
                           ('company_id', '=', request.env.company.id)], limit=1)
         return emp or Emp.search(
             [('user_id', '=', request.env.user.id)], limit=1)
+
+    def _ess_own_employees(self):
+        """EVERY employee record of the session user (one per company), sudo.
+
+        The ownership guard for a record reached by id (a payslip, a photo):
+        a person employed in two companies owns both records' slips, whatever
+        company the session happens to be in. Never anybody else's, and empty
+        for the public user."""
+        user = request.env.user
+        if not user or user._is_public():
+            return request.env['hr.employee'].sudo().browse()
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)])
 
     def _ess_net(self, slip):
         """The slip's own NET figure. None if it has none (never derive money
@@ -88,7 +120,31 @@ class PbMePortal(CustomerPortal):
         if 'profile_request_count' in counters:
             values['profile_request_count'] = request.env['pb.profile.change.request'].sudo().search_count(
                 [('employee_id', '=', emp.id), ('state', 'in', ('draft', 'hr_review'))]) if emp else 0
+        if 'payslip_count' in counters:
+            # om_hr_payroll counts as the user behind `check_access_rights`,
+            # which answers 0 for an employee login (ledger T15).
+            values['payslip_count'] = request.env['hr.payslip'].sudo().search_count(
+                self._get_payslips_domain()) if emp else 0
         return values
+
+    # -------------------------------------------------------------- photos
+    @http.route(['/my/photo/<int:employee_id>/<string:size>'], type='http',
+                auth='user', methods=['GET'])
+    def portal_my_photo(self, employee_id, size, **kw):
+        """The person's OWN photo, for every kind of login (ledger T14).
+
+        `/web/image/hr.employee*` answers the placeholder to an employee login
+        (no ACL on the employee). This route reads the image under sudo, but
+        only for the session user's own employee record — anything else is a
+        404, never somebody else's face."""
+        if size not in _PHOTO_SIZES:
+            return request.not_found()
+        emp = self._ess_own_employees().filtered(lambda e: e.id == employee_id)
+        if not emp:
+            return request.not_found()
+        stream = request.env['ir.binary']._get_image_stream_from(
+            emp[:1], field_name=size)
+        return stream.get_response()
 
     # =================================================================
     #  Profile  (view + change-request flow)
@@ -123,7 +179,7 @@ class PbMePortal(CustomerPortal):
             'address': emp.private_street or '',
             'emergency_contact': emp.emergency_contact or '',
             'emergency_phone': emp.emergency_phone or '',
-            'avatar_url': '/web/image/hr.employee/%s/avatar_256' % emp.id,
+            'avatar_url': request.env['pb.me.home']._photo_url(emp, 'avatar_256'),
         }
 
     def _request_payload(self, r):
@@ -167,15 +223,19 @@ class PbMePortal(CustomerPortal):
         emp = self._ess_employee()
         if not emp:
             return request.redirect('/my')
-        Req = request.env['pb.profile.change.request']
-        editable = Req.sudo()._editable_fields()
+        Req = request.env['pb.profile.change.request'].sudo()
+        editable = Req._editable_fields()
         vals = {'employee_id': emp.id, 'company_id': emp.company_id.id,
                 'note': (post.get('note') or '').strip()}
         for f in editable:
             v = (post.get(f) or '').strip()
             if v:
                 vals[f] = v
-        # create AS THE USER so create_uid is the owner and the own-rule applies
+        # TIERS T2 D2 (ledger T-R11): sudo AFTER the ownership guard — the
+        # employee is the session's own (`_ess_employee`), passed explicitly,
+        # and only whitelisted proposed fields are copied from the form. An
+        # employee login holds no ACL on this model. sudo keeps env.uid, so
+        # create_uid and the chatter author are still the employee.
         try:
             req = Req.create(vals)
         except (AccessError, UserError, ValidationError) as e:
@@ -191,7 +251,7 @@ class PbMePortal(CustomerPortal):
             return request.redirect('/my/profile')
         values = {
             'page_name': 'profile',
-            'req': self._request_payload(req.sudo()),
+            'req': self._request_payload(req),
             'can_submit': req.can_submit,
         }
         return request.render('pb_me_portal.portal_profile_request', values)
@@ -203,22 +263,27 @@ class PbMePortal(CustomerPortal):
         if not req:
             return request.redirect('/my/profile')
         try:
-            req.action_submit()   # AS THE USER (owner passes _approval_can)
+            # sudo record, owner-guarded by `_own_request` (T-R11); env.uid is
+            # still the employee, so the approval request names them.
+            req.action_submit()
         except (AccessError, UserError, ValidationError) as e:
             return request.render('pb_me_portal.portal_profile_error',
                                   {'page_name': 'profile', 'error': str(e)})
         return request.redirect('/my/profile')
 
     def _own_request(self, request_id):
-        """A change request the SESSION user owns, else empty (never another
-        employee's — the record rule enforces it; we double-check)."""
+        """A change request the SESSION user owns — as a sudo record — else an
+        empty recordset. The guard IS the ownership check (ledger T-R11): the
+        request's employee must be the session's own employee. An employee
+        login has no ACL on the model, so the record rule cannot do it."""
+        Req = request.env['pb.profile.change.request'].sudo()
         emp = self._ess_employee()
         if not emp:
-            return request.env['pb.profile.change.request']
-        req = request.env['pb.profile.change.request'].browse(int(request_id)).exists()
-        if req and req.sudo().employee_id.id == emp.id:
+            return Req.browse()
+        req = Req.browse(int(request_id)).exists()
+        if req and req.employee_id.id == emp.id:
             return req
-        return request.env['pb.profile.change.request']
+        return Req.browse()
 
     # =================================================================
     #  Documents  (own vault + self-upload)
@@ -247,9 +312,21 @@ class PbMePortal(CustomerPortal):
             'issue_date': d.issue_date, 'expiry_date': d.expiry_date,
             'expiry_state': d.expiry_state,
             'verified': d.verified,
-            'download': '/web/content/ir.attachment/%s/datas?download=true' % d.attachment_id.id
-            if d.attachment_id else '',
+            'download': self._doc_download_url(d.attachment_id),
         }
+
+    def _doc_download_url(self, attachment):
+        """A download link that works for every kind of login (ledger T14).
+
+        An employee login has no ACL on `ir.attachment`, so the link carries
+        the attachment's own access token (`/web/content` accepts it). The
+        caller only ever passes the attachment of one of the person's OWN
+        documents (`portal_my_documents` searches by the session employee)."""
+        if not attachment:
+            return ''
+        token = attachment.sudo().generate_access_token()[0]
+        return '/web/content/ir.attachment/%s/datas?download=true&access_token=%s' % (
+            attachment.id, token)
 
     @http.route(['/my/documents/upload'], type='http', auth='user',
                 website=True, methods=['POST'])
@@ -282,9 +359,14 @@ class PbMePortal(CustomerPortal):
             return request.redirect('/my/documents?error=type')
 
         # C18.25 order: attachment first, bind res_model/res_id AFTER the doc
-        # exists. Created AS THE USER so the own-create rule applies; the doc
-        # employee_id is forced to the session employee (never a form value).
-        att = request.env['ir.attachment'].create({
+        # exists. TIERS T2 D2 (ledger T-R11): both creates run under sudo,
+        # AFTER every guard above — the session's own employee (forced, never
+        # a form value), a category HR marked self-uploadable (the model's own
+        # category check skips under sudo, so THIS route's check is the one
+        # that counts — keep it), the size and the type. An employee login
+        # holds no ACL on either model; sudo keeps env.uid, so create_uid is
+        # still the employee.
+        att = request.env['ir.attachment'].sudo().create({
             'name': upload.filename or (title or 'document'),
             'datas': base64.b64encode(data),
             'mimetype': mimetype,
@@ -299,17 +381,18 @@ class PbMePortal(CustomerPortal):
         if expiry:
             doc_vals['expiry_date'] = expiry
         try:
-            doc = request.env['pb.employee.document'].create(doc_vals)
+            # a savepoint, so a refused create (a malformed date) cannot leave
+            # the transaction aborted before the attachment is cleaned up
+            with request.env.cr.savepoint():
+                doc = request.env['pb.employee.document'].sudo().create(doc_vals)
         except (AccessError, UserError, ValidationError, ValueError):
             # ValueError: a malformed expiry date must render the styled error
             # page, not a 500 (review I-low)
-            att.sudo().unlink()
+            att.unlink()
             return request.redirect('/my/documents?error=denied')
-        # bind the attachment to the document (C18.25 order). sudo: the employee
-        # has read-only on their own document, so a self-user write of the
-        # attachment's res_model/res_id is refused — the binding is a system op
-        # on a record they already own.
-        att.sudo().write({'res_model': doc._name, 'res_id': doc.id})
+        # bind the attachment to the document (C18.25 order) — a system op on
+        # a record the person already owns.
+        att.write({'res_model': doc._name, 'res_id': doc.id})
         return request.redirect('/my/documents?ok=1')
 
     # =================================================================
@@ -370,7 +453,6 @@ class PbMePortal(CustomerPortal):
     def portal_my_payslips(self, page=1, date_begin=None, date_end=None,
                            sortby=None, filterby=None, **kw):
         values = self._prepare_my_payslips_values(page, date_begin, date_end, sortby, filterby)
-        from odoo.addons.portal.controllers.portal import pager as portal_pager
         pager = portal_pager(**values['pager'])
         payslips = values['payslips'](pager['offset'])
         request.session['my_payslips_history'] = payslips.ids[:100]
@@ -397,6 +479,62 @@ class PbMePortal(CustomerPortal):
                          if self._ess_employee() else request.env.company.currency_id),
         })
         return request.render('pb_me_portal.portal_my_payslips', values)
+
+    # TIERS T2 (ledger T15): om_hr_payroll's portal searches the employee and
+    # the payslips AS THE USER behind `check_access_rights` — an employee
+    # login gets an AccessError or an empty list. These three overrides read
+    # under sudo, and the domain itself is the ownership guard: it always
+    # names the session's own employee.
+    def _get_payslips_domain(self):
+        emp = self._ess_employee()
+        if not emp:
+            return list(Domain.FALSE)
+        return [('employee_id', '=', emp.id), ('state', 'in', _PAYSLIP_STATES)]
+
+    def _prepare_my_payslips_values(self, page, date_begin, date_end, sortby,
+                                    filterby, domain=None, url='/my/payslips'):
+        """om_hr_payroll's values, same keys, read under sudo (T-R11)."""
+        values = self._prepare_portal_layout_values()
+        Payslip = request.env['hr.payslip'].sudo()
+        domain = list(Domain.AND([Domain(domain or []),
+                                  Domain(self._get_payslips_domain())]))
+        searchbar_sortings = self._get_payslip_searchbar_sortings()
+        if not sortby or sortby not in searchbar_sortings:
+            sortby = 'date'
+        order = searchbar_sortings[sortby]['order']
+        if date_begin and date_end:
+            domain += [('date_to', '>', date_begin), ('date_to', '<=', date_end)]
+        values.update({
+            'date': date_begin,
+            'payslips': lambda pager_offset: Payslip.search(
+                domain, order=order, limit=self._items_per_page,
+                offset=pager_offset),
+            'page_name': 'payslip',
+            'pager': {
+                'url': url,
+                'url_args': {'date_begin': date_begin, 'date_end': date_end,
+                             'sortby': sortby},
+                'total': Payslip.search_count(domain),
+                'page': page,
+                'step': self._items_per_page,
+            },
+            'default_url': url,
+            'searchbar_sortings': searchbar_sortings,
+            'sortby': sortby,
+        })
+        return values
+
+    def _document_check_access(self, model_name, document_id, access_token=None):
+        """A payslip of the person's OWN employee record comes back as a sudo
+        record, for every kind of login (page and PDF). Anything else goes to
+        the stock check (internal ACL/rules or the document's access token),
+        which raises for somebody else's slip — the route redirects to /my."""
+        if model_name == 'hr.payslip':
+            slip = request.env['hr.payslip'].sudo().browse(int(document_id)).exists()
+            if slip and slip.employee_id in self._ess_own_employees():
+                return slip
+        return super()._document_check_access(model_name, document_id,
+                                              access_token=access_token)
 
     @http.route(['/my/payslips/<int:payslip_id>'], type='http',
                 auth='public', website=True)

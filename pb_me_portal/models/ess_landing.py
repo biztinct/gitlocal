@@ -9,6 +9,8 @@ payslips, profile, time off, schedule, goals, training, My buddy.
 "Employee only" is asked of the same rules the left menu uses, so the landing
 and the menu can never disagree:
 
+  * an EMPLOYEE LOGIN — a portal (share) account with an employee record
+    (TIERS T2) — is employee-only without further questions; otherwise
   * an internal user with an employee record,
   * the Pay Run entry is NOT on their left menu (the sidebar's `_state_for`),
   * the Hiring board does not admit them (pb_hiring lands those on Hiring).
@@ -31,9 +33,12 @@ backend until TIERS T3 (ledger T-R8): a person with an active role
 assignment, with a direct report, or with an approval seat waiting on them.
 Team leads keep the backend.
 
-This is a fence, not a wall (ledger T8): the person keeps every
-`base.group_user` ACL and the JSON-RPC endpoints; only the doors are shut.
-TIERS T2 (portal accounts) removes the group. The rule fails OPEN (T-R2):
+For an INTERNAL account this is a fence, not a wall (ledger T8): the person
+keeps every `base.group_user` ACL and the JSON-RPC endpoints; only the doors
+are shut. The wall is the EMPLOYEE LOGIN (TIERS T2): a share account that
+holds no backend group at all, which is portal-only by construction. Every
+`/my` page serves it through `sudo()` after an own-employee guard (ledger
+T-R11; `controllers/portal.py`). The rule fails OPEN (T-R2):
 any error logs a warning and answers False, so a bug can never lock somebody
 out of their work.
 """
@@ -45,15 +50,36 @@ _logger = logging.getLogger(__name__)
 
 PAY_RUN_ITEM = 'pb_payhub.item_pay_run'
 HOME_HUB = 'pb_home_hub.action_pb_home_hub'
+# Direct groups that are NOT a backend permission (TIERS T2b, ledger T22):
+# multi-company only widens what a person may see of their own world, and the
+# field check-in groups' only screen is `/driver`, a portal-style page.
+HARMLESS_GROUPS = (
+    'base.group_multi_company',
+    'pb_driver_checkin.group_pb_driver',
+    'pb_driver_checkin.group_pb_field_staff',
+)
 
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
     def _pb_employee_only(self):
+        """Is this person an employee whose own world is My Payobook?
+
+        True for
+
+          * an EMPLOYEE LOGIN (TIERS T2): a portal/share account with an
+            employee record (`hr.employee.user_id`, ledger T-R10) — it has no
+            backend at all, so it is an employee, full stop;
+          * an internal account with an employee record whose left menu does
+            not carry Pay Run and whom the Hiring board does not admit.
+
+        Never for the public user, an administrator, or anybody without an
+        employee record (an agency or vendor portal login is not an employee).
+        """
         self.ensure_one()
         user = self.sudo()
-        if not user._is_internal() or user._is_admin() or user._is_system():
+        if user._is_public() or user._is_admin() or user._is_system():
             return False
         # Searched, not `user.employee_ids`: that follows the companies of the
         # moment, and at sign-in (or in a job) those need not include the one
@@ -61,6 +87,8 @@ class ResUsers(models.Model):
         if not self.env['hr.employee'].sudo().search_count(
                 [('user_id', '=', user.id)], limit=1):
             return False
+        if user.share:
+            return True
         Item = self.env['pb.sidebar.item'].sudo()
         pay = self.env.ref(PAY_RUN_ITEM, raise_if_not_found=False)
         if pay:
@@ -82,19 +110,29 @@ class ResUsers(models.Model):
         employee-only person (`_pb_employee_only()`) who also
 
           * holds no active role assignment (`_pb_holds_role`),
+          * holds no backend permission given by hand (`_pb_holds_backend_group`,
+            TIERS T2b, ledger T22),
           * manages nobody (`_pb_has_reports`), and
           * has no approval seat waiting on them (`_pb_has_open_seat`)
 
-        — team leads and approvers keep the backend until TIERS T3 brings
-        approvals to the portal (ledger T-R8).
+        — team leads, approvers and anyone an administrator deliberately gave a
+        permission keep the backend until TIERS T3 brings approvals to the
+        portal (ledger T-R8). Those exclusions are for INTERNAL users only: an
+        employee login (a share user, TIERS T2) has no backend to keep and
+        cannot hold a role (biz_access `_check_safe`), so it is portal-only by
+        construction.
 
         Fails OPEN (ledger T-R2): any error logs a warning with the trace and
         answers False. Templates call this, so it must never raise.
         """
         try:
             self.ensure_one()
-            return bool(self._pb_employee_only()
-                        and not self._pb_holds_role()
+            if not self._pb_employee_only():
+                return False
+            if self.sudo().share:
+                return True
+            return bool(not self._pb_holds_role()
+                        and not self._pb_holds_backend_group()
                         and not self._pb_has_reports()
                         and not self._pb_has_open_seat())
         except Exception:               # noqa: BLE001
@@ -109,6 +147,32 @@ class ResUsers(models.Model):
             return False
         return bool(self.env['pb.role.assignment'].sudo().search_count(
             [('user_id', '=', self.id), ('active', '=', True)], limit=1))
+
+    def _pb_holds_backend_group(self):
+        """A permission given by hand (TIERS T2b, ledger T22).
+
+        Roles (biz_access) are not the only way somebody gets a backend
+        permission: an administrator can tick a group on the person's record.
+        An HR manager without payroll, a budget viewer, an access manager with
+        a direct group all have an employee record and no role, and T1 fenced
+        them. So: any DIRECT group outside `base.group_user`'s implied closure
+        keeps the backend, except the harmless ones in `HARMLESS_GROUPS`
+        (multi-company, and the field check-in groups whose only screen is
+        `/driver`). The landing rule `_pb_employee_only` is deliberately NOT
+        changed by this — where somebody lands and what they may open are two
+        different questions.
+        """
+        user = self.sudo()
+        base_user = self.env.ref('base.group_user', raise_if_not_found=False)
+        if not base_user:
+            return False
+        closure = base_user | base_user.all_implied_ids
+        harmless = self.env['res.groups']
+        for xmlid in HARMLESS_GROUPS:
+            group = self.env.ref(xmlid, raise_if_not_found=False)
+            if group:
+                harmless |= group
+        return bool(user.group_ids - closure - harmless)
 
     def _pb_has_reports(self):
         """Somebody's manager: an active employee whose manager is this user."""

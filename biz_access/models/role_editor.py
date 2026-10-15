@@ -312,6 +312,10 @@ class RoleEditor(models.AbstractModel):
     @api.model
     def passport(self, user_id=None):
         result = super().passport(user_id)
+        if result['header'].get('kind') == 'employee':
+            # an employee login (TIERS T2) holds nothing to compare
+            result['equivalent_roles'] = []
+            return result
         user = self._person(user_id)
         assigned = {row['profile_id'] for row in result['roles']}
         matches = super()._roles_of(user)

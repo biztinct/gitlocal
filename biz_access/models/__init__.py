@@ -10,3 +10,4 @@ from . import role_editor
 from . import access_export
 from . import pb_access_request
 from . import pb_access_approval
+from . import account_type

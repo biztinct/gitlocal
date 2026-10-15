@@ -467,6 +467,12 @@
                     <span t-if="ps.is_me" class="pbva-badge pbva-badge--mine">
                       You
                     </span>
+                    <!-- TIERS T2: an employee login is chipped; staff is the
+                         default look, so two hundred rows carry no chip. -->
+                    <span t-if="ps.kind === 'employee'"
+                          class="pbva-badge pbva-badge--quiet">
+                      Employee
+                    </span>
                   </b>
                   <small t-if="ps.title" t-esc="ps.title"/>
                   <small t-else="" t-esc="ps.login"/>
@@ -519,11 +525,38 @@
                           t-on-click="() => this.openPersonHistory(ph)">
                     <t t-out="ic('history',14)"/> Their history
                   </button>
-                  <button t-if="passport.can_manage" class="pbim-btn primary"
+                  <button t-if="passport.can_manage and ph.kind !== 'employee'"
+                          class="pbim-btn primary"
                           t-on-click="() => this.openGiveRole(ph)">
                     <t t-out="ic('plus',14)"/> Give a role
                   </button>
                 </div>
+              </div>
+
+              <!-- ======================= Employee | Staff =======================
+                   TIERS T2. Which kind of login this person has: an employee
+                   login (self-service pages only, no backend, no roles) or a full one.
+                   One press opens a confirmation that says what they keep and
+                   what changes; when the switch is not allowed, it is drawn
+                   disabled with the reason under it — never a silent no. -->
+              <div t-if="ph.switch and passport.can_manage" class="pbva-kind">
+                <div class="pbva-tabs pbva-kind-seg" role="radiogroup"
+                     aria-label="Kind of login">
+                  <button t-foreach="kindOptions" t-as="ko" t-key="ko.key"
+                          role="radio"
+                          t-att-aria-checked="ph.kind === ko.key ? 'true' : 'false'"
+                          t-attf-class="pbva-tab {{ ph.kind === ko.key ? 'is-on' : '' }}"
+                          t-att-disabled="ph.kind !== ko.key and (!ph.switch.allowed or state.busy)"
+                          t-on-click="() => this.openSwitch(ph, ko.key)">
+                    <t t-out="ic(ko.icon,14)"/> <t t-esc="ko.label"/>
+                  </button>
+                </div>
+                <p t-if="ph.switch.why" class="pbva-hint pbva-kind-why">
+                  <t t-esc="ph.switch.why"/>
+                </p>
+                <p t-elif="ph.kind === 'employee'" class="pbva-hint pbva-kind-why">
+                  Employee login: self-service pages only, no backend.
+                </p>
               </div>
 
               <div class="pbva-pass-cols">
@@ -538,6 +571,12 @@
                   <PbMiniRail t-if="passport.rail.length"
                               sections="passport.rail" legend="true"
                               expandable="true"/>
+
+                  <p t-elif="ph.kind === 'employee'" class="pbva-col-empty">
+                    An employee login does not open the backend, so there is
+                    no left menu. They use the self-service pages: payslips, leave,
+                    documents and requests.
+                  </p>
 
                   <p t-else="" class="pbva-col-empty">
                     There is no left menu written down on this system, so there
@@ -576,7 +615,16 @@
                        they still have a login and still see the entries
                        everybody sees — and offers the one action that changes
                        it. -->
-                  <div t-if="!passport.roles.length" class="pbva-mini-empty">
+                  <!-- TIERS T2: an employee login cannot hold a role. -->
+                  <div t-if="ph.kind === 'employee'" class="pbva-mini-empty">
+                    <t t-out="ic('user',22)"/>
+                    <p>
+                      Employee login — no roles. Make them staff to give a
+                      role.
+                    </p>
+                  </div>
+
+                  <div t-elif="!passport.roles.length" class="pbva-mini-empty">
                     <t t-out="ic('idCard',22)"/>
                     <p>
                       No role assignments yet. Their existing direct permissions
@@ -1117,6 +1165,67 @@
             <button data-biz-validate="true" class="pbim-btn primary" t-on-click="createPerson"
                     t-att-disabled="state.addingPersonBusy or (state.addingPerson.email.trim() and !state.addingPerson.email.includes('@'))">
               <t t-out="ic('userPlus',15)"/> Add person
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== Employee | Staff, confirmed =====================
+           TIERS T2. The same shape as "Add a person": what they keep, what
+           changes, an optional reason, and the press. -->
+      <div t-if="state.switching" class="pbim-modal-scrim"
+           t-on-click="closeSwitch">
+        <t t-set="sw" t-value="state.switching"/>
+        <div class="pbim-modal pbva-modal" t-on-click.stop=""
+             role="dialog" aria-modal="true"
+             t-att-aria-label="switchTitle(sw)">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic">
+              <t t-out="ic(sw.to === 'employee' ? 'user' : 'briefcase',17)"/>
+            </div>
+            <div class="pbva-modal-t">
+              <h3 t-esc="switchTitle(sw)"/>
+              <p t-if="sw.to === 'employee'">An employee login uses the self-service pages only.</p>
+              <p t-else="">A full login opens the backend, with the roles you give.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeSwitch"
+                    t-att-disabled="state.switchingBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbva-modal-b">
+            <div class="pbva-note pbva-note--shield">
+              <t t-out="ic('checkCircle',14)"/>
+              <span><b>They keep</b> their self-service pages: payslips, leave, documents and requests.</span>
+            </div>
+            <div t-if="sw.to === 'employee'" class="pbva-note pbva-note--shield">
+              <t t-out="ic('lock',14)"/>
+              <span>
+                <b>They lose</b> the backend.
+                <t t-if="sw.roles_ending" t-esc="switchRolesLine(sw.roles_ending)"/>
+              </span>
+            </div>
+            <div t-else="" class="pbva-note pbva-note--shield">
+              <t t-out="ic('key',14)"/>
+              <span><b>They get</b> the backend. Give them a role next.</span>
+            </div>
+            <label class="pbva-lbl" for="pbva-switch-reason">Reason (optional)</label>
+            <input id="pbva-switch-reason" class="pbva-in"
+                   t-att-value="sw.reason"
+                   t-on-input="onSwitchReason"
+                   placeholder="For example, works on the shop floor only"/>
+          </div>
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeSwitch"
+                    t-att-disabled="state.switchingBusy">Keep as is</button>
+            <button class="pbim-btn primary" t-on-click="confirmSwitch"
+                    t-att-disabled="state.switchingBusy">
+              <t t-if="sw.to === 'employee'">
+                <t t-out="ic('user',15)"/> Make employee
+              </t>
+              <t t-else="">
+                <t t-out="ic('briefcase',15)"/> Make staff
+              </t>
             </button>
           </div>
         </div>
