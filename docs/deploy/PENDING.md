@@ -29,6 +29,10 @@ The owner confirmed that the other session handles this deployment. Its rollout
 covers all five databases; its own receipt closes those two module versions.
 The completed tiers rollout does not overwrite or take over that work.
 
+| Date | Module → version | What changed | Status |
+|---|---|---|---|
+| 2026-10-16 | biz_access → 19.0.1.6.1 | TIERS follow-up: the Employee/Staff switch refuses a person with a permission given by hand (mirrors `tools/tiers_switchover.py`). `-u biz_access` on all five databases in one run, asset purge + version bump each; abm jobs re-checked. | Deployed on all five 2026-10-16 (this session) |
+
 ## Completed batch — 16 October 2026
 
 | Modules | Result |
