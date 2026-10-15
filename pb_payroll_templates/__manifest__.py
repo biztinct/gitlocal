@@ -1,7 +1,7 @@
 {
     'name': 'Payobook Payroll Templates',
     'summary': 'Current employee records and reviewed monthly workbooks',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'depends': ['pb_records', 'pb_payrun_wizard', 'pb_formula_studio'],

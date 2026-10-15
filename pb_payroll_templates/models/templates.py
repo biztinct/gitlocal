@@ -25,6 +25,20 @@ IDENTITY = {'barcode', 'employee_id', 'pb_source_ref', 'identification_id',
 TIME = re.compile(r'days?|hours?|\bhrs?\b|attendance|timesheet|ngày|giờ|công', re.I)
 VARIABLE = re.compile(r'bonus|reimburs|deduct|arrear|adjust|severance|overtime|cpf|self.help|shg|tax|thuế|khấu trừ|thưởng', re.I)
 RECURRING = re.compile(r'salary|basic|wage|fixed|recurring|allowance|phụ cấp|lương', re.I)
+SALARY = re.compile(r'\bbasic\b|base.*salary|contract.*salary|monthly.*salary|^salary$|\bwage\b|lương hợp đồng|lương cơ bản', re.I)
+
+
+def salary_inputs(config):
+    """Find salary in the scheme currency, never an unused foreign reference."""
+    candidates = config.rule_ids.filtered(lambda r: r.column_type == 'input'
+        and SALARY.search(r.name or '') and not VARIABLE.search(r.name or '')
+        and not re.search(r'\bannual|\byearly|\bhourly|\bdaily|\bnet\b', r.name or '', re.I))
+    currency = config.currency_id.name
+    explicit = candidates.filtered(lambda r: re.search(r'\b%s\b' % re.escape(currency), r.name or '', re.I)) if currency else candidates.browse()
+    if explicit:
+        return explicit
+    currencies = set(config.env['res.currency'].sudo().with_context(active_test=False).search([]).mapped('name'))
+    return candidates.filtered(lambda r: not (set(re.findall(r'\b[A-Z]{3}\b', r.name or '')) & currencies))
 
 
 def plain(value):
@@ -552,6 +566,7 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         current = self._current(cfg, period, people)
         catalog = self._catalog(cfg)
+        salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
         mandatory = [c for c in catalog if not c.get('readonly')
                      and re.search(r'paid.?days|working.?days|standard.*days|period.?days|days.?worked|ngày công', c['label'], re.I)]
         missing = []
@@ -562,6 +577,16 @@ class PayrollTemplates(models.AbstractModel):
                     missing.append('%s · %s' % (employee.name, c['label']))
         if missing:
             raise UserError(_('Complete the required Time inputs before computing payroll:\n%s') % '\n'.join(missing[:20]))
+        missing_salary = []
+        for employee in people:
+            for c in catalog:
+                if c['id'] not in salary_keys:
+                    continue
+                value = records[employee.id].get(c.get('record_id')) if c.get('readonly') else current[employee.id].get(c['id'])
+                if value is None or value == '':
+                    missing_salary.append('%s · %s' % (employee.name, c['label']))
+        if missing_salary:
+            raise UserError(_('Recurring salary is missing. Update employee / contract records or provide the required salary input before computing payroll:\n%s') % '\n'.join(missing_salary[:20]))
         headers = ['Employee ID', 'employee_code', 'Employee name', 'employee_name', 'email']
         identity_cols = []
         for rid, kind in self._identity_rules(cfg).items():
@@ -583,9 +608,10 @@ class PayrollTemplates(models.AbstractModel):
             vals = [self._code(e), self._code(e), e.name, e.name, e.work_email or '']
             vals.extend({'code': self._code(e), 'name': e.name, 'email': e.work_email or ''}[kind] for kind in identity_cols)
             for c in cols:
-                value = current[e.id].get(c['id'])
-                if value is None and c.get('record_id') and c.get('readonly'):
-                    value = records[e.id].get(c['record_id'])
+                # Saved recurring values are current record context. Earlier
+                # uploads/monthly-layout values (including stale zeros) cannot
+                # override them. Variable monthly zeros still remain updates.
+                value = records[e.id].get(c['record_id']) if c.get('record_id') and c.get('readonly') else current[e.id].get(c['id'])
                 if value is None and not c.get('readonly') and c['kind'] in ('money', 'decimal', 'integer', 'quantity', 'rate'):
                     value = 0
                 # No previous month's amounts enter this path.
@@ -701,7 +727,8 @@ class TemplateRecordFields(models.AbstractModel):
                 mapping = self.env['hr.payslip.import.mapping'].new({
                     'target_model_id': self.env['ir.model']._get(model).id,
                     'target_field_id': metadata.id, 'destination_type': 'field'})
-                rule = configs.rule_ids.filtered(lambda r: r.column_type == 'input' and not VARIABLE.search(r.name or '') and re.search(r'basic|base.*salary|contract.*salary|monthly.*salary|^salary$|wage', r.name or '', re.I))[:1] if name == 'wage' else self.env['hr.formula.rule']
+                candidates = salary_inputs(configs[:1]) if name == 'wage' else self.env['hr.formula.rule']
+                rule = candidates if len(candidates) == 1 else self.env['hr.formula.rule']
                 cards[fid] = {'id': fid, 'group': 'employee' if model == 'hr.employee' else 'contract',
                               'label': field.string, 'sub': _('Standard employee / contract record'),
                               'ttype': field.type, 'model': model, 'field': name,

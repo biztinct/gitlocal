@@ -165,6 +165,51 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual(blob['Payroll|Salary'],1000)
         self.assertEqual(self.contract.wage,1000)
 
+    def test_current_recurring_salary_wins_over_saved_monthly_zero(self):
+        self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
+            'company_id':self.env.company.id,'employee_id':self.emp.id,'period':'2026-10',
+            'payload':{'rule:%s'%self.salary.id:0,'rule:%s'%self.paid.id:20,
+                       'rule:%s'%self.bonus.id:0}})
+        for salary in (1000,1200,0):
+            self.contract.wage=salary
+            raw,_ids=self.api._engine_file(self.cfg,'2026-10')
+            wb=openpyxl.load_workbook(io.BytesIO(raw))
+            row=dict(zip([c.value for c in wb.active[1]],[c.value for c in wb.active[2]]))
+            self.assertEqual(row['Payroll|Salary'],salary)
+            self.assertEqual(row['Payroll|Monthly bonus'],0)
+
+    def test_salary_candidate_uses_scheme_currency(self):
+        cfg=self.env['hr.formula.config'].create({'name':'VND salary source',
+            'code':'WBVNDSALARY','country_code':'VN','company_id':self.env.company.id})
+        rules=self.env['hr.formula.rule'].create([
+            {'config_id':cfg.id,'name':'Gross contract salary USD','code':'WBUSD',
+             'column_type':'input','value_kind':'money','sequence':1},
+            {'config_id':cfg.id,'name':'Gross contract salary VND','code':'WBVND',
+             'column_type':'input','value_kind':'money','sequence':2}])
+        cards=self.env['pb.records.desk']._cards(cfg.id)
+        self.assertEqual(cards['f:hr.contract:wage']['component']['id'],rules[1].id)
+        vnd=next(c for c in self.api._catalog(cfg) if c['code']=='WBVND')
+        self.assertTrue(vnd['readonly'])
+        self.assertEqual(vnd['record_id'],'f:hr.contract:wage')
+
+    def test_ambiguous_salary_does_not_choose_first_column(self):
+        cfg=self.env['hr.formula.config'].create({'name':'Ambiguous salary source',
+            'code':'WBAMBSALARY','country_code':'SG','company_id':self.env.company.id})
+        for name,code in [('Basic salary','WBASALA'),('Contract salary','WBASALB')]:
+            self.env['hr.formula.rule'].create({'config_id':cfg.id,'name':name,'code':code,
+                'column_type':'input','value_kind':'money'})
+        cards=self.env['pb.records.desk']._cards(cfg.id)
+        self.assertIsNone(cards['f:hr.contract:wage']['component'])
+
+    def test_missing_recurring_salary_is_not_silently_zero(self):
+        wb=self.export();self.set_value(wb,'Time','Paid days',20)
+        self.apply(self.review(wb))
+        values=self.api._record_values(self.cfg,self.emp,self.api._cards(self.cfg))
+        values[self.emp.id]['f:hr.contract:wage']=None
+        with patch.object(type(self.api),'_record_values',return_value=values):
+            with self.assertRaisesRegex(UserError,'Recurring salary is missing'):
+                self.api._engine_file(self.cfg,'2026-10')
+
     def test_missing_time_blocks_computation(self):
         with self.assertRaises(UserError):self.api._engine_file(self.cfg,'2026-10')
 
