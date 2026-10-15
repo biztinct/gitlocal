@@ -54,8 +54,9 @@ class TestDependencyOrder(unittest.TestCase):
     def test_column_letter_takes_precedence_over_a_code(self):
         rules = [rule('TOTAL', 'C', 'A', "values['BASE'] + 2"),
                  rule('A', 'B', kind='input'),
-                 rule('BASE', 'A', kind='input')]
-        self.assertEqual(self.evaluator.evaluate_all(rules, {'BASE': 10, 'A': 99})['TOTAL'], 12)
+                 rule('BASE', 'A', 'D', "values['SEED'] * 2"),
+                 rule('SEED', 'D', kind='input')]
+        self.assertEqual(self.evaluator.evaluate_all(rules, {'SEED': 5, 'A': 99})['TOTAL'], 12)
 
     def test_first_matching_column_wins(self):
         rules = [rule('TOTAL', 'B', 'A'), rule('FIRST', 'A', kind='input'),

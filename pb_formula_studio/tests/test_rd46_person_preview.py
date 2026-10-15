@@ -25,6 +25,7 @@ The rest is the shape of the thing:
   * a preview saves nothing until somebody says to.
 """
 import json
+from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
 
@@ -284,7 +285,12 @@ class TestRd46PersonPreview(TransactionCase):
     def test_04c_a_payslip_with_no_scheme_says_so_plainly(self):
         emp = self.env['hr.employee'].create({'name': 'RD46 No Scheme'})
         slip = self.env['hr.payslip'].create({
-            'employee_id': emp.id, 'name': 'RD46 Bare'})
+            'employee_id': emp.id, 'name': 'RD46 Bare', 'formula_config_id': False})
         from odoo.exceptions import UserError
-        with self.assertRaises(UserError):
-            slip.action_show_calculation()
+        # A tenant may have a company/country default that the resolver finds
+        # even for this bare payslip. Exercise the no-scheme result explicitly,
+        # independent of the database's existing payroll configuration.
+        with patch.object(type(slip), '_find_formula_config',
+                          return_value=self.env['hr.formula.config']):
+            with self.assertRaises(UserError):
+                slip.action_show_calculation()
