@@ -22,7 +22,7 @@ LIMIT = 10000
 TABS = {'time': 'Time', 'adjustments': 'Monthly adjustments'}
 IDENTITY = {'barcode', 'employee_id', 'pb_source_ref', 'identification_id',
             'work_email', 'private_email'}
-TIME = re.compile(r'days?|hours?|overtime|attendance|timesheet|ngày|giờ|cong', re.I)
+TIME = re.compile(r'days?|hours?|\bhrs?\b|attendance|timesheet|ngày|giờ|công', re.I)
 VARIABLE = re.compile(r'bonus|reimburs|deduct|arrear|adjust|severance|overtime|cpf|self.help|shg|tax|thuế|khấu trừ|thưởng', re.I)
 RECURRING = re.compile(r'salary|basic|wage|fixed|recurring|allowance|phụ cấp|lương', re.I)
 
@@ -134,15 +134,13 @@ class PayrollTemplates(models.AbstractModel):
         identity_rules = self._identity_rules(cfg)
         for rule in cfg.rule_ids.filtered(lambda r: r.column_type == 'input'):
             sources = rule.source_ids.filtered(lambda s: s.kind == 'excel') if 'source_ids' in rule._fields else self.env['hr.formula.rule.source'].sudo().search([('rule_id', '=', rule.id), ('kind', '=', 'excel')])
-            if not sources and rule.data_source != 'excel':
-                continue
             if rule.id in identity_rules:
                 continue
             text = '%s %s' % (rule.name, rule.code)
             card_id = by_rule.get(rule.id)
             if card_id and cards[card_id].get('field') in IDENTITY:
                 continue
-            quantity = rule.value_kind == 'quantity' or bool(TIME.search(text) and rule.value_kind in ('integer', 'decimal'))
+            quantity = rule.value_kind == 'quantity' or bool(TIME.search(text) and rule.value_kind in ('integer', 'decimal', 'money'))
             recurring = bool(card_id and not quantity and not VARIABLE.search(text))
             # Mapped dates, names, status and recurring salary are read from records.
             default = 'available' if recurring or rule.value_kind in ('date', 'text', 'boolean') else ('time' if quantity else 'adjustments')

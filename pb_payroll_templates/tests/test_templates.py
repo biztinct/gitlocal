@@ -140,6 +140,11 @@ class TestPayrollTemplates(TransactionCase):
     def test_missing_time_blocks_computation(self):
         with self.assertRaises(UserError):self.api._engine_file(self.cfg,'2026-10')
 
+    def test_manual_time_inputs_are_available(self):
+        self.paid.clear_source_binding('excel');self.paid.data_source='manual'
+        d=self.api.workspace(self.cfg.id,'2026-10')
+        self.assertIn('rule:%s'%self.paid.id,d['layout']['time'])
+
     def test_formula_and_invalid_number_are_refused(self):
         for value in ('=1+1','abc'):
             wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',value)
