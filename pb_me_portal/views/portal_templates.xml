@@ -851,4 +851,26 @@
     </t>
   </template>
 
+  <!-- ============================================================= -->
+  <!--  TIERS T1 — the fence: no "Apps" link for portal-only people  -->
+  <!-- ============================================================= -->
+  <!-- The account menu's "Apps" entry (desktop and mobile dropdown, on every
+       portal and website page) is a door into the backend. A portal-only
+       person (`res.users._pb_portal_only()`: employee-only, no role, no
+       direct report, no open approval seat — ledger T-R8) does not get it
+       drawn. Everyone else sees it exactly as before. The web-client route
+       bounce in controllers/ess_landing.py is the real block; this only
+       stops offering a link that would bounce.
+
+       biz_deroute_website patches the same anchor's `href` (to /bizapp);
+       both are `attributes` patches on one node and both apply. The method
+       is exception-safe (ledger T-R2/T5), so the page can never 500 on it. -->
+  <template id="portal_user_dropdown_portal_only"
+            inherit_id="portal.user_dropdown"
+            name="Account menu: no Apps link for portal-only employees">
+    <xpath expr="//a[@id='o_backend_user_dropdown_link']" position="attributes">
+      <attribute name="t-if">not user_id._pb_portal_only()</attribute>
+    </xpath>
+  </template>
+
 </odoo>
