@@ -77,6 +77,11 @@ export class PayrollTemplates extends Component {
     get fields(){return Object.fromEntries((this.state.data?.fields||[]).map(f=>[f.id,f]));}
     fieldsIn(lane){return (this.state.layout[lane]||[]).map(i=>this.fields[i]).filter(f=>f && (lane!=='available'||`${f.label} ${f.code}`.toLowerCase().includes(this.state.query.toLowerCase())));}
     get monthlyCount(){return this.state.layout.time.length+this.state.layout.adjustments.length;}
+    unit(f){
+        if(/hours?|\bhrs?\b|giờ/i.test(f.label))return 'Hours';
+        if(/days?|ngày/i.test(f.label))return 'Days';
+        return {money:this.state.data.currency,quantity:'Quantity',integer:'Whole number',decimal:'Number',rate:'%',text:'Text',identifier:'Reference',date:'Date',boolean:'Yes / No'}[f.kind]||'';
+    }
     async changeConfig(ev){this.state.configId=Number(ev.target.value);await this.load();}
     async changeMonth(ev){this.state.period=ev.target.value;await this.load();}
     show(screen){this.state.screen=screen;this.state.menu='';}
