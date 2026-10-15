@@ -531,31 +531,14 @@ class PayrollAIConversation(models.Model):
             'vocab': dict(VOICE_VOCAB),
             # Server-rendered so it follows the READER's language through the
             # ordinary `_()` path — this module's copy contract since D1.
+            #
+            # NO CONSENT CARD COPY (owner ruling 2026-10-15): the "Send
+            # recordings for transcription?" card and its Yes / No buttons are
+            # gone from the drawer; the first tap on the microphone records
+            # the agreement (`rpc_set_voice_consent`). `ask` stays in this
+            # payload so the browser knows that first tap must save it — the
+            # server gate in `rpc_transcribe_voice` is unchanged.
             'copy': {
-                'consent_title': _('Send recordings for transcription?'),
-                # THE CARD NAMES WHAT LEAVES, WHO GETS IT AND WHEN.
-                #
-                # The first draft said "nothing is sent until you press send",
-                # which is true of the TEXT and false of the RECORDING — the
-                # audio goes the moment the person taps Stop, which is the
-                # whole reason this consent exists. A notice that is reassuring
-                # about the wrong half is worse than none.
-                #
-                # ONECHAT OC3: reworded for tap-to-talk (tap to start, tap
-                # Stop). What leaves, who gets it and when are unchanged; the
-                # recording now leaves on Stop, and Cancel sends nothing. Owner
-                # decision Q5: people who already said yes are not asked again.
-                'consent_body': _(
-                    "Tap the microphone and speak. When you tap Stop, the "
-                    "recording goes to an outside company's speech service, "
-                    "which turns it into text. Tap Cancel and nothing is sent. "
-                    "The recording is audio: unlike text, we cannot take names "
-                    "out of it first. The text then waits in the box — nothing "
-                    "is asked or answered until you read it and press send. Say "
-                    "no and the microphone stays off. Everything else works the "
-                    "same."),
-                'consent_yes': _('Yes, send my recordings'),
-                'consent_no': _('No, keep the microphone off'),
                 'tap_hint': _('Tap to speak'),
                 'check_hint': _('This is what I heard. Edit it, then press send.'),
                 'listen_label': _('Read answers aloud'),

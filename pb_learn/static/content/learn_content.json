@@ -1342,8 +1342,8 @@
       "vi": "Không rời khỏi Payobook"
     },
     "swVoiceBody": {
-      "en": "Adds a microphone to the PayAI chat. Each person agrees once before anything is recorded. People speak, check the words, then press Send. Recordings go to the speech service only to be turned into text.",
-      "vi": "Thêm micro vào khung chat PayAI. Mỗi người đồng ý một lần trước khi ghi âm. Mọi người nói, kiểm tra lại câu chữ, rồi bấm Gửi. Bản ghi âm chỉ được gửi tới dịch vụ chuyển giọng nói để đổi thành chữ."
+      "en": "Adds a microphone to the PayAI chat. People tap it, speak, check the words, then press Send. Recordings go to the speech service only to be turned into text.",
+      "vi": "Thêm micro vào khung chat PayAI. Mọi người bấm vào micro, nói, kiểm tra lại câu chữ, rồi bấm Gửi. Bản ghi âm chỉ được gửi tới dịch vụ chuyển giọng nói để đổi thành chữ."
     },
     "swVoiceLeaves": {
       "en": "Sends the recording to a speech service.",
@@ -34241,5 +34241,5 @@
       }
     }
   ],
-  "version": "0d8616ee7c35"
+  "version": "85ea7ba089f8"
 }

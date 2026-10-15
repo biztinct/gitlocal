@@ -225,29 +225,6 @@
                 </t>
             </div>
 
-            <!-- Voice consent, asked once, before anything is recorded.
-                 Copy comes from the server so it follows the reader's own
-                 language, and it names what actually leaves: the recording. -->
-            <t t-if="state.voiceAsking">
-                <div class="payai-voice-consent">
-                    <div class="payai-voice-consent-title">
-                        <i class="fa fa-microphone"/>
-                        <t t-esc="voiceCopy.consent_title"/>
-                    </div>
-                    <p class="payai-voice-consent-body" t-esc="voiceCopy.consent_body"/>
-                    <div class="payai-voice-consent-actions">
-                        <button class="payai-voice-yes"
-                                t-on-click="() => this.answerVoiceConsent(true)">
-                            <t t-esc="voiceCopy.consent_yes"/>
-                        </button>
-                        <button class="payai-voice-no"
-                                t-on-click="() => this.answerVoiceConsent(false)">
-                            <t t-esc="voiceCopy.consent_no"/>
-                        </button>
-                    </div>
-                </div>
-            </t>
-
             <!-- Input Area -->
             <div class="payai-chat-input-area">
                 <!-- Recording Indicator -->
@@ -430,21 +407,6 @@
                 <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-arrow-down"/></svg>
                 <t t-esc="t('jumpLatest', 'Jump to latest')"/>
             </button>
-
-            <t t-if="state.voiceAsking">
-                <div class="payai-embed-consent">
-                    <b t-esc="voiceCopy.consent_title"/>
-                    <p t-esc="voiceCopy.consent_body"/>
-                    <div class="payai-embed-row">
-                        <button type="button" class="payai-embed-btn pri"
-                                t-on-click="() => this.answerVoiceConsent(true)"
-                                t-esc="voiceCopy.consent_yes"/>
-                        <button type="button" class="payai-embed-btn"
-                                t-on-click="() => this.answerVoiceConsent(false)"
-                                t-esc="voiceCopy.consent_no"/>
-                    </div>
-                </div>
-            </t>
 
             <div class="payai-embed-input" t-att-data-voice="state.isRecording ? 'listening' : (state.micStarting ? 'starting' : (state.voiceBusy ? 'busy' : ''))">
                 <!-- ONECHAT OC3 — TAP TO TALK. While the microphone is open the

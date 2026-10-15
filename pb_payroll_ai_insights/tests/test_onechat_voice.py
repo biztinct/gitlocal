@@ -106,7 +106,9 @@ class TestOneChatVoice(TransactionCase):
     def test_voice_status(self):
         status = self.Conv.rpc_voice_status()
         self.assertTrue(status['ask'] and status['switch_on'] and status['provider_ready'])
-        self.assertTrue(status['copy']['consent_body'].startswith('Tap the microphone and speak.'))
+        # Owner ruling 2026-10-15: no consent card, so no card copy is sent.
+        for gone in ('consent_title', 'consent_body', 'consent_yes', 'consent_no'):
+            self.assertNotIn(gone, status['copy'])
         self.assertEqual(status['copy']['tap_hint'], 'Tap to speak')
         self.env['payroll.ai.consent'].with_user(self.user).set_voice(False)
         status = self.Conv.rpc_voice_status()

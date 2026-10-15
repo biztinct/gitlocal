@@ -536,12 +536,6 @@ msgstr "Xin chào! Tôi là PayAI"
 #. module: pb_payroll_ai_insights
 #. odoo-python
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Tap the microphone and speak. When you tap Stop, the recording goes to an outside company's speech service, which turns it into text. Tap Cancel and nothing is sent. The recording is audio: unlike text, we cannot take names out of it first. The text then waits in the box — nothing is asked or answered until you read it and press send. Say no and the microphone stays off. Everything else works the same."
-msgstr "Bạn bấm vào micrô rồi nói. Khi bạn bấm Dừng, bản ghi âm sẽ được gửi tới dịch vụ chuyển giọng nói thành chữ của một công ty bên ngoài. Bấm Hủy bỏ thì không có gì được gửi đi. Đây là âm thanh: khác với chữ, chúng tôi không thể bỏ tên riêng ra trước khi gửi. Phần chữ nghe được sẽ nằm chờ trong ô nhập — không có câu hỏi nào được gửi đi cho tới khi bạn đọc lại rồi bấm gửi. Nếu bạn từ chối, micrô sẽ tắt. Mọi thứ khác vẫn hoạt động y như vậy."
-
-#. module: pb_payroll_ai_insights
-#. odoo-python
-#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
 msgid "Tap to speak"
 msgstr "Bấm để nói"
 
@@ -757,12 +751,6 @@ msgstr "Không có dữ liệu biểu đồ"
 #: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
 msgid "No speech service is set up here."
 msgstr "Ở đây chưa cấu hình dịch vụ chuyển giọng nói thành chữ."
-
-#. module: pb_payroll_ai_insights
-#. odoo-python
-#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "No, keep the microphone off"
-msgstr "Không, tắt micrô"
 
 #. module: pb_payroll_ai_insights
 #. odoo-python
@@ -1084,12 +1072,6 @@ msgid "Salary Distribution"
 msgstr "Phân phối lương"
 
 #. module: pb_payroll_ai_insights
-#. odoo-python
-#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Send recordings for transcription?"
-msgstr "Gửi bản ghi âm đi để chuyển thành chữ?"
-
-#. module: pb_payroll_ai_insights
 #: model:ir.model.fields,field_description:pb_payroll_ai_insights.field_payroll_ai_dashboard__sequence
 msgid "Sequence"
 msgstr "Thứ tự"
@@ -1257,12 +1239,6 @@ msgstr "Chiều rộng (đơn vị lưới)"
 #: model:ir.model.fields,help:pb_payroll_ai_insights.field_payroll_ai_dashboard_widget__width
 msgid "Width in grid units (1-12)"
 msgstr "Chiều rộng tính theo đơn vị lưới (1-12)"
-
-#. module: pb_payroll_ai_insights
-#. odoo-python
-#: code:addons/pb_payroll_ai_insights/models/payroll_ai_conversation.py:0
-msgid "Yes, send my recordings"
-msgstr "Đồng ý, gửi bản ghi âm của tôi"
 
 #. module: pb_payroll_ai_insights
 #. odoo-javascript

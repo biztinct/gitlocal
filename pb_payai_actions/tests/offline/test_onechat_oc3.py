@@ -145,8 +145,9 @@ class TestTranscribe(unittest.TestCase):
         self.assertTrue(status['switch_on'] and status['provider_ready'])
         self.assertEqual(status['vocab'], CONV_MOD.VOICE_VOCAB)
         copy = status['copy']
-        self.assertTrue(copy['consent_body'].startswith('Tap the microphone and speak.'))
-        self.assertIn('Tap Cancel and nothing is sent.', copy['consent_body'])
+        # Owner ruling 2026-10-15: no consent card, so no card copy is sent.
+        for gone in ('consent_title', 'consent_body', 'consent_yes', 'consent_no'):
+            self.assertNotIn(gone, copy)
         self.assertEqual(copy['tap_hint'], 'Tap to speak')
         self.assertNotIn('hold_hint', copy)
         # Declined: no microphone, but the menu can tell voice could be had.
@@ -159,7 +160,7 @@ class TestTranscribe(unittest.TestCase):
         status = self.Conv.rpc_voice_status()
         self.assertFalse(status['switch_on'] or status['provider_ready'] or status['available'])
 
-    def test_vietnamese_consent_copy(self):
+    def test_vietnamese_voice_copy(self):
         env_vi = R.make_env('P', lang='vi_VN')
         env_vi.extra.pop('payroll.ai.conversation')
         env_vi.extra['ir.config_parameter'].set_param('payai.voice_enabled', 'True')
@@ -172,10 +173,7 @@ class TestTranscribe(unittest.TestCase):
                 copy = Conv_vi.rpc_voice_status()['copy']
         finally:
             CURRENT_LANG['lang'] = 'en_US'
-        body = copy['consent_body'].lower()
-        for claim in ('khi bạn bấm dừng, bản ghi âm sẽ được gửi', 'công ty bên ngoài',
-                      'không thể bỏ tên riêng', 'nằm chờ trong ô nhập', 'hủy bỏ'):
-            self.assertIn(claim, body)
+        self.assertNotIn('consent_body', copy)
         self.assertEqual(copy['tap_hint'], 'Bấm để nói')
 
 

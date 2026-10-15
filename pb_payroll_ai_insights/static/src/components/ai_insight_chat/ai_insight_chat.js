@@ -642,7 +642,6 @@ export class AiInsightChat extends Component {
             // server answers this (`rpc_voice_status`) because both gates
             // live there and the browser's copy is a hint, never the control.
             voice: { available: false, ask: false, consent: "unset", copy: {} },
-            voiceAsking: false,     // the consent card is up
             voiceBusy: false,       // transcribing
             voiceHint: "",          // "this is what I heard" — shown once
             voiceError: "",
@@ -1115,26 +1114,33 @@ export class AiInsightChat extends Component {
         return this.state.voice.copy || {};
     }
 
-    /** The consent card, once. `ask` is the server's answer to "has this
-     *  person been asked", so a decline is remembered and cannot come back
-     *  and nag. */
-    async answerVoiceConsent(granted) {
-        this.state.voiceAsking = false;
-        try {
-            await rpc("/web/dataset/call_kw", {
-                model: "payroll.ai.conversation",
-                method: "rpc_set_voice_consent",
-                args: [!!granted], kwargs: {},
-            }, { silent: true });
-        } catch (error) {
-            console.error("PayAI voice consent error:", error);
-            return;
+    /** NO CONSENT CARD (owner ruling 2026-10-15). The card that asked
+     *  "Send recordings for transcription?" before the first recording is
+     *  gone: tapping the microphone IS the yes. The server still refuses to
+     *  transcribe without a stored "granted" row (`rpc_transcribe_voice`), so
+     *  the first tap records that row here, in parallel with the recorder
+     *  starting — the recorder must start inside the tap (Safari drops the
+     *  microphone permission prompt once an await sits between them), and the
+     *  audio only leaves on Stop, by which time `_voiceGranting` has settled
+     *  and `_sendForText` waits for it. Also used by the More menu's
+     *  "Use my voice" for people who said no on the old card. */
+    _grantVoice() {
+        if (this._voiceGranting) {
+            return this._voiceGranting;
         }
-        this.state.voice.consent = granted ? "granted" : "declined";
+        this.state.voice.consent = "granted";
         this.state.voice.ask = false;
-        // A decline takes the microphone away entirely rather than leaving a
-        // dead control behind.
-        this.state.voice.available = !!granted;
+        this.state.voice.available = true;
+        this._voiceGranting = rpc("/web/dataset/call_kw", {
+            model: "payroll.ai.conversation",
+            method: "rpc_set_voice_consent",
+            args: [true], kwargs: {},
+        }, { silent: true }).catch((error) => {
+            console.error("PayAI voice consent error:", error);
+        }).finally(() => {
+            this._voiceGranting = null;
+        });
+        return this._voiceGranting;
     }
 
     // --- tap to talk (ONECHAT OC3) ----------------------------------------
@@ -1209,9 +1215,8 @@ export class AiInsightChat extends Component {
             return;
         }
         if (this.state.voice.ask) {
-            // Never record first and ask afterwards.
-            this.state.voiceAsking = true;
-            return;
+            // First tap ever: the tap is the agreement (no card).
+            this._grantVoice();
         }
         if (!this.state.voice.available) {
             return;
@@ -1530,6 +1535,10 @@ export class AiInsightChat extends Component {
         this.state.hearAs = null;
         try {
             const base64 = await this._toBase64(blob);
+            if (this._voiceGranting) {
+                // The first-tap agreement is still being saved.
+                await this._voiceGranting;
+            }
             if (this._discarded) {
                 return;
             }
@@ -2512,9 +2521,9 @@ export class AiInsightChatEmbedded extends AiInsightChat {
             ttsSupported: () => this.ttsSupported,
             voiceDeclined: () => !!(this.state.voice.consent === "declined"
                 && this.state.voice.switch_on && this.state.voice.provider_ready),
-            reopenVoiceConsent: () => {
-                this.state.voiceAsking = true;
-            },
+            // "Use my voice" (More menu): no card any more, it just turns the
+            // microphone back on. Name kept so pb_learn's coach still calls it.
+            reopenVoiceConsent: () => this._grantVoice(),
             cancelRecording: () => this.cancelRecording(),
             // "Starting…" counts: Escape then cancels before anything records.
             isRecording: () => !!(this.state.isRecording || this.state.micStarting),

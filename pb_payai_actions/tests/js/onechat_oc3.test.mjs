@@ -381,6 +381,45 @@ async function recorderSuite() {
         unmount(chat);
     }
 
+    // Owner ruling 2026-10-15: no consent card. Never asked before → the
+    // first tap saves the agreement and records straight away.
+    reset();
+    {
+        Object.assign(VOICE_ON, { ask: true, consent: "unset" });
+        try {
+            const { chat } = await openChat();
+            check(chat.voiceOffered, "never asked: the microphone is drawn");
+            const heard = await record(chat);
+            const agree = rpcs("rpc_set_voice_consent");
+            check(agree.length === 1 && agree[0].args[0] === true, "the first tap saves the agreement, once");
+            check(heard && rpcLog.indexOf(agree[0]) < rpcLog.indexOf(rpcs("rpc_transcribe_voice")[0]),
+                  "… and the recording is turned into text after it is saved");
+            check(!("voiceAsking" in chat.state) && chat.state.voice.ask === false
+                  && chat.state.voice.consent === "granted", "no card is shown, and no second ask");
+            await record(chat);
+            check(rpcs("rpc_set_voice_consent").length === 1, "a second recording does not save it again");
+            unmount(chat);
+        } finally {
+            Object.assign(VOICE_ON, { ask: false, consent: "granted" });
+        }
+    }
+
+    // Said no on the old card → "Use my voice" turns the microphone on, no card.
+    reset();
+    {
+        Object.assign(VOICE_ON, { available: false, ask: false, consent: "declined" });
+        try {
+            const { chat } = await openChat();
+            check(!chat.voiceOffered && chat.api.voiceDeclined(), "said no before: no microphone, the menu offers voice");
+            await chat.api.reopenVoiceConsent();
+            check(chat.voiceOffered && rpcs("rpc_set_voice_consent").length === 1
+                  && chat.state.voice.consent === "granted", "'Use my voice' saves yes and draws the microphone");
+            unmount(chat);
+        } finally {
+            Object.assign(VOICE_ON, { available: true, ask: false, consent: "granted" });
+        }
+    }
+
     // stop before start: applied the moment it starts
     reset();
     {
