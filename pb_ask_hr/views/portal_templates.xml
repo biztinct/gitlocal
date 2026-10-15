@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- TIERS T3a — Ask HR on My Payobook. The pages reuse pb_me_portal's
+       .pbme kit (tokens, buttons, empty state, ess_icon); `.pbah-*` is this
+       module's thin layer (static/src/scss/ask_hr.scss). Every word a person
+       sees is here; the controller passes facts and keys only. -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_ask_hr" name="Ask HR breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="37">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'ask_hr'" class="breadcrumb-item active">Ask HR</li>
+      <li t-if="page_name in ('ask_hr_new', 'ask_hr_ticket')" class="breadcrumb-item"><a href="/my/ask-hr">Ask HR</a></li>
+      <li t-if="page_name == 'ask_hr_new'" class="breadcrumb-item active">New question</li>
+      <li t-if="page_name == 'ask_hr_ticket' and ticket" class="breadcrumb-item active" t-out="ticket.number"/>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home                                 -->
+  <!-- ============================================================= -->
+  <!-- Always drawn for an employee (config_card): the first question must
+       have a door. The count is the open questions. pb_me_portal's registry
+       (`/my/ask-hr`) gives it the People section and its badge. -->
+  <template id="portal_my_home_ask_hr" name="Ask HR home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="25">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Ask HR</t>
+        <t t-set="text">Questions and answers</t>
+        <t t-set="url" t-value="'/my/ask-hr'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'askhr_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <!-- The quiet status pill. `fresh` = it just changed (the page came back
+       from an action): it settles in once. -->
+  <template id="pbah_pill" name="Ask HR: status pill">
+    <span t-att-class="'pbah-pill pbah-pill--%s%s' % (state, ' is-fresh' if fresh else '')" role="status">
+      <i class="pbah-pill-dot" aria-hidden="true"/>
+      <t t-if="state == 'new'">Sent</t>
+      <t t-elif="state == 'with_hr'">With HR</t>
+      <t t-elif="state == 'answered'">Answered</t>
+      <t t-else="">Closed</t>
+    </span>
+  </template>
+
+  <!-- "2 h ago" from the controller's {unit, n, date}. -->
+  <template id="pbah_ago" name="Ask HR: how long ago">
+    <t t-if="ago['unit'] == 'now'">just now</t>
+    <t t-elif="ago['unit'] == 'min'"><t t-out="ago['n']"/> min ago</t>
+    <t t-elif="ago['unit'] == 'h'"><t t-out="ago['n']"/> h ago</t>
+    <t t-elif="ago['unit'] == 'd' and ago['n'] == 1">yesterday</t>
+    <t t-elif="ago['unit'] == 'd'"><t t-out="ago['n']"/> days ago</t>
+    <t t-else="" t-out="ago['date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/>
+  </template>
+
+  <!-- One toast per action key; it slides in, then fades by itself. -->
+  <template id="pbah_toast" name="Ask HR: toast">
+    <div t-if="done" class="pbah-toast" role="status" aria-live="polite">
+      <span class="pbah-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="done == 'sent'">Sent to HR. They usually answer within a working day.</span>
+      <span t-elif="done == 'reply'">Reply sent. HR will see it straight away.</span>
+      <span t-elif="done == 'closed'">Marked as solved. Glad it is sorted.</span>
+      <span t-elif="done == 'reopened'">Reopened. It is back with HR.</span>
+      <span t-elif="done == 'already_closed'">Already closed. Nothing more to do.</span>
+      <span t-else="">Already open. HR has it.</span>
+    </div>
+  </template>
+
+  <!-- An error said in plain words, with what to do next. -->
+  <template id="pbah_alert" name="Ask HR: error line">
+    <div t-if="error" class="pbah-alert" role="alert">
+      <span class="pbah-alert-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="error == 'subject'">Add a subject so HR knows what this is about.</span>
+      <span t-elif="error == 'empty'">Write a message, or attach a file, before sending.</span>
+      <span t-elif="error == 'type'">Files can be PDF, JPG or PNG. Choose another file and send again.</span>
+      <span t-elif="error == 'size'">Each file can be up to 10 MB. Try a smaller copy, or a photo of the page.</span>
+      <span t-elif="error == 'count'">Attach up to 3 files at a time. Send the rest in a reply.</span>
+      <span t-elif="error == 'late'">This question was closed more than 14 days ago. Ask a new question instead.</span>
+      <span t-else="">That did not go through. Please try again in a moment.</span>
+    </div>
+  </template>
+
+  <!-- File chips under a message (tokened links, ledger T20). -->
+  <template id="pbah_files" name="Ask HR: files">
+    <div t-if="files" class="pbah-files">
+      <a t-foreach="files" t-as="f" class="pbah-file" t-att-href="f['url']" t-att-title="f['name']">
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="14"/></t>
+        <span class="pbah-file-n" t-out="f['name']"/>
+      </a>
+    </div>
+  </template>
+
+  <!-- The file picker shared by the new-question form and the reply box. The
+       warnings are drawn here (hidden) so the script only shows them — it
+       holds no words of its own. -->
+  <template id="pbah_picker" name="Ask HR: file picker">
+    <div class="pbah-picker">
+      <label class="pbah-drop">
+        <input type="file" name="attachments" multiple="multiple" class="pbah-drop-input"
+               accept="application/pdf,image/png,image/jpeg" data-pbah-files=""
+               t-att-data-pbah-max="max_files"/>
+        <span class="pbah-drop-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="16"/></t></span>
+        <span class="pbah-drop-t"><b>Attach files</b><span>PDF, JPG or PNG, up to 3, 10 MB each</span></span>
+      </label>
+      <ul class="pbah-chosen" data-pbah-chosen="" aria-live="polite"/>
+      <p class="pbah-warn d-none" data-pbah-warn="count">Attach up to 3 files at a time.</p>
+      <p class="pbah-warn d-none" data-pbah-warn="type">Files can be PDF, JPG or PNG.</p>
+      <p class="pbah-warn d-none" data-pbah-warn="size">Each file can be up to 10 MB.</p>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/ask-hr — the list                                        -->
+  <!-- ============================================================= -->
+  <template id="portal_ask_hr_list" name="Ask HR (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbah">
+        <t t-call="pb_ask_hr.pbah_toast"/>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Ask HR</t>
+          <t t-set="hero_sub">Your questions for HR and their answers, all in one place.</t>
+          <t t-set="hero_actions"><a class="pbme-btn pbme-btn--primary" href="/my/ask-hr/new"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="16"/></t>Ask HR</a></t>
+        </t>
+
+        <div t-if="not total" class="pbme-empty pbah-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nothing asked yet</h3>
+          <p>When you ask HR a question, it lives here with their answer.</p>
+          <a class="pbme-btn pbme-btn--primary" href="/my/ask-hr/new">Ask your first question</a>
+        </div>
+
+        <t t-else="">
+          <p class="pbah-strip">
+            <span t-att-class="'pbah-stat is-act' if n_answered else 'pbah-stat'"><b t-out="n_answered"/> answered</span>
+            <span class="pbah-stat"><b t-out="n_with_hr"/> with HR</span>
+            <span class="pbah-stat"><b t-out="n_closed"/> closed</span>
+          </p>
+          <nav class="pbme-chips" aria-label="Show">
+            <a t-att-class="'pbme-chip is-on' if tab == 'open' else 'pbme-chip'" href="/my/ask-hr" t-att-aria-current="'page' if tab == 'open' else None">Open<span class="pbme-chip-n" t-out="n_open"/></a>
+            <a t-att-class="'pbme-chip is-on' if tab == 'closed' else 'pbme-chip'" href="/my/ask-hr?tab=closed" t-att-aria-current="'page' if tab == 'closed' else None">Closed<span class="pbme-chip-n" t-out="n_closed"/></a>
+          </nav>
+
+          <ol t-if="rows" class="pbah-list" data-pbah-rows="">
+            <li t-foreach="rows" t-as="r" class="pbah-li">
+              <a t-att-class="'pbah-row is-unread' if r['unread'] else 'pbah-row'" t-att-href="r['url']">
+                <span class="pbah-row-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="r['icon']"/><t t-set="isz" t-value="16"/></t></span>
+                <span class="pbah-row-body">
+                  <b class="pbah-row-title"><i t-if="r['unread']" class="pbah-unread" aria-hidden="true"/><span t-out="r['name']"/><span t-if="r['unread']" class="visually-hidden">New answer</span></b>
+                  <span class="pbah-row-meta"><span t-out="r['category_label']"/><span class="pbah-row-num" t-out="r['number']"/></span>
+                </span>
+                <span class="pbah-row-side">
+                  <t t-call="pb_ask_hr.pbah_pill"><t t-set="state" t-value="r['state']"/><t t-set="fresh" t-value="False"/></t>
+                  <span t-if="r['ago']" class="pbah-ago"><t t-call="pb_ask_hr.pbah_ago"><t t-set="ago" t-value="r['ago']"/></t></span>
+                </span>
+              </a>
+            </li>
+          </ol>
+          <div t-elif="tab == 'open'" class="pbme-empty pbah-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>Nothing open right now</h3>
+            <p>Got a new question? HR usually answers within a working day.</p>
+            <a class="pbme-btn pbme-btn--primary" href="/my/ask-hr/new">Ask HR</a>
+          </div>
+          <div t-else="" class="pbme-empty pbah-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>Nothing closed yet</h3>
+            <p>A question moves here once it is solved.</p>
+            <a class="pbme-btn pbme-btn--ghost" href="/my/ask-hr">Show open questions</a>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/ask-hr/new — ask a question                              -->
+  <!-- ============================================================= -->
+  <template id="portal_ask_hr_new" name="Ask HR: new question (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbah">
+        <div class="pbah-new">
+          <form class="pbah-card pbah-ask" method="post" action="/my/ask-hr/new"
+                enctype="multipart/form-data" data-pbah-form="">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <h1 class="pbah-h1">Ask HR</h1>
+            <p class="pbah-lead">Tell HR what you need — they usually answer within a working day.</p>
+            <t t-call="pb_ask_hr.pbah_alert"/>
+
+            <fieldset class="pbah-field">
+              <legend class="pbah-label">What is it about?</legend>
+              <div class="pbah-cats">
+                <label t-foreach="categories" t-as="c" class="pbah-cat">
+                  <input type="radio" name="category" class="pbah-cat-input" t-att-value="c['value']"
+                         t-att-checked="'checked' if c['value'] == category else None"/>
+                  <span class="pbah-cat-in">
+                    <span class="pbah-cat-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="c['icon']"/><t t-set="isz" t-value="16"/></t></span>
+                    <span class="pbah-cat-t" t-out="c['label']"/>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label class="pbah-field">
+              <span class="pbah-label">Subject</span>
+              <input type="text" name="subject" class="pbah-input" maxlength="200" required="required"
+                     autocomplete="off" t-att-value="subject"
+                     placeholder="In a few words, for example: My May payslip is missing overtime"/>
+            </label>
+
+            <label class="pbah-field">
+              <span class="pbah-label">Details <span class="pbah-opt">optional</span></span>
+              <textarea name="text" class="pbah-input pbah-textarea" rows="6" data-pbah-autosize=""
+                        placeholder="Dates, amounts, what you have tried already: anything that helps HR answer in one go."><t t-out="text or ''"/></textarea>
+            </label>
+
+            <t t-call="pb_ask_hr.pbah_picker"/>
+
+            <div class="pbah-actions">
+              <button type="submit" class="pbme-btn pbme-btn--primary pbah-send" data-pbah-submit="">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send to HR
+              </button>
+              <a class="pbme-btn pbme-btn--ghost" href="/my/ask-hr">Cancel</a>
+              <span class="pbah-kbd">Ctrl + Enter sends</span>
+            </div>
+          </form>
+
+          <aside class="pbah-card pbah-next" aria-labelledby="pbah-next-h">
+            <h2 class="pbah-next-h" id="pbah-next-h">What happens next</h2>
+            <ol class="pbah-steps">
+              <li class="pbah-step"><span class="pbah-step-n">1</span><span><b>HR gets it straight away</b><span>Your question goes to the HR team's queue.</span></span></li>
+              <li class="pbah-step"><span class="pbah-step-n">2</span><span><b>Their answer appears here</b><span>We e-mail you as well, so you do not have to check.</span></span></li>
+              <li class="pbah-step"><span class="pbah-step-n">3</span><span><b>Reply, or mark it solved</b><span>Ask a follow-up in the same conversation.</span></span></li>
+            </ol>
+          </aside>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/ask-hr/<id> — the conversation                            -->
+  <!-- ============================================================= -->
+  <!-- A thread, not a form: the person's own messages on the right in the
+       brand tint, HR's on the left with an initials avatar (`/my/photo` only
+       serves the person's own face, ledger T14). The opening bubble is the
+       question itself. The last line of the thread always says where things
+       stand and what happens next. -->
+  <template id="pbah_bubble" name="Ask HR: one message">
+    <li t-att-class="'pbah-msg is-me' if mine else 'pbah-msg is-hr'">
+      <span t-if="not mine" class="pbah-av" aria-hidden="true" t-out="m['initials']"/>
+      <div class="pbah-msg-in">
+        <div class="pbah-by">
+          <b t-if="mine and owner">You</b>
+          <b t-else="" t-out="m['author']"/>
+          <span t-if="not mine" class="pbah-by-role">HR</span>
+          <time class="pbah-time" t-out="m['date']" t-options="{'widget': 'datetime', 'format': 'd MMM, HH:mm'}"/>
+        </div>
+        <div t-if="m['body']" class="pbah-bubble" t-out="m['body']"/>
+        <t t-call="pb_ask_hr.pbah_files"><t t-set="files" t-value="m['attachments']"/></t>
+      </div>
+    </li>
+  </template>
+
+  <template id="portal_ask_hr_ticket" name="Ask HR: question (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbah pbah-page">
+        <t t-call="pb_ask_hr.pbah_toast"/>
+        <header class="pbah-head">
+          <div class="pbah-head-main">
+            <div class="pbme-eyebrow"><t t-out="row['number']"/></div>
+            <h1 class="pbah-h1" t-out="row['name']"/>
+            <p class="pbah-head-meta">
+              <span class="pbah-chip"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="row['icon']"/><t t-set="isz" t-value="13"/></t><t t-out="row['category_label']"/></span>
+              <span class="pbah-head-date">Asked <t t-out="question['date']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/></span>
+            </p>
+          </div>
+          <t t-call="pb_ask_hr.pbah_pill"><t t-set="state" t-value="ticket.state"/><t t-set="fresh" t-value="bool(done)"/></t>
+        </header>
+
+        <ol class="pbah-thread">
+          <t t-call="pb_ask_hr.pbah_bubble">
+            <t t-set="m" t-value="question"/>
+            <t t-set="mine" t-value="True"/>
+          </t>
+          <t t-foreach="thread" t-as="m">
+            <t t-call="pb_ask_hr.pbah_bubble"><t t-set="mine" t-value="m['is_employee']"/></t>
+          </t>
+          <li id="pbah-end" class="pbah-note">
+            <t t-if="ticket.state in ('new', 'with_hr')">
+              <span class="pbah-note-ic is-wait"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="14"/></t></span>
+              <span>With HR. They usually answer within a working day, and we e-mail you when they do.</span>
+            </t>
+            <t t-elif="ticket.state == 'answered'">
+              <span class="pbah-note-ic is-act"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="14"/></t></span>
+              <span>HR answered. Reply if you need more, or tell them it solved it.</span>
+            </t>
+            <t t-elif="ticket.closed_by == 'employee'">
+              <span class="pbah-note-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t></span>
+              <span>Marked as solved on <t t-out="ticket.closed_on" t-options="{'widget': 'date', 'format': 'd MMM'}"/>.</span>
+            </t>
+            <t t-else="">
+              <span class="pbah-note-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t></span>
+              <span>HR closed this question<t t-if="ticket.closed_on"> on <t t-out="ticket.closed_on" t-options="{'widget': 'date', 'format': 'd MMM'}"/></t>.</span>
+            </t>
+          </li>
+        </ol>
+
+        <t t-if="owner and ticket.state != 'closed'">
+          <form id="pbah-reply" class="pbah-card pbah-composer" method="post"
+                t-attf-action="/my/ask-hr/#{ticket.id}/reply" enctype="multipart/form-data" data-pbah-form="">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <t t-call="pb_ask_hr.pbah_alert"/>
+            <label for="pbah-body" class="visually-hidden">Your reply</label>
+            <textarea id="pbah-body" name="body" class="pbah-input pbah-textarea" rows="3"
+                      data-pbah-autosize="" placeholder="Write a reply to HR"/>
+            <div class="pbah-composer-bar">
+              <t t-call="pb_ask_hr.pbah_picker"/>
+              <span class="pbah-kbd">Ctrl + Enter sends</span>
+              <button type="submit" class="pbme-btn pbme-btn--primary pbah-send" data-pbah-submit="">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send reply
+              </button>
+            </div>
+          </form>
+          <form method="post" t-attf-action="/my/ask-hr/#{ticket.id}/close"
+                t-att-class="'pbah-card pbah-solved is-act' if ticket.state == 'answered' else 'pbah-solved'">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <span t-if="ticket.state == 'answered'" class="pbah-solved-t"><b>Did that answer it?</b><span>Mark it solved and it moves to Closed. You can reopen it for 14 days.</span></span>
+            <span t-else="" class="pbah-solved-t"><span>Sorted it another way?</span></span>
+            <button type="submit" t-att-class="'pbme-btn pbme-btn--primary' if ticket.state == 'answered' else 'pbme-btn pbme-btn--ghost'">
+              <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>That solved it
+            </button>
+          </form>
+        </t>
+        <div t-elif="owner" class="pbah-card pbah-closed">
+          <t t-call="pb_ask_hr.pbah_alert"/>
+          <div class="pbah-closed-t">
+            <b>This question is closed.</b>
+            <span t-if="can_reopen">Still need help with it? Reopen it and it goes back to HR.</span>
+            <span t-else="">Need more help? Ask a new question and HR will pick it up.</span>
+          </div>
+          <form t-if="can_reopen" method="post" t-attf-action="/my/ask-hr/#{ticket.id}/reopen">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/><t t-set="isz" t-value="15"/></t>Reopen it</button>
+          </form>
+          <a t-else="" class="pbme-btn pbme-btn--primary" href="/my/ask-hr/new">Ask a new question</a>
+        </div>
+        <p t-else="" class="pbah-shared">You are reading this question from a shared link. Only the person who asked it can reply.</p>
+
+        <a class="pbah-back" href="/my/ask-hr"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All my questions</a>
+      </div>
+    </t>
+  </template>
+
+  <!-- Not the person's own (or gone): a styled 404, never a stock page and
+       never a hint about whose it is. -->
+  <template id="portal_ask_hr_missing" name="Ask HR: not found (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbah">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We could not find that question</h3>
+          <p>It may have been removed, or the link belongs to somebody else.</p>
+          <a href="/my/ask-hr" class="pbme-btn pbme-btn--primary">Back to Ask HR</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

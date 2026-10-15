@@ -27,6 +27,11 @@ _DOWNLOAD_ONLY_PATH = 'M12 15V3'
 # test_me_home_source.test_11_every_icon_name_is_drawn.
 _REGISTRY_CALL_SITES = {
     """<t t-set="icon" t-value="pbme_tile['icon']"/>""",
+    # TIERS T3a: a needs-you row another module adds names its own icon
+    # (`_pbme_needs_extra`), and a My requests row carries its source's
+    # (`_my_requests_sources`). Both are plain strings, never branded bodies.
+    """<t t-set="icon" t-value="it.get('icon') or 'bell'"/>""",
+    """<t t-set="icon" t-value="r['icon']"/>""",
 }
 
 

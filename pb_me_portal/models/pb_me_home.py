@@ -43,7 +43,7 @@ import pytz
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import format_date, formatLang
 from odoo.tools.translate import LazyGettext, LazyTranslate
 
 _logger = logging.getLogger(__name__)
@@ -59,6 +59,20 @@ DOC_SOON_DAYS = 90
 TREND_MONTHS = 6
 #: How long an approved profile change stays on "Needs you".
 APPROVED_RECENT_DAYS = 7
+
+#: The badge colours a "Needs you" row may wear (the kit's badge tones).
+NEED_TONES = ('indigo', 'green', 'blue', 'amber', 'rose', 'teal', 'pink', 'slate')
+
+#: My requests (TIERS T3a): a status tone → the filter bucket it counts in.
+#: `act` = the person must do something (the one coloured pill), `wait` = with
+#: somebody else (a quiet amber dot), `ok` / `no` / `off` = finished (grey).
+REQUEST_BUCKETS = {'act': 'act', 'wait': 'wait', 'ok': 'done', 'no': 'done',
+                   'off': 'done'}
+REQUEST_TONES = tuple(REQUEST_BUCKETS)
+#: How many rows My requests shows before "Show earlier".
+MY_REQUESTS_PAGE = 50
+#: The newest N records read per source (a person files far fewer).
+MY_REQUESTS_PER_SOURCE = 500
 
 #: "Needs you" order is fixed (M-R6).
 NEEDS_ORDER = (
@@ -79,6 +93,8 @@ _TILE_ROWS = (
     ('/my/taxsheet', 'me', 'calculator', 'slate', {}),
     ('/my/assets', 'me', 'laptop', 'blue', {}),
     ('/my/compensation', 'me', 'gift', 'pink', {}),
+    # TIERS T3a: every request the person made, in one list
+    ('/my/requests', 'me', 'list-checks', 'teal', {}),
     # --- Time ---
     ('/my/work/schedule', 'time', 'calendar', 'indigo', {}),
     ('/my/work/timesheet', 'time', 'clock', 'blue', {}),
@@ -93,6 +109,8 @@ _TILE_ROWS = (
     ('/my/training/claims', 'growth', 'wallet', 'teal', {}),
     ('/my/recognition', 'growth', 'award', 'pink', {}),
     # --- People ---
+    # TIERS T3a: pb_ask_hr's tile (soft — the row is inert without it)
+    ('/my/ask-hr', 'people', 'message-circle-question', 'indigo', {}),
     ('/my/orgchart', 'people', 'users', 'indigo', {}),
     ('/my/buddy', 'people', 'user-check', 'green', {}),
     ('/my/journey', 'people', 'route', 'blue', {}),
@@ -139,6 +157,10 @@ _TILE_WORDS = {
     '/my/security': {'title': _lt('Sign-in & security'),
                      'text': _lt('Password, devices, sessions')},
     '/my/resignation': {'text': _lt('Hand in your notice')},
+    '/my/requests': {'title': _lt('My requests'),
+                     'text': _lt('Everything you asked for, and where it is')},
+    '/my/ask-hr': {'title': _lt('Ask HR'),
+                   'text': _lt('Questions and answers')},
 }
 
 
@@ -513,6 +535,11 @@ class PbMeHome(models.AbstractModel):
         found = {}
 
         def put(key, n, url, **extra):
+            # `label`/`sub`/`icon`/`tone`/`sentence` are for rows the
+            # templates do not know (T3a, `_pbme_needs_extra`); a tone outside
+            # the kit's badge colours falls back to slate
+            if 'tone' in extra and extra['tone'] not in NEED_TONES:
+                extra['tone'] = 'slate'
             if n:
                 found[key] = dict(extra, key=key, n=int(n), url=url)
 
@@ -570,4 +597,225 @@ class PbMeHome(models.AbstractModel):
         put('profile_waiting', waiting, '/my/profile')
         put('profile_approved', approved, '/my/profile')
 
-        return [found[k] for k in NEEDS_ORDER if k in found], docs
+        # TIERS T3a: rows other modules add (pb_ask_hr's "HR answered your
+        # question"). A broken extra loses its own rows, never the card.
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self._pbme_needs_extra(emp, put)
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_me_portal: an extra needs-you row failed',
+                            exc_info=True)
+
+        # the fixed M-R6 order first, then any key the order does not know,
+        # in the order it was put
+        ordered = [found[k] for k in NEEDS_ORDER if k in found]
+        ordered += [row for key, row in found.items() if key not in NEEDS_ORDER]
+        return ordered, docs
+
+    @api.model
+    def _pbme_needs_extra(self, emp, put):
+        """Hook (TIERS T3a): add "Needs you" rows the templates do not know.
+
+        Call ``put(key, n, url, label=…, sub=…, icon=…, tone=…, sentence=…)``
+        with ``label`` (the row's bold line), ``sub`` (its grey line), a Lucide
+        ``icon`` name `ess_icon` draws, a badge ``tone`` (NEED_TONES) and an
+        optional one-line ``sentence`` for the top line when it is the only
+        thing waiting. The words are the caller's, already translated. Rows
+        land after the fixed order, in insertion order; ``n == 0`` is dropped.
+        Every override must call ``super()``."""
+        return None
+
+    # ========================================================== my requests
+    @api.model
+    def _my_requests_fmt_date(self, value):
+        """A date for a request title, in the reader's language."""
+        return format_date(self.env, value) if value else ''
+
+    @api.model
+    def _my_requests_sources(self):
+        """Every kind of request an employee can make, as one list of dicts
+        (TIERS T3a, D5). Other modules extend it with ``super()``; a model that
+        is not installed is simply skipped by `get_my_requests` (soft reads —
+        this list never adds a dependency).
+
+        Each dict: ``key``, ``model``, ``label`` (the kind, shown small),
+        ``icon`` (Lucide, drawn by `ess_icon`), ``employee_field``,
+        ``date_field`` (the sort date; ``create_date`` when empty),
+        ``state_field``, ``states`` ``{value: (label, tone)}`` with tone in
+        REQUEST_TONES, ``url(rec)`` and ``title(rec)``."""
+        _ = self.env._
+        fmt = self._my_requests_fmt_date
+        has_workforce = 'pb.ess.workforce' in self.env
+
+        def leave_title(rec):
+            start = rec.request_date_from or (rec.date_from and rec.date_from.date())
+            end = rec.request_date_to or (rec.date_to and rec.date_to.date())
+            when = fmt(start) if start == end else '%s – %s' % (fmt(start), fmt(end))
+            return '%s · %s' % (rec.holiday_status_id.name or _('Leave'), when)
+
+        def timesheet_url(rec):
+            if not has_workforce:
+                return None
+            monday = rec.date - timedelta(days=rec.date.weekday())
+            return '/my/work/timesheet?week=%s' % monday.isoformat()
+
+        def resignation_title(rec):
+            lwd = rec.approved_lwd or rec.requested_lwd
+            if lwd:
+                return _('Resignation · last day %s', fmt(lwd))
+            return _('Resignation')
+
+        return [
+            {
+                'key': 'leave', 'model': 'hr.leave', 'label': _('Leave'),
+                'icon': 'umbrella', 'employee_field': 'employee_id',
+                'date_field': 'date_from', 'state_field': 'state',
+                'states': {
+                    'confirm': (_('Waiting approval'), 'wait'),
+                    'validate1': (_('Waiting approval'), 'wait'),
+                    'validate': (_('Approved'), 'ok'),
+                    'refuse': (_('Refused'), 'no'),
+                    'cancel': (_('Cancelled'), 'off'),
+                },
+                'url': lambda rec: '/my/work/leave' if has_workforce else None,
+                'title': leave_title,
+            },
+            {
+                'key': 'timesheet_fix', 'model': 'hr.attendance.correction',
+                'label': _('Timesheet'), 'icon': 'clock',
+                'employee_field': 'employee_id', 'date_field': 'date',
+                'state_field': 'state',
+                'states': {
+                    'draft': (_('Draft'), 'off'),
+                    'submitted': (_('With your manager'), 'wait'),
+                    'approved': (_('Applied'), 'ok'),
+                    'refused': (_('Refused'), 'no'),
+                },
+                'url': timesheet_url,
+                'title': lambda rec: _('Timesheet fix · %s', fmt(rec.date)),
+            },
+            {
+                'key': 'profile', 'model': 'pb.profile.change.request',
+                'label': _('Profile'), 'icon': 'user',
+                'employee_field': 'employee_id', 'date_field': 'create_date',
+                'state_field': 'state',
+                'states': {
+                    'draft': (_('Draft'), 'off'),
+                    'hr_review': (_('With HR'), 'wait'),
+                    'approved': (_('Applied'), 'ok'),
+                    'refused': (_('Refused'), 'no'),
+                },
+                'url': lambda rec: '/my/profile/request/%s' % rec.id,
+                'title': lambda rec: _('Profile change'),
+            },
+            {
+                'key': 'asset', 'model': 'pb.asset.request',
+                'label': _('Equipment'), 'icon': 'laptop',
+                'employee_field': 'employee_id', 'date_field': 'needed_by',
+                'state_field': 'state',
+                'states': {
+                    'draft': (_('Draft'), 'off'),
+                    'submitted': (_('Waiting for the manager'), 'wait'),
+                    'manager_approved': (_('With HR'), 'wait'),
+                    'approved': (_('Approved'), 'ok'),
+                    'refused': (_('Turned down'), 'no'),
+                    'cancelled': (_('Cancelled'), 'off'),
+                },
+                'url': lambda rec: '/my/assets',
+                'title': lambda rec: _('Asset · %s', rec.category_id.name or ''),
+            },
+            {
+                'key': 'resignation', 'model': 'pb.resignation',
+                'label': _('Resignation'), 'icon': 'log-out',
+                'employee_field': 'employee_id', 'date_field': 'submit_date',
+                'state_field': 'state',
+                'states': {
+                    'draft': (_('Draft'), 'off'),
+                    'submitted': (_('With the manager'), 'wait'),
+                    'manager_ok': (_('With HR'), 'wait'),
+                    'approved': (_('Accepted'), 'ok'),
+                    'refused': (_('Not accepted'), 'no'),
+                    'withdrawn': (_('Withdrawn'), 'off'),
+                },
+                'url': lambda rec: '/my/resignation',
+                'title': resignation_title,
+            },
+            {
+                'key': 'overtime', 'model': 'hr.overtime.request',
+                'label': _('Overtime'), 'icon': 'timer',
+                'employee_field': 'employee_id', 'date_field': 'date',
+                'state_field': 'state',
+                'states': {
+                    'draft': (_('Draft'), 'off'),
+                    'submitted': (_('Waiting approval'), 'wait'),
+                    'approved': (_('Approved'), 'ok'),
+                    'refused': (_('Refused'), 'no'),
+                },
+                'url': lambda rec: '/my/work/overtime' if has_workforce else None,
+                'title': lambda rec: _('Overtime · %s', fmt(rec.date)),
+            },
+        ]
+
+    @api.model
+    def _my_requests_rows(self, src, emp):
+        """One source's rows for ``emp`` — read under sudo keyed on the
+        employee (T-R11). Raises on any failure; the caller isolates it."""
+        Model = self.env[src['model']].sudo()
+        recs = Model.search([(src['employee_field'], '=', emp.id)],
+                            order='id desc', limit=MY_REQUESTS_PER_SOURCE)
+        rows = []
+        for rec in recs:
+            state = rec[src['state_field']]
+            label, tone = src['states'].get(state) or (state or '', 'off')
+            if tone not in REQUEST_TONES:
+                tone = 'off'
+            when = rec[src['date_field']] or rec.create_date
+            if not isinstance(when, datetime):
+                when = datetime.combine(when, datetime.min.time())
+            rows.append({
+                'key': src['key'],
+                'model': src['model'],
+                'id': rec.id,
+                'kind': src['label'],
+                'icon': src.get('icon') or 'file',
+                'title': src['title'](rec),
+                'state': state,
+                'state_label': label,
+                'tone': tone,
+                'bucket': REQUEST_BUCKETS[tone],
+                'url': src['url'](rec),
+                'date': when,
+                'created': rec.create_date,
+            })
+        return rows
+
+    @api.model
+    def get_my_requests(self, emp, bucket=None):
+        """Every request ``emp`` made, newest first (TIERS T3a).
+
+        ``{'rows': [...], 'counts': {'act', 'wait', 'done', 'all'}}`` — the
+        counts are over every row, ``rows`` keeps only ``bucket`` when one of
+        ``act`` / ``wait`` / ``done`` is given. ``None`` when ``emp`` is not
+        the caller's own (M-R4). Each source runs in its own savepoint through
+        `optional`: one broken source is logged and skipped, never a blank
+        page."""
+        if not isinstance(emp, models.BaseModel) or emp._name != 'hr.employee':
+            return None
+        emp = emp.sudo()[:1]
+        if not emp or emp.user_id.id != self.env.uid:
+            return None
+        rows = []
+        for src in self._my_requests_sources():
+            got = self.optional(
+                src['model'], lambda M, src=src: self._my_requests_rows(src, emp),
+                fields=(src['employee_field'], src['date_field'],
+                        src['state_field']))
+            rows.extend(got or [])
+        rows.sort(key=lambda r: (r['date'], r['created'] or r['date'], r['id']),
+                  reverse=True)
+        counts = {'act': 0, 'wait': 0, 'done': 0, 'all': len(rows)}
+        for row in rows:
+            counts[row['bucket']] += 1
+        if bucket in ('act', 'wait', 'done'):
+            rows = [r for r in rows if r['bucket'] == bucket]
+        return {'rows': rows, 'counts': counts}

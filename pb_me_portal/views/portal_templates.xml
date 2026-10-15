@@ -10,6 +10,7 @@
       <li t-if="page_name == 'profile'" class="breadcrumb-item active">My Profile</li>
       <li t-if="page_name == 'documents'" class="breadcrumb-item active">My Documents</li>
       <li t-if="page_name == 'taxsheet'" class="breadcrumb-item active">Tax Sheet</li>
+      <li t-if="page_name == 'my_requests'" class="breadcrumb-item active">My requests</li>
     </xpath>
   </template>
 
@@ -55,6 +56,12 @@
         <t t-set="url" t-value="'/my/documents'"/>
         <t t-set="config_card" t-value="True"/>
         <t t-set="placeholder_count" t-value="'document_count'"/>
+      </t>
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">My requests</t>
+        <t t-set="text">Everything you asked for, and where it is</t>
+        <t t-set="url" t-value="'/my/requests'"/>
+        <t t-set="config_card" t-value="True"/>
       </t>
       <t t-call="portal.portal_docs_entry">
         <t t-set="title">Tax Sheet</t>
@@ -160,6 +167,7 @@
     <t t-elif="it['key'] == 'goals_to_set'">Your goals are <b>waiting to be set.</b></t>
     <t t-elif="it['key'] == 'profile_waiting'">Your profile change is <b>with HR.</b></t>
     <t t-elif="it['key'] == 'profile_approved'">HR <b>approved</b> your profile change.</t>
+    <t t-elif="it.get('sentence') or it.get('label')" t-out="it.get('sentence') or it['label']"/>
     <t t-else=""><b>1 thing</b> needs you.</t>
   </template>
 
@@ -338,7 +346,10 @@
 
   <!-- One "Needs you" row: badge · what · grey detail (the chevron and the
        link are the caller's). Colour per M-R6: amber = waiting on you, rose =
-       expired or late, green = approved, indigo/blue = with someone else. -->
+       expired or late, green = approved, indigo/blue = with someone else.
+       TIERS T3a: a row another module adds (`_pbme_needs_extra`) carries its
+       own words and badge (`label`, `sub`, `icon`, `tone`) and is drawn by
+       the generic branch before the last fallback. -->
   <template id="pbme_need_row" name="Employee home: needs-you row">
     <t t-set="n" t-value="it['n']"/>
     <t t-if="it['key'] == 'shifts_to_confirm'">
@@ -380,6 +391,10 @@
     <t t-elif="it['key'] == 'profile_approved'">
       <span class="pbme-badge pbme-badge--green"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t></span>
       <span class="pbme-need-body"><b>Profile change approved</b><span class="pbme-need-d">HR updated your details</span></span>
+    </t>
+    <t t-elif="it.get('label')">
+      <span t-att-class="'pbme-badge pbme-badge--%s' % (it.get('tone') or 'slate')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="it.get('icon') or 'bell'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-out="it['label']"/><span t-if="it.get('sub')" class="pbme-need-d" t-out="it['sub']"/></span>
     </t>
     <t t-else="">
       <span class="pbme-badge pbme-badge--slate"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="16"/></t></span>
@@ -439,6 +454,16 @@
       <t t-elif="icon == 'log-out'"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></t>
       <t t-elif="icon == 'bell'"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></t>
       <t t-elif="icon == 'chevron-right'"><path d="m9 18 6-6-6-6"/></t>
+      <t t-elif="icon == 'message-circle-question'"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></t>
+      <t t-elif="icon == 'list-checks'"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></t>
+      <t t-elif="icon == 'paperclip'"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'rotate-ccw'"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14"/><path d="M12 5v14"/></t>
+      <t t-elif="icon == 'heart'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></t>
+      <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></t>
+      <t t-elif="icon == 'inbox'"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></t>
       <t t-else=""><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></t>
     </svg>
   </template>
@@ -847,6 +872,81 @@
             </table>
           </div>
         </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  TIERS T3a — My requests: everything the person asked for      -->
+  <!-- ============================================================= -->
+  <!-- One timeline, newest first, grouped by month. Each row: the kind's
+       badge, the title, the kind and date in grey, and a status pill in the
+       quiet-board palette — the pill is coloured ONLY when the person has to
+       do something (`act`); a request with somebody else wears a quiet amber
+       dot (`wait`); a finished one is grey. Rows come from
+       `pb.me.home.get_my_requests` (soft sources, one savepoint each); the
+       words of a row (kind, title, status) are the source's own. -->
+  <template id="portal_my_requests" name="My requests (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbme-rq">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My requests</t>
+          <t t-set="hero_sub">Everything you have asked for, in one place, with where it is now.</t>
+          <t t-if="ask_hr_url" t-set="hero_actions"><a class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="16"/></t>Ask HR</a></t>
+        </t>
+
+        <t t-if="counts['all']">
+          <p class="pbme-rq-strip" aria-live="polite">
+            <span t-att-class="'pbme-rq-stat is-act' if counts['act'] else 'pbme-rq-stat'"><b t-out="counts['act']"/> waiting on you</span>
+            <span class="pbme-rq-stat"><b t-out="counts['wait']"/> with someone</span>
+            <span class="pbme-rq-stat"><b t-out="counts['done']"/> done</span>
+          </p>
+          <nav class="pbme-chips" aria-label="Show">
+            <a t-att-class="'pbme-chip is-on' if bucket == 'all' else 'pbme-chip'" href="/my/requests" t-att-aria-current="'page' if bucket == 'all' else None">All<span class="pbme-chip-n" t-out="counts['all']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'act' else 'pbme-chip'" href="/my/requests?filter=act" t-att-aria-current="'page' if bucket == 'act' else None">Waiting on you<span class="pbme-chip-n" t-out="counts['act']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'wait' else 'pbme-chip'" href="/my/requests?filter=wait" t-att-aria-current="'page' if bucket == 'wait' else None">With someone<span class="pbme-chip-n" t-out="counts['wait']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'done' else 'pbme-chip'" href="/my/requests?filter=done" t-att-aria-current="'page' if bucket == 'done' else None">Done<span class="pbme-chip-n" t-out="counts['done']"/></a>
+          </nav>
+        </t>
+
+        <div t-if="not counts['all']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nothing asked yet</h3>
+          <p>Leave, a timesheet fix, a profile change, a question for HR: everything you ask for lands here, with where it is now.</p>
+          <a t-if="ask_hr_url" class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url">Ask HR a question</a>
+        </div>
+        <div t-elif="not months" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3 t-if="bucket == 'act'">Nothing is waiting on you</h3>
+          <h3 t-elif="bucket == 'wait'">Nothing is with anyone right now</h3>
+          <h3 t-else="">Nothing finished yet</h3>
+          <p t-if="bucket == 'act'">When something needs your answer, it shows here first.</p>
+          <p t-elif="bucket == 'wait'">A request you send stays here until somebody decides.</p>
+          <p t-else="">A request moves here once it is decided.</p>
+          <a class="pbme-btn pbme-btn--ghost" href="/my/requests">Show everything</a>
+        </div>
+        <div t-else="" class="pbme-rq-timeline" data-pbme-rows="">
+          <section t-foreach="months" t-as="m" class="pbme-rq-month">
+            <h2 class="pbme-rq-month-h" t-out="m['month']" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/>
+            <ol class="pbme-rq-list">
+              <li t-foreach="m['rows']" t-as="r" class="pbme-rq-li">
+                <a t-att-href="r['url'] or None" t-att-class="'pbme-rq-row is-%s%s' % (r['tone'], '' if r['url'] else ' is-static')">
+                  <span t-att-class="'pbme-rq-ic is-act' if r['tone'] == 'act' else 'pbme-rq-ic'" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="r['icon']"/><t t-set="isz" t-value="16"/></t></span>
+                  <span class="pbme-rq-body">
+                    <b class="pbme-rq-title" t-out="r['title']"/>
+                    <span class="pbme-rq-meta"><span class="pbme-rq-kind" t-out="r['kind']"/><span class="pbme-rq-date" t-out="r['date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></span>
+                  </span>
+                  <span t-att-class="'pbme-rq-pill pbme-rq-pill--%s' % r['tone']"><i class="pbme-rq-dot" aria-hidden="true"/><t t-out="r['state_label']"/></span>
+                  <span t-if="r['url']" class="pbme-rq-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+                </a>
+              </li>
+            </ol>
+          </section>
+          <div t-if="more_url" class="pbme-rq-more">
+            <a class="pbme-btn pbme-btn--ghost" t-att-href="more_url">Show earlier</a>
+          </div>
+          <p class="pbme-rq-keys" aria-hidden="true">Tip: use the arrow keys to move between requests, and Enter to open one.</p>
+        </div>
       </div>
     </t>
   </template>

@@ -172,7 +172,100 @@
     .pbme-empty-ic { width: 66px; height: 66px; border-radius: 50%; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 26px; margin: 0 auto 14px; }
     .pbme-empty-ic--err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
     .pbme-empty h3 { font-size: 17px; font-weight: 800; }
-    .pbme-empty p { color: var(--pbim-muted); margin-top: 5px; }
+    .pbme-empty p { color: var(--pbim-muted); margin-top: 5px; max-width: 54ch; margin-left: auto; margin-right: auto; }
+    .pbme-empty .pbme-btn { margin-top: 14px; }
+
+    // ---------- My requests (TIERS T3a) ----------
+    // One timeline grouped by month. Quiet-board palette: grey at rest, the
+    // one coloured pill is the request that waits on the person (`act`); a
+    // request with somebody else carries a quiet amber dot (`wait`).
+    &.pbme-rq { max-width: 920px; margin-left: auto; margin-right: auto; }
+    .pbme-rq-strip {
+        display: flex; flex-wrap: wrap; align-items: baseline; margin: 0 2px 12px;
+        font-size: 14px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-weight: 800; font-variant-numeric: tabular-nums; margin-right: 4px; }
+        .pbme-rq-stat + .pbme-rq-stat::before { content: "\00b7"; margin: 0 10px; color: var(--pbim-slate); }
+        .pbme-rq-stat.is-act { color: var(--pbim-primary-strong); font-weight: 700; b { color: var(--pbim-primary); } }
+    }
+    .pbme-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 20px; }
+    .pbme-chip {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 36px;
+        padding: 6px 8px 6px 13px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); color: var(--pbim-text);
+        font-size: 13px; font-weight: 700; text-decoration: none;
+        transition: background-color .15s, border-color .15s, color .15s;
+        &:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-strong); text-decoration: none; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &.is-on { background: var(--pbim-soft); border-color: var(--pbim-primary-light); color: var(--pbim-primary); }
+    }
+    .pbme-chip-n {
+        min-width: 22px; padding: 2px 7px; border-radius: 999px; text-align: center;
+        background: var(--pbim-bg); color: var(--pbim-muted);
+        font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .pbme-chip.is-on .pbme-chip-n { background: var(--pbim-surface); color: var(--pbim-primary); }
+    .pbme-rq-month { margin-bottom: 22px; animation: pbme-rq-in 320ms cubic-bezier(.2, .7, .3, 1) both; }
+    .pbme-rq-month:nth-child(2) { animation-delay: 60ms; }
+    .pbme-rq-month:nth-child(3) { animation-delay: 120ms; }
+    .pbme-rq-month:nth-child(n+4) { animation-delay: 160ms; }
+    .pbme-rq-month-h {
+        font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted); margin: 0 6px 8px;
+    }
+    .pbme-rq-list {
+        list-style: none; margin: 0; padding: 4px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+    }
+    .pbme-rq-li + .pbme-rq-li { border-top: 1px solid var(--pbim-line-2); }
+    .pbme-rq-row {
+        display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+        border-radius: 10px; color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s;
+        &:not(.is-static):hover { background: var(--pbim-bg); color: var(--pbim-text); text-decoration: none; }
+        &:not(.is-static):hover .pbme-rq-go { color: var(--pbim-primary); transform: translateX(2px); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: -2px; }
+    }
+    .pbme-rq-ic {
+        width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: inline-grid; place-items: center;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        &.is-act { background: var(--pbim-soft); color: var(--pbim-primary); }
+        .pbme-ic { width: 16px; height: 16px; }
+    }
+    .pbme-rq-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbme-rq-title {
+        font-size: 14px; font-weight: 700; color: var(--pbim-ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbme-rq-meta { font-size: 12px; color: var(--pbim-muted); }
+    .pbme-rq-date::before { content: "\00b7"; margin: 0 6px; }
+    .pbme-rq-pill {
+        display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap;
+        padding: 4px 10px; border-radius: 999px; border: 1px solid transparent;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        font-size: 12px; font-weight: 700;
+    }
+    .pbme-rq-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5; flex: none; }
+    .pbme-rq-pill--act {
+        background: var(--pbim-primary); color: #fff;
+        .pbme-rq-dot { background: #fff; opacity: 1; }
+    }
+    .pbme-rq-pill--wait {
+        background: var(--pbim-surface); border-color: var(--pbim-line); color: var(--pbim-text);
+        .pbme-rq-dot { background: var(--pbim-amber); opacity: 1; }
+    }
+    .pbme-rq-pill--no .pbme-rq-dot { background: var(--pbim-rose); opacity: .85; }
+    .pbme-rq-go { color: var(--pbim-primary-light); display: inline-grid; flex: none; transition: color .15s, transform .15s; }
+    .pbme-rq-more { display: flex; justify-content: center; margin-top: 4px; }
+    .pbme-rq-keys { text-align: center; font-size: 12px; color: var(--pbim-muted); margin: 14px 0 0; }
+    @media (hover: none) { .pbme-rq-keys { display: none; } }
+    @media (max-width: 560px) {
+        .pbme-rq-row { flex-wrap: wrap; gap: 8px 12px; }
+        .pbme-rq-body { flex-basis: calc(100% - 50px); }
+        .pbme-rq-pill { margin-left: 46px; }
+        .pbme-rq-go { display: none; }
+    }
 
     // ---------- mobile (this is the phone surface) ----------
     @media (max-width: 768px) {
@@ -485,10 +578,12 @@
     // Me strip — a full-width row under the bento: five tiles across, a
     // second row when there are more
     .pbme-b-me { padding: 10px 12px; justify-content: center; }
+    // (T3a) a grid that fills the row whatever the tile count — six tiles
+    // sit six across, never five plus one stretched across a second row
     .pbme-me-body {
-        display: flex; flex-wrap: wrap; gap: 4px 6px;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px 6px;
         > .o_portal_index_card {
-            flex: 1 1 calc(20% - 6px); width: auto; max-width: none; min-width: 150px; padding: 0; margin: 0;
+            width: auto; max-width: none; min-width: 0; padding: 0; margin: 0;
         }
         > .o_portal_index_card > a {
             background: transparent !important; padding: 10px 12px !important; border-radius: 14px !important;
@@ -557,6 +652,7 @@
 @keyframes pbme-bar-grow { from { transform: scaleY(0); } }
 @keyframes pbme-ring-fill { from { --pbme-pct: 0%; } }
 @keyframes pbme-reveal { to { visibility: visible; } }
+@keyframes pbme-rq-in { from { opacity: 0; transform: translateY(6px); } }
 
 // desktop (≥ 1000 px): Pay 1–5 × rows 1–3, Leave 6–8 and This week 9–12 ×
 // rows 1–2, Needs you 6–12 × row 3, the Me strip full width under it
@@ -630,4 +726,6 @@
     .pbme-home .pbme-bento > .pbme-b,
     .pbme-home .pbme-bar,
     .pbme-home .pbme-ring { animation: none; }
+    .pbme .pbme-rq-month { animation: none; }
+    .pbme .pbme-rq-row, .pbme .pbme-rq-go, .pbme .pbme-chip { transition: none; }
 }

@@ -27,7 +27,9 @@ _PO = os.path.join(_HERE, 'i18n', 'vi_VN.po')
 NEW_TEMPLATES = ('portal_my_home_ess', 'portal_docs_entry_pbme', 'pbme_top',
                  'pbme_need_sentence', 'pbme_bento', 'pbme_need_row',
                  # M2: the three hero cards
-                 'pbme_card_pay', 'pbme_card_leave', 'pbme_card_week')
+                 'pbme_card_pay', 'pbme_card_leave', 'pbme_card_week',
+                 # TIERS T3a: My requests
+                 'portal_my_requests')
 
 #: Every model the home reads softly (M-R3) — none is a dependency.
 OPTIONAL_MODELS = ('pb.ess.workforce', 'pb.payroll.calendar', 'pb.my.training',

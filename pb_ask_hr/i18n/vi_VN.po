@@ -1,0 +1,1032 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_ask_hr
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 05:39+0000\n"
+"PO-Revision-Date: 2026-10-15 16:45+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid ""
+"<b>Did that answer it?</b><span>Mark it solved and it moves to Closed. You "
+"can reopen it for 14 days.</span>"
+msgstr ""
+"<b>Câu trả lời đã giải quyết được chưa?</b><span>Đánh dấu đã xong, câu hỏi "
+"sẽ chuyển sang mục Đã đóng. Bạn có thể mở lại trong 14 ngày.</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "<b>This question is closed.</b>"
+msgstr "<b>Câu hỏi này đã đóng.</b>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_picker
+msgid ""
+"<span class=\"pbah-drop-t\"><b>Attach files</b><span>PDF, JPG or PNG, up to "
+"3, 10 MB each</span></span>"
+msgstr ""
+"<span class=\"pbah-drop-t\"><b>Đính kèm tệp</b><span>PDF, JPG hoặc PNG, tối "
+"đa 3 tệp, mỗi tệp 10 MB</span></span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "<span class=\"pbah-kbd\">Ctrl + Enter sends</span>"
+msgstr "<span class=\"pbah-kbd\">Ctrl + Enter để gửi</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid ""
+"<span class=\"pbah-label\">Details <span class=\"pbah-"
+"opt\">optional</span></span>"
+msgstr ""
+"<span class=\"pbah-label\">Chi tiết <span class=\"pbah-opt\">không bắt "
+"buộc</span></span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "<span class=\"pbah-label\">Subject</span>"
+msgstr "<span class=\"pbah-label\">Tiêu đề</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid ""
+"<span class=\"pbah-step-n\">1</span><span><b>HR gets it straight "
+"away</b><span>Your question goes to the HR team's queue.</span></span>"
+msgstr ""
+"<span class=\"pbah-step-n\">1</span><span><b>Nhân sự nhận được "
+"ngay</b><span>Câu hỏi của bạn vào hàng chờ của phòng nhân sự.</span></span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid ""
+"<span class=\"pbah-step-n\">2</span><span><b>Their answer appears "
+"here</b><span>We e-mail you as well, so you do not have to "
+"check.</span></span>"
+msgstr ""
+"<span class=\"pbah-step-n\">2</span><span><b>Câu trả lời hiện ở "
+"đây</b><span>Chúng tôi cũng gửi e-mail cho bạn, nên bạn không cần phải kiểm "
+"tra.</span></span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid ""
+"<span class=\"pbah-step-n\">3</span><span><b>Reply, or mark it "
+"solved</b><span>Ask a follow-up in the same conversation.</span></span>"
+msgstr ""
+"<span class=\"pbah-step-n\">3</span><span><b>Trả lời, hoặc đánh dấu đã "
+"xong</b><span>Hỏi thêm ngay trong cùng cuộc trao đổi.</span></span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid ""
+"<span>HR answered. Reply if you need more, or tell them it solved it.</span>"
+msgstr ""
+"<span>Nhân sự đã trả lời. Hãy trả lời nếu bạn cần thêm, hoặc báo cho họ biết"
+" vấn đề đã được giải quyết.</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "<span>Sorted it another way?</span>"
+msgstr "<span>Đã giải quyết theo cách khác?</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid ""
+"<span>With HR. They usually answer within a working day, and we e-mail you "
+"when they do.</span>"
+msgstr ""
+"<span>Đang ở phòng nhân sự. Họ thường trả lời trong một ngày làm việc, và "
+"chúng tôi sẽ gửi e-mail cho bạn khi có câu trả lời.</span>"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "A question moves here once it is solved."
+msgstr "Câu hỏi sẽ chuyển sang đây khi đã được giải quyết."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__access_warning
+msgid "Access warning"
+msgstr "Cảnh báo truy cập"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Biểu tượng ngoại lệ hoạt động"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid "Add a subject so HR knows what this is about."
+msgstr "Hãy thêm tiêu đề để phòng nhân sự biết bạn hỏi về việc gì."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "All my questions"
+msgstr "Tất cả câu hỏi của tôi"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Already closed. Nothing more to do."
+msgstr "Đã đóng rồi. Không cần làm gì thêm."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Already open. HR has it."
+msgstr "Đang mở rồi. Phòng nhân sự đang xử lý."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+msgid "Answer %(number)s: %(subject)s"
+msgstr "Trả lời %(number)s: %(subject)s"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__answered
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Answered"
+msgstr "Đã trả lời"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__answered_on
+msgid "Answered on"
+msgstr "Trả lời lúc"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "Answered — your turn"
+msgstr "Đã trả lời — đến lượt bạn"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+#: model:ir.actions.act_window,name:pb_ask_hr.action_pb_ask_hr_ticket
+#: model:ir.ui.menu,name:pb_ask_hr.menu_pb_ask_hr_ticket
+#: model:pb.sidebar.item,name:pb_ask_hr.item_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_breadcrumbs_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_my_home_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.res_config_settings_view_form_ask_hr
+msgid "Ask HR"
+msgstr "Hỏi Nhân sự"
+
+#. module: pb_ask_hr
+#: model:ir.model,name:pb_ask_hr.model_pb_ask_hr_ticket
+msgid "Ask HR question"
+msgstr "Câu hỏi gửi Nhân sự"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Ask a new question"
+msgstr "Đặt câu hỏi mới"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Ask your first question"
+msgstr "Đặt câu hỏi đầu tiên"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Asked"
+msgstr "Hỏi ngày"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_picker
+msgid "Attach up to 3 files at a time."
+msgstr "Đính kèm tối đa 3 tệp mỗi lần."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid "Attach up to 3 files at a time. Send the rest in a reply."
+msgstr ""
+"Đính kèm tối đa 3 tệp mỗi lần. Gửi các tệp còn lại trong một câu trả lời."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_missing
+msgid "Back to Ask HR"
+msgstr "Quay lại Hỏi Nhân sự"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__benefits
+msgid "Benefits & insurance"
+msgstr "Phúc lợi & bảo hiểm"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__category
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Category"
+msgstr "Chủ đề"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__closed
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__closed_by
+msgid "Closed by"
+msgstr "Người đóng"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__closed_on
+msgid "Closed on"
+msgstr "Đóng lúc"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_ask_hr
+#: model:ir.model,name:pb_ask_hr.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cài đặt cấu hình"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__access_url
+msgid "Customer Portal URL"
+msgstr "Đường dẫn trang cá nhân"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid ""
+"Dates, amounts, what you have tried already: anything that helps HR answer "
+"in one go."
+msgstr ""
+"Ngày tháng, số tiền, những gì bạn đã thử: bất cứ điều gì giúp phòng nhân sự "
+"trả lời ngay một lần."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__display_name
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_ask_hr.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__documents
+msgid "Documents & letters"
+msgstr "Giấy tờ & thư xác nhận"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_picker
+msgid "Each file can be up to 10 MB."
+msgstr "Mỗi tệp tối đa 10 MB."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid ""
+"Each file can be up to 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "Mỗi tệp tối đa 10 MB. Hãy thử bản nhỏ hơn, hoặc chụp ảnh trang giấy."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_ask_hr
+#: model:ir.model,name:pb_ask_hr.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__employee_name
+msgid "Employee name"
+msgstr "Tên nhân viên"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__equipment
+msgid "Equipment & access"
+msgstr "Thiết bị & quyền truy cập"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+msgid "File"
+msgstr "Tệp"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__attachment_ids
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Files"
+msgstr "Tệp"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_picker
+msgid "Files can be PDF, JPG or PNG."
+msgstr "Tệp phải là PDF, JPG hoặc PNG."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid "Files can be PDF, JPG or PNG. Choose another file and send again."
+msgstr "Tệp phải là PDF, JPG hoặc PNG. Hãy chọn tệp khác rồi gửi lại."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ fa-tasks"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Got a new question? HR usually answers within a working day."
+msgstr "Có câu hỏi mới? Phòng nhân sự thường trả lời trong một ngày làm việc."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__closed_by__hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__last_public_by__hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_bubble
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "HR answered %s of your questions"
+msgstr "Nhân sự đã trả lời %s câu hỏi của bạn"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "HR answered %s of your questions."
+msgstr "Nhân sự đã trả lời %s câu hỏi của bạn."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "HR answered your question"
+msgstr "Nhân sự đã trả lời câu hỏi của bạn"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "HR answered your question."
+msgstr "Nhân sự đã trả lời câu hỏi của bạn."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "HR closed this question"
+msgstr "Phòng nhân sự đã đóng câu hỏi này"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__user_id
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "HR owner"
+msgstr "Người phụ trách"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Handling"
+msgstr "Xử lý"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__id
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_ask_hr.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng cho biết hoạt động ngoại lệ."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__message_has_error
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "In a few words, for example: My May payslip is missing overtime"
+msgstr ""
+"Vài chữ ngắn gọn, ví dụ: Phiếu lương tháng 5 của tôi thiếu tiền làm thêm giờ"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_missing
+msgid "It may have been removed, or the link belongs to somebody else."
+msgstr "Có thể câu hỏi đã bị xóa, hoặc đường dẫn này là của người khác."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__last_activity_on
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_list
+msgid "Last activity"
+msgstr "Hoạt động gần nhất"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__last_public_by
+msgid "Last word from"
+msgstr "Lời cuối từ"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__leave
+msgid "Leave & attendance"
+msgstr "Nghỉ phép & chấm công"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Mark answered"
+msgstr "Đánh dấu đã trả lời"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Marked as solved on"
+msgstr "Đã đánh dấu xong ngày"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Marked as solved. Glad it is sorted."
+msgstr "Đã đánh dấu xong. Rất vui vì vấn đề đã được giải quyết."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Mine"
+msgstr "Của tôi"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn hoạt động của tôi"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Need more help? Ask a new question and HR will pick it up."
+msgstr "Cần thêm trợ giúp? Hãy đặt câu hỏi mới, phòng nhân sự sẽ tiếp nhận."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__new
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "New answer"
+msgstr "Có câu trả lời mới"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_breadcrumbs_ask_hr
+msgid "New question"
+msgstr "Câu hỏi mới"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_res_config_settings__pb_ask_hr_owner_id
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.res_config_settings_view_form_ask_hr
+msgid ""
+"New questions are assigned to this person and appear on their to-do list. "
+"Leave empty to let the HR team pick them up from the queue."
+msgstr ""
+"Câu hỏi mới được giao cho người này và hiện trong danh sách việc cần làm của"
+" họ. Để trống để cả phòng nhân sự tiếp nhận từ hàng chờ."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện lịch của hoạt động tiếp theo"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn hoạt động tiếp theo"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: pb_ask_hr
+#: model_terms:ir.actions.act_window,help:pb_ask_hr.action_pb_ask_hr_ticket
+msgid "No questions waiting"
+msgstr "Không có câu hỏi nào đang chờ"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Nobody has it yet"
+msgstr "Chưa có ai nhận"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Nothing asked yet"
+msgstr "Chưa có câu hỏi nào"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Nothing closed yet"
+msgstr "Chưa có câu hỏi nào đã đóng"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Nothing open right now"
+msgstr "Hiện không có câu hỏi nào đang mở"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__number
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số hành động"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Open"
+msgstr "Đang mở"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__pay
+msgid "Pay & payslips"
+msgstr "Lương & phiếu lương"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__access_url
+msgid "Portal Access URL"
+msgstr "Đường dẫn truy cập"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_my_home_ask_hr
+msgid "Questions and answers"
+msgstr "Câu hỏi và câu trả lời"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+msgid "Read the answer, then reply or mark it solved"
+msgstr "Đọc câu trả lời, rồi trả lời hoặc đánh dấu đã xong"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Reopen"
+msgstr "Mở lại"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Reopen it"
+msgstr "Mở lại"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Reopened. It is back with HR."
+msgstr "Đã mở lại. Câu hỏi đã quay về phòng nhân sự."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Reply sent. HR will see it straight away."
+msgstr "Đã gửi câu trả lời. Phòng nhân sự sẽ thấy ngay."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Reply with Send message. Notes stay private."
+msgstr "Trả lời bằng Gửi tin nhắn. Ghi chú chỉ nội bộ thấy."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__access_token
+msgid "Security Token"
+msgstr "Mã bảo mật"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Send reply"
+msgstr "Gửi trả lời"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "Send to HR"
+msgstr "Gửi cho Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_toast
+msgid "Sent to HR. They usually answer within a working day."
+msgstr "Đã gửi cho phòng nhân sự. Họ thường trả lời trong một ngày làm việc."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Show open questions"
+msgstr "Xem câu hỏi đang mở"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__category__other
+msgid "Something else"
+msgstr "Việc khác"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__state
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái theo hoạt động\n"
+"Quá hạn: Đã qua ngày hạn\n"
+"Hôm nay: Hoạt động diễn ra hôm nay\n"
+"Đã lên kế hoạch: Hoạt động trong tương lai."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Still need help with it? Reopen it and it goes back to HR."
+msgstr "Vẫn cần trợ giúp? Mở lại để câu hỏi quay về phòng nhân sự."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__name
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_kanban
+msgid "Take it"
+msgstr "Nhận xử lý"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "Tell HR what you need — they usually answer within a working day."
+msgstr ""
+"Cho phòng nhân sự biết bạn cần gì — họ thường trả lời trong một ngày làm "
+"việc."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid "That did not go through. Please try again in a moment."
+msgstr "Chưa gửi được. Vui lòng thử lại sau giây lát."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "That solved it"
+msgstr "Đã giải quyết xong"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__closed_by__employee
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__last_public_by__employee
+msgid "The employee"
+msgstr "Nhân viên"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "The employee's own words"
+msgstr "Lời của chính nhân viên"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "The question"
+msgstr "Câu hỏi"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+msgid ""
+"This question was closed more than %s days ago. Ask a new question instead."
+msgstr "Câu hỏi này đã đóng hơn %s ngày. Hãy đặt câu hỏi mới."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid ""
+"This question was closed more than 14 days ago. Ask a new question instead."
+msgstr "Câu hỏi này đã đóng hơn 14 ngày. Hãy đặt câu hỏi mới."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__waiting_days
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_list
+msgid "Waiting (days)"
+msgstr "Đã chờ (ngày)"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_missing
+msgid "We could not find that question"
+msgstr "Không tìm thấy câu hỏi này"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trên trang"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,help:pb_ask_hr.field_pb_ask_hr_ticket__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "What happens next"
+msgstr "Điều gì xảy ra tiếp theo"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+msgid "What is it about?"
+msgstr "Bạn hỏi về việc gì?"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
+msgid "What they need"
+msgstr "Nhân viên cần gì"
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_pb_ask_hr_ticket__description
+msgid "What you need"
+msgstr "Bạn cần gì"
+
+#. module: pb_ask_hr
+#: model_terms:ir.actions.act_window,help:pb_ask_hr.action_pb_ask_hr_ticket
+msgid ""
+"When an employee asks HR something from their own pages, it lands here. "
+"Answer with Send message on the question; they get your reply by e-mail and "
+"on their page."
+msgstr ""
+"Khi nhân viên hỏi phòng nhân sự từ trang của họ, câu hỏi sẽ đến đây. Trả lời"
+" bằng Gửi tin nhắn trên câu hỏi; họ nhận câu trả lời qua e-mail và trên "
+"trang của mình."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "When you ask HR a question, it lives here with their answer."
+msgstr ""
+"Khi bạn hỏi phòng nhân sự, câu hỏi sẽ nằm ở đây cùng câu trả lời của họ."
+
+#. module: pb_ask_hr
+#: model:ir.model.fields,field_description:pb_ask_hr.field_res_config_settings__pb_ask_hr_owner_id
+msgid "Who picks up Ask HR questions"
+msgstr "Ai tiếp nhận câu hỏi gửi Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/pb_me_home.py:0
+#: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__with_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+msgid "With HR"
+msgstr "Đang ở Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_alert
+msgid "Write a message, or attach a file, before sending."
+msgstr "Hãy viết tin nhắn hoặc đính kèm tệp trước khi gửi."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Write a reply to HR"
+msgstr "Viết câu trả lời cho phòng nhân sự"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_bubble
+msgid "You"
+msgstr "Bạn"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid ""
+"You are reading this question from a shared link. Only the person who asked "
+"it can reply."
+msgstr ""
+"Bạn đang xem câu hỏi này qua đường dẫn được chia sẻ. Chỉ người đặt câu hỏi "
+"mới có thể trả lời."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "Your questions for HR and their answers, all in one place."
+msgstr "Các câu hỏi bạn gửi phòng nhân sự và câu trả lời, tất cả ở một nơi."
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "Your reply"
+msgstr "Câu trả lời của bạn"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "answered"
+msgstr "đã trả lời"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "closed"
+msgstr "đã đóng"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_kanban
+msgid "d"
+msgstr "ngày"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
+msgid "days ago"
+msgstr "ngày trước"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
+msgid "h ago"
+msgstr "giờ trước"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
+msgid "just now"
+msgstr "vừa xong"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
+msgid "min ago"
+msgstr "phút trước"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+msgid "on"
+msgstr "ngày"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_kanban
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_kanban
+msgid "waiting"
+msgstr "chờ"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+msgid "with HR"
+msgstr "đang ở Nhân sự"
+
+#. module: pb_ask_hr
+#: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
+msgid "yesterday"
+msgstr "hôm qua"

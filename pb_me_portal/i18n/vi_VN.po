@@ -110,6 +110,7 @@ msgstr "Số tiền"
 #. module: pb_me_portal
 #. odoo-python
 #: code:addons/pb_me_portal/models/pb_profile_change_request.py:0
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Applied"
 msgstr "Đã áp dụng"
 
@@ -129,7 +130,9 @@ msgid "Approve & Apply"
 msgstr "Phê duyệt & Áp dụng"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__approved
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Approved"
 msgstr "Đã phê duyệt"
 
@@ -264,7 +267,9 @@ msgid "Download PDF"
 msgstr "Tải xuống bản PDF"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__draft
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Draft"
 msgstr "Nháp"
 
@@ -439,7 +444,12 @@ msgid "My Profile"
 msgstr "Thông tin của tôi"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_profile
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_menu_ess
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
 msgid "My requests"
 msgstr "Đơn của tôi"
 
@@ -567,7 +577,9 @@ msgid "Private Phone"
 msgstr "Điện thoại cá nhân"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Profile"
 msgstr "Hồ sơ"
 
@@ -587,7 +599,9 @@ msgid "Profile Changes"
 msgstr "Thay đổi hồ sơ"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_profile_request
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Profile change"
 msgstr "Thay đổi hồ sơ"
 
@@ -628,7 +642,9 @@ msgid "Refuse"
 msgstr "Từ chối"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model:ir.model.fields.selection,name:pb_me_portal.selection__pb_profile_change_request__state__refused
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Refused"
 msgstr "Đã từ chối"
 
@@ -1360,7 +1376,9 @@ msgid "Last pay"
 msgstr "Kỳ lương gần nhất"
 
 #. module: pb_me_portal
+#. odoo-python
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_leave
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Leave"
 msgstr "Nghỉ phép"
 
@@ -1493,3 +1511,241 @@ msgstr "yêu cầu đang chờ"
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
 msgid "to confirm"
 msgstr "cần xác nhận"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "A request moves here once it is decided."
+msgstr "Yêu cầu sẽ chuyển sang đây khi đã có quyết định."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "A request you send stays here until somebody decides."
+msgstr "Yêu cầu bạn gửi sẽ nằm ở đây cho đến khi có người quyết định."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Accepted"
+msgstr "Đã chấp nhận"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Ask HR"
+msgstr "Hỏi Nhân sự"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Ask HR a question"
+msgstr "Đặt câu hỏi cho Nhân sự"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Asset · %s"
+msgstr "Thiết bị · %s"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Done"
+msgstr "Đã xong"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Equipment"
+msgstr "Thiết bị"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_home_ess
+msgid "Everything you asked for, and where it is"
+msgstr "Mọi thứ bạn đã yêu cầu, và đang ở đâu"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Everything you have asked for, in one place, with where it is now."
+msgstr "Mọi thứ bạn đã yêu cầu, ở một nơi, kèm tình trạng hiện tại."
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid ""
+"Leave, a timesheet fix, a profile change, a question for HR: everything you "
+"ask for lands here, with where it is now."
+msgstr ""
+"Nghỉ phép, sửa bảng công, thay đổi hồ sơ, câu hỏi cho Nhân sự: mọi yêu cầu "
+"của bạn đều có ở đây, kèm tình trạng hiện tại."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Not accepted"
+msgstr "Không được chấp nhận"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Nothing asked yet"
+msgstr "Chưa có yêu cầu nào"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Nothing finished yet"
+msgstr "Chưa có yêu cầu nào hoàn tất"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Nothing is waiting on you"
+msgstr "Không có việc gì đang chờ bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Nothing is with anyone right now"
+msgstr "Hiện không có yêu cầu nào đang chờ người khác"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Overtime"
+msgstr "Làm thêm giờ"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Overtime · %s"
+msgstr "Làm thêm giờ · %s"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Questions and answers"
+msgstr "Câu hỏi và câu trả lời"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Resignation"
+msgstr "Nghỉ việc"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Resignation · last day %s"
+msgstr "Nghỉ việc · ngày làm cuối %s"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Show earlier"
+msgstr "Xem cũ hơn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Show everything"
+msgstr "Xem tất cả"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Timesheet"
+msgstr "Bảng công"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Timesheet fix · %s"
+msgstr "Sửa bảng công · %s"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid ""
+"Tip: use the arrow keys to move between requests, and Enter to open one."
+msgstr "Mẹo: dùng phím mũi tên để chuyển giữa các yêu cầu, và Enter để mở."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Waiting approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Waiting for the manager"
+msgstr "Đang chờ quản lý"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "When something needs your answer, it shows here first."
+msgstr "Khi có việc cần bạn trả lời, nó sẽ hiện ở đây trước tiên."
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "With HR"
+msgstr "Đang ở Nhân sự"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "With someone"
+msgstr "Đang chờ người khác"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "With the manager"
+msgstr "Đang ở quản lý"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "With your manager"
+msgstr "Đang ở quản lý của bạn"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Withdrawn"
+msgstr "Đã rút lại"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "done"
+msgstr "đã xong"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "waiting on you"
+msgstr "đang chờ bạn"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_requests
+msgid "with someone"
+msgstr "đang chờ người khác"

@@ -61,12 +61,13 @@ class TestMeHome(TransactionCase):
         self.assertEqual(self.Home.tile_meta('/my/documents')['group'], 'me')
         self.assertEqual(self.Home.tile_meta('/my/security')['title'],
                          'Sign-in & security')
-        # registry order: Profile, Documents, Tax Sheet, My Things, Pay Package
+        # registry order: Profile, Documents, Tax Sheet, My Things, Pay
+        # Package, My requests (TIERS T3a)
         me = sorted((m['seq'], url) for url, m in pb_me_home.TILES.items()
                     if m['group'] == 'me' and not m.get('hidden'))
         self.assertEqual([u for _s, u in me],
                          ['/my/profile', '/my/documents', '/my/taxsheet',
-                          '/my/assets', '/my/compensation'])
+                          '/my/assets', '/my/compensation', '/my/requests'])
 
     # ------------------------------------------------------------ test 3
     def _render_tile(self, url, title, text='Some text'):

@@ -31,6 +31,8 @@ from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 
+from ..models import pb_me_home
+
 _logger = logging.getLogger(__name__)
 
 #: The routes that render `portal.portal_my_home` (stock `home()`).
@@ -284,6 +286,51 @@ class PbMePortal(CustomerPortal):
         if req and req.employee_id.id == emp.id:
             return req
         return Req.browse()
+
+    # =================================================================
+    #  My requests  (TIERS T3a — everything the person asked for)
+    # =================================================================
+    @http.route(['/my/requests'], type='http', auth='user', website=True)
+    def portal_my_requests(self, filter=None, page=1, **kw):
+        """One timeline of every request the person made, grouped by month.
+
+        The rows come from `pb.me.home.get_my_requests` — soft sources read
+        under sudo keyed on the session's own employee (T-R11); this route
+        accepts no employee id. `filter` keeps one bucket (`act` / `wait` /
+        `done`); `page` shows `page × 50` rows ("Show earlier")."""
+        emp = self._ess_employee()
+        if not emp:
+            return request.redirect('/my')
+        bucket = filter if filter in ('act', 'wait', 'done') else 'all'
+        try:
+            page = max(1, min(int(page), 1000))
+        except (TypeError, ValueError):
+            page = 1
+        Home = request.env['pb.me.home']
+        data = Home.get_my_requests(emp, None if bucket == 'all' else bucket) \
+            or {'rows': [], 'counts': {'act': 0, 'wait': 0, 'done': 0, 'all': 0}}
+        size = pb_me_home.MY_REQUESTS_PAGE
+        shown = data['rows'][:page * size]
+        months = []
+        for row in shown:
+            month = row['date'].date().replace(day=1)
+            if not months or months[-1]['month'] != month:
+                months.append({'month': month, 'rows': []})
+            months[-1]['rows'].append(row)
+        more_url = None
+        if len(data['rows']) > len(shown):
+            more_url = '/my/requests?page=%s%s' % (
+                page + 1, '' if bucket == 'all' else '&filter=%s' % bucket)
+        values = {
+            'page_name': 'my_requests',
+            'bucket': bucket,
+            'counts': data['counts'],
+            'months': months,
+            'more_url': more_url,
+            # soft: the Ask HR button only when that module is installed
+            'ask_hr_url': '/my/ask-hr/new' if 'pb.ask.hr.ticket' in request.env else None,
+        }
+        return request.render('pb_me_portal.portal_my_requests', values)
 
     # =================================================================
     #  Documents  (own vault + self-upload)

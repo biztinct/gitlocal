@@ -35,6 +35,10 @@ TARGET_RAIL = [
     ('operate', 20, True, [
         ('pb_payhub.item_pay_run', 10, 'zap', 'Pay Run'),
         ('pb_people_hub.item_people', 20, 'users', 'People'),
+        # TIERS T3a. The HR queue of employees' questions — work you do about
+        # a person, so beside People, at 22 (no neighbour renumbered, W18).
+        # `inbox` because the rail's icon set is closed (see the icon test).
+        ('pb_ask_hr.item_ask_hr', 22, 'inbox', 'Ask HR'),
         # RIZE P0. A journey is about a PERSON and it is work you do rather
         # than something you look up, so it sits beside People — and at 25,
         # which lands it there without renumbering either neighbour (W18: a
@@ -150,6 +154,7 @@ MATCH_MODELS = {
     'pb_payhub.item_pay_run': [
         'hr.payslip.run', 'hr.payslip', 'hr.payroll.import.batch'],
     'pb_people_hub.item_people': ['hr.employee', 'hr.contract'],
+    'pb_ask_hr.item_ask_hr': ['pb.ask.hr.ticket'],
     'pb_lifecycle.item_lifecycle': [
         'pb.journey.case', 'pb.journey.task', 'pb.journey.template',
         'pb.letter.template', 'pb.hr.letter', 'pb.employee.checkin',
@@ -169,6 +174,7 @@ MATCH_XMLIDS = {
         'pb_hr_workforce_planning.action_wfp_merit_matrix',
         'pb_hr_workforce_planning.action_wfp_cycle',
         'pb_hr_workforce_planning.action_wfp_tagging_wizard'],
+    'pb_ask_hr.item_ask_hr': ['pb_ask_hr.action_pb_ask_hr_ticket'],
     'pb_settings.item_settings': [
         'base.action_res_users', 'base.action_res_company_form',
         'pb_sidebar.action_pb_sidebar_item', 'pb_sidebar.action_pb_sidebar_section',
