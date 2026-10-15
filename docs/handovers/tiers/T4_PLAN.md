@@ -1,5 +1,10 @@
 # TIERS T4 — switch-over plan (Fable runs it; nothing here runs before the owner's go-ahead)
 
+**Completed 16 October 2026:** the owner lifted the freeze, approved the exact
+12 demo conversions and five joiner links, and the deployment and migration
+steps below are closed. See [TIERS_CLOSEOUT.md](TIERS_CLOSEOUT.md). The original
+plan is retained below as history.
+
 State on 2026-10-15 evening: T1, T2 live on all five databases; T3a live on payobook only; T3b built and tested,
 not deployed (owner freeze 20:32 Sydney, memory `deploy-freeze-payobook`). T3c (buddy stand-in guard, training
 claim links) coded by Fable, clone tests pending/green — see `TIERS_PROGRAM.md` status.

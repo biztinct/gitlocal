@@ -19,14 +19,28 @@ demo database) first and check it there. The other databases (`rize`,
   is pending. abm is retired: its upgrade turns its scheduled jobs back on —
   switch them off again after (see memory `abm-tenant-retired`).
 
-| Date | Module → version | What changed | Waiting on |
-|---|---|---|---|
-| 2026-10-15 | **NOT YET DEPLOYED (owner freeze 20:32 Sydney)** pb_me_portal_comm → 19.0.1.0.0 (new, auto-install), pb_ess_workforce → 19.0.1.2.0, pb_me_portal → 19.0.3.3.0, pb_onboarding → 19.0.1.1.0, pb_rnr → 19.0.1.2.0, pb_pay → 19.0.3.6.0, pb_timeoff → 19.0.1.6.0 | TIERS T3b: clock in/out from My Payobook (`/my/work/clock`, live timer, per-company switch in Attendance settings, punches tagged as self-service), notice board (`/my/notices` fed by sent announcements, read receipts in a new table), home cards registry + "This week" clock line, colleague photos for employee logins, tokened pay-letter and leave-attachment links, VI. Tests green on p0clone (484 tests; 3 known clone-data errors). Plus T3c: pb_onboarding → 19.0.1.1.1 (buddy stand-in guard), pb_training → 19.0.1.2.5 (tokened claim links). Recipe when the owner says go: `-i pb_me_portal_comm -u pb_me_portal,pb_ess_workforce,pb_onboarding,pb_rnr,pb_pay,pb_timeoff,pb_training` on payobook, asset purge + version bump; no new field on an existing model. | **Owner's go-ahead**, then Fable's live walk, then the batch |
-| 2026-10-15 | pb_ask_hr → 19.0.1.0.0 (new), pb_me_portal → 19.0.3.2.0, pb_sidebar (test table only, no version change) | TIERS T3a: "Ask HR" questions from My Payobook with a conversation page, HR queue (kanban + form) under the HR menu and a ninth left-menu entry for HR staff (owner-approved), "My requests" timeline across leave / timesheet fixes / profile changes / assets / resignation / overtime / Ask HR, needs-you registry hook, VI. Normal tier: `-i pb_ask_hr -u pb_me_portal` on payobook, asset purge + version bump. New table only (pb.ask.hr.ticket); no new field on an existing model. Live walk done 2026-10-15: ess2 asked ASK-00001, admin took and answered it from the queue, the employee page showed "Answered" and the home "HR answered your question". Note: payobook sends no chatter e-mail (no alias domain, known), so the employee e-mail could not be seen there. | The batch (`-i pb_ask_hr -u pb_me_portal` per DB) |
+The formerly frozen T3a/T3b/T3c entries are deployed on all five databases,
+verified on 16 October 2026. The owner-approved demo account migration is also
+complete. See [the close-out](2026-10-16-pending-work-closeout.md).
 
-Previously: no pending upgrades after the owner-approved 15 October 2026 batch.
-`tools/deploy_status.py` reports every installed custom module matches the repo.
-See [the batch report](2026-10-15-payroll-template-rollout.md).
+A concurrent performance change, `3c204362f` (`pb_formula_studio` 1.201.14 and
+`pb_hr_payroll_formula` 1.148.10), entered deployment while this close-out ran.
+The owner confirmed that the other session handles this deployment. Its rollout
+covers all five databases; its own receipt closes those two module versions.
+The completed tiers rollout does not overwrite or take over that work.
+
+## Completed batch — 16 October 2026
+
+| Modules | Result |
+|---|---|
+| pb_me_portal_comm 1.0.0, pb_ask_hr 1.0.0 | Installed on all five targets, including missing glue/dependencies. |
+| pb_me_portal 3.3.0, pb_ess_workforce 1.2.0, pb_onboarding 1.1.1, pb_rnr 1.2.0, pb_pay 3.6.0, pb_timeoff 1.6.0 | Queued portal updates and held QWeb/style edits reloaded on all five. |
+| pb_training 1.2.5 | Upgraded everywhere already installed; remains absent on retired ABM. |
+| biz_mail_debrand 1.1.0, pb_payroll_templates 1.0.2 | Combined-state reload and regression checks passed on all five. |
+
+414 targeted deployed tests passed, plus four local migration guard tests.
+Demo-first Chrome walk passed. The approved 12 demo conversions and five joiner
+links are complete; the other four databases needed no account changes.
 
 ## Completed batch — 15 October 2026
 
