@@ -93,7 +93,14 @@ with Registry('payobook').cursor() as source_cr:
                 rv['is_demo'] = False
             if source_rule.category_id:
                 category = target['hr.salary.rule.category'].search([
-                    ('code', '=', source_rule.category_id.code)])
+                    ('code', '=', source_rule.category_id.code),
+                    ('name', '=', source_rule.category_id.name),
+                    ('company_id', 'in', [False, company.id])])
+                if not category:
+                    assert not source_rule.category_id.parent_id
+                    category = target['hr.salary.rule.category'].create({
+                        'code': source_rule.category_id.code,
+                        'name': source_rule.category_id.name, 'company_id': company.id})
                 assert len(category) == 1, ('Ambiguous category', source_rule.category_id.code)
                 rv['category_id'] = category.id
             if source_rule.payslip_identifier:
