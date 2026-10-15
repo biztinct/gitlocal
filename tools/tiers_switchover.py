@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """TIERS T4 — switch plain employees from full accounts to employee logins.
 
-Runs over JSON-RPC against a RUNNING server (never `odoo-bin shell`, see
+Runs over XML-RPC against a RUNNING server (never `odoo-bin shell`, see
 memory `payobook-deploy`), as an administrator. Dry-run by default.
 
     PB_URL=https://payobook.com PB_DB=payobook PB_LOGIN=... PB_PASSWORD=... \
@@ -37,9 +37,9 @@ import os
 import sys
 import xmlrpc.client
 
-HARMLESS = ('base.group_multi_company',
-            'pb_driver_checkin.group_pb_driver',
-            'pb_driver_checkin.group_pb_field_staff')
+HARMLESS = ('base.group_multi_company',)
+# Driver and field accounts still use /driver, which requires an internal
+# login. The portal fence's harmless groups are NOT migration-safe groups.
 SKIP_LOGINS = {'manager.demo@payobook.com'}      # demo team lead stays staff
 
 
@@ -93,6 +93,9 @@ def candidates(rpc, verbose=True):
             continue
         passport = rpc.call('pb.access', 'passport', p['id'])
         switch = passport['header'].get('switch') or {}
+        if switch.get('roles_ending'):
+            skipped.append((p['login'], 'active roles; remove them separately'))
+            continue
         if switch.get('to') != 'employee' or not switch.get('allowed'):
             skipped.append((p['login'], switch.get('why') or 'not allowed'))
             continue
@@ -113,7 +116,7 @@ def apply(rpc, reason):
         return
     stamp = dt.datetime.now().strftime('%Y%m%d-%H%M%S')
     path = 'tiers_rollback_%s_%s.json' % (rpc.db, stamp)
-    with open(path, 'w') as fh:
+    with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as fh:
         json.dump(rows, fh, indent=1)
     print('rollback list written: %s' % path)
     done = 0
@@ -167,7 +170,8 @@ def backfill(rpc, do_apply):
         return
     stamp = dt.datetime.now().strftime('%Y%m%d-%H%M%S')
     path = 'tiers_backfill_%s_%s.json' % (rpc.db, stamp)
-    json.dump([t[0] for t in todo], open(path, 'w'))
+    with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as fh:
+        json.dump([t[0] for t in todo], fh)
     print('rollback list written: %s (set user_id back to False)' % path)
     for eid, name, uid, login in todo:
         try:
