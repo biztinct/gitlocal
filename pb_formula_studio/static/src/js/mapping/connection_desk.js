@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillUpdateProps } from "@odoo/owl";
+import { Component, useState, onWillUpdateProps, useEffect, useRef } from "@odoo/owl";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -14,6 +14,7 @@ export class ConnectionDesk extends Component {
     static props = { data: Object, configId: Number, componentId: {type:Number, optional:true},
         onOpenDoor: Function, onRefresh: Function, onNewRule: Function };
     setup() {
+        this.modals = [useRef("traceModal"),useRef("priorityModal"),useRef("draftModal")];
         this.orm = useService("orm"); this.notif = useService("notification");
         this.state = useState({q:"", filter:"all", selected:this.props.componentId || 0, tab:"sources",
             busy:false, error:"", trace:null, priority:null, draft:null, kind:"", role:"", storage:""});
@@ -23,6 +24,12 @@ export class ConnectionDesk extends Component {
             if (name !== "constructor" && name !== "setup" && typeof d.value === "function") this[name] = this[name].bind(this);
         }
         this.select(this.selected);
+        useEffect(() => {
+            const el=this.modals.find(r=>r.el)?.el; if(!el)return;
+            const previous=document.activeElement;
+            (el.querySelector('input:not([type="checkbox"])') || el.querySelector('button'))?.focus();
+            return () => { if(previous?.isConnected)previous.focus(); };
+        }, () => [!!this.state.trace, !!this.state.priority, !!this.state.draft]);
         useHotkey("escape", () => { if(this.state.busy)return; this.state.trace=null;this.state.priority=null;this.state.draft=null; });
         onWillUpdateProps((next) => {
             if (next.configId !== this.props.configId) {
@@ -100,6 +107,12 @@ export class ConnectionDesk extends Component {
             this.notif.add(_t("Source order saved for this scheme."),{type:"success"}); });
     }
     newComponent() { this.state.draft={name:"", kind:"money", storage:""}; this.state.error=""; }
+    draftStorageChanged(ev) {
+        const d=this.state.draft;d.storage=ev.target.value;
+        const numeric=this.props.data.kinds.find(k=>k.value===d.kind)?.numeric;
+        if(d.storage === "text" && numeric)d.kind="text";
+        if(d.storage === "amount" && !numeric)d.kind="money";
+    }
     async createComponent() {
         if(!this.state.draft?.name.trim())return;
         await this.run(async()=> { const d=this.state.draft;

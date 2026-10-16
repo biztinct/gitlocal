@@ -22,6 +22,8 @@ class TestMappingExperience(TransactionCase):
         cls.env['hr.api.data.store'].create({'connector_id': cls.connector.id, 'data_type': 'custom',
             'employee_external_id': 'DESK1', 'raw_payload': {'hours': 0},
             'extracted_data': {'hours': 0}, 'state': 'extracted'})
+        cls.manager = cls.env['res.users'].create({'name': 'Desk manager', 'login': 'desk-manager-test',
+            'group_ids': [(4, cls.env.ref('pb_hr_payroll_formula.group_formula_manager').id)]})
         cls.reader = cls.env['res.users'].create({'name': 'Desk reader', 'login': 'desk-reader-test',
             'group_ids': [(4, cls.env.ref('pb_hr_payroll_formula.group_formula_user').id)]})
 
@@ -90,16 +92,17 @@ class TestMappingExperience(TransactionCase):
             self.studio.mapping_component_create(self.config.id, '   ')
 
     def test_atomic_save_and_connect_preserves_spreadsheet_fallback(self):
-        result = self.studio.mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+        result = self.studio.with_user(self.manager).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
         self.assertTrue(result['ok'])
         self.assertTrue(self.env['hr.integration.field.mapping'].search([
             ('connector_id', '=', self.connector.id), ('target_rule_id', '=', self.rule.id), ('source_field', '=', 'DESKTOTAL')]))
         self.assertTrue(self.rule.source_ids.filtered(lambda s: s.kind == 'excel' and s.key == 'Hours'))
 
     def test_failed_connection_rolls_back_rule_save(self):
-        with patch.object(type(self.studio), 'api_mapping_create', return_value={'ok': False, 'msg': 'Connection test refusal'}):
+        with patch.object(type(self.studio), 'api_mapping_create', return_value={'ok': False, 'msg': 'Connection test refusal'}) as connect:
             with self.assertRaises(UserError):
-                self.studio.mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+                self.studio.with_user(self.manager).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+            connect.assert_called_once()
         self.assertFalse(self.env['hr.api.transformation.rule'].search([('connector_id', '=', self.connector.id), ('output_key', '=', 'DESKTOTAL')]))
 
     def test_text_and_foreign_targets_cannot_be_connected(self):
