@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_payroll_templates.RunInputReviewAction">
+        <RunInputReview runId="runId" close="() => this.close()"/>
+    </t>
+    <t t-name="pb_payroll_templates.RunInputReview">
+        <Dialog title="'Input changes'" size="'xl'" contentClass="'pir-dialog'">
+            <div class="pir" t-att-aria-busy="state.busy ? 'true' : 'false'">
+                <div class="pir-hero">
+                    <span class="pir-eyebrow">PAYROLL INPUT REVIEW</span>
+                    <h2>This month’s changes. Next month’s starting point.</h2>
+                    <p t-if="state.data"><b t-esc="state.data.name"/> · Review the values used and choose which mapped changes to keep for future payrolls.</p>
+                </div>
+                <div class="pir-error" role="alert" t-if="state.error"><span t-esc="state.error"/><button type="button" class="btn btn-link" t-on-click="load" t-att-disabled="state.busy">Refresh review</button></div>
+                <p class="pir-empty" t-if="!state.data and state.busy" role="status">Loading your saved input review…</p>
+                <t t-if="state.data">
+                    <div class="pir-stats">
+                        <button type="button" t-on-click="() => this.setFilter('pending')"><strong t-esc="stats.pending"/><span>Mapped changes to decide</span></button>
+                        <button type="button" t-on-click="() => this.setFilter('excel')"><strong t-esc="stats.excel"/><span>Excel-only values</span></button>
+                        <button type="button" t-on-click="() => this.setFilter('saved')"><strong t-esc="stats.saved"/><span>Saved for future payrolls</span></button>
+                        <button type="button" t-on-click="() => this.setFilter('approval')"><strong t-esc="stats.approval"/><span>Record updates in approval</span></button>
+                    </div>
+                    <div class="pir-notice" t-if="stats.excel"><b>Some fields live only in Excel.</b> They are retained with this payroll for review, but are not stored as reusable employee or contract fields. Enter them again for the next payroll, or ask your administrator to map them to a system field.</div>
+                    <div class="pir-notice" t-if="state.data.cancelled">This payroll was rejected. You can inspect its changes and decisions here; record updates are disabled.</div>
+                    <div class="pir-notice" t-elif="!state.data.can_decide">You can review these changes. A payroll operator with record-edit permission can decide which values to save.</div>
+                    <t t-if="sheet">
+                        <div class="pir-tools">
+                            <select t-if="state.data.sheets.length > 1" aria-label="Workbook" t-on-change="changeSheet"><option t-foreach="state.data.sheets" t-as="s" t-key="s.id" t-att-value="s_index" t-att-selected="s_index === state.sheet" t-esc="s.filename"/></select>
+                            <input placeholder="Find employee or ID" aria-label="Find employee or ID" t-model="state.query" t-on-input="() => { this.state.page = 0; }"/>
+                            <input placeholder="Find field" aria-label="Find field" t-model="state.field" t-on-input="() => { this.state.page = 0; }"/>
+                            <select aria-label="Show input changes" t-model="state.filter" t-on-change="() => { this.state.page = 0; }">
+                                <option value="all">All inputs</option><option value="changed">Changed mapped fields</option><option value="pending">To decide</option><option value="excel">Excel only</option><option value="saved">Saved for future</option><option value="once">This payroll only</option><option value="approval">Awaiting approval</option><option value="blocked">Needs attention</option>
+                            </select>
+                            <button type="button" class="btn btn-link" t-on-click="load" t-att-disabled="state.busy">Refresh</button>
+                            <button type="button" class="btn btn-light" t-on-click="download" t-att-disabled="state.busy">Download Excel review</button>
+                        </div>
+                        <div class="pir-legend"><span class="changed">Changed mapped field</span><span class="excel">Excel only</span><span class="saved">Saved for future</span><span>Unchanged values stay neutral · each cell includes its status</span></div>
+                        <p class="pir-caption"><t t-esc="sheet.filename"/> · <t t-if="sheet.historical">Historical payroll: “On record” means the value at first review. An original before-value was not captured.</t><t t-else="">“On record” is the value captured before this file was computed.</t></p>
+                        <div class="pir-grid" tabindex="0" aria-label="Payroll input comparison spreadsheet">
+                            <table>
+                                <thead><tr class="pir-letters"><th>#</th><th>A · Employee</th><th>B · Employee ID</th><th t-foreach="columns" t-as="c" t-key="c.id" t-esc="letter(c_index)"/></tr>
+                                    <tr><th></th><th>Employee</th><th>Employee ID</th><th t-foreach="columns" t-as="c" t-key="c.id"><b t-esc="c.label"/><small t-esc="c.mapped ? (c.destination || 'Review mapping') : 'Excel only · enter again next payroll'"/><button t-if="c.mapped and state.data.can_decide" type="button" class="btn btn-link btn-sm p-0" t-on-click="() => this.selectColumn(c)" t-att-disabled="state.busy">Select changes</button></th></tr>
+                                </thead>
+                                <tbody><tr t-foreach="rows" t-as="row" t-key="row.line_id"><th t-esc="state.page * 30 + row_index + 1"/><th t-esc="row.name"/><td class="pir-code" t-esc="row.code"/>
+                                    <td t-foreach="columns" t-as="col" t-key="col.id" t-attf-class="pir-cell {{ row.cells[col.id]?.decision || '' }} {{ state.selected[key(row,col)] ? 'selected' : '' }}">
+                                        <t t-set="cell" t-value="row.cells[col.id]"/>
+                                        <t t-if="cell">
+                                            <label t-if="cell.decision === 'pending' and state.data.can_decide and !cell.payroll_changed and !cell.not_computed" class="pir-select"><input type="checkbox" t-att-aria-label="'Select ' + row.name + ' · ' + col.label" t-att-checked="!!state.selected[key(row,col)]" t-att-disabled="state.busy" t-on-change="() => this.toggle(row,col)"/><b t-esc="value(cell.value)"/></label>
+                                            <b t-else="" class="pir-used" t-esc="value(cell.value)"/>
+                                            <small t-if="col.mapped">On record: <t t-esc="cell.old_label || value(cell.old)"/></small>
+                                            <small t-if="cell.ignored">Workbook: <t t-esc="value(cell.supplied)"/> · a higher-priority payroll source was used.</small>
+                                            <small t-if="cell.payroll_changed">Payroll inputs changed after this snapshot. Inspect the current payslip before deciding in Records Desk.</small>
+                                            <small t-if="cell.not_computed">This row has no computed payslip yet. Complete pay-data approval and computation before making a record decision.</small>
+                                            <span class="pir-status" t-esc="status(cell)"/>
+                                            <small t-if="cell.reason" t-esc="cell.reason"/>
+                                            <small t-if="cell.by"><t t-esc="cell.by"/> · <t t-esc="cell.at"/> UTC</small>
+                                            <small t-if="cell.reference"><t t-esc="cell.reference"/><t t-if="cell.with_whom"> · <t t-esc="cell.with_whom"/></t></small>
+                                        </t><span t-else="">—</span>
+                                    </td>
+                                </tr></tbody>
+                            </table>
+                            <p class="pir-empty" t-if="!rows.length">No inputs match these filters. Choose “All inputs” or clear your search.</p>
+                        </div>
+                        <div class="pir-pager"><span><t t-esc="matchingRows.length"/> employees · page <t t-esc="state.page + 1"/> of <t t-esc="pages"/></span><button type="button" class="btn btn-light" t-att-disabled="state.page === 0" t-on-click="() => { this.state.page--; }">Previous</button><button type="button" class="btn btn-light" t-att-disabled="state.page + 1 >= pages" t-on-click="() => { this.state.page++; }">Next</button></div>
+                        <div class="pir-selection" t-if="state.data.can_decide"><button type="button" class="btn btn-link" t-on-click="selectVisible" t-att-disabled="state.busy">Select all matching undecided cells</button><button type="button" class="btn btn-link" t-on-click="() => { this.state.selected = {}; }" t-att-disabled="state.busy">Clear selection</button><b><t t-esc="selected.length"/> selected</b><input placeholder="Optional note for other reviewers" aria-label="Note for other reviewers" t-model="state.note" maxlength="1000"/></div>
+                        <details class="pir-history" t-if="sheet.events.length"><summary>Decision history · <t t-esc="sheet.events.length"/></summary><p t-foreach="sheet.events" t-as="e" t-key="e_index"><b t-esc="e.by"/> · <t t-esc="e.at"/> UTC · <t t-esc="e.count"/> values · <t t-esc="e.decision === 'future' ? 'Keep for future payrolls' : 'This payroll only'"/><t t-if="e.reference"> · <t t-esc="e.reference"/></t><t t-if="e.note"> · <t t-esc="e.note"/></t></p></details>
+                    </t>
+                    <div class="pir-empty" t-else=""><b>No spreadsheet input snapshot for this payroll.</b><p>Payrolls computed from system records alone have no workbook changes to decide.</p></div>
+                </t>
+            </div>
+            <t t-set-slot="footer">
+                <div class="pir-footer"><p>Your review stays with this batch. You and other reviewers can return from <b>Input changes</b>. Computed payslips are preserved.</p><div><button type="button" class="btn btn-light" t-on-click="props.close" t-att-disabled="state.busy">Close</button><button type="button" class="btn btn-outline-primary" t-if="state.data?.can_decide" t-on-click="() => this.decide('once')" t-att-disabled="!selected.length || state.busy">This payroll only</button><button type="button" class="btn btn-primary" t-if="state.data?.can_decide" t-on-click="() => this.decide('future')" t-att-disabled="!selected.length || state.busy">Keep selected for future payrolls</button></div></div>
+            </t>
+        </Dialog>
+    </t>
+    <t t-inherit="pb_payrun_wizard.PayrunWizard" t-inherit-mode="extension">
+        <xpath expr="//h4[hasclass('pw-modes-h')]" position="replace"><p class="pw-note"><b>Compute now. Choose what to keep afterwards.</b> Your file is used for this payroll. After computing, review mapped changes and decide what should carry into future payrolls. You can also decide later from the batch.</p></xpath>
+        <xpath expr="//div[hasclass('pw-modes')]" position="replace"/>
+        <xpath expr="//div[hasclass('pw-statpills')]" position="before">
+            <div class="pir-entry" t-if="state.summary.sheet"><div><b>What changed in your workbook?</b><p>Compare mapped fields with the saved records, see Excel-only inputs, and choose what to keep for future payrolls. This review stays available on the batch.</p></div><button type="button" class="pw-btn primary" t-on-click="openInputChanges">Review input changes →</button></div>
+        </xpath>
+        <xpath expr="//t[@t-set='exc']" position="after"><div class="pir-entry" t-if="state.summary.sheet"><div><b>Keep your input decisions with this payroll.</b><p>Review what changed and choose which mapped values to save for future payrolls. You can also return from the batch later.</p></div><button type="button" class="pw-btn ghost" t-on-click="openInputChanges">Review input changes →</button></div></xpath>
+    </t>
+    <t t-inherit="pb_payruns.Card" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pbr-menu')]" position="inside"><button type="button" t-on-click="() => this.openInputChanges(b)">Input changes</button></xpath>
+        <xpath expr="//div[hasclass('pbr-sub')]" position="after"><button t-if="b.input_review" type="button" class="pbr-btn pir-batch-chip" t-on-click.stop="() => this.openInputChanges(b)"><t t-if="b.input_review.pending"><t t-esc="b.input_review.pending"/> input changes to decide</t><t t-elif="b.input_review.approval"><t t-esc="b.input_review.approval"/> record updates in approval</t><t t-else="">Input changes reviewed</t> →</button></xpath>
+    </t>
+    <t t-inherit="pb_payruns.Peek" t-inherit-mode="extension">
+        <xpath expr="//div[@class='pb']" position="inside"><section class="pir-entry"><div><h3>Input changes</h3><p>See workbook values, review decisions, and choose which mapped changes to keep for future payrolls.</p></div><button type="button" class="pbr-btn" t-on-click="() => this.openInputChanges(b)">Review input changes →</button></section></xpath>
+    </t>
+</templates>

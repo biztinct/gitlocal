@@ -1,0 +1,48 @@
+.pir-dialog { .modal-body { padding: 0; } .modal-footer { padding: 18px 24px; } }
+.pir { color: #20213c; padding: 24px; font-size: 13px;
+    .pir-hero { margin: -24px -24px 20px; padding: 26px 28px; background: linear-gradient(115deg,#f0edfc,#f8faff); border-bottom: 1px solid #e0def0;
+        h2 { font-size: 24px; letter-spacing: -.65px; margin: 8px 0; font-weight: 650; }
+        p { margin: 0; color: #62617e; line-height: 1.6; }
+    }
+    .pir-eyebrow { color: #6653b7; font-size: 10px; font-weight: 750; letter-spacing: 1.5px; }
+    .pir-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px;
+        button { border: 1px solid #e2dff0; border-radius: 12px; padding: 16px; text-align: left; background: white; color: inherit; transition: background .15s;
+            &:hover { background: #f6f3ff; } strong { display:block; font-size: 27px; font-weight: 650; color: #5e49ad; } span { color: #64627b; }
+        }
+    }
+    .pir-notice { padding: 12px 16px; background: #fff8e9; border: 1px solid #f0dfb9; border-radius: 9px; margin-bottom: 14px; line-height: 1.6; }
+    .pir-error { padding: 14px; background: #fff0f1; border: 1px solid #e8bdc1; border-radius: 9px; margin-bottom: 14px; white-space: pre-line; }
+    .pir-tools { display:flex; gap:8px; flex-wrap:wrap; margin: 16px 0 12px; }
+    input:not([type=checkbox]), select { border: 1px solid #dcd9e8; border-radius: 7px; padding: 8px 10px; min-width: 130px; background: white; color: inherit; }
+    input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #7966c5; outline-offset: 2px; }
+    .pir-legend { display:flex; flex-wrap:wrap; gap:16px; font-size:11px; color:#747087; margin:12px 0;
+        .changed,.excel,.saved { &::before { content:''; display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; } }
+        .changed::before {background:#c7b8f0;} .excel::before {background:#edcf8a;} .saved::before {background:#93cdb9;}
+    }
+    .pir-caption { font-size:11px; color:#77738a; }
+    .pir-grid { max-height: 46vh; overflow:auto; border:1px solid #dbd8e6; border-radius:9px; background:#faf9fc;
+        table { border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; font-size:12px; }
+        th,td { min-width:200px; max-width:250px; padding:12px; border-bottom:1px solid #e5e2ed; border-right:1px solid #e5e2ed; vertical-align:top; background:white; }
+        thead { position:sticky; top:0; z-index:3; } thead th { background:#f5f3fa; } th { font-weight:600; }
+        tr > :first-child { min-width:38px; max-width:38px; text-align:center; background:#f5f3fa; color:#817b93; }
+        tr > :nth-child(2) { position:sticky; left:0; z-index:2; min-width:180px; max-width:180px; box-shadow:2px 0 3px #28203d0a; }
+        thead tr > :nth-child(2) { z-index:4; } .pir-letters th { font-size:10px; color:#817b93; padding:6px 12px; }
+        small { display:block; font-size:10px; margin-top:6px; color:#777085; font-weight:400; line-height:1.5; }
+        .pir-code { min-width:125px; font-variant-numeric: tabular-nums; }
+        .pir-cell.pending { background:#f3edff; } .pir-cell.excel { background:#fff8e8; }
+        .pir-cell.saved { background:#eaf8f1; } .pir-cell.approval { background:#ecf4ff; }
+        .pir-cell.blocked { background:#fff0ef; } .pir-cell.once { background:#f4f5f8; }
+        .pir-cell.selected { box-shadow:inset 0 0 0 2px #8065c7; }
+        .pir-status { display:block; margin-top:8px; font-size:10px; color:#6f5b8d; line-height:1.45; }
+        .pir-select { display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; } input[type=checkbox] { accent-color:#6550ad; width:15px; height:15px; }
+        .pir-used { font-variant-numeric: tabular-nums; }
+    }
+    .pir-pager { display:flex; align-items:center; gap:8px; margin:12px 0; span {margin-right:auto; color:#777085;} }
+    .pir-selection { display:flex; flex-wrap:wrap; align-items:center; gap:10px; border-top:1px solid #e8e4f0; padding-top:12px; input {flex:1;} }
+    .pir-history { margin-top:16px; color:#716a83; font-size:11px; p {padding:8px 12px; margin:0;} summary {cursor:pointer;} }
+    .pir-empty { text-align:center; padding:36px; color:#777085; }
+}
+.pir-footer {width:100%; display:flex; flex-direction:column; gap:12px; p {font-size:11px; color:#777085; margin:0;} > div {display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;} }
+.pir-entry { margin:20px 0; padding:18px; background:#f5f2fd; border:1px solid #ded6f1; border-radius:12px; display:flex; align-items:center; flex-wrap:wrap; gap:16px; text-align:left; > div {flex:1; min-width:220px;} b,h3 {font-size:15px; color:#4f3b91;} p {font-size:12px; line-height:1.6; margin:6px 0 0; color:#777085;} }
+.pir-batch-chip {margin-top:10px; color:#6044a4 !important; background:#f4effc !important; font-size:11px !important;}
+@media(max-width:700px) { .pir {padding:16px; .pir-hero {margin:-16px -16px 16px; padding:20px; h2 {font-size:20px;}} .pir-stats {grid-template-columns:repeat(2,1fr);} .pir-tools input {min-width:0; width:100%;} .pir-grid {max-height:40vh;} } }
