@@ -888,11 +888,10 @@ export class MappingStudio extends Component {
                                             [cfg, this.state.batchId || false]);
                     break;
                 case "employee":
-                    // J1 — the third argument is `include_payroll`. The Studio
-                    // used to hard-code `false`, so the payroll lane was
-                    // unreachable here and the reveal chip had nothing to reveal.
+                    // Load the complete board. Category pills only change visibility;
+                    // hiding a category must not turn its valid wires into missing cards.
                     r = await this.orm.call(MODEL, "employee_mapping_data",
-                                            [cfg, false, !!this.state.empPayroll]);
+                                            [cfg, false, true]);
                     break;
                 case "scheme":
                     r = await this.orm.call(MODEL, "scheme_mapping_data", [cfg, false]);
@@ -1608,21 +1607,27 @@ export class MappingStudio extends Component {
         if (this.state.busy) { return; }
         this.state.empPayroll = !this.state.empPayroll;
         this.state.empLane = null;
-        await this.load();
     }
     clearEmpLane() {
         this.state.empLane = null;
         this.state.empHiddenLanes = [];
+        this.state.empPayroll = true;
     }
-    async showAllEmpLanes() {
-        this.clearEmpLane();
-        if (!this.state.empPayroll) {
-            this.state.empPayroll = true;
-            await this.load();
-        }
-    }
+    async showAllEmpLanes() { this.clearEmpLane(); }
     get empLaneFilter() { return ""; }
-    get empExcludedGroups() { return this.isEmp ? this.state.empHiddenLanes : undefined; }
+    get empExcludedGroups() {
+        if (!this.isEmp) { return undefined; }
+        const labels = [...this.state.empHiddenLanes];
+        if (!this.state.empPayroll) {
+            labels.push(this.empChips.find(ch => ch.role === "payroll")?.label || roleLabel("payroll"));
+        }
+        const key = JSON.stringify(labels);
+        if (key !== this._excludedKey) {
+            this._excludedKey = key;
+            this._excludedGroups = labels;
+        }
+        return this._excludedGroups;
+    }
     get compactCanvas() { return ["employee", "import", "api"].includes(this.state.mode); }
 
     // ---- "Add a field to map…" ------------------------------------------------
@@ -2058,8 +2063,7 @@ export class MappingStudio extends Component {
         let r;
         try {
             r = await this.orm.call(MODEL, "employee_mapping_resolve_remaining",
-                                    [this.state.configId, decisions,
-                                     !!this.state.empPayroll]);
+                                    [this.state.configId, decisions, true]);
         } catch (e) {
             r = { ok: false, msg: _t("Those columns could not be saved.") };
         } finally {

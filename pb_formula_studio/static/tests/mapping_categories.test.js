@@ -22,7 +22,7 @@ test("Payroll uses the same show/hide model as other category pills", async () =
     await host.showAllEmpLanes();
     expect(host.empLaneVisible(identity)).toBe(true);
     expect(host.empLaneVisible(payroll)).toBe(true);
-    expect(loads).toBe(3);
+    expect(loads).toBe(0);
     host.state.busy = true;
     await host.toggleEmpLane(payroll);
     expect(host.empLaneVisible(payroll)).toBe(true);
