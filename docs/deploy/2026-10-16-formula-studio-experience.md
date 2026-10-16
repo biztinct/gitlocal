@@ -60,3 +60,38 @@ rewritten by this repair. This is deliberate because a value's type affects how
 future payroll inputs are interpreted.
 
 Machine-readable results: `2026-10-16-formula-studio-experience.json`.
+
+
+## Follow-up: view order and component mapping focus
+
+Runtime commit `b660d31e6` changes the Build tabs to **Cards → Table → Grid**.
+The remembered/default view is retained. The component inspector's **Open mapping**
+now carries the selected component ID and opens Journey on that component and its
+connected sources. Components that share a source are excluded. Calculated and
+fixed values appear expanded with an explanation that they have no incoming
+mapping. **Show all components** restores the whole Journey. Changing schemes or
+tabs clears the component scope; the Formula Studio return door retains the
+original scheme and selected component.
+
+The combined source state (149 custom modules, 4,808 verified files) was deployed
+to `payobook`, `rize`, `p0clone`, `payobook_template`, and `abm`. All five have
+Studio `19.0.1.201.20`; the engine remains `19.0.1.148.12`. Each database passed
+32 selected Studio regressions with zero failures/errors. Every cron activation
+flag and the deployment's payroll and outgoing-mail snapshots were preserved.
+The activation guards were removed, and the Odoo service is active. Backups and
+the full receipt are under `/odoo/backups/studio-component-focus-20261016/`.
+
+Chrome verified all three reordered tabs, India component R (Employers contribution
+to PF) opening alone with the calculated-value explanation, Show all restoring the
+complete Journey, and return navigation retaining component R. Vietnam's Standard
+working days input opened with exactly its spreadsheet source and component, with
+a non-empty connecting path. Changing the Mapping scheme cleared the old focus.
+No JavaScript runtime errors were observed. No payroll configuration was edited
+by these UI checks. Screenshots were inspected in memory; no screenshot or PNG
+files were written.
+
+Additional checks passed: 19 component-focus assertions (including the real board's
+view getters), 14 formatter assertions, 12 OWL template compilations, JavaScript
+syntax checks, and Odoo's reader over all 2,475 Vietnamese translations.
+`tools/deploy_status.py` reports nothing pending on all five databases. The final
+repository and server hash comparisons both matched all 4,808 staged source files.

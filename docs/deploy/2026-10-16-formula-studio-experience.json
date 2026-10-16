@@ -111,5 +111,72 @@
   "native_formatter_assertions": 14,
   "owl_templates_compiled": 10,
   "odoo_po_reader_entries": 2468,
-  "test_screenshots_written_to_files": 0
+  "test_screenshots_written_to_files": 0,
+  "component_mapping_followup": {
+    "runtime_commit": "b660d31e653585dd6321a8fd8cc51fffafde0173",
+    "studio_version": "19.0.1.201.20",
+    "custom_modules_verified": 149,
+    "source_files_verified": 4808,
+    "backup": "/odoo/backups/studio-component-focus-20261016",
+    "service": "active",
+    "native_component_focus_checks": 19,
+    "native_formatter_checks": 14,
+    "owl_templates_compiled": 12,
+    "vietnamese_translation_entries": 2475,
+    "databases": {
+      "p0clone": {
+        "tests_passed": 32,
+        "failures": 0,
+        "errors": 0,
+        "cron_flags_preserved": true,
+        "payroll_snapshot_preserved": true,
+        "active_jobs": 26
+      },
+      "payobook": {
+        "tests_passed": 32,
+        "failures": 0,
+        "errors": 0,
+        "cron_flags_preserved": true,
+        "payroll_snapshot_preserved": true,
+        "active_jobs": 37
+      },
+      "rize": {
+        "tests_passed": 32,
+        "failures": 0,
+        "errors": 0,
+        "cron_flags_preserved": true,
+        "payroll_snapshot_preserved": true,
+        "active_jobs": 69
+      },
+      "payobook_template": {
+        "tests_passed": 32,
+        "failures": 0,
+        "errors": 0,
+        "cron_flags_preserved": true,
+        "payroll_snapshot_preserved": true,
+        "active_jobs": 0
+      },
+      "abm": {
+        "tests_passed": 32,
+        "failures": 0,
+        "errors": 0,
+        "cron_flags_preserved": true,
+        "payroll_snapshot_preserved": true,
+        "active_jobs": 0
+      }
+    },
+    "chrome": {
+      "cards_table_grid_order": true,
+      "all_build_tabs_work": true,
+      "india_pf_formula_focused": true,
+      "show_all_restores_journey": true,
+      "return_retains_component": true,
+      "vietnam_input_source_focused": true,
+      "connection_path_nonempty": true,
+      "scheme_change_clears_focus": true,
+      "runtime_errors": 0
+    },
+    "test_png_files_written": 0,
+    "deployment_pending": false
+  }
 }

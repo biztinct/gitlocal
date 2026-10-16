@@ -20,7 +20,7 @@ in use.
 | Add immediately saves a blank rule | Unsaved draft with name/type/value type and formula validation; Cancel creates no record. Server also rejects blank creation. |
 | Empty active payslip layout | Readiness message; preview net is the designated computed component, independent of layout placement. |
 | Redundant Grid rows | Category, Type and Status rows removed; type is in the header, errors remain contextual. Keyboard row model matches rendered rows. |
-| Chaotic toolbar | Build / Validate / Compare / Health navigation; Table / Grid / Cards subviews; searchable Tools and Review changes. One lifecycle control. |
+| Chaotic toolbar | Build / Validate / Compare / Health navigation; Cards / Table / Grid subviews; searchable Tools and Review changes. One lifecycle control. |
 | Sample button silently cycles / does nothing | Labeled sample picker, disabled empty state, existing real-person picker retained. |
 | Unreadable all-node map | Open centered on selected component at readable zoom; component picker centers and highlights its connections. Overview Fit remains available. |
 | Progress, navigation and accessibility | What-if explicit run, progress, Cancel, failure feedback. Build view and selected component remembered per scheme. Close labels; draft dialogs trap focus and support Escape. |
@@ -65,3 +65,14 @@ Final UI polish removes arbitrary sums from collapsed visual groups (they can mi
 units or count the same pay twice), exposes the existing real-payslip picker from
 the Table toolbar, keeps failing sample checks visible in the single review queue,
 and adjusts the narrow layout so component names and preview values remain readable.
+
+
+The follow-up runtime commit `b660d31e6` (Studio `19.0.1.201.20`) moves Cards to the
+first tab and scopes the inspector's Open mapping door to the selected component.
+Journey uses the component ID rather than a name search, includes connected source
+rows, and excludes other components sharing those sources. Calculated/fixed rows
+remain visible without invented mapping wires. Show all restores the full board;
+changing scheme/tab clears the scope. All five databases passed 32 Studio checks
+and retained every cron flag. Chrome verified India PF, Vietnam Standard working
+days, connecting geometry, tab order, Show all, and return navigation. See the
+follow-up section of the deployment closeout for exact targets and backup location.
