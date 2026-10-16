@@ -6,6 +6,7 @@ import { _t } from "@web/core/l10n/translation";
 import { JourneyBoard } from "./journey_board";
 import { srcLabel } from "../source_vocab";
 import { formatComponentValue } from "../value_format";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.formula.studio";
 export class ConnectionDesk extends Component {
@@ -17,7 +18,7 @@ export class ConnectionDesk extends Component {
         this.modals = [useRef("traceModal"),useRef("priorityModal"),useRef("draftModal")];
         this.orm = useService("orm"); this.notif = useService("notification");
         this.state = useState({q:"", filter:"all", selected:this.props.componentId || 0, tab:"sources",
-            busy:false, error:"", trace:null, priority:null, draft:null, kind:"", role:"", storage:""});
+            busy:false, error:"", trace:null, priority:null, draft:null, kind:"", role:"", storage:"", storageEditing:false});
         // OWL t-set scopes can inherit the component. Keep all mutations on it.
         for (const name of Object.getOwnPropertyNames(ConnectionDesk.prototype)) {
             const d = Object.getOwnPropertyDescriptor(ConnectionDesk.prototype, name);
@@ -36,11 +37,15 @@ export class ConnectionDesk extends Component {
             if (next.configId !== this.props.configId) {
                 this.state.selected = 0; this.state.q = ""; this.state.priority = null; this.state.trace = null;
             }
-            const row = next.data.components.find(r => r.id === this.state.selected) || next.data.components[0];
-            if (row) { this.state.selected = row.id; this.state.kind = row.value_kind; this.state.role = row.net_role || ""; this.state.storage = ""; }
+            const inputs = next.data.components.filter(r => r.type === "input");
+            const row = inputs.find(r => r.id === this.state.selected) || inputs[0];
+            if (row) { this.state.selected = row.id; this.state.kind = row.value_kind; this.state.role = row.net_role || ""; }
+            else { this.state.selected=0; this.state.kind=""; this.state.role=""; }
+            this.state.storage=""; this.state.storageEditing=false;
         });
     }
-    get rows() { return this.props.data.components || []; }
+    // Mapping operates on inputs; keep calculated/constant components in Journey.
+    get rows() { return (this.props.data.components || []).filter(r => r.type === "input"); }
     get selected() { return this.rows.find(r => r.id === this.state.selected) || this.rows[0] || null; }
     get filtered() {
         const q = this.state.q.trim().toLocaleLowerCase();
@@ -50,12 +55,20 @@ export class ConnectionDesk extends Component {
     get missingCount() { return this.rows.filter(r => this.isMissing(r)).length; }
     get multipleCount() { return this.rows.filter(r => r.sources.length > 1).length; }
     get sampleName() { const p=this.props.data; return (p.samples.find(s => s.id === p.preview.sample_id) || {}).name || ""; }
+    icon(name) { return ic(name); }
+    get savedStorage() { return this.selected?.is_contract_component ? (this.selected.is_text_component ? "text" : "amount") : ""; }
+    get setupDirty() { return !!this.selected && (!!this.state.storage || this.state.kind !== this.selected.value_kind || this.state.role !== (this.selected.net_role || "")); }
+    get storageMismatch() {
+        const storage=this.state.storage || this.savedStorage;
+        return !!storage && (storage === "text") !== ["text","identifier","date","boolean"].includes(this.state.kind);
+    }
     isMissing(row) { return row.type === "input" && row.sources[0].kind === "none"; }
     label(kind) { return srcLabel(kind); }
     kindLabel(kind) { return (this.props.data.kinds.find(k => k.value === kind) || {}).label || kind; }
     laneLabel(k) { return {api:_t("Connected systems"),excel:_t("Spreadsheets"),records:_t("Employee & contract records")}[k]; }
     value(row) { return formatComponentValue(row, this.props.data.preview.values[row.col], this.props.data.config.currency); }
-    select(row) { if (!row) return; this.state.selected=row.id; this.state.kind=row.value_kind; this.state.role=row.net_role || ""; this.state.storage=""; this.state.error=""; }
+    select(row) { if (!row) return; this.state.selected=row.id; this.state.kind=row.value_kind; this.state.role=row.net_role || ""; this.state.storage=""; this.state.storageEditing=false; this.state.error=""; }
+    discardSetup() { this.select(this.selected); }
     trap(ev) {
         if(ev.key!=="Tab")return;
         const nodes=[...ev.currentTarget.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex="0"]')].filter(el=>el.getClientRects().length);
@@ -71,12 +84,19 @@ export class ConnectionDesk extends Component {
         finally { this.state.busy=false; }
     }
     async saveSetup() {
+        if(!this.setupDirty || !this.props.data.can_edit || (this.state.storage && this.storageMismatch))return;
         await this.run(async () => {
             await this.orm.call(MODEL,"mapping_component_setup",[this.props.configId,this.selected.id,this.state.kind,this.state.role,this.state.storage || null]);
             await this.props.onRefresh(); this.notif.add(_t("Component setup saved."),{type:"success"});
         });
     }
-    pickStorage(storage) { this.state.storage=storage; this.state.kind=storage === "text" ? "text" : "money"; if(storage === "text")this.state.role=""; }
+    pickStorage(storage) {
+        if(this.state.busy || !this.props.data.can_edit || storage===this.savedStorage)return;
+        this.state.storage=storage;
+        const textKind=["text","identifier","date","boolean"].includes(this.state.kind);
+        if((storage === "text") !== textKind)this.state.kind=storage === "text" ? "text" : "money";
+        if(storage === "text")this.state.role="";
+    }
     kindChanged(ev) { this.state.kind=ev.target.value; if (!this.props.data.kinds.find(k=>k.value===this.state.kind)?.money) this.state.role=""; }
     get roleOptions() { const money=this.props.data.kinds.find(k=>k.value===this.state.kind)?.money; return this.props.data.pay_roles.filter(r=>money || !r.key || ["info","information","ignore"].includes(r.key)); }
     async trace() {

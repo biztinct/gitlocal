@@ -2,10 +2,10 @@
 <templates xml:space="preserve">
 <t t-name="pb_formula_studio.ConnectionDesk">
  <div class="pbcdesk">
-  <div class="pbcdesk-heading"><div><h2>Connections</h2><p>Choose a component to see where its value comes from and where it goes.</p></div><div class="pbcdesk-actions"><button class="pbim-btn" t-on-click="priorities">Source order</button><button t-if="props.data.can_edit" class="pbim-btn primary" t-on-click="newComponent">+ Component</button></div></div>
+  <div class="pbcdesk-heading"><div><h2>Connections</h2><p>Map input components to their sources and storage. See calculations in Journey.</p></div><div class="pbcdesk-actions"><button class="pbim-btn" t-on-click="priorities">Source order</button><button t-if="props.data.can_edit" class="pbim-btn primary" t-on-click="newComponent">+ Component</button></div></div>
   <div t-if="state.error" class="pbcdesk-error" role="alert" t-esc="state.error"/>
   <div class="pbcdesk-layout">
-   <section class="pbcdesk-list" aria-label="Components">
+   <section class="pbcdesk-list" aria-label="Input components">
     <div class="pbcdesk-search"><input type="search" aria-label="Find a component" placeholder="Find a component by name, code or letter…" t-model="state.q"/><div class="pbcdesk-filters"><button t-att-class="state.filter==='all' ? 'on' : ''" t-on-click="() => this.state.filter='all'">All <b t-esc="rows.length"/></button><button t-att-class="state.filter==='missing' ? 'on' : ''" t-on-click="() => this.state.filter='missing'">Need a source <b t-esc="missingCount"/></button><button t-att-class="state.filter==='multiple' ? 'on' : ''" t-on-click="() => this.state.filter='multiple'">With fallback <b t-esc="multipleCount"/></button></div></div>
     <div class="pbcdesk-listhead"><span>Component / read order</span><span>Sample value</span></div>
     <div class="pbcdesk-rows">
@@ -29,16 +29,33 @@
       <t t-if="selected.type==='input'"><h4>Manage connections</h4><div class="pbcdesk-stack"><button t-if="props.data.priority.enabled.api" class="pbim-btn" t-on-click="() => this.open('api')">System fields &amp; suggestions →</button><button t-if="props.data.priority.enabled.excel" class="pbim-btn" t-on-click="() => this.open('import')">Spreadsheet columns →</button><button class="pbim-btn" t-on-click="() => this.props.onNewRule(selected.id)">Create a transformation →</button></div></t>
      </t>
      <t t-elif="state.tab==='storage'">
-      <h4>Where this value is kept</h4><div t-if="selected.storage" class="pbcdesk-evidence"><b t-esc="label(selected.storage.kind)"/><p t-esc="selected.storage.label || selected.storage.key"/></div>
-      <p t-if="selected.is_contract_component">Kept on the contract as <b t-esc="selected.is_text_component ? 'text' : 'an amount'"/>. Import writes it; a later pay run can read it back.</p><p t-elif="!selected.storage">No employee or contract storage selected.</p>
-      <div t-if="props.data.can_edit and selected.type==='input'" class="pbcdesk-stack"><button t-attf-class="pbim-btn {{state.storage==='amount' ? 'primary' : ''}}" t-on-click="() => this.pickStorage('amount')">Keep as amount component</button><button t-attf-class="pbim-btn {{state.storage==='text' ? 'primary' : ''}}" t-on-click="() => this.pickStorage('text')">Keep as text component</button></div>
-      <p t-if="state.storage">Draft choice. Save setup to apply it. Existing source connections are retained.</p><button class="pbim-btn" t-on-click="() => this.open('employee')">Employee &amp; contract mappings ⇆</button>
+      <div class="pbcdesk-sectiontitle"><h4>Contract storage</h4><button t-if="props.data.can_edit and savedStorage" class="pbcdesk-textbtn" t-att-aria-expanded="state.storageEditing ? 'true' : 'false'" t-att-disabled="state.busy" t-on-click="() => this.state.storageEditing=!this.state.storageEditing"><t t-esc="state.storageEditing ? 'Close choices' : 'Change'"/></button></div>
+      <div t-if="savedStorage" class="pbcdesk-storagecard saved">
+       <div class="pbcdesk-storageicon" aria-hidden="true" t-out="icon(savedStorage==='text' ? 'fileText' : 'banknote')"/>
+       <div><span class="pbcdesk-status"><t t-out="icon('checkCircle')"/> Saved on contract</span><strong t-esc="savedStorage==='text' ? 'Text component' : 'Amount component'"/><small t-esc="savedStorage==='text' ? 'Keeps words, codes and other text.' : 'Keeps a number payroll can calculate with.'"/></div>
+      </div>
+      <p t-if="savedStorage" class="pbcdesk-storagehelp">Import writes this value to the contract. A later pay run can read it back.</p>
+      <p t-else="">No contract component storage selected. Choose how to keep this value for later pay runs.</p>
+      <div t-if="props.data.can_edit and (!savedStorage or state.storageEditing)" class="pbcdesk-storagechoices" role="group" aria-label="Contract storage choices">
+       <button t-foreach="['text','amount']" t-as="storageChoice" t-key="storageChoice" t-attf-class="pbcdesk-storagechoice {{savedStorage===storageChoice ? 'current' : ''}} {{state.storage===storageChoice ? 'draft' : ''}}" t-att-disabled="state.busy or savedStorage===storageChoice" t-att-aria-pressed="(state.storage || savedStorage)===storageChoice ? 'true' : 'false'" t-on-click="() => this.pickStorage(storageChoice)">
+        <span class="pbcdesk-choiceicon" aria-hidden="true" t-out="icon(storageChoice==='text' ? 'fileText' : 'banknote')"/><span><strong t-esc="storageChoice==='text' ? 'Text component' : 'Amount component'"/><small t-esc="storageChoice==='text' ? 'Words, grades or reference codes' : 'Salary, allowances or other numbers'"/></span><span class="pbcdesk-choicebadge" t-if="savedStorage===storageChoice">Current</span><span class="pbcdesk-choicebadge" t-elif="state.storage===storageChoice">Draft</span>
+       </button>
+      </div>
+      <div t-if="state.storage" class="pbcdesk-draftnote" role="status"><strong>Unsaved storage change</strong><small>Save setup to switch to <t t-esc="state.storage==='text' ? 'text' : 'amount'"/> storage. Source connections stay in place.</small></div>
+      <div t-if="selected.storage" class="pbcdesk-recordstorage"><small>Linked record field</small><strong t-esc="label(selected.storage.kind)"/><span t-esc="selected.storage.label || selected.storage.key"/></div>
+      <button class="pbcdesk-mappinglink" t-on-click="() => this.open('employee')"><span class="pbcdesk-linkicon" aria-hidden="true" t-out="icon('users')"/><span><strong>Employee &amp; contract mappings</strong><small>View mappings for this component</small></span><span aria-hidden="true" t-out="icon('chevron')"/></button>
      </t>
      <t t-else=""><h4>How payroll reads this value</h4><p>Value type controls display and numeric treatment. Pay role controls how reports count it.</p></t>
      <t t-if="state.tab!=='sources'">
-      <label>Value type<select t-att-value="state.kind" t-on-change="kindChanged" t-att-disabled="!props.data.can_edit"><option t-foreach="props.data.kinds" t-as="k" t-key="k.value" t-att-value="k.value" t-att-selected="state.kind===k.value" t-esc="k.label"/></select></label>
-      <label>Pay role<select t-model="state.role" t-att-disabled="!props.data.can_edit"><option value="">Not assigned</option><option t-foreach="roleOptions" t-as="p" t-key="p.key" t-att-value="p.key" t-esc="p.label"/></select></label>
-      <p>Existing pay runs keep their stored results until recomputed.</p><button t-if="props.data.can_edit" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="saveSetup">Save setup</button><button class="pbim-btn ghost" t-on-click="() => this.open('treatment')">All treatment settings →</button>
+      <div class="pbcdesk-treatment">
+       <h4 t-if="state.tab==='storage'">How payroll reads it</h4>
+       <label>Value type<select t-att-value="state.kind" t-on-change="kindChanged" t-att-disabled="!props.data.can_edit or state.busy"><option t-foreach="props.data.kinds" t-as="k" t-key="k.value" t-att-value="k.value" t-att-selected="state.kind===k.value" t-esc="k.label"/></select></label>
+       <div t-if="storageMismatch" class="pbcdesk-typehint"><strong>Check the value type</strong><small>Contract storage is <t t-esc="(state.storage || savedStorage)==='text' ? 'text' : 'an amount'"/>, while payroll reads this as <t t-esc="kindLabel(state.kind)"/>. Choose a matching value type if this is not intended.</small></div>
+       <label t-if="state.tab==='payroll'">Pay role<select t-model="state.role" t-att-disabled="!props.data.can_edit or state.busy"><option value="">Not assigned</option><option t-foreach="roleOptions" t-as="p" t-key="p.key" t-att-value="p.key" t-esc="p.label"/></select></label>
+       <small>Existing pay runs keep their stored results until recomputed.</small>
+      </div>
+      <div t-if="props.data.can_edit and setupDirty" class="pbcdesk-savebar"><span>Unsaved changes</span><button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="discardSetup">Discard</button><button class="pbim-btn primary" t-att-disabled="state.busy or (state.storage and storageMismatch)" t-on-click="saveSetup">Save setup</button></div>
+      <button class="pbcdesk-textbtn pbcdesk-treatmentlink" t-on-click="() => this.open('treatment')">All treatment settings <span aria-hidden="true">→</span></button>
      </t>
     </div>
    </aside>
