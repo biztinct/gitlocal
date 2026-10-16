@@ -397,3 +397,9 @@ msgstr "Số giờ trung bình"
 #: code:addons/pb_driver_checkin/static/src/js/field_palette.js:0
 msgid "Field"
 msgstr "Hiện trường"
+
+#. module: pb_driver_checkin
+#. odoo-javascript
+#: code:addons/pb_driver_checkin/static/src/js/field_palette.js:0
+msgid "Field check-in map"
+msgstr "Bản đồ chấm công hiện trường"

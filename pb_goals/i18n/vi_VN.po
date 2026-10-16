@@ -135,3 +135,39 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_goals/static/src/js/goals_palette.js:0
 msgid "Goals"
 msgstr "Mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "My goals"
+msgstr "Mục tiêu của tôi"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goal years"
+msgstr "Năm mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goal templates"
+msgstr "Mẫu mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goal check-ins"
+msgstr "Cập nhật mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goal changes"
+msgstr "Thay đổi mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Goal numbers"
+msgstr "Số liệu mục tiêu"

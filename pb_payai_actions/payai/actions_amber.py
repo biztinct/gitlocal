@@ -904,6 +904,15 @@ class RunPayroll(_Amber):
             period = best[3] or period
             who = sorted(people.union(others))
         elif n == 1 and not people and not months:
+            if self._EVERYONE_SAID.match(fold(self._bare(scheme))):
+                # GAPS (FIX-1 later list): "Run June payroll for everyone",
+                # "Chạy lương tháng 6 cho toàn bộ nhân viên" — nobody left
+                # out, which is what no people means (everyone the scheme
+                # covers); never a scheme called "everyone". Only after no
+                # scheme was found by these words (a scheme named "All staff"
+                # keeps its name).
+                texts['scheme'] = ''
+                return texts
             if named or self._ONLY.search(scheme) or self._ONLY_VI.search(scheme):
                 # "Run December payroll for An only", "… for Phong": no
                 # scheme said — somebody's name is.
@@ -929,7 +938,11 @@ class RunPayroll(_Amber):
                 words = _without_month(bare, got[3])
             texts['scheme'] = words
             who = sorted(people.union(k for k in others if k != first))
-        if period and not texts.get('period'):
+        if period and (not texts.get('period') or self._no_month_said(texts['period'])):
+            # GAPS (FIX-1 later list): "Run monthly payroll for next month" —
+            # "monthly" before "payroll" names no month, so the month said
+            # after it is the period (it was dropped, and the plan showed
+            # this month as the default).
             texts['period'] = period
         if who:
             texts['people'] = ', '.join(part(k) for k in who)
@@ -981,6 +994,29 @@ class RunPayroll(_Amber):
         'and', 'or', 'on', 'in', 'under', 'with', 'of', 'at',
         'nguoi', 'cac', 'nhung', 'va', 'hoac', 'nhan', 'vien', 'la'))
     _EVERYONE = frozenset(('everyone', 'all', 'everybody'))
+    #: GAPS: the whole of a "for …" part that means nobody left out (folded).
+    _EVERYONE_SAID = re.compile(
+        r'^(?:everyone|everybody|all|all\s+(?:of\s+)?(?:the\s+)?(?:staff|employees|people|'
+        r'workers|team|company)|every\s+(?:employee|person|one)|'
+        r'the\s+(?:whole|entire)\s+(?:team|company|staff)|'
+        r'toan\s+bo(?:\s+(?:nhan\s+vien|cong\s+ty|moi\s+nguoi))?|'
+        r'tat\s+ca(?:\s+(?:nhan\s+vien|moi\s+nguoi))?|moi\s+nguoi|'
+        r'ca\s+cong\s+ty|toan\s+(?:the\s+nhan\s+vien|cong\s+ty))$')
+
+    def _no_month_said(self, period):
+        """GAPS: True when the period's words name no month — only filler or
+        month-phrase words ("monthly", "my", "the"), no number."""
+        words = (period or '').split()
+        for word in words:
+            # A capital on a little word is a name ("Run the An payroll …"),
+            # unless the word is itself a month-phrase word ("Mid-Month").
+            if word[:1].isupper() and not all(
+                    t in self._MONTH_PHRASE for t in re.findall(r'[a-z]+', fold(word))):
+                return False
+        return bool(words) and not re.search(r'\d', period) \
+            and not any(t in MONTHS for t in re.findall(r'[a-z]+', fold(period))) \
+            and not self._month_in(self._bare(period)) \
+            and all(self._month_phrase_word(w) for w in words)
 
     def _status_words(self, text):
         return [w for w in tokens(self._bare(text or '')) if w not in self._STATUS_FILLER]

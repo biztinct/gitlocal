@@ -22,3 +22,45 @@ msgstr "Thông báo"
 #: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
 msgid "Announcements"
 msgstr "Thông báo"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Who looks after them"
+msgstr "Người phụ trách"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Write an announcement"
+msgstr "Viết thông báo"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Announcement templates"
+msgstr "Mẫu thông báo"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Birthdays and anniversaries this week"
+msgstr "Sinh nhật và ngày kỷ niệm tuần này"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "On the announcements calendar"
+msgstr "Trên lịch thông báo"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Announcements I look after"
+msgstr "Thông báo tôi phụ trách"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Your own"
+msgstr "Của riêng bạn"

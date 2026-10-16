@@ -222,3 +222,21 @@ msgstr "Không đạt"
 #: code:addons/pb_pip/static/src/xml/pip_request.xml:58
 msgid "Ask HR about someone in your team"
 msgstr "Hỏi nhân sự về một người trong nhóm của bạn"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Ask HR about someone in my team"
+msgstr "Hỏi bộ phận nhân sự về một người trong nhóm của tôi"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "All growth plans"
+msgstr "Tất cả kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Growth plan templates"
+msgstr "Mẫu kế hoạch phát triển"

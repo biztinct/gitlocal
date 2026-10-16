@@ -91,6 +91,13 @@ class PayrollAIConversation(models.Model):
                 # lesson); never a permission, never a destination.
                 'kind': row.get('kind') if row.get('kind') in DOOR_KINDS else '',
             }
+            # GAPS (4b): the row's words as written in the code (English),
+            # so the door can be shown in the reader's language — display
+            # only, never matched as a permission or a destination.
+            for key in ('label', 'sublabel'):
+                src = _clean_str(row.get('%s_src' % key))
+                if src and src != entry[key]:
+                    entry['%s_src' % key] = src
             if target:
                 entry['target'] = target
             clean.append(entry)

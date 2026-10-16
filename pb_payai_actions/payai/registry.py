@@ -525,6 +525,15 @@ def _tail_start(text, cut):
     return cut
 
 
+#: GAPS (3): "what is / what's the status (state, progress) of <a pay run>"
+#: — never about a screen or a file (those are where-is questions).
+_STATUS_OF_RUN = re.compile(
+    r"^\s*what(?:'s|’s|s|\s+is)\s+(?:the\s+)?(?:current\s+|latest\s+)?"
+    r"(?:status|state|progress)\s+(?:of|on|for)\s+"
+    r"(?!.*\b(?:board|screen|page|tab|list|excel|spreadsheet|report|file|menu|button)\b)"
+    r".*\b(?:pay\s*runs?|runs?|payrolls?)\b", re.I)
+
+
 def _asks_how_or_why(message):
     """A how/why/what-is question, by its opening (or, in Vietnamese, a
     "là gì / như thế nào / tại sao" before any reason)."""
@@ -533,6 +542,10 @@ def _asks_how_or_why(message):
         return False
     # "How is the June run doing?" asks for a status, not an explanation.
     if re.match(r'^\s*how\s+is\s+(?:the\s+)?.*\b(?:run|payroll)\b', text, re.I):
+        return False
+    # GAPS (3): "What is the status of June 2026 payroll?" — the same: a
+    # run's status, answered by the look that shows it (nothing to confirm).
+    if _STATUS_OF_RUN.match(text):
         return False
     folded = strip_marks(text).lower()
     if _QUESTION_VI.match(folded):

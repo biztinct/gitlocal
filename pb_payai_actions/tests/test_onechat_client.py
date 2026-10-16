@@ -40,6 +40,11 @@ class TestOneChatClient(TransactionCase):
         follows the text, the brand filter, no figures or amounts read)."""
         self._run_suite('onechat_oc3.test.mjs')
 
+    def test_03_door_words_travel_with_the_rows(self):
+        """GAPS (4b) — each ⌘K row is registered with the words under its
+        translation, so a door reads in the reader's language."""
+        self._run_suite('gaps_doors.test.mjs')
+
     def _run_suite(self, name):
         node = shutil.which('node')
         if not node:

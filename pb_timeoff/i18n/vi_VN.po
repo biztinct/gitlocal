@@ -435,3 +435,15 @@ msgstr "Đang chờ duyệt"
 #: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
 msgid "Holidays"
 msgstr "Ngày lễ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
+msgid "Public holidays"
+msgstr "Ngày lễ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
+msgid "Carry-forward watch"
+msgstr "Theo dõi phép chuyển sang"

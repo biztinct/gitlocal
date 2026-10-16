@@ -92,7 +92,8 @@ PHRASES_VI = {
         r'^(?!(?:phê\s+duyệt|duyệt|chạy|tính|gửi|trình|nộp|trả|từ\s+chối|xoá|xóa|huỷ|hủy|'
         r'tạo|lập|làm|tải|xuất)\b)'
         r'(?P<run>.*\b(?:bảng|đợt|kỳ)\s+lương\b.*?)\s+(?:đang\s+)?(?:ở\s+đâu|thế\s+nào|'
-        r'ra\s+sao|tới\s+đâu|đến\s+đâu|sao\s+rồi)' + _ASK_SOFT + r'$',
+        # GAPS (3): "… đến đâu rồi" (how far has it got?) as well.
+        r'ra\s+sao|(?:tới|đến)\s+đâu(?:\s+rồi)?|đâu\s+rồi|sao\s+rồi)' + _ASK_SOFT + r'$',
     ),
     'download_run_excel': (
         r'^(?:tải|xuất|lấy|gửi\s+(?:tôi|mình|em))\s+(?:về\s+)?(?:file\s+|tệp\s+)?'

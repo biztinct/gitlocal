@@ -391,3 +391,27 @@ msgstr "Phê duyệt"
 #: code:addons/pb_probation/static/src/js/probation_board.js:0
 msgid "Outcome"
 msgstr "Kết quả"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Probation reviews"
+msgstr "Đánh giá thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Training courses"
+msgstr "Khoá đào tạo"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Who has done what"
+msgstr "Ai đã hoàn thành gì"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Probation policies"
+msgstr "Chính sách thử việc"

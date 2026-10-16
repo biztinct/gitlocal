@@ -183,6 +183,25 @@ class LearnHelper(models.AbstractModel):
             return None
         return self._out('payai', 'command', extra_chips=self._explain_chip(text, probe))
 
+    #: GAPS (3): the one look a status QUESTION may reach through the router.
+    #: It changes nothing and has nothing to confirm (tier 'look').
+    STATUS_ACTION = 'run_status'
+
+    @api.model
+    def _route_status(self, text):
+        """Step 11b: a question about where a pay run stands ("what is the
+        status of June 2026 payroll", "bảng lương tháng 6 sao rồi") goes to
+        PayAI's command path — sent WITHOUT `ask_only` — when "PayAI may
+        look" is on and the phrase table reads it as the run-status look.
+        Any other key (a plan, a decision, a refusal) is not this step's."""
+        if not self._can_act():
+            return None
+        key = self._command_key(text)
+        action = ACTIONS.get(key) if key else None
+        if key != self.STATUS_ACTION or action is None or action.tier != 'look':
+            return None
+        return self._out('payai', 'command')
+
     @api.model
     def _explain_chip(self, text, probe=None):
         """"Explain how instead" — offered when the guide teaches this very

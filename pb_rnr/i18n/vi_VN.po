@@ -135,3 +135,33 @@ msgstr "Bảng vinh danh"
 #: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
 msgid "Praise"
 msgstr "Khen ngợi"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "The recognition wall"
+msgstr "Bảng ghi nhận"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Company values"
+msgstr "Giá trị công ty"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Recognition"
+msgstr "Ghi nhận"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Recognition quarters"
+msgstr "Các quý ghi nhận"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "My praise"
+msgstr "Lời khen của tôi"
