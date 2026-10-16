@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE ONE CATALOGUE ROW THIS MODULE OWNS (ledger E3).
+
+         Every row in the approval catalogue is created by the module that
+         owns the business object (pb_training's precedent, AM52), so the
+         catalogue never claims something is wired up when it is not.
+         `noupdate="1"` so a business that reworded it keeps its wording.
+         Money leaves the company, so a one-person route asks the publisher
+         to confirm it.
+         ================================================================== -->
+    <record id="process_expense" model="biz.approval.process">
+        <field name="key">expense</field>
+        <field name="name">Expense claims</field>
+        <field name="area">money</field>
+        <field name="money" eval="True"/>
+        <field name="model_name">pb.expense.claim</field>
+        <field name="description">Paying somebody back for what they paid for themselves: the receipts, what they were for and the total.</field>
+        <field name="sequence">185</field>
+    </record>
+
+</odoo>
