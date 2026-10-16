@@ -61,9 +61,9 @@ class PayrollInputReview(models.AbstractModel):
                 source, detail = 'system', _('Saved monthly inputs')
                 if c.get('readonly'):
                     value = records[emp.id].get(c.get('record_id'))
-                    fid = c.get('record_id') or ''
-                    card = cards.get(fid, {})
-                    origin = _('Contract record') if fid.startswith(('f:hr.contract:', 'c:')) else _('Employee record') if fid.startswith('f:hr.employee:') else _('Bank account record') if fid.startswith('b:') else _('Saved record')
+                    record_fid = c.get('record_id') or ''
+                    card = cards.get(record_fid, {})
+                    origin = _('Contract record') if record_fid.startswith(('f:hr.contract:', 'c:')) else _('Employee record') if record_fid.startswith('f:hr.employee:') else _('Bank account record') if record_fid.startswith('b:') else _('Saved record')
                     detail = '%s · %s' % (origin, card.get('label') or c['label'])
                     if fid in overrides:
                         value, source, detail = overrides[fid], 'edited', _('Saved edit for this month only')
