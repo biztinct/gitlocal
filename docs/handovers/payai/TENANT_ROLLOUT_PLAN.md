@@ -307,3 +307,17 @@ Verify:
 ## 8. Size
 No code. About half a day of engineering time: copy + tests + walk 2–3 h; template install 20–30 min; Rize install +
 checks 30–45 min; owner browser check 10 min. Each switch flip later: 1 minute in Settings, then a one-week watch.
+
+## STATUS 2026-10-16 13:12 Sydney — DONE (owner decisions via cards)
+Owner chose: template + Rize; install directly (no rehearsal copy); ChatGPT ON for Rize (owner/admin must paste the
+key into Rize's PayAI config — Claude may not enter API keys; until then the phrase table only); abm housekeeping YES;
+Rize switches: "may look" only; install as soon as the server was free.
+Waited for another assistant's payobook/rize upgrade (server down ~12:30–13:08; Rize jobs were temporarily 0 during it,
+back to 69 after). Unit payai-tenant-ship: backups /tmp/pre_payai_tenant_{rize,payobook_template,abm}_*.dump;
+`-i pb_payai_actions` on payobook_template + rize EXIT=0, 0 log errors; pb_payai_actions 19.0.4.2.0 installed on both;
+switches rize look=on prepare/decide/voice=off, template all off; jobs rize 69→69, template 0→0; abm payroll_ai_config
+is_active→false (0 active), user look.p4@payobook.com (id 265) inactive; asset purge + version bump ×4; sites 200.
+Server-side check on Rize as ash (rolled back): run card for "where is the October India run" ✓; prepare → "PayAI can
+look, but is not allowed to do this here yet" ✓; access → never card ✓; "what can you do" ✓. "open the pay runs board"
+needs the browser's screen list (shell has none) — check in the browser. Browser check on rize.payobook.com still to do
+in the owner's signed-in session.
