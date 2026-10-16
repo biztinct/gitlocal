@@ -16,8 +16,11 @@ demo database) first and check it there. The other databases (`rize`,
 - Batch recipe: the "normal" tier in the repo CLAUDE.md deploy contract,
   `-u <modules>` on each remaining database one at a time, asset purge +
   `web.assets.version` bump on each, then `deploy_status.py` must say nothing
-  is pending. abm is retired: its upgrade turns its scheduled jobs back on —
-  switch them off again after (see memory `abm-tenant-retired`).
+  is pending. abm is retired and payobook_template is a template: an upgrade
+  turns their scheduled jobs back on (their cron XML is not noupdate) — switch
+  them off again after, on BOTH (abm: memory `abm-tenant-retired`;
+  payobook_template: all crons off by design, pb_tenants switches the listed
+  ones on for each new clone — `pb_tenants.template_active_crons`).
 
 The formerly frozen T3a/T3b/T3c entries are deployed on all five databases,
 verified on 16 October 2026. The owner-approved demo account migration is also

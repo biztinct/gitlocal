@@ -32,6 +32,7 @@ Phased workflow; all three pieces in release 1; keep "no approval needed" for tr
   never the attendance packet).
 - Demo data: ess2.demo has an attendance open since ~59 days ("Clocked in since 08:02 · 1415 h"); ess demo
   employees' managers have no logins, so expense claims block at the manager step until HR sets one.
-- payobook_template: all 76 scheduled jobs are OFF since an unknown session's run at 00:06 UTC (ledger E34);
-  raised with the owner, not changed.
+- payobook_template: all scheduled jobs OFF is by design (pb_tenants switches the listed ones on per new
+  clone); the ETP batch re-activated 15, switched off again by gitlocal-bb the same day (ledger E34). Rule: after
+  any `-u` on payobook_template, crons off again, like abm.
 - Expenses in days-unit companies, mileage, foreign currency, OCR: non-goals (E1_HANDOVER).
