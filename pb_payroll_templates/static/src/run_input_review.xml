@@ -47,7 +47,7 @@
                                             <b t-else="" class="pir-used" t-esc="value(cell.value)"/>
                                             <small t-if="col.mapped">On record: <t t-esc="cell.old_label || value(cell.old)"/></small>
                                             <small t-if="cell.context_only">Workbook context · not used in the pay calculation.</small>
-                                            <small t-if="cell.ignored">Workbook: <t t-esc="value(cell.supplied)"/> · a higher-priority payroll source was used.</small>
+                                            <small t-if="cell.ignored">Workbook: <t t-esc="value(cell.supplied)"/> · payroll used the value shown above.</small>
                                             <small t-if="cell.payroll_changed">Payroll inputs changed after this snapshot. Inspect the current payslip before deciding in Records Desk.</small>
                                             <small t-if="cell.not_computed">This row has no computed payslip yet. Complete pay-data approval and computation before making a record decision.</small>
                                             <span class="pir-status" t-esc="status(cell)"/>
