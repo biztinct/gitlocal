@@ -198,6 +198,10 @@ class PayrollTemplates(models.AbstractModel):
                 'state': cfg.state,
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'record_columns': len(cards), 'fields': catalog,
+                'calculated_fields': [{'id': r.id, 'label': r.name or r.code,
+                                       'code': r.code, 'column': r.column_letter,
+                                       'formula': r.excel_formula or ''}
+                                      for r in cfg.rule_ids if r.column_type != 'input'],
                 'layout': self._layout(cfg, catalog),
                 'can_layout': self.env.user.has_group('base.group_system') or self.env.user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
                 'can_export': desk._may_export(),
@@ -267,13 +271,15 @@ class PayrollTemplates(models.AbstractModel):
                        for fid, c in cards.items()} for e in people}
 
     @api.model
-    def download(self, config_id, period, mode='monthly'):
+    def download(self, config_id, period='', mode='monthly'):
         cfg = self._config(config_id)
         desk = self.env['pb.records.desk']
         if not desk._may_export():
             raise AccessError(_('You need the Records export ability to download payroll workbooks.'))
-        if mode not in ('records', 'monthly'):
+        if mode not in ('records', 'monthly', 'template'):
             raise UserError(_('Choose an employee or monthly workbook.'))
+        reusable = mode == 'template'
+        period = period or fields.Date.context_today(self).strftime('%Y-%m')
         people = self._roster(cfg, period)
         codes = [self._code(e) for e in people]
         if any(not c for c in codes) or len(set(codes)) != len(codes):
@@ -282,11 +288,11 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         catalog = self._catalog(cfg)
         layout = self._layout(cfg, catalog)
-        monthly = self._current(cfg, period, people)
+        monthly = {e.id: {} for e in people} if reusable else self._current(cfg, period, people)
         by_id = {c['id']: c for c in catalog}
         ordered_cards = sorted(cards.items(), key=lambda pair: pair[0] != 'f:hr.employee:name')
         columns = {'Employee records': [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable')} for fid, c in ordered_cards]} if mode == 'records' else {TABS[k]: [by_id[i] for i in layout[k]] for k in TABS}
-        snapshot = {'mode': mode, 'period': period, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'employees': {}}
+        snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'employees': {}}
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
@@ -315,7 +321,7 @@ class PayrollTemplates(models.AbstractModel):
                 values = records[e.id] if mode == 'records' else monthly[e.id]
                 vals = []
                 for c in cols:
-                    value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode == 'monthly' else values.get(c['id'])
+                    value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode != 'records' else values.get(c['id'])
                     if mode == 'monthly' and value is None and not c.get('readonly') and re.search(r'standard.*days|standard working days', c['label'], re.I):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
@@ -344,11 +350,11 @@ class PayrollTemplates(models.AbstractModel):
         meta = wb.create_sheet('_Payobook')
         meta.append(['reference', exchange.token])
         meta.append(['configuration', cfg.name])
-        meta.append(['pay month', period])
+        meta.append(['pay month', '' if reusable else period])
         meta.sheet_state = 'veryHidden'
         out = io.BytesIO()
         wb.save(out)
-        filename = 'Payobook_%s_%s_%s.xlsx' % (cfg.country_code, mode, period)
+        filename = 'Payobook_%s_monthly_template.xlsx' % cfg.country_code if reusable else 'Payobook_%s_%s_%s.xlsx' % (cfg.country_code, mode, period)
         return {'ok': True, 'filename': filename, 'file_b64': base64.b64encode(out.getvalue()).decode(), 'rows': len(people)}
 
     def _read(self, file_b64):
@@ -389,7 +395,7 @@ class PayrollTemplates(models.AbstractModel):
         if '_Payobook' not in wb:
             raise UserError(_('Use a workbook downloaded from Payroll templates. Other records files can be imported in Records Desk.'))
         snapshot = self._get_exchange(cfg, wb['_Payobook']['B1'].value, 'export').payload
-        if mode != snapshot['mode'] or (mode == 'monthly' and period != snapshot['period']):
+        if mode != snapshot['mode'] or (mode == 'monthly' and not snapshot.get('reusable') and period != snapshot['period']):
             raise UserError(_('This workbook belongs to a different workflow or pay month. Download the selected month and try again.'))
         catalog = self._catalog(cfg)
         layout = self._layout(cfg, catalog)
@@ -454,6 +460,11 @@ class PayrollTemplates(models.AbstractModel):
                         continue
                     current = records[eid].get(c['id']) if mode == 'records' else monthly[eid].get(c['id'])
                     previous = old['records'].get(c['id']) if mode == 'records' else old['monthly'].get(c['id'])
+                    if mode == 'monthly' and snapshot.get('reusable'):
+                        # A reusable blank template has no period snapshot.
+                        # Review against the chosen period; confirm() still
+                        # refuses concurrent changes after this review.
+                        previous = current
                     if c.get('readonly') and mode == 'monthly':
                         previous = old['records'].get(c.get('record_id'))
                         current = records[eid].get(c.get('record_id'))
@@ -639,7 +650,7 @@ class TemplatePayrun(models.AbstractModel):
             self._require_runner()
             facade = self.env['pb.payroll.templates']
             cfg = facade._config(vals.get('formula_config_id'), write=True)
-            catalog = facade._catalog(cfg)
+            catalog = [c for c in facade._catalog(cfg) if not c.get('readonly')]
             return {'wanted': bool(catalog), 'config_id': cfg.id, 'config_name': cfg.name,
                     'components': [{'code': c['code'], 'name': c['label'], 'key': c['source_keys'][0]} for c in catalog if c['source_keys']],
                     'choices': [], 'lanes': self._payrun_lanes(vals)}

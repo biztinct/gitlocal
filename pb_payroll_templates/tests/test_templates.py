@@ -235,6 +235,44 @@ class TestPayrollTemplates(TransactionCase):
         d=self.api.workspace(self.cfg.id,'2026-10')
         self.assertIn('rule:%s'%self.paid.id,d['layout']['time'])
 
+    def test_reusable_template_is_blank_and_imports_into_chosen_month(self):
+        self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
+            'company_id':self.env.company.id,'employee_id':self.emp.id,'period':'2026-10',
+            'payload':{'rule:%s'%self.bonus.id:99}})
+        wb=self.export('template')
+        self.assertIsNone(wb['_Payobook']['B3'].value)
+        bonus_col=[c.value for c in wb['Monthly adjustments'][1]].index('Monthly bonus')+1
+        self.assertIsNone(wb['Monthly adjustments'].cell(2,bonus_col).value)
+        self.set_value(wb,'Monthly adjustments','Monthly bonus',25)
+        for period in ('2026-10','2026-11'):
+            review=self.review(wb,period=period)
+            self.assertFalse(review['issues'])
+            self.apply(review)
+            self.assertEqual(self.api._current(self.cfg,period,self.emp)[self.emp.id]['rule:%s'%self.bonus.id],25)
+
+    def test_reusable_template_still_guards_changes_after_review(self):
+        wb=self.export('template');self.set_value(wb,'Monthly adjustments','Monthly bonus',25)
+        review=self.review(wb,period='2026-11')
+        self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
+            'company_id':self.env.company.id,'employee_id':self.emp.id,'period':'2026-11',
+            'payload':{'rule:%s'%self.bonus.id:30}})
+        with self.assertRaisesRegex(UserError,'changed after review'):
+            self.apply(review)
+
+    def test_calculated_fields_are_reference_only_and_cannot_enter_layout(self):
+        computed=self.env['hr.formula.rule'].create({'config_id':self.cfg.id,
+            'name':'Chênh lệch thuế TNCN 2 (PIT gap 2)','code':'WBPITGAP',
+            'column_type':'formula','excel_formula':'=1+1','value_kind':'money'})
+        d=self.api.workspace(self.cfg.id,'2026-10')
+        self.assertIn(computed.id,[f['id'] for f in d['calculated_fields']])
+        self.assertNotIn('rule:%s'%computed.id,[f['id'] for f in d['fields']])
+        for mode in ('monthly','template'):
+            wb=self.export(mode)
+            for sheet in ('Time','Monthly adjustments'):
+                self.assertNotIn(computed.name,[c.value for c in wb[sheet][1]])
+        d['layout']['adjustments'].append('rule:%s'%computed.id)
+        with self.assertRaises(UserError):self.api.save_layout(self.cfg.id,d['layout'])
+
     def test_monthly_zero_cannot_fall_back_to_old_record(self):
         self.map_field(self.bonus,'hr.contract','wage')
         self.cfg.source_priority='records,excel,api'

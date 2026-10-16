@@ -19,6 +19,7 @@ const fileData = f => new Promise((resolve, reject) => {
 });
 const month = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
 const message = e => e?.data?.message || e?.message || 'Please try again.';
+const searchText = value => String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
 export function moveField(layout, id, lane, before='') {
     const next=JSON.parse(JSON.stringify(layout));
     for(const key of Object.keys(next)) next[key]=next[key].filter(i=>i!==id);
@@ -58,7 +59,7 @@ export class PayrollTemplates extends Component {
     setup(){
         this.orm=useService('orm');this.action=useService('action');this.dialog=useService('dialog');this.notif=useService('notification');
         const ctx=this.props.action?.context||{};
-        this.state=useState({busy:false,error:'',data:null,screen:'downloads',period:ctx.templates_period||month(),configId:ctx.templates_config_id||0,layout:{time:[],adjustments:[],available:[]},dirty:false,menu:'',query:'',preview:'time'});
+        this.state=useState({busy:false,error:'',data:null,screen:'downloads',period:ctx.templates_period||month(),configId:ctx.templates_config_id||0,layout:{time:[],adjustments:[],available:[]},dirty:false,menu:'',query:'',showCalculated:false,preview:'time'});
         this.dragged='';
         this.fileRef=useRef('file');
         onWillStart(()=>this.load());
@@ -75,7 +76,9 @@ export class PayrollTemplates extends Component {
     }
     get config(){return this.state.data?.configs.find(c=>c.id===Number(this.state.configId))||{};}
     get fields(){return Object.fromEntries((this.state.data?.fields||[]).map(f=>[f.id,f]));}
-    fieldsIn(lane){return (this.state.layout[lane]||[]).map(i=>this.fields[i]).filter(f=>f && (lane!=='available'||`${f.label} ${f.code}`.toLowerCase().includes(this.state.query.toLowerCase())));}
+    matches(f){return searchText(`${f.label} ${f.code}`).includes(searchText(this.state.query));}
+    fieldsIn(lane){return (this.state.layout[lane]||[]).map(i=>this.fields[i]).filter(f=>f && this.matches(f));}
+    get calculatedFields(){return (this.state.data?.calculated_fields||[]).filter(f=>this.matches(f));}
     get monthlyCount(){return this.state.layout.time.length+this.state.layout.adjustments.length;}
     unit(f){
         if(/hours?|\bhrs?\b|giờ/i.test(f.label))return 'Hours';
@@ -83,11 +86,10 @@ export class PayrollTemplates extends Component {
         return {money:this.state.data.currency,quantity:'Quantity',integer:'Whole number',decimal:'Number',rate:'%',text:'Text',identifier:'Reference',date:'Date',boolean:'Yes / No'}[f.kind]||'';
     }
     async changeConfig(ev){this.state.configId=Number(ev.target.value);await this.load();}
-    async changeMonth(ev){this.state.period=ev.target.value;await this.load();}
     show(screen){this.state.screen=screen;this.state.menu='';}
     async download(mode){
         if(this.state.busy)return;this.state.busy=true;this.state.error='';
-        try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.state.configId,this.state.period,mode]));this.notif.add('Workbook downloaded with the latest saved data.',{type:'success'});}
+        try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.state.configId,mode==='template'?'':this.state.period,mode]));this.notif.add(mode==='template'?'Reusable template downloaded. Choose its pay month when uploading in Pay Run.':'Workbook downloaded with the latest saved records.',{type:'success'});}
         catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
     }
     choose(mode){this.importMode=mode;this.fileRef.el.click();}
@@ -115,8 +117,7 @@ export class PayrollTemplates extends Component {
     openConfigurations(){return this.action.doAction('pb_formula_studio.action_pb_formula_studio');}
     openPayRun(){
         if(this.state.data.state!=='active'||!this.state.data.people){this.notif.add('Activate this configuration and assign employees before starting a pay run.',{type:'warning'});return;}
-        const [y,m]=this.state.period.split('-').map(Number),last=new Date(y,m,0).getDate();
-        return this.action.doAction('pb_payrun_wizard.action_pb_payrun_wizard',{additionalContext:{pb_payai_prefill:{from_templates:true,formula_config_id:this.state.configId,date_start:`${this.state.period}-01`,date_end:`${this.state.period}-${last}`}}});
+        return this.action.doAction('pb_payrun_wizard.action_pb_payrun_wizard',{additionalContext:{pb_payai_prefill:{from_templates:true,formula_config_id:this.state.configId}}});
     }
 }
 registry.category('actions').add('pb_payroll_templates',PayrollTemplates);
@@ -128,6 +129,14 @@ patch(PbFormulaStudio.prototype,{
 });
 
 patch(PayrunWizard.prototype,{
+    clearSheetFile(){
+        super.clearSheetFile();
+        this.state.sheet.templateFile=false;
+    },
+    onField(field,ev){
+        super.onField(field,ev);
+        if(field==='date_start'||field==='date_end')this.clearSheetFile();
+    },
     async _refreshGate(clearFile){
         if(!this.state.form.templates_monthly)return super._refreshGate(clearFile);
         try{
@@ -139,8 +148,10 @@ patch(PayrunWizard.prototype,{
         if(!pre.from_templates)return super._applyPrefill(pre);
         this.state.form.templates_monthly=true;
         this.state.form.division=null;
-        this.state.form.date_start=pre.date_start;this.state.form.date_end=pre.date_end;
+        if(pre.date_start)this.state.form.date_start=pre.date_start;
+        if(pre.date_end)this.state.form.date_end=pre.date_end;
         const card=this.schemeCards.find(c=>c.id===pre.formula_config_id);if(card)this.pickScheme(card);
+        this.clearSheetFile();
     },
     openPayrollTemplates(){
         return this.action.doAction('pb_payroll_templates.action_templates',{additionalContext:{templates_config_id:this.sheetConfigId,templates_period:this.state.form.date_start?.slice(0,7)||month()}});
@@ -150,7 +161,9 @@ patch(PayrunWizard.prototype,{
         catch(e){this.notif.add(message(e),{type:'danger'});}
     },
     async _takeFile(f){
-        if(!f||!f.name.toLowerCase().endsWith('.xlsx'))return super._takeFile(f);
+        if(!f)return;
+        this.clearSheetFile();
+        if(!f.name.toLowerCase().endsWith('.xlsx'))return super._takeFile(f);
         if(f.size>10*1024*1024){this.state.sheet.error='Choose a workbook under 10 MB.';return;}
         const b64=await fileData(f);
         let isTemplate=false;
@@ -158,10 +171,12 @@ patch(PayrunWizard.prototype,{
         if(!isTemplate){this.state.sheet.templateFile=false;return super._takeFile(f);}
         this.state.sheet.checking=true;this.state.sheet.error='';
         try{
-            const data=await this.orm.call('pb.payroll.templates','review',[this.sheetConfigId,this.state.form.date_start.slice(0,7),'monthly',b64,f.name]);
+            const configId=this.sheetConfigId,period=this.state.form.date_start.slice(0,7);
+            const data=await this.orm.call('pb.payroll.templates','review',[configId,period,'monthly',b64,f.name]);
             this.dialog.add(WorkbookReview,{data,configId:this.sheetConfigId,onApplied:async()=>{
-                const result=await this.orm.call('pb.payrun.wizard','template_month_file',[this.sheetConfigId,this.state.form.date_start.slice(0,7)]);
-                Object.assign(this.state.sheet,{file_b64:result.file_b64,file_name:result.filename,templateFile:true,mode:'once',skipped:false,error:'',preflight:{ok:true,columns:data.changes.length,total:0,fed:[],fed_rows:[],missing:[],employees_col:true}});
+                if(configId!==this.sheetConfigId||period!==this.state.form.date_start.slice(0,7))return;
+                const result=await this.orm.call('pb.payrun.wizard','template_month_file',[configId,period]);
+                Object.assign(this.state.sheet,{file_b64:result.file_b64,file_name:result.filename,uploadedName:f.name,templateFile:true,mode:'once',skipped:false,error:'',preflight:{ok:true,columns:data.changes.length,total:0,fed:[],fed_rows:[],missing:[],employees_col:true}});
             }});
         }catch(e){this.state.sheet.error=message(e);}finally{this.state.sheet.checking=false;}
     },

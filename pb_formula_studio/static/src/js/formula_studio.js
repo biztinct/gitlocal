@@ -145,6 +145,7 @@ export class PbFormulaStudio extends Component {
             // Command Center — visual tool launcher ("Tools" button / ⌘K)
             cmdOpen: false, cmdQuery: "", cmdActive: 0,
             components: [],
+            componentQuery: "",
             samples: [],
             scenarios: [],              // F14 — what-if overlays per component
             preview: { sample_id: false, values: {} },
@@ -1486,6 +1487,23 @@ export class PbFormulaStudio extends Component {
     }
     groupItems(g) { return this.state.components.filter(c => c.group === g); }
     get visibleGroups() { return GROUPS.filter(g => this.groupItems(g).length); }
+    get componentSearch() { return (this.state.componentQuery || "").trim(); }
+    outlineGroupItems(group) {
+        const normalize = value => String(value || "").normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase();
+        const words = normalize(this.componentSearch).split(/\s+/).filter(Boolean);
+        return this.groupItems(group).filter(c => {
+            const text = normalize(`${c.name} ${c.code} ${c.col}`);
+            return words.every(word => text.includes(word));
+        });
+    }
+    get outlineGroups() {
+        const groups = this.componentSearch || this.lensAll ? this.visibleGroups : this.payrollGroups;
+        return groups.filter(group => this.outlineGroupItems(group).length);
+    }
+    get outlineMatchCount() { return this.outlineGroups.reduce((n, group) => n + this.outlineGroupItems(group).length, 0); }
+    clearComponentSearch() { this.state.componentQuery = ""; }
+    onComponentSearchKey(ev) { if (ev.key === "Escape") { this.clearComponentSearch(); ev.stopPropagation(); } }
 
     // ==== COLROLES P2 — the lens =============================================
     // Two lenses over the SAME loaded payload (no reload, no RPC): 'payroll'

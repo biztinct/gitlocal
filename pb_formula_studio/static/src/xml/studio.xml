@@ -885,12 +885,17 @@
                 <button t-att-class="focusRelated ? 'on' : ''" t-on-click="() => this.setFocus('related')">Related</button>
               </div>
             </div>
+            <div class="ol-search">
+              <input type="search" aria-label="Search components" placeholder="Search name, code or column…" t-model="state.componentQuery" t-on-keydown="onComponentSearchKey"/>
+              <button t-if="componentSearch" class="ol-act" aria-label="Clear component search" t-on-click="clearComponentSearch">×</button>
             </div>
-            <t t-foreach="lensAll ? visibleGroups : payrollGroups" t-as="grp" t-key="grp">
-              <t t-set="grpItems" t-value="groupItems(grp)"/>
-              <div t-if="!focusRelated or hiddenCount(grpItems, rel) !== grpItems.length or state.focusMore.ol" class="ol-grp" t-esc="grp"/>
+            <div t-if="componentSearch" class="ol-search-status" role="status"><t t-esc="outlineMatchCount"/> matching component<t t-if="outlineMatchCount !== 1">s</t> · All fields</div>
+            </div>
+            <t t-foreach="outlineGroups" t-as="grp" t-key="grp">
+              <t t-set="grpItems" t-value="outlineGroupItems(grp)"/>
+              <div t-if="componentSearch or !focusRelated or hiddenCount(grpItems, rel) !== grpItems.length or state.focusMore.ol" class="ol-grp" t-esc="grp"/>
               <div t-foreach="grpItems" t-as="c" t-key="c.id"
-                   t-if="rowShown(c, rel, 'ol')"
+                   t-if="componentSearch or rowShown(c, rel, 'ol')"
                    t-att-data-col="c.col"
                    t-attf-class="ol-item {{ rowRel(c, rel) }} {{ isCycleMember(c.col) ? 'cyc-hi' : '' }}"
                    t-on-click="() => this.selectComponent(c.id)">
@@ -910,13 +915,13 @@
             </t>
             <!-- "Related" fold-out: the rows this view is hiding, never dropped -->
             <t t-set="olHidden" t-value="hiddenCount(outlineItems, rel)"/>
-            <button t-if="olHidden" t-attf-class="ol-more {{ state.focusMore.ol ? 'open' : '' }}" t-on-click="() => this.toggleFocusMore('ol')">
+            <button t-if="!componentSearch and olHidden" t-attf-class="ol-more {{ state.focusMore.ol ? 'open' : '' }}" t-on-click="() => this.toggleFocusMore('ol')">
               <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               <span class="t"><t t-if="state.focusMore.ol">Hide the other</t><t t-else="">Show the other</t> <b t-esc="olHidden"/> <t t-if="olHidden === 1">component</t><t t-else="">components</t></span>
             </button>
             <!-- Payroll lens: everything that is not pay collapses to ONE quiet row.
                  It is never dropped — the count says exactly how much is tucked away. -->
-            <t t-if="!lensAll and peopleCount">
+            <t t-if="!componentSearch and !lensAll and peopleCount">
               <button t-attf-class="ol-people {{ state.peopleOpen ? 'open' : '' }}" t-on-click="togglePeople">
                 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 <svg class="ppl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
