@@ -33,6 +33,7 @@
                             </select>
                             <button type="button" class="btn btn-link" t-on-click="load" t-att-disabled="state.busy">Refresh</button>
                             <button type="button" class="btn btn-light" t-on-click="download" t-att-disabled="state.busy">Download Excel review</button>
+                            <button type="button" class="btn btn-link" t-on-click="openRecords" t-att-disabled="state.busy">Open Records Desk</button>
                         </div>
                         <div class="pir-legend"><span class="changed">Changed mapped field</span><span class="excel">Excel only</span><span class="saved">Saved for future</span><span>Unchanged values stay neutral · each cell includes its status</span></div>
                         <p class="pir-caption"><t t-esc="sheet.filename"/> · <t t-if="sheet.historical">Historical payroll: “On record” means the value at first review. An original before-value was not captured.</t><t t-else="">“On record” is the value captured before this file was computed.</t></p>

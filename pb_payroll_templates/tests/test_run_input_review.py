@@ -148,11 +148,17 @@ class TestRunInputReview(TransactionCase):
 
     def test_export_has_colors_comments_and_literal_text(self):
         sheet = self.make_review()
+        snapshot = self.env['pb.payroll.run.input.review'].sudo().browse(sheet['id'])
+        data = dict(snapshot.payload)
+        data['rows'][0]['name'] = '=1+1'
+        snapshot.payload = data
         exported = self.api.export_run_input_changes(self.run.id, sheet['id'])
         wb = openpyxl.load_workbook(io.BytesIO(base64.b64decode(exported['file_b64'])))
         self.assertEqual(wb.active.freeze_panes, 'C2')
         self.assertEqual(wb.active['C2'].fill.fgColor.rgb, '00F3EDFF')
-        self.assertIn('1000', wb.active['C2'].comment.text)
+        self.assertIn('1000', wb.active['C2'].comment.text.replace(',', ''))
+        self.assertEqual(wb.active['B2'].data_type, 's')
+        self.assertEqual(wb.active['B2'].value, '=1+1')
         self.assertIn('Read me', wb.sheetnames)
 
     def test_ordinary_validation_does_not_capture_review(self):

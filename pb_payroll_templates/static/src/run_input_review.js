@@ -20,7 +20,7 @@ export class RunInputReview extends Component {
     static components = {Dialog};
     static props = {runId: Number, close: Function};
     setup() {
-        this.orm = useService('orm'); this.dialog = useService('dialog');
+        this.orm = useService('orm'); this.dialog = useService('dialog'); this.action = useService('action');
         this.state = useState({data: null, busy: false, error: '', sheet: 0, query: '', field: '', filter: 'all', page: 0, selected: {}, note: ''});
         onWillStart(() => this.load());
     }
@@ -79,6 +79,11 @@ export class RunInputReview extends Component {
             const url = URL.createObjectURL(new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
             const a = document.createElement('a'); a.href = url; a.download = data.filename; a.click(); URL.revokeObjectURL(url);
         } catch (e) { this.state.error = e.data?.message || e.message || _t('The review could not be downloaded.'); }
+    }
+    openRecords() {
+        const configId = this.sheet.config_id;
+        this.props.close();
+        this.action.doAction('pb_records.action_pb_records_desk', {additionalContext: {records_config_id: configId}});
     }
     changeSheet(ev) { this.state.sheet = Number(ev.target.value); this.state.selected = {}; this.state.page = 0; }
     setFilter(filter) { this.state.filter = filter; this.state.page = 0; }

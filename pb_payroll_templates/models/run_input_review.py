@@ -130,7 +130,7 @@ class RunInputReview(models.AbstractModel):
 
     def _review_payload(self, snapshot, check_inputs=True):
         data = copy.deepcopy(snapshot.payload or {})
-        data.update(id=snapshot.id, filename=snapshot.batch_id.import_filename or '', revision=data.get('revision', 0))
+        data.update(id=snapshot.id, config_id=snapshot.batch_id.formula_config_id.id, filename=snapshot.batch_id.import_filename or '', revision=data.get('revision', 0))
         proposals = {c.get('apply_id') for r in data.get('rows', []) for c in r['cells'].values() if c.get('apply_id')}
         applies = {p.id: p for p in self.env['pb.records.apply'].sudo().browse(list(proposals)).exists()}
         lines = self.env['hr.payroll.import.line'].sudo().browse([r['line_id'] for r in data.get('rows', [])]).exists() if check_inputs else self.env['hr.payroll.import.line']
@@ -273,6 +273,7 @@ class RunInputReview(models.AbstractModel):
                 if isinstance(out.value, str):
                     out.data_type = 's'
         for out in ws[1]:
+            out.data_type = 's'
             out.fill = PatternFill('solid', fgColor='55428C')
             out.font = Font(color='FFFFFF', bold=True)
             out.alignment = Alignment(wrap_text=True)
@@ -286,6 +287,7 @@ class RunInputReview(models.AbstractModel):
                      'Green: saved for future payrolls. Blue: record update awaiting approval. Grey: this payroll only.',
                      'Read each cell comment for its on-record value and decision. This file is a read-only review; make decisions in the payroll batch.']:
             guide.append([text])
+            guide.cell(guide.max_row, 1).data_type = 's'
         guide.column_dimensions['A'].width = 110
         out = io.BytesIO()
         wb.save(out)
