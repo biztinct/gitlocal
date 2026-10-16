@@ -1213,11 +1213,7 @@ export class MappingCanvas extends Component {
         if (ev) { ev.stopPropagation(); }
         this.leaveItem();
         this.ui.selWire = this.ui.selWire === g.id ? null : g.id;
-        if (this.props.compact && this.ui.selWire) {
-            this.ui.expanded[this.itemKey("left", g.leftId)] = true;
-            this.ui.expanded[this.itemKey("right", g.rightId)] = true;
-            this.centreBoth(g);
-        }
+        if (this.props.compact && this.ui.selWire) { this.centreBoth(g); }
     }
 
     /**
@@ -1242,6 +1238,10 @@ export class MappingCanvas extends Component {
         if (ev) { ev.stopPropagation(); ev.preventDefault(); }
         if (!g) { return; }
         this.ui.selWire = g.id;
+        if (this.props.compact) {
+            this.ui.expanded[this.itemKey("left", g.leftId)] = true;
+            this.ui.expanded[this.itemKey("right", g.rightId)] = true;
+        }
         // Read the CURRENT geometry rather than the object the template closed
         // over: between the render and the double-click a filter may have moved
         // an end behind it, and acting on a stale `hiddenL` would scroll to a

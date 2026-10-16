@@ -172,7 +172,7 @@
                           t-att-aria-expanded="isExpanded('left', it.id) ? 'true' : 'false'"
                           t-att-title="isExpanded('left', it.id) ? 'Collapse details' : 'Expand details'"
                           t-on-click="(ev) => this.toggleDetails('left', it.id, ev)"
-                          t-out="ic(isExpanded('left', it.id) ? 'chevronDown' : 'chevronRight', 12)"/>
+                          t-out="ic(isExpanded('left', it.id) ? 'chevronDown' : 'chevron', 12)"/>
                   <div class="mc-item-main">
                     <t t-call="pb_formula_studio.McItemLabel">
                       <t t-set="mcSide" t-value="'left'"/>
@@ -277,7 +277,7 @@
                           t-att-aria-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
                           t-att-title="isExpanded('right', it.id) ? 'Collapse details' : 'Expand details'"
                           t-on-click="(ev) => this.toggleDetails('right', it.id, ev)"
-                          t-out="ic(isExpanded('right', it.id) ? 'chevronDown' : 'chevronRight', 12)"/>
+                          t-out="ic(isExpanded('right', it.id) ? 'chevronDown' : 'chevron', 12)"/>
                   <div class="mc-item-main">
                     <!-- SOURCING S6 — the SAME label block as the left column.
                          S16 and S18 were both this: two item templates that did
