@@ -1407,3 +1407,27 @@ class TestPayaiFixAmber(p3._P3Case):
         got = registry.match('chạy lương khối văn phòng tháng 5')
         texts = self._norm(got[1])
         self.assertEqual((texts.get('period'), texts.get('scheme')), ('tháng 5', 'khối văn phòng'))
+
+    # ------------------------------------------- GAPS (FIX-1 later list)
+    def test_gaps_everyone_is_no_scheme(self):
+        """"Run June payroll for everyone", "Chạy lương tháng 6 cho toàn bộ
+        nhân viên": nobody left out is what no people means — the scheme is
+        asked, never refused as "no scheme called everyone"."""
+        for text in ('Run June 2031 payroll for everyone', 'Run June 2031 payroll for all employees',
+                     'Run June 2031 payroll for all staff', 'Run June 2031 payroll for the whole team',
+                     'Chạy lương tháng 6 năm 2031 cho toàn bộ nhân viên',
+                     'Chạy lương tháng 6 năm 2031 cho tất cả nhân viên',
+                     'chay luong thang 6 nam 2031 cho tat ca', 'Chạy lương tháng 6 năm 2031 cho mọi người',
+                     'Chạy lương tháng 6 năm 2031 cho cả công ty'):
+            got = registry.match(text)
+            self.assertEqual((got or ('',))[0], 'run_payroll', (text, got))
+            texts = self._norm(got[1])
+            self.assertFalse(texts.get('scheme'), (text, texts))
+            self.assertFalse(texts.get('people'), (text, texts))
+            self.assertTrue(texts.get('period'), (text, texts))
+        # A scheme's own words still name the scheme; a person is still a person.
+        texts = self._norm(registry.match('Run June 2031 payroll for Payai Retail End-Month')[1])
+        self.assertEqual(texts.get('scheme'), 'Payai Retail End-Month')
+        texts = self._norm(registry.match('Run June 2031 payroll for Payai Nguyễn Văn An only')[1])
+        self.assertIn('An', texts.get('people') or '')
+

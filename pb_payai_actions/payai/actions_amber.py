@@ -904,6 +904,15 @@ class RunPayroll(_Amber):
             period = best[3] or period
             who = sorted(people.union(others))
         elif n == 1 and not people and not months:
+            if self._EVERYONE_SAID.match(fold(self._bare(scheme))):
+                # GAPS (FIX-1 later list): "Run June payroll for everyone",
+                # "Chạy lương tháng 6 cho toàn bộ nhân viên" — nobody left
+                # out, which is what no people means (everyone the scheme
+                # covers); never a scheme called "everyone". Only after no
+                # scheme was found by these words (a scheme named "All staff"
+                # keeps its name).
+                texts['scheme'] = ''
+                return texts
             if named or self._ONLY.search(scheme) or self._ONLY_VI.search(scheme):
                 # "Run December payroll for An only", "… for Phong": no
                 # scheme said — somebody's name is.
@@ -981,6 +990,14 @@ class RunPayroll(_Amber):
         'and', 'or', 'on', 'in', 'under', 'with', 'of', 'at',
         'nguoi', 'cac', 'nhung', 'va', 'hoac', 'nhan', 'vien', 'la'))
     _EVERYONE = frozenset(('everyone', 'all', 'everybody'))
+    #: GAPS: the whole of a "for …" part that means nobody left out (folded).
+    _EVERYONE_SAID = re.compile(
+        r'^(?:everyone|everybody|all|all\s+(?:of\s+)?(?:the\s+)?(?:staff|employees|people|'
+        r'workers|team|company)|every\s+(?:employee|person|one)|'
+        r'the\s+(?:whole|entire)\s+(?:team|company|staff)|'
+        r'toan\s+bo(?:\s+(?:nhan\s+vien|cong\s+ty|moi\s+nguoi))?|'
+        r'tat\s+ca(?:\s+(?:nhan\s+vien|moi\s+nguoi))?|moi\s+nguoi|'
+        r'ca\s+cong\s+ty|toan\s+(?:the\s+nhan\s+vien|cong\s+ty))$')
 
     def _status_words(self, text):
         return [w for w in tokens(self._bare(text or '')) if w not in self._STATUS_FILLER]
