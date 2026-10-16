@@ -15,13 +15,10 @@ patch(PbFormulaStudio.prototype, {
         // component. Timers, cancellation tokens and graph caches must belong to
         // the real instance, not a short-lived render context.
         this._experienceHost = this;
-        for (const name of ['load', 'chooseConfig', 'openDepMap', 'focusDependency',
-            'openWhatif', 'closeWhatif', 'cancelWhatif', 'invalidateWhatif',
-            'whatifSelectTarget', 'onWhatifSlide', '_runWhatif', 'onTestInput',
-            'flushTestInputs', 'selectSample', 'loadSampleDetail', 'changePreviewSample',
-            'addComponentQuick', 'createComponentDraft', 'closeComponentDraft',
-            'reviewValueTypes', 'applyValueTypes', 'closeTypeReview', 'changeComponentKind']) {
-            this[name] = this[name].bind(this);
+        for (const [name, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(PbFormulaStudio.prototype))) {
+            if (name !== 'constructor' && name !== 'setup' && typeof descriptor.value === 'function') {
+                this[name] = this[name].bind(this);
+            }
         }
         this.experience = useState({query: '', filter: 'all', inspector: 'formula', group: '',
             draft: null, draftBusy: false, draftError: '', sampleBusy: false,

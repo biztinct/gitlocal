@@ -122,6 +122,13 @@ export class GridStudio extends Component {
         this._lastCommit = null;     // { ruleId, previousFormula } — single-level undo (T2.9)
         this._editorSeeded = false;  // seed the overlay <input> value exactly once
         onPatched(() => this._afterPatch());
+        // Cell saves, validation tokens and Undo must share the same instance
+        // even when a handler comes from an OWL t-set/foreach render context.
+        for (const [name, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(GridStudio.prototype))) {
+            if (name !== 'constructor' && name !== 'setup' && typeof descriptor.value === 'function') {
+                this[name] = this[name].bind(this);
+            }
+        }
     }
 
     // ---- derived (recomputed against CURRENT props each render) ----
