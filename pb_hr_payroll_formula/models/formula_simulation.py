@@ -146,28 +146,10 @@ class HrFormulaSimulation(models.TransientModel):
         return tol
 
     def _pick_headline_code(self):
-        """Deterministic headline component for the histogram / movers: a net /
-        take-home column if one exists, else the last payslip-visible formula
-        column (≈ the bottom line), else the highest-index formula column."""
+        """Use the scheme's net-pay designation, never column position."""
         self.ensure_one()
-        from ..formula_engine.column_manager import ColumnManager
-        rules = self.config_id.rule_ids
-        NET = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
-        for r in rules:
-            if (r.code or '').upper().replace(' ', '') in NET:
-                return r.code
-        formula_rules = rules.filtered(lambda r: r.column_type == 'formula')
-
-        def _idx(r):
-            try:
-                return ColumnManager.letter_to_index(r.column_letter or 'A')
-            except Exception:
-                return 0
-        onslip = formula_rules.filtered(lambda r: r.appears_on_payslip)
-        pool = onslip or formula_rules
-        if not pool:
-            return False
-        return max(pool, key=_idx).code
+        rule = self.config_id._net_role_find_net_rule(self.config_id._net_role_rules())
+        return rule.code if rule else False
 
     # ------------------------------------------------------------ chunked drive
     @api.model
@@ -200,23 +182,40 @@ class HrFormulaSimulation(models.TransientModel):
                 'headline': sim.headline_code, 'overrides': len(overrides)}
 
     @api.model
-    def sim_prepare(self, sim_id, limit=None):
+    def sim_prepare(self, sim_id, limit=None, run_id=None):
         """Return the payslip ids to drive through the simulation. Uses the
         config's payslips that carry stored inputs (same population F6 shadows)."""
         sim = self.browse(int(sim_id))
         if not sim.exists():
             return {'sim_id': False, 'payslip_ids': [], 'total': 0}
-        # same population F6 shadows: any payslip carrying stored inputs. In
-        # last_payrun mode the baseline is the payslip's stored computed values
-        # when present, else its actual line totals (available far more widely),
-        # so we do NOT further restrict the domain.
+        # One chosen run, one record per employee. Historical runs are not people.
+        Slip = self.env['hr.payslip'].sudo()
         domain = [('formula_config_id', '=', sim.config_id.id),
                   ('formula_input_values', '!=', False)]
-        slips = self.env['hr.payslip'].sudo().search(
-            domain, limit=int(limit) if limit else None)
-        sim.write({'state': 'computing', 'agg_json': '{}',
+        if not run_id:
+            latest = Slip.search(domain + [('payslip_run_id', '!=', False)],
+                                 order='date_to desc, id desc', limit=1)
+            run_id = latest.payslip_run_id.id
+        if not run_id:
+            return {'ok': False, 'msg': _('Choose a pay run with stored inputs.'),
+                    'sim_id': sim.id, 'payslip_ids': [], 'total': 0}
+        candidates = Slip.search(domain + [('payslip_run_id', '=', int(run_id))],
+                                 order='date_to desc, id desc')
+        seen, ids = set(), []
+        for slip in candidates:
+            if slip.employee_id.id not in seen:
+                seen.add(slip.employee_id.id)
+                ids.append(slip.id)
+        population = len(ids)
+        ids = ids[:max(0, int(limit))] if limit else ids
+        run = self.env['hr.payslip.run'].browse(int(run_id)).exists()
+        scope = {'run_id': int(run_id), 'run_name': run.name if run else '',
+                 'population': population, 'records': len(candidates),
+                 'sampled': len(ids) < population}
+        sim.write({'state': 'computing', 'agg_json': json.dumps({'scope': scope}),
                    'employees_total': 0, 'employees_changed': 0})
-        return {'sim_id': sim.id, 'payslip_ids': slips.ids, 'total': len(slips)}
+        return {'ok': True, 'sim_id': sim.id, 'payslip_ids': ids, 'total': len(ids),
+                **scope}
 
     @api.model
     def sim_batch(self, payload):
@@ -370,7 +369,8 @@ class HrFormulaSimulation(models.TransientModel):
             'baseline_total': round(agg.get('head_base', 0.0), 2),
             'candidate_total': round(agg.get('head_cand', 0.0), 2),
             'delta_total': round(agg.get('head_cand', 0.0) - agg.get('head_base', 0.0), 2),
-            'annualized_delta': round((agg.get('head_cand', 0.0) - agg.get('head_base', 0.0)) * 12, 2),
+            'scope': agg.get('scope', {}),
+            'sampled': agg.get('scope', {}).get('sampled', False),
         }
 
     def sim_drop(self):

@@ -117,7 +117,7 @@ export function srcSentence(c, hasAnyRun = true) {
     let out = d.kind === "none" ? _t("No source chosen")
         : `${srcLabel(d.kind)}${q(d.label || d.key)}`;
     if (!a) {
-        return hasAnyRun ? out : `${out} · ${_t("This scheme has not been run yet")}`;
+        return hasAnyRun ? out : `${out} · ${_t("No recorded run source for this component")}`;
     }
     if (a.fell_back) {
         out += ` · ${_t("Fell back to")} ${srcLabel(a.kind)}`;

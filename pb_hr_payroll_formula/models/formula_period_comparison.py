@@ -88,23 +88,10 @@ class HrFormulaPeriodComparison(models.TransientModel):
 
     # ------------------------------------------------------------------ helpers
     def _pick_headline_code(self):
-        """Net/take-home column if one exists, else the last payslip-visible
-        formula column — the bottom line the per-employee movers are built on."""
+        """Use the scheme's net-pay designation, never column position."""
         self.ensure_one()
-        rules = self.config_id.rule_ids
-        for r in rules:
-            if (r.code or '').upper().replace(' ', '') in _NET_CODES:
-                return r.code
-        from ..formula_engine.column_manager import ColumnManager
-
-        def _idx(r):
-            try:
-                return ColumnManager.letter_to_index(r.column_letter or 'A')
-            except Exception:
-                return 0
-        formula_rules = rules.filtered(lambda r: r.column_type == 'formula')
-        pool = formula_rules.filtered(lambda r: r.appears_on_payslip) or formula_rules
-        return max(pool, key=_idx).code if pool else False
+        rule = self.config_id._net_role_find_net_rule(self.config_id._net_role_rules())
+        return rule.code if rule else False
 
     def _slip_computed(self, slip):
         """A slip's computed component values: its stored ``formula_computed_values``

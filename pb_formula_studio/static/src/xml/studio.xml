@@ -832,10 +832,10 @@
 
         <!-- 3-pane (cards) / full-width workbench with drawers (grid) -->
         <t t-else="">
-        <div t-ref="work" t-att-style="panelStyle" t-attf-class="pbfs-work {{ state.view === 'grid' ? 'pbfs-work--full' : '' }}">
+        <div t-ref="work" t-att-style="panelStyle" t-attf-class="pbfs-work {{ (state.view === 'grid' || state.view === 'table') ? 'pbfs-work--full' : '' }}">
           <svg id="pbfsArrows" class="pbfs-arrows"/>
           <!-- outline (grid: always a drawer · cards: drawer below the md breakpoint) -->
-          <div t-attf-class="pbfs-outline {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.outlineDrawer ? 'open' : '' }} {{ state.outlineCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-components">
+          <div t-attf-class="pbfs-outline {{ (state.view === 'grid' || state.view === 'table') ? 'as-drawer' : 'md-drawer' }} {{ state.outlineDrawer ? 'open' : '' }} {{ state.outlineCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-components">
             <button class="pbfs-panel-restore" t-on-click="() => this.togglePanel('outline')" title="Expand Components" aria-label="Expand Components"><span>›</span><span class="pbfs-panel-label">Components</span></button>
             <div class="ol-toolbar">
             <div class="ol-head">
@@ -1496,7 +1496,7 @@
 
           <div t-if="state.view === 'cards'" class="pbfs-panel-resizer" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Live preview panel" aria-valuemin="260" aria-valuemax="500" t-att-aria-valuenow="panelWidths.preview" title="Drag to resize. Arrow keys adjust width; Home and End set minimum and maximum." t-on-pointerdown="(ev) => this.startPanelResize('preview', ev)" t-on-pointermove="movePanelResize" t-on-pointerup="endPanelResize" t-on-pointercancel="endPanelResize" t-on-lostpointercapture="endPanelResize" t-on-keydown="(ev) => this.keyboardPanelResize('preview', ev)"><span/></div>
           <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->
-          <div t-attf-class="pbfs-test {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.previewDrawer ? 'open' : '' }} {{ state.previewCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-preview">
+          <div t-attf-class="pbfs-test {{ (state.view === 'grid' || state.view === 'table') ? 'as-drawer' : 'md-drawer' }} {{ state.previewDrawer ? 'open' : '' }} {{ state.previewCollapsed ? 'pbfs-panel-collapsed' : '' }}" data-coach="fs-preview">
             <button class="pbfs-panel-restore" t-on-click="() => this.togglePanel('preview')" title="Expand Live preview" aria-label="Expand Live preview"><span>‹</span><span class="pbfs-panel-label">Live preview</span></button>
             <div class="tp-toolbar">
             <div class="tp-head">
@@ -1557,7 +1557,7 @@
               <div class="tp-pick-h">
                 <b t-if="state.personPicker === 'runs'">Which pay run?</b>
                 <b t-else="">Which employee?</b>
-                <button class="tp-pick-x" t-on-click="closePersonPicker" title="Close">
+                <button class="tp-pick-x" t-on-click="closePersonPicker" title="Close" aria-label="Close dialog">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
               </div>
@@ -1717,7 +1717,7 @@
           <div class="rcl-actions">
             <p class="rcl-fine">Accepting keeps these columns machine-classified, so a later re-read can improve them. Change a role by hand in the component editor to lock it against that.</p>
             <div class="rcl-btns">
-              <button class="pbfs-btn ghost" t-on-click="closeReclassify">Close</button>
+              <button class="pbfs-btn ghost" t-on-click="closeReclassify" aria-label="Close dialog">Close</button>
               <button t-if="reclassRows.length" class="pbfs-btn primary" t-att-disabled="state.reclassBusy or !reclassAcceptedIds.length" t-on-click="applyReclassify">
                 Apply <t t-esc="reclassAcceptedIds.length"/> change<t t-if="reclassAcceptedIds.length !== 1">s</t>
               </button>
@@ -1738,7 +1738,7 @@
               <button t-att-class="state.explainLang === 'en' ? 'on' : ''" t-on-click="() => this.setExplainLang('en')">EN</button>
               <button t-att-class="state.explainLang === 'vi' ? 'on' : ''" t-on-click="() => this.setExplainLang('vi')">VI</button>
             </div>
-            <button class="ex-x" t-on-click="closeExplain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="ex-x" t-on-click="closeExplain" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
           <div class="ex-body">
             <p class="ex-text" t-esc="state.explainText"/>
@@ -1766,7 +1766,7 @@
                 <small t-if="state.historyData"><t t-esc="state.historyData.code"/> · <t t-esc="state.historyData.name"/></small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeHistory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeHistory" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="hs-body">
@@ -1845,7 +1845,7 @@
             </div>
             <div class="pp-head-side">
               <button class="pp-refresh" t-on-click="_loadProblems" title="Re-scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></svg></button>
-              <button class="hs-x" t-on-click="closeProblems"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+              <button class="hs-x" t-on-click="closeProblems" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
           </div>
 
@@ -1945,7 +1945,7 @@
                 <small t-if="selected"><t t-esc="selected.col"/> · <t t-esc="selected.name"/></small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeNotes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeNotes" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <!-- composer -->
@@ -1995,7 +1995,7 @@
                 <small>Reference in any formula as <code>BRACKET(code, income)</code></small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeRates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeRates" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="pr-body">
@@ -2098,7 +2098,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996C19.518 15.994 22 13.512 22 10.437 22 5.775 17.51 2 12 2z"/></svg>
                 Theme
               </button>
-              <button class="hs-x" t-on-click="closePayslip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+              <button class="hs-x" t-on-click="closePayslip" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
           </div>
 
@@ -2281,7 +2281,7 @@
             <div class="ps-import" t-on-click="(ev) => ev.stopPropagation()">
               <div class="ps-sub-head">
                 <div><b>Design from an existing payslip</b><small>We suggest the layout and field matches. You remain in control before anything changes.</small></div>
-                <button class="hs-x" t-on-click="closePsImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+                <button class="hs-x" t-on-click="closePsImport" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
               </div>
               <div class="ps-import-body">
                 <div t-if="!state.psImportDraft and !state.psImportBusy" class="ps-import-upload">
@@ -2332,7 +2332,7 @@
                 </div>
               </div>
               <div class="ps-sub-foot">
-                <button class="ps-secondary" t-on-click="closePsImport">Cancel</button>
+                <button class="ps-secondary" t-on-click="closePsImport" aria-label="Close dialog">Cancel</button>
                 <button t-if="state.psImportDraft" class="ps-primary" t-att-disabled="state.psImportBusy or !psImportSelectedCount" t-on-click="psApplyTemplate">Apply <t t-esc="psImportSelectedCount"/> matched fields</button>
               </div>
             </div>
@@ -2341,7 +2341,7 @@
           <!-- Component-aware rich content shared by browser preview and PDF report. -->
           <div t-if="state.psRichOpen" class="ps-sub-scrim" t-on-click="closePsRich">
             <div class="ps-rich" t-on-click="(ev) => ev.stopPropagation()">
-              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Insert live employee details and payroll components anywhere — including inside table cells.</small></div><button class="hs-x" t-on-click="closePsRich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="ps-sub-head"><div><b t-esc="state.psRichTitle"/><small>Insert live employee details and payroll components anywhere — including inside table cells.</small></div><button class="hs-x" t-on-click="closePsRich" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
               <div class="ps-rich-workspace">
                 <aside class="ps-rich-components">
                   <div class="ps-rich-components-head"><b>Live fields</b><span>Click or drag to the cursor</span></div>
@@ -2442,7 +2442,7 @@
                   <div class="ps-rich-editor" contenteditable="true" t-on-mousedown="psRichEditorPointerDown" t-on-mouseup="psRichRememberSelection" t-on-keyup="psRichRememberSelection" t-on-input="psRichRememberSelection" t-on-click="psRichEditorClick" t-on-dragover="psRichEditorDragOver" t-on-drop="psRichEditorDrop"></div>
                 </div>
               </div>
-              <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
+              <div class="ps-sub-foot"><button class="ps-secondary" t-on-click="closePsRich" aria-label="Close dialog">Cancel</button><button class="ps-primary" t-att-disabled="state.psRichBusy" t-on-click="psSaveRich">Save content</button></div>
             </div>
           </div>
         </div>
@@ -2463,7 +2463,7 @@
               <select t-if="state.replayData and state.replayData.ok and state.replayData.samples.length" class="pm-ctx" t-on-change="replaySetSample">
                 <option t-foreach="state.replayData.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="s.id === state.replayData.sample_id" t-esc="s.name"/>
               </select>
-              <button class="hs-x" t-on-click="closeReplay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+              <button class="hs-x" t-on-click="closeReplay" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
           </div>
 
@@ -2507,7 +2507,7 @@
                   </div>
                   <div class="rp-spot-result">
                     <span class="rp-spot-lbl">=</span>
-                    <span t-attf-class="rp-result {{ replayCurrent.is_deduction ? 'ded' : '' }}"><t t-if="replayCurrent.is_deduction">−</t><t t-esc="replayFmt({number_format: replayCurrent.number_format, value: replayCurrent.result})"/></span>
+                    <span t-attf-class="rp-result {{ replayCurrent.is_deduction ? 'ded' : '' }}"><t t-if="replayCurrent.is_deduction">−</t><t t-esc="replayFmt({col: replayCurrent.col, number_format: replayCurrent.number_format, value: replayCurrent.result})"/></span>
                   </div>
                 </t>
                 <div t-else="" class="rp-idle">
@@ -2529,7 +2529,7 @@
                 <div t-foreach="replaySteps" t-as="s" t-key="s.col" t-attf-class="rp-row {{ replayStepComputed(s_index) ? 'on' : 'pending' }} {{ s_index === state.replayStep ? 'current' : '' }}">
                   <span class="rp-row-col" t-esc="s.col"/>
                   <span class="rp-row-nm" t-esc="s.name"/>
-                  <span t-if="replayStepComputed(s_index)" t-attf-class="rp-row-val {{ s.is_deduction ? 'ded' : '' }}"><t t-if="s.is_deduction">−</t><t t-esc="replayFmt({number_format: s.number_format, value: s.result})"/></span>
+                  <span t-if="replayStepComputed(s_index)" t-attf-class="rp-row-val {{ s.is_deduction ? 'ded' : '' }}"><t t-if="s.is_deduction">−</t><t t-esc="replayFmt({col: s.col, number_format: s.number_format, value: s.result})"/></span>
                   <span t-else="" class="rp-row-val pending">•••</span>
                 </div>
               </div>
@@ -2551,7 +2551,7 @@
                 <small>Slide a rate and project the payroll cost across everyone</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeWhatif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeWhatif" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="wi-body" t-if="state.whatifData and state.whatifData.components.length">
@@ -2653,7 +2653,7 @@
                 <small>Review and sign off the formula changes since the last milestone</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeReleases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeReleases" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="rl-tabs">
@@ -2783,7 +2783,7 @@
                 <small t-if="state.rollbackData and state.rollbackData.ok !== false"><t t-esc="state.rollbackData.change_count"/> component<t t-if="state.rollbackData.change_count !== 1">s</t> will be restored</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeRollback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeRollback" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
           <div class="rb-body">
             <div t-if="state.rollbackBusy and !state.rollbackData" class="rb-loading">Building rollback preview…</div>
@@ -2878,7 +2878,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               New configuration
             </button>
-            <button class="hs-x" t-on-click="closeConfigSwitcher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeConfigSwitcher" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="cs-filters">
@@ -3025,7 +3025,7 @@
                 <small t-if="state.legisCoverage and state.legisCoverage.pack">Roll a statutory change across every configuration — reviewed, versioned, signed off</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeLegislation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeLegislation" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="lg-body">
@@ -3153,7 +3153,7 @@
                 <small>Fork a live configuration, trial a change in isolation, merge it back as a release</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeBranches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeBranches" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="br-body">
@@ -3292,7 +3292,7 @@
                 <small>One master scheme, many variants — edit once, push everywhere, keep local overrides</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeVariants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeVariants" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="vr-body">
@@ -3429,7 +3429,7 @@
                 <small>Share a read-only trust surface — no login, revocable, with optional release sign-off</small>
               </div>
             </div>
-            <button class="hs-x" t-on-click="closeShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeShare" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="sh-body">
@@ -3511,7 +3511,7 @@
                 <t t-set="qGlanceOn" t-value="''"/>
               </t>
             </div>
-            <button class="hs-x" t-on-click="closeDepMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="hs-x" t-on-click="closeDepMap" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="dp-toolbar">
@@ -3574,7 +3574,7 @@
                 <small>This configuration vs the last actual payrun · every employee, real inputs</small>
               </div>
             </div>
-            <button class="sm-x" t-on-click="closeSimulate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="sm-x" t-on-click="closeSimulate" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
           <div class="sm-body">
@@ -3652,7 +3652,7 @@
 
               <div class="sm-foot">
                 <span class="sm-note">Nothing was written — this is a preview. Activate when you're confident.</span>
-                <button class="pbfs-btn ghost" t-on-click="closeSimulate">Close</button>
+                <button class="pbfs-btn ghost" t-on-click="closeSimulate" aria-label="Close dialog">Close</button>
               </div>
             </t>
           </div>
@@ -3712,7 +3712,7 @@
         <div class="ai-top">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
           <div><b>PayAI Formula Assistant</b><small>Describe a rule in plain English</small></div>
-          <button class="x" t-on-click="closeAI"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          <button class="x" t-on-click="closeAI" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="ai-body">
           <div class="ai-msg"><div class="who">PayAI</div>
@@ -3768,7 +3768,7 @@
               <button class="zfit" t-on-click="zoomFit" title="Fit to window"><span class="zlabel">Fit</span></button>
               <button t-on-click="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
             </div>
-            <button class="fc-x" t-on-click="closeFlow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <button class="fc-x" t-on-click="closeFlow" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
           <div class="fc-legend">
             <span class="lg"><span class="sw" style="background:#0E7490"/>Input / info</span>
@@ -3911,7 +3911,7 @@
               </t>
             </div>
             <div class="wz-foot">
-              <button class="pbfs-btn ghost" t-on-click="closeWizard">Cancel</button>
+              <button class="pbfs-btn ghost" t-on-click="closeWizard" aria-label="Close dialog">Cancel</button>
               <div style="margin-left:auto;display:flex;gap:10px;">
                 <button t-if="state.wizardStep > 1" class="pbfs-btn ghost" t-on-click="wizardBack">Back</button>
                 <button t-if="state.wizardStep &lt; 5" class="pbfs-btn primary" t-on-click="wizardNext">Continue</button>
@@ -3940,7 +3940,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 13h6"/></svg>
             Keyboard shortcuts
           </div>
-          <button class="pbsc-x" t-on-click="closeShortcuts" title="Close (Esc)">
+          <button class="pbsc-x" t-on-click="closeShortcuts" title="Close (Esc)" aria-label="Close dialog">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>
@@ -3967,7 +3967,7 @@
             <b t-esc="state.budgetEdit and state.budgetEdit.id ? 'Edit budget' : 'New budget'"/>
             <small t-esc="state.config.name"/>
           </div>
-          <button class="pbbud-x" t-on-click="closeBudgetEditor" title="Close">
+          <button class="pbbud-x" t-on-click="closeBudgetEditor" title="Close" aria-label="Close dialog">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
@@ -4017,7 +4017,7 @@
         <div class="pbbud-foot">
           <button t-if="state.budgetEdit and state.budgetEdit.id" class="pbfs-btn ghost sm pbbud-del" t-att-disabled="state.budgetBusy" t-on-click="() => this.deleteBudget(state.budgetEdit)">Delete</button>
           <span class="pbbud-spacer"/>
-          <button class="pbfs-btn ghost sm" t-on-click="closeBudgetEditor">Cancel</button>
+          <button class="pbfs-btn ghost sm" t-on-click="closeBudgetEditor" aria-label="Close dialog">Cancel</button>
           <button class="pbfs-btn primary sm" t-att-disabled="state.budgetBusy" t-on-click="saveBudget">
             <t t-if="state.budgetBusy">Saving…</t><t t-else="">Save budget</t>
           </button>
@@ -4033,7 +4033,7 @@
             <b>Offer calculator</b>
             <small>Type hypothetical inputs — the full breakdown runs through the live configuration. Nothing is saved.</small>
           </div>
-          <button class="pbof-x" t-on-click="closeOfferCalc" title="Close">
+          <button class="pbof-x" t-on-click="closeOfferCalc" title="Close" aria-label="Close dialog">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
         </div>
@@ -4095,7 +4095,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy summary
           </button>
-          <button class="pbfs-btn ghost sm" t-on-click="closeOfferCalc">Close</button>
+          <button class="pbfs-btn ghost sm" t-on-click="closeOfferCalc" aria-label="Close dialog">Close</button>
         </div>
       </div>
     </div>
@@ -4108,7 +4108,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
             Snippet library
           </div>
-          <button class="pbsc-x" t-on-click="closeSnipManage" title="Close (Esc)">
+          <button class="pbsc-x" t-on-click="closeSnipManage" title="Close (Esc)" aria-label="Close dialog">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </button>
         </div>

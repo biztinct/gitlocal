@@ -7,7 +7,7 @@ import { _t } from "@web/core/l10n/translation";
 import * as SrcVocab from "../source_vocab";
 
 // Property rows are a fixed vocabulary — index math stays trivial.
-const ROWS = ["name", "category", "type", "formula", "value", "status"];
+const ROWS = ["name", "formula", "value"];
 const EDITABLE_ROWS = new Set(["formula"]); // category/type edit via bulk popover (T2.7)
 
 // Grid Studio v1 (T2.2 — focus model + keyboard nav + cell editing, skeleton S1).
@@ -71,6 +71,7 @@ export class GridStudio extends Component {
         // component *id*, never array index — the parent replaces state.components
         // wholesale after every save, so id-keyed focus/selection survive a refresh.
         this.ui = useState({
+            query: "", groupBy: "", showAll: false, columnsOpen: false, hidden: [],
             focus: { colId: null, row: "formula" }, // colId = hr.formula.rule id
             selection: [],                           // array of colIds (Ctrl/Shift multi-select)
             anchorId: null,                          // Shift-range anchor
@@ -136,13 +137,36 @@ export class GridStudio extends Component {
     // ONE definition of "visible", used by the render path and by the pre-render
     // focus relocation below (which has to ask about the INCOMING lens).
     _inLens(c, lens = this.props.lens) {
+        if (this.ui.hidden.includes(c.id)) return false;
+        if (this.ui.showAll) return true;
         if (c.is_visible_in_grid === false) return false;
         return lens === "all" || ((c.column_role || "payroll") === "payroll");
     }
     get ordered() {
-        return this.props.components.filter(c => this._inLens(c)).sort((a, b) =>
+        const q = this.ui.query.trim().toLocaleLowerCase();
+        return this.props.components.filter(c => this._inLens(c) && (!q ||
+            `${c.name} ${c.code} ${c.col}`.toLocaleLowerCase().includes(q))).sort((a, b) =>
+            (this.ui.groupBy ? this._catKey(a).localeCompare(this._catKey(b)) : 0) ||
             ((a.sequence ?? 0) - (b.sequence ?? 0)) || (this._colNum(a.col) - this._colNum(b.col)));
     }
+    changeGridView() {
+        this.ui.editing = null;
+        const ids = new Set(this.ordered.map(c=>c.id));
+        this.ui.selection = this.ui.selection.filter(id=>ids.has(id));
+        if (!ids.has(this.ui.anchorId)) this.ui.anchorId = null;
+        if (!ids.has(this.ui.focus.colId)) this.ui.focus = {colId:this.ordered[0]?.id || null,row:'formula'};
+        this._lastN = null;
+    }
+    showEveryColumn() { this.ui.showAll = true; this.ui.hidden = []; this.ui.query = ''; this.changeGridView(); }
+    resetColumnView() { this.ui.showAll = false; this.ui.hidden = []; this.ui.query = ''; this.changeGridView(); }
+    toggleColumn(c) {
+        const shown = new Set(this.props.components.filter(x=>this._inLens(x)).map(x=>x.id));
+        if (shown.has(c.id)) shown.delete(c.id); else shown.add(c.id);
+        this.ui.showAll = true;
+        this.ui.hidden = this.props.components.filter(x=>!shown.has(x.id)).map(x=>x.id);
+        this.changeGridView();
+    }
+    gridColumnVisible(c) { return this._inLens(c); }
     // How many columns the current lens is holding back (footer pill).
     get hiddenCount() { return this.props.components.length - this.ordered.length; }
     // One whole sentence per case — a "s" fragment glued on in the template is
@@ -168,9 +192,9 @@ export class GridStudio extends Component {
     // ONE unit list downstream of `ordered`; every windowing/nav/fill consumer
     // reads `viewOrdered` (or `baseCols`) instead of `ordered`. `ordered` itself
     // is never touched, so letters/sequence stay authoritative.
-    _catKey(c) { return String((c && (c.category_id || c.category || c.group)) || "?"); }
+    _catKey(c) { return this.ui.groupBy === "type" ? this.typeLabel(c) : (c.display_group || _t("Ungrouped")); }
     get viewOrdered() {
-        const folds = this.props.folds || {};
+        const folds = this.ui.groupBy ? (this.props.folds || {}) : {};
         const out = [];
         let openCat = null;                       // contiguous folded run being absorbed
         for (const c of this.ordered) {
@@ -178,7 +202,7 @@ export class GridStudio extends Component {
             if (folds[k]) {
                 if (openCat === k) { out[out.length - 1].members.push(c); continue; }
                 openCat = k;
-                out.push({ kind: "summary", cat: k, label: c.category || c.group || k, members: [c], key: "cat:" + k + ":" + c.id });
+                out.push({ kind: "summary", cat: k, label: this._catKey(c), members: [c], key: "cat:" + k + ":" + c.id });
             } else {
                 openCat = null;
                 out.push({ kind: "base", comp: c, key: "b" + c.id });
@@ -191,12 +215,13 @@ export class GridStudio extends Component {
     get baseCols() { return this.viewOrdered.filter(u => u.kind === "base").map(u => u.comp); }
     // Distinct categories in display order, for the toolbar fold chips.
     get foldableCategories() {
+        if (!this.ui.groupBy) return [];
         const seen = new Map();
         for (const c of this.ordered) {
             const k = this._catKey(c);
-            if (!seen.has(k)) seen.set(k, { key: k, label: c.category || c.group || k });
+            if (!seen.has(k)) seen.set(k, { key: k, label: this._catKey(c) });
         }
-        const folds = this.props.folds || {};
+        const folds = this.ui.groupBy ? (this.props.folds || {}) : {};
         return [...seen.values()].map(x => ({ ...x, folded: !!folds[x.key] }));
     }
     toggleFold(catKey) {
@@ -395,7 +420,7 @@ export class GridStudio extends Component {
         this.props.onReorder(dragId, beforeId);
     }
     onColDragEnd() { this.ui.dragId = null; this.ui.dragOverId = null; this._stopEdgeScroll(); }
-    groupByCategory() { if (this.props.onGroupByCategory) this.props.onGroupByCategory(); }
+    groupByCategory() { this.ui.groupBy = this.ui.groupBy ? "" : "group"; this.changeGridView(); }
 
     // ---- F111: category band strip ----
     _bandColor(group) {

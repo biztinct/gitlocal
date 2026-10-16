@@ -3695,7 +3695,7 @@ export class PbFormulaStudio extends Component {
         this.state.cmpNarrate = null;
         try {
             const prep = await this.orm.call("pb.formula.studio", "compare_prepare",
-                [this.state.config.id, this.state.cmpA, this.state.cmpB], {}, { silent: true });
+                [this.state.config.id, this.state.cmpA, this.state.cmpB, this.experience.outcome || false], {}, { silent: true });
             if (!prep || prep.ok === false || !prep.cmp_id) {
                 this.notif.add((prep && prep.msg) || _t("Comparison failed"), { type: "warning" });
                 return;

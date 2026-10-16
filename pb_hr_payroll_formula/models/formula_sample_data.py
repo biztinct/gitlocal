@@ -360,14 +360,19 @@ class HrFormulaSampleData(models.Model):
             code = rule.code
             expected = expected_vals.get(code)
             computed = computed_vals.get(code, 0)
-            input_val = input_vals.get(code)
+            input_val = input_vals.get(code, input_vals.get(rule.column_letter))
 
-            # Calculate discrepancy
-            disc = 0
-            if expected is not None and expected != 0:
-                disc = abs(expected - computed) / abs(expected) * 100
-            elif expected is None and computed != 0:
-                disc = 100
+            # Numeric differences and exact text matches use different comparisons.
+            disc, passed = 0, expected is None
+            if expected is not None:
+                from ..formula_engine.comparison import coerce_number
+                en, cn = coerce_number(expected), coerce_number(computed)
+                if en is None or cn is None:
+                    passed = str(expected) == str(computed)
+                    disc = 0 if passed else 100
+                else:
+                    disc = abs(en - cn) / (abs(en) if en else 1) * 100
+                    passed = disc < 0.01
 
             comparison.append({
                 'column_letter': rule.column_letter,
@@ -378,7 +383,7 @@ class HrFormulaSampleData(models.Model):
                 'expected': expected,
                 'computed': computed,
                 'discrepancy': disc,
-                'passed': disc < 0.01,
+                'passed': passed,
             })
 
         return comparison

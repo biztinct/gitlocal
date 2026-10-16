@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.201.15',
+    'version': '19.0.1.201.16',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -97,7 +97,9 @@
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/payslip_table_tools.js',
             'pb_formula_studio/static/src/js/payslip_image_tools.js',
+            'pb_formula_studio/static/src/js/value_format.js',
             'pb_formula_studio/static/src/js/formula_studio.js',
+            'pb_formula_studio/static/src/js/studio_experience.js',
             'pb_formula_studio/static/src/js/formula_config_views.js',
             'pb_formula_studio/static/src/js/shadow/shadow_run.js',
             # NETROLE P2 — a client action of its own: the import chains it, and
@@ -111,6 +113,8 @@
             'pb_formula_studio/static/src/xml/component_treatment.xml',
             'pb_formula_studio/static/src/xml/mapping_studio.xml',
             'pb_formula_studio/static/src/xml/studio.xml',
+            'pb_formula_studio/static/src/xml/studio_experience.xml',
+            'pb_formula_studio/static/src/scss/studio_experience.scss',
             'pb_formula_studio/static/src/xml/shadow_run.xml',
             'pb_formula_studio/static/src/xml/category_review.xml',
         ],

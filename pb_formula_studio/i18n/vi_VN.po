@@ -14931,7 +14931,6 @@ msgstr "Tệp trên bảng này"
 msgid "The file read onto this board"
 msgstr "Tệp đã được đọc vào bảng này"
 
-
 #. module: pb_formula_studio
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
@@ -15075,8 +15074,12 @@ msgstr "Hãy cho biết các giá trị đến từ đâu, bức tranh sẽ tự
 #. module: pb_formula_studio
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
-msgid "This scheme names no connection, and a pay run only reads the one it is set to — so nothing drawn from a connected system is used."
-msgstr "Bảng lương này chưa chọn kết nối nào, và một kỳ lương chỉ đọc kết nối được chọn — nên không dữ liệu nào từ hệ thống kết nối được dùng."
+msgid ""
+"This scheme names no connection, and a pay run only reads the one it is set "
+"to — so nothing drawn from a connected system is used."
+msgstr ""
+"Bảng lương này chưa chọn kết nối nào, và một kỳ lương chỉ đọc kết nối được "
+"chọn — nên không dữ liệu nào từ hệ thống kết nối được dùng."
 
 #. module: pb_formula_studio
 #. odoo-python
@@ -15170,8 +15173,12 @@ msgstr "Vừa cộng vừa trừ"
 
 #. module: pb_formula_studio
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
-msgid "<span class=\"frv-mark\">Payo<span>book</span></span>\n          <span class=\"frv-ro\">Read-only review</span>"
-msgstr "<span class=\"frv-mark\">Payo<span>book</span></span>\n          <span class=\"frv-ro\">Bản xem lại chỉ đọc</span>"
+msgid ""
+"<span class=\"frv-mark\">Payo<span>book</span></span>\n"
+"          <span class=\"frv-ro\">Read-only review</span>"
+msgstr ""
+"<span class=\"frv-mark\">Payo<span>book</span></span>\n"
+"          <span class=\"frv-ro\">Bản xem lại chỉ đọc</span>"
 
 #. module: pb_formula_studio
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
@@ -15195,8 +15202,12 @@ msgstr "Câu hỏi và nhận xét"
 
 #. module: pb_formula_studio
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
-msgid "Shared securely by <b>Payobook</b> · this link is private to you and can be revoked at any time."
-msgstr "Được chia sẻ an toàn bởi <b>Payobook</b> · liên kết này chỉ dành riêng cho bạn và có thể bị thu hồi bất cứ lúc nào."
+msgid ""
+"Shared securely by <b>Payobook</b> · this link is private to you and can be "
+"revoked at any time."
+msgstr ""
+"Được chia sẻ an toàn bởi <b>Payobook</b> · liên kết này chỉ dành riêng cho "
+"bạn và có thể bị thu hồi bất cứ lúc nào."
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -15262,4 +15273,711 @@ msgstr "dùng nó"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
 msgid "Show every component, or only the ones connected to the selected one"
-msgstr "Hiện mọi thành phần, hoặc chỉ những thành phần nối với thành phần đang chọn"
+msgstr ""
+"Hiện mọi thành phần, hoặc chỉ những thành phần nối với thành phần đang chọn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Build"
+msgstr "Thiết kế"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Review changes"
+msgstr "Xem thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Preview for"
+msgstr "Xem trước cho"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Preview sample"
+msgstr "Mẫu xem trước"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Review value types"
+msgstr "Xem lại kiểu giá trị"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "+ Add component"
+msgstr "+ Thêm thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Add component"
+msgstr "Thêm thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "NEW COMPONENT"
+msgstr "THÀNH PHẦN MỚI"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "COMPONENT"
+msgstr "THÀNH PHẦN"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Component details"
+msgstr "Chi tiết thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Component type"
+msgstr "Loại thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "All components"
+msgstr "Tất cả thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Constants"
+msgstr "Hằng số"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Group by"
+msgstr "Nhóm theo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "None"
+msgstr "Không nhóm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Treatment group"
+msgstr "Nhóm xử lý"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Ungrouped"
+msgstr "Chưa có nhóm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Source / calculation"
+msgstr "Nguồn / phép tính"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Preview value"
+msgstr "Giá trị xem trước"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Sample outcomes"
+msgstr "Kết quả mẫu"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Calculation"
+msgstr "Phép tính"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Edit component"
+msgstr "Sửa thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Open mapping"
+msgstr "Mở ánh xạ"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "What uses this component?"
+msgstr "Thành phần nào sử dụng giá trị này?"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Explore dependency map"
+msgstr "Khám phá sơ đồ phụ thuộc"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Money"
+msgstr "Tiền tệ"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Quantity (days, hours)"
+msgstr "Số lượng (ngày, giờ)"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Percentage"
+msgstr "Tỷ lệ phần trăm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Whole number"
+msgstr "Số nguyên"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Decimal number"
+msgstr "Số thập phân"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "ID or code"
+msgstr "Mã định danh"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Yes / No"
+msgstr "Có / Không"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Input — from data"
+msgstr "Đầu vào — từ dữ liệu"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Formula — calculated"
+msgstr "Công thức — được tính"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Constant — fixed value"
+msgstr "Hằng số — giá trị cố định"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Fixed value:"
+msgstr "Giá trị cố định:"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Adding…"
+msgstr "Đang thêm…"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Component added"
+msgstr "Đã thêm thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Enter a component name."
+msgstr "Nhập tên thành phần."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Enter a formula."
+msgstr "Nhập công thức."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Check the formula."
+msgstr "Kiểm tra công thức."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Could not add component."
+msgstr "Không thể thêm thành phần."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Value type saved. Recompute a pay run to change its stored results."
+msgstr "Đã lưu kiểu giá trị. Tính lại kỳ lương để cập nhật kết quả đã lưu."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Selected value types saved"
+msgstr "Đã lưu các kiểu giá trị đã chọn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No blocking issues"
+msgstr "Không có lỗi chặn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "%s errors to resolve"
+msgstr "%s lỗi cần giải quyết"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "%s warnings to review"
+msgstr "%s cảnh báo cần xem lại"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Add a sample in Validate"
+msgstr "Thêm mẫu trong phần Kiểm tra"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No sample yet"
+msgstr "Chưa có mẫu"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No matching components. Try a different search or filter."
+msgstr "Không có thành phần phù hợp. Hãy đổi từ khóa hoặc bộ lọc."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Find a component…"
+msgstr "Tìm thành phần…"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Find components"
+msgstr "Tìm thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Find every tool · Ctrl/Cmd K"
+msgstr "Tìm mọi công cụ · Ctrl/Cmd K"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Filter components"
+msgstr "Lọc thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Build view"
+msgstr "Chế độ thiết kế"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Review use"
+msgstr "Xem cách sử dụng"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Review this component"
+msgstr "Xem lại thành phần này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Formula outputs checked by these samples"
+msgstr "Đầu ra công thức được các mẫu này kiểm tra"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"No formula dependents or payslip placement were found. A component may still"
+" be needed by mapping, employee records, or reports. Review its use before "
+"removing it."
+msgstr ""
+"Không tìm thấy công thức phụ thuộc hoặc vị trí trên phiếu lương. Ánh xạ, hồ "
+"sơ nhân viên hoặc báo cáo vẫn có thể cần thành phần này. Hãy xem lại trước "
+"khi xóa."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"No formula dependents. Check mapping, reports, and payslip layout before "
+"removing it."
+msgstr ""
+"Không có công thức phụ thuộc. Kiểm tra ánh xạ, báo cáo và bố cục phiếu lương"
+" trước khi xóa."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"This percentage shows which formulas have an expected result. It does not "
+"measure scenario variety or prove the payroll is correct. Add boundary "
+"scenarios to check more cases."
+msgstr ""
+"Tỷ lệ này cho biết công thức nào có kết quả kỳ vọng. Nó không đo độ đa dạng "
+"tình huống hay khẳng định bảng lương chính xác. Thêm tình huống tại ngưỡng "
+"để kiểm tra nhiều trường hợp hơn."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Select an input below to see the value behind this calculation."
+msgstr "Chọn đầu vào bên dưới để xem giá trị được dùng trong phép tính."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"The value type controls how values are read and displayed across the scheme."
+" Existing pay runs keep their stored results until recomputed."
+msgstr ""
+"Kiểu giá trị quyết định cách đọc và hiển thị giá trị trong cơ chế lương. Kỳ "
+"lương hiện có giữ kết quả đã lưu cho đến khi được tính lại."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Set the Net pay component in Component treatment to show an outcome here."
+msgstr ""
+"Chọn thành phần Lương thực nhận trong phần Xử lý thành phần để hiển thị kết "
+"quả ở đây."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Nothing is saved until you choose Add component."
+msgstr "Chưa có gì được lưu cho đến khi bạn chọn Thêm thành phần."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "e.g. Overtime hours"
+msgstr "Ví dụ: Số giờ làm thêm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Close component draft"
+msgstr "Đóng bản nháp thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Close value type review"
+msgstr "Đóng phần xem lại kiểu giá trị"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Suggested corrections based on labels, formulas, and sample values. Your "
+"manually chosen types are preserved. Review each suggestion before applying "
+"it."
+msgstr ""
+"Đề xuất sửa dựa trên tên, công thức và giá trị mẫu. Các kiểu bạn tự chọn "
+"được giữ nguyên. Xem từng đề xuất trước khi áp dụng."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"No automatic type corrections suggested. You can change a component’s type "
+"in its Source tab."
+msgstr ""
+"Không có đề xuất sửa kiểu tự động. Bạn có thể đổi kiểu thành phần trong thẻ "
+"Nguồn."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"This changes how values are read and displayed. Recompute and validate "
+"affected pay runs before relying on new results."
+msgstr ""
+"Thao tác này đổi cách đọc và hiển thị giá trị. Tính lại và kiểm tra các kỳ "
+"lương bị ảnh hưởng trước khi dùng kết quả mới."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Apply selected corrections"
+msgstr "Áp dụng các sửa đổi đã chọn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Sample input could not be saved. Check the value and try again."
+msgstr "Không thể lưu đầu vào mẫu. Kiểm tra giá trị rồi thử lại."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose a pay run"
+msgstr "Chọn kỳ lương"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Measure outcome"
+msgstr "Kết quả cần đo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose an outcome"
+msgstr "Chọn kết quả"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose a pay run and an outcome first."
+msgstr "Trước tiên hãy chọn kỳ lương và kết quả."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No stored inputs in this pay run."
+msgstr "Kỳ lương này không có đầu vào đã lưu."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Calculate impact"
+msgstr "Tính ảnh hưởng"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Calculation failed. Check the inputs and try again."
+msgstr "Tính toán thất bại. Kiểm tra đầu vào rồi thử lại."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Pay run measured"
+msgstr "Kỳ lương được đo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "One payslip per employee. No annual projection assumed."
+msgstr "Mỗi nhân viên một phiếu lương. Không tự suy ra dự báo cả năm."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Employees with any changed output"
+msgstr "Nhân viên có đầu ra thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose one pay run, vary a constant, and measure a named outcome"
+msgstr "Chọn một kỳ lương, thay đổi hằng số và đo kết quả đã chọn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Payslip layout is not ready."
+msgstr "Bố cục phiếu lương chưa sẵn sàng."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Place the components employees should see, then preview it. An empty layout "
+"does not mean computed net pay is zero."
+msgstr ""
+"Đặt các thành phần nhân viên cần xem rồi xem trước. Bố cục trống không có "
+"nghĩa lương thực nhận tính được bằng không."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Applicable configurations are aligned"
+msgstr "Các cấu hình áp dụng đã đồng nhất"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No applicable configurations have been checked against this pack"
+msgstr "Chưa có cấu hình áp dụng nào được kiểm tra với bộ quy định này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Focus a component"
+msgstr "Tập trung vào thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Focus dependency component"
+msgstr "Tập trung vào thành phần phụ thuộc"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose a component to read its connections"
+msgstr "Chọn thành phần để xem các kết nối"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "dependent components ·"
+msgstr "thành phần phụ thuộc ·"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Find grid components"
+msgstr "Tìm thành phần trong lưới"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Show all columns"
+msgstr "Hiện tất cả cột"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Reset view"
+msgstr "Đặt lại chế độ xem"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Keyboard help"
+msgstr "Hướng dẫn bàn phím"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Formula cells: F2 to edit, Enter to save, Esc to cancel, Ctrl+Z to undo. "
+"Arrow keys move between cells."
+msgstr ""
+"Ô công thức: F2 để sửa, Enter để lưu, Esc để hủy, Ctrl+Z để hoàn tác. Dùng "
+"phím mũi tên để chuyển ô."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Choose columns for this view. Show all also reveals columns hidden in scheme"
+" settings."
+msgstr ""
+"Chọn cột cho chế độ xem này. Hiện tất cả cũng hiển thị các cột bị ẩn trong "
+"cài đặt cơ chế lương."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Give the component a name before adding it."
+msgstr "Đặt tên thành phần trước khi thêm."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Enter a formula before adding this component."
+msgstr "Nhập công thức trước khi thêm thành phần này."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Unknown sample input: %s"
+msgstr "Đầu vào mẫu không xác định: %s"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Enter a valid number for %s."
+msgstr "Nhập số hợp lệ cho %s."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Choose a monetary outcome to measure. Set Net pay in Component treatment to "
+"use it by default."
+msgstr ""
+"Chọn kết quả tiền tệ cần đo. Đặt Lương thực nhận trong Xử lý thành phần để "
+"dùng mặc định."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Formula is empty"
+msgstr "Công thức trống"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Add a formula or change this component to an input."
+msgstr "Thêm công thức hoặc đổi thành phần này thành đầu vào."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
+msgid "No recorded run source for this component"
+msgstr "Chưa có nguồn từ kỳ lương được ghi nhận cho thành phần này"

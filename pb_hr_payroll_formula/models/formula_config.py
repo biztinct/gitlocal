@@ -757,8 +757,12 @@ class HrFormulaConfig(models.Model):
 
     @staticmethod
     def _payslip_token_value(rule, value, currency):
-        if value is None:
+        if value is None or value == '':
             return '—'
+        if rule.value_kind in ('identifier', 'text', 'date') or rule.is_text_component:
+            return str(value)
+        if rule.value_kind == 'boolean':
+            return _('Yes') if value in (True, 1, '1', 'true', 'True') else _('No') if value in (False, 0, '0', 'false', 'False') else str(value)
         try:
             number = float(value)
         except (TypeError, ValueError):
