@@ -31,13 +31,13 @@ The completed tiers rollout does not overwrite or take over that work.
 
 | Date | Module → version | What changed | Status |
 |---|---|---|---|
-| 2026-10-16 | pb_payroll_ai_insights, pb_payai_actions (screen files only, versions unchanged) | PayAI flicker while recording: the level meter and clock now redraw on their own (PayaiRecMeter), and unchanged helper turns and card icons keep their drawn copy instead of being re-inserted on every redraw. Looks-only tier on payobook: files + asset purge + `orm_signaling_assets` + `web.assets.version`, no restart; live check: 43 screen changes in 5 s of recording, none of them turns or icons (was 681 in 0.4 s). | Asset purge + version bump on rize, payobook_template, abm (no -u needed) |
 | 2026-10-16 | biz_access → 19.0.1.6.1 | TIERS follow-up: the Employee/Staff switch refuses a person with a permission given by hand (mirrors `tools/tiers_switchover.py`). `-u biz_access` on all five databases in one run, asset purge + version bump each; abm jobs re-checked. | Deployed on all five 2026-10-16 (this session) |
 
 ## Completed batch — 16 October 2026
 
 | Modules | Result |
 |---|---|
+| 2026-10-16 | pb_payroll_ai_insights, pb_payai_actions (screen files only, versions unchanged) | PayAI flicker while recording: the level meter and clock now redraw on their own (PayaiRecMeter), and unchanged helper turns and card icons keep their drawn copy instead of being re-inserted on every redraw. Looks-only tier on payobook: files + asset purge + `orm_signaling_assets` + `web.assets.version`, no restart; live check: 43 screen changes in 5 s of recording, none of them turns or icons (was 681 in 0.4 s). | Deployed on all databases 2026-10-16: payobook live-checked; rize, payobook_template, abm asset refresh (signaling + version bump), each bundle confirmed to carry the fix. |
 | pb_me_portal_comm 1.0.0, pb_ask_hr 1.0.0 | Installed on all five targets, including missing glue/dependencies. |
 | pb_me_portal 3.3.0, pb_ess_workforce 1.2.0, pb_onboarding 1.1.1, pb_rnr 1.2.0, pb_pay 3.6.0, pb_timeoff 1.6.0 | Queued portal updates and held QWeb/style edits reloaded on all five. |
 | pb_training 1.2.5 | Upgraded everywhere already installed; remains absent on retired ABM. |
