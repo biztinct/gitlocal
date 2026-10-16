@@ -48,6 +48,7 @@
                                             <label t-if="cell.decision === 'pending' and state.data.can_decide and !cell.payroll_changed and !cell.not_computed" class="pir-select"><input type="checkbox" t-att-aria-label="'Select ' + row.name + ' · ' + col.label" t-att-checked="!!state.selected[key(row,col)]" t-att-disabled="state.busy" t-on-change="() => this.toggle(row,col)"/><b t-esc="value(cell.value)"/></label>
                                             <b t-else="" class="pir-used" t-esc="value(cell.value)"/>
                                             <small t-if="col.mapped">On record: <t t-esc="cell.old_label || value(cell.old)"/></small>
+                                            <small t-if="cell.context_only">Workbook context · not used in the pay calculation.</small>
                                             <small t-if="cell.ignored">Workbook: <t t-esc="value(cell.supplied)"/> · a higher-priority payroll source was used.</small>
                                             <small t-if="cell.payroll_changed">Payroll inputs changed after this snapshot. Inspect the current payslip before deciding in Records Desk.</small>
                                             <small t-if="cell.not_computed">This row has no computed payslip yet. Complete pay-data approval and computation before making a record decision.</small>

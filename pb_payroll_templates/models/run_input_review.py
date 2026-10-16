@@ -83,8 +83,9 @@ class RunInputReview(models.AbstractModel):
                 used = batch._transform_data_to_formula_inputs(raw, contract=contract, employee=emp)
             cells = {}
             for rule in rules:
-                supplied, present = batch._get_rule_raw_value(raw, rule, allow_column_letter=False)
-                if not present or rule.code not in used:
+                keys = rule.source_ids.filtered(lambda s: s.kind == 'excel').mapped('key')
+                supplied, _key = batch._lookup_in_blob(raw, keys + batch._rule_header_candidates(rule, allow_column_letter=False))
+                if supplied is None or isinstance(supplied, str) and not supplied.strip():
                     continue  # Blanks never become instructions to erase a record.
                 destinations = mapped.get(rule.id, set())
                 fid = next(iter(destinations)) if len(destinations) == 1 else None
@@ -97,11 +98,11 @@ class RunInputReview(models.AbstractModel):
                     'kind': rule.value_kind, 'mapped': bool(destinations), 'field_id': fid,
                     'destination': card['label'] if card else '',
                     'mapping': sorted(destinations)}
-                value = plain(used[rule.code])
+                value = plain(used.get(rule.code, supplied))
                 cell = {'value': value, 'supplied': plain(supplied), 'old': None, 'old_label': '',
                     'new_label': str(value) if value is not None else '', 'changed': False,
                     'decision': 'excel' if not destinations else 'same', 'reason': '',
-                    'contract_id': contract.id or False}
+                    'contract_id': contract.id or False, 'context_only': rule.code not in used}
                 cell['ignored'] = plain(batch._normalize_rule_input_value(rule, supplied)) != value
                 if card:
                     current = desk._read_cell(batch, card, emp, contract)
@@ -141,7 +142,7 @@ class RunInputReview(models.AbstractModel):
             actual = json.loads(line.payslip_id.formula_input_values or '{}') if line and line.payslip_id else None
             for cid, cell in row['cells'].items():
                 cell['not_computed'] = bool(check_inputs and (not line or not line.payslip_id))
-                cell['payroll_changed'] = actual is not None and actual.get(col_by_id[cid]['code']) != cell['value']
+                cell['payroll_changed'] = actual is not None and not cell.get('context_only') and actual.get(col_by_id[cid]['code']) != cell['value']
                 proposal = applies.get(cell.get('apply_id'))
                 if proposal:
                     refused = any(r.get('emp_id') == row['emp_id'] and r.get('field_id') == cell.get('proposal_field') for r in proposal.late_refusals())
