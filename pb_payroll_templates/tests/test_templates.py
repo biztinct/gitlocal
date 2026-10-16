@@ -319,3 +319,27 @@ class TestPayrollTemplates(TransactionCase):
         with self.assertRaises(UserError):self.api.with_user(other)._get_exchange(self.cfg,token,'export')
         company=self.env['res.company'].create({'name':'Other workbook company'})
         with self.assertRaises(AccessError):self.api.with_company(company)._config(self.cfg.id)
+
+    def test_payroll_staff_can_open_templates_without_settings_access(self):
+        officer = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Template payroll officer', 'login': 'template.officer@test.invalid',
+            'company_id': self.env.company.id,
+            'company_ids': [(6, 0, self.env.company.ids)],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                self.env.ref('pb_hr_payroll_base.group_payroll_base_officer').id])],
+        })
+        self.assertFalse(officer.has_group('base.group_system'))
+        workspace = self.api.with_user(officer).workspace(self.cfg.id, '2026-10')
+        self.assertEqual(workspace['config_id'], self.cfg.id)
+        self.assertTrue(workspace['can_export'])
+        exported = self.api.with_user(officer).download(self.cfg.id, '', 'template')
+        self.assertTrue(exported['file_b64'])
+
+    def test_template_gate_checks_integration_on_selected_scheme(self):
+        wizard = self.env['pb.payrun.wizard']
+        vals = {'formula_config_id': self.cfg.id, 'templates_monthly': True}
+        self.assertFalse(wizard.spreadsheet_gate(vals)['lanes']['integration_configured'])
+        connector = self.env['hr.integration.connector'].create({
+            'name': 'Workbook integration', 'connector_type': 'demo'})
+        self.cfg.connector_id = connector
+        self.assertTrue(wizard.spreadsheet_gate(vals)['lanes']['integration_configured'])

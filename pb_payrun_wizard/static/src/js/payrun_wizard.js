@@ -8,6 +8,7 @@ import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_d
 import { Dialog } from "@web/core/dialog/dialog";
 import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
 import { runPayroll, takePrefill } from "@pb_payrun_wizard/js/run_driver";
+import { useSetupAction } from "@web/search/action_hook";
 
 // The shared Lucide registry first, this wizard's own five last, so every glyph
 // the standalone screen already rendered is byte-identical and the pay-data step
@@ -251,7 +252,8 @@ export class PayrunWizard extends Component {
         this.action = useService("action");
         this.notif = useService("notification");
         this.dialog = useService("dialog");
-        this.state = useState({
+        const saved = this.props.state?.payrun;
+        this.state = useState(saved || {
             step: 1, loading: false, busyMsg: "",
             defaults: null,
             form: {
@@ -297,7 +299,14 @@ export class PayrunWizard extends Component {
                 mode: freshSheetMode(),
             },
         });
+        // Breadcrumb navigation remounts client actions. Keep the selected
+        // period, scope, upload and current step in the controller's memory.
+        useSetupAction({ getLocalState: () => ({ payrun: JSON.parse(JSON.stringify(this.state)) }) });
         onWillStart(async () => {
+            if (saved) {
+                await this._refreshGate(false);
+                return;
+            }
             // The gate is a read of the schemes, not of the period, so it rides
             // alongside the defaults rather than costing the user a round trip.
             const [d, gate] = await Promise.all([

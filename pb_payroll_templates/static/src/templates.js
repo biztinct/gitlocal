@@ -4,6 +4,8 @@ import { registry } from '@web/core/registry';
 import { useService } from '@web/core/utils/hooks';
 import { patch } from '@web/core/utils/patch';
 import { Dialog } from '@web/core/dialog/dialog';
+import { ConfirmationDialog } from '@web/core/confirmation_dialog/confirmation_dialog';
+import { useSetupAction } from '@web/search/action_hook';
 import { PbFormulaStudio } from '@pb_formula_studio/js/formula_studio';
 import { PayrunWizard } from '@pb_payrun_wizard/js/payrun_wizard';
 import { ic } from '@pb_import_kit/js/import_icons';
@@ -59,9 +61,15 @@ export class PayrollTemplates extends Component {
     setup(){
         this.orm=useService('orm');this.action=useService('action');this.dialog=useService('dialog');this.notif=useService('notification');
         const ctx=this.props.action?.context||{};
+        this.fromPayRun=!!ctx.templates_from_payrun;
+        this.payRunForm=ctx.templates_payrun_form||{};
         this.state=useState({busy:false,error:'',data:null,screen:'downloads',period:ctx.templates_period||month(),configId:ctx.templates_config_id||0,layout:{time:[],adjustments:[],available:[]},dirty:false,menu:'',query:'',showCalculated:false,preview:'time'});
         this.dragged='';
         this.fileRef=useRef('file');
+        useSetupAction({beforeLeave:()=>!this.state.dirty||new Promise(resolve=>this.dialog.add(ConfirmationDialog,{
+            body:'Your template layout has unsaved changes. Leave without saving?',
+            confirmLabel:'Leave without saving',confirm:()=>resolve(true),cancel:()=>resolve(false),
+        }))});
         onWillStart(()=>this.load());
     }
     ic=ic;
@@ -104,8 +112,8 @@ export class PayrollTemplates extends Component {
     }
     async save(){
         this.state.busy=true;this.state.error='';
-        try{await this.orm.call('pb.payroll.templates','save_layout',[this.state.configId,this.state.layout]);this.state.dirty=false;this.notif.add('Monthly layout saved for this configuration.',{type:'success'});}
-        catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
+        try{await this.orm.call('pb.payroll.templates','save_layout',[this.state.configId,this.state.layout]);this.state.dirty=false;this.notif.add('Monthly layout saved for this configuration.',{type:'success'});return true;}
+        catch(e){this.state.error=message(e);return false;}finally{this.state.busy=false;}
     }
     move(id,lane,before=''){if(!this.state.data.can_layout)return;this.state.layout=moveField(this.state.layout,id,lane,before);this.state.dirty=true;this.state.menu='';}
     earlier(id,lane){const a=this.state.layout[lane],i=a.indexOf(id);if(i>0)this.move(id,lane,a[i-1]);}
@@ -115,7 +123,15 @@ export class PayrollTemplates extends Component {
     drop(ev,lane,before=''){ev.preventDefault();ev.stopPropagation();const id=this.dragged;this.dragged='';if(id&&this.fields[id])this.move(id,lane,before);}
     openRecords(){return this.action.doAction('pb_records.action_pb_records_desk',{additionalContext:{records_config_id:this.state.configId}});}
     openConfigurations(){return this.action.doAction('pb_formula_studio.action_pb_formula_studio');}
+    async returnToPayRun(){
+        if(this.state.busy)return;
+        if(this.state.dirty&&!await this.save())return;
+        const crumbs=this.env.config?.breadcrumbs||[];
+        if(crumbs.length>1)return this.action.restore(crumbs[crumbs.length-2].jsId);
+        return this.action.doAction('pb_payrun_wizard.action_pb_payrun_wizard',{additionalContext:{pb_payai_prefill:{...this.payRunForm,from_templates:true,formula_config_id:this.payRunForm.formula_config_id||this.state.configId}}});
+    }
     openPayRun(){
+        if(this.fromPayRun)return this.returnToPayRun();
         if(this.state.data.state!=='active'||!this.state.data.people){this.notif.add('Activate this configuration and assign employees before starting a pay run.',{type:'warning'});return;}
         return this.action.doAction('pb_payrun_wizard.action_pb_payrun_wizard',{additionalContext:{pb_payai_prefill:{from_templates:true,formula_config_id:this.state.configId}}});
     }
@@ -154,7 +170,7 @@ patch(PayrunWizard.prototype,{
         this.clearSheetFile();
     },
     openPayrollTemplates(){
-        return this.action.doAction('pb_payroll_templates.action_templates',{additionalContext:{templates_config_id:this.sheetConfigId,templates_period:this.state.form.date_start?.slice(0,7)||month()}});
+        return this.action.doAction('pb_payroll_templates.action_templates',{clearBreadcrumbs:false,additionalContext:{templates_config_id:this.sheetConfigId,templates_period:this.state.form.date_start?.slice(0,7)||month(),templates_from_payrun:true,templates_payrun_form:{...this.state.form}}});
     },
     async downloadMonthlyTemplate(){
         try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.sheetConfigId,this.state.form.date_start.slice(0,7),'monthly']));}

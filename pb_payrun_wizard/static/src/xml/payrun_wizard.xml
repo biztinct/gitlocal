@@ -218,7 +218,7 @@
                                  the file has its two cards because a file can
                                  be a one-off, and the connected system is the
                                  source of truth by definition. -->
-                            <div class="pw-feedsync" t-if="!state.sheet.file_name and lanes.api">
+                            <div class="pw-feedsync" t-if="!state.sheet.file_name and lanes.api and lanes.integration_configured">
                                 <div class="pw-feedsync-tx">
                                     <b>No file this month?</b>
                                     <span>Bring employee and contract records into

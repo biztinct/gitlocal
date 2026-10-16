@@ -1601,9 +1601,15 @@ class PbPayrunWizard(models.AbstractModel):
         an old database.
         """
         out = {'api': True, 'excel': True, 'records': True,
-               'records_first': False}
+               'records_first': False, 'integration_configured': False}
         try:
             config = self._payrun_config(vals)
+            # Enabling a source lane does not mean an integration exists.
+            # Match the connector used by update_records_from_feed, scoped to
+            # this run's scheme rather than another scheme in the company.
+            if config and 'connector_id' in config._fields:
+                out['integration_configured'] = bool(
+                    config.connector_id and config.connector_id.active)
             if config and 'source_priority' in config._fields:
                 out['api'] = bool(config.source_api_enabled)
                 out['excel'] = bool(config.source_excel_enabled)

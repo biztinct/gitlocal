@@ -84,3 +84,17 @@ class TestSc4LaneGates(TransactionCase):
         lanes = gate.get('lanes') or {}
         self.assertTrue(lanes.get('api') and lanes.get('excel')
                         and lanes.get('records'))
+
+    def test_06_integration_prompt_requires_this_schemes_active_connector(self):
+        connector = self.env['hr.integration.connector'].create({
+            'name': 'SC4 configured feed', 'connector_type': 'demo'})
+        linked = self._scheme('SC4F', connector_id=connector.id)
+        unlinked = self._scheme('SC4G')
+        self.assertTrue(self.Wizard.spreadsheet_gate(
+            {'formula_config_id': linked.id})['lanes']['integration_configured'])
+        self.assertFalse(self.Wizard.spreadsheet_gate(
+            {'formula_config_id': unlinked.id})['lanes']['integration_configured'],
+            'A connector on another scheme must not offer Update records here.')
+        connector.active = False
+        self.assertFalse(self.Wizard.spreadsheet_gate(
+            {'formula_config_id': linked.id})['lanes']['integration_configured'])
