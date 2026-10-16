@@ -120,3 +120,14 @@ class TestMappingExperience(TransactionCase):
             studio.mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
         self.assertFalse(self.env['hr.api.transformation.rule'].search([('connector_id', '=', self.connector.id), ('output_key', '=', 'DESKTOTAL')]))
         self.assertTrue(studio.mapping_rule_save(self.config.id, self.connector.id, self._spec())['ok'])
+
+    def test_priority_review_expires_when_a_component_or_binding_changes(self):
+        token = self.studio._desk_priority(self.config)['token']
+        self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'New input',
+            'code': 'DESKNEW', 'column_type': 'input'})
+        with self.assertRaises(UserError):
+            self.studio.mapping_priority_save(self.config.id, ['excel', 'api', 'records'], token)
+        token = self.studio._desk_priority(self.config)['token']
+        self.rule.set_source_binding('excel', 'Another column', origin='board')
+        with self.assertRaises(UserError):
+            self.studio.mapping_priority_save(self.config.id, ['excel', 'api', 'records'], token)

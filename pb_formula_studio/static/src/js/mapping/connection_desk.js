@@ -32,6 +32,7 @@ export class ConnectionDesk extends Component {
         }, () => [!!this.state.trace, !!this.state.priority, !!this.state.draft]);
         useHotkey("escape", () => { if(this.state.busy)return; this.state.trace=null;this.state.priority=null;this.state.draft=null; });
         onWillUpdateProps((next) => {
+            if(next.data === this.props.data && next.configId === this.props.configId)return;
             if (next.configId !== this.props.configId) {
                 this.state.selected = 0; this.state.q = ""; this.state.priority = null; this.state.trace = null;
             }
@@ -117,7 +118,7 @@ export class ConnectionDesk extends Component {
         if(!this.state.draft?.name.trim())return;
         await this.run(async()=> { const d=this.state.draft;
             const result=await this.orm.call(MODEL,"mapping_component_create",[this.props.configId,d.name,d.kind,d.storage || null]);
-            this.state.selected=result.rule_id; this.state.draft=null; await this.props.onRefresh();
+            this.state.selected=result.rule_id; this.state.q=""; this.state.filter="all"; this.state.tab="sources"; this.state.draft=null; await this.props.onRefresh();
             this.notif.add(_t("Component created. Choose its source next."),{type:"success"}); });
     }
 }

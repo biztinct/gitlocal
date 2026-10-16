@@ -1853,3 +1853,20 @@ msgstr "Tôi đã xem lại nơi nhận và việc thay thế."
 #: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "No recipes match. Try another search."
 msgstr "Không có công thức mẫu phù hợp. Hãy thử tìm kiếm khác."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Complete the data and calculation to see a preview."
+msgstr "Hoàn tất dữ liệu và phép tính để xem trước."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
+msgid "Complete Data, Filter and Calculate to see a preview."
+msgstr "Hoàn tất các bước Dữ liệu, Lọc và Tính toán để xem trước."
+
+#. module: pb_integrations
+#: code:addons/pb_integrations/models/rule_composer.py:0
+msgid "Draft transformation"
+msgstr "Phép chuyển đổi nháp"

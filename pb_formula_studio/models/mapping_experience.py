@@ -38,7 +38,14 @@ class MappingExperience(models.AbstractModel):
         order = [v for v in (config.source_priority or '').replace(' ', '').split(',') if v in ('api', 'excel', 'records')]
         order = list(dict.fromkeys(order + ['api', 'excel', 'records']))
         flags = {k: bool(config['source_%s_enabled' % k]) for k in order}
-        token = hashlib.sha256(json.dumps([order, flags, str(config.write_date)], sort_keys=True).encode()).hexdigest()
+        records, wires = self._source_record_dests(config), self._source_wire_dests(config)
+        revision = [(r.id, str(r.write_date),
+                     [(s.id, s.kind, s.key, str(s.write_date)) for s in r.source_ids.sorted('id')])
+                    for r in config.rule_ids.sorted('id')]
+        record_revision = [(rid, value['kind'], value['key']) for rid, value in sorted(records.items())]
+        wire_revision = [(rid, value['kind'], value['key']) for rid, value in sorted(wires.items())]
+        token = hashlib.sha256(json.dumps([order, flags, str(config.write_date), revision,
+                                           record_revision, wire_revision], sort_keys=True).encode()).hexdigest()
         return {'order': order, 'enabled': flags, 'token': token}
 
     @api.model

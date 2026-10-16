@@ -16445,3 +16445,15 @@ msgstr "Dữ liệu"
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
 msgid "Filter"
 msgstr "Lọc"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Before:"
+msgstr "Trước:"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "After:"
+msgstr "Sau:"

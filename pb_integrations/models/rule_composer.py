@@ -478,6 +478,10 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
             return {'ok': False, 'readonly': True,
                     'error': _("Advanced rules are edited in the backend form, "
                                "not in the composer.")}
+        # A preview is transient. Naming is the final guided step, while
+        # rule_save still requires a real name before it writes anything.
+        if not str(spec.get('name') or '').strip():
+            spec['name'] = _('Draft transformation')
         try:
             vals = self._rule_draft_vals(connector, spec)
         except ValueError as error:

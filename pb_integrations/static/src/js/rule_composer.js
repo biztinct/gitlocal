@@ -507,6 +507,7 @@ export class RuleComposer extends Component {
 
     get canSave() {
         if (this.readOnly || this.state.saving || !this.state.draft) { return false; }
+        if (!this.state.draft.name.trim() || !this.state.draft.output_key.trim())return false;
         // A formula that does not parse must not reach a row: it would run on
         // the next pull, fail for every employee and answer with the default.
         if (this.state.draft.builder_mode === "excel"
@@ -529,6 +530,7 @@ export class RuleComposer extends Component {
     get target() { return (this.props.mappingTargets || []).find(t=>t.id===Number(this.state.targetId)); }
     get evidenceLabel() {
         const p=this.state.preview;
+        if (p.incomplete) return _t("Complete the data and calculation to see a preview.");
         if (p.loading) return _t("Updating preview…");
         if (p.ok === false) return _t("Preview failed — check the error below");
         if (!p.records_in) return _t("No received rows — the fallback is not a verified result");
@@ -984,8 +986,14 @@ export class RuleComposer extends Component {
     _queuePreview() {
         if (!this.state.draft) { return; }
         if (this.isPython) { return; }
-        this.state.preview = { ...this.state.preview, loading: true };
-        this._pump.schedule(emitSpec(this.state.draft, this.unaryOps));
+        const spec=emitSpec(this.state.draft, this.unaryOps);
+        const blankFields=(spec.filter_conditions?.rows || []).some(r=>!r.field);
+        const needsValue=spec.builder_mode!=="excel" && ["sum","avg","min","max"].includes(spec.rule_type);
+        if (!spec.source_data_type || blankFields || (needsValue && (!spec.value_steps.length || spec.value_steps.some(s=>!s.field))) || (spec.builder_mode==="excel" && !spec.excel_formula.trim())) {
+            this._pump.cancel();this.state.preview={loading:false,ok:null,incomplete:true};return;
+        }
+        this.state.preview = { ...this.state.preview, incomplete:false, loading: true };
+        this._pump.schedule(spec);
     }
 
     _applyPreview(res) {

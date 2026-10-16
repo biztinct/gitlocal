@@ -308,3 +308,13 @@ class TestRuleComposerRpc(TransactionCase):
         saved = self._as(self.manager).rule_save(self.connector.id, spec)
         self.assertTrue(saved['ok'], saved.get('msg'))
         self.assertEqual(self.Rule.browse(saved['id']).builder_mode, 'guided')
+
+    def test_nameless_preview_is_transient_but_save_still_requires_name(self):
+        spec = self._spec(name='', output_key='')
+        before = self.Rule.search_count([('connector_id', '=', self.connector.id)])
+        result = self._as(self.manager).rule_preview(self.connector.id, spec)
+        self.assertTrue(result['ok'], result.get('error'))
+        self.assertEqual(result['result'], 4)
+        self.assertEqual(self.Rule.search_count([('connector_id', '=', self.connector.id)]), before)
+        self.assertEqual(spec['name'], '')
+        self.assertFalse(self._as(self.manager).rule_save(self.connector.id, spec)['ok'])

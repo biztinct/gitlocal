@@ -37,3 +37,5 @@
 .pbcdesk-blank{padding:32px;color:var(--pbim-muted);}
 @media(max-width:1050px){.pbcdesk-layout{grid-template-columns:minmax(280px,1fr) 330px;padding:0 16px 16px;gap:12px;}.pbcdesk-heading{padding:18px 16px 8px;}}
 @media(max-width:740px){.pbcdesk{overflow:auto;}.pbcdesk-layout{display:flex;flex-direction:column;flex:none;}.pbcdesk-list{height:400px;flex:none;}.pbcdesk-inspector{min-height:460px;}.pbcdesk-heading{flex-wrap:wrap;}.pbcdesk-detailbody{overflow:visible;}.pbcdesk-overlay{padding:10px;}.pbcdesk-dialog{max-height:95vh;}.pbcdesk-trace{height:90vh;}}
+
+.pbcdesk-tracebody {position:relative;flex:1;min-height:0;}
