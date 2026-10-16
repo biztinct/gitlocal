@@ -110,14 +110,11 @@ export class RunInputReview extends Component {
     }
 }
 
-class RunInputReviewAction extends Component {
-    static template = 'pb_payroll_templates.RunInputReviewAction';
-    static components = {RunInputReview}; static props = ['*'];
-    setup() { this.action = useService('action'); }
-    get runId() { return this.props.action.params.run_id; }
-    close() { this.action.doAction({type: 'ir.actions.act_window', res_model: 'hr.payslip.run', res_id: this.runId, views: [[false, 'form']]}); }
-}
-registry.category('actions').add('pb_payroll_input_changes', RunInputReviewAction);
+registry.category('actions').add('pb_payroll_input_changes', (env, action) => {
+    // Dialog needs the dialog service's environment and focus lifecycle. Keep
+    // the batch or Runs board underneath so closing always returns in place.
+    env.services.dialog.add(RunInputReview, {runId: action.params.run_id});
+});
 
 patch(PayrunWizard.prototype, {
     // This addon owns the durable choice. The basic wizard still works on

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="pb_payroll_templates.RunInputReviewAction">
-        <RunInputReview runId="runId" close="() => this.close()"/>
-    </t>
     <t t-name="pb_payroll_templates.RunInputReview">
         <Dialog title="'Input changes'" size="'xl'" contentClass="'pir-dialog'">
             <div class="pir" t-att-aria-busy="state.busy ? 'true' : 'false'">
