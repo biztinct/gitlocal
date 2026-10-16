@@ -462,6 +462,10 @@ class TestPayrollTemplates(TransactionCase):
         self.api.confirm_monthly_review(self.cfg.id,review['token'],[
             {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':30}])
         self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id]['rule:%s'%self.bonus.id],30)
+        reopened=self.api.reopen_monthly_review(self.cfg.id,review['token'])
+        self.api.confirm_monthly_review(self.cfg.id,reopened['token'],[
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':None}])
+        self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id]['rule:%s'%self.bonus.id],30)
 
     def test_database_changes_after_review_block_even_if_no_upload_delta(self):
         review=self.review(self.export())

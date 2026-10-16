@@ -83,6 +83,7 @@ export class MonthlyInputReview extends Component {
         if(ev.key!=='Enter')return;ev.preventDefault();
         this.gridRef.el.querySelector(`input[data-row="${ri+(ev.shiftKey?-1:1)}"][data-col="${ci}"]`)?.focus();
     }
+    finishEdit(row,c){const cell=row.cells[c.id];if(cell.value===null&&cell.current!==null&&cell.current!==undefined)this.edit(row,c,cell.current);}
     onInput(row,c,ev){this.edit(row,c,ev.target.value);}
     restoreActive(){const a=this.active;if(!a)return;const initial=this.original.grid.rows.find(r=>r.emp_id===a.row.emp_id).cells[a.column.id];Object.assign(this.activeCell,JSON.parse(JSON.stringify(initial)));delete this.state.edits[`${a.row.emp_id}:${a.column.id}`];}
     reset(){for(const r of this.data.grid.rows){const original=this.original.grid.rows.find(o=>o.emp_id===r.emp_id);r.cells=JSON.parse(JSON.stringify(original.cells));}this.state.edits={};this.state.error='';}

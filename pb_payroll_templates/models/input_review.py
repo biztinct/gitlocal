@@ -169,7 +169,10 @@ class PayrollInputReview(models.AbstractModel):
                 cell = row['cells'][c['id']]
                 cell['issue'] = ''
                 try:
-                    value = self._input_value(cell['value'], c['kind'])
+                    # Inline blanks follow the workbook's keep-current rule.
+                    # The grid and materialized payroll must agree after save.
+                    raw = cell['current'] if cell['source'] == 'edited' and cell['value'] in (None, '') else cell['value']
+                    value = self._input_value(raw, c['kind'])
                     if c.get('positive') and value is not None and value <= 0:
                         raise ValueError(_('Enter a number greater than zero.'))
                     cell['value'] = value
