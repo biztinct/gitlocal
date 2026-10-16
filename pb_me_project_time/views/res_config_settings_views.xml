@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ETP E3 D3: the per-company switch for project time on the
+         self-service pages, in the stock Timesheets "Time Encoding" block
+         (hr_timesheet.res_config_settings_view_form). An ir.config_parameter
+         behind a non-stored field — no column on res.company. -->
+    <record id="res_config_settings_view_form_project_time" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.me.project.time</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_timesheet.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='time_encoding_setting_container']" position="inside">
+                <setting id="pb_me_project_time_setting" company_dependent="1"
+                         help="When off, the Project time page shows that it is switched off, and its home tile and card are hidden. Time entered here before stays where it is.">
+                    <field name="pb_me_project_time_enabled"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

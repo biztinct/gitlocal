@@ -324,6 +324,11 @@
               <button type="submit" class="pbme-btn pbme-btn--primary">Send to my manager</button>
             </form>
           </div>
+          <!-- ETP E3 (D8): the other kind of time, one line, only when that page is on for this person. -->
+          <p t-if="'pb.me.project.time' in request.env and request.env['pb.me.project.time'].session_state() == 'ok'"
+             class="pbme-muted pbew-crosslink">
+            <a href="/my/project-time">Looking for the hours you spent on each project? That is Project time.</a>
+          </p>
         </t>
       </div>
     </t>

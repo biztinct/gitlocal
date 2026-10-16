@@ -814,3 +814,9 @@ msgid ""
 msgstr ""
 "Bạn chưa được cấp ngày phép nào. Số ngày phép sẽ hiện ở đây khi bộ phận nhân "
 "sự cấp."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_timesheet
+msgid "Looking for the hours you spent on each project? That is Project time."
+msgstr "Bạn tìm số giờ đã làm cho từng dự án? Đó là trang Giờ theo dự án."
+
