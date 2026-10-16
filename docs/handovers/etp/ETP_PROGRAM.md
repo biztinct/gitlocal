@@ -42,6 +42,8 @@ three Lucide glyphs (`receipt`, `plane`, `clipboard-list`) in `pb_me_portal 19.0
 three builds never touch the same file. Each phase module draws its own home tile the way pb_ask_hr does.
 
 ## Status
+- **2026-10-16 ~12:05 Sydney: PROGRAM COMPLETE — E1–E3 live on all five databases**, owner's live walk done on
+  payobook as ess2.demo, batch deployed; see `ETP_CLOSEOUT.md`.
 - 2026-10-16 10:30 Sydney: surveys done, program + ledger + three handovers written, pb_me_portal 19.0.3.4.0
   pre-work committed, clone databases p1clone/p2clone created from p0clone (dump/restore + filestore copy),
   three Opus agents launched.
