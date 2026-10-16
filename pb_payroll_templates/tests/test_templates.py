@@ -273,6 +273,22 @@ class TestPayrollTemplates(TransactionCase):
         d['layout']['adjustments'].append('rule:%s'%computed.id)
         with self.assertRaises(UserError):self.api.save_layout(self.cfg.id,d['layout'])
 
+    def test_text_record_context_with_legacy_numeric_kind_round_trips(self):
+        role=self.rule('Position','WBJOBTITLE','money')
+        self.map_field(role,'hr.employee','job_title')
+        self.emp.job_title='Payroll specialist'
+        d=self.api.workspace(self.cfg.id,'2026-10')
+        fid='rule:%s'%role.id
+        d['layout']['available'].remove(fid);d['layout']['adjustments'].append(fid)
+        self.api.save_layout(self.cfg.id,d['layout'])
+        for mode in ('monthly','template'):
+            wb=self.export(mode)
+            review=self.review(wb)
+            self.assertFalse(review['issues'])
+            self.assertFalse(review['changes'])
+            self.set_value(wb,'Monthly adjustments','Position','Changed context')
+            self.assertTrue(self.review(wb)['issues'])
+
     def test_monthly_zero_cannot_fall_back_to_old_record(self):
         self.map_field(self.bonus,'hr.contract','wage')
         self.cfg.source_priority='records,excel,api'

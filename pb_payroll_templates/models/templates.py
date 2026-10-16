@@ -468,6 +468,15 @@ class PayrollTemplates(models.AbstractModel):
                     if c.get('readonly') and mode == 'monthly':
                         previous = old['records'].get(c.get('record_id'))
                         current = records[eid].get(c.get('record_id'))
+                    if c.get('readonly'):
+                        # Record context can be text even when a legacy payroll
+                        # column still has its default numeric value kind.
+                        # It is never an input to coerce or write back.
+                        if plain(value) == current:
+                            unchanged += 1
+                        else:
+                            issues.append(_('%s row %s: %s is read-only context.') % (sheet_name, rn, c['label']))
+                        continue
                     try:
                         value = self._numeric(value, c.get('kind')) if mode == 'monthly' else plain(value)
                     except (ValueError, TypeError):
@@ -475,9 +484,6 @@ class PayrollTemplates(models.AbstractModel):
                         continue
                     if plain(value) == current:
                         unchanged += 1
-                        continue
-                    if c.get('readonly'):
-                        issues.append(_('%s row %s: %s is read-only context.') % (sheet_name, rn, c['label']))
                         continue
                     if current != previous:
                         issues.append(_('%s · %s changed since download. Download again to review the latest value.') % (emp.name, c['label']))
