@@ -1,0 +1,115 @@
+{
+  "runtime_commit": "412b75eaa942b7c0363908ec7f105e7ae0ca07cd",
+  "source_files_verified": 4807,
+  "custom_modules_verified": 149,
+  "service": "active",
+  "databases": {
+    "p0clone": {
+      "versions": {
+        "pb_hr_payroll_formula": "19.0.1.148.12",
+        "pb_formula_studio": "19.0.1.201.19"
+      },
+      "full_regression_tests": 72,
+      "final_studio_tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "payroll_snapshot_preserved": true,
+      "cron_flags_preserved": true,
+      "active_jobs": 26,
+      "mail_queue_preserved": true,
+      "temporary_guards_remaining": 0
+    },
+    "payobook": {
+      "versions": {
+        "pb_formula_studio": "19.0.1.201.19",
+        "pb_hr_payroll_formula": "19.0.1.148.12"
+      },
+      "full_regression_tests": 72,
+      "final_studio_tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "payroll_snapshot_preserved": true,
+      "cron_flags_preserved": true,
+      "active_jobs": 37,
+      "mail_queue_preserved": true,
+      "temporary_guards_remaining": 0
+    },
+    "rize": {
+      "versions": {
+        "pb_formula_studio": "19.0.1.201.19",
+        "pb_hr_payroll_formula": "19.0.1.148.12"
+      },
+      "full_regression_tests": 72,
+      "final_studio_tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "payroll_snapshot_preserved": true,
+      "cron_flags_preserved": true,
+      "active_jobs": 69,
+      "mail_queue_preserved": true,
+      "temporary_guards_remaining": 0
+    },
+    "payobook_template": {
+      "versions": {
+        "pb_formula_studio": "19.0.1.201.19",
+        "pb_hr_payroll_formula": "19.0.1.148.12"
+      },
+      "full_regression_tests": 72,
+      "final_studio_tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "payroll_snapshot_preserved": true,
+      "cron_flags_preserved": true,
+      "active_jobs": 0,
+      "mail_queue_preserved": true,
+      "temporary_guards_remaining": 0
+    },
+    "abm": {
+      "versions": {
+        "pb_formula_studio": "19.0.1.201.19",
+        "pb_hr_payroll_formula": "19.0.1.148.12"
+      },
+      "full_regression_tests": 72,
+      "final_studio_tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "payroll_snapshot_preserved": true,
+      "cron_flags_preserved": true,
+      "active_jobs": 0,
+      "mail_queue_preserved": true,
+      "temporary_guards_remaining": 0
+    }
+  },
+  "temporary_ui_configuration_removed": true,
+  "chrome": {
+    "tenant": "rize",
+    "runtime_errors": 0,
+    "viewports": [
+      "normal desktop",
+      "390 \u00d7 844"
+    ],
+    "checks": [
+      "Table search, grouping, selection and inspector",
+      "Grid Show all 81 columns, grouping, column manager and three property rows",
+      "Add draft validation and cancellation",
+      "Fictional component creation and typed sample values",
+      "Formula save, recalculation and Undo",
+      "Value-type persistence",
+      "Sample-specific buffered edits and switching",
+      "Real-scheme effective defaults visible",
+      "Named net-pay comparison",
+      "What-if run scope, cancellation and selected-outcome affected count",
+      "Payslip readiness and designated net value",
+      "115 of 115 graph edge paths non-empty",
+      "Legislation applicability wording",
+      "Review changes opens",
+      "Actual-payslip picker opens from Table",
+      "Collapsed groups use a neutral value",
+      "Narrow viewport name, controls and preview values visible"
+    ]
+  },
+  "native_formatter_assertions": 14,
+  "owl_templates_compiled": 10,
+  "odoo_po_reader_entries": 2468,
+  "test_screenshots_written_to_files": 0
+}
