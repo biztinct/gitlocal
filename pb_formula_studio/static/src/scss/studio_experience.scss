@@ -126,3 +126,19 @@
     .wi-scope { flex-wrap: wrap; line-height: 1.7; }
 }
 .pbfs .pbtest-inrow .experience-default-label { margin-left: 8px; white-space: nowrap; }
+.pbfs {
+    @media (max-width: 767px) {
+        .pbfs-top { padding: 12px; }
+        .pbfs-top-row1 { flex-direction: column; align-items: stretch; gap: 8px; }
+        .pbfs-cfg { width: 100%; flex-wrap: wrap; gap: 7px; }
+        .pbfs-cfg-name { flex: 1 0 100%; max-width: 100%; text-align: left; white-space: normal; }
+        .pbfs-cfg-name .nm { white-space: normal; overflow-wrap: anywhere; line-height: 1.4; }
+        .pbfs-id-right { width: 100%; flex-wrap: wrap; justify-content: space-between; }
+        .experience-navigation .pbfs-seg { width: 100%; gap: 0; justify-content: space-between; }
+        .experience-navigation .pbfs-seg button { padding: 8px 6px; }
+        .experience-navigation .pbfs-top-actions { width: 100%; min-width: 0; flex-wrap: wrap; }
+        .experience-navigation .pbfs-top-actions button { flex: 1 1 auto; min-width: 0; max-width: 100%; white-space: normal; }
+        .experience-table td:nth-child(2), .experience-table th:nth-child(2) { display: none; }
+        .experience-component > span { min-width: 0; }
+    }
+}

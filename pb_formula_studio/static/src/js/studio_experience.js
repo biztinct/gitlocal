@@ -91,10 +91,17 @@ patch(PbFormulaStudio.prototype, {
     kindLabel(kind) { return (this.valueKinds.find(k => k[0] === kind) || ['', kind])[1]; },
     get issueSummary() {
         const c = (this.state.probData || {}).counts || {};
-        if (c.error) return _t('%s errors to resolve', c.error);
-        if (c.warning) return _t('%s warnings to review', c.warning);
+        if (c.error) return c.error === 1 ? _t('1 error to resolve') : _t('%s errors to resolve', c.error);
+        if (this.testChip?.kind === 'fail') return this.testChip.failed === 1 ? _t('1 sample check failing') : _t('%s sample checks failing', this.testChip.failed);
+        if (c.warning) return c.warning === 1 ? _t('1 warning to review') : _t('%s warnings to review', c.warning);
         return _t('No blocking issues');
     },
+    openReviewQueue() {
+        if (this.state.probData?.counts?.error) this.openProblems();
+        else if (this.testChip?.kind === 'fail') this.openTest();
+        else this.openProblems();
+    },
+    async openActualPreview() { this.state.previewDrawer = true; await this.openPersonPicker(); },
     fmtTyped(c, value) { return formatComponentValue(c, value, this.state.config.currency || '', {yes:_t('Yes'), no:_t('No')}); },
     tcell(value, row) { return this.fmtTyped(row, value); },
     testInputType(row) { return componentInputType(row); },

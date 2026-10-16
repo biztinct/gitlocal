@@ -16079,3 +16079,33 @@ msgstr ""
 #: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Choose a constant and a finite value to simulate."
 msgstr "Chọn một hằng số và giá trị hữu hạn để mô phỏng."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
+msgid "Actual payslip"
+msgstr "Phiếu lương thực tế"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
+msgid "1 error to resolve"
+msgstr "1 lỗi cần giải quyết"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
+msgid "1 warning to review"
+msgstr "1 cảnh báo cần xem lại"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
+msgid "1 sample check failing"
+msgstr "1 phép kiểm tra mẫu thất bại"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
+msgid "%s sample checks failing"
+msgstr "%s phép kiểm tra mẫu thất bại"

@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
   <t t-name="pb_formula_studio.Experience" t-inherit="pb_formula_studio.PbFormulaStudio" t-inherit-mode="extension">
     <xpath expr="//div[hasclass('pbfs-id-right')]" position="replace">
-      <div class="pbfs-id-right"><button class="experience-issues" t-on-click="openProblems" t-esc="issueSummary"/>
+      <div class="pbfs-id-right"><button class="experience-issues" t-on-click="openReviewQueue" t-esc="issueSummary"/>
         <button t-if="state.canEdit and ['draft','testing','validated'].includes(state.config.state)" class="pbfs-btn primary" t-on-click="advance" t-esc="nextLabel()"/>
       </div>
     </xpath>
@@ -35,6 +35,7 @@
             <option t-foreach="state.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="!state.personPayslipId and s.id === state.preview.sample_id" t-esc="s.name"/>
           </select>
         </label>
+        <button class="pbfs-btn ghost sm" t-on-click="openActualPreview">Actual payslip</button>
         <button class="pbfs-btn ghost sm" t-att-disabled="experience.typeBusy" t-on-click="reviewValueTypes">Review value types</button>
         <button t-if="state.canEdit" class="pbfs-btn primary sm" t-on-click="addComponentQuick">+ Add component</button>
       </div>
@@ -129,12 +130,12 @@
     <xpath expr="//div[hasclass('ps-body')]" position="before"><div t-if="state.psData and state.psData.ok and !payslipLayoutReady" class="experience-notice"><b>Payslip layout is not ready.</b> Place the components employees should see, then preview it. An empty layout does not mean computed net pay is zero.</div></xpath>
     <xpath expr="//div[hasclass('lg-allgood')]" position="replace"><div t-if="!state.legisCoverage.summary.drift" class="lg-allgood"><span t-if="state.legisCoverage.summary.aligned">Applicable configurations are aligned</span><span t-else="">No applicable configurations have been checked against this pack</span></div></xpath>
     <xpath expr="//div[hasclass('dp-toolbar')]" position="before"><label class="experience-controls">Focus a component<select aria-label="Focus dependency component" t-on-change="focusDependency"><option value="">Choose a component to read its connections</option><option t-foreach="state.depNodes" t-as="n" t-key="n.id" t-att-value="n.col" t-esc="n.col + ' · ' + n.name"/></select></label></xpath>
-    <xpath expr="//div[hasclass('pbcfg-rail-side')]/div[hasclass('pbfs-ring')]" position="replace"><button class="experience-issues" t-on-click="openProblems" t-esc="issueSummary"/></xpath>
+    <xpath expr="//div[hasclass('pbcfg-rail-side')]/div[hasclass('pbfs-ring')]" position="replace"><button class="experience-issues" t-on-click="openReviewQueue" t-esc="issueSummary"/></xpath>
     <xpath expr="//div[hasclass('cs-ring')][@t-else]" position="replace"><div t-else="" class="experience-config-verdict"><span t-if="c.problem_counts.error">Needs review</span><span t-elif="c.problem_counts.warning">Review warnings</span><span t-else="">No blocking issues</span></div></xpath>
     <xpath expr="//b[@t-esc='state.config.score']/parent::div" position="replace"><div class="sub">Every tool for <b t-esc="state.config.name"/></div></xpath>
     <xpath expr="//div[hasclass('intel-unused')]/preceding-sibling::div[2]" position="replace"><div class="ce-sec-h">No formula dependents</div></xpath>
     <xpath expr="//div[hasclass('pbtest-inrow')]/span" position="inside"><small t-if="r.input_is_default" class="experience-default-label">Default</small></xpath>
-    <xpath expr="//div[hasclass('pbtest-inputs')]" position="before"><p class="experience-muted">Inputs marked Default use the scheme default because this sample has no value for that component.</p></xpath>
+    <xpath expr="//div[hasclass('pbtest-inputs')]" position="before"><p t-if="state.testDetail.rows.some(r => r.input_is_default)" class="experience-muted">Inputs marked Default use the scheme default because this sample has no value for that component.</p></xpath>
     <xpath expr="//tr[@t-foreach='cmpComponents']/td[1]" position="replace"><td class="s"><b t-esc="componentName(c.code)"/><small class="experience-component-code" t-esc="c.code"/></td></xpath>
     <xpath expr="//t[@t-esc='state.cmpResult.headline']" position="attributes"><attribute name="t-esc">componentName(state.cmpResult.headline)</attribute></xpath>
     <xpath expr="//span[@t-esc=&quot;state.whatifResult.employees_changed + ' / ' + state.whatifResult.employees_total&quot;]" position="attributes"><attribute name="t-esc">state.whatifResult.headline_changed + ' / ' + state.whatifResult.employees_total</attribute></xpath>

@@ -52,3 +52,16 @@ output. Scope includes employees excluded for missing inputs and extra payslips
 ignored when choosing the latest one per employee. Added four regression cases
 for default inputs, sparse-value classification, constant validation, and unchanged
 headline outcomes; all 11 audit-specific cases pass before final rollout.
+
+The Chrome write pass used a temporary, draft-only scheme with fictional sample
+values. It verified explicit component creation, 00017/00018 identifier preservation,
+21 unprefixed days, 10.5% rates, sample switching, a formula edit from 2,100 to 4,200,
+Undo back to 2,100, persistent value-type changes, and fast Test sample switching
+without moving an edit to the wrong sample. The temporary scheme was removed.
+Real-scheme Test inputs now display 21 standard days with a Default marker.
+Graph path geometry was verified non-empty after the action-context repair.
+
+Final UI polish removes arbitrary sums from collapsed visual groups (they can mix
+units or count the same pay twice), exposes the existing real-payslip picker from
+the Table toolbar, keeps failing sample checks visible in the single review queue,
+and adjusts the narrow layout so component names and preview values remain readable.

@@ -268,13 +268,10 @@ export class GridStudio extends Component {
         else { this.ui.focus = { colId: null, row: this.ui.focus.row }; this.ui.tintCol = null; }
     }
     // Summary cell content: Σ of member values from the given values map (D-F6).
-    summaryValue(summary, valuesMap) {
-        let total = 0;
-        for (const c of summary.members) {
-            const v = valuesMap ? valuesMap[c.col] : undefined;
-            if (typeof v === "number") total += v;
-        }
-        return this.props.formatSum ? this.props.formatSum(total) : this._fmtNum(total);
+    summaryValue() {
+        // A visual group is not a payroll subtotal: summing input IDs, days,
+        // gross pay and net pay can mix units and double count the same money.
+        return '—';
     }
     summaryBandStyle(summary) {
         const g = summary.members[0] && summary.members[0].group;
