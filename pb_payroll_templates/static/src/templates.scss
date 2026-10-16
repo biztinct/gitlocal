@@ -72,5 +72,5 @@
   button:disabled{cursor:default;opacity:.5}
 }
 .o_modal_full .pt-sheet-dialog{border-radius:0!important;height:100%;.pt-sheet-body{display:flex;flex-direction:column}.pt-input-sheet{display:flex;flex-direction:column;flex:1;min-height:0}.pt-grid-wrap{max-height:none;flex:1}.pt-cell-inspector{flex-shrink:0}}
-@media(min-width:1200px){.modal-dialog:has(.pt-sheet-dialog){max-width:min(1450px,94vw)}}
+@media(min-width:1200px){.modal-dialog:has(.pt-sheet-dialog){width:1450px;max-width:94vw}}
 @media(max-width:900px){.pt-sheet-dialog{.pt-sheet-metrics{grid-template-columns:repeat(2,1fr)}.pt-sheet-intro{align-items:start;flex-direction:column}.pt-input-sheet{padding:16px 12px 0}.pt-sheet-toolbar{gap:7px}.pt-sheet-filters{margin:0}.pt-sheet-legend small{display:none}.pt-baseline-coverage{display:none}.pt-sheet-footer-note{display:none}.pt-grid-wrap{min-height:200px}.pt-sheet-tabs button{padding:11px 6px}.pt-sheet-tabs button:last-child{display:none}.pt-employee-col{width:150px!important;min-width:150px!important;max-width:150px!important}.pt-inspector-prior{display:none}}}
