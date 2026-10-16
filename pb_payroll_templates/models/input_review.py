@@ -43,7 +43,8 @@ class PayrollInputReview(models.AbstractModel):
 
     def _resolved_month(self, cfg, period, people, catalog):
         current = self._current(cfg, period, people)
-        records = self._record_values(cfg, people, self._cards(cfg))
+        cards = self._cards(cfg)
+        records = self._record_values(cfg, people, cards)
         rows = self.env['pb.payroll.month.inputs'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id),
             ('period', '=', period), ('employee_id', 'in', people.ids)])
@@ -60,7 +61,10 @@ class PayrollInputReview(models.AbstractModel):
                 source, detail = 'system', _('Saved monthly inputs')
                 if c.get('readonly'):
                     value = records[emp.id].get(c.get('record_id'))
-                    detail = c.get('record_id') or _('Employee / contract record')
+                    fid = c.get('record_id') or ''
+                    card = cards.get(fid, {})
+                    origin = _('Contract record') if fid.startswith(('f:hr.contract:', 'c:')) else _('Employee record') if fid.startswith('f:hr.employee:') else _('Bank account record') if fid.startswith('b:') else _('Saved record')
+                    detail = '%s · %s' % (origin, card.get('label') or c['label'])
                     if fid in overrides:
                         value, source, detail = overrides[fid], 'edited', _('Saved edit for this month only')
                 else:
@@ -133,11 +137,17 @@ class PayrollInputReview(models.AbstractModel):
         if isinstance(value, str) and value.lstrip().startswith(('=', '@')):
             raise ValueError(_('Enter a value, not a formula.'))
         if kind in NUMBERS:
-            return self._numeric(value, kind)
+            try:
+                return self._numeric(value, kind)
+            except (ValueError, TypeError):
+                raise ValueError(_('Enter a whole number.') if kind == 'integer' else _('Enter a valid number.')) from None
         if kind == 'date':
             if isinstance(value, datetime):
                 return value.date().isoformat()
-            return fields.Date.to_date(value).isoformat()
+            try:
+                return fields.Date.to_date(value).isoformat()
+            except (ValueError, TypeError, AttributeError):
+                raise ValueError(_('Use a valid date in YYYY-MM-DD format.')) from None
         if kind == 'boolean':
             if isinstance(value, bool):
                 return value

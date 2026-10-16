@@ -361,6 +361,7 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual({c['id'] for c in review['grid']['columns']},
                          {'rule:%s'%r.id for r in (self.salary,self.paid,self.bonus)})
         self.assertEqual(self.cell(review,self.salary)['source'],'system')
+        self.assertIn('Contract record',self.cell(review,self.salary)['detail'])
         self.assertEqual(self.cell(review,self.salary)['value'],1000)
         self.assertEqual(self.cell(review,self.paid)['source'],'excel')
         self.assertEqual(self.cell(review,self.bonus)['source'],'default')
@@ -457,7 +458,7 @@ class TestPayrollTemplates(TransactionCase):
     def test_invalid_uploaded_cell_can_be_corrected_without_reupload(self):
         wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus','invalid')
         review=self.review(wb)
-        self.assertTrue(self.cell(review,self.bonus)['issue'])
+        self.assertEqual(self.cell(review,self.bonus)['issue'],'Enter a valid number.')
         self.api.confirm_monthly_review(self.cfg.id,review['token'],[
             {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':30}])
         self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id]['rule:%s'%self.bonus.id],30)
