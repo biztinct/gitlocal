@@ -23,9 +23,9 @@
                     <t t-if="sheet">
                         <div class="pir-tools">
                             <select t-if="state.data.sheets.length > 1" aria-label="Workbook" t-on-change="changeSheet"><option t-foreach="state.data.sheets" t-as="s" t-key="s.id" t-att-value="s_index" t-att-selected="s_index === state.sheet" t-esc="s.filename"/></select>
-                            <input placeholder="Find employee or ID" aria-label="Find employee or ID" t-model="state.query" t-on-input="() => { this.state.page = 0; }"/>
-                            <input placeholder="Find field" aria-label="Find field" t-model="state.field" t-on-input="() => { this.state.page = 0; }"/>
-                            <select aria-label="Show input changes" t-model="state.filter" t-on-change="() => { this.state.page = 0; }">
+                            <input placeholder="Find employee or ID" aria-label="Find employee or ID" t-model="state.query" t-on-input="resetView"/>
+                            <input placeholder="Find field" aria-label="Find field" t-model="state.field" t-on-input="resetView"/>
+                            <select aria-label="Show input changes" t-model="state.filter" t-on-change="resetView">
                                 <option value="all">All inputs</option><option value="changed">Changed mapped fields</option><option value="pending">To decide</option><option value="excel">Excel only</option><option value="saved">Saved for future</option><option value="once">This payroll only</option><option value="approval">Awaiting approval</option><option value="blocked">Needs attention</option>
                             </select>
                             <button type="button" class="btn btn-link" t-on-click="load" t-att-disabled="state.busy">Refresh</button>

@@ -86,7 +86,8 @@ export class RunInputReview extends Component {
         this.action.doAction('pb_records.action_pb_records_desk', {additionalContext: {records_config_id: configId}});
     }
     changeSheet(ev) { this.state.sheet = Number(ev.target.value); this.state.selected = {}; this.state.page = 0; }
-    setFilter(filter) { this.state.filter = filter; this.state.page = 0; }
+    resetView() { this.state.page = 0; this.state.selected = {}; }
+    setFilter(filter) { this.state.filter = filter; this.resetView(); }
     decide(decision) {
         const keys = this.selected;
         if (!keys.length || !this.canDecide) return;

@@ -12,7 +12,11 @@
     }
     .pir-notice { padding: 12px 16px; background: #fff8e9; border: 1px solid #f0dfb9; border-radius: 9px; margin-bottom: 14px; line-height: 1.6; }
     .pir-error { padding: 14px; background: #fff0f1; border: 1px solid #e8bdc1; border-radius: 9px; margin-bottom: 14px; white-space: pre-line; }
-    .pir-tools { display:flex; gap:8px; flex-wrap:wrap; margin: 16px 0 12px; }
+    .pir-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin: 12px 0;
+        input:not([type=checkbox]) {width:160px; min-width:0; flex:0 1 160px;}
+        select {width:auto; max-width:210px; flex:0 1 auto;}
+        button {padding:8px 10px; font-size:12px;}
+    }
     input:not([type=checkbox]), select { border: 1px solid #dcd9e8; border-radius: 7px; padding: 8px 10px; min-width: 130px; background: white; color: inherit; }
     input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid #7966c5; outline-offset: 2px; }
     .pir-legend { display:flex; flex-wrap:wrap; gap:16px; font-size:11px; color:#747087; margin:12px 0;
