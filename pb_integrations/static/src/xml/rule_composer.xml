@@ -69,7 +69,7 @@
               <div t-if="state.ai.error" class="itgrc-err" t-esc="state.ai.error"/>
             </div>
 
-            <h3 class="itgrc-h">Or start from one of these</h3>
+            <h3 class="itgrc-h">Or start from one of these</h3><div class="itgrc-recipefilters"><input class="pplw-in" type="search" placeholder="Find a recipe…" aria-label="Find a recipe" t-model="state.recipeQuery"/><select class="pplw-in" aria-label="Recipe category" t-model="state.recipeGroup"><option value="all">All recipes</option><option value="vendor">Vendor recipes</option><option value="general">General recipes</option></select></div><p t-if="!recipes.length" class="itgrc-note">No recipes match. Try another search.</p>
             <div class="itgrc-recipes">
               <t t-foreach="recipes" t-as="r" t-key="r.key">
                 <button t-if="!r.exists" class="itgrc-recipe"
@@ -91,7 +91,7 @@
 
           <div t-else="" class="itgrc-cols">
             <!-- ==== the composer: four steps, and the data answering ==== -->
-            <div class="itgrc-steps">
+            <div class="itgrc-steps"><div t-if="!isPython" class="itgrc-stepnav"><button t-foreach="steps" t-as="step" t-key="step.id" t-att-class="state.step===step.id ? 'on' : ''" t-on-click="() => this.goStep(step.id)"><b t-esc="step.id"/><t t-esc="step.label"/></button></div><label t-if="!isPython" class="itgrc-allsteps"><input type="checkbox" t-model="state.allSteps"/> Show all steps</label>
 
               <div t-if="state.ribbon" class="itgrc-ribbon">
                 <span t-out="ic('sparkles', 15)"/>
@@ -134,9 +134,9 @@
 
               <t t-else="">
                 <!-- ==== TAKE ==== -->
-                <div class="itgrc-card">
+                <div t-if="state.allSteps or state.step===1" class="itgrc-card">
                   <div class="itgrc-card__h">
-                    <span class="n">1</span><span>Take</span>
+                    <span class="n">1</span><span>Choose the data</span>
                     <span class="itgrc-chip" t-esc="chipRecords"/>
                   </div>
                   <div class="itgrc-feeds">
@@ -174,9 +174,9 @@
                 </div>
 
                 <!-- ==== KEEP ==== -->
-                <div class="itgrc-card">
+                <div t-if="state.allSteps or state.step===2" class="itgrc-card">
                   <div class="itgrc-card__h">
-                    <span class="n">2</span><span>Keep</span>
+                    <span class="n">2</span><span>Keep matching records</span>
                     <span class="itgrc-chip" t-esc="chipMatched"/>
                   </div>
                   <div class="itgrc-seg">
@@ -220,9 +220,9 @@
                 </div>
 
                 <!-- ==== DERIVE ==== -->
-                <div class="itgrc-card">
+                <div t-if="state.allSteps or state.step===3" class="itgrc-card">
                   <div class="itgrc-card__h">
-                    <span class="n">3</span><span>Derive</span>
+                    <span class="n">3</span><span>Calculate the answer</span>
                     <span class="itgrc-chip" t-esc="chipValued"/>
                     <span class="itgrc-sp"/>
                     <button t-if="!readOnly and !isFormulaLane" class="itgrc-lane"
@@ -352,8 +352,8 @@
                 </div>
 
                 <!-- ==== CALL IT ==== -->
-                <div class="itgrc-card">
-                  <div class="itgrc-card__h"><span class="n">4</span><span>Call it</span></div>
+                <div t-if="state.allSteps or state.step===4" class="itgrc-card">
+                  <div class="itgrc-card__h"><span class="n">4</span><span>Name &amp; connect</span></div>
                   <label class="pplw-label">Name</label>
                   <input class="pplw-in" t-att-value="state.draft.name"
                          t-att-disabled="readOnly"
@@ -369,6 +369,8 @@
                   <label class="pplw-label">If nothing matches, use</label>
                   <input class="pplw-in itgrc-val" t-att-value="state.draft.default_value"
                          t-att-disabled="readOnly" t-on-input="onDefault"/>
+                  <p class="itgrc-note">A fallback is used when nothing matches. The preview distinguishes it from a result verified against received rows.</p>
+                  <t t-if="props.mappingTargets and !readOnly"><label class="pplw-label">Connect the output to a component (optional)</label><select class="pplw-in" t-att-value="state.targetId" t-on-change="targetChanged"><option value="">Save rule only — connect later</option><option t-foreach="props.mappingTargets" t-as="target" t-key="target.id" t-att-value="target.id" t-esc="target.name+' · '+target.code"/></select><div t-if="target" class="itgrc-binding"><b>Review this connection</b><p>Current source order: <t t-foreach="target.sources" t-as="source" t-key="source_index"><t t-if="source_index"> → </t><t t-esc="source.kind"/></t></p><p>This output uses the scheme’s system-source priority. Any existing mapping for this component on the selected connector, or for this output, is replaced. Spreadsheet and record sources are kept.</p><label><input type="checkbox" t-model="state.bindingReviewed"/> I have reviewed the destination and replacement.</label></div></t>
                 </div>
 
                 <!-- PROVENANCE, for a rule that used to be a program.
@@ -398,7 +400,7 @@
                   <span t-esc="syntheticNote"/>
                 </div>
 
-                <div class="itgrc-rail__h">
+                <p class="itgrc-evidence" role="status" t-esc="evidenceLabel"/><div class="itgrc-rail__h">
                   <span t-out="ic('play', 14)"/>
                   <span>What the data says</span>
                   <span t-if="state.preview.loading" class="itgrc-rail__busy">…</span>
@@ -455,10 +457,10 @@
                  kind of wrong — plausible, and one step behind. -->
             <span t-if="footSummary" class="itgrc-foot__sum" t-esc="footSummary"/>
             <span class="pbim-modal__sp"/>
-            <button class="pbim-btn ghost" t-on-click="requestClose">Close</button>
-            <button data-biz-validate="true" t-if="state.draft and !readOnly" class="pbim-btn primary"
-                    t-att-disabled="!canSave" t-on-click="save">
-              <t t-out="ic('check', 15)"/> Save rule
+            <button class="pbim-btn ghost" t-on-click="requestClose">Close</button><button t-if="state.draft and !isPython and !state.allSteps and state.step>1" class="pbim-btn" t-on-click="() => this.goStep(state.step-1)">Back</button><button t-if="state.draft and !isPython and !state.allSteps and state.step&lt;4" class="pbim-btn primary" t-on-click="() => this.goStep(state.step+1)">Continue</button>
+            <button data-biz-validate="true" t-if="state.draft and !readOnly and (state.allSteps or state.step===4)" class="pbim-btn primary"
+                    t-att-disabled="!canSave or (state.targetId and !state.bindingReviewed)" t-on-click="save">
+              <t t-out="ic('check', 15)"/> <t t-if="state.targetId">Save &amp; connect</t><t t-else="">Save rule</t>
             </button>
           </t>
         </div>

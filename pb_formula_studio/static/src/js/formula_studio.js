@@ -5042,7 +5042,7 @@ export class PbFormulaStudio extends Component {
      */
     openMapping(mode, componentId) {
         const cfg = this.state.config && this.state.config.id;
-        const ctx = { pb_mode: mode || "employee" };
+        const ctx = { pb_mode: mode || "desk" };
         if (cfg) { ctx.pb_config = cfg; }
         if (componentId) { ctx.pb_component = componentId; }
         openHub(this.action, {

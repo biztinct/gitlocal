@@ -19,13 +19,14 @@
             <span class="pbms-brand__ic" t-out="ic('gitMerge', 18)"/>
             <span class="pbms-brand__t">Mapping</span>
           </div>
+          <button t-if="isDesk or isJourney" class="pbim-btn pbms-compact-scheme" t-on-click="(ev) => this.togglePicker('config', ev)"><t t-esc="configName"/> ▾</button>
         </div>
 
         <!-- ==== THE SENTENCE ====
              FROM <source> ══ N mapped ══▶ TO <target>. It is a header, not a
              toolbar: it is on screen in every state, it names both ends, and
              both ends are one click from being changed. -->
-        <div class="pbms-story" data-coach="mp-story">
+        <div t-if="!isDesk and !isJourney" class="pbms-story" data-coach="mp-story">
 
           <div t-attf-class="pbms-end from {{ fromSlot.kind === 'static' ? 'is-static' : '' }}">
             <div class="pbms-end__kicker">FROM</div>
@@ -149,7 +150,7 @@
 
         <!-- ==== modes, in plain language ==== -->
         <div class="pbms-modes" data-coach="mp-modes">
-          <button t-foreach="modes" t-as="m" t-key="m.id"
+          <button t-foreach="primaryModes" t-as="m" t-key="m.id"
                   t-attf-class="pbms-mode {{ state.mode === m.id ? 'on' : '' }}"
                   t-att-title="m.hint"
                   t-on-click="() => this.setMode(m.id)">
@@ -157,6 +158,7 @@
             <span t-esc="m.label"/>
           </button>
 
+          <details class="pbms-toolmenu"><summary>Tools <span t-if="!['desk','transform','journey'].includes(state.mode)"> · <t t-esc="mode.label"/></span> ▾</summary><div><button t-foreach="toolModes" t-as="m" t-key="m.id" t-att-class="state.mode===m.id ? 'on' : ''" t-on-click="(ev) => this.openTool(m.id,ev)"><span t-out="ic(m.icon,14)"/><t t-esc="m.label"/></button></div></details>
           <div class="pbms-modes__sp"/>
 
           <!-- ==== J5: the way back to the picture ====
@@ -467,7 +469,8 @@
             <!-- ==== J5 — the Journey. First tab, cold-start default, and the
                  only board on this surface that cannot write. Five lanes, one
                  read, every card a door. ==== -->
-            <div t-if="isJourney" class="pbms-canvas">
+            <div t-if="isDesk" class="pbms-canvas"><ConnectionDesk data="state.data" configId="state.configId" componentId="state.componentId" onOpenDoor="(door) => this.openDoor(door)" onRefresh="() => this.load()" onNewRule="() => this.openComposer(0)"/></div>
+            <div t-elif="isJourney" class="pbms-canvas">
               <JourneyBoard data="state.data" busy="state.busy"
                             componentId="state.componentId"
                             onOpenDoor="(door) => this.openDoor(door)"/>
@@ -818,7 +821,9 @@
                       ruleId="state.composer.ruleId"
                       connectors="composerConnectors"
                       onClose="() => this.closeComposer()"
-                      onSaved="() => this.onRuleSaved()"/>
+                      mappingTargets="state.composer.targets"
+                  onSaveDraft="(connector, spec, rule, target) => this.saveComposerDraft(connector, spec, rule, target)"
+                  onSaved="() => this.onRuleSaved()"/>
 
       </div>
     </div>

@@ -16154,3 +16154,247 @@ msgstr "Hiển thị tất cả thành phần"
 #: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
 msgid "Calculated or fixed in this scheme"
 msgstr "Được tính toán hoặc cố định trong cấu hình này"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Source order"
+msgstr "Thứ tự nguồn"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "+ Component"
+msgstr "+ Thành phần"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Find a component by name, code or letter…"
+msgstr "Tìm thành phần theo tên, mã hoặc chữ cái…"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Need a source"
+msgstr "Cần nguồn dữ liệu"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "With fallback"
+msgstr "Có nguồn dự phòng"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Component / read order"
+msgstr "Thành phần / thứ tự đọc"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Sample value"
+msgstr "Giá trị mẫu"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Sample preview"
+msgstr "Xem trước mẫu"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Sources"
+msgstr "Nguồn"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Storage"
+msgstr "Lưu trữ"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Use in payroll"
+msgstr "Sử dụng trong bảng lương"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Configured read order"
+msgstr "Thứ tự đọc đã cấu hình"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Latest recorded run source"
+msgstr "Nguồn được ghi nhận trong kỳ lương gần nhất"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Trace this component"
+msgstr "Theo dõi thành phần này"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Manage connections"
+msgstr "Quản lý kết nối"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "System fields & suggestions →"
+msgstr "Trường hệ thống và gợi ý →"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Spreadsheet columns →"
+msgstr "Cột bảng tính →"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Create a transformation →"
+msgstr "Tạo phép chuyển đổi →"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Where this value is kept"
+msgstr "Nơi lưu trữ giá trị này"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Keep as amount component"
+msgstr "Lưu thành phần dạng số tiền"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Keep as text component"
+msgstr "Lưu thành phần dạng văn bản"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Not assigned"
+msgstr "Chưa chỉ định"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Save setup"
+msgstr "Lưu thiết lập"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "All treatment settings →"
+msgstr "Tất cả thiết lập xử lý →"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Close trace"
+msgstr "Đóng theo dõi"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Source order for this scheme"
+msgstr "Thứ tự nguồn cho cơ cấu này"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Review the impact"
+msgstr "Xem lại tác động"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Save order for this scheme"
+msgstr "Lưu thứ tự cho cơ cấu này"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Contract storage"
+msgstr "Lưu trữ hợp đồng"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Choose later"
+msgstr "Chọn sau"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Amount component"
+msgstr "Thành phần số tiền"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Save component"
+msgstr "Lưu thành phần"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Component setup saved."
+msgstr "Đã lưu thiết lập thành phần."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Source order saved for this scheme."
+msgstr "Đã lưu thứ tự nguồn cho cơ cấu này."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Component created. Choose its source next."
+msgstr "Đã tạo thành phần. Tiếp theo hãy chọn nguồn."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Connected systems"
+msgstr "Hệ thống kết nối"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Spreadsheets"
+msgstr "Bảng tính"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/connection_desk.js:0
+msgid "Employee & contract records"
+msgstr "Hồ sơ nhân viên và hợp đồng"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "No components match. Try another search or filter."
+msgstr "Không có thành phần phù hợp. Hãy thử tìm kiếm hoặc bộ lọc khác."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "No recorded run source for this component."
+msgstr "Chưa có nguồn kỳ lương được ghi nhận cho thành phần này."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "No employee or contract storage selected."
+msgstr "Chưa chọn nơi lưu trữ trong hồ sơ nhân viên hoặc hợp đồng."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "Existing pay runs keep their stored results until recomputed."
+msgstr "Các kỳ lương hiện có giữ nguyên kết quả đã lưu cho đến khi tính lại."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid "This is a draft. Nothing is created until you save."
+msgstr "Đây là bản nháp. Chưa tạo dữ liệu cho đến khi bạn lưu."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid ""
+"Choose a component to see where its value comes from and where it goes."
+msgstr "Chọn một thành phần để xem nguồn và nơi nhận giá trị."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/xml/connection_desk.xml:0
+msgid ""
+"The first supplied value is used. Zero and No count as supplied; blank "
+"values fall through."
+msgstr ""
+"Sử dụng giá trị được cung cấp đầu tiên. Số không và Không vẫn là giá trị hợp"
+" lệ; giá trị trống sẽ chuyển sang nguồn tiếp theo."
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+msgid "Data"
+msgstr "Dữ liệu"
+
+#. Connection desk and guided transformation editor.
+#: pb_formula_studio/static/src/js/mapping/mapping_studio.js:0
+msgid "Filter"
+msgstr "Lọc"

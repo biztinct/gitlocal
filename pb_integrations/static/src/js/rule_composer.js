@@ -337,6 +337,8 @@ export class RuleComposer extends Component {
         connectors: { type: Array, optional: true },
         onClose: { type: Function },
         onSaved: { type: Function, optional: true },
+        mappingTargets: { type: Array, optional: true },
+        onSaveDraft: { type: Function, optional: true },
     };
 
     setup() {
@@ -348,6 +350,7 @@ export class RuleComposer extends Component {
             loadError: "",
             data: null,
             connectorId: this.props.connectorId || 0,
+            step: 1, allSteps: false, recipeQuery: "", recipeGroup: "all", targetId: "", bindingReviewed: false,
             draft: null,                    // null = the front door is showing
             keyTouched: false,
             dirty: false,
@@ -514,7 +517,22 @@ export class RuleComposer extends Component {
 
     // --------------------------------------------------------- the front door
     get showFrontDoor() { return !this.state.draft; }
-    get recipes() { return this.payload.recipes || []; }
+    get recipes() {
+        const q=this.state.recipeQuery.toLowerCase().trim();
+        return (this.payload.recipes || []).filter(r => (!q || `${r.title} ${r.blurb}`.toLowerCase().includes(q)) &&
+            (this.state.recipeGroup === "all" || (this.state.recipeGroup === "vendor" ? r.vendor : !r.vendor)));
+    }
+    get steps() { return [{id:1,label:_t("Data")},{id:2,label:_t("Filter")},{id:3,label:_t("Calculate")},{id:4,label:_t("Name & connect")}]; }
+    goStep(id) { this.state.step=id; this.state.picker=null; }
+    targetChanged(ev) { this.state.targetId=ev.target.value; this.state.bindingReviewed=false; this.state.dirty=true; }
+    get target() { return (this.props.mappingTargets || []).find(t=>t.id===Number(this.state.targetId)); }
+    get evidenceLabel() {
+        const p=this.state.preview;
+        if (p.loading) return _t("Updating preview…");
+        if (p.ok === false) return _t("Preview failed — check the error below");
+        if (!p.records_in) return _t("No received rows — the fallback is not a verified result");
+        return p.synthetic ? _t("Illustration only — verify with received data") : _t("Preview of received rows — not a saved payroll result");
+    }
 
     startFrom(recipe) {
         if (recipe.exists) { return; }
@@ -525,6 +543,7 @@ export class RuleComposer extends Component {
         if (!spec.output_key) { spec.output_key = suggestOutputKey(spec.name); }
         this.state.keyTouched = !!spec.output_key;
         this.state.draft = spec;
+        this.state.step = 1;
         this.state.dirty = true;
         this._queuePreview();
     }
@@ -1001,6 +1020,7 @@ export class RuleComposer extends Component {
     /** The big number. An em dash while nothing has been computed, because a
      * blank where a result belongs reads as "the answer is nothing". */
     get resultText() {
+        if (!this.state.preview.records_in) return _t("Unverified");
         const r = this.state.preview.result;
         return r === undefined || r === null ? "—" : r;
     }
@@ -1060,14 +1080,13 @@ export class RuleComposer extends Component {
 
     // -------------------------------------------------------------- the write
     async save() {
-        if (!this.canSave) { return; }
+        if (!this.canSave || (this.state.targetId && !this.state.bindingReviewed)) { return; }
         this.state.saving = true;
         try {
-            const res = await this.orm.call(
-                "pb.integrations", "rule_save",
-                [this.state.connectorId,
-                 emitSpec(this.state.draft, this.unaryOps),
-                 this.props.ruleId || false]);
+            const spec = emitSpec(this.state.draft, this.unaryOps);
+            const res = this.props.onSaveDraft
+                ? await this.props.onSaveDraft(this.state.connectorId, spec, this.props.ruleId || false, Number(this.state.targetId) || false)
+                : await this.orm.call("pb.integrations", "rule_save", [this.state.connectorId, spec, this.props.ruleId || false]);
             if (!res || res.ok === false) {
                 this.notif.add((res && res.msg) || _t("This rule was not saved."),
                                { type: "danger" });
@@ -1079,7 +1098,7 @@ export class RuleComposer extends Component {
             this.props.onClose();
         } catch (error) {
             console.warn("pb_integrations: rule_save failed", error);
-            this.notif.add(_t("This rule was not saved."), { type: "danger" });
+            this.notif.add(error.data?.message || _t("This rule was not saved."), { type: "danger" });
         } finally {
             this.state.saving = false;
         }

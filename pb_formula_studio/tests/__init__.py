@@ -68,3 +68,4 @@ from . import test_studio_responsive_rails
 from . import test_tax_input_preview
 
 from . import test_studio_experience
+from . import test_mapping_experience

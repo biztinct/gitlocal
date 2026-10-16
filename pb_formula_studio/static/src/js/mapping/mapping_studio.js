@@ -65,6 +65,7 @@ import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 import { MappingCanvas } from "./mapping_canvas";
 import { TransformFlowBoard } from "./transform_flow_board";
+import { ConnectionDesk } from "./connection_desk";
 import { JourneyBoard } from "./journey_board";
 import { ComponentTreatmentBoard } from "@pb_formula_studio/js/component_treatment";
 import { placeInLane } from "./mapping_geometry";
@@ -101,6 +102,7 @@ const UNDO_MS = 10000;
  * the overlay's `state.mapMode`; only the words a person reads are new.
  */
 export const MODES = [
+    { id: "desk", icon: "list", label: _t("Connections"), hint: _t("Sources, storage and payroll treatment, one component at a time.") },
     { id: "api", icon: "plug", label: _t("System fields → Scheme"),
       hint: _t("Wire the fields an HR system's API delivers onto a scheme's inputs.") },
     // JOURNEY J4 — between the API tab and the Spreadsheet tab, because that is
@@ -157,7 +159,7 @@ const TEMPLATABLE = ["api", "cycle"];
 export class MappingStudio extends Component {
     static template = "pb_formula_studio.MappingStudio";
     static components = { MappingCanvas, TransformFlowBoard, JourneyBoard,
-                          ComponentTreatmentBoard,
+                          ComponentTreatmentBoard, ConnectionDesk,
                           RuleComposer, HubBackChip };
     static props = ["*"];
 
@@ -198,7 +200,7 @@ export class MappingStudio extends Component {
             // pre-existing door (the Integrations cockpit's `api`, the connector
             // cockpit's `api`, Formula Studio's `employee`) landing exactly where
             // it always did.
-            mode: askedMode || "journey",
+            mode: askedMode || "desk",
             connectors: [], configs: [], batches: [],
             connectorId: 0, endpointId: 0, configId: 0, batchId: 0,
             // JOURNEY J4 — was the connector CHOSEN, or merely defaulted to?
@@ -641,6 +643,10 @@ export class MappingStudio extends Component {
             return true;
         });
     }
+    openTool(mode, ev) { ev.currentTarget.closest("details").open = false; return this.setMode(mode); }
+    get primaryModes() { return ["desk", "transform", "journey"].map(id => MODES.find(m => m.id === id)); }
+    get toolModes() { return this.modes.filter(m => !["desk", "transform", "journey"].includes(m.id)); }
+    get isDesk() { return this.state.mode === "desk"; }
     get mode() {
         return this.modes.find((m) => m.id === this.state.mode)
             || this.modes[0] || MODES[0];
@@ -855,6 +861,9 @@ export class MappingStudio extends Component {
         try {
             let r;
             switch (this.state.mode) {
+                case "desk":
+                    r = await this.orm.call(MODEL, "mapping_workspace_data", [cfg]);
+                    break;
                 case "journey":
                     // ONE read for five lanes. It composes the helpers the other
                     // tabs already call; it defines nothing and it writes nothing.
@@ -968,12 +977,14 @@ export class MappingStudio extends Component {
             this.state.endpointId = 0;
         }
         if (door.endpoint) { this.state.endpointId = Number(door.endpoint) || 0; }
+        const fromJourney = this.isJourney;
         this.state.mode = door.mode;
         this.state.data = null;
         this.state.extraCols = [];
         this.state.tmplMode = "";
         this.state.focus = (door.focus || "").toString();
-        this.state.fromJourney = true;
+        this.state.fromJourney = fromJourney;
+        this.state.componentId = Number(door.componentId) || 0;
         this._resetEmpToolkit();
         // BEFORE the load, not after: `state.data = null` unmounts the board,
         // and a board that is about to be created reads the order at mount
@@ -2169,7 +2180,7 @@ export class MappingStudio extends Component {
         // Draft the map from what you paid"), and a strip above it saying
         // "pick your source, pick your scheme, draw a wire" describes three
         // steps none of which exist there.
-        if (this.isTransform || this.isJourney || this.isTreatment
+        if (this.isDesk || this.isTransform || this.isJourney || this.isTreatment
                 || this.isSchemeBoard) { return false; }
         return !!(this.state.data && this.state.data.ok && !this.mappedCount);
     }
@@ -2227,13 +2238,18 @@ export class MappingStudio extends Component {
     }
 
     /** `id` 0 opens it empty — "New transformation rule…". */
-    openComposer(ruleId) {
+    async openComposer(ruleId) {
+        const targets = await this.orm.call(MODEL, "mapping_rule_targets", [this.state.configId]);
         this.state.composer = {
+            targets,
             ruleId: ruleId || 0,
             connectorId: this.state.connectorId || 0,
         };
     }
     closeComposer() { this.state.composer = null; }
+    async saveComposerDraft(connectorId, spec, ruleId, targetId) {
+        return this.orm.call(MODEL, "mapping_rule_save", [this.state.configId, connectorId, spec, ruleId || false, targetId || false]);
+    }
 
     /**
      * A saved rule changes every lane at once — its reads, its summary, its

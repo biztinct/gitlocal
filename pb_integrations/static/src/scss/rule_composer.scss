@@ -428,3 +428,11 @@
         overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52%;
     }
 }
+
+.itgrc {
+ .itgrc-stepnav {display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;button{border:1px solid var(--pbim-line);background:#fff;border-radius:8px;padding:10px 12px;color:var(--pbim-muted);display:flex;align-items:center;gap:7px;font-size:12px;&.on{background:var(--pbim-soft);color:var(--pbim-primary);border-color:var(--pbim-primary-light);}b{font-size:10px;}}}
+ .itgrc-allsteps {display:flex;align-items:center;gap:8px;color:var(--pbim-muted);font-size:12px;margin-bottom:18px;}
+ .itgrc-recipefilters {display:flex;gap:10px;margin:12px 0 18px;select{width:180px;}}
+ .itgrc-evidence {padding:12px;border:1px solid var(--pbim-line);border-radius:9px;background:var(--pbim-soft);color:var(--pbim-primary);font-size:12px;line-height:1.6;}
+ .itgrc-binding {margin-top:16px;padding:14px;border:1px solid var(--pbim-primary-light);border-radius:10px;background:var(--pbim-soft);font-size:12px;line-height:1.6;p{margin:10px 0;}label{display:flex;align-items:flex-start;gap:8px;}input{margin-top:4px;}}
+}
