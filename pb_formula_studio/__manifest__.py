@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Formula Studio',
     'summary': 'Best-in-class cockpit + wizard + PayAI for the formula engine',
-    'version': '19.0.1.201.19',
+    'version': '19.0.1.201.20',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -93,6 +93,7 @@
             # kernel it reads: the bundle order matches the import order.
             'pb_formula_studio/static/src/js/mapping/transform_flow_board.js',
             'pb_formula_studio/static/src/js/mapping/journey_board.js',
+            'pb_formula_studio/static/src/js/mapping/component_focus.js',
             'pb_formula_studio/static/src/js/component_treatment.js',
             'pb_formula_studio/static/src/js/mapping/mapping_studio.js',
             'pb_formula_studio/static/src/js/payslip_table_tools.js',

@@ -43,6 +43,15 @@
         </div>
       </div>
 
+      <div t-if="ui.componentId" class="jny-component-focus" role="status">
+        <div>
+          <b t-esc="componentFocusTitle"/>
+          <span t-if="focusedCalculated">This value is calculated or fixed by the scheme; it has no incoming mapping.</span>
+          <span t-elif="focusedComponent">Showing this component and its connected sources.</span>
+        </div>
+        <button type="button" class="jny-act" t-on-click="showAllComponents">Show all components</button>
+      </div>
+
       <!-- ==== the board ====
            `.jny-board` scrolls; `.jny-stage` is the full content and the wire
            origin. Lane bodies do NOT scroll individually any more: a row and
@@ -116,7 +125,7 @@
                         <span t-if="cardSub(c)" class="jny-card__s" t-esc="cardSub(c)"/>
 
                         <!-- ==== the scheme card's fed bar ==== -->
-                        <t t-if="c.kind === 'scheme' and c.bar">
+                        <t t-if="c.kind === 'scheme' and c.bar and !ui.componentId">
                           <span class="jny-bars">
                             <span class="jny-bars__seg ok"
                                   t-attf-style="width:{{ schemeBar.pct }}%"/>
@@ -190,16 +199,17 @@
 
                     <!-- ==== ONE folded line for what the scheme works out
                          for itself. Its own toggle, inside the card. ==== -->
-                    <t t-if="c.folded and c.folded.n">
+                    <t t-if="foldedRowsOf(c).length">
                       <li class="jny-fold">
-                        <button type="button" class="jny-fold__b"
-                                t-att-aria-expanded="ui.folded ? 'true' : 'false'"
+                        <span t-if="ui.componentId">Calculated or fixed in this scheme</span>
+                        <button t-else="" type="button" class="jny-fold__b"
+                                t-att-aria-expanded="foldedOpen ? 'true' : 'false'"
                                 t-on-click="(ev) => this.toggleFolded(ev)">
-                          <span t-out="ic(ui.folded ? 'chevronDown' : 'chevron', 11)"/>
+                          <span t-out="ic(foldedOpen ? 'chevronDown' : 'chevron', 11)"/>
                           <span t-esc="c.folded.label"/>
                         </button>
                       </li>
-                      <li t-if="ui.folded" t-foreach="c.folded.rows" t-as="fr"
+                      <li t-if="foldedOpen" t-foreach="foldedRowsOf(c)" t-as="fr"
                           t-key="fr.id" class="jny-row calc" t-att-title="fr.label">
                         <span class="jny-row__g"/>
                         <span class="jny-row__l" t-esc="fr.label"/>

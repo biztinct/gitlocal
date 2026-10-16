@@ -49,6 +49,7 @@ import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { wireGeometry, clampY, spreadHubs } from "./mapping_geometry";
 import { srcLabel } from "../source_vocab";
+import { componentJourneyScope } from "./component_focus";
 
 /** Pixels of a lane's band reserved so a clamped wire is not flush to the edge. */
 const BAND = 10;
@@ -75,12 +76,14 @@ export class JourneyBoard extends Component {
         data: { type: Object },
         busy: { type: Boolean, optional: true },
         onOpenDoor: { type: Function },
+        componentId: { type: Number, optional: true },
     };
 
     setup() {
         this.action = useService("action");
         this.ui = useState({
             q: "",
+            componentId: this.props.componentId || 0,
             hover: "",          // the row or card the pointer/keyboard is on
             pin: "",            // a trace the reader clicked to keep
             open: {},           // card id -> true. An object, for reactivity.
@@ -120,7 +123,11 @@ export class JourneyBoard extends Component {
                 const after = (next.data || {}).config || {};
                 if (before.id !== after.id) {
                     this.ui.open = this._loadOpen(after.id || 0);
+                    this.ui.componentId = next.componentId || 0;
                 }
+            }
+            if (next.componentId !== this.props.componentId) {
+                this.ui.componentId = next.componentId || 0;
             }
         });
         onPatched(() => this._schedule());
@@ -137,11 +144,37 @@ export class JourneyBoard extends Component {
 
     /** Only the lanes that have something to say. The Scheme is always one. */
     get lanes() {
-        const src = this.d.lanes || {};
-        return LANES.filter((l) => (src[l.id] || []).length);
+        return LANES.filter(l => this.cardsFor(l.id).length);
     }
 
-    cardsFor(laneId) { return (this.d.lanes || {})[laneId] || []; }
+    cardsFor(laneId) {
+        const cards = (this.d.lanes || {})[laneId] || [];
+        const scope = this.componentScope;
+        return scope ? cards.filter(c => scope.cardIds.has(c.id)) : cards;
+    }
+
+    get componentScope() {
+        return this.ui.componentId
+            ? componentJourneyScope(this.index, this.ui.componentId, this.d.contains)
+            : null;
+    }
+
+    get focusedComponent() { return this.componentScope?.target || null; }
+
+    get componentFocusTitle() {
+        return this.focusedComponent ? _t("Mapping for %s", this.focusedComponent.label)
+            : _t("This component is no longer available in this scheme.");
+    }
+
+    get focusedCalculated() {
+        return !!this.focusedComponent && this.cardsFor('scheme').some(c =>
+            (c.folded?.rows || []).some(r => r.id === this.focusedComponent.id));
+    }
+
+    showAllComponents() {
+        this.ui.componentId = 0;
+        this.clearSearch();
+    }
 
     /**
      * Rows, cards and neighbours, indexed once per payload.
@@ -157,7 +190,7 @@ export class JourneyBoard extends Component {
         const cardOf = new Map();
         const byCard = new Map();
         for (const lane of LANES) {
-            for (const c of this.cardsFor(lane.id)) {
+            for (const c of ((this.d.lanes || {})[lane.id] || [])) {
                 byCard.set(c.id, c);
                 for (const r of (c.rows || [])) {
                     rows.set(r.id, r);
@@ -225,7 +258,8 @@ export class JourneyBoard extends Component {
      */
     get matches() {
         const q = (this.ui.q || "").trim().toLowerCase();
-        if (!q) { return null; }
+        const scope = this.componentScope;
+        if (!q) { return scope ? scope.rowIds : null; }
         const hit = new Set();
         const text = (r) => [r.label, r.tag, r.sub].filter(Boolean)
             .join(" ").toLowerCase();
@@ -244,7 +278,7 @@ export class JourneyBoard extends Component {
         for (const id of hit) {
             for (const o of (this.index.nb.get(id) || [])) { out.add(o); }
         }
-        return out;
+        return scope ? new Set([...out].filter(id => scope.rowIds.has(id))) : out;
     }
 
     rowsOf(card) {
@@ -254,9 +288,18 @@ export class JourneyBoard extends Component {
         return rows.filter((r) => m.has(r.id));
     }
 
+    foldedRowsOf(card) {
+        const rows = card.folded?.rows || [];
+        const matches = this.matches;
+        return matches ? rows.filter(r => matches.has(r.id)) : rows;
+    }
+
+    get foldedOpen() { return this.ui.folded || !!this.ui.componentId; }
+
     isOpen(card) {
-        if (!card || !(card.rows || []).length) { return false; }
-        if (this.matches) { return this.rowsOf(card).length > 0; }
+        if (!card) { return false; }
+        if (this.matches) { return this.rowsOf(card).length + this.foldedRowsOf(card).length > 0; }
+        if (!(card.rows || []).length) { return false; }
         return !!this.ui.open[card.id];
     }
 
@@ -276,6 +319,7 @@ export class JourneyBoard extends Component {
      * before it can be dismissed costs the reader something (W64/W80).
      */
     get headline() {
+        if (this.ui.componentId) { return _t("Mapping for one component"); }
         const h = this.d.header || {};
         const bits = [
             h.inputs === 1 ? _t("1 needs a source")
@@ -316,6 +360,7 @@ export class JourneyBoard extends Component {
      * server-rendered "3d ago" is stale the moment it is cached.
      */
     cardSub(c) {
+        if (this.ui.componentId && c.kind === "scheme") { return ""; }
         if (c.kind === "connector") {
             return [this.statusWord(c.status), this.since(c.last_sync), c.sub]
                 .filter(Boolean).join(" · ");
@@ -551,6 +596,7 @@ export class JourneyBoard extends Component {
      * what is already on screen.
      */
     get drawn() {
+        const scope = this.componentScope;
         const rendered = new Set();
         for (const lane of LANES) {
             for (const c of this.cardsFor(lane.id)) {
@@ -565,6 +611,7 @@ export class JourneyBoard extends Component {
         };
         const by = new Map();
         for (const l of (this.d.links || [])) {
+            if (scope && (!scope.rowIds.has(l.a) || !scope.rowIds.has(l.b))) continue;
             const a = endOf(l.a);
             const b = endOf(l.b);
             // MAPFIX F1 — an end that does not exist gets NO curve, ever. A
@@ -585,6 +632,7 @@ export class JourneyBoard extends Component {
             if (g.kind !== l.kind) { g.kind = "mixed"; }
         }
         for (const c of (this.d.contains || [])) {
+            if (scope && (!scope.cardIds.has(c.from) || !scope.cardIds.has(c.to))) continue;
             const key = [c.from, c.to, "contain", 0].join("|");
             if (!this.index.byCard.has(c.from) || !this.index.byCard.has(c.to)) {
                 continue;

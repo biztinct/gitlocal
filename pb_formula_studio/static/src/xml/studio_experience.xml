@@ -24,9 +24,9 @@
     <xpath expr="//header[hasclass('pbfs-top')]" position="after">
       <div t-if="buildView" class="experience-buildbar">
         <div class="pbfs-seg sm" aria-label="Build view">
+          <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">Cards</button>
           <button t-att-class="state.view === 'table' ? 'active' : ''" t-on-click="() => this.setView('table')">Table</button>
           <button t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">Grid</button>
-          <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">Cards</button>
         </div>
         <label class="experience-sample">Preview for
           <select aria-label="Preview sample" t-att-disabled="experience.sampleBusy or !state.samples.length" t-on-change="changePreviewSample">
@@ -91,7 +91,7 @@
             </t>
             <t t-elif="experience.inspector === 'source'">
               <h3>Where this value comes from</h3><p t-esc="srcSentence(selected)"/>
-              <button class="pbfs-btn soft" t-on-click="() => this.openMapping()">Open mapping</button>
+              <button class="pbfs-btn soft" t-on-click="() => this.openMapping('journey', selected.id)">Open mapping</button>
               <label class="experience-field">Value type<select t-att-disabled="!state.canEdit" t-on-change="changeComponentKind"><option t-foreach="valueKinds" t-as="k" t-key="k[0]" t-att-value="k[0]" t-att-selected="selected.value_kind === k[0]" t-esc="k[1]"/></select></label>
               <p class="experience-muted">The value type controls how values are read and displayed across the scheme. Existing pay runs keep their stored results until recomputed.</p>
             </t>

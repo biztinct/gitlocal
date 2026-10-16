@@ -16109,3 +16109,48 @@ msgstr "1 phép kiểm tra mẫu thất bại"
 #: code:addons/pb_formula_studio/static/src/js/studio_experience.js:0
 msgid "%s sample checks failing"
 msgstr "%s phép kiểm tra mẫu thất bại"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Mapping for %s"
+msgstr "Ánh xạ cho %s"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Mapping for one component"
+msgstr "Ánh xạ cho một thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "This component is no longer available in this scheme."
+msgstr "Thành phần này không còn có trong cấu hình này."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid ""
+"This value is calculated or fixed by the scheme; it has no incoming mapping."
+msgstr ""
+"Giá trị này được tính toán hoặc cố định trong cấu hình; không có ánh xạ đầu "
+"vào."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Showing this component and its connected sources."
+msgstr "Đang hiển thị thành phần này và các nguồn được kết nối."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Show all components"
+msgstr "Hiển thị tất cả thành phần"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/journey_board.js:0
+msgid "Calculated or fixed in this scheme"
+msgstr "Được tính toán hoặc cố định trong cấu hình này"

@@ -212,6 +212,7 @@ export class MappingStudio extends Component {
             connectorPicked: linkedConnector,
             // VALUEKIND P5 — reported by the treatment board once it has read.
             treatmentCount: 0,
+            componentId: Number(ctx.pb_component) || 0,
             data: null,
             fetchOffer: null, fetchBusy: false,
             dismissed: [],
@@ -938,6 +939,7 @@ export class MappingStudio extends Component {
         // would leave a "Journey" chip on a tab nobody reached from there and a
         // search box narrowed by a word the user never typed.
         this.state.focus = "";
+        this.state.componentId = 0;
         this.state.fromJourney = false;
         this._resetEmpToolkit();
         await this.load();
@@ -1143,6 +1145,7 @@ export class MappingStudio extends Component {
             case "config":
                 if (this.state.configId === id) { return; }
                 this.state.configId = id;
+                this.state.componentId = 0;
                 // CLEANMAP P1 — so does the FROM file. Keeping the old one
                 // across a scheme change put another scheme's workbook in the
                 // left column under a header naming this one; 0 asks the

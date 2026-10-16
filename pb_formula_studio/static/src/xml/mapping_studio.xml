@@ -469,6 +469,7 @@
                  read, every card a door. ==== -->
             <div t-if="isJourney" class="pbms-canvas">
               <JourneyBoard data="state.data" busy="state.busy"
+                            componentId="state.componentId"
                             onOpenDoor="(door) => this.openDoor(door)"/>
             </div>
 

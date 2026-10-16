@@ -5040,10 +5040,11 @@ export class PbFormulaStudio extends Component {
      * scheme rather than on the configuration picker. A door that returns you
      * somewhere else is a door people stop walking through.
      */
-    openMapping(mode) {
+    openMapping(mode, componentId) {
         const cfg = this.state.config && this.state.config.id;
         const ctx = { pb_mode: mode || "employee" };
         if (cfg) { ctx.pb_config = cfg; }
+        if (componentId) { ctx.pb_component = componentId; }
         openHub(this.action, {
             tag: "pb_mapping_studio",
             context: ctx,
