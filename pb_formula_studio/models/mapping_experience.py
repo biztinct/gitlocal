@@ -128,7 +128,8 @@ class MappingExperience(models.AbstractModel):
         config = self._desk_config(config_id)
         records, wires = self._source_record_dests(config), self._source_wire_dests(config)
         return [{'id': r.id, 'name': r.name, 'code': r.code,
-                 'sources': self._declared_sources(r, records, wires)}
+                 'sources': [{**s, 'kind_label': self._source_label(s['kind'])}
+                             for s in self._declared_sources(r, records, wires)]}
                 for r in config.rule_ids if r.column_type == 'input'
                 and not r.is_text_component and r.value_kind not in ('text', 'identifier', 'date', 'boolean')]
 

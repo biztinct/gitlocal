@@ -1713,120 +1713,143 @@ msgstr "Đếm thì không cần trường nào: kết quả là còn lại bao 
 msgid "These rows are illustrations of what this source will send. They are not records that were received."
 msgstr "Các dòng này chỉ là minh hoạ cho những gì nguồn sẽ gửi. Chúng không phải là bản ghi đã nhận được."
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Filter"
 msgstr "Lọc"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Calculate"
 msgstr "Tính toán"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Name & connect"
 msgstr "Đặt tên và kết nối"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Show all steps"
 msgstr "Hiển thị tất cả các bước"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Find a recipe…"
 msgstr "Tìm công thức mẫu…"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "All recipes"
 msgstr "Tất cả công thức mẫu"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Vendor recipes"
 msgstr "Công thức mẫu của nhà cung cấp"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "General recipes"
 msgstr "Công thức mẫu chung"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Choose the data"
 msgstr "Chọn dữ liệu"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Keep matching records"
 msgstr "Giữ bản ghi phù hợp"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Calculate the answer"
 msgstr "Tính kết quả"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Save & connect"
 msgstr "Lưu và kết nối"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Review this connection"
 msgstr "Xem lại kết nối này"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Connect the output to a component (optional)"
 msgstr "Kết nối đầu ra với thành phần (không bắt buộc)"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "Save rule only — connect later"
 msgstr "Chỉ lưu quy tắc — kết nối sau"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Unverified"
 msgstr "Chưa xác minh"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Updating preview…"
 msgstr "Đang cập nhật bản xem trước…"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Preview failed — check the error below"
 msgstr "Xem trước thất bại — kiểm tra lỗi bên dưới"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "No received rows — the fallback is not a verified result"
 msgstr ""
 "Chưa nhận được bản ghi — giá trị dự phòng chưa phải kết quả đã xác minh"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Illustration only — verify with received data"
 msgstr "Chỉ là minh họa — hãy xác minh với dữ liệu đã nhận"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/js/rule_composer.js:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/rule_composer.js:0
 msgid "Preview of received rows — not a saved payroll result"
 msgstr "Xem trước các bản ghi đã nhận — chưa phải kết quả bảng lương được lưu"
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "I have reviewed the destination and replacement."
 msgstr "Tôi đã xem lại nơi nhận và việc thay thế."
 
-#. Connection desk and guided transformation editor.
-#: pb_integrations/static/src/xml/rule_composer.xml:0
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/rule_composer.xml:0
 msgid "No recipes match. Try another search."
 msgstr "Không có công thức mẫu phù hợp. Hãy thử tìm kiếm khác."
