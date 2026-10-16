@@ -181,7 +181,11 @@ class PbMeExpensePortal(PbMePortal):
         emp = self._ess_employee()
         if not emp:
             return request.redirect('/my')
-        return self._render_new(emp)
+        # `?trip=<id>` comes from the trip page's "Claim receipts for this
+        # trip" (pb_me_trip, E2 D5): the picker pre-selects it only when it
+        # is one of the person's own offered trips (the template matches on
+        # `trips`), so a foreign id simply selects nothing.
+        return self._render_new(emp, trip_id=kw.get('trip'))
 
     @http.route(['/my/expenses/new'], type='http', auth='user', website=True,
                 methods=['POST'])

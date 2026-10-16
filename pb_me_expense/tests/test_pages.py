@@ -65,9 +65,17 @@ class TestExpensePages(ExpenseFixtures, HttpCase):
         self.assertTrue(re.search(r'name="date"[^>]*value="%s"' % today, text)
                         or re.search(r'value="%s"[^>]*name="date"' % today, text),
                         'the date defaults to today')
-        has_trip = bool(self.Facade.with_user(user).trips_for(emp))
-        if self.bridge and has_trip:
+        trips = self.Facade.with_user(user).trips_for(emp)
+        if self.bridge and trips:
             self.assertIn('Which trip was this for?', text)
+            # `?trip=` from the trip page pre-selects that trip (E2 D5)
+            pre = self._text(self.url_open(
+                '/my/expenses/new?trip=%s' % trips[0]['id'], timeout=60))
+            self.assertRegex(pre, r'value="%s"[^>]*selected' % trips[0]['id'])
+            # a foreign or junk id selects nothing
+            none = self._text(self.url_open('/my/expenses/new?trip=999999',
+                                            timeout=60))
+            self.assertNotRegex(none, r'<option[^>]*selected')
         else:
             self.assertNotIn('Which trip was this for?', text)
 
