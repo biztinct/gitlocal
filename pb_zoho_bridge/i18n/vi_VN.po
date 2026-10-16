@@ -170,3 +170,21 @@ msgstr "%s trong số đó đang chờ phê duyệt trước khi có bất kỳ 
 msgid "Arrivals from a connected system"
 msgstr "Hồ sơ đến từ hệ thống được kết nối"
 
+
+#. module: pb_zoho_bridge
+#. odoo-javascript
+#: code:addons/pb_zoho_bridge/static/src/js/zoho_palette.js:0
+msgid "Upload a joiner file"
+msgstr "Tải lên tệp nhân viên mới"
+
+#. module: pb_zoho_bridge
+#. odoo-javascript
+#: code:addons/pb_zoho_bridge/static/src/js/zoho_palette.js:0
+msgid "Arrivals from the connected system"
+msgstr "Hồ sơ đến từ hệ thống được kết nối"
+
+#. module: pb_zoho_bridge
+#. odoo-javascript
+#: code:addons/pb_zoho_bridge/static/src/js/zoho_palette.js:0
+msgid "Arrival rules"
+msgstr "Quy tắc hồ sơ đến"

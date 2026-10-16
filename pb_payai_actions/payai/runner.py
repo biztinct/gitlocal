@@ -34,7 +34,7 @@ from odoo.addons.pb_payroll_ai_insights.models.ai_redaction import (
 
 from . import cards, gate, registry
 from .registry import ACTIONS
-from .resolve import ambiguous, door_title, fold, missing, resolved, tokens
+from .resolve import ambiguous, door_names, door_title, fold, missing, resolved, tokens
 
 _lt = LazyTranslate(__name__)
 _logger = logging.getLogger(__name__)
@@ -327,6 +327,9 @@ class Ctx:
         # delegations is never one PayAI holds, whatever the browser sent.
         self.doors = [row for row in (self.conversation.payai_doors() if self.conversation
                                       else []) if not gate.door_denied(row)]
+        # GAPS (4b): each row's words in English and Vietnamese, so a door
+        # button reads in the reader's language, not the screens' language.
+        self.doors = door_names(self.env, self.doors)
         self.task = None
         #: P2 — slots resolved so far in this request (a later slot may need
         #: an earlier one: the pay value depends on the person's scheme).

@@ -141,3 +141,15 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_assets/static/src/js/assets_palette.js:0
 msgid "Assets"
 msgstr "Tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_palette.js:0
+msgid "Asset requests"
+msgstr "Yêu cầu tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_palette.js:0
+msgid "Asset categories"
+msgstr "Nhóm tài sản"

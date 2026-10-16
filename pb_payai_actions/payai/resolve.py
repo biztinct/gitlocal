@@ -925,8 +925,8 @@ def door_place(row):
 
 
 def _door_choice(row):
-    return {'value': row['id'], 'label': row.get('label') or '',
-            'sublabel': row.get('sublabel') or ''}
+    label, sub = door_shown(row)
+    return {'value': row['id'], 'label': label, 'sublabel': sub}
 
 
 def resolve_door(ctx, text):
@@ -965,12 +965,112 @@ def resolve_door(ctx, text):
 
 
 def door_title(row):
-    """"Pay › Runs" style: where it lives › what it is."""
-    label = row.get('label') or ''
-    sub = row.get('sublabel') or ''
+    """"Pay › Runs" style: where it lives › what it is — in the READER's
+    language (GAPS 4b, `door_names`)."""
+    label, sub = door_shown(row)
     if sub and fold(sub) != fold(label) and len(sub) <= 32:
         return '%s › %s' % (sub, label)
     return label
+
+
+# ------------------------------------------------- door names, both languages
+# GAPS (4b): a ⌘K row arrives with its label in the language of the person's
+# SCREENS (the browser translated it), but PayAI answers in the language the
+# chat's language pill chose — so a Vietnamese reader on an English screen
+# read "Mở Home › Approvals". The rows' labels are the palette's own `_t()`
+# words, so the browser's catalogue (the module .po files the web client
+# loads) holds both: `door_names` gives each row its words in English and in
+# Vietnamese once per request, and `door_shown` picks the reader's.
+_WEB_TERMS = {}
+#: Only our own modules register ⌘K rows; the platform's catalogues are not read.
+_OWN_PREFIXES = ('pb_', 'biz_')
+
+
+def _web_terms(env, lang):
+    """{English words: translation} of every installed module's browser
+    strings in `lang` (the same catalogue the web client loads), ours first."""
+    key = (id(env.registry), lang)
+    got = _WEB_TERMS.get(key)
+    if got is not None:
+        return got
+    from odoo.tools.translate import code_translations
+    got = {}
+    mods = env['ir.module.module'].sudo().search(
+        [('state', '=', 'installed')]).mapped('name')
+    for mod in sorted(m for m in mods if m.startswith(_OWN_PREFIXES)):
+        try:
+            messages = code_translations.get_web_translations(mod, lang).get('messages') or ()
+        except Exception:                                   # noqa: BLE001
+            continue
+        for msg in messages:
+            if msg.get('string'):
+                got.setdefault(msg['id'], msg['string'])
+    if len(_WEB_TERMS) > 8:
+        _WEB_TERMS.clear()
+    _WEB_TERMS[key] = got
+    return got
+
+
+def _learn_name(env, rid):
+    """A Learn row's own name pair ({'en', 'vi'}), or None."""
+    parts = (rid or '').split('.', 2)
+    if len(parts) != 3 or parts[0] != 'learn' or parts[1] not in ('station', 'scenario'):
+        return None
+    Content = env.get('learn.content') if hasattr(env, 'get') else None
+    if Content is None:
+        return None
+    try:
+        item = getattr(Content, parts[1])(parts[2]) or {}
+    except Exception:                                       # noqa: BLE001
+        return None
+    name = item.get('name')
+    return name if isinstance(name, dict) and name.get('en') else None
+
+
+def _unique_back(terms):
+    """{translation: English words} for the translations only ONE English
+    phrase has ("Phê duyệt" is Approvals AND Sign-off: never guessed)."""
+    seen = {}
+    for src, text in terms.items():
+        seen.setdefault(text, set()).add(src)
+    return {text: next(iter(srcs)) for text, srcs in seen.items() if len(srcs) == 1}
+
+
+def door_names(env, rows):
+    """Each row, with `names` = {'en': (label, sublabel), 'vi': (…)}. The
+    English is the row's words as written in the code (`label_src`, sent by
+    the browser), else the words themselves on English screens, else the one
+    English phrase their translation has. The row's own words are kept as
+    they came (matching reads them); a word with no translation stays as it
+    is, and a Learn row's composite sublabel shows only in its own language."""
+    try:
+        screens_vi = is_vi(env.user.lang or 'en_US')
+        vi = _web_terms(env, 'vi_VN')
+    except Exception:                                       # noqa: BLE001
+        return rows
+    back = _unique_back(vi) if screens_vi else {}
+    for row in rows:
+        pair = {}
+        for key in ('label', 'sublabel'):
+            text = row.get(key) or ''
+            source = row.get('%s_src' % key) or (back.get(text, text) if screens_vi else text)
+            pair[key] = (source, vi.get(source, text if screens_vi else source))
+        learn = _learn_name(env, row.get('id'))
+        if learn:
+            pair['label'] = (learn['en'], learn.get('vi') or learn['en'])
+            sub = row.get('sublabel') or ''
+            pair['sublabel'] = ('' if screens_vi else sub, sub if screens_vi else '')
+        row['names'] = {'en': (pair['label'][0], pair['sublabel'][0]),
+                        'vi': (pair['label'][1], pair['sublabel'][1])}
+    return rows
+
+
+def door_shown(row):
+    """(label, sublabel) of a row in the reader's language."""
+    names = (row.get('names') or {}).get('vi' if is_vi() else 'en')
+    if names:
+        return names[0] or row.get('label') or '', names[1] or ''
+    return row.get('label') or '', row.get('sublabel') or ''
 
 
 # ------------------------------------------------------------------ person

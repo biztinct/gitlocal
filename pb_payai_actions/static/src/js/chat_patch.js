@@ -252,6 +252,20 @@ function doorKind(row) {
 }
 
 /**
+ * GAPS (4b) — a ⌘K row's words as written in the code (English), under the
+ * translation the screens show. A _t() string made before the translations
+ * loaded keeps them underneath; anything else is sent as it reads. The
+ * server renders the door in the READER's language from these (the chat's
+ * language pill may differ from the screens' language). Display only.
+ */
+export function wordsOf(value) {
+    if (value instanceof String) {
+        return String.prototype.valueOf.call(value);
+    }
+    return String(value || "");
+}
+
+/**
  * FIX-1b — where a ⌘K row leads, by identifier only (its action's tag, xmlid,
  * lens, focus). The server's one deny-list (`gate.door_denied`) matches on it
  * as well as on the row id, so a door into Settings › Access and delegations
@@ -340,6 +354,7 @@ patch(AiInsightChat.prototype, {
             const rows = await palette.entries();
             const doors = rows.filter((r) => !r.anyQuery).map((r) => ({
                 id: r.id, label: String(r.label || ""), sublabel: String(r.sublabel || ""),
+                label_src: wordsOf(r.label), sublabel_src: wordsOf(r.sublabel),
                 group: String(r.group || ""), groups: r.groups || [],
                 restricted: !!r.restricted, kind: doorKind(r), target: doorTarget(r),
             }));

@@ -456,3 +456,21 @@ msgstr "Vòng đời nhân sự"
 #: code:addons/pb_lifecycle/static/src/js/lifecycle_hub.js:0
 msgid "Journeys"
 msgstr "Hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid "Start a journey"
+msgstr "Bắt đầu một hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid "Journey checklists"
+msgstr "Danh sách việc của hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid "Letters"
+msgstr "Thư"

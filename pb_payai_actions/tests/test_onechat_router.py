@@ -23,7 +23,7 @@ from odoo.tests.common import tagged
 
 from odoo.addons.pb_learn.models import learn_intent as intent_mod
 from odoo.addons.pb_learn.tests.test_helper_route import compare, corpus
-from odoo.addons.pb_payai_actions.payai import gate, runner
+from odoo.addons.pb_payai_actions.payai import gate, i18n, resolve, runner
 from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine import PayrollAIEngine
 # Through the module: a class imported by name would be collected twice.
 from odoo.addons.pb_payai_actions.tests import test_payai_p3 as p3
@@ -219,6 +219,34 @@ class TestOneChatRouter(_RouterMixin, p3._P3Case):
                 self.assertEqual(got['response'], 'answered', text)
                 self.assertFalse(got.get('card'), text)
         self.assertEqual(tools, [])
+
+    # ------------------------------------------------------------ GAPS (4b)
+    def test_gaps4b_door_buttons_read_in_the_readers_language(self):
+        """English screens, Vietnamese chat: the door reads "Trang chủ › Phê
+        duyệt", never "Home › Approvals" under a Vietnamese "Mở"."""
+        Conv = self.env['payroll.ai.conversation'].with_user(self.officer)
+        session = Conv.create({'name': 'PayAI gaps doors', 'user_id': self.officer.id})
+        Conv.rpc_register_doors(session.id, [
+            {'id': 'homehub_approvals', 'label': 'Approvals', 'sublabel': 'Home',
+             'label_src': 'Approvals', 'sublabel_src': 'Home', 'kind': 'lens'},
+            {'id': 'payhub_runs', 'label': 'Runs', 'sublabel': 'Pay', 'kind': 'lens'}])
+        stored = {r['id']: r for r in session.sudo().payai_doors()}
+        # The same words as the label are not stored twice.
+        self.assertNotIn('label_src', stored['homehub_approvals'])
+        engine = self.env['payroll.ai.engine'].with_user(self.officer)
+        token = i18n.set_lang('vi_VN')
+        try:
+            ctx = runner.Ctx(engine, {'conversation_id': session.id})
+            row = ctx.door_row('homehub_approvals')
+            self.assertEqual(resolve.door_title(row), 'Trang chủ › Phê duyệt')
+        finally:
+            i18n.reset_lang(token)
+        token = i18n.set_lang('en_US')
+        try:
+            self.assertEqual(resolve.door_title(ctx.door_row('homehub_approvals')),
+                             'Home › Approvals')
+        finally:
+            i18n.reset_lang(token)
 
     # ---------------------------------------------------------------- E3
     def test_clear_conversation_stops_the_plans_waiting(self):

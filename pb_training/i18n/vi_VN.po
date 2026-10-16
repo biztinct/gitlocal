@@ -201,3 +201,39 @@ msgstr "Hiện tất cả"
 #: code:addons/pb_training/static/src/js/training_palette.js:0
 msgid "Training"
 msgstr "Đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Tests and question bank"
+msgstr "Bài kiểm tra và ngân hàng câu hỏi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "My training"
+msgstr "Đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training assignments"
+msgstr "Phân công đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Compliance schedules"
+msgstr "Lịch đào tạo bắt buộc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training claims"
+msgstr "Yêu cầu hoàn phí đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training numbers"
+msgstr "Số liệu đào tạo"

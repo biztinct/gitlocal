@@ -212,3 +212,15 @@ msgstr "Người đồng hành"
 #: code:addons/pb_onboarding/static/src/xml/onboarding_board.xml:307
 msgid "Their record"
 msgstr "Hồ sơ của họ"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+msgid "Welcome sessions"
+msgstr "Buổi chào đón"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+msgid "HR partner rules"
+msgstr "Quy tắc đối tác nhân sự"
