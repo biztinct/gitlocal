@@ -191,3 +191,13 @@
 }
 .pct-select { max-width: 210px; }
 .pct-input { max-width: 168px; }
+
+.pct-guide {
+    margin-bottom: 14px; font-size: 11px; color: var(--pbim-muted, #64748B);
+    border: 1px solid var(--pbim-line, #E2E8F0); background: #fff; border-radius: 10px;
+    summary { padding: 10px 12px; cursor: pointer; color: var(--pbim-primary, #5A4BB0); font-weight: 650; }
+    dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 0; padding: 2px 12px 12px; }
+    dt { font-size: 11px; color: var(--pbim-text, #1E1B2E); margin-bottom: 4px; }
+    dd { margin: 0; line-height: 1.55; }
+    p { padding: 10px 12px; margin: 0; border-top: 1px solid var(--pbim-line, #E2E8F0); line-height: 1.5; }
+}

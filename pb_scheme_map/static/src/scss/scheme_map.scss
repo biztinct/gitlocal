@@ -753,3 +753,15 @@
     .pbim.smp .smp-line,
     .pbim.smp .smp-ring__fill { transition: none; }
 }
+
+.smp-evidence-help {
+    position: relative; font-size: 11px; color: var(--pbim-muted, #64748B);
+    summary { cursor: pointer; white-space: nowrap; }
+    p { position: absolute; z-index: 12; width: 320px; top: 24px; left: 0; margin: 0; padding: 12px 14px;
+        background: #fff; border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(36,31,82,.12); line-height: 1.55; }
+}
+
+.smp .smp-person__who .smp-person__evidence { padding: 5px 7px; border-radius: 6px; color: var(--pbim-primary); background: var(--pbim-soft); line-height: 1.5; }
+.smp .smp-person__who .smp-person__evidence--archived { color: var(--pbim-amber-ink); background: var(--pbim-amber-soft); }
+.smp-person__file { display: block; overflow-wrap: anywhere; }

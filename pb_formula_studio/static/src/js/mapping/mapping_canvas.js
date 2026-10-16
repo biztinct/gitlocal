@@ -70,6 +70,8 @@ export class MappingCanvas extends Component {
         // the column edge and is counted, where an item missing from the list
         // entirely counts as `gone` and reads as a broken wire (C5's whole lesson).
         groupFilter: { type: String, optional: true },
+        excludedGroups: { type: Array, optional: true },
+        compact: { type: Boolean, optional: true },
         // JOURNEY J3 S1 — this board's rows run BOTH ways, so its wires grow a
         // second arrowhead. A capability, not a mode: the adapter that knows its
         // rows are two-way says so in its payload, and every board that does not
@@ -106,6 +108,8 @@ export class MappingCanvas extends Component {
         this.ui = useState({
             armedLeft: null,      // a left item id awaiting a right click (draw mode)
             hoverWire: null,
+            expanded: {},
+            tip: null,
             hoverItem: null,      // {side, id} — the card the pointer is on
             selWire: null,        // the wire whose hub stays open
             // C7 — the arrival ring, per COLUMN rather than one at a time. The
@@ -196,6 +200,7 @@ export class MappingCanvas extends Component {
             }
         });
         onWillUnmount(() => {
+            if (this._tipTimer) { clearTimeout(this._tipTimer); }
             if (this._ro) { this._ro.disconnect(); }
             if (this._raf) { cancelAnimationFrame(this._raf); }
             if (this._tfTimer) { clearTimeout(this._tfTimer); }
@@ -212,6 +217,8 @@ export class MappingCanvas extends Component {
                 || next.rightTitle !== this.props.rightTitle) {
                 this.resetQuery("left");
                 this.resetQuery("right");
+                this.ui.expanded = {};
+                this.leaveItem();
                 this.ui.selWire = null;
                 this.ui.reveal = null;
             }
@@ -219,7 +226,8 @@ export class MappingCanvas extends Component {
             // is about to render, and focus/arming resolved against the OLD list are
             // then pointing at a card that stops existing this frame. Relocate them
             // here, before the render, exactly as GridStudio does for the lens.
-            if (next.groupFilter !== this.props.groupFilter) {
+            if (next.groupFilter !== this.props.groupFilter
+                || next.excludedGroups !== this.props.excludedGroups) {
                 this.ui.armedLeft = null;
                 if (this.ui.focusSide === "left") { this.ui.focusId = null; }
             }
@@ -265,7 +273,8 @@ export class MappingCanvas extends Component {
                     span = el._mcName = el.querySelector(".mc-item-label > span");
                 }
                 if (!span) { continue; }
-                const clipped = span.scrollHeight > span.clientHeight + 1;
+                const clipped = span.scrollHeight > span.clientHeight + 1
+                    || span.scrollWidth > span.clientWidth + 1;
                 span.classList.toggle("is-clipped", clipped);
                 // MJ34 — a `title` nobody can tell is there is not an
                 // affordance, which is why `.is-clipped` also carries a cursor
@@ -284,7 +293,7 @@ export class MappingCanvas extends Component {
         if (this._raf) { return; }
         this._raf = requestAnimationFrame(() => { this._raf = null; this._recompute(); });
     }
-    onColScroll() { this._schedule(); }
+    onColScroll() { this.leaveItem(); this._schedule(); }
 
     /**
      * One pass over a column, not two selector queries per wire.
@@ -773,7 +782,7 @@ export class MappingCanvas extends Component {
     setFilter(side, v) { this.ui.f[side] = this.ui.f[side] === v ? "all" : v; }
     clearFilters(side) {
         this.clearSearch(side); this.ui.f[side] = "all";
-        if (side === "left" && this.props.groupFilter && this.props.onClearGroupFilter) {
+        if (side === "left" && (this.props.groupFilter || this.props.excludedGroups?.length) && this.props.onClearGroupFilter) {
             this.props.onClearGroupFilter();
         }
         // A reveal bar is a claim about a filter. Drop the half of the claim
@@ -787,7 +796,7 @@ export class MappingCanvas extends Component {
         }
     }
     hasFilter(side) {
-        if (side === "left" && this.props.groupFilter) { return true; }
+        if (side === "left" && (this.props.groupFilter || this.props.excludedGroups?.length)) { return true; }
         return this.ui.f[side] !== "all" || !!this.ui.qa[side];
     }
 
@@ -817,6 +826,7 @@ export class MappingCanvas extends Component {
                 && (it.group || "") !== this.props.groupFilter) {
             return false;
         }
+        if (side === "left" && this.props.excludedGroups?.includes(it.group || "")) { return false; }
         const f = this.ui.f[side];
         if (f !== "all") {
             const acc = side === "left" ? this._accL : this._accR;
@@ -1130,8 +1140,57 @@ export class MappingCanvas extends Component {
         if (!f.on) { return ""; }
         return f.wires.has(g.id) ? "hot" : "dim";
     }
-    enterItem(side, id) { this.ui.hoverItem = { side, id }; }
-    leaveItem() { this.ui.hoverItem = null; }
+    itemKey(side, id) { return `${side}:${id}`; }
+    isExpanded(side, id) { return !!this.ui.expanded[this.itemKey(side, id)]; }
+    toggleDetails(side, id, ev) {
+        ev?.stopPropagation();
+        this.leaveItem();
+        const key = this.itemKey(side, id);
+        this.ui.expanded[key] = !this.ui.expanded[key];
+    }
+    recordChip(it, side) {
+        // Employee/Contract is the record family, not a second line of detail.
+        return side === "right" && it.meta?.model && !it.meta?.col
+            ? it.sublabel : "";
+    }
+    detailLines(it) {
+        const lines = [
+            it.meta?.col ? `${it.meta.col} · ${it.sublabel || ""}` : it.sublabel,
+            it.meta?.field ? `${it.meta.model}.${it.meta.field} · ${it.meta.ttype || ""}` : "",
+            it.group ? _t("Category: %s", it.group) : "",
+            this.dirNote(it),
+            it.sample !== null && it.sample !== undefined && it.sample !== ""
+                ? (it.prov === "catalog" && it.provOrigin === "template"
+                    ? _t("Example: %s", String(it.sample)) : _t("Sample: %s", String(it.sample))) : "",
+            ...this.itemChips(it).map(ch => ch.rank
+                ? `${ch.rank}. ${ch.hint}` : ch.hint),
+            this.note(it)?.title || this.note(it)?.text,
+        ];
+        return [...new Set(lines.filter(Boolean))];
+    }
+    enterItem(side, id, ev) {
+        this.leaveItem();
+        this.ui.hoverItem = { side, id };
+        if (!this.props.compact || !ev?.currentTarget || this.ui.menu) { return; }
+        const card = ev.currentTarget.getBoundingClientRect();
+        const root = this.rootRef.el.getBoundingClientRect();
+        const width = Math.min(320, root.width - 24);
+        const x = side === "left" ? card.right - root.left + 12 : card.left - root.left - width - 12;
+        const y = Math.max(8, Math.min(card.top - root.top, root.height - 270));
+        this._tipTimer = setTimeout(() => {
+            this.ui.tip = { side, id, x: Math.max(12, Math.min(x, root.width - width - 12)), y, width };
+        }, 450);
+    }
+    leaveItem() {
+        clearTimeout(this._tipTimer);
+        this.ui.hoverItem = null;
+        this.ui.tip = null;
+    }
+    get tipItem() {
+        const t = this.ui.tip;
+        return t ? (t.side === "left" ? this.props.leftItems : this.props.rightItems)
+            .find(it => it.id === t.id) : null;
+    }
     enterWire(id) { this.ui.hoverWire = id; }
     leaveWire() { this.ui.hoverWire = null; }
     /** Travelling highlights are a flourish; past ~60 wires they are static. */
@@ -1152,7 +1211,13 @@ export class MappingCanvas extends Component {
     }
     selectWire(g, ev) {
         if (ev) { ev.stopPropagation(); }
+        this.leaveItem();
         this.ui.selWire = this.ui.selWire === g.id ? null : g.id;
+        if (this.props.compact && this.ui.selWire) {
+            this.ui.expanded[this.itemKey("left", g.leftId)] = true;
+            this.ui.expanded[this.itemKey("right", g.rightId)] = true;
+            this.centreBoth(g);
+        }
     }
 
     /**

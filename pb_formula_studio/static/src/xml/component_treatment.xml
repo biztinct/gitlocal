@@ -91,24 +91,27 @@
         <!-- Orientation text, read once. It sits INSIDE the scroller so it
              scrolls away with the first row rather than holding 150px of a
              911px window for the life of the session. -->
-        <p class="pct-sub">Set once per pay component and it holds however the
-          value reaches you — a spreadsheet column, a connected system, a
-          contract, or the scheme's own formulas. <b>Group</b> is what you see
-          on the grid. <b>Pay role</b> is what every report counts it as.
-          <b>Subtotal</b> means the amount is already inside another line, so
-          totals count that one instead of this. <b>Value type</b> decides
-          whether it is read as a number or kept exactly as it arrived — and a
-          value that is not an amount cannot be added to or taken off net pay.</p>
+        <details class="pct-guide">
+          <summary>What do these settings mean? How are they filled?</summary>
+          <dl>
+            <div><dt>Report group</dt><dd>A label used to organise the grid and reports, such as Earnings or Deductions. It comes from the component’s saved group, or its salary-rule category if no group was set. You can change it here. It is separate from Identity / Employee profile categories.</dd></div>
+            <div><dt>Pay role</dt><dd>How reports count this value: added to net pay, deducted, employer cost, final net pay or information only. Suggested from the scheme’s formulas and value types; your saved choice takes priority. The reason appears below each role.</dd></div>
+            <div><dt>Included in another total (Subtotal)</dt><dd>Tick when this amount is already counted inside another component. Reports count that total instead, to avoid counting the same money twice. For example, an allowance already included in gross pay. Suggested with the pay role; you can override it.</dd></div>
+            <div><dt>Run signal (Tells the run)</dt><dd>A special purpose the run needs to recognise, such as employment status or hours worked. Setup can suggest a signal from names and sample values, and you can choose it here. Leave it blank for an ordinary pay component.</dd></div>
+            <div><dt>Value type</dt><dd>What the value is: money, hours/days, text, date and so on. Suggested from formulas, source types and sample values; you can correct it. Saving settings does not rewrite stored payslip results; recompute the relevant run when needed.</dd></div>
+          </dl>
+          <p><b>Re-classify from the formulas</b> refreshes automatic pay roles and subtotal flags. It keeps choices you saved yourself. Review changes before using them in payroll.</p>
+        </details>
         <table class="pct-table" data-coach="tr-table">
           <thead>
             <tr>
               <th>Component</th>
               <th>Comes from</th>
-              <th>Group</th>
-              <th>Pay role</th>
-              <th class="c">Subtotal</th>
-              <th>Tells the run</th>
-              <th>Value type</th>
+              <th title="Organises the grid and reports; editable here.">Report group</th>
+              <th title="How reports count this value. Suggested from formulas; your choice takes priority.">Pay role</th>
+              <th class="c" title="Already counted inside another component; prevents double counting in reports.">Included in<br/>another total</th>
+              <th title="Identifies a special run input, such as employment status or hours worked.">Run signal</th>
+              <th title="How the value is read and displayed: money, quantity, text, date and so on.">Value type</th>
             </tr>
           </thead>
           <tbody>
@@ -121,7 +124,7 @@
               <td>
                 <span t-attf-class="pct-lane l-{{ row.lane }}" t-esc="laneLabel(row.lane)"/>
                 <span class="pct-eg">
-                  <span t-foreach="row.delivered" t-as="eg" t-key="eg_index"
+                  <span t-foreach="row.delivered.filter(eg => eg !== 'None' and eg !== 'null')" t-as="eg" t-key="eg_index"
                         class="pct-chip" t-esc="eg"/>
                 </span>
                 <span t-if="row.drift" class="pct-stored">
@@ -148,7 +151,7 @@
                       t-esc="row.pay_role_source === 'user' ? 'you set this' : (row.needs_review ? 'needs your answer' : row.pay_role_reason)"/>
               </td>
               <td class="c">
-                <input type="checkbox" t-att-checked="valueOf(row, 'rollup')"
+                <input type="checkbox" t-att-aria-label="'Already counted inside another total: ' + row.name" t-att-checked="valueOf(row, 'rollup')"
                        t-att-disabled="props.readonly ? 1 : 0"
                        t-on-change="(ev) => this.onChange(row, 'rollup', ev)"/>
               </td>

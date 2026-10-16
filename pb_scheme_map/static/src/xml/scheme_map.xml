@@ -61,6 +61,10 @@
 
         <p class="smp-strip__line" t-esc="coverLine"/>
 
+        <details class="smp-evidence-help">
+          <summary>How are schemes suggested?</summary>
+          <p>Suggestions use the scheme recorded on recent payslips for this team. Linked spreadsheet imports show where those runs came from. The uncovered-people list also shows the latest linked spreadsheet import, including archived schemes. An import does not permanently assign the person or their whole team. Review the evidence, then accept the right proposal. Mixed teams may need separate assignments.</p>
+        </details>
         <div class="smp-strip__acts">
           <button t-if="exceptionCount" class="smp-chip is-bad"
                   t-on-click="toggleExceptions"
@@ -77,8 +81,9 @@
           </span>
           <button t-if="canEdit and hasSchemes" class="pbim-btn primary"
                   t-att-disabled="state.busy ? 'disabled' : false"
+                  title="Review suggestions from recent payslips and their linked imports. This does not change assignments until you accept a proposal."
                   t-on-click="startDraft">
-            <t t-out="ic('sparkles', 15)"/> Draft the map from what you paid
+            <t t-out="ic('sparkles', 15)"/> Review scheme suggestions
           </button>
           <button t-if="canEdit" class="pbim-btn outline"
                   t-att-disabled="state.busy ? 'disabled' : false"
@@ -286,7 +291,7 @@
                 <small t-if="scheme.last_run.spreadsheet and scheme.last_run.spreadsheet.filename"
                        class="smp-scheme__source"
                        t-att-title="'Imported for ' + (scheme.last_run.spreadsheet.run || scheme.name)">
-                  Suggested by spreadsheet <b t-esc="scheme.last_run.spreadsheet.filename"/>
+                  Import evidence: <b t-esc="scheme.last_run.spreadsheet.filename"/>
                 </small>
               </span>
               <span t-if="!scheme.covered" class="smp-tag is-warn">Nobody yet</span>
@@ -302,8 +307,7 @@
           <p class="smp-teach__title">Nothing is attached to a scheme yet</p>
           <p class="smp-teach__sub">
             You have been paying people for months, so the map already exists —
-            it is just not written down. Press "Draft the map from what you
-            paid" and this system reads the last runs and proposes it back to
+            it is just not written down. Press "Review scheme suggestions" and this system reads the last runs and proposes it back to
             you, line by line, with the numbers behind each one.
           </p>
         </div>
@@ -483,8 +487,17 @@
                 <t t-else="">No team</t>
                 · <t t-esc="person.reason"/>
               </small>
+              <small t-if="person.import_evidence" t-att-class="person.import_evidence.available ? 'smp-person__evidence' : 'smp-person__evidence smp-person__evidence--archived'">
+                <t t-if="person.import_evidence.available">Candidate from import: </t><t t-else="">Previous import scheme: </t>
+                <b t-esc="person.import_evidence.config"/> · <t t-esc="person.import_evidence.cycle"/>
+                <span t-if="!person.import_evidence.available"> · Archived or inactive — choose a current replacement.</span>
+                <span t-if="!person.import_evidence.processed"> · Matched in staging; import not completed for this person.</span>
+                <span t-if="person.import_evidence.filename" class="smp-person__file" t-esc="person.import_evidence.filename"/>
+              </small>
+              <small t-else="" class="smp-person__evidence">No linked spreadsheet import to suggest a scheme from.</small>
+              <small t-if="!person.department_id">Choose a team or a specific assignment before applying a team map.</small>
             </span>
-            <button t-if="canEdit" class="pbim-btn outline sm"
+            <button t-if="canEdit and person.department_id" class="pbim-btn outline sm"
                     t-on-click="() => this.openAttachForDepartment(person.department_id)">
               <t t-out="ic('link', 14)"/> Attach a scheme
             </button>

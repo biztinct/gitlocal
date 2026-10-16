@@ -228,7 +228,8 @@ export class MappingStudio extends Component {
             // Both filters live in the HOST, not in the canvas: the canvas is
             // payroll-agnostic and must not learn what a "payroll component" is.
             empPayroll: false,      // include the pay columns in the LEFT column
-            empLane: null,          // a role lane LABEL, or null for every lane
+            empLane: null,          // legacy single-lane filter; kept for arrival/reset compatibility
+            empHiddenLanes: [],     // category labels hidden in this view
             empQuery: "", empResults: [],       // "Add a field to map…"
             empExtras: [], empHidden: [],       // session-scoped right-column edits
             empMenu: null, empMenuFilter: "", empMenuAll: {},   // Employee ▾ / Contract ▾
@@ -1047,7 +1048,7 @@ export class MappingStudio extends Component {
         Object.assign(this.state, {
             empQuery: "", empResults: [], empExtras: [], empHidden: [],
             empMenu: null, empMenuFilter: "", empMenuAll: {},
-            empPayroll: false, empLane: null,
+            empPayroll: false, empLane: null, empHiddenLanes: [],
         });
     }
 
@@ -1588,29 +1589,41 @@ export class MappingStudio extends Component {
             }));
     }
 
-    /** The lane filter is by GROUP LABEL, because that is what the canvas groups on. */
-    toggleEmpLane(chip) {
-        if (chip.role === "payroll" && !this.state.empPayroll) {
-            // Asking to see the payroll lane is asking for the columns in it; a
-            // chip that filtered to a lane the server has not sent would empty
-            // the board.
-            this.toggleEmpPayroll();
+    /** Category pills are visibility toggles; the Payroll pill has the same rule. */
+    empLaneVisible(chip) {
+        return chip.role === "payroll" ? !!this.state.empPayroll
+            : !this.state.empHiddenLanes.includes(chip.label);
+    }
+    async toggleEmpLane(chip) {
+        if (this.state.busy) { return; }
+        if (chip.role === "payroll") {
+            await this.toggleEmpPayroll();
             return;
         }
-        this.state.empLane = this.state.empLane === chip.label ? null : chip.label;
+        const hidden = this.state.empHiddenLanes;
+        this.state.empHiddenLanes = hidden.includes(chip.label)
+            ? hidden.filter(label => label !== chip.label) : [...hidden, chip.label];
     }
-
     async toggleEmpPayroll() {
+        if (this.state.busy) { return; }
         this.state.empPayroll = !this.state.empPayroll;
-        if (!this.state.empPayroll && this.state.empLane === roleLabel("payroll")) {
-            this.state.empLane = null;
-        }
+        this.state.empLane = null;
         await this.load();
     }
-
-    clearEmpLane() { this.state.empLane = null; }
-
-    get empLaneFilter() { return this.isEmp ? (this.state.empLane || "") : ""; }
+    clearEmpLane() {
+        this.state.empLane = null;
+        this.state.empHiddenLanes = [];
+    }
+    async showAllEmpLanes() {
+        this.clearEmpLane();
+        if (!this.state.empPayroll) {
+            this.state.empPayroll = true;
+            await this.load();
+        }
+    }
+    get empLaneFilter() { return ""; }
+    get empExcludedGroups() { return this.isEmp ? this.state.empHiddenLanes : undefined; }
+    get compactCanvas() { return ["employee", "import", "api"].includes(this.state.mode); }
 
     // ---- "Add a field to map…" ------------------------------------------------
     // The right column is the whole catalogue, which is 236 cards on abm; this is

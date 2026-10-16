@@ -2686,3 +2686,57 @@ test("component destination focus narrows the right column and keeps source choi
     expect(canvas.ui.qa.left).toBe("L2");
     expect(canvas.ui.qa.right).toBe("");
 });
+
+// Compact specialist boards preserve mapping actions while disclosing detail.
+test("compact disclosure shows full metadata without arming or drawing a mapping", async () => {
+    let draws = 0;
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props({
+        compact: true,
+        leftItems: [{id: "L", label: "Nationality", sublabel: "NATIONALITY", meta: {
+            col: "F", direction: "to_record", directionNote: "Stored as contract text",
+            actions: [{key: "make_amount", label: "Make amount component"}],
+        }}],
+        rightItems: [{id: "R", label: "Employee Name", sublabel: "Employee",
+            meta: {model: "hr.employee", field: "name", ttype: "char"}}],
+        wires: [], onDraw: () => draws++, onLeftAction: () => {},
+    }) });
+    const card = document.querySelector('.mc-item[data-side="left"]');
+    card.querySelector(".mc-item-expand").click();
+    await animationFrame();
+    expect(card.getAttribute("data-expanded")).toBe("true");
+    expect(card.querySelector(".mc-item-details").textContent).toInclude("Stored as contract text");
+    expect(canvas.ui.armedLeft).toBe(null);
+    expect(draws).toBe(0);
+    expect(document.querySelector(".mc-record-chip").textContent).toBe("Employee");
+    expect(card.querySelector(".mc-item-more")).not.toBe(null);
+});
+
+test("selecting a compact connection expands both ends without changing its direction", async () => {
+    const wires = [{id: "one", leftId: "L", rightId: "R", state: "accepted", direction: "to_record"}];
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props({
+        compact: true, leftItems: [{id: "L", label: "Nationality", meta: {}}],
+        rightItems: [{id: "R", label: "Contract text", meta: {}}], wires,
+    }) });
+    canvas.selectWire(wires[0]);
+    await animationFrame();
+    expect(canvas.isExpanded("left", "L")).toBe(true);
+    expect(canvas.isExpanded("right", "R")).toBe(true);
+    expect(wires[0].direction).toBe("to_record");
+    expect(wires.length).toBe(1);
+});
+
+test("category visibility filters only the source side and can be cleared", async () => {
+    let cleared = false;
+    const canvas = await mountWithCleanup(MappingCanvas, { props: props({
+        compact: true, excludedGroups: ["Payroll"],
+        leftItems: [{id: "L", label: "Pay", group: "Payroll", meta: {}},
+                    {id: "L2", label: "Code", group: "Identity", meta: {}}],
+        rightItems: [{id: "R", label: "Wage", group: "Payroll", meta: {}}],
+        wires: [], onClearGroupFilter: () => { cleared = true; },
+    }) });
+    expect(canvas.leftView.map(it => it.id)).toEqual(["L2"]);
+    expect(canvas.rightView.map(it => it.id)).toEqual(["R"]);
+    expect(canvas.hasFilter("left")).toBe(true);
+    canvas.clearFilters("left");
+    expect(cleared).toBe(true);
+});

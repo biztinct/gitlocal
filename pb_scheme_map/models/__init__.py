@@ -5,3 +5,5 @@ from . import pb_scheme_map
 from . import hr_employee
 from . import hr_payslip_run
 from . import pb_scheme_board
+
+from . import import_evidence

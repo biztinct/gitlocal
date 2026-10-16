@@ -1077,3 +1077,12 @@
 /* Long destination names may wrap inside a chip on small screens. */
 .pbms-modes .pbms-mode, .pbms-modes .pbms-schemechip { max-width: 100%; white-space: normal; }
 .pbms-modes__sp { display: none; }
+
+.pbms-wrap .pbms-lanes-label { font-size: 10px; color: var(--pbim-muted); flex: none; }
+ .pbms-wrap .pbms-category-help {
+    font-size: 10px; color: var(--pbim-muted);
+    summary { cursor: pointer; white-space: nowrap; }
+    &[open] { flex-basis: 100%; }
+    p { padding: 10px 12px; margin: 6px 0 0; max-width: 680px; white-space: normal;
+        background: var(--pbim-soft); border: 1px solid var(--pbim-line); border-radius: 9px; line-height: 1.5; }
+}

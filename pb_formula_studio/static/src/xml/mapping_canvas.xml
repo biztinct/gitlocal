@@ -14,7 +14,8 @@
        same word. Now nothing can. -->
   <t t-name="pb_formula_studio.McItemLabel">
     <div class="mc-item-label">
-      <span t-esc="it.label"/>
+      <span t-esc="it.label" t-att-title="it.label"/>
+      <span t-if="props.compact and recordChip(it, mcSide)" t-attf-class="mc-record-chip {{ it.meta.model === 'hr.contract' ? 'contract' : 'employee' }}" t-esc="recordChip(it, mcSide)"/>
       <!-- JOURNEY J9 — the rank is a real <sup>, never a Unicode superscript
            character: a screen reader announces the element and skips the
            glyph, and the font stack renders the element at every size where
@@ -23,6 +24,8 @@
             t-att-class="ch.cls" t-att-title="ch.hint">
         <t t-esc="ch.label"/><sup t-if="ch.rank" t-esc="ch.rank"/>
       </span>
+      <span t-if="props.compact and note(it) and note(it).tone === 'warn'" class="mc-detail-warning"
+            t-att-title="note(it).title or note(it).text" role="img" aria-label="Check destination requirements" t-out="ic('alert', 11)"/>
       <!-- SOURCING S5 — lineage, in place. Only a card that HAS lineage grows the
            affordance, so every other board is unchanged. S6 — and a COMPONENT fed
            by a rule output has lineage too, which is why this lives here rather
@@ -35,8 +38,16 @@
     </div>
   </t>
 
+  <t t-name="pb_formula_studio.McCompactDetails">
+    <div class="mc-item-details">
+      <div t-foreach="detailLines(it)" t-as="detail" t-key="detail_index" t-esc="detail"/>
+      <button t-if="noteValues(it)" type="button" class="mc-detail-values"
+              t-on-click="(ev) => this.toggleNoteMenu(it, ev)">View all accepted values</button>
+    </div>
+  </t>
+
   <t t-name="pb_formula_studio.MappingCanvas">
-    <div t-attf-class="mapping-canvas {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
+    <div t-attf-class="mapping-canvas {{ props.compact ? 'is-compact' : '' }} {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
          t-ref="root" tabindex="0" t-on-keydown="onKeydown">
 
       <!-- THE BOARD. Everything that can be scrolled out of view lives inside
@@ -44,6 +55,13 @@
            edge, it may never paint over the story bar or the mode strip. The
            transform popover and the draw hint are deliberate siblings, outside
            the clip, because they are allowed to overhang. -->
+      <div t-if="tipItem" class="mc-detail-tip" role="tooltip"
+           t-attf-style="left:{{ ui.tip.x }}px;top:{{ ui.tip.y }}px;width:{{ ui.tip.width }}px">
+        <strong t-esc="tipItem.label"/>
+        <div t-foreach="detailLines(tipItem)" t-as="tipLine" t-key="tipLine_index" t-esc="tipLine"/>
+        <small>Use the chevron to keep details open.</small>
+      </div>
+
       <div class="mc-board">
 
         <!-- wire layer (SVG bezier paths, pixel coords relative to the board) -->
@@ -72,7 +90,7 @@
                      child is not a tooltip, it is an unknown attribute, and
                      the gesture would be undiscoverable on the wire itself
                      (which is where a reader tries it first). -->
-                <title>Double-click to bring both ends into view</title>
+                <title t-esc="props.compact ? 'Click to expand both connected cards. Double-click to centre them.' : 'Double-click to bring both ends into view'"/>
               </path>
               <path class="mc-wire" t-att-d="g.d"/>
               <polygon class="mc-head" t-att-points="g.head"/>
@@ -144,27 +162,34 @@
                 <!-- opt-in group header: drawn only for items that carry a
                      `group`, so every existing adapter renders unchanged -->
                 <div t-if="leftGroupHead(lview, it_index)" class="mc-group" t-esc="leftGroupHead(lview, it_index)"/>
-                <div data-side="left" t-att-data-id="it.id"
+                <div data-side="left" t-att-data-id="it.id" t-att-data-expanded="isExpanded('left', it.id) ? 'true' : 'false'"
                      t-attf-class="mc-item {{ isArmed(it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('left', it.id) }} {{ isFlashing('left', it.id) ? 'flash' : '' }} {{ isWirable(it) ? '' : 'sealed' }} {{ it.meta and it.meta.orphan ? 'orphan' : '' }}"
                      t-on-click="() => this.clickLeft(it.id)"
-                     t-on-mouseenter="() => this.enterItem('left', it.id)"
+                     t-on-mouseenter="(ev) => this.enterItem('left', it.id, ev)"
                      t-on-mouseleave="() => this.leaveItem()">
+                  <button t-if="props.compact" type="button" class="mc-item-expand"
+                          t-att-aria-label="(isExpanded('left', it.id) ? 'Collapse details for ' : 'Expand details for ') + it.label"
+                          t-att-aria-expanded="isExpanded('left', it.id) ? 'true' : 'false'"
+                          t-att-title="isExpanded('left', it.id) ? 'Collapse details' : 'Expand details'"
+                          t-on-click="(ev) => this.toggleDetails('left', it.id, ev)"
+                          t-out="ic(isExpanded('left', it.id) ? 'chevronDown' : 'chevronRight', 12)"/>
                   <div class="mc-item-main">
                     <t t-call="pb_formula_studio.McItemLabel">
                       <t t-set="mcSide" t-value="'left'"/>
                     </t>
-                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <t t-if="props.compact and isExpanded('left', it.id)" t-call="pb_formula_studio.McCompactDetails"/>
+                    <div class="mc-item-sub mc-secondary"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- JOURNEY J3 S1 — what this row DOES, both halves of it.
                          Left column only: it is a statement about the mapping,
                          and the mapping is anchored on the component. -->
-                    <div t-if="dirNote(it)" t-attf-class="mc-item-dir {{ it.meta.direction }}"
+                    <div t-if="dirNote(it)" t-attf-class="mc-item-dir mc-secondary {{ it.meta.direction }}"
                          t-att-title="dirNote(it)"><span class="mc-item-dir__g" t-esc="it.meta.direction === 'two_way' ? '⇆' : '→'"/><t t-esc="dirNote(it)"/></div>
                     <!-- what the data looks like. A live sample is a value that
                          arrived; only a SHIPPED-PAPER catalogue sample is an
                          invented example, and the `e.g.` marks exactly that
                          (SC-1). A catalogue row observed in real data carries a
                          REAL sample and shows it plain. -->
-                    <div t-if="it.sample" t-attf-class="mc-item-sample {{ it.prov === 'catalog' and it.provOrigin === 'template' ? 'eg' : '' }}">
+                    <div t-if="it.sample" t-attf-class="mc-item-sample mc-secondary {{ it.prov === 'catalog' and it.provOrigin === 'template' ? 'eg' : '' }}">
                       <span t-if="it.prov === 'catalog' and it.provOrigin === 'template'" class="mc-item-sample__k">e.g.</span><t t-esc="it.sample"/>
                     </div>
                   </div>
@@ -241,12 +266,18 @@
                 <!-- opt-in group header, the mirror of the left column's. Only
                      boards whose right items carry a `group` grow one. -->
                 <div t-if="rightGroupHead(rview, it_index)" class="mc-group" t-esc="rightGroupHead(rview, it_index)"/>
-                <div data-side="right" t-att-data-id="it.id"
+                <div data-side="right" t-att-data-id="it.id" t-att-data-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
                      t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
                      t-on-click="() => this.clickRight(it.id)"
-                     t-on-mouseenter="() => this.enterItem('right', it.id)"
+                     t-on-mouseenter="(ev) => this.enterItem('right', it.id, ev)"
                      t-on-mouseleave="() => this.leaveItem()">
                   <span class="mc-plug left"/>
+                  <button t-if="props.compact" type="button" class="mc-item-expand"
+                          t-att-aria-label="(isExpanded('right', it.id) ? 'Collapse details for ' : 'Expand details for ') + it.label"
+                          t-att-aria-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
+                          t-att-title="isExpanded('right', it.id) ? 'Collapse details' : 'Expand details'"
+                          t-on-click="(ev) => this.toggleDetails('right', it.id, ev)"
+                          t-out="ic(isExpanded('right', it.id) ? 'chevronDown' : 'chevronRight', 12)"/>
                   <div class="mc-item-main">
                     <!-- SOURCING S6 — the SAME label block as the left column.
                          S16 and S18 were both this: two item templates that did
@@ -257,7 +288,8 @@
                     <t t-call="pb_formula_studio.McItemLabel">
                       <t t-set="mcSide" t-value="'right'"/>
                     </t>
-                    <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <t t-if="props.compact and isExpanded('right', it.id)" t-call="pb_formula_studio.McCompactDetails"/>
+                    <div class="mc-item-sub mc-secondary"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                     <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
                          selection's permitted values (with the stored code, which
                          is what the file has to contain), or whether a many2one
@@ -272,7 +304,7 @@
                          that would do nothing never appears. -->
                     <t t-if="note(it)">
                       <button t-if="noteValues(it)" type="button"
-                              t-attf-class="mc-item-note act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
+                              t-attf-class="mc-item-note mc-secondary act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
                               t-att-title="note(it).title"
                               t-att-aria-label="noteMenuLabel(it)"
                               aria-haspopup="dialog"
@@ -281,7 +313,7 @@
                         <span class="mc-item-note__t"><t t-esc="note(it).text"/><span
                               class="mc-item-note__x" t-out="ic('chevronDown', 11)"/></span>
                       </button>
-                      <div t-else="" t-attf-class="mc-item-note {{ note(it).tone }}"
+                      <div t-else="" t-attf-class="mc-item-note mc-secondary {{ note(it).tone }}"
                            t-att-title="note(it).title" t-esc="note(it).text"/>
                     </t>
                   </div>

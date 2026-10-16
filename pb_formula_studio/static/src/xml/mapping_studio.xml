@@ -378,19 +378,26 @@
                the filter. The payroll chip is the odd one out — it does not
                filter, it REVEALS, because the pay columns are not sent to this
                board until somebody asks for them. -->
-          <div class="pbms-lanes">
+          <div class="pbms-lanes" role="group" aria-label="Visible component categories">
+            <span class="pbms-lanes-label" title="Each pill shows or hides that category. Categories use the component’s saved Column role, not its report group.">Show categories</span>
             <button t-foreach="empChips" t-as="ch" t-key="ch.role" type="button"
-                    t-attf-class="pbms-lane {{ ch.role }} {{ state.empLane === ch.label ? 'on' : '' }} {{ ch.role === 'payroll' and state.empPayroll ? 'shown' : '' }}"
+                    t-attf-class="pbms-lane {{ ch.role }} {{ empLaneVisible(ch) ? 'on' : '' }}"
+                    t-att-aria-pressed="empLaneVisible(ch) ? 'true' : 'false'"
+                    t-att-title="(empLaneVisible(ch) ? 'Hide ' : 'Show ') + ch.label + ' components'"
+                    t-att-disabled="state.busy ? 'disabled' : false"
                     t-on-click="() => this.toggleEmpLane(ch)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="ch.icon"/><t t-call="pb_formula_studio.RoleIco"/></svg>
               <span class="l" t-esc="ch.label"/>
               <span class="n" t-esc="ch.total"/>
               <span t-if="ch.unmapped" class="u" t-attf-title="{{ ch.unmapped }} not sent anywhere yet"><t t-esc="ch.unmapped"/> unmapped</span>
             </button>
-            <button t-if="state.empPayroll" type="button" class="pbms-lane ghost on"
-                    t-on-click="toggleEmpPayroll">Hide payroll components</button>
-            <button t-if="state.empLane" type="button" class="pbms-lane ghost"
-                    t-on-click="clearEmpLane">Show every lane</button>
+            <button t-if="!state.empPayroll or state.empHiddenLanes.length" type="button" class="pbms-lane ghost"
+                    t-att-disabled="state.busy ? 'disabled' : false"
+                    t-on-click="showAllEmpLanes">Show all</button>
+            <details class="pbms-category-help">
+              <summary title="How categories are chosen">How are these grouped?</summary>
+              <p>These categories use each component’s saved <b>Column role</b>. Setup can suggest it from formulas, storage, the identifier row, names, section headings and sample values. A role you choose yourself is preserved. The right side groups actual employee and contract fields by their purpose.</p>
+            </details>
           </div>
         </t>
 
@@ -503,6 +510,7 @@
                              canEdit="canEdit" busy="state.busy"
                              command="state.cmd"
                              groupFilter="empLaneFilter"
+                             excludedGroups="empExcludedGroups" compact="compactCanvas"
                              bidirectional="isBidirectional"
                              onAccept="(w) => this.accept(w)"
                              onReject="(w) => this.reject(w)"

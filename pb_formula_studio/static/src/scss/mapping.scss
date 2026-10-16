@@ -770,3 +770,69 @@
     border: 1px solid var(--i-amber-border, #FDE68A);
     max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+
+/* Compact specialist canvases. Geometry still measures the actual card edges,
+   so centring the board and expanding details cannot change arrow semantics. */
+.mapping-canvas.is-compact {
+    --mc-col-w: 390px;
+    max-width: 1380px;
+    left: 0; right: 0; margin-inline: auto;
+    .mc-col { width: var(--mc-col-w); max-width: 42%; }
+    .mc-col-head { gap: 5px; padding: 8px 14px 5px; }
+    .mc-col-q input { font-size: 11px; }
+    .mc-col-title { font-size: 10px; }
+    .mc-col-body { gap: 5px; padding-top: 2px; }
+    .mc-group { font-size: 9px; margin-top: 5px; margin-bottom: 0; }
+    .mc-item { flex-shrink: 0; gap: 5px; padding: 7px 9px; border-radius: 9px; min-height: 36px; align-items: flex-start; }
+    .mc-col.right .mc-item { flex-direction: row; text-align: left; }
+    .mc-item-label { flex-wrap: nowrap; gap: 4px; align-items: center; font-size: 11.5px; min-height: 20px; }
+    .mc-item-label > span:first-child {
+        flex: 1 1 auto; white-space: nowrap; text-overflow: ellipsis;
+        display: block; line-height: 1.4; min-width: 36px;
+    }
+    .mc-item-label .mc-src, .mc-item-label .mc-prov, .mc-item-label .mc-badge,
+    .mc-item-label .mc-conflict {
+        flex: 0 0 auto; font-size: 7.5px; letter-spacing: 0;
+        padding: 1px 4px; line-height: 1.5; border-radius: 4px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .mc-item-label sup { font-size: 7px; margin-left: 1px; }
+    .mc-detail-warning { color: var(--mc-amber-ink); display: inline-flex; flex: none; }
+    .mc-record-chip {
+        flex: none; font-size: 8px; font-weight: 700; line-height: 1.5;
+        padding: 1px 5px; border-radius: 4px;
+        &.employee { color: #285C89; background: #E9F1FC; }
+        &.contract { color: #89601A; background: #FFF1CF; }
+    }
+    .mc-secondary { display: none; }
+    .mc-item-expand {
+        flex: none; width: 20px; height: 20px; padding: 0; border: 0;
+        background: transparent; border-radius: 5px; color: var(--muted, #64748B);
+        display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+        &:hover, &:focus-visible { background: #fff; color: var(--i, #5A4BB0); outline: 1px solid var(--i-border, #CBC2EE); }
+    }
+    .mc-item-more { opacity: .75; }
+    .mc-item-details {
+        border-top: 1px solid var(--line, #E8E9F3); margin-top: 6px; padding-top: 5px;
+        font-size: 10px; line-height: 1.5; color: var(--muted, #64748B);
+        overflow-wrap: anywhere;
+        > div + div { margin-top: 3px; }
+    }
+    .mc-item[data-expanded="true"] .mc-item-label { flex-wrap: wrap; }
+    .mc-item[data-expanded="true"] .mc-item-label > span:first-child { white-space: normal; flex-basis: 100%; }
+    .mc-detail-values { border: 0; padding: 3px 0; color: var(--i, #5A4BB0); background: transparent; font-size: 10px; text-decoration: underline; }
+    .mc-detail-tip {
+        position: absolute; z-index: 12; pointer-events: none; padding: 12px 14px;
+        border: 1px solid var(--i-border, #CBC2EE); border-radius: 10px;
+        background: #fff; box-shadow: 0 8px 26px rgba(36,31,82,.16);
+        font-size: 10.5px; line-height: 1.5; color: var(--muted, #64748B);
+        max-height: 260px; overflow: hidden; overflow-wrap: anywhere;
+        strong { display: block; font-size: 12px; color: var(--ink, #1E1B2E); margin-bottom: 6px; }
+        div + div { margin-top: 4px; }
+        small { display: block; color: var(--i, #5A4BB0); margin-top: 8px; }
+    }
+    @media (max-width: 900px) {
+        --mc-col-w: 42%;
+        .mc-item-label { flex-wrap: wrap; }
+        .mc-item-label > span:first-child { flex-basis: 100%; }
+    }
+}

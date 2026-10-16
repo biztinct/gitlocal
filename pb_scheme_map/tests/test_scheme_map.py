@@ -680,3 +680,54 @@ class TestSchemeMap(TransactionCase):
         with self.assertRaises(AccessError):
             Board.attach('department-%s' % self.top.id, self.end.id, 'any',
                          self.company.id)
+
+    def _import_evidence_fixture(self, config, company=None, employee=None):
+        batch = self.env['hr.payroll.import.batch'].with_context(
+            tracking_disable=True, mail_create_nolog=True).create({
+                'name': 'Import evidence fixture', 'formula_config_id': config.id,
+                'company_id': (company or self.company).id,
+                'source_type': 'excel', 'state': 'done',
+                'import_filename': 'evidence.xlsx',
+            })
+        return self.env['hr.payroll.import.line'].create({
+            'batch_id': batch.id, 'employee_id': (employee or self.people[0]).id,
+            'state': 'processed',
+        })
+
+    def test_import_evidence_is_a_candidate_and_does_not_assign_anyone(self):
+        self._import_evidence_fixture(self.end)
+        Board = self.env['pb.scheme.board']
+        before = self.Assign.search_count([])
+        result = Board._people_import_evidence(
+            [{'employee_id': self.people[0].id}], self.company.id)
+        evidence = result[0]['import_evidence']
+        self.assertEqual(evidence['config_id'], self.end.id)
+        self.assertTrue(evidence['available'])
+        self.assertEqual(evidence['filename'], 'evidence.xlsx')
+        self.assertEqual(self.Assign.search_count([]), before)
+
+    def test_archived_import_evidence_is_kept_as_history(self):
+        self._import_evidence_fixture(self.spare)
+        self.spare.write({'state': 'archived', 'active': False})
+        result = self.env['pb.scheme.board']._people_import_evidence(
+            [{'employee_id': self.people[0].id}], self.company.id)
+        self.assertEqual(result[0]['import_evidence']['config_id'], self.spare.id)
+        self.assertFalse(result[0]['import_evidence']['available'])
+
+    def test_import_evidence_respects_company_and_ignores_failed_rows(self):
+        line = self._import_evidence_fixture(self.end)
+        line.state = 'error'
+        self._import_evidence_fixture(self.mid, company=self.other)
+        result = self.env['pb.scheme.board']._people_import_evidence(
+            [{'employee_id': self.people[0].id}], self.company.id)
+        self.assertFalse(result[0]['import_evidence'])
+
+    def test_latest_eligible_import_is_evidence_without_overwriting_a_team_map(self):
+        self._import_evidence_fixture(self.end)
+        self._import_evidence_fixture(self.mid)
+        assignment = self.Assign.create({'config_id': self.end.id,
+            'department_id': self.top.id, 'cycle_type': 'any'})
+        result = self.env['pb.scheme.board']._people_import_evidence(
+            [{'employee_id': self.people[0].id}], self.company.id)
+        self.assertEqual(result[0]['import_evidence']['config_id'], self.mid.id)
+        self.assertEqual(assignment.config_id, self.end)
