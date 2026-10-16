@@ -951,6 +951,7 @@ export class MappingStudio extends Component {
         this.state.componentId = 0;
         this.state.fromJourney = false;
         this._resetEmpToolkit();
+        this._applyFocus();
         await this.load();
     }
 
@@ -986,6 +987,7 @@ export class MappingStudio extends Component {
         this.state.fromJourney = fromJourney;
         this.state.componentId = Number(door.componentId) || 0;
         this._resetEmpToolkit();
+        if(this.state.componentId && door.mode === "employee")this.state.empPayroll = true;
         // BEFORE the load, not after: `state.data = null` unmounts the board,
         // and a board that is about to be created reads the order at mount
         // (see `MappingCanvas.setup`). Bumping the token afterwards would race
@@ -1030,7 +1032,7 @@ export class MappingStudio extends Component {
         // says "filter by nothing" — and issuing it is what makes each door
         // independent of the one before it.
         this.state.cmd = { token: this.state.cmd.token + 1,
-                           kind: "search", text };
+                           kind: this.state.componentId && ["api", "import"].includes(this.state.mode) ? "searchRight" : "search", text };
     }
 
     /**
@@ -2238,10 +2240,10 @@ export class MappingStudio extends Component {
     }
 
     /** `id` 0 opens it empty — "New transformation rule…". */
-    async openComposer(ruleId) {
+    async openComposer(ruleId, targetId=0) {
         const targets = await this.orm.call(MODEL, "mapping_rule_targets", [this.state.configId]);
         this.state.composer = {
-            targets,
+            targets, targetId: targets.some(t=>t.id===targetId) ? targetId : 0,
             ruleId: ruleId || 0,
             connectorId: this.state.connectorId || 0,
         };

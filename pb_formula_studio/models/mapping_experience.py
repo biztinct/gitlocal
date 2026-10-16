@@ -126,6 +126,9 @@ class MappingExperience(models.AbstractModel):
     @api.model
     def mapping_rule_targets(self, config_id):
         config = self._desk_config(config_id)
+        mapping = self.env['hr.integration.field.mapping']
+        if not all(mapping.has_access(op) for op in ('create', 'write', 'unlink')):
+            return []
         records, wires = self._source_record_dests(config), self._source_wire_dests(config)
         return [{'id': r.id, 'name': r.name, 'code': r.code,
                  'sources': [{**s, 'kind_label': self._source_label(s['kind'])}
@@ -136,6 +139,10 @@ class MappingExperience(models.AbstractModel):
     @api.model
     def mapping_rule_save(self, config_id, connector_id, spec, rule_id=None, target_id=None):
         config = self._desk_config(config_id, write=True)
+        if target_id:
+            mapping = self.env['hr.integration.field.mapping']
+            for op in ('create', 'write', 'unlink'):
+                mapping.check_access(op)
         if target_id and int(target_id) not in [r['id'] for r in self.mapping_rule_targets(config.id)]:
             raise UserError(_('Choose a numeric input on this scheme.'))
         with self.env.cr.savepoint():

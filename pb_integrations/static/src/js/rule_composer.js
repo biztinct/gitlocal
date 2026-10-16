@@ -338,6 +338,7 @@ export class RuleComposer extends Component {
         onClose: { type: Function },
         onSaved: { type: Function, optional: true },
         mappingTargets: { type: Array, optional: true },
+        initialTargetId: { type: Number, optional: true },
         onSaveDraft: { type: Function, optional: true },
     };
 
@@ -350,7 +351,7 @@ export class RuleComposer extends Component {
             loadError: "",
             data: null,
             connectorId: this.props.connectorId || 0,
-            step: 1, allSteps: false, recipeQuery: "", recipeGroup: "all", targetId: "", bindingReviewed: false,
+            step: 1, allSteps: false, recipeQuery: "", recipeGroup: "all", targetId: this.props.initialTargetId ? String(this.props.initialTargetId) : "", bindingReviewed: false,
             draft: null,                    // null = the front door is showing
             keyTouched: false,
             dirty: false,

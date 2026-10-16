@@ -176,10 +176,10 @@ export class MappingCanvas extends Component {
         // would arm a card nobody clicked — a one-shot order replayed on mount
         // stops being one-shot.
         const first = this.props.command;
-        if (first && first.kind === "search") {
+        if (first && (first.kind === "search" || first.kind === "searchRight")) {
             const t = first.text || "";
-            this.ui.q.left = t; this.ui.qa.left = t;   // LEFT only — see MJ1 above
-            this.ui.q.right = ""; this.ui.qa.right = "";
+            this.ui.q.left = first.kind === "searchRight" ? "" : t; this.ui.qa.left = this.ui.q.left;
+            this.ui.q.right = first.kind === "searchRight" ? t : ""; this.ui.qa.right = this.ui.q.right;
         }
         this._tfRef = null;       // mapping ref of the open transform popover
         this._tfToken = 0;        // C8 supersede token for the debounced preview
@@ -629,7 +629,7 @@ export class MappingCanvas extends Component {
             this.ui.f.right = "suggested";
             this.ui.q.left = ""; this.ui.qa.left = "";
             this.ui.q.right = ""; this.ui.qa.right = "";
-        } else if (cmd.kind === "search") {
+        } else if (cmd.kind === "search" || cmd.kind === "searchRight") {
             // JOURNEY J5 — a door that arrives pre-FILTERED.
             //
             // The one change this phase makes to the canvas, and it is made
@@ -656,8 +656,8 @@ export class MappingCanvas extends Component {
             // so the door narrows what you arrived FROM and leaves what you are
             // aiming AT alone.
             const t = cmd.text || "";
-            this.ui.q.left = t; this.ui.qa.left = t;
-            this.ui.q.right = ""; this.ui.qa.right = "";
+            this.ui.q.left = cmd.kind === "searchRight" ? "" : t; this.ui.qa.left = this.ui.q.left;
+            this.ui.q.right = cmd.kind === "searchRight" ? t : ""; this.ui.qa.right = this.ui.q.right;
             this.ui.f.left = "all"; this.ui.f.right = "all";
             this._schedule();
         } else if (cmd.kind === "armLeft" && cmd.leftId != null) {

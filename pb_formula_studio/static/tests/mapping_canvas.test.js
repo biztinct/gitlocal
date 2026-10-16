@@ -2673,3 +2673,16 @@ test("J10 — the two new kinds carry a glyph of their own", () => {
     expect(srcIcon("employee_field")).toBe("person");
     expect(srcIcon("contract_component")).toBe("briefcase");
 });
+
+// A component is a destination on API/import boards. Journey source doors keep
+// their existing left-only focus; the desk must leave source choices visible.
+test("component destination focus narrows the right column and keeps source choices", async () => {
+    const canvas = await mountWithCleanup(MappingCanvas, {
+        props: props({command: {token: 1, kind: "searchRight", text: "R1"}}),
+    });
+    expect(canvas.ui.qa.left).toBe("");
+    expect(canvas.ui.qa.right).toBe("R1");
+    canvas._runCommand({token: 2, kind: "search", text: "L2"});
+    expect(canvas.ui.qa.left).toBe("L2");
+    expect(canvas.ui.qa.right).toBe("");
+});

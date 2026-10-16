@@ -22,6 +22,8 @@ class TestMappingExperience(TransactionCase):
         cls.env['hr.api.data.store'].create({'connector_id': cls.connector.id, 'data_type': 'custom',
             'employee_external_id': 'DESK1', 'raw_payload': {'hours': 0},
             'extracted_data': {'hours': 0}, 'state': 'extracted'})
+        cls.admin = cls.env['res.users'].create({'name': 'Desk administrator', 'login': 'desk-admin-test',
+            'group_ids': [(4, cls.env.ref('pb_hr_payroll_formula.group_formula_admin').id)]})
         cls.manager = cls.env['res.users'].create({'name': 'Desk manager', 'login': 'desk-manager-test',
             'group_ids': [(4, cls.env.ref('pb_hr_payroll_formula.group_formula_manager').id)]})
         cls.reader = cls.env['res.users'].create({'name': 'Desk reader', 'login': 'desk-reader-test',
@@ -92,7 +94,7 @@ class TestMappingExperience(TransactionCase):
             self.studio.mapping_component_create(self.config.id, '   ')
 
     def test_atomic_save_and_connect_preserves_spreadsheet_fallback(self):
-        result = self.studio.with_user(self.manager).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+        result = self.studio.with_user(self.admin).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
         self.assertTrue(result['ok'])
         self.assertTrue(self.env['hr.integration.field.mapping'].search([
             ('connector_id', '=', self.connector.id), ('target_rule_id', '=', self.rule.id), ('source_field', '=', 'DESKTOTAL')]))
@@ -101,7 +103,7 @@ class TestMappingExperience(TransactionCase):
     def test_failed_connection_rolls_back_rule_save(self):
         with patch.object(type(self.studio), 'api_mapping_create', return_value={'ok': False, 'msg': 'Connection test refusal'}) as connect:
             with self.assertRaises(UserError):
-                self.studio.with_user(self.manager).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+                self.studio.with_user(self.admin).mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
             connect.assert_called_once()
         self.assertFalse(self.env['hr.api.transformation.rule'].search([('connector_id', '=', self.connector.id), ('output_key', '=', 'DESKTOTAL')]))
 
@@ -110,3 +112,11 @@ class TestMappingExperience(TransactionCase):
         self.assertNotIn(self.rule.id, [r['id'] for r in self.studio.mapping_rule_targets(self.config.id)])
         with self.assertRaises(UserError):
             self.studio.mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+
+    def test_rule_editor_without_mapping_rights_can_only_save_rule(self):
+        studio = self.studio.with_user(self.manager)
+        self.assertEqual(studio.mapping_rule_targets(self.config.id), [])
+        with self.assertRaises(AccessError):
+            studio.mapping_rule_save(self.config.id, self.connector.id, self._spec(), target_id=self.rule.id)
+        self.assertFalse(self.env['hr.api.transformation.rule'].search([('connector_id', '=', self.connector.id), ('output_key', '=', 'DESKTOTAL')]))
+        self.assertTrue(studio.mapping_rule_save(self.config.id, self.connector.id, self._spec())['ok'])
