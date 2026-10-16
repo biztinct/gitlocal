@@ -195,6 +195,13 @@ class RunStatus(_RunLook):
         r'^(?P<run>.*\b(?:pay\s*runs?|runs?|payroll)\b.*?)\s+status$',
         r'^where\s+is\s+(?:the\s+)?(?P<run>.*\b(?:pay\s*run|run|payroll)\b.*)$',
         r'^how\s+is\s+(?:the\s+)?(?P<run>.*\b(?:pay\s*run|run|payroll)\b.*?)\s+(?:doing|going)$',
+        # GAPS (3): "What is the status of June 2026 payroll?" — a status
+        # question is answered by this look, not by a chart of figures
+        # (`registry._STATUS_OF_RUN` keeps it out of the question path).
+        r'^what(?:\'s|’s|s|\s+is)\s+(?:the\s+)?(?:current\s+|latest\s+)?'
+        r'(?:status|state|progress)\s+(?:of|on|for)\s+(?:the\s+)?'
+        r'(?!.*\b(?:board|screen|page|tab|list|excel|spreadsheet|report|file|menu|button)\b)'
+        r'(?P<run>.*\b(?:pay\s*runs?|runs?|payrolls?)\b.*?)(?:\s+(?:now|today|so\s+far))?$',
     )
 
     def resolve_slot(self, ctx, slot, text):

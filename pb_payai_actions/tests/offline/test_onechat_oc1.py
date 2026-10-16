@@ -642,6 +642,62 @@ class TestReviewShapes(unittest.TestCase):
         self.assertIsNone(H.whole_word_class('đã ạ'))
 
 
+class TestGapsStatusQuestions(unittest.TestCase):
+    """GAPS (3): a question about where a pay run STANDS reaches the run's
+    status card (a look, nothing to confirm) — not the chart / data answer;
+    a genuine figure question still gets the data answer (both ways, also
+    corpus rows)."""
+
+    STATUS = ('What is the status of June 2026 payroll', 'what is the status of June 2026 payroll?',
+              "what's the status of the June run?", 'how is June payroll going',
+              'how is the June run doing?', 'status of the June run',
+              'where is the October Retail run', "what's the progress on the October run",
+              'tình trạng lương tháng 6', 'bảng lương tháng 6 sao rồi',
+              'bảng lương tháng 6 thế nào', 'đợt lương tháng 6 đến đâu rồi',
+              'bang luong thang 6 sao roi', 'tình hình đợt lương tháng 6 thế nào')
+    FIGURES = ('what was total net pay in June', 'how much did we pay Retail in June',
+               'what is the total of the June run', 'how is the June payroll calculated',
+               'bảng lương tháng 6 tính thế nào', 'tổng lương thực nhận tháng 6 là bao nhiêu')
+    NOT_A_RUN = ('where is the pay run board', 'where is the payroll settings',
+                 'what is the status of my leave request', 'where is the run',
+                 'Tôi chạy bảng lương thế nào?', 'show me how to approve the June run')
+
+    def test_status_questions_reach_the_run_card(self):
+        for text in self.STATUS:
+            out, _env = route('P', text)
+            self.assertEqual((out['route'], out['why']), ('payai', 'command'), text)
+            self.assertNotIn('ask_only', out, text)
+            # Only the run-status look is ever reached this way.
+            self.assertEqual(REGISTRY_MOD.match(text)[0], 'run_status', text)
+            self.assertEqual(REGISTRY_MOD.ACTIONS['run_status'].tier, 'look')
+            # A database without the command path is unchanged (no card).
+            out, _env = route('B', text)
+            self.assertNotEqual(out['route'], 'payai', text)
+
+    def test_figure_questions_keep_the_data_answer(self):
+        for text in self.FIGURES:
+            out, _env = route('P', text)
+            self.assertEqual((out['route'], out['why'], out.get('ask_only')),
+                             ('payai', 'data', True), text)
+
+    def test_screens_and_steps_are_not_a_status(self):
+        for text in self.NOT_A_RUN:
+            out, _env = route('P', text)
+            self.assertNotEqual((out['route'], out['why']), ('payai', 'command'), text)
+            if out['route'] == 'payai':
+                self.assertTrue(out.get('ask_only'), text)
+
+    def test_the_hook_never_reaches_anything_but_the_look(self):
+        env = R.make_env('P')
+        helper = R.helper(env)
+        for key in ('run_payroll', 'approve_item', 'never_access', 'submit_run', None):
+            with R.Patch(helper, _command_key=lambda self, text, k=key: k):
+                self.assertIsNone(helper._route_status('what is the status of June payroll'),
+                                  key)
+        with R.Patch(helper, _can_act=lambda self: False):
+            self.assertIsNone(helper._route_status('what is the status of June payroll'))
+
+
 class TestContract(unittest.TestCase):
     def test_1_19_contract(self):
         res = subprocess.run([sys.executable, os.path.join(GEN_DIR, 'check_contract.py'),

@@ -24,6 +24,7 @@ themselves by overriding a hook:
   _route_payai_state(t, s)  pb_payai_actions — a plan waiting / a question open
   _waiting_plan(s)          pb_payai_actions — the plan a bare "yes" refers to
   _route_command(t, p, q)   pb_payai_actions — a command the phrase table names
+  _route_status(t)          pb_payai_actions — a pay run's status, asked
   _capability_route(t, s)   pb_payai_actions — "what can you do" → PayAI's card
   _go_ahead_words(t)        pb_payai_actions — the runner's own go-ahead words
 
@@ -336,6 +337,51 @@ _PRONOUNS_VI = frozenset(('toi', 'minh', 'em', 'anh', 'chi', 'ban', 'chung', 'ho
 def is_howto(text):
     """H — a request to be shown how (⊂ Q)."""
     return howto_kind(text) is not None
+
+
+# -- a status question ("where does it stand?") ---------------------------
+#: GAPS (3): asked where something stands — "what is the status of …", "how
+#: is … going / doing", "where is the June run", "… sao rồi", "tình trạng …".
+#: The command layer decides whether the phrase table reads it as a pay run's
+#: status (a look, nothing to confirm); this only says the SHAPE fits.
+_STATUS_EN = re.compile(
+    r"\b(?:status|state|progress)\b|^how\s+is\b.*\b(?:doing|going)$", re.I)
+#: "where is the October Retail run" — a status only with a month or period
+#: in it ("where is the pay run board" asks for a screen).
+_WHERE_EN = re.compile(r"^where\s+(?:is|are)\b", re.I)
+#: Folded Vietnamese status words. "thế nào / ra sao / ở đâu" only when no
+#: verb stands before them ("bảng lương tháng 6 tính thế nào", "Tôi chạy
+#: bảng lương thế nào?" ask HOW it is done or worked out).
+_STATUS_VI = re.compile(
+    r"\b(?:tinh trang|tinh hinh|trang thai|sao roi|(?:toi|den) dau|dau roi)\b")
+_STATUS_VI_SOFT = re.compile(r"\b(?:the nao|ra sao|o dau)\b")
+_STATUS_VI_VERB = re.compile(
+    r"\b(?:tinh|chay|duyet|lam|gui|xu ly|tra|nop|tao|lap|xoa|huy|in|xuat|"
+    r"tai|sua|doi|cap nhat|khau tru|duoc|cach|xem|tim|mo)\b.*\b(?:the nao|ra sao|o dau)\b")
+#: A screen, a file or a list is not a run's status.
+_STATUS_NOT = re.compile(
+    r"\b(?:board|screen|page|tab|menu|button|settings?|list|excel|spreadsheet|report|"
+    r"file|template|lens|man hinh|xlsx|bang tinh)\b", re.I)
+
+
+def status_question(text):
+    """Does the sentence ask where something STANDS (not how much, not how to
+    do it, not where a screen is)? Pure; the command layer then checks that
+    the phrase table names a pay run's status."""
+    t = clean(text).rstrip(' ?？!.')
+    folded = _norm(t)
+    core = _drop_openers(t) or t
+    if not t or _STATUS_NOT.search(t) or _STATUS_NOT.search(folded):
+        return False
+    if _QTY_EN.search(t) or _QTY_VI.search(folded):
+        return False
+    if _STATUS_EN.search(core):
+        return True
+    if _WHERE_EN.match(core) and time_ref(t):
+        return True
+    if _STATUS_VI.search(folded):
+        return True
+    return bool(_STATUS_VI_SOFT.search(folded) and not _STATUS_VI_VERB.search(folded))
 
 
 #: Spoken / typed openers in front of a question that do not change it ("so
@@ -739,6 +785,13 @@ class LearnHelper(models.AbstractModel):
         return None
 
     @api.model
+    def _route_status(self, text):
+        """GAPS (3): a question about where a pay run stands, which the
+        command layer answers with its own look (nothing to confirm). None
+        here: a database without that layer has no such look."""
+        return None
+
+    @api.model
     def _capability_route(self, text, screen_key=None):
         return self._out('guide', 'capability', answer=self._capability_answer(screen_key))
 
@@ -1031,6 +1084,16 @@ class LearnHelper(models.AbstractModel):
                 return routed
             # 11 — a command the phrase table names.
             routed = self._route_command(t, probe, q)
+            if routed:
+                return routed
+
+        # 11b — GAPS (3): "what is the status of June 2026 payroll", "how
+        # is June payroll going", "where is the October Retail run", "bảng
+        # lương tháng 6 sao rồi" — a question, but about where a pay run
+        # STANDS: the run's own status card (a look; nothing to confirm),
+        # never a chart of figures. A request for steps never comes here.
+        if q and h != 'proc' and status_question(t):
+            routed = self._route_status(t)
             if routed:
                 return routed
 

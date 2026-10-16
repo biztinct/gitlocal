@@ -183,6 +183,43 @@ class TestOneChatRouter(_RouterMixin, p3._P3Case):
         out = Conv.rpc_send_message('go ahead', session.id, None, ask_only=True)
         self.assertIn('Typing it does not count', json.dumps(out['card']))
 
+    # ------------------------------------------------------------ GAPS (3)
+    def test_gaps3_a_status_question_gets_the_run_card(self):
+        """"What is the status of June 2031 payroll" (and close forms) reach
+        the pay run's status card — a look, nothing to confirm — through the
+        router; a genuine figure question still gets the data answer."""
+        run = self._run_with_slip(self.retail_end, 'Payai June status 2031')
+        for text in ('What is the status of June 2031 payroll',
+                     "what's the status of the June 2031 run?",
+                     'how is June 2031 payroll going',
+                     'where is the June 2031 run',
+                     'bảng lương tháng 6 năm 2031 sao rồi',
+                     'tình trạng lương tháng 6 năm 2031'):
+            session = self._session(self.officer)
+            out = self._route(self.officer, text, session)
+            self.assertEqual((out['route'], out['why']), ('payai', 'command'), text)
+            self.assertFalse(out.get('ask_only'), text)
+            card, _s = self._send(self.officer, text, session)
+            self.assertEqual((card['kind'], card['tier']), ('done', 'look'), (text, card))
+            self.assertIn(run.name, json.dumps(card, ensure_ascii=False), text)
+            self.assertFalse(self.env['payai.task'].sudo().search(
+                [('user_id', '=', self.officer.id), ('state', '=', 'planned')]), text)
+        Conv = self.env['payroll.ai.conversation'].with_user(self.officer)
+        tools = []
+        with patch.object(PayrollAIEngine, 'process_message', _answered), \
+                patch.object(runner, 'ask_model',
+                             lambda ctx, message: tools.append(message) or None):
+            for text in ('what was total net pay in June 2031',
+                         'how much did we pay Retail in June 2031'):
+                session = self._session(self.officer)
+                out = self._route(self.officer, text, session)
+                self.assertEqual((out['route'], out['why'], out.get('ask_only')),
+                                 ('payai', 'data', True), text)
+                got = Conv.rpc_send_message(text, session.id, None, ask_only=True)
+                self.assertEqual(got['response'], 'answered', text)
+                self.assertFalse(got.get('card'), text)
+        self.assertEqual(tools, [])
+
     # ---------------------------------------------------------------- E3
     def test_clear_conversation_stops_the_plans_waiting(self):
         card, session = self._send(self.officer, PLAN_JUNE)
