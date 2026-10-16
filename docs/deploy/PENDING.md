@@ -20,7 +20,10 @@ demo database) first and check it there. The other databases (`rize`,
   turns their scheduled jobs back on (their cron XML is not noupdate) — switch
   them off again after, on BOTH (abm: memory `abm-tenant-retired`;
   payobook_template: all crons off by design, pb_tenants switches the listed
-  ones on for each new clone — `pb_tenants.template_active_crons`).
+  ones on for each new clone — `pb_tenants.template_active_crons`). When a NEW
+  module with a scheduled job is installed on the template, append its cron ids
+  to that list, or new tenants never get the job (how ids 59–76 went missing
+  until 2026-10-16).
 
 The formerly frozen T3a/T3b/T3c entries are deployed on all five databases,
 verified on 16 October 2026. The owner-approved demo account migration is also
