@@ -62,6 +62,9 @@ class MonthlyInputs(models.Model):
     employee_id = fields.Many2one('hr.employee', required=True, ondelete='cascade')
     period = fields.Char(required=True, index=True)
     payload = fields.Json(default=dict)
+    record_overrides = fields.Json(default=dict)
+    origins = fields.Json(default=dict)
+    review_snapshot = fields.Json(default=dict)
     _unique = models.Constraint('UNIQUE(config_id, company_id, employee_id, period)', 'One input record per person and pay period.')
 
 
@@ -391,6 +394,8 @@ class PayrollTemplates(models.AbstractModel):
     def review(self, config_id, period, mode, file_b64, filename=''):
         cfg = self._config(config_id, write=mode == 'monthly')
         self._period(period)
+        if mode == 'monthly':
+            return self._review_monthly(cfg, period, file_b64, filename)
         wb = self._read(file_b64)
         if '_Payobook' not in wb:
             raise UserError(_('Use a workbook downloaded from Payroll templates. Other records files can be imported in Records Desk.'))
@@ -520,6 +525,8 @@ class PayrollTemplates(models.AbstractModel):
         self._lock(cfg)
         receipt = self._get_exchange(cfg, token, 'review')
         data = receipt.payload
+        if data.get('grid'):
+            return self._confirm_monthly(cfg, receipt, [])
         if data['issues']:
             raise UserError(_('Resolve all workbook issues before confirming changes.'))
         if data['mode'] == 'monthly':
@@ -583,13 +590,14 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         current = self._current(cfg, period, people)
         catalog = self._catalog(cfg)
+        resolved = self._resolved_month(cfg, period, people, catalog)
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
         mandatory = [c for c in catalog if not c.get('readonly')
                      and re.search(r'paid.?days|working.?days|standard.*days|period.?days|days.?worked|ngày công', c['label'], re.I)]
         missing = []
         for employee in people:
             for c in mandatory:
-                value = current[employee.id].get(c['id'])
+                value = resolved[employee.id][c['id']]['value']
                 if value is None or value == '' or (re.search(r'standard|period|working', c['label'], re.I) and float(value) <= 0):
                     missing.append('%s · %s' % (employee.name, c['label']))
         if missing:
@@ -599,7 +607,7 @@ class PayrollTemplates(models.AbstractModel):
             for c in catalog:
                 if c['id'] not in salary_keys:
                     continue
-                value = records[employee.id].get(c.get('record_id')) if c.get('readonly') else current[employee.id].get(c['id'])
+                value = resolved[employee.id][c['id']]['value']
                 if value is None or value == '':
                     missing_salary.append('%s · %s' % (employee.name, c['label']))
         if missing_salary:
@@ -628,7 +636,7 @@ class PayrollTemplates(models.AbstractModel):
                 # Saved recurring values are current record context. Earlier
                 # uploads/monthly-layout values (including stale zeros) cannot
                 # override them. Variable monthly zeros still remain updates.
-                value = records[e.id].get(c['record_id']) if c.get('record_id') and c.get('readonly') else current[e.id].get(c['id'])
+                value = resolved[e.id][c['id']]['value']
                 if value is None and not c.get('readonly') and c['kind'] in ('money', 'decimal', 'integer', 'quantity', 'rate'):
                     value = 0
                 # No previous month's amounts enter this path.
@@ -722,18 +730,20 @@ class TemplateBatch(models.Model):
         cards = facade._cards(cfg)
         saved = facade._record_values(cfg, employee, cards)[employee.id]
         raw_data = dict(raw_data or {})
+        override_row = self.env['pb.payroll.month.inputs'].sudo().search([('config_id', '=', cfg.id), ('company_id', '=', self.company_id.id), ('employee_id', '=', employee.id), ('period', '=', period)], limit=1)
+        overrides = override_row.record_overrides or {}
         joined = []
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
         for c in catalog:
             if not (c.get('readonly') and c.get('record_id')):
                 continue
-            value = saved.get(c['record_id'])
+            value = overrides[c['id']] if c['id'] in overrides else saved.get(c['record_id'])
             if c['id'] in salary_keys and value in (None, ''):
                 raise UserError(_('Recurring salary is missing for %s. Update the employee / contract records before recomputing payroll.') % employee.name)
             for key in c['source_keys']:
                 raw_data[key] = value
             joined.append(c)
-        monthly_codes = [c['code'] for c in catalog if not c.get('readonly')]
+        monthly_codes = [c['code'] for c in catalog if not c.get('readonly') or c['id'] in overrides]
         contextual = self.with_context(pb_template_engine=True, pb_template_monthly_codes=monthly_codes)
         result = super(TemplateBatch, contextual)._transform_data_to_formula_inputs(
             raw_data, contract=contract, employee=employee, provenance=provenance, topup_data=topup_data)
@@ -741,7 +751,7 @@ class TemplateBatch(models.Model):
             for c in joined:
                 fid = c['record_id']
                 kind = 'contract_component' if fid.startswith('c:') else 'contract_field' if fid.startswith('f:hr.contract:') else 'employee_field' if fid.startswith('f:hr.employee:') else 'bank_account'
-                provenance[c['code']] = {'src': kind, 'key': fid, 'via': 'monthly_records'}
+                provenance[c['code']] = {'src': 'manual' if c['id'] in overrides else kind, 'key': fid, 'via': 'monthly_review' if c['id'] in overrides else 'monthly_records'}
         return result
 
     def _mapped_record_value(self, mapping, contract=None, employee=None):

@@ -1,6 +1,6 @@
 <odoo>
     <record id="action_templates" model="ir.actions.client">
-        <field name="name">Payroll templates</field>
+        <field name="name">Configure Templates</field>
         <field name="tag">pb_payroll_templates</field>
     </record>
     <record id="config_templates" model="ir.ui.view">
@@ -9,7 +9,7 @@
         <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_config_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button name="%(action_templates)d" type="action" string="Templates" context="{'templates_config_id': id}"/>
+                <button name="%(action_templates)d" type="action" string="Configure Templates" context="{'templates_config_id': id}"/>
             </xpath>
         </field>
     </record>

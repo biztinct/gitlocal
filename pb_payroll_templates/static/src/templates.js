@@ -4,6 +4,7 @@ import { registry } from '@web/core/registry';
 import { useService } from '@web/core/utils/hooks';
 import { patch } from '@web/core/utils/patch';
 import { Dialog } from '@web/core/dialog/dialog';
+import { MonthlyInputReview } from './monthly_review';
 import { ConfirmationDialog } from '@web/core/confirmation_dialog/confirmation_dialog';
 import { useSetupAction } from '@web/search/action_hook';
 import { PbFormulaStudio } from '@pb_formula_studio/js/formula_studio';
@@ -107,7 +108,7 @@ export class PayrollTemplates extends Component {
         this.state.busy=true;this.state.error='';
         try{
             const data=await this.orm.call('pb.payroll.templates','review',[this.state.configId,this.state.period,mode,await fileData(f),f.name]);
-            this.dialog.add(WorkbookReview,{data,configId:this.state.configId,onApplied:async()=>{await this.load();}});
+            this.dialog.add(mode==='monthly'?MonthlyInputReview:WorkbookReview,{data,configId:this.state.configId,onApplied:async()=>{await this.load();}});
         }catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
     }
     async save(){
@@ -176,6 +177,18 @@ patch(PayrunWizard.prototype,{
         try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.sheetConfigId,this.state.form.date_start.slice(0,7),'monthly']));}
         catch(e){this.notif.add(message(e),{type:'danger'});}
     },
+    async _useReviewedTemplate(configId,period,uploadedName,review){
+        if(configId!==this.sheetConfigId||period!==this.state.form.date_start.slice(0,7))return;
+        const result=await this.orm.call('pb.payrun.wizard','template_month_file',[configId,period]);
+        Object.assign(this.state.sheet,{file_b64:result.file_b64,file_name:result.filename,uploadedName,templateFile:true,reviewToken:review.review_token,mode:'once',skipped:false,error:'',preflight:{ok:true,columns:review.reviewed,total:review.reviewed,fed:[],fed_rows:[],missing:[],employees_col:true}});
+    },
+    async reviewMonthlyInputs(){
+        try{
+            const configId=this.sheetConfigId,period=this.state.form.date_start.slice(0,7),name=this.state.sheet.uploadedName;
+            const data=await this.orm.call('pb.payroll.templates','reopen_monthly_review',[configId,this.state.sheet.reviewToken]);
+            this.dialog.add(MonthlyInputReview,{data,configId,onApplied:r=>this._useReviewedTemplate(configId,period,name,r)});
+        }catch(e){this.notif.add(message(e),{type:'danger'});}
+    },
     async _takeFile(f){
         if(!f)return;
         this.clearSheetFile();
@@ -189,11 +202,7 @@ patch(PayrunWizard.prototype,{
         try{
             const configId=this.sheetConfigId,period=this.state.form.date_start.slice(0,7);
             const data=await this.orm.call('pb.payroll.templates','review',[configId,period,'monthly',b64,f.name]);
-            this.dialog.add(WorkbookReview,{data,configId:this.sheetConfigId,onApplied:async()=>{
-                if(configId!==this.sheetConfigId||period!==this.state.form.date_start.slice(0,7))return;
-                const result=await this.orm.call('pb.payrun.wizard','template_month_file',[configId,period]);
-                Object.assign(this.state.sheet,{file_b64:result.file_b64,file_name:result.filename,uploadedName:f.name,templateFile:true,mode:'once',skipped:false,error:'',preflight:{ok:true,columns:data.changes.length,total:0,fed:[],fed_rows:[],missing:[],employees_col:true}});
-            }});
+            this.dialog.add(MonthlyInputReview,{data,configId,onApplied:result=>this._useReviewedTemplate(configId,period,f.name,result)});
         }catch(e){this.state.sheet.error=message(e);}finally{this.state.sheet.checking=false;}
     },
 });

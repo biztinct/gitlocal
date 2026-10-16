@@ -153,7 +153,11 @@ class TestPayrollTemplates(TransactionCase):
         layout['available'].remove(fid);layout['time'].append(fid);self.api.save_layout(self.cfg.id,layout)
         wb=self.export();self.assertEqual(wb['Time'].cell(2,[c.value for c in wb['Time'][1]].index('Salary')+1).value,1000)
         self.set_value(wb,'Time','Salary',1500)
-        self.assertTrue(self.review(wb)['issues'])
+        review=self.review(wb)
+        self.assertFalse(review['issues'])
+        self.assertTrue(review['warnings'])
+        self.assertEqual(review['grid']['rows'][0]['cells'][fid]['value'],1000)
+        self.assertEqual(review['grid']['rows'][0]['cells'][fid]['source'],'system')
 
     def test_engine_aliases_and_recurring_records(self):
         wb=self.export();self.set_value(wb,'Time','Paid days',20);self.set_value(wb,'Monthly adjustments','Monthly bonus',0)
@@ -287,7 +291,10 @@ class TestPayrollTemplates(TransactionCase):
             self.assertFalse(review['issues'])
             self.assertFalse(review['changes'])
             self.set_value(wb,'Monthly adjustments','Position','Changed context')
-            self.assertTrue(self.review(wb)['issues'])
+            changed=self.review(wb)
+            self.assertFalse(changed['issues'])
+            self.assertTrue(changed['warnings'])
+            self.assertEqual(changed['grid']['rows'][0]['cells'][fid]['value'],'Payroll specialist')
 
     def test_monthly_zero_cannot_fall_back_to_old_record(self):
         self.map_field(self.bonus,'hr.contract','wage')
@@ -343,3 +350,140 @@ class TestPayrollTemplates(TransactionCase):
             'name': 'Workbook integration', 'connector_type': 'demo'})
         self.cfg.connector_id = connector
         self.assertTrue(wizard.spreadsheet_gate(vals)['lanes']['integration_configured'])
+
+    def cell(self, review, rule):
+        return review['grid']['rows'][0]['cells']['rule:%s' % rule.id]
+
+    def test_review_includes_all_inputs_with_sources_and_no_calculateds(self):
+        wb=self.export();self.set_value(wb,'Time','Paid days',21)
+        review=self.review(wb)
+        self.assertEqual(len(review['grid']['rows']),1)
+        self.assertEqual({c['id'] for c in review['grid']['columns']},
+                         {'rule:%s'%r.id for r in (self.salary,self.paid,self.bonus)})
+        self.assertEqual(self.cell(review,self.salary)['source'],'system')
+        self.assertEqual(self.cell(review,self.salary)['value'],1000)
+        self.assertEqual(self.cell(review,self.paid)['source'],'excel')
+        self.assertEqual(self.cell(review,self.bonus)['source'],'default')
+        self.assertFalse(self.cell(review,self.salary)['has_prior'])
+        self.assertEqual(review['previous_period'],'2026-09')
+
+    def test_rerun_compares_previous_calendar_month_not_same_month(self):
+        fid='rule:%s'%self.bonus.id
+        for period,value in [('2026-09',10),('2026-10',20),('2026-08',99)]:
+            self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
+                'company_id':self.env.company.id,'employee_id':self.emp.id,
+                'period':period,'payload':{fid:value}})
+        wb=self.export();review=self.review(wb)
+        cell=self.cell(review,self.bonus)
+        self.assertEqual(cell['value'],20)
+        self.assertEqual(cell['prior'],10)
+        self.assertTrue(cell['changed'])
+        self.assertEqual(review['changes'],[])
+        self.apply(review)
+        again=self.review(self.export())
+        self.assertEqual(self.cell(again,self.bonus)['prior'],10)
+        self.assertTrue(self.cell(again,self.bonus)['changed'])
+
+    def test_no_history_does_not_invent_previous_record_salary(self):
+        review=self.review(self.export())
+        self.assertFalse(self.cell(review,self.salary)['has_prior'])
+        self.assertEqual(review['stats']['changed'],0)
+        _period,prior=self.api._previous_inputs(self.cfg,'2026-01',self.emp,self.api._review_catalog(self.cfg))
+        self.assertEqual(_period,'2025-12')
+        self.assertEqual(prior[self.emp.id],{})
+
+    def test_finalized_prior_payroll_wins_over_draft_and_saved_inputs(self):
+        import json
+        self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
+            'company_id':self.env.company.id,'employee_id':self.emp.id,
+            'period':'2026-09','payload':{'rule:%s'%self.bonus.id:999}})
+        def slip(state,month,amount,config=None,credit=False):
+            return self.env['hr.payslip'].create({'name':'Prior input review test',
+                'employee_id':self.emp.id,'contract_id':self.contract.id,
+                'company_id':self.env.company.id,'date_from':month+'-01',
+                'date_to':month+'-28','state':state,'credit_note':credit,
+                'formula_config_id':(config or self.cfg).id,
+                'formula_input_values':json.dumps({self.salary.code:900,self.bonus.code:amount})})
+        slip('done','2026-09',10)
+        slip('draft','2026-09',15)
+        slip('done','2026-10',20)
+        slip('done','2026-09',22,credit=True)
+        review=self.review(self.export())
+        self.assertEqual(self.cell(review,self.bonus)['prior'],10)
+        self.assertEqual(self.cell(review,self.bonus)['baseline_kind'],'finalized_payroll')
+        self.assertEqual(self.cell(review,self.salary)['prior'],900)
+        self.assertTrue(self.cell(review,self.salary)['changed'])
+
+    def test_inline_edit_validates_and_round_trips_run_only_salary_override(self):
+        wb=self.export();self.set_value(wb,'Time','Paid days',21)
+        review=self.review(wb)
+        result=self.api.confirm_monthly_review(self.cfg.id,review['token'],[
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.salary.id,'value':'1200'},
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':'0'}])
+        self.assertEqual(self.contract.wage,1000)
+        self.assertEqual(result['reviewed'],3)
+        raw,_ids=self.api._engine_file(self.cfg,'2026-10')
+        row=dict(zip(*list(openpyxl.load_workbook(io.BytesIO(raw)).active.values)))
+        self.assertEqual(row['Payroll|Salary'],1200)
+        batch=self.env['hr.payroll.import.batch'].create({'name':'Inline edit recompute',
+            'formula_config_id':self.cfg.id,'company_id':self.env.company.id,
+            'one_time':True,'date_from':'2026-10-01','date_to':'2026-10-31',
+            'import_filename':'Payobook-month-2026-10.xlsx'})
+        provenance={}
+        values=batch._transform_data_to_formula_inputs({'Payroll|Salary':0,'Payroll|Paid days':21},
+            contract=self.contract,employee=self.emp,provenance=provenance)
+        self.assertEqual(values[self.salary.code],1200)
+        self.assertEqual(provenance[self.salary.code]['via'],'monthly_review')
+        self.assertEqual(self.contract.wage,1000)
+        next_values=self.api._resolved_month(self.cfg,'2026-11',self.emp,self.api._review_catalog(self.cfg))
+        self.assertEqual(next_values[self.emp.id]['rule:%s'%self.salary.id]['value'],1000)
+        reopened=self.api.reopen_monthly_review(self.cfg.id,result['review_token'])
+        self.assertEqual(self.cell(reopened,self.salary)['value'],1200)
+        self.api.confirm_monthly_review(self.cfg.id,reopened['token'],[])
+        with self.assertRaises(UserError):self.api.confirm_monthly_review(self.cfg.id,review['token'],[])
+
+    def test_inline_edit_cannot_inject_field_or_employee_and_invalid_is_atomic(self):
+        wb=self.export();review=self.review(wb)
+        for edit in [
+            {'emp_id':self.emp.id,'field_id':'f:hr.contract:wage','value':9999},
+            {'emp_id':0,'field_id':'rule:%s'%self.bonus.id,'value':9999},
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':'=1+1'},
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':'NaN'},
+        ]:
+            with self.assertRaises(UserError):self.api.confirm_monthly_review(self.cfg.id,review['token'],[edit])
+        self.assertFalse(self.env['pb.payroll.month.inputs'].search([('config_id','=',self.cfg.id)]))
+        self.assertEqual(self.contract.wage,1000)
+
+    def test_invalid_uploaded_cell_can_be_corrected_without_reupload(self):
+        wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus','invalid')
+        review=self.review(wb)
+        self.assertTrue(self.cell(review,self.bonus)['issue'])
+        self.api.confirm_monthly_review(self.cfg.id,review['token'],[
+            {'emp_id':self.emp.id,'field_id':'rule:%s'%self.bonus.id,'value':30}])
+        self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id]['rule:%s'%self.bonus.id],30)
+
+    def test_database_changes_after_review_block_even_if_no_upload_delta(self):
+        review=self.review(self.export())
+        self.contract.wage=1100
+        with self.assertRaisesRegex(UserError,'changed after review'):
+            self.api.confirm_monthly_review(self.cfg.id,review['token'],[])
+        self.assertFalse(self.env['pb.payroll.month.inputs'].search([('config_id','=',self.cfg.id)]))
+
+    def test_previous_month_excludes_other_schemes_and_older_months(self):
+        other=self.env['hr.formula.config'].create({'name':'Other review scheme',
+            'code':'OTHERREVIEW','country_code':'SG','company_id':self.env.company.id})
+        for config,period in [(other,'2026-09'),(self.cfg,'2026-08')]:
+            self.env['pb.payroll.month.inputs'].create({'config_id':config.id,
+                'company_id':self.env.company.id,'employee_id':self.emp.id,
+                'period':period,'payload':{'rule:%s'%self.bonus.id:50}})
+        review=self.review(self.export())
+        self.assertFalse(self.cell(review,self.bonus)['has_prior'])
+
+    def test_review_snapshot_preserves_prior_system_record_value(self):
+        self.apply(self.review(self.export(period='2026-09'),period='2026-09'))
+        self.contract.wage=1200
+        review=self.review(self.export())
+        self.assertEqual(self.cell(review,self.salary)['prior'],1000)
+        self.assertEqual(self.cell(review,self.salary)['value'],1200)
+        self.assertEqual(self.cell(review,self.salary)['baseline_kind'],'reviewed_inputs')
+        self.assertTrue(self.cell(review,self.salary)['changed'])
