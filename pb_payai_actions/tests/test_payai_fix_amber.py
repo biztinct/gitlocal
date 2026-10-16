@@ -1431,3 +1431,18 @@ class TestPayaiFixAmber(p3._P3Case):
         texts = self._norm(registry.match('Run June 2031 payroll for Payai Nguyễn Văn An only')[1])
         self.assertIn('An', texts.get('people') or '')
 
+    def test_gaps_a_month_after_a_word_that_names_none(self):
+        """"Run monthly payroll for next month", "Run the current payroll for
+        June", "Chạy lương kỳ này cho tháng 5": the word before "payroll"
+        names no month, so the month said after it is the period (it was
+        dropped and the plan showed this month as the default). A month
+        already said stays."""
+        for text, period in (('Run monthly payroll for next month', 'next month'),
+                             ('Run the current payroll for June 2031', 'June 2031'),
+                             ('Run mid-month payroll for Retail for May 2031', 'May 2031'),
+                             ('Chạy lương kỳ này cho tháng 5 năm 2031', 'tháng 5 năm 2031')):
+            got = registry.match(text)
+            texts = self._norm(got[1])
+            self.assertEqual(texts.get('period'), period, (text, texts))
+        texts = self._norm(registry.match("Run May's payroll for June")[1])
+        self.assertEqual(texts.get('period'), "May's")

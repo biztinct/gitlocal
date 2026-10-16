@@ -938,7 +938,11 @@ class RunPayroll(_Amber):
                 words = _without_month(bare, got[3])
             texts['scheme'] = words
             who = sorted(people.union(k for k in others if k != first))
-        if period and not texts.get('period'):
+        if period and (not texts.get('period') or self._no_month_said(texts['period'])):
+            # GAPS (FIX-1 later list): "Run monthly payroll for next month" —
+            # "monthly" before "payroll" names no month, so the month said
+            # after it is the period (it was dropped, and the plan showed
+            # this month as the default).
             texts['period'] = period
         if who:
             texts['people'] = ', '.join(part(k) for k in who)
@@ -998,6 +1002,21 @@ class RunPayroll(_Amber):
         r'toan\s+bo(?:\s+(?:nhan\s+vien|cong\s+ty|moi\s+nguoi))?|'
         r'tat\s+ca(?:\s+(?:nhan\s+vien|moi\s+nguoi))?|moi\s+nguoi|'
         r'ca\s+cong\s+ty|toan\s+(?:the\s+nhan\s+vien|cong\s+ty))$')
+
+    def _no_month_said(self, period):
+        """GAPS: True when the period's words name no month — only filler or
+        month-phrase words ("monthly", "my", "the"), no number."""
+        words = (period or '').split()
+        for word in words:
+            # A capital on a little word is a name ("Run the An payroll …"),
+            # unless the word is itself a month-phrase word ("Mid-Month").
+            if word[:1].isupper() and not all(
+                    t in self._MONTH_PHRASE for t in re.findall(r'[a-z]+', fold(word))):
+                return False
+        return bool(words) and not re.search(r'\d', period) \
+            and not any(t in MONTHS for t in re.findall(r'[a-z]+', fold(period))) \
+            and not self._month_in(self._bare(period)) \
+            and all(self._month_phrase_word(w) for w in words)
 
     def _status_words(self, text):
         return [w for w in tokens(self._bare(text or '')) if w not in self._STATUS_FILLER]
