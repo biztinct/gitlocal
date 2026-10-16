@@ -125,7 +125,13 @@ class TestPayrollTemplates(TransactionCase):
         review=self.review(wb);self.apply(review)
         with self.assertRaises(UserError):self.apply(review)
         self.set_value(wb,'Monthly adjustments','Monthly bonus',20)
-        stale=self.review(wb);self.assertTrue(stale['issues'])
+        stale=self.review(wb)
+        self.assertFalse(stale['issues'])
+        self.assertTrue(stale['warnings'])
+        self.assertEqual(self.cell(stale,self.bonus)['value'],20)
+        row=self.env['pb.payroll.month.inputs'].search([('config_id','=',self.cfg.id),('period','=','2026-10')])
+        row.payload=dict(row.payload, **{'rule:%s'%self.bonus.id:30})
+        with self.assertRaisesRegex(UserError,'changed after review'):self.apply(stale)
 
     def test_concurrent_change_after_review(self):
         wb=self.export('records');self.set_value(wb,'Employee records','Wage',1200)
@@ -139,13 +145,21 @@ class TestPayrollTemplates(TransactionCase):
         wb=self.export();wb['Time'].delete_rows(2)
         self.assertTrue(self.review(wb)['issues'])
 
-    def test_wrong_month_and_stale_layout(self):
+    def test_wrong_month_refused_but_moved_columns_preserve_uploaded_values(self):
         wb=self.export()
         with self.assertRaises(UserError):self.review(wb,period='2026-11')
+        self.set_value(wb,'Monthly adjustments','Monthly bonus',55)
         d=self.api.workspace(self.cfg.id,'2026-10');layout=d['layout'];fid='rule:%s'%self.bonus.id
         layout['adjustments'].remove(fid);layout['time'].append(fid)
         self.api.save_layout(self.cfg.id,layout)
-        with self.assertRaises(UserError):self.review(wb)
+        review=self.review(wb)
+        self.assertFalse(review['issues'])
+        self.assertTrue(review['warnings'])
+        self.assertEqual(self.cell(review,self.bonus)['value'],55)
+        self.assertEqual(self.cell(review,self.bonus)['source'],'excel')
+        self.assertEqual(next(c for c in review['grid']['columns'] if c['id']==fid)['tab'],'Time')
+        self.apply(review)
+        self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id][fid],55)
         fresh=self.export();self.assertIn('Monthly bonus',[c.value for c in fresh['Time'][1]])
 
     def test_readonly_salary_context(self):
@@ -492,3 +506,31 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual(self.cell(review,self.salary)['value'],1200)
         self.assertEqual(self.cell(review,self.salary)['baseline_kind'],'reviewed_inputs')
         self.assertTrue(self.cell(review,self.salary)['changed'])
+
+    def test_renamed_field_and_legacy_fingerprint_keep_workbook_entries(self):
+        wb=self.export()
+        self.set_value(wb,'Monthly adjustments','Monthly bonus',65)
+        self.bonus.name='Updated monthly bonus label'
+        review=self.review(wb)
+        self.assertFalse(review['issues'])
+        self.assertEqual(self.cell(review,self.bonus)['value'],65)
+        self.assertTrue(review['warnings'])
+        self.assertIn('Updated monthly bonus label',[c['label'] for c in review['grid']['columns']])
+
+    def test_removed_input_cannot_silently_drop_filled_workbook_values(self):
+        wb=self.export();self.set_value(wb,'Monthly adjustments','Monthly bonus',80)
+        self.cfg.state='draft'
+        self.bonus.unlink()
+        with self.assertRaisesRegex(UserError,'Monthly bonus'):
+            self.review(wb)
+        self.assertFalse(self.env['pb.payroll.month.inputs'].search([('config_id','=',self.cfg.id)]))
+
+    def test_changed_record_source_requires_new_workbook(self):
+        layout=self.api.workspace(self.cfg.id,'2026-10')['layout']
+        fid='rule:%s'%self.salary.id
+        layout['available'].remove(fid);layout['adjustments'].append(fid)
+        self.api.save_layout(self.cfg.id,layout)
+        wb=self.export()
+        self.salary.value_kind='quantity'
+        with self.assertRaisesRegex(UserError,'saved-record source changed'):
+            self.review(wb)

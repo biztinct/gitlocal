@@ -13,6 +13,7 @@ import {
     continueLabel,
     freshSheetMode,
     isOneTime,
+    isSheetReady,
     MODE_ONCE,
     MODE_UPDATE,
     nextSheetMode,
@@ -138,4 +139,13 @@ test("Copy names copies the names, one per line", () => {
     // A row that named nobody has no name to copy and does not leave a blank.
     expect(exceptionNames([{ emp: "" }, { emp: "B Two" }])).toBe("B Two");
     expect(exceptionNames([])).toBe("");
+});
+
+
+test("compute requires an accepted file, never a stale preflight or failed upload", () => {
+    const valid={file_b64:'Yg==',file_name:'monthly.xlsx',preflight:{ok:true},checking:false,error:''};
+    expect(isSheetReady(valid)).toBe(true);
+    for(const change of [{file_b64:''},{file_name:''},{preflight:null},{preflight:{ok:false}},{checking:true},{error:'The layout changed.'}]){
+        expect(isSheetReady({...valid,...change})).toBe(false);
+    }
 });

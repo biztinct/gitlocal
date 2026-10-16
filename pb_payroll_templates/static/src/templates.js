@@ -148,7 +148,8 @@ patch(PbFormulaStudio.prototype,{
 patch(PayrunWizard.prototype,{
     clearSheetFile(){
         super.clearSheetFile();
-        this.state.sheet.templateFile=false;
+        Object.assign(this.state.sheet,{templateFile:false,uploadedName:'',reviewToken:'',checking:false});
+        this._templateUploadSeq=(this._templateUploadSeq||0)+1;
     },
     onField(field,ev){
         super.onField(field,ev);
@@ -194,15 +195,18 @@ patch(PayrunWizard.prototype,{
         this.clearSheetFile();
         if(!f.name.toLowerCase().endsWith('.xlsx'))return super._takeFile(f);
         if(f.size>10*1024*1024){this.state.sheet.error='Choose a workbook under 10 MB.';return;}
-        const b64=await fileData(f);
-        let isTemplate=false;
-        try{isTemplate=await this.orm.call('pb.payroll.templates','is_template',[b64]);}catch(e){this.state.sheet.error=message(e);return;}
-        if(!isTemplate){this.state.sheet.templateFile=false;return super._takeFile(f);}
+        const sequence=this._templateUploadSeq,configId=this.sheetConfigId,period=this.state.form.date_start.slice(0,7);
+        const current=()=>sequence===this._templateUploadSeq&&configId===this.sheetConfigId&&period===this.state.form.date_start.slice(0,7);
         this.state.sheet.checking=true;this.state.sheet.error='';
         try{
-            const configId=this.sheetConfigId,period=this.state.form.date_start.slice(0,7);
+            const b64=await fileData(f);
+            if(!current())return;
+            const isTemplate=await this.orm.call('pb.payroll.templates','is_template',[b64]);
+            if(!current())return;
+            if(!isTemplate){this.state.sheet.checking=false;return super._takeFile(f);}
             const data=await this.orm.call('pb.payroll.templates','review',[configId,period,'monthly',b64,f.name]);
-            this.dialog.add(MonthlyInputReview,{data,configId,onApplied:result=>this._useReviewedTemplate(configId,period,f.name,result)});
-        }catch(e){this.state.sheet.error=message(e);}finally{this.state.sheet.checking=false;}
+            if(!current())return;
+            this.dialog.add(MonthlyInputReview,{data,configId,onApplied:result=>current()&&this._useReviewedTemplate(configId,period,f.name,result)});
+        }catch(e){if(current())this.state.sheet.error=message(e);}finally{if(current())this.state.sheet.checking=false;}
     },
 });

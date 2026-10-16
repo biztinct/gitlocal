@@ -49,6 +49,12 @@ export const SHEET_MODES = [MODE_UPDATE, MODE_ONCE];
 /** The pay-data step's slice of state, so "the default is update" is one fact. */
 export function freshSheetMode() { return MODE_UPDATE; }
 
+/** A successful preflight alone cannot authorize a missing or rejected file. */
+export function isSheetReady(sheet) {
+    return !!(sheet.file_b64 && sheet.file_name && sheet.preflight?.ok && !sheet.checking && !sheet.error);
+}
+
+
 /** Radio-group keyboard: arrows/Home/End move, anything else leaves it alone. */
 export function nextSheetMode(mode, key) {
     const i = Math.max(0, SHEET_MODES.indexOf(mode));
@@ -753,10 +759,7 @@ export class PayrunWizard extends Component {
         const g = this.state.sheet.gate;
         return this.state.form.formula_config_id || (g && g.config_id) || 0;
     }
-    get sheetReady() {
-        const p = this.state.sheet.preflight;
-        return !!(p && p.ok);
-    }
+    get sheetReady() { return isSheetReady(this.state.sheet); }
 
     // ---------------- RECORDS R3: the way out to the Records Desk -----------
     /**
@@ -819,6 +822,7 @@ export class PayrunWizard extends Component {
     }
     onSheetFile(ev) {
         const f = ev.target.files && ev.target.files[0];
+        ev.target.value = ''; // Let the same filename be selected again after an error.
         this._takeFile(f);
     }
     // RD56 — one button, and it does exactly what it says: writes the
@@ -896,6 +900,10 @@ export class PayrunWizard extends Component {
     }
 
     continueWithSheet() {
+        if (!this.sheetReady) {
+            this.notif.add(_t('Upload and review a valid workbook before computing.'), { type: 'warning' });
+            return;
+        }
         this.state.sheet.skipped = false;
         return this.toCompute();
     }

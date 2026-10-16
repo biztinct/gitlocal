@@ -208,14 +208,25 @@ class PayrollInputReview(models.AbstractModel):
             raise UserError(_('This workbook belongs to a different workflow or pay month.'))
         base_catalog = self._catalog(cfg)
         fingerprint = self._fingerprint(self._layout(cfg, base_catalog), base_catalog)
-        if snapshot['layout'] != fingerprint:
-            raise UserError(_('The monthly layout changed after this download. Download a fresh workbook.'))
+        layout_changed = snapshot['layout'] != fingerprint
+        if layout_changed:
+            # Server-owned download columns carry stable input IDs. Cosmetic
+            # metadata, order and worksheet placement need no data re-entry.
+            # Never drop an old column or silently change its record source.
+            current_fields = {c['id']: c for c in base_catalog}
+            incompatible = [c['label'] for cols in snapshot['columns'].values() for c in cols
+                if c['id'] not in current_fields or any(c.get(k) != current_fields[c['id']].get(k)
+                    for k in ('readonly', 'record_id'))]
+            if incompatible:
+                raise UserError(_('These workbook fields were removed or their saved-record source changed: %s. Download the current template and copy your entries into it.') % ', '.join(incompatible[:10]))
         people = self._roster(cfg, period)
         catalog = self._review_catalog(cfg)
         resolved = self._resolved_month(cfg, period, people, catalog)
         previous_period, previous = self._previous_inputs(cfg, period, people, catalog)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
         uploads, structural, warnings, seen_tabs = {}, [], [], {}
+        if layout_changed:
+            warnings.append(_('Template settings changed since download. Your workbook values have been matched to the current input fields. Review all fields below before continuing.'))
         for sheet_name, cols in snapshot['columns'].items():
             if sheet_name not in wb:
                 structural.append(_('Missing worksheet: %s') % sheet_name)
@@ -261,7 +272,7 @@ class PayrollInputReview(models.AbstractModel):
                     old_value = old['monthly'].get(c['id'])
                     current = resolved[eid][c['id']]['stored']
                     if not snapshot.get('reusable') and current != old_value and plain(value) != current:
-                        structural.append(_('%s · %s changed since download. Download again to review the latest value.') % (people.browse(eid).name, c['label']))
+                        warnings.append(_('%s · %s: this month’s saved input changed since download. Your uploaded value is shown for review; confirming replaces only this month’s input.') % (people.browse(eid).name, c['label']))
                     uploads[(eid, c['id'])] = plain(value)
             seen_tabs[sheet_name] = seen
         if not seen_tabs.get('Monthly adjustments', set()).issubset(seen_tabs.get('Time', set())):

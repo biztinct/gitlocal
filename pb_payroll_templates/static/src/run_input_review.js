@@ -121,7 +121,13 @@ patch(PayrunWizard.prototype, {
     // This addon owns the durable choice. The basic wizard still works on
     // databases where Payroll Templates is not installed.
     get sheetOnce() { return true; },
-    get sheetContinueLabel() { return _t('Compute with this file'); },
+    get sheetContinueLabel() {
+        const sheet = this.state.sheet;
+        if (sheet.checking) return _t('Reading workbook…');
+        if (sheet.error) return _t('Fix upload to continue');
+        if (!sheet.file_name) return _t('Upload a file to continue');
+        return this.sheetReady ? _t('Compute with this file') : _t('Review file to continue');
+    },
     openInputChanges() { this.dialog.add(RunInputReview, {runId: this.state.summary.run_id}); },
 });
 patch(PbPayruns.prototype, {

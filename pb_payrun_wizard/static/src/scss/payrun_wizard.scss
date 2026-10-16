@@ -462,3 +462,10 @@ $pw-lock-bd: #A7E3D5;
     padding: 10px 12px; border-radius: 12px;
     background: var(--pw-soft); color: var(--pw-ink); font-size: 13px;
 }
+
+// An unavailable action must look unavailable, including the green run-only action.
+.pw-root .pw-btn:disabled, .pw-root .pw-btn.pw-btn--lock:disabled {
+    background: #e9ecf3; border-color: #dce0e9; color: #9098aa;
+    opacity: 1; box-shadow: none; cursor: not-allowed; transform: none;
+    &:hover { background: #e9ecf3; border-color: #dce0e9; color: #9098aa; }
+}
