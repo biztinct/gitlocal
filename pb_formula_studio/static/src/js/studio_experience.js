@@ -5,9 +5,24 @@ import { _t } from '@web/core/l10n/translation';
 import { PbFormulaStudio } from './formula_studio';
 import { formatComponentValue, componentInputType } from './value_format';
 
+const commandLanesGetter = Object.getOwnPropertyDescriptor(PbFormulaStudio.prototype, 'commandLanes').get;
+const paletteCommandsGetter = Object.getOwnPropertyDescriptor(PbFormulaStudio.prototype, 'paletteCommands').get;
+
 patch(PbFormulaStudio.prototype, {
     setup() {
         super.setup(...arguments);
+        // OWL renders templates with t-set through a context inheriting from the
+        // component. Timers, cancellation tokens and graph caches must belong to
+        // the real instance, not a short-lived render context.
+        this._experienceHost = this;
+        for (const name of ['load', 'chooseConfig', 'openDepMap', 'focusDependency',
+            'openWhatif', 'closeWhatif', 'cancelWhatif', 'invalidateWhatif',
+            'whatifSelectTarget', 'onWhatifSlide', '_runWhatif', 'onTestInput',
+            'flushTestInputs', 'selectSample', 'loadSampleDetail', 'changePreviewSample',
+            'addComponentQuick', 'createComponentDraft', 'closeComponentDraft',
+            'reviewValueTypes', 'applyValueTypes', 'closeTypeReview', 'changeComponentKind']) {
+            this[name] = this[name].bind(this);
+        }
         this.experience = useState({query: '', filter: 'all', inspector: 'formula', group: '',
             draft: null, draftBusy: false, draftError: '', sampleBusy: false,
             typeReview: null, typeBusy: false, whatifRuns: [], whatifRun: '',
@@ -23,7 +38,7 @@ patch(PbFormulaStudio.prototype, {
             const opener = document.activeElement;
             const dialog = document.querySelector('.experience-dialog');
             const controls = () => [...(dialog?.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])') || [])];
-            controls()[0]?.focus();
+            (dialog?.querySelector('[autofocus], input, select') || controls()[0])?.focus();
             const handle = ev => {
                 if (ev.key === 'Escape') {
                     ev.preventDefault(); ev.stopImmediatePropagation();
@@ -49,10 +64,19 @@ patch(PbFormulaStudio.prototype, {
             this.experience.whatifRun = '';
             let saved;
             try { saved = JSON.parse(sessionStorage.getItem('pbfs-workspace:' + this.state.config.id)); } catch (_) {}
-            this.state.view = saved && ['table', 'grid', 'cards'].includes(saved.view) ? saved.view : 'table';
+            this._restoredBuildView = saved && ['table', 'grid', 'cards'].includes(saved.view) ? saved.view : 'table';
+            this.state.view = this._restoredBuildView;
             if (saved && this.state.components.some(c => c.id === saved.selected)) this.state.selectedId = saved.selected;
         }
     },
+    async chooseConfig(id) {
+        const previous = this.state.config.id;
+        await super.chooseConfig(...arguments);
+        if (previous !== id && this.state.config.id === id) this.state.view = this._restoredBuildView || 'table';
+    },
+    componentName(code) { return this.state.components.find(c=>c.code===code)?.name || code; },
+    get commandLanes() { return commandLanesGetter.call(this._experienceHost || this); },
+    get paletteCommands() { return paletteCommandsGetter.call(this._experienceHost || this); },
     get buildView() { return ['table', 'grid', 'cards'].includes(this.state.view); },
     get experienceRows() {
         const q = this.experience.query.trim().toLocaleLowerCase();
@@ -103,7 +127,7 @@ patch(PbFormulaStudio.prototype, {
     addComponentQuick() {
         if (!this.state.canEdit) return;
         this.experience.draftError = '';
-        this.experience.draft = {name:'', column_type:'input', value_kind:'money', excel_formula:'', constant_value:0};
+        this.experience.draft = {name:'', column_type:'input', value_kind:'', excel_formula:'', constant_value:0};
     },
     closeComponentDraft() { if (!this.experience.draftBusy) this.experience.draft = null; },
     async createComponentDraft() {
@@ -111,6 +135,7 @@ patch(PbFormulaStudio.prototype, {
         if (!d || this.experience.draftBusy) return;
         this.experience.draftError = '';
         if (!d.name.trim()) { this.experience.draftError = _t('Enter a component name.'); return; }
+        if (!d.value_kind) { this.experience.draftError = _t('Choose a value type.'); return; }
         if (d.column_type === 'formula' && !d.excel_formula.trim()) { this.experience.draftError = _t('Enter a formula.'); return; }
         this.experience.draftBusy = true;
         try {
@@ -137,7 +162,7 @@ patch(PbFormulaStudio.prototype, {
         this.experience.typeBusy = true;
         try {
             const r = await this.orm.call('pb.formula.studio','experience_review_types',[this.state.config.id]);
-            this.experience.typeReview = (r.rows || []).map(row => ({...row,selected:true}));
+            this.experience.typeReview = (r.rows || []).map(row => ({...row,selected:false}));
         } finally { this.experience.typeBusy = false; }
     },
     closeTypeReview() { if (!this.experience.typeBusy) this.experience.typeReview = null; },

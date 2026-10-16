@@ -80,13 +80,64 @@ class TestStudioExperience(TransactionCase):
                 'date_from':'2026-08-01','date_to':'2026-08-31','payslip_run_id':run.id,
                 'formula_config_id':self.config.id,'formula_input_values':json.dumps({'BASE':100,'EMPKEY':'0017'}),
                 'calculation_method':'formula'})
+        excluded = self.env['hr.employee'].create({'name':'Missing-input fictional employee'})
+        self.env['hr.payslip'].create({'name':'Missing-input fictional slip','employee_id':excluded.id,
+            'date_from':'2026-08-01','date_to':'2026-08-31','payslip_run_id':runs[0].id,
+            'formula_config_id':self.config.id,'calculation_method':'formula'})
         Sim = self.env['hr.formula.simulation']
         created = Sim.sim_create(self.config.id)
         result = Sim.sim_prepare(created['sim_id'],limit=200,run_id=runs[0].id)
         self.assertEqual(result['total'],1)
         self.assertEqual(result['records'],2)
         self.assertEqual(result['population'],1)
+        self.assertEqual(result['employees_in_run'],2)
+        self.assertEqual(result['excluded_employees'],1)
+        self.assertEqual(result['duplicate_records'],1)
         self.assertFalse(result['sampled'])
         self.assertEqual(result['run_id'],runs[0].id)
         self.assertTrue(all(s.payslip_run_id==runs[0] for s in self.env['hr.payslip'].browse(result['payslip_ids'])))
         self.assertNotIn('annualized_delta',Sim.browse(created['sim_id']).sim_result())
+
+    def test_sample_uses_visible_defaults_without_writing_them(self):
+        self.pay.default_value = 21
+        sample = self.env['hr.formula.sample.data'].create({'config_id':self.config.id,
+            'name':'Default inputs','input_values_json':'{}'})
+        detail = self.studio.get_sample_detail(sample.id)
+        row = next(r for r in detail['rows'] if r['code']=='BASE')
+        self.assertEqual(row['input'],21)
+        self.assertTrue(row['input_is_default'])
+        self.assertEqual(sample.input_values_json,'{}')
+        sample.input_values_json = '{"BASE":0}'
+        row = next(r for r in self.studio.get_sample_detail(sample.id)['rows'] if r['code']=='BASE')
+        self.assertEqual(row['input'],0)
+        self.assertFalse(row['input_is_default'])
+
+    def test_zero_salary_cap_is_not_suggested_as_boolean(self):
+        self.Rule.create({'config_id':self.config.id,'name':'Cap salary','code':'SALARYCAP',
+            'column_type':'input','value_kind':'money','value_kind_source':'auto'})
+        self.env['hr.formula.sample.data'].create({'config_id':self.config.id,
+            'name':'Empty cap','input_values_json':'{"SALARYCAP":"0"}'})
+        rows=self.studio.experience_review_types(self.config.id)['rows']
+        self.assertFalse(any(r['code']=='SALARYCAP' and r['proposed']=='boolean' for r in rows))
+
+    def test_whatif_rejects_unknown_constants_and_nonfinite_values(self):
+        with self.assertRaises(UserError): self.studio.whatif_prepare(self.config.id,'MISSING',1)
+        constant=self.Rule.create({'config_id':self.config.id,'name':'Unused constant',
+            'code':'PROBECONST','column_type':'constant','constant_value':1})
+        with self.assertRaises(UserError): self.studio.whatif_prepare(self.config.id,constant.code,float('inf'))
+
+    def test_changed_constant_does_not_claim_selected_outcome_changed(self):
+        constant=self.Rule.create({'config_id':self.config.id,'name':'Unused constant',
+            'code':'PROBECONST','column_type':'constant','constant_value':1})
+        employee=self.env['hr.employee'].create({'name':'Outcome fictional employee'})
+        run=self.env['hr.payslip.run'].create({'name':'Outcome probe','date_start':'2026-08-01','date_end':'2026-08-31'})
+        self.env['hr.payslip'].create({'name':'Outcome fictional slip','employee_id':employee.id,
+            'date_from':'2026-08-01','date_to':'2026-08-31','payslip_run_id':run.id,
+            'formula_config_id':self.config.id,'formula_input_values':'{"BASE":100,"EMPKEY":"0017"}',
+            'calculation_method':'formula'})
+        prep=self.studio.whatif_prepare(self.config.id,constant.code,3,run_id=run.id)
+        self.studio.whatif_batch({'sim_id':prep['sim_id'],'payslip_ids':prep['payslip_ids']})
+        result=self.studio.whatif_result(prep['sim_id'])['result']
+        self.assertEqual(result['headline_changed'],0)
+        self.assertEqual(result['employees_changed'],1)
+        self.assertEqual(result['delta_total'],0)

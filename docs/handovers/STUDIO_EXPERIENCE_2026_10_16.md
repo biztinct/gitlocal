@@ -36,3 +36,19 @@ Validation: 14 native Node formatter checks; merged-template OWL compilation;
 68 selected Odoo regression cases passed on an isolated copy of p0clone, with all
 cron jobs and mail servers disabled and guarded against reactivation. Deployment
 receipts and end-to-end Chrome checks are recorded in the deployment closeout.
+
+Chrome follow-up repairs: compact controls against the live theme's full-width
+input defaults; retain Table on entry from the configuration board; mark effective
+sample inputs as Default; show the deterministic explanation in the inspector;
+require an explicit value type for new components; leave proposed type corrections
+unchecked and suppress boolean suggestions supported only by numeric zero/one
+samples. Tool callbacks and timer-owning actions are bound to the component
+instance so graph geometry and cancellation tokens survive OWL render contexts.
+The graph's connection paths were found empty in the first deployed browser pass;
+the final pass must verify non-empty path geometry and visible connections.
+
+What-if now distinguishes a changed selected outcome from any changed intermediate
+output. Scope includes employees excluded for missing inputs and extra payslips
+ignored when choosing the latest one per employee. Added four regression cases
+for default inputs, sparse-value classification, constant validation, and unchanged
+headline outcomes; all 11 audit-specific cases pass before final rollout.

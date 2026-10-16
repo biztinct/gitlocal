@@ -69,6 +69,11 @@ class StudioExperience(models.AbstractModel):
                 contexts=config._rule_operand_contexts(r, scheme),
                 quantity=bool(looks_like_a_quantity(r.name or '', r.code or '')),
                 sample_values=samples.get(r.code) or [], appears_on_payslip=r.appears_on_payslip)
+            evidence = samples.get(r.code) or []
+            if kind == 'boolean' and not any(
+                    isinstance(v, bool) or str(v).strip().lower() in
+                    ('yes', 'no', 'true', 'false', 'có', 'không') for v in evidence):
+                continue
             if kind != r.value_kind:
                 rows.append({'code': r.code, 'name': r.name, 'current': r.value_kind,
                              'proposed': kind, 'reason': reason})
@@ -166,6 +171,9 @@ class StudioExperience(models.AbstractModel):
     def whatif_prepare(self, config_id, target_code, new_value, limit=None, run_id=None, headline_code=None):
         config = self._pick_config(config_id)
         headline = self._experience_headline(config, headline_code)
+        target = config.rule_ids.filtered(lambda r: r.code == target_code and r.column_type == 'constant')
+        if not target or not math.isfinite(float(new_value)):
+            raise UserError(_('Choose a constant and a finite value to simulate.'))
         Sim = self.env['hr.formula.simulation']
         created = Sim.sim_create(config.id, value_overrides={target_code: float(new_value)})
         if not created.get('ok'):

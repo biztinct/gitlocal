@@ -199,6 +199,8 @@ class HrFormulaSimulation(models.TransientModel):
         if not run_id:
             return {'ok': False, 'msg': _('Choose a pay run with stored inputs.'),
                     'sim_id': sim.id, 'payslip_ids': [], 'total': 0}
+        all_slips = Slip.search([('formula_config_id', '=', sim.config_id.id), ('payslip_run_id', '=', int(run_id))])
+        all_people = set(all_slips.mapped('employee_id').ids)
         candidates = Slip.search(domain + [('payslip_run_id', '=', int(run_id))],
                                  order='date_to desc, id desc')
         seen, ids = set(), []
@@ -211,6 +213,9 @@ class HrFormulaSimulation(models.TransientModel):
         run = self.env['hr.payslip.run'].browse(int(run_id)).exists()
         scope = {'run_id': int(run_id), 'run_name': run.name if run else '',
                  'population': population, 'records': len(candidates),
+                 'employees_in_run': len(all_people),
+                 'excluded_employees': len(all_people - seen),
+                 'duplicate_records': len(candidates) - population,
                  'sampled': len(ids) < population}
         sim.write({'state': 'computing', 'agg_json': json.dumps({'scope': scope}),
                    'employees_total': 0, 'employees_changed': 0})
@@ -360,6 +365,7 @@ class HrFormulaSimulation(models.TransientModel):
             'employees_unchanged': unchanged,
             'pct_unchanged': round(100.0 * unchanged / self.employees_total, 1) if self.employees_total else 100.0,
             'zero_hist': agg.get('hist_zero', 0),
+            'headline_changed': self.employees_total - agg.get('hist_zero', 0),
             'components': components,
             'histogram': histogram,
             'movers': agg.get('movers', []),

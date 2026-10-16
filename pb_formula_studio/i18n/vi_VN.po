@@ -15932,31 +15932,41 @@ msgstr ""
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Give the component a name before adding it."
 msgstr "Đặt tên thành phần trước khi thêm."
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Enter a formula before adding this component."
 msgstr "Nhập công thức trước khi thêm thành phần này."
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Unknown sample input: %s"
 msgstr "Đầu vào mẫu không xác định: %s"
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Enter a valid number for %s."
 msgstr "Nhập số hợp lệ cho %s."
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid ""
 "Choose a monetary outcome to measure. Set Net pay in Component treatment to "
 "use it by default."
@@ -15966,13 +15976,17 @@ msgstr ""
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Formula is empty"
 msgstr "Công thức trống"
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
 msgid "Add a formula or change this component to an input."
 msgstr "Thêm công thức hoặc đổi thành phần này thành đầu vào."
 
@@ -15981,3 +15995,87 @@ msgstr "Thêm công thức hoặc đổi thành phần này thành đầu vào."
 #: code:addons/pb_formula_studio/static/src/js/source_vocab.js:0
 msgid "No recorded run source for this component"
 msgstr "Chưa có nguồn từ kỳ lương được ghi nhận cho thành phần này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose value type"
+msgstr "Chọn kiểu giá trị"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Choose a value type."
+msgstr "Chọn kiểu giá trị."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Inputs marked Default use the scheme default because this sample has no "
+"value for that component."
+msgstr ""
+"Đầu vào có nhãn Mặc định dùng giá trị mặc định của cơ chế lương vì mẫu này "
+"chưa có giá trị cho thành phần đó."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Review warnings"
+msgstr "Xem lại cảnh báo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "No formula dependents"
+msgstr "Không có công thức phụ thuộc"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid ""
+"Select the corrections you agree with. Suggestions use labels, formulas, and"
+" sample values; they can be incomplete. Your manually chosen types are "
+"preserved."
+msgstr ""
+"Chọn các sửa đổi bạn đồng ý. Đề xuất dựa trên tên, công thức và giá trị mẫu "
+"nên có thể chưa đầy đủ. Các kiểu bạn tự chọn được giữ nguyên."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Employees with a changed outcome"
+msgstr "Nhân viên có kết quả đã chọn thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "Measured"
+msgstr "Đã đo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "employees in this pay run using stored inputs."
+msgstr "nhân viên trong kỳ lương này bằng đầu vào đã lưu."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "employees excluded because stored inputs are missing."
+msgstr "nhân viên bị loại vì thiếu đầu vào đã lưu."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+msgid "extra payslips ignored; the latest payslip per employee is used."
+msgstr ""
+"phiếu lương bổ sung được bỏ qua; dùng phiếu mới nhất của mỗi nhân viên."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_formula_studio/static/src/xml/studio_experience.xml:0
+#: code:addons/pb_formula_studio/models/studio_experience.py:0
+msgid "Choose a constant and a finite value to simulate."
+msgstr "Chọn một hằng số và giá trị hữu hạn để mô phỏng."

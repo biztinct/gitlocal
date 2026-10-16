@@ -360,7 +360,8 @@ class HrFormulaSampleData(models.Model):
             code = rule.code
             expected = expected_vals.get(code)
             computed = computed_vals.get(code, 0)
-            input_val = input_vals.get(code, input_vals.get(rule.column_letter))
+            supplied = code in input_vals or rule.column_letter in input_vals
+            input_val = input_vals.get(code, input_vals.get(rule.column_letter, rule.default_value))
 
             # Numeric differences and exact text matches use different comparisons.
             disc, passed = 0, expected is None
@@ -380,6 +381,7 @@ class HrFormulaSampleData(models.Model):
                 'name': rule.name,
                 'column_type': rule.column_type,
                 'input': input_val,
+                'input_is_default': rule.column_type == 'input' and not supplied,
                 'expected': expected,
                 'computed': computed,
                 'discrepancy': disc,

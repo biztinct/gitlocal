@@ -106,3 +106,23 @@
         .experience-column-manager { grid-template-columns: 1fr; }
     }
 }
+
+.pbfs {
+    .experience-buildbar > .pbfs-seg { width: auto; flex: 0 0 auto; }
+    .experience-buildbar > .pbfs-seg button { flex: 0 0 auto; padding: 8px 18px; }
+    .experience-sample { width: auto; white-space: nowrap; }
+    .experience-sample select { width: auto; }
+    .experience-controls > input[type=search] { width: 240px; flex: 1 1 240px; }
+    .experience-controls > select { width: auto; flex: 0 0 auto; max-width: 190px; }
+    .experience-controls label { width: auto; white-space: nowrap; }
+    .experience-controls label select { width: auto; }
+    .experience-inspector-tabs { width: auto; }
+    .experience-inspector-foot { padding-right: 80px; }
+    .experience-default-label { color: #8c809b; font-size: 10px; }
+    .experience-component-code { display: block; margin-top: 3px; color: #9a91a6; font-size: 10px; font-weight: normal; }
+    .experience-config-verdict { color: #897c98; font-size: 11px; margin-left: auto; }
+    .experience-whatif-scope label { white-space: normal; }
+    .experience-whatif-scope label select { width: 100%; }
+    .wi-scope { flex-wrap: wrap; line-height: 1.7; }
+}
+.pbfs .pbtest-inrow .experience-default-label { margin-left: 8px; white-space: nowrap; }

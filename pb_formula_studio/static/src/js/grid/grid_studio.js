@@ -72,7 +72,7 @@ export class GridStudio extends Component {
         // wholesale after every save, so id-keyed focus/selection survive a refresh.
         this.ui = useState({
             query: "", groupBy: "", showAll: false, columnsOpen: false, hidden: [],
-            focus: { colId: null, row: "formula" }, // colId = hr.formula.rule id
+            focus: { colId: this.props.selectedId || null, row: "formula" }, // colId = hr.formula.rule id
             selection: [],                           // array of colIds (Ctrl/Shift multi-select)
             anchorId: null,                          // Shift-range anchor
             editing: null,   // { colId, row, buffer, valid, message } | null
