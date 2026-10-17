@@ -34,7 +34,7 @@ assert len(w['layout']['time'])==4 and len(w['layout']['adjustments'])==13
 blank=openpyxl.load_workbook(root/'Vietnam_Monthly_Input_Template.xlsx',data_only=False)
 assert blank.sheetnames==['Time','Monthly adjustments','Instructions']
 for tab in ['Time','Monthly adjustments']:
-    expected=['Country employee ID','Employee name']+[r['name'] for r in d['rules'] if r['tab']==tab]
+    expected=['Country-Based Employee ID','Employee Name']+[r['name'] for r in d['rules'] if r['tab']==tab]
     assert [c.value for c in blank[tab][1]]==expected
     assert all(c.value is None for row in blank[tab].iter_rows(min_row=2) for c in row)
 probe=env['hr.payroll.import.batch'].with_company(cfg.company_id).new(dict(formula_config_id=cfg.id,company_id=cfg.company_id.id,file_header_row=1,file_data_start_row=2))
@@ -45,7 +45,7 @@ transformed=probe._transform_data_to_formula_inputs(raw)
 assert transformed['VNSTDDAYS']==22 and transformed['VNPAIDDAYS']==22 and transformed['VNACTBONUS']==1000000,transformed
 # Identity values travel beside amount inputs rather than inside that numeric
 # result dictionary. Verify the preserved source identity separately.
-assert any(str(raw.get(k))=='VNTEST001' for k in ['Country employee ID','Time|Country employee ID','Monthly adjustments|Country employee ID']),raw
+assert any(str(raw.get(k))=='VNTEST001' for k in ['Country-Based Employee ID','Time|Country-Based Employee ID','Monthly adjustments|Country-Based Employee ID']),raw
 preflight=env['pb.payrun.wizard'].with_company(cfg.company_id).preflight_spreadsheet(cfg.id,base64.b64encode((root/'monthly-probe.xlsx').read_bytes()).decode(),'monthly-probe.xlsx')
 assert preflight.get('ok') and preflight.get('employees_col'),preflight
 attachment_ids=[]

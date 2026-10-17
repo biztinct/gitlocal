@@ -48,7 +48,7 @@ parsed=probe._parse_source_file((p/names[1]).read_bytes(),names[1])
 assert len(parsed['rows'])==70
 parsed_keys=[]
 for row in parsed['rows']:
-    key=next((row[k] for k in ['Country employee ID','Time|Country employee ID','Monthly adjustments|Country employee ID'] if row.get(k)),None)
+    key=next((row[k] for k in ['Country-Based Employee ID','Time|Country-Based Employee ID','Monthly adjustments|Country-Based Employee ID'] if row.get(k)),None)
     parsed_keys.append(str(key))
 assert len(set(parsed_keys))==70 and set(parsed_keys)=={r[0] for r in people}
 prior_hash=hashlib.sha256(json.dumps(cfg.rule_ids.read(['code','excel_formula','net_role','net_role_detail','value_kind','is_contract_component']),sort_keys=True,default=str).encode()).hexdigest()

@@ -171,3 +171,31 @@ class TestMappingCreateGuard(TransactionCase):
         self.assertEqual(note.get('tone'), 'warn')
         self.assertFalse(card['meta'].get('mappable', True))
         self.assertNotIn('Odoo', '%s %s' % (note['text'], note['title']))
+
+    def test_06_spreadsheet_targets_are_inputs_and_produced_values_refuse_links(self):
+        """A computed total is never an upload destination, even from a stale UI."""
+        cfg = self._config('Spreadsheet input targets')
+        monthly = self._rule(cfg, 'MONTHLY', name='Monthly salary')
+        annual = self._rule(cfg, 'ANNUAL', seq=20, name='Annual salary',
+                            column_type='formula', excel_formula='=A2*12')
+        fixed = self._rule(cfg, 'FIXED', seq=30, column_type='constant',
+                           constant_value=12)
+        board = self.Studio.import_mapping_data(cfg.id, False)
+        self.assertTrue(board['ok'], board)
+        self.assertEqual({c['id'] for c in board['right']}, {monthly.id})
+        self.assertTrue(all(w['rightId'] == monthly.id for w in board['wires']))
+        before = cfg.rule_ids.mapped('source_ids').ids
+        for produced in (annual, fixed):
+            refused = self.Studio.import_mapping_create(
+                cfg.id, False, 'c:Annual salary', produced.id)
+            self.assertFalse(refused['ok'], refused)
+            self.assertIn('needs no source', refused['msg'])
+        self.assertEqual(cfg.rule_ids.mapped('source_ids').ids, before)
+        accepted = self.Studio.import_mapping_create(
+            cfg.id, False, 'c:Monthly salary', monthly.id)
+        self.assertTrue(accepted['ok'], accepted)
+        self.assertEqual(monthly.source_binding_key, 'Monthly salary')
+        # The filter belongs to the spreadsheet board. The full catalogue
+        # still exposes produced values for inspecting their dependencies.
+        catalogue = self.Studio._mc_right_column(cfg, {}, {})
+        self.assertEqual({c['id'] for c in catalogue}, set(cfg.rule_ids.ids))

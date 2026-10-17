@@ -40,7 +40,7 @@
     },
     {
       "code": "VNHCD",
-      "name": "Global employee ID",
+      "name": "Employee ID",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "c:text",
@@ -57,7 +57,7 @@
     },
     {
       "code": "VNHCE",
-      "name": "Country employee ID",
+      "name": "Country-Based Employee ID",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:employee_id",
@@ -74,7 +74,7 @@
     },
     {
       "code": "VNHCF",
-      "name": "Employee name",
+      "name": "Employee Name",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:name",
@@ -91,7 +91,7 @@
     },
     {
       "code": "VNHCG",
-      "name": "First name",
+      "name": "First Name",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -108,7 +108,7 @@
     },
     {
       "code": "VNHCH",
-      "name": "Last name",
+      "name": "Last Name",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -125,7 +125,7 @@
     },
     {
       "code": "VNHCI",
-      "name": "Gender as supplied",
+      "name": "Gender",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -142,7 +142,7 @@
     },
     {
       "code": "VNHCJ",
-      "name": "Nationality as supplied",
+      "name": "Nationality",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -159,7 +159,7 @@
     },
     {
       "code": "VNHCK",
-      "name": "Date of birth",
+      "name": "Date of Birth",
       "kind": "date",
       "group": "Employee details",
       "destination": "f:hr.employee:birthday",
@@ -176,7 +176,7 @@
     },
     {
       "code": "VNHCM",
-      "name": "Place of birth",
+      "name": "Place of Birth",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:place_of_birth",
@@ -193,7 +193,7 @@
     },
     {
       "code": "VNHCP",
-      "name": "Marital status as supplied",
+      "name": "Marital Status",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -210,7 +210,7 @@
     },
     {
       "code": "VNHCQ",
-      "name": "HC dependent count",
+      "name": "Dependent/Children",
       "kind": "integer",
       "group": "Employee details",
       "destination": "c:amount",
@@ -227,7 +227,7 @@
     },
     {
       "code": "VNHCR",
-      "name": "Personal email",
+      "name": "personal email ID",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:private_email",
@@ -244,7 +244,7 @@
     },
     {
       "code": "VNHCS",
-      "name": "Personal phone",
+      "name": "Personal Contact Number",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:private_phone",
@@ -261,7 +261,7 @@
     },
     {
       "code": "VNHCT",
-      "name": "Work phone",
+      "name": "Work Contact Number",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:work_phone",
@@ -278,7 +278,7 @@
     },
     {
       "code": "VNHCU",
-      "name": "Job title",
+      "name": "Position/Designation/Title",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:job_title_text",
@@ -295,7 +295,7 @@
     },
     {
       "code": "VNHCV",
-      "name": "Country of work",
+      "name": "Country of Work",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -312,7 +312,7 @@
     },
     {
       "code": "VNHCW",
-      "name": "City of work",
+      "name": "City of Work",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -329,7 +329,7 @@
     },
     {
       "code": "VNHCX",
-      "name": "Contract start date",
+      "name": "Legal entity Date of Joining/Contract start date",
       "kind": "date",
       "group": "Employment context",
       "destination": "f:hr.contract:date_start",
@@ -346,7 +346,7 @@
     },
     {
       "code": "VNHCY",
-      "name": "Probation start date",
+      "name": "Probation Start Date",
       "kind": "date",
       "group": "Employment context",
       "destination": "c:text",
@@ -380,7 +380,7 @@
     },
     {
       "code": "VNHCAA",
-      "name": "Probation outcome",
+      "name": "Probation result/Outcome",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -397,7 +397,7 @@
     },
     {
       "code": "VNHCAB",
-      "name": "Labour contract signing date",
+      "name": "Labour contract Date",
       "kind": "date",
       "group": "Employment context",
       "destination": "c:text",
@@ -414,7 +414,7 @@
     },
     {
       "code": "VNHCAC",
-      "name": "Contract end date as supplied",
+      "name": "Contract end date",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -431,7 +431,7 @@
     },
     {
       "code": "VNHCAD",
-      "name": "Employment type as supplied",
+      "name": "employment Type(Full time/Contract/Intern)",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -448,7 +448,7 @@
     },
     {
       "code": "VNHCAE",
-      "name": "Reporting manager name",
+      "name": "Reporting Manager",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -465,7 +465,7 @@
     },
     {
       "code": "VNHCAF",
-      "name": "Reporting manager email",
+      "name": "Reporting manager Mail ID",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -482,7 +482,7 @@
     },
     {
       "code": "VNHCAG",
-      "name": "Hiring manager",
+      "name": "Hiring Manager",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -499,7 +499,7 @@
     },
     {
       "code": "VNHCAH",
-      "name": "Department",
+      "name": "Function/Department",
       "kind": "text",
       "group": "Employment context",
       "destination": "f:hr.employee:department_id",
@@ -516,7 +516,7 @@
     },
     {
       "code": "VNHCAI",
-      "name": "Subdepartment",
+      "name": "Sub-Function/Sub-Department",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -533,7 +533,7 @@
     },
     {
       "code": "VNHCAJ",
-      "name": "Job level",
+      "name": "Level(Jr/Mid/Sr)",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -550,7 +550,7 @@
     },
     {
       "code": "VNHCAK",
-      "name": "Source employment status",
+      "name": "Status(Active/Inactive/Notice Period)",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -567,7 +567,7 @@
     },
     {
       "code": "VNHCAN",
-      "name": "Government ID",
+      "name": "Govt ID Proof/ID (KTP/Passport Number)/",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "c:text",
@@ -584,7 +584,7 @@
     },
     {
       "code": "VNHCAO",
-      "name": "Work permit number",
+      "name": "Work Permit (if expat)",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_work_permit_number",
@@ -601,7 +601,7 @@
     },
     {
       "code": "VNHCAP",
-      "name": "Passport number",
+      "name": "Passport Number",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_passport_number",
@@ -618,7 +618,7 @@
     },
     {
       "code": "VNHCAQ",
-      "name": "Visa status as supplied",
+      "name": "Visa Status",
       "kind": "text",
       "group": "Employee details",
       "destination": "c:text",
@@ -635,7 +635,7 @@
     },
     {
       "code": "VNHCAR",
-      "name": "Vietnam tax code",
+      "name": "Tax ID (PAN/NRIC/NIK etc.)",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_tax_code",
@@ -652,7 +652,7 @@
     },
     {
       "code": "VNHCAW",
-      "name": "Social insurance number",
+      "name": "SI Book No.-Viet",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_social_insurance_number",
@@ -669,7 +669,7 @@
     },
     {
       "code": "VNHCBD",
-      "name": "Current address",
+      "name": "Current Address",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_temporary_address",
@@ -686,7 +686,7 @@
     },
     {
       "code": "VNHCBE",
-      "name": "Emergency contact phone",
+      "name": "Emmergency Contact Number",
       "kind": "identifier",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_emergency_contact_phone",
@@ -703,7 +703,7 @@
     },
     {
       "code": "VNHCBF",
-      "name": "Emergency contact name",
+      "name": "Emmergency Contact Name",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_emergency_contact_name",
@@ -720,7 +720,7 @@
     },
     {
       "code": "VNHCBG",
-      "name": "Emergency relationship",
+      "name": "Emmergency Contact Relationship",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:vietnam_emergency_contact_relationship",
@@ -737,7 +737,7 @@
     },
     {
       "code": "VNHCBH",
-      "name": "Salary currency",
+      "name": "Salary Currency",
       "kind": "text",
       "group": "Compensation reference",
       "destination": "c:text",
@@ -754,7 +754,7 @@
     },
     {
       "code": "VNHCBI",
-      "name": "Gross or net basis",
+      "name": "Gross/Nett",
       "kind": "text",
       "group": "Compensation reference",
       "destination": "c:text",
@@ -771,7 +771,7 @@
     },
     {
       "code": "VNHCBK",
-      "name": "Monthly fixed salary VND",
+      "name": "Monthly fixed/basic salary",
       "kind": "money",
       "group": "Compensation reference",
       "destination": "f:hr.contract:wage",
@@ -788,7 +788,7 @@
     },
     {
       "code": "VNHCBL",
-      "name": "Annual variable target rate",
+      "name": "Annual Var %",
       "kind": "rate",
       "group": "Compensation reference",
       "destination": "c:amount",
@@ -805,7 +805,7 @@
     },
     {
       "code": "VNHCBQ",
-      "name": "HC bonus reference VND",
+      "name": "Other Bonus/Incentive",
       "kind": "money",
       "group": "Compensation reference",
       "destination": "c:amount",
@@ -822,7 +822,7 @@
     },
     {
       "code": "VNHCBS",
-      "name": "ESOP reference",
+      "name": "Stock Options / ESOPs",
       "kind": "text",
       "group": "Compensation reference",
       "destination": "c:text",
@@ -839,7 +839,7 @@
     },
     {
       "code": "VNHCBY",
-      "name": "Resignation date",
+      "name": "Resignation date/Notice Put down date",
       "kind": "date",
       "group": "Employment context",
       "destination": "c:text",
@@ -856,7 +856,7 @@
     },
     {
       "code": "VNHCBZ",
-      "name": "Notice period days",
+      "name": "Notice Period",
       "kind": "integer",
       "group": "Employment context",
       "destination": "c:amount",
@@ -873,7 +873,7 @@
     },
     {
       "code": "VNHCCA",
-      "name": "Planned last working date",
+      "name": "LWD as per Notice period",
       "kind": "date",
       "group": "Employment context",
       "destination": "c:text",
@@ -890,7 +890,7 @@
     },
     {
       "code": "VNHCCB",
-      "name": "Actual last working date",
+      "name": "LWD(Actual)",
       "kind": "date",
       "group": "Employment context",
       "destination": "c:text",
@@ -907,7 +907,7 @@
     },
     {
       "code": "VNHCCC",
-      "name": "Unserved notice days",
+      "name": "Unserved notice period",
       "kind": "integer",
       "group": "Employment context",
       "destination": "c:amount",
@@ -924,7 +924,7 @@
     },
     {
       "code": "VNHCCD",
-      "name": "Exit reason",
+      "name": "Reason for Exit",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -941,7 +941,7 @@
     },
     {
       "code": "VNHCCE",
-      "name": "Exit interview status",
+      "name": "Exit Interview Status",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -958,7 +958,7 @@
     },
     {
       "code": "VNHCCF",
-      "name": "Final settlement status",
+      "name": "Full & Final Settlement Done",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -975,7 +975,7 @@
     },
     {
       "code": "VNHCCG",
-      "name": "Clearance status",
+      "name": "Clearance Forms Submitted",
       "kind": "text",
       "group": "Employment context",
       "destination": "c:text",
@@ -992,7 +992,7 @@
     },
     {
       "code": "VNHCCH",
-      "name": "Work email",
+      "name": "Official email ID",
       "kind": "text",
       "group": "Employee details",
       "destination": "f:hr.employee:work_email",
@@ -1009,7 +1009,7 @@
     },
     {
       "code": "VNHCCP",
-      "name": "Bank name",
+      "name": "Bank Name",
       "kind": "text",
       "group": "Bank details",
       "destination": "b:bank_name",
@@ -1026,7 +1026,7 @@
     },
     {
       "code": "VNHCCQ",
-      "name": "Bank account number",
+      "name": "Bank Account Number",
       "kind": "identifier",
       "group": "Bank details",
       "destination": "b:acc_number",
@@ -1043,7 +1043,7 @@
     },
     {
       "code": "VNHCCR",
-      "name": "Bank beneficiary",
+      "name": "Bank Account Name/Beneficiary Name",
       "kind": "text",
       "group": "Bank details",
       "destination": "b:acc_holder_name",
@@ -1060,7 +1060,7 @@
     },
     {
       "code": "VNHCCS",
-      "name": "Bank SWIFT code",
+      "name": "SWIFT Code/IFSC Code",
       "kind": "identifier",
       "group": "Bank details",
       "destination": "b:bank_bic",
@@ -1077,7 +1077,7 @@
     },
     {
       "code": "VNHCCY",
-      "name": "Annual sick leave entitlement",
+      "name": "Eligible Sick leave/year",
       "kind": "integer",
       "group": "Employee details",
       "destination": "c:amount",
@@ -1094,7 +1094,7 @@
     },
     {
       "code": "VNJOINED",
-      "name": "Date of joining",
+      "name": "Legal entity Date of Joining (employee)",
       "kind": "date",
       "group": "Employment context",
       "destination": "f:hr.employee:date_of_joining",
@@ -1983,7 +1983,7 @@
       "populated": 105,
       "status": "Mapped",
       "code": "VNHCD",
-      "name": "Global employee ID",
+      "name": "Employee ID",
       "kind": "identifier",
       "destination": "c:text",
       "note": "Not a match key: duplicate and missing IDs exist."
@@ -1994,7 +1994,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCE",
-      "name": "Country employee ID",
+      "name": "Country-Based Employee ID",
       "kind": "identifier",
       "destination": "f:hr.employee:employee_id",
       "note": "Unique across all 127 source people; proposed match key."
@@ -2005,7 +2005,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCF",
-      "name": "Employee name",
+      "name": "Employee Name",
       "kind": "text",
       "destination": "f:hr.employee:name",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2016,7 +2016,7 @@
       "populated": 113,
       "status": "Mapped",
       "code": "VNHCG",
-      "name": "First name",
+      "name": "First Name",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2027,7 +2027,7 @@
       "populated": 113,
       "status": "Mapped",
       "code": "VNHCH",
-      "name": "Last name",
+      "name": "Last Name",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2038,7 +2038,7 @@
       "populated": 113,
       "status": "Mapped",
       "code": "VNHCI",
-      "name": "Gender as supplied",
+      "name": "Gender",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2049,7 +2049,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCJ",
-      "name": "Nationality as supplied",
+      "name": "Nationality",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2060,7 +2060,7 @@
       "populated": 123,
       "status": "Mapped",
       "code": "VNHCK",
-      "name": "Date of birth",
+      "name": "Date of Birth",
       "kind": "date",
       "destination": "f:hr.employee:birthday",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2082,7 +2082,7 @@
       "populated": 103,
       "status": "Mapped",
       "code": "VNHCM",
-      "name": "Place of birth",
+      "name": "Place of Birth",
       "kind": "text",
       "destination": "f:hr.employee:place_of_birth",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2115,7 +2115,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCP",
-      "name": "Marital status as supplied",
+      "name": "Marital Status",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2126,7 +2126,7 @@
       "populated": 31,
       "status": "Mapped",
       "code": "VNHCQ",
-      "name": "HC dependent count",
+      "name": "Dependent/Children",
       "kind": "integer",
       "destination": "c:amount",
       "note": "HC count does not establish registered tax-dependent eligibility."
@@ -2137,7 +2137,7 @@
       "populated": 98,
       "status": "Mapped",
       "code": "VNHCR",
-      "name": "Personal email",
+      "name": "personal email ID",
       "kind": "text",
       "destination": "f:hr.employee:private_email",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2148,7 +2148,7 @@
       "populated": 100,
       "status": "Mapped",
       "code": "VNHCS",
-      "name": "Personal phone",
+      "name": "Personal Contact Number",
       "kind": "identifier",
       "destination": "f:hr.employee:private_phone",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2159,7 +2159,7 @@
       "populated": 100,
       "status": "Mapped",
       "code": "VNHCT",
-      "name": "Work phone",
+      "name": "Work Contact Number",
       "kind": "identifier",
       "destination": "f:hr.employee:work_phone",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2170,7 +2170,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCU",
-      "name": "Job title",
+      "name": "Position/Designation/Title",
       "kind": "text",
       "destination": "f:hr.employee:job_title_text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2181,7 +2181,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCV",
-      "name": "Country of work",
+      "name": "Country of Work",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2192,7 +2192,7 @@
       "populated": 21,
       "status": "Mapped",
       "code": "VNHCW",
-      "name": "City of work",
+      "name": "City of Work",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2203,7 +2203,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCX",
-      "name": "Contract start date",
+      "name": "Legal entity Date of Joining/Contract start date",
       "kind": "date",
       "destination": "f:hr.contract:date_start",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2214,7 +2214,7 @@
       "populated": 113,
       "status": "Mapped",
       "code": "VNHCY",
-      "name": "Probation start date",
+      "name": "Probation Start Date",
       "kind": "date",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2236,7 +2236,7 @@
       "populated": 60,
       "status": "Mapped",
       "code": "VNHCAA",
-      "name": "Probation outcome",
+      "name": "Probation result/Outcome",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2247,7 +2247,7 @@
       "populated": 59,
       "status": "Mapped",
       "code": "VNHCAB",
-      "name": "Labour contract signing date",
+      "name": "Labour contract Date",
       "kind": "date",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2258,7 +2258,7 @@
       "populated": 59,
       "status": "Mapped",
       "code": "VNHCAC",
-      "name": "Contract end date as supplied",
+      "name": "Contract end date",
       "kind": "text",
       "destination": "c:text",
       "note": "Mixed dates and Indefinite text. Preserve as text; review native end dates separately."
@@ -2269,7 +2269,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCAD",
-      "name": "Employment type as supplied",
+      "name": "employment Type(Full time/Contract/Intern)",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2280,7 +2280,7 @@
       "populated": 92,
       "status": "Mapped",
       "code": "VNHCAE",
-      "name": "Reporting manager name",
+      "name": "Reporting Manager",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2291,7 +2291,7 @@
       "populated": 78,
       "status": "Mapped",
       "code": "VNHCAF",
-      "name": "Reporting manager email",
+      "name": "Reporting manager Mail ID",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2302,7 +2302,7 @@
       "populated": 92,
       "status": "Mapped",
       "code": "VNHCAG",
-      "name": "Hiring manager",
+      "name": "Hiring Manager",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2313,7 +2313,7 @@
       "populated": 92,
       "status": "Mapped",
       "code": "VNHCAH",
-      "name": "Department",
+      "name": "Function/Department",
       "kind": "text",
       "destination": "f:hr.employee:department_id",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2324,7 +2324,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCAI",
-      "name": "Subdepartment",
+      "name": "Sub-Function/Sub-Department",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2335,7 +2335,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCAJ",
-      "name": "Job level",
+      "name": "Level(Jr/Mid/Sr)",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2346,7 +2346,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCAK",
-      "name": "Source employment status",
+      "name": "Status(Active/Inactive/Notice Period)",
       "kind": "text",
       "destination": "c:text",
       "note": "Context only. Does not activate, terminate or select employees."
@@ -2379,7 +2379,7 @@
       "populated": 126,
       "status": "Mapped",
       "code": "VNHCAN",
-      "name": "Government ID",
+      "name": "Govt ID Proof/ID (KTP/Passport Number)/",
       "kind": "identifier",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2390,7 +2390,7 @@
       "populated": 2,
       "status": "Mapped",
       "code": "VNHCAO",
-      "name": "Work permit number",
+      "name": "Work Permit (if expat)",
       "kind": "identifier",
       "destination": "f:hr.employee:vietnam_work_permit_number",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2401,7 +2401,7 @@
       "populated": 3,
       "status": "Mapped",
       "code": "VNHCAP",
-      "name": "Passport number",
+      "name": "Passport Number",
       "kind": "identifier",
       "destination": "f:hr.employee:vietnam_passport_number",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2412,7 +2412,7 @@
       "populated": 2,
       "status": "Mapped",
       "code": "VNHCAQ",
-      "name": "Visa status as supplied",
+      "name": "Visa Status",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2423,7 +2423,7 @@
       "populated": 117,
       "status": "Mapped",
       "code": "VNHCAR",
-      "name": "Vietnam tax code",
+      "name": "Tax ID (PAN/NRIC/NIK etc.)",
       "kind": "identifier",
       "destination": "f:hr.employee:vietnam_tax_code",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2478,7 +2478,7 @@
       "populated": 107,
       "status": "Mapped",
       "code": "VNHCAW",
-      "name": "Social insurance number",
+      "name": "SI Book No.-Viet",
       "kind": "identifier",
       "destination": "f:hr.employee:vietnam_social_insurance_number",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2555,7 +2555,7 @@
       "populated": 100,
       "status": "Mapped",
       "code": "VNHCBD",
-      "name": "Current address",
+      "name": "Current Address",
       "kind": "text",
       "destination": "f:hr.employee:vietnam_temporary_address",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2566,7 +2566,7 @@
       "populated": 3,
       "status": "Mapped",
       "code": "VNHCBE",
-      "name": "Emergency contact phone",
+      "name": "Emmergency Contact Number",
       "kind": "identifier",
       "destination": "f:hr.employee:vietnam_emergency_contact_phone",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2577,7 +2577,7 @@
       "populated": 3,
       "status": "Mapped",
       "code": "VNHCBF",
-      "name": "Emergency contact name",
+      "name": "Emmergency Contact Name",
       "kind": "text",
       "destination": "f:hr.employee:vietnam_emergency_contact_name",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2588,7 +2588,7 @@
       "populated": 3,
       "status": "Mapped",
       "code": "VNHCBG",
-      "name": "Emergency relationship",
+      "name": "Emmergency Contact Relationship",
       "kind": "text",
       "destination": "f:hr.employee:vietnam_emergency_contact_relationship",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2599,7 +2599,7 @@
       "populated": 111,
       "status": "Mapped",
       "code": "VNHCBH",
-      "name": "Salary currency",
+      "name": "Salary Currency",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2610,7 +2610,7 @@
       "populated": 111,
       "status": "Mapped",
       "code": "VNHCBI",
-      "name": "Gross or net basis",
+      "name": "Gross/Nett",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2632,7 +2632,7 @@
       "populated": 111,
       "status": "Mapped",
       "code": "VNHCBK",
-      "name": "Monthly fixed salary VND",
+      "name": "Monthly fixed/basic salary",
       "kind": "money",
       "destination": "f:hr.contract:wage",
       "note": "VND gross only. Review salaries and effective date before applying."
@@ -2643,7 +2643,7 @@
       "populated": 19,
       "status": "Mapped",
       "code": "VNHCBL",
-      "name": "Annual variable target rate",
+      "name": "Annual Var %",
       "kind": "rate",
       "destination": "c:amount",
       "note": "Target/reference only. Never automatically paid each month."
@@ -2698,7 +2698,7 @@
       "populated": 2,
       "status": "Mapped",
       "code": "VNHCBQ",
-      "name": "HC bonus reference VND",
+      "name": "Other Bonus/Incentive",
       "kind": "money",
       "destination": "c:amount",
       "note": "Target/reference only. Never automatically paid each month."
@@ -2720,7 +2720,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCBS",
-      "name": "ESOP reference",
+      "name": "Stock Options / ESOPs",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2786,7 +2786,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCBY",
-      "name": "Resignation date",
+      "name": "Resignation date/Notice Put down date",
       "kind": "date",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2797,7 +2797,7 @@
       "populated": 111,
       "status": "Mapped",
       "code": "VNHCBZ",
-      "name": "Notice period days",
+      "name": "Notice Period",
       "kind": "integer",
       "destination": "c:amount",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2808,7 +2808,7 @@
       "populated": 4,
       "status": "Mapped",
       "code": "VNHCCA",
-      "name": "Planned last working date",
+      "name": "LWD as per Notice period",
       "kind": "date",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2819,7 +2819,7 @@
       "populated": 45,
       "status": "Mapped",
       "code": "VNHCCB",
-      "name": "Actual last working date",
+      "name": "LWD(Actual)",
       "kind": "date",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2830,7 +2830,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCC",
-      "name": "Unserved notice days",
+      "name": "Unserved notice period",
       "kind": "integer",
       "destination": "c:amount",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2841,7 +2841,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCD",
-      "name": "Exit reason",
+      "name": "Reason for Exit",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2852,7 +2852,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCE",
-      "name": "Exit interview status",
+      "name": "Exit Interview Status",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2863,7 +2863,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCF",
-      "name": "Final settlement status",
+      "name": "Full & Final Settlement Done",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2874,7 +2874,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCG",
-      "name": "Clearance status",
+      "name": "Clearance Forms Submitted",
       "kind": "text",
       "destination": "c:text",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2885,7 +2885,7 @@
       "populated": 120,
       "status": "Mapped",
       "code": "VNHCCH",
-      "name": "Work email",
+      "name": "Official email ID",
       "kind": "text",
       "destination": "f:hr.employee:work_email",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2973,7 +2973,7 @@
       "populated": 103,
       "status": "Mapped",
       "code": "VNHCCP",
-      "name": "Bank name",
+      "name": "Bank Name",
       "kind": "text",
       "destination": "b:bank_name",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2984,7 +2984,7 @@
       "populated": 103,
       "status": "Mapped",
       "code": "VNHCCQ",
-      "name": "Bank account number",
+      "name": "Bank Account Number",
       "kind": "identifier",
       "destination": "b:acc_number",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -2995,7 +2995,7 @@
       "populated": 127,
       "status": "Mapped",
       "code": "VNHCCR",
-      "name": "Bank beneficiary",
+      "name": "Bank Account Name/Beneficiary Name",
       "kind": "text",
       "destination": "b:acc_holder_name",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -3006,7 +3006,7 @@
       "populated": 0,
       "status": "Mapped",
       "code": "VNHCCS",
-      "name": "Bank SWIFT code",
+      "name": "SWIFT Code/IFSC Code",
       "kind": "identifier",
       "destination": "b:bank_bic",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -3072,7 +3072,7 @@
       "populated": 65,
       "status": "Mapped",
       "code": "VNHCCY",
-      "name": "Annual sick leave entitlement",
+      "name": "Eligible Sick leave/year",
       "kind": "integer",
       "destination": "c:amount",
       "note": "Proposed mapping. Blank values keep existing records."
@@ -3097,7 +3097,7 @@
     ],
     [
       "Identity",
-      "Approve Country employee ID (VN column E). Resolve changes against existing employees before importing.",
+      "Approve Country-Based Employee ID (VN column E). Resolve changes against existing employees before importing.",
       "Pending"
     ],
     [

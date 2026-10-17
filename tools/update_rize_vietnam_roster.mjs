@@ -34,7 +34,7 @@ for(const tab of ['Time','Monthly adjustments']){
 }
 const guide=monthly.worksheets.getItem('Instructions');
 guide.getRange('B2').values=[['The owner included 68 Active and 2 Notice Period employees for review. Resolve configuration, salary and record exceptions before import. The payroll configuration remains Draft.']];
-guide.getRange('B5').values=[['Country employee ID and Employee name are prefilled for the same 70 people on both tabs. Verify identities, keep one row per employee and retain IDs as text.']];
+guide.getRange('B5').values=[['Country-Based Employee ID and Employee Name are prefilled for the same 70 people on both tabs. Verify identities, keep one row per employee and retain IDs as text.']];
 for(const wb of [review,monthly])wb.recalculate();
 if(front.getRange('C30').values[0][0]!==10)throw Error('Remaining review decisions should equal 10');
 for(const [wb,sheetName,range,name]of [[review,'Review','B17:E20','review'],[review,'Roster review','A1:F8','roster'],[monthly,'Time','A1:F8','time'],[monthly,'Monthly adjustments','A1:F8','adjustments'],[monthly,'Instructions','A1:B6','instructions']]){

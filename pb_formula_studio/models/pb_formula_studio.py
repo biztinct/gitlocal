@@ -9247,8 +9247,10 @@ class PbFormulaStudio(models.AbstractModel):
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
+        # Uploads supply inputs. Calculated and fixed values remain visible in
+        # the configuration/Journey, rather than looking like upload targets.
         right = self._mc_right_column(
-            config, _acts, _emp, wire_dests=_wires,
+            config, _acts, _emp, wirable_only=True, wire_dests=_wires,
             lineage=self._lineage_for_config(config), board='import')
         wires, mapped_rules = [], set()
         for r in input_rules:

@@ -55,13 +55,13 @@ const ruleSheet=table(base(wb,'Payroll rules'),['Code','Component','Input / form
 ruleSheet.getRange(`B2:B${d.rules.length+1}`).format.wrapText=true;ruleSheet.getRange(`J2:J${d.rules.length+1}`).format.wrapText=true;ruleSheet.getRange(`A2:J${d.rules.length+1}`).format.rowHeight=48;
 ruleSheet.getRange(`I2:I${d.rules.length+1}`).format.wrapText=true;
 d.rules.forEach((r,i)=>{if(r.formula)ruleSheet.getRange(`A${i+2}:J${i+2}`).format.rowHeight=Math.max(64,Math.ceil(r.formula.length/90)*14+20)});
-const issues=table(base(wb,'Source exceptions'),['Source row','Country employee ID','VN column','Issue','Review status','Your decision'],src.issues.map(i=>[i.row,i.key,i.field,i.issue,i.status,'']),[14,24,14,90,20,55]);
+const issues=table(base(wb,'Source exceptions'),['Source row','Country-Based Employee ID','VN column','Issue','Review status','Your decision'],src.issues.map(i=>[i.row,i.key,i.field,i.issue,i.status,'']),[14,24,14,90,20,55]);
 issues.getRange(`E2:F${src.issues.length+1}`).format.fill='#FFF4D6';
 issues.getRange(`E2:E${src.issues.length+1}`).dataValidation={rule:{type:'list',values:['Open','Resolved','Accepted for review']}};
 const recurring=d.rules.filter(r=>r.destination==='c:amount'||r.destination==='c:text');
 const cs=table(base(wb,'Contract components'),['Code','Component','Storage','Value type','Purpose','Payroll effect'],recurring.map(r=>[r.code,r.name,r.destination==='c:text'?'Text':'Amount',r.kind,r.note,r.code.startsWith('VNHC')?'Reference only':'Recurring payroll input']),[18,43,15,17,95,28]);
 cs.getRange(`E2:E${recurring.length+1}`).format.wrapText=true;cs.getRange(`A2:F${recurring.length+1}`).format.rowHeight=50;
-const roster=table(base(wb,'Roster review'),['Source row','Country employee ID','Employee name','Source status','Proposed inclusion','Your decision'],src.roster.map(p=>[p.row,p.key,p.name,p.status,p.status==='Inactive'?'Exclude unless approved final pay':'Review for monthly population','Pending']),[14,24,40,22,48,25]);
+const roster=table(base(wb,'Roster review'),['Source row','Country-Based Employee ID','Employee Name','Source status','Proposed inclusion','Your decision'],src.roster.map(p=>[p.row,p.key,p.name,p.status,p.status==='Inactive'?'Exclude unless approved final pay':'Review for monthly population','Pending']),[14,24,40,22,48,25]);
 roster.getRange('B2:B128').setNumberFormat('@');roster.getRange('F2:F128').format.fill='#FFF4D6';
 roster.getRange('F2:F128').dataValidation={rule:{type:'list',values:['Pending','Include','Exclude']}};
 const sources=table(base(wb,'Sources'),['Source / scope'],d.sources.map(v=>[v]),[150]);
@@ -85,7 +85,7 @@ await(await SpreadsheetFile.exportXlsx(wb)).save(`${outputDir}/Vietnam_Configura
 const monthly=Workbook.create();
 for(const tab of ['Time','Monthly adjustments']){
  const inputRules=d.rules.filter(r=>r.tab===tab);
- const headers=['Country employee ID','Employee name',...inputRules.map(r=>r.name)];
+ const headers=['Country-Based Employee ID','Employee Name',...inputRules.map(r=>r.name)];
  const sh=table(base(monthly,tab),headers,[],headers.map((h,i)=>i===1?35:28));
  const last=col(headers.length);
  sh.getRange(`A2:${last}101`).format={font:{name:'Arial',size:10,color:'#27344A'},rowHeight:24,fill:'#FFF4D6'};
@@ -98,7 +98,7 @@ const instructions=table(base(monthly,'Instructions'),['Step','Monthly upload in
  [1,'First approve the configuration, source exceptions, recurring settings and payroll population. This blank schema has no assigned employees.'],
  [2,'Apply only approved employee and contract changes through Records Desk. Assign the reviewed scheme to the intended population.'],
  [3,'Prefer the populated template from Configure Templates once the new scheme has eligible employees. Its roster and saved record context are current.'],
- [4,'For this blank schema, enter the same Country employee ID and Employee name on both tabs. One row per employee, no duplicate IDs. Keep IDs as text.'],
+ [4,'For this blank schema, enter the same Country-Based Employee ID and Employee Name on both tabs. One row per employee, no duplicate IDs. Keep IDs as text.'],
  [5,'Choose the pay month in Pay Run. Time: enter standard working days and paid days. Unpaid leave and weekend hours are reference only.'],
  [6,'Monthly adjustments: enter approved actual cash payments and deductions as positive VND amounts. Do not enter annual bonus targets or CTC.'],
  [7,'Approved overtime pay is the complete overtime payment. Include only its approved exempt amount in Approved cash tax exemption, with other validated exemptions.'],
