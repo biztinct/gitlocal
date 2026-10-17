@@ -178,6 +178,50 @@ class TestGuide(TransactionCase):
         self.assertEqual(out['right_now']['items'], [])
         self.assertEqual(len(out['fields']), 6)
 
+    # ------------------------------------------------------------ T4
+    def _unbalanced_run(self):
+        """A draft run (dated far ahead, so it sorts first on a full board)
+        whose stored figures do not reconcile, run for the fixture scheme."""
+        employee = self.env['hr.employee'].create({'name': 'Board Person'})
+        vals = {'name': 'Guide Unbalanced Run', 'date_start': '2099-06-01',
+                'date_end': '2099-06-30'}
+        if 'pb_formula_config_id' in self.env['hr.payslip.run']._fields:
+            vals['pb_formula_config_id'] = self.config.id
+        run = self.env['hr.payslip.run'].create(vals)
+        self.env['hr.payslip'].create({
+            'name': 'Board slip', 'employee_id': employee.id,
+            'date_from': '2099-06-01', 'date_to': '2099-06-30',
+            'payslip_run_id': run.id, 'company_id': self.env.company.id,
+            'formula_config_id': self.config.id})
+        self.env.flush_all()
+        # The balance is a stored roll-up of payslip lines; set the outcome
+        # directly rather than build a scheme that miscounts on purpose.
+        self.env.cr.execute(
+            "UPDATE hr_payslip_run SET pb_balance_ok = FALSE, pb_balance_gap = 897000 "
+            "WHERE id = %s", [run.id])
+        self.env.invalidate_all()
+        return run
+
+    def test_04_runs_board_names_a_run_that_does_not_add_up(self):
+        if 'pb.payruns' not in self.env:
+            self.skipTest('the Runs board is not installed here')
+        run = self._unbalanced_run()
+        items = self.env['pb.payruns'].learn_right_now({})
+        hits = [i for i in items if i['key'] == 'not_balanced'
+                and 'Guide Unbalanced Run' in i['text']['en']]
+        self.assertEqual(len(hits), 1, items)
+        self.assertIn('Guide Scheme', hits[0]['text']['en'])
+        self.assertIn('Guide Scheme', hits[0]['text']['vi'])
+        self.assertIn('897,000', hits[0]['text']['en'])
+        self.assertIn('897.000', hits[0]['text']['vi'])
+        action = hits[0]['action']
+        if action['kind'] == 'open':
+            self.assertEqual(action['lens'], 'treatment')
+            self.assertEqual(action['config_id'], self.config.id)
+        else:
+            self.assertEqual(action['id'], run.id)
+        self.assertNotIn('ok', [i['key'] for i in items])
+
     # ------------------------------------------------------------ T6
     def test_06_board_value_types_are_translated(self):
         board = self.config.with_context(lang='vi_VN').value_kind_board()
