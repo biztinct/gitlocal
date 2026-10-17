@@ -278,7 +278,7 @@ async function drawerSuite() {
     check(host.state.lp.done && String(host.guideHTML).includes(runtime.esc(T("lpDone"))), "a right answer, Finish: Lesson done");
     check(calls.some((c) => c.method === "record" && c.args[1].state === "done" && c.args[1].completed_at),
           "… progress done, with completed_at");
-    host._lpLeave();
+    host._lpExit();
     check(host.state.lp === null && host.state.gSec.screen === true, "Leave restores the sections as they were");
     // a practice-copy step hands over to the Journey, at that step
     const opened = [];
@@ -294,7 +294,54 @@ async function drawerSuite() {
           "a rep-* step → handed to the practice copy, with where to come back", JSON.stringify(handed));
 }
 
+// ============================================================ the content
+function contentSuite() {
+    console.log("T2 the rewritten lessons (real content)");
+    const lesson = (station) => CONTENT.stations.find((s) => s.key === station).lessons[0];
+    const L9 = lesson("treatment");
+    const hero = L9.steps[0];
+    check(hero.anchor === "tr-col-role" && /Loan Installment/.test(text(hero.look))
+          && /Taken off net pay/.test(text(hero.press)) && /net pay/.test(text(hero.means)),
+          "L9 step 1 is the hero: the amber Pay role cell, Taken off net pay");
+    const field = L9.steps.find((s) => s.field === "treatment.rollup");
+    const html = lp.lessonCardHTML(lp.stepView(field, "VN"), { index: 1, total: L9.steps.length, text });
+    check(field && (field.uses || []).length === 3 && html.includes("Pay run totals: Gross, Deductions, Net"),
+          "a field step shows the field's real readers (Used by) as chips");
+    check(html.includes(runtime.esc(T("lpPress"))) && html.includes(runtime.esc(T("lpAffects"))),
+          "… with It affects and Press");
+    check(lp.placeFor(L9.steps[3], { reachable: true, current: "treatment" }).where === "replica",
+          "L9 step 4 (the warning) plays on the practice copy");
+    const L6 = lesson("statutory");
+    check(/BPJS/.test(text(lp.stepView(L6.steps[0], "ID").means)), "L6 step 1 in Indonesia names BPJS");
+    check(/EPF/.test(text(lp.stepView(L6.steps[0], "IN").means)), "… in India EPF");
+    check(/CPF/.test(text(lp.stepView(L6.steps[0], "SG").means)), "… in Singapore CPF");
+    check(/BHXH/.test(text(lp.stepView(L6.steps[0], "VN").means)), "… in Vietnam BHXH");
+    check(/your country/.test(text(lp.stepView(L6.steps[0], "BR").means)), "… anywhere else the generic line");
+    const eight = ["treatment", "runpayroll", "payruns", "payslips", "approvals", "dashboard", "insights",
+                   "formula", "mapping", "statutory"];
+    const legacy = [];
+    for (const key of eight) {
+        lesson(key).steps.forEach((s, i) => {
+            const v = lp.stepView(s, "VN");
+            if (v.legacy || !v.look || !v.means || !v.affects) {
+                legacy.push(`${key}#${i + 1}`);
+            }
+        });
+    }
+    check(!legacy.length, "every step of the eight screens' lessons (+ statutory) has all four lines", legacy.join(","));
+    const presses = [];
+    for (const key of eight) {
+        lesson(key).steps.forEach((s) => {
+            if (s.press && lp.isPracticeAnchor(s.anchor)) {
+                presses.push(s.anchor);
+            }
+        });
+    }
+    check(!presses.length, "no Press line on a practice-copy step", presses.join(","));
+}
+
 cardSuite();
+contentSuite();
 placeSuite();
 countrySuite();
 placementSuite();

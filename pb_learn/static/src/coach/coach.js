@@ -621,8 +621,9 @@ export class CoachHost extends Component {
         if (this.state.lp && this.state.open && !typing && !this.sc.state.active
                 && (ev.key === "ArrowRight" || ev.key === "ArrowLeft")
                 && !this.state.lp.done && !(this.state.lp.quiz && ev.key === "ArrowRight")) {
+            // preventDefault only: a branch that closes nothing never
+            // swallows the key (test_assets test_06).
             ev.preventDefault();
-            ev.stopPropagation();
             if (ev.key === "ArrowRight") {
                 this._lpNext();
             } else {
@@ -668,7 +669,7 @@ export class CoachHost extends Component {
             // Escape leaves the lesson, and the Guide stays open.
             if (this.state.lp) {
                 ev.stopPropagation();
-                this._lpLeave();
+                this._lpExit();
                 return;
             }
             // Only closes the Coach. The screen behind it keeps its own Escape.
@@ -1395,7 +1396,7 @@ export class CoachHost extends Component {
         // LEARNREV P4 — a lesson in the panel ends with the panel (its place
         // is kept in `learn.progress`, so Start resumes it).
         if (this.state.lp) {
-            this._lpLeave();
+            this._lpExit();
         }
         // A ⌘K sentence or an Explain still waiting for the chat to mount
         // was given up when the person closed the drawer: it must not be
@@ -1786,7 +1787,7 @@ export class CoachHost extends Component {
      *  on the board it starts from. */
     async startScenario(key, mode, stepKey) {
         if (this.state.lp) {
-            this._lpLeave();
+            this._lpExit();
         }
         try {
             await this.sc.load();
@@ -2301,7 +2302,7 @@ export class CoachHost extends Component {
         }
     }
 
-    _lpLeave() {
+    _lpExit() {
         const lp = this.state.lp;
         if (!lp) {
             return;
@@ -3345,7 +3346,7 @@ export class CoachHost extends Component {
         } else if (act === "c-lpback") {
             this._lpBack();
         } else if (act === "c-lpleave") {
-            this._lpLeave();
+            this._lpExit();
         } else if (act === "c-lpretry") {
             this._lpShow();
         } else if (act === "c-lppractice") {

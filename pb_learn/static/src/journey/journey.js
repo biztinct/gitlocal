@@ -936,7 +936,7 @@ export class LearnJourney extends Component {
         const shell = shellHTML(st.screen, { guided: true, visible: this.visible, note });
         const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
         const back = handed
-            ? `<button class="lrn-btn sm" data-act="l-return">${ic("arrow-left")}${esc(T("lpBackReal"))}</button>` : "";
+            ? `<button class="lrn-btn sm" data-act="l-return">${ic("chevron-left")}${esc(T("lpBackReal"))}</button>` : "";
         return `${shell}
         <div class="lrn-playbar" role="group" aria-label="${esc(T("step"))}">
             ${back}
