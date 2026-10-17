@@ -567,7 +567,7 @@ class TestExcelOnRamp(TransactionCase):
                                    'import_file': base64.b64encode(payload), 'import_filename': 'formula-sources.xlsx',
                                    'file_sheet_name': 'People'})
         self.env['hr.payroll.import.line'].create({
-            'batch_id': batch.id, 'row_number': 1,
+            'batch_id': batch.id,
             'raw_data_json': json.dumps({'Employee Code': 'E001', 'A': 'E001',
                                         'Basic Salary': 100, 'B': 100, 'Age': 30, 'C': 30})})
         loaded = self.Studio.import_mapping_data(cfg.id, batch.id)
