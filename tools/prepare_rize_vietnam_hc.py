@@ -239,6 +239,8 @@ for r in rows:
     if gid and sum(s[f'D{rr}'].value==gid for rr in rows)>1: issue(r,'D','Global employee ID is duplicated; country employee ID remains unique')
     if gid=='#N/A': issue(r,'D','Global employee ID contains literal #N/A')
 
+if (root/'record-comparison.json').exists():
+    issues.extend(json.loads((root/'record-comparison.json').read_text()))
 review = [
  ['Roster','Confirm 68 Active plus 2 Notice Period employees for the first pay month. Exclude 57 Inactive unless final pay is approved.','Pending'],
  ['Identity','Approve Country employee ID (VN column E). Resolve changes against existing employees before importing.','Pending'],

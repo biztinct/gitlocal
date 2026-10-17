@@ -29,6 +29,13 @@ const summary=[['Configuration',d.name],['State','Draft. Validate before cutover
 review.getRange('B4:C14').values=summary;
 review.getRange('B4:C14').format={font:{name:'Arial',size:10,color:'#27344A'},rowHeight:25,columnWidth:32};
 review.getRange('C4:C14').format.columnWidth=75;
+if(receipt.roster_reconciliation){
+ const rc=receipt.roster_reconciliation;
+ review.getRange('E4:F8').values=[['Source / current records','To review'],['Active / Notice IDs matched',`${rc.matched} of ${rc.source_active_notice}`],['No existing employee match',rc.missing],['Missing source salary',rc.missing_salary],['Source salary differs from contract',rc.salary_differences]];
+ review.getRange('E4:F8').format={font:{name:'Arial',size:10,color:'#27344A'},rowHeight:28,columnWidth:48};
+ review.getRange('E4:F4').format={fill:'#40376E',font:{name:'Arial',size:10,color:'#FFFFFF',bold:true}};
+ review.getRange('F5:F8').format.fill='#FFF4D6';
+}
 review.getRange('B17:E17').values=[['Review area','Action','Decision','Your notes']];
 review.getRange('B17:E17').format={fill:'#40376E',font:{name:'Arial',size:10,bold:true,color:'#FFFFFF'},rowHeight:32};
 review.getRange('B18:E28').values=d.review.map(r=>[...r,'']);
