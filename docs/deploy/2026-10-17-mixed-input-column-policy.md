@@ -43,4 +43,39 @@ and XML syntax and SCSS compilation passed. Rollback-only staged Odoo checks
 passed both source regressions and constant conversion; the real Vietnam board
 preserved all 93 mappings and all 30 stored payroll scenarios passed.
 
-Deployment and Chrome verification results will be recorded after validation.
+## Deployed verification
+
+Implementation **a3b63a544** was deployed from the latest combined branch 19.1
+under `/tmp/payobook-studio-deploy.lock`. The live module differed in exactly
+the five expected module files; the complete committed module was synchronized
+and verified byte for byte. The shared odoo-server service was restarted and is
+active. Assets were refreshed on **payobook, rize, payobook_template, abm,
+p0clone and lrp4clone**, version `20261017-mixed-input-policy-a3b63a544`.
+Module versions, business record counts and active cron counts were preserved.
+No schema or module-data upgrade was run. Unrelated workbook deletions and
+untracked Singapore/Vietnam output directories were left untouched.
+
+Both deployed source regressions and constant conversion passed on every one
+of the six databases. Fixtures were rolled back. The Rize checks confirmed
+18 excluded source columns, 120 remaining cards, three retained mixed inputs,
+the exact whole-file data-check counts above, 93 unchanged mappings and 96
+destination payload cards (93 ordinary inputs plus three collapsed constants).
+Sl No, Age and their bare, sheet and letter aliases were refused by the mapping
+endpoint. Rule definitions, source bindings and configuration values were
+unchanged; all 30 stored Vietnam payroll scenarios passed. Configuration 4639
+remains Draft with no live assignments; Rize business counts remain 107
+employees, 102 contracts, 183 payslips, four runs and 4,234 advantage rows.
+
+Chrome loaded the deployed assets and verified the 18-column notice, absence
+of Sl No/Age/Annual Gross salary cards, presence of all three approved input
+columns, 93 ordinary payroll targets and collapsed Constants (3). Searching
+Sl No returned no source card or Add column shortcut. The separate Input data
+checks section was initially collapsed, expanded correctly and displayed the
+six Employee ID error coordinates and the whole-file/optional-blank explanation.
+Both searches were cleared and the review panel left open on the Vietnam Draft
+tab. Browser warning/error logs were empty. No mapping was drawn or removed.
+The visual check used an in-memory screenshot; no PNG or screenshot files were
+created or retained by this test run.
+
+Protected backup and source/asset/test receipts:
+`Payobook19v2:/odoo/backups/mixed-input-policy-20261017-a3b63a544/`.
