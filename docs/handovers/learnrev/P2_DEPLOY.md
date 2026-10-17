@@ -115,3 +115,10 @@ Error + rejection collector installed after each load; it stayed empty on every 
 3. Guide is OFF on rize, payobook_template, abm (as instructed) — LR39 applies there.
 4. P2 report open items 1–5 unchanged.
 5. Not pushed.
+
+## Owner decisions 2026-10-17 22:40 Sydney (applied by Fable)
+- **Guide switch ON for rize and payobook_template** as well (owner: yes). Set by direct SQL on `ir_config_parameter`
+  (`pb_learn.guide_enabled = True`) followed by `INSERT INTO orm_signaling_default DEFAULT VALUES` on each DB so the
+  running workers drop their parameter cache. abm left OFF (retired tenant). Read-back: payobook True, rize True,
+  payobook_template True, abm unset.
+- **Keep `pb_learn.compose_enabled` ON for payobook** (owner: yes). The L3 Explain rewrite is fixed in P3 (S10).
