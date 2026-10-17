@@ -29,7 +29,7 @@
     # live Home does (owner 2026-10-12: Vietnamese-style months).
     # 20.5.3: vi_VN.po gains the one generated entry it lacked (slot value "22");
     # the generator now MERGES into the hand-kept .po instead of overwriting it.
-    'version': '19.0.20.5.4',
+    'version': '19.0.20.5.5',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
