@@ -502,8 +502,12 @@ def _corpus_screen_part(tree, screen, lang, features=None):
             # PAYAI FIX-1 (P4:crit-2): a step about a feature this reader's
             # company does not have is not material for an answer either.
             for step in gate_steps(lesson.get('steps'), features):
-                parts.append('- %s: %s' % (_one(step['title'], lang),
-                                           _one(step.get('body'), lang)))
+                # LEARNREV P4: a rewritten step has no `body`; its "It means"
+                # and "It affects" lines say the same thing in two sentences.
+                said = _one(step.get('body'), lang) or ' '.join(
+                    t for t in (_one(step.get('means'), lang),
+                                _one(step.get('affects'), lang)) if t)
+                parts.append('- %s: %s' % (_one(step['title'], lang), said))
         for mistake in (station.get('outline') or {}).get('mistakes') or []:
             parts.append('MISTAKE: %s' % _one(mistake, lang))
     return parts

@@ -498,12 +498,24 @@ def leaves(data):
             for i, m in enumerate(o.get('mistakes') or []):
                 add('stations', '%s.mistake%d' % (w, i), m)
 
+    # LEARNREV P4 — the four lines of a rewritten step, its field step's
+    # readers (`uses`), and every country variant, are prose a learner reads.
+    def four(section, w, s):
+        for f in ('look', 'means', 'affects', 'press'):
+            add(section, '%s.%s' % (w, f), s.get(f))
+        for j, u in enumerate(s.get('uses') or ()):
+            add(section, '%s.uses%d' % (w, j), u)
+        for cc, v in (s.get('variants') or {}).items():
+            for f, val in (v or {}).items():
+                add(section, '%s.%s.%s' % (w, cc, f), val)
+
     for lk, L in data['lessons'].items():
         add('lessons', '%s.title' % lk, L['title'])
         add('lessons', '%s.goal' % lk, L.get('goal'))
         for i, s in enumerate(L['steps']):
             for f in ('kicker', 'title', 'body', 'tip', 'consequence'):
                 add('lessons', '%s.s%d.%s' % (lk, i, f), s.get(f))
+            four('lessons', '%s.s%d' % (lk, i), s)
         q = L.get('quiz') or {}
         if q:
             add('lessons', '%s.quiz' % lk, q['question'])
@@ -552,6 +564,7 @@ def leaves(data):
             say = st.get('say') or {}
             for f in ('kicker', 'title', 'body', 'tip'):
                 add('scenarios', '%s.%s.%s' % (sc['key'], st['key'], f), say.get(f))
+            four('scenarios', '%s.%s' % (sc['key'], st['key']), say)
             # AN INPUT STEP'S `value` IS PROSE A LEARNER READS AND THEN TYPES.
             # It is a bilingual pair for a reason — "1,200,000" and
             # "1.200.000" are the same amount written for two readers — and it

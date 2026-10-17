@@ -68,6 +68,9 @@ import xml.etree.ElementTree as ET
 # set of rules, and no way for the gate and the card to disagree about which
 # terms a learner can reach a definition for.
 import jargon
+# LEARNREV P4 — the screen manifests, read the way the offline truth gate
+# reads them, so a field step's lines come from the field itself.
+import export_manifests
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 AUTHOR = os.path.dirname(HERE)                       # docs/tutorial_poc/author
@@ -624,8 +627,166 @@ def _step_gates(sw, step):
     return out
 
 
-def content_lesson(lkey, lesson, data, bi):
+# ============================================================================
+# LEARNREV P4 — the four-line step: Look at · It means · It affects · Press
+# ============================================================================
+# A rewritten step says ONE thing four ways, each line a job: what to look at on
+# the screen, what it means, what it changes or feeds, and (only on a real
+# control) what to press. `body` stays legal for steps not rewritten yet; the
+# player shows it as the "It means" line.
+#
+# A FIELD STEP (`field: "<screen>.<manifest field key>"`) is about a column.
+# Its "It means" is the field's own one-line help and its "It affects" is what
+# changing it does, with the field's first three readers as `uses` — written
+# by this generator from the manifest (tools/export_manifests.py), never by the
+# author, so a lesson about a column cannot say something the column does not.
+STEP_LINES = ('look', 'means', 'affects', 'press')
+#: The countries a step may speak to, and the one it falls back to.
+VARIANT_KEYS = ('VN', 'ID', 'IN', 'SG', 'generic')
+VARIANT_FIELDS = ('look', 'means', 'affects', 'press', 'tip')
+FIELD_USES = 3
+
+
+def _product_anchors():
+    """Anchors a `press` may name: real controls the product draws, never a
+    practice replica's `rep-*` and never a retired name (anchors.json)."""
+    path = os.path.join(ADDON, 'static/src/anchors.json')
+    with open(path, encoding='utf-8') as fh:
+        reg = json.load(fh)
+    literal, prefixes, retired = set(), set(), set()
+    for block in ('product', 'pattern', 'foreign'):
+        for key, entry in (reg.get(block) or {}).items():
+            if isinstance(entry, dict) and entry.get('retired'):
+                # Refused by name: a foreign wildcard (`fs-*`) must not wave
+                # a retired product anchor back in.
+                retired.add(key)
+                continue
+            if block == 'pattern' or key.endswith('*'):
+                prefixes.add(key.rstrip('*'))
+            else:
+                literal.add(key)
+    return literal, tuple(sorted(prefixes)), retired
+
+
+def _press_anchor_ok(anchor, product):
+    literal, prefixes, retired = product
+    if not anchor or anchor.startswith('rep-') or anchor in retired:
+        return False
+    return anchor in literal or (bool(prefixes) and anchor.startswith(prefixes))
+
+
+def _first(text):
+    t = ' '.join(str(text or '').split())
+    hit = re.match(r'^.*?[.!?](?=\s|$)', t, re.S)
+    return hit.group(0) if hit else t
+
+
+def fill_field_steps(data, manifests):
+    """Write `means` / `affects` / `uses` onto every field step, in place,
+    BEFORE the language gate runs, so the gate measures what ships."""
+    problems = []
+
+    def fill(where, holder):
+        ref = holder.get('field')
+        if not ref:
+            return
+        screen, _dot, key = str(ref).partition('.')
+        f = ((manifests.get(screen) or {}).get('fields') or {}).get(key)
+        if not f:
+            problems.append('%s: field %r is not a field of any screen manifest '
+                            '(want "<screen>.<field key>")' % (where, ref))
+            return
+        for line in ('means', 'affects', 'uses'):
+            if holder.get(line):
+                problems.append('%s: a field step does not author %r — it comes '
+                                'from the field (%s)' % (where, line, ref))
+        src = f.get('help') if (f.get('help') or {}).get('en') else (
+            f.get('how') or f.get('filled_by'))
+        if not src or not src.get('en'):
+            problems.append('%s: %s has no help, how or filled_by to say what '
+                            'it means' % (where, ref))
+            return
+        holder['means'] = {'en': _first(src.get('en')), 'vi': _first(src.get('vi'))}
+        uses = [u for u in f.get('used_by') or () if u.get('en')][:FIELD_USES]
+        if uses:
+            holder['uses'] = [{'en': u['en'], 'vi': u.get('vi') or ''} for u in uses]
+        if f.get('if_changed'):
+            holder['affects'] = dict(f['if_changed'])
+        elif uses:
+            holder['affects'] = {
+                'en': 'Read by %s.' % '; '.join(u['en'] for u in uses),
+                'vi': 'Được dùng ở %s.' % '; '.join(u.get('vi') or u['en'] for u in uses)}
+        else:
+            problems.append('%s: %s says neither who reads it nor what changing '
+                            'it does' % (where, ref))
+
+    for lkey, lesson in (data.get('lessons') or {}).items():
+        for i, step in enumerate(lesson.get('steps') or ()):
+            fill('lesson %s step %d' % (lkey, i), step)
+    for sc in data.get('scenarios') or ():
+        for step in sc.get('steps') or ():
+            say = step.get('say') or {}
+            if step.get('field') and 'field' not in say:
+                say['field'] = step['field']
+                step['say'] = say
+            fill('scenario %s step %s' % (sc['key'], step.get('key')), say)
+    return problems
+
+
+def _shape_problems(where, holder, anchor, product, problems):
+    """The step-shape gate (T1): a `look` step says what it means and what it
+    affects; `press` only on a real control; country variants carry a generic
+    fallback and only the lines a variant may change."""
+    if en_of(holder.get('look')) and not (en_of(holder.get('means'))
+                                          and en_of(holder.get('affects'))):
+        problems.append('%s: a step with "look" must also say "means" and '
+                        '"affects"' % where)
+    variants = holder.get('variants') or {}
+    pressing = en_of(holder.get('press')) or any(
+        en_of((v or {}).get('press')) for v in variants.values())
+    if pressing and not _press_anchor_ok(anchor, product):
+        problems.append('%s: "press" needs a real product anchor, not %r — a '
+                        'practice copy or an unknown name cannot be pressed on the '
+                        'real screen' % (where, anchor or '(none)'))
+    if variants:
+        bad = [k for k in variants if k not in VARIANT_KEYS]
+        if bad:
+            problems.append('%s: unknown variant(s) %s (allowed: %s)'
+                            % (where, ', '.join(bad), ', '.join(VARIANT_KEYS)))
+        if 'generic' not in variants:
+            problems.append('%s: country variants need a "generic" one for every '
+                            'other country' % where)
+        for k, v in variants.items():
+            extra = [f for f in (v or {}) if f not in VARIANT_FIELDS]
+            if extra:
+                problems.append('%s: variant %s may not set %s'
+                                % (where, k, ', '.join(extra)))
+
+
+def _lines_node(bi, sw, holder):
+    """The four lines (+ `uses`, `field`, `variants`) of one step, emitted only
+    when present so every legacy step keeps the exact shape it always had."""
+    out = {}
+    for line in STEP_LINES:
+        if en_of(holder.get(line)):
+            out[line] = bi.p('%s %s' % (sw, line), holder[line])
+    if holder.get('uses'):
+        out['uses'] = [bi.p('%s uses %d' % (sw, j), u)
+                       for j, u in enumerate(holder['uses'])]
+    if holder.get('field'):
+        out['field'] = holder['field']
+    if holder.get('variants'):
+        out['variants'] = {
+            k: {f: bi.p('%s variant %s %s' % (sw, k, f), v[f])
+                for f in VARIANT_FIELDS if en_of((v or {}).get(f))}
+            for k, v in sorted(holder['variants'].items())}
+    return out
+
+
+def content_lesson(lkey, lesson, data, bi, product=None, problems=None):
     where = 'lesson %s' % lkey
+    product = product or _product_anchors()
+    problems = problems if problems is not None else []
     node = {
         # A lesson carries its OWN name and goal. health_learn reused the
         # station's, which is wrong the moment a lesson is called something
@@ -641,10 +802,13 @@ def content_lesson(lkey, lesson, data, bi):
     for i, step in enumerate(lesson['steps']):
         sw = '%s step %d' % (where, i)
         moment = step.get('moment') or {}
+        if not en_of(step.get('body')) and not en_of(step.get('look')):
+            problems.append('%s: neither a body nor the four lines' % sw)
+        _shape_problems(sw, step, step.get('anchor') or '', product, problems)
         node['steps'].append(dict({
             'kicker': bi.p('%s kicker' % sw, step.get('kicker')),
             'title': bi.p('%s title' % sw, step['title']),
-            'body': bi.p('%s body' % sw, step['body']),
+            'body': bi.p('%s body' % sw, step.get('body')),
             'tip': bi.p('%s tip' % sw, step.get('tip')),
             'consequence': bi.p('%s consequence' % sw, step.get('consequence')),
             'screen': step['screen'],
@@ -665,7 +829,7 @@ def content_lesson(lkey, lesson, data, bi):
             } for j, (role, label, value) in enumerate(_step_lines(step, data))],
         # Only on the steps that carry one, so every other step keeps the
         # exact shape it always had.
-        }, **_step_gates(sw, step)))
+        }, **_step_gates(sw, step), **_lines_node(bi, sw, step)))
     quiz = lesson.get('quiz')
     if quiz:
         node['quizzes'].append({
@@ -689,6 +853,8 @@ def content_stations(data, bi):
         lesson_of.setdefault(data['lessons'][lkey]['station'], lkey)
 
     out, seq = [], 0
+    product = _product_anchors()
+    problems = []
     for line_key, line in data['stations'].items():
         for st in line['stations']:
             seq += 10
@@ -724,9 +890,16 @@ def content_stations(data, bi):
                     'prereq': bi.p('%s outline prereq' % where, outline.get('prereq')),
                     'mistakes': bi.each('%s mistake' % where, outline.get('mistakes')),
                 },
-                'lessons': ([content_lesson(lkey, data['lessons'][lkey], data, bi)]
+                'lessons': ([content_lesson(lkey, data['lessons'][lkey], data, bi,
+                                            product, problems)]
                             if lkey else []),
             })
+    if problems:
+        print('LESSON STEPS: %d problem(s). A step that says what to look at '
+              'must say what it means and what it affects.' % len(problems))
+        for p in problems:
+            print('  %s' % p)
+        raise SystemExit(10)
     # learn.station._order = 'line, sequence, id' — the LINE sorts first, and
     # alphabetically, which is not the order the sections were written in.
     # journey.js holds the reading order (LINE_ORDER); this is storage order and
@@ -1304,6 +1477,7 @@ def content_scenarios(data, bi):
     literal, prefixes = _anchor_registry_keys(data)
     input_anchors = data.get('inputAnchors') or {}
     replica = _replica_anchors()
+    product = _product_anchors()
     problems, seen = [], set()
     out = []
     phrase_owner = {}
@@ -1505,7 +1679,9 @@ def content_scenarios(data, bi):
                         % (sw, anchor or '(no anchor)'))
 
             say = step.get('say') or {}
-            node['steps'].append({
+            # LEARNREV P4 — the four lines, under the same gate as a lesson's.
+            _shape_problems(sw, say, anchor, product, problems)
+            node['steps'].append(dict({
                 'key': skey,
                 'anchor': anchor,
                 'nav': nav,
@@ -1523,7 +1699,7 @@ def content_scenarios(data, bi):
                 'body': bi.p('%s body' % sw, say.get('body')),
                 'tip': bi.p('%s tip' % sw, say.get('tip')),
                 'value': bi.p('%s value' % sw, step.get('value')),
-            })
+            }, **_lines_node(bi, sw, say)))
 
         if not node['steps']:
             problems.append('%s: no steps' % where)
@@ -1744,6 +1920,17 @@ def main():
     args = ap.parse_args()
 
     data = dump()
+
+    # LEARNREV P4 — field steps take their "It means" / "It affects" from the
+    # screen manifests, and they do it BEFORE the language gate, so the gate
+    # measures the sentences that actually ship.
+    field_problems = fill_field_steps(data, export_manifests.export(REPO))
+    if field_problems:
+        print('FIELD STEPS: %d problem(s). A field step is about a column the '
+              'manifest describes.' % len(field_problems))
+        for p in field_problems:
+            print('  %s' % p)
+        return 11
 
     # THE LANGUAGE GATE, before anything is emitted. A sentence nobody can
     # follow is a content bug in exactly the way a missing Vietnamese value is,
