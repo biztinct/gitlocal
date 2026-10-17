@@ -19,7 +19,7 @@
    </section>
    <aside t-if="selected" class="pbcdesk-inspector" aria-label="Component details" data-coach="md-inspector">
     <div class="pbcdesk-detailhead"><small>COMPONENT <t t-esc="selected.col"/></small><h3 t-esc="selected.name"/><code t-esc="selected.code"/><div class="pbcdesk-hero" t-esc="value(selected)"/><small>Sample preview</small></div>
-    <div class="pbcdesk-tabs" role="tablist"><button t-foreach="['sources','storage','payroll']" t-as="tab" t-key="tab" t-att-class="state.tab===tab ? 'on' : ''" role="tab" t-att-aria-selected="state.tab===tab" t-on-click="() => this.state.tab=tab"><t t-esc="{sources:'Sources',storage:'Storage',payroll:'Use in payroll'}[tab]"/></button></div>
+    <div class="pbcdesk-tabs" role="tablist"><button t-foreach="['sources','storage','payroll']" t-as="tab" t-key="tab" t-att-class="state.tab===tab ? 'on' : ''" role="tab" t-att-aria-selected="state.tab===tab" t-on-click="() => this.state.tab=tab"><t t-if="tab==='sources'">Sources</t><t t-elif="tab==='storage'">Storage</t><t t-else="">Use in payroll</t></button></div>
     <div class="pbcdesk-detailbody">
      <t t-if="state.tab==='sources'">
       <h4>Configured read order</h4><p t-if="selected.type==='input'">The first supplied value is used. Zero and No count as supplied; blank values fall through.</p>
