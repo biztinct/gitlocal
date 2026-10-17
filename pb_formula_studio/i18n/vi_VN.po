@@ -16536,3 +16536,15 @@ msgstr "Tự động"
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
 msgid "Clear to use the group suggested by the pay role"
 msgstr "Xoá để dùng nhóm được gợi ý theo vai trò trong lương"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Refresh automatic value types, pay roles, report groups and the Included in another total ticks. Choices you saved are kept."
+msgstr "Làm mới tự động loại giá trị, vai trò trong lương, nhóm báo cáo và các dấu Đã tính trong một tổng khác. Những lựa chọn bạn đã lưu được giữ nguyên."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:275
+msgid "Value types, pay roles, report groups and the Included in another total ticks checked. %s component(s) changed."
+msgstr "Đã kiểm tra loại giá trị, vai trò trong lương, nhóm báo cáo và các dấu Đã tính trong một tổng khác. %s thành phần đã thay đổi."

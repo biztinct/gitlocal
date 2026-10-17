@@ -520,6 +520,8 @@ MANIFESTS['mapping'] = {
                 'vi': "Đợt lương tiếp theo đọc theo thứ tự mới. Các phiếu lương đã "
                       "tính giữ nguyên giá trị cho tới khi bạn tính lại đợt lương.",
             },
+            # LEARNREV P2 (LR23): Connections' component list.
+            'anchor': 'md-list',
         },
         {
             'key': 'source_order', 'derived': True,
@@ -564,6 +566,7 @@ MANIFESTS['mapping'] = {
                 'en': "Read-only. It follows the sources and the sample you pick.",
                 'vi': "Chỉ xem. Nó thay đổi theo các nguồn và nhân viên mẫu bạn chọn.",
             },
+            'anchor': 'md-list',
         },
         {
             'key': 'storage', 'field': 'is_contract_component',
@@ -595,9 +598,11 @@ MANIFESTS['mapping'] = {
                 'vi': "Từ tệp tiếp theo, việc nhập sẽ ghi giá trị vào hợp đồng. Các "
                       "giá trị đã có trên hợp đồng vẫn giữ nguyên.",
             },
+            'anchor': 'md-inspector',
         },
-        _treatment_field('value_kind', anchor=''),
-        _treatment_field('pay_role', anchor=''),
+        # LEARNREV P2 (LR23): the panel for the picked component.
+        _treatment_field('value_kind', anchor='md-inspector'),
+        _treatment_field('pay_role', anchor='md-inspector'),
     ],
     'actions': [
         {'label': {'en': "Save setup", 'vi': "Lưu thiết lập"},
@@ -678,7 +683,9 @@ MANIFESTS['formula'] = {
                 'vi': "Các phiếu lương tính sau thay đổi hiện tên mới. Các phiếu "
                       "lương đã tính giữ tên cũ.",
             },
-            'anchor': 'fs-components',
+            # LEARNREV P2 (LR23): the default Table view's header row. The
+            # Cards view's fs-* anchors are not on screen until Cards is picked.
+            'anchor': 'sx-table',
         },
         {
             'key': 'source', 'field': 'column_type',
@@ -711,6 +718,7 @@ MANIFESTS['formula'] = {
                       "nguồn, công thức được tính ra, giá trị cố định giống nhau cho "
                       "mọi người.",
             },
+            'anchor': 'sx-table',
         },
         {
             'key': 'formula', 'field': 'excel_formula',
@@ -744,7 +752,9 @@ MANIFESTS['formula'] = {
                 'vi': "Đợt lương tiếp theo tính theo công thức mới; hãy thử với kỳ "
                       "trước trước đã. Các phiếu lương đã tính không bị viết lại.",
             },
-            'anchor': 'fs-formula',
+            # Cards view only: no header in the default Table view, so no (i);
+            # the card is in the Guide's Fields section.
+            'anchor': '',
         },
         {
             'key': 'depends', 'field': 'formula_dependencies',
@@ -770,9 +780,9 @@ MANIFESTS['formula'] = {
                 'en': "Read-only. Change the formula to change it.",
                 'vi': "Chỉ xem. Hãy sửa công thức để thay đổi nó.",
             },
-            'anchor': 'fs-deps',
+            'anchor': '',
         },
-        _treatment_field('value_kind', anchor=''),
+        _treatment_field('value_kind', anchor='sx-table'),
         {
             'key': 'preview', 'derived': True,
             'column': {'en': "Preview value", 'vi': "Giá trị xem trước"},
@@ -787,7 +797,7 @@ MANIFESTS['formula'] = {
                 'en': "Read-only. Pick another sample under Preview for.",
                 'vi': "Chỉ xem. Hãy chọn nhân viên mẫu khác ở mục Xem trước cho.",
             },
-            'anchor': 'fs-preview',
+            'anchor': 'sx-table',
         },
         {
             'key': 'on_payslip', 'field': 'appears_on_payslip',

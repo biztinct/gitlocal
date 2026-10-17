@@ -753,13 +753,15 @@
     },
     "fs-views": {
       "screen": "formula",
-      "file": "pb_formula_studio/static/src/xml/studio.xml",
-      "desc": "The six views: Cards · Grid · Test · Compare · Health · Settings."
+      "file": "pb_formula_studio/static/src/xml/studio_experience.xml",
+      "desc": "The six views: Cards · Grid · Test · Compare · Health · Settings. RETIRED (LEARNREV P2, LR23): studio_experience.xml replaces the header row that drew it; content still naming it is rewritten in P4.",
+      "retired": true
     },
     "fs-command": {
       "screen": "formula",
-      "file": "pb_formula_studio/static/src/xml/studio.xml",
-      "desc": "Tools — the Command Center (Ctrl/Cmd K); Simulate is under Analyze."
+      "file": "pb_formula_studio/static/src/xml/studio_experience.xml",
+      "desc": "Tools — the Command Center (Ctrl/Cmd K); Simulate is under Analyze. RETIRED (LEARNREV P2, LR23): studio_experience.xml replaces the header row that drew it; content still naming it is rewritten in P4.",
+      "retired": true
     },
     "bp-status": {
       "screen": "blueprint",
@@ -1800,6 +1802,30 @@
       "screen": "reports",
       "file": "pb_budget/static/src/xml/budget_board.xml",
       "desc": "Budget heat view: each function's tile with its reading (On pace, Running warm…)."
+    },
+    "dash-needs": {
+      "screen": "dashboard",
+      "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
+      "desc": "The Pulse \"Needs you\" line: one chip per open action, or the quiet line when nothing waits. Its (i) opens the Needs you card (LEARNREV P2).",
+      "reserved": true
+    },
+    "md-list": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/connection_desk.xml",
+      "desc": "Mapping › Connections, the component list: Component / read order and Sample value, one row per input component with its sources in read order.",
+      "reserved": true
+    },
+    "md-inspector": {
+      "screen": "mapping",
+      "file": "pb_formula_studio/static/src/xml/connection_desk.xml",
+      "desc": "Mapping › Connections, the panel for the component picked: Contract storage, Value type and Pay role, saved with Save setup.",
+      "reserved": true
+    },
+    "sx-table": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio_experience.xml",
+      "desc": "Formula Engine, the default Table view: Component, Source / calculation, Value type and Preview value, one row per component.",
+      "reserved": true
     }
   },
   "pattern": {

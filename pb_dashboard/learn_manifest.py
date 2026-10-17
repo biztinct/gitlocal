@@ -147,7 +147,8 @@ MANIFESTS = {
                     'en': "Read-only. Press a chip to open the place where it is done.",
                     'vi': "Chỉ xem. Bấm vào một nhãn để mở nơi xử lý việc đó.",
                 },
-                'anchor': 'dash-hero',
+                # LEARNREV P2: the "Needs you" line sits outside the hero.
+                'anchor': 'dash-needs',
             },
             {
                 'key': 'pay_schemes', 'derived': True,

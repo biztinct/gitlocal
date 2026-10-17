@@ -5,7 +5,7 @@
   <div class="pbcdesk-heading"><div><h2>Connections</h2><p>Map input components to their sources and storage. See calculations in Journey.</p></div><div class="pbcdesk-actions"><button class="pbim-btn" t-on-click="priorities">Source order</button><button t-if="props.data.can_edit" class="pbim-btn primary" t-on-click="newComponent">+ Component</button></div></div>
   <div t-if="state.error" class="pbcdesk-error" role="alert" t-esc="state.error"/>
   <div class="pbcdesk-layout">
-   <section class="pbcdesk-list" aria-label="Input components">
+   <section class="pbcdesk-list" aria-label="Input components" data-coach="md-list">
     <div class="pbcdesk-search"><input type="search" aria-label="Find a component" placeholder="Find a component by name, code or letter…" t-model="state.q"/><div class="pbcdesk-filters"><button t-att-class="state.filter==='all' ? 'on' : ''" t-on-click="() => this.state.filter='all'">All <b t-esc="rows.length"/></button><button t-att-class="state.filter==='missing' ? 'on' : ''" t-on-click="() => this.state.filter='missing'">Need a source <b t-esc="missingCount"/></button><button t-att-class="state.filter==='multiple' ? 'on' : ''" t-on-click="() => this.state.filter='multiple'">With fallback <b t-esc="multipleCount"/></button></div></div>
     <div class="pbcdesk-listhead"><span>Component / read order</span><span>Sample value</span></div>
     <div class="pbcdesk-rows">
@@ -17,7 +17,7 @@
     </div>
     <p class="pbcdesk-footnote"><t t-if="sampleName">Values shown for sample: <b t-esc="sampleName"/>.</t><t t-else="">No sample values available.</t> These are separate from recorded run sources.</p>
    </section>
-   <aside t-if="selected" class="pbcdesk-inspector" aria-label="Component details">
+   <aside t-if="selected" class="pbcdesk-inspector" aria-label="Component details" data-coach="md-inspector">
     <div class="pbcdesk-detailhead"><small>COMPONENT <t t-esc="selected.col"/></small><h3 t-esc="selected.name"/><code t-esc="selected.code"/><div class="pbcdesk-hero" t-esc="value(selected)"/><small>Sample preview</small></div>
     <div class="pbcdesk-tabs" role="tablist"><button t-foreach="['sources','storage','payroll']" t-as="tab" t-key="tab" t-att-class="state.tab===tab ? 'on' : ''" role="tab" t-att-aria-selected="state.tab===tab" t-on-click="() => this.state.tab=tab"><t t-esc="{sources:'Sources',storage:'Storage',payroll:'Use in payroll'}[tab]"/></button></div>
     <div class="pbcdesk-detailbody">

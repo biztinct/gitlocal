@@ -50,7 +50,7 @@
             <span class="experience-muted"><t t-esc="experienceRows.length"/> of <t t-esc="state.components.length"/></span>
           </div>
           <div class="experience-table-scroll">
-            <table class="experience-table"><thead><tr><th>Component</th><th>Source / calculation</th><th>Value type</th><th class="num">Preview value</th></tr></thead><tbody>
+            <table class="experience-table" data-coach="sx-table"><thead><tr><th>Component</th><th>Source / calculation</th><th>Value type</th><th class="num">Preview value</th></tr></thead><tbody>
               <t t-foreach="experienceRows" t-as="c" t-key="c.id">
                 <tr t-if="experience.group and (c_first or experienceGroup(c) !== experienceGroup(experienceRows[c_index-1]))" class="experience-group"><th colspan="4" t-esc="experienceGroup(c)"/></tr>
                 <tr t-att-class="c.id === state.selectedId ? 'selected' : ''" t-on-click="() => this.inspectComponent(c.id)">
