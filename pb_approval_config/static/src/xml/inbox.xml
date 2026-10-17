@@ -155,7 +155,7 @@
                 </div>
                 <div class="pbam-reqs2">
                   <span t-esc="cd.process"/> · <span t-esc="cd.sub"/> ·
-                  sent in by <span t-esc="cd.submitted_by"/>, <span t-esc="when(cd.submitted_at)"/>
+                  <span class="pbam-lbl">sent in by</span> <span t-esc="cd.submitted_by"/>, <span t-esc="when(cd.submitted_at)"/>
                 </div>
                 <div class="pbam-facts">
                   <span class="pbam-f">
@@ -169,7 +169,7 @@
                   </span>
                   <span t-elif="cd.waiting_for" class="pbam-f">
                     <t t-out="ic('user',12)"/>
-                    <span>Waiting for <b t-esc="cd.waiting_for"/></span>
+                    <span><span class="pbam-lbl">Waiting for</span> <b t-esc="cd.waiting_for"/></span>
                   </span>
                 </div>
                 <div data-coach="ai-route" class="pbam-rt">
@@ -190,7 +190,7 @@
                 <div t-if="cd.count" class="pbam-cnt" t-esc="cd.count"/>
                 <div t-if="cd.kind" class="pbam-kind" t-esc="cd.kind"/>
                 <div t-if="cd.due_at" class="pbam-due" t-att-class="{ 'is-late': cd.late }">
-                  <t t-out="ic('clock',11)"/> <span>Due <t t-esc="when(cd.due_at)"/></span>
+                  <t t-out="ic('clock',11)"/> <span><span class="pbam-lbl">Due</span> <t t-esc="when(cd.due_at)"/></span>
                 </div>
               </div>
             </div>

@@ -5161,3 +5161,9 @@ msgstr "Đã từ chối"
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Watching, not deciding — a request is yours to decide only when a step names you."
 msgstr "Chỉ theo dõi, không quyết định — một yêu cầu chỉ là việc của bạn khi một bước có tên bạn."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "sent in by"
+msgstr "người gửi"

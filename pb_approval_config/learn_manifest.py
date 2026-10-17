@@ -400,7 +400,7 @@ MANIFESTS = {
         ],
         'right_now': 'pb.approval.matrix.learn_right_now',
         'station': 'matrix',
-        'tasks': [],
+        'tasks': ['sc_matrix'],
         'terms': ['approvalRoute', 'routeStep'],
     },
 }

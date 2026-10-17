@@ -113,7 +113,7 @@ MANIFESTS = {
         'actions': [],
         'right_now': None,
         'station': 'wftime',
-        'tasks': [],
+        'tasks': ['sc_wftime'],
         'terms': ['overtime'],
     },
 }
