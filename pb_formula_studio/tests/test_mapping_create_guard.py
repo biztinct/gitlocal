@@ -41,11 +41,11 @@ class TestMappingCreateGuard(TransactionCase):
         cls.Rule = cls.env['hr.formula.rule']
         cls.Mapping = cls.env['hr.payslip.import.mapping'].sudo()
 
-    def _config(self, name):
+    def _config(self, name, state='active'):
         # CR19 — `country_code` is required with no default.
         return self.Config.create({
             'name': name, 'code': name.replace(' ', '_').upper()[:32],
-            'country_code': 'VN', 'state': 'active',
+            'country_code': 'VN', 'state': state,
         })
 
     def _rule(self, cfg, code, seq=10, **kw):
@@ -204,7 +204,7 @@ class TestMappingCreateGuard(TransactionCase):
         self.assertEqual({c['id'] for c in catalogue}, set(cfg.rule_ids.ids))
 
     def test_07_confirmed_constant_mapping_preserves_default_and_calculations(self):
-        cfg = self._config('Constant input conversion')
+        cfg = self._config('Constant input conversion', state='draft')
         monthly = self._rule(cfg, 'MONTHLY', name='Monthly salary')
         fixed = self._rule(cfg, 'FACTOR', seq=20, column_type='constant', constant_value=12)
         annual = self._rule(cfg, 'ANNUAL', seq=30, column_type='formula', excel_formula='=A2*B2')
@@ -229,7 +229,7 @@ class TestMappingCreateGuard(TransactionCase):
         self.assertFalse(card['meta'].get('collapsedGroup'))
 
     def test_08_constant_conversion_rejects_stale_values_and_rolls_back_failure(self):
-        cfg = self._config('Constant conversion guard')
+        cfg = self._config('Constant conversion guard', state='draft')
         fixed = self._rule(cfg, 'FACTOR', column_type='constant', constant_value=12)
         before = fixed.source_ids.ids
         stale = self.Studio.import_mapping_use_constant(cfg.id, False, 'c:Factor', fixed.id, 10)
@@ -246,3 +246,12 @@ class TestMappingCreateGuard(TransactionCase):
         refused = self.Studio.import_mapping_use_constant(cfg.id, False, 'c:Factor', formula.id, 0)
         self.assertFalse(refused['ok'], refused)
         self.assertEqual(formula.column_type, 'formula')
+
+    def test_09_live_constant_conversion_obeys_the_scheme_approval_gate(self):
+        cfg = self._config('Live constant approval')
+        fixed = self._rule(cfg, 'FIXED', column_type='constant', constant_value=12)
+        guarded = cfg._scheme_route()[0] == 'steps'
+        result = self.Studio.import_mapping_use_constant(cfg.id, False, 'c:Factor', fixed.id, 12)
+        self.assertEqual(result['ok'], not guarded, result)
+        self.assertEqual(fixed.column_type, 'constant' if guarded else 'input')
+        self.assertEqual(bool(fixed.source_ids), not guarded)
