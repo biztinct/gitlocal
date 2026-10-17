@@ -141,6 +141,8 @@
         border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
     }
     th.c, td.c { text-align: center; }
+    // One text node so the screen translates it whole (a <br/> split it in two); wraps here instead.
+    .pct-th-wrap { display: inline-block; max-width: 8.5rem; white-space: normal; }
     td.c input { cursor: pointer; }
 
     // A row can be both; the clash is the one to act on, so it wins.

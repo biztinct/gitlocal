@@ -109,7 +109,7 @@
               <th>Comes from</th>
               <th title="Organises the grid and reports; editable here.">Report group</th>
               <th title="How reports count this value. Suggested from formulas; your choice takes priority.">Pay role</th>
-              <th class="c" title="Already counted inside another component; prevents double counting in reports.">Included in<br/>another total</th>
+              <th class="c" title="Already counted inside another component; prevents double counting in reports."><span class="pct-th-wrap">Included in another total</span></th>
               <th title="Identifies a special run input, such as employment status or hours worked.">Run signal</th>
               <th title="How the value is read and displayed: money, quantity, text, date and so on.">Value type</th>
             </tr>

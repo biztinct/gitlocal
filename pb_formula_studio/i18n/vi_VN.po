@@ -16479,8 +16479,8 @@ msgstr "Tín hiệu cho đợt lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
-msgid "Included in<br/>another total"
-msgstr "Đã tính trong<br/>một tổng khác"
+msgid "Included in another total"
+msgstr "Đã tính trong một tổng khác"
 
 #. module: pb_formula_studio
 #. odoo-javascript
