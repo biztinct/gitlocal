@@ -451,20 +451,15 @@ msgstr "Lịch trình"
 #. odoo-javascript
 #: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
 #: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
-msgid "Search surfaces and actions"
-msgstr "Tìm kiếm bề mặt và hành động"
+msgid "Search screens and actions"
+msgstr "Tìm màn hình và hành động"
 
 #. module: pb_hub
 #. odoo-javascript
 #: code:addons/pb_hub/static/src/xml/hub_palette.xml:0
-msgid "Search surfaces and actions…"
-msgstr "Tìm kiếm bề mặt và hành động…"
-
-#. module: pb_hub
-#. odoo-javascript
 #: code:addons/pb_hub/static/src/xml/hub_shell.xml:0
-msgid "Search surfaces, actions…"
-msgstr "Giao diện tìm kiếm, hành động…"
+msgid "Search screens and actions…"
+msgstr "Tìm màn hình và hành động…"
 
 #. module: pb_hub
 #. odoo-javascript

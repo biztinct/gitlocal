@@ -66,9 +66,9 @@
                     total="tracker.total" onClick="tracker.onClick"/>
 
         <button class="pbhub-search" t-on-click="() => this.openPalette()"
-                aria-label="Search surfaces and actions">
+                aria-label="Search screens and actions">
           <span class="pbhub-search__ic" t-out="ic('search', 14)"/>
-          <span class="pbhub-search__tx">Search surfaces, actions…</span>
+          <span class="pbhub-search__tx">Search screens and actions…</span>
           <span class="pbhub-search__kbd" t-esc="paletteHint"/>
         </button>
 
