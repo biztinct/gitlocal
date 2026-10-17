@@ -38,3 +38,6 @@ from . import test_helper_route
 from . import test_onechat_ui
 # ONECHAT OC4 — Learn content follows the one PayAI chat (keys, lessons, phrases).
 from . import test_onechat_content
+# LEARNREV P1 — the content engine: the truth gate and the Guide.
+from . import test_guide_truth
+from . import test_guide

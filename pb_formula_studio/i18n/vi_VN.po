@@ -16457,3 +16457,76 @@ msgstr "Trước:"
 #: code:addons/pb_formula_studio/static/src/xml/connection_desk.xml:0
 msgid "After:"
 msgstr "Sau:"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Report group"
+msgstr "Nhóm báo cáo"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Run signal"
+msgstr "Tín hiệu cho đợt lương"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Included in<br/>another total"
+msgstr "Đã tính trong<br/>một tổng khác"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Organises the grid and reports; editable here."
+msgstr "Sắp xếp lưới và báo cáo; có thể sửa ở đây."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid ""
+"How reports count this value. Suggested from formulas; your choice takes "
+"priority."
+msgstr ""
+"Cách báo cáo tính giá trị này. Được gợi ý từ các công thức; lựa chọn của bạn"
+" được ưu tiên."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid ""
+"Already counted inside another component; prevents double counting in "
+"reports."
+msgstr ""
+"Đã được tính bên trong một thành phần khác; tránh tính hai lần trong báo "
+"cáo."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid ""
+"Identifies a special run input, such as employment status or hours worked."
+msgstr ""
+"Xác định một đầu vào đặc biệt của đợt lương, như tình trạng làm việc hoặc số"
+" giờ đã làm."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid ""
+"How the value is read and displayed: money, quantity, text, date and so on."
+msgstr ""
+"Cách giá trị được đọc và hiển thị: tiền, số lượng, chữ, ngày tháng, v.v."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Automatic"
+msgstr "Tự động"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/component_treatment.xml:1
+msgid "Clear to use the group suggested by the pay role"
+msgstr "Xoá để dùng nhóm được gợi ý theo vai trò trong lương"
