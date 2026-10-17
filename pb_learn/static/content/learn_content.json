@@ -717,10 +717,6 @@
       "en": "Term",
       "vi": "Thuật ngữ"
     },
-    "libKbd": {
-      "en": "⌘K",
-      "vi": "⌘K"
-    },
     "libKbdHint": {
       "en": "Search everything from any screen with ⌘K",
       "vi": "Tìm mọi thứ từ bất kỳ màn hình nào bằng ⌘K"
@@ -34638,5 +34634,5 @@
       }
     }
   ],
-  "version": "3629b9118096"
+  "version": "ecc3d3284781"
 }

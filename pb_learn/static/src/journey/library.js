@@ -430,6 +430,10 @@ export function moreHTML(model, practice) {
     return `<div class="lrn-lib-more">${practice || practiceRowHTML(model)}${team}</div>`;
 }
 
+/* The key, not words: the same in every language (so not a chrome string —
+   test_bundle's parity check would read it as untranslated). */
+const KBD = "⌘K";
+
 /** The search box (S5). Its results are drawn into `[data-lib-results]` by
  *  the Journey without a re-render, so typing never loses the caret. */
 export function searchBoxHTML(query) {
@@ -438,7 +442,7 @@ export function searchBoxHTML(query) {
         <input type="search" data-lib-q="1" value="${esc(query || "")}" autocomplete="off"
             placeholder="${esc(T("search"))}" aria-label="${esc(T("search"))}"
             aria-controls="lrn-lib-results"/>
-        <kbd class="lrn-lib-kbd" title="${esc(T("libKbdHint"))}">${esc(T("libKbd"))}</kbd>
+        <kbd class="lrn-lib-kbd" title="${esc(T("libKbdHint"))}">${KBD}</kbd>
     </div>`;
 }
 
