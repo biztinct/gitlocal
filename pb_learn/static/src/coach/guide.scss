@@ -787,6 +787,36 @@
 .lrn-coach .lrn-lp-lines { margin: 6px 0; }
 .lrn-coach .lrn-lp-line { grid-template-columns: 84px 1fr; }
 
+// S3 — a walkthrough running beside the Guide (Tasks section).
+.lrn-gplaying {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 8px;
+    border: 1px solid #CBC2EE;
+    border-radius: 10px;
+    background: #F6F4FD;
+}
+.lrn-gplayic {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: #5A4BB0;
+    color: #fff;
+    .lrn-ic { width: 13px; height: 13px; }
+}
+.lrn-gplaytx {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    b { font-size: 12.5px; color: #241F52; }
+    small { font-size: 11px; color: #5A4BB0; }
+}
+
 // The dim around the real control. Under the drawer (1040) so the panel is
 // never dimmed; it takes no clicks, so the control can still be pressed.
 .lrn-pspot { position: fixed; inset: 0; z-index: 1030; pointer-events: none; }

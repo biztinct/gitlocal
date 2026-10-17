@@ -324,7 +324,18 @@ function fieldsBody(g, ui) {
 const MODE_LABEL = { watch: "scWatch", try: "scPractise", do: "scDo" };
 const MODE_ICON = { watch: "play", try: "flask", do: "zap" };
 
+/** LEARNREV P4 (S3) — the walkthrough running beside the Guide. */
+function playingRow(p) {
+    const label = fmt(T("gPlaying"), { n: (p.index || 0) + 1, m: p.total || 1 });
+    return `<div class="lrn-gplaying" role="status"><span class="lrn-gplayic">${ic("play")}</span>
+        <span class="lrn-gplaytx"><b>${esc(p.name || "")}</b><small>${esc(label)}</small></span>
+        <button type="button" class="lrn-btn sm ghost" data-act="c-scstop">${ic("square")}${esc(T("gStop"))}</button></div>`;
+}
+
 function tasksBody(g, ui) {
+    if (ui.playing) {
+        return playingRow(ui.playing);
+    }
     const offers = ui.offers || (() => true);
     const tasks = ((g.doors || {}).tasks || []).map((t) => {
         const modes = (t.modes || []).filter((m) => MODE_LABEL[m] && offers(t.key, m));
@@ -398,7 +409,7 @@ export function sectionsHTML(g, ui = {}) {
         section("screen", !!open.screen, screenBody(g)),
         section("now", !!open.now, nowBody(g, ui), badge(n, "warn")),
         section("fields", !!open.fields, fieldsBody(g, ui), badge(fields, "mute")),
-        section("tasks", !!open.tasks, tasksBody(g, ui)),
+        section("tasks", !!open.tasks || !!ui.playing, tasksBody(g, ui)),
         // LEARNREV P4 — while a lesson plays, its step card IS this section.
         ui.lessonHTML
             ? section("understand", true, ui.lessonHTML)

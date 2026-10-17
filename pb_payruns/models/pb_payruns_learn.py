@@ -148,19 +148,30 @@ class PbPayrunsLearn(models.AbstractModel):
         if ready:
             n = len(ready)
             names = [b['name'] for b in ready]
+            # LEARNREV P4 (P3 deploy item) — the board's month summary counts
+            # THIS month ("5 are still drafts"); this list counts every month.
+            # Say both in one line, or the two numbers read as a contradiction.
+            period = board.get('period') or {}
+            p_from, p_to = period.get('date_start') or '', period.get('date_end') or ''
+            this_month = sum(1 for b in ready if p_from and b.get('date_start') and b.get('date_end')
+                             and b['date_start'] <= p_to and b['date_end'] >= p_from)
+            if n == 1:
+                en = "%s is a draft. Check it, then submit it for approval." % names[0]
+                vi = "Đợt lương %s đang là bản nháp. Hãy kiểm tra rồi gửi phê duyệt." % names[0]
+            elif this_month == n:
+                en = ("%d draft pay runs this month can be checked and submitted for "
+                      "approval: %s." % (n, _names(names, 'en')))
+                vi = ("%d đợt lương nháp của tháng này có thể được kiểm tra và gửi phê "
+                      "duyệt: %s." % (n, _names(names, 'vi')))
+            else:
+                en = ("%d draft pay runs across all months (%d this month) can be checked "
+                      "and submitted for approval: %s." % (n, this_month, _names(names, 'en')))
+                vi = ("%d đợt lương nháp trong mọi tháng (%d của tháng này) có thể được "
+                      "kiểm tra và gửi phê duyệt: %s." % (n, this_month, _names(names, 'vi')))
             items.append({
                 'key': 'submit', 'count': n, 'severity': 'info',
-                'names': names[:NAMED],
-                'text': {
-                    'en': ("%s is a draft. Check it, then submit it for approval."
-                           % names[0]) if n == 1 else
-                          ("%d draft pay runs can be checked and submitted for "
-                           "approval: %s." % (n, _names(names, 'en'))),
-                    'vi': ("Đợt lương %s đang là bản nháp. Hãy kiểm tra rồi gửi phê "
-                           "duyệt." % names[0]) if n == 1 else
-                          ("%d đợt lương nháp có thể được kiểm tra và gửi phê duyệt: "
-                           "%s." % (n, _names(names, 'vi'))),
-                },
+                'names': names[:NAMED], 'this_month': this_month,
+                'text': {'en': en, 'vi': vi},
                 'action': self._learn_open(PAY_HUB, lens='runs', lens_key='pb_lens',
                                            ids=[b['id'] for b in ready])
                           or self._learn_record(ready[0]['id']),

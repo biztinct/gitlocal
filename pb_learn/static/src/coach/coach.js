@@ -157,6 +157,9 @@ export const COACH_ACTIONS = new Set([
     // this learner's own `learn.progress` row and learning-log events.
     "c-lpstart", "c-lpnext", "c-lpback", "c-lpleave", "c-lpretry", "c-lppractice",
     "c-lpans", "c-lpretryq", "c-lpfinish",
+    // LEARNREV P4 (S3) — Stop on the Tasks row while a walkthrough runs
+    // beside the Guide: the walkthrough's own Leave, nothing else.
+    "c-scstop",
 ]);
 
 /* LEARNREV P4 — the hand-over to the practice copy: which lesson the panel
@@ -260,6 +263,9 @@ export class CoachHost extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.sc = useService("learn.scenario");
+        // LEARNREV P4 — the running walkthrough, observed: the Tasks row
+        // "Playing · step N of M" redraws as it moves.
+        this.scState = useState(this.sc.state);
         this.inputRef = useRef("input");
 
         this.state = useState({
@@ -1768,14 +1774,20 @@ export class CoachHost extends Component {
 
     /** Start a scenario from the drawer.
      *
-     *  The drawer CLOSES first: a walkthrough of the screen behind it cannot
-     *  be followed through a panel sitting on top of it, and Watch's first act
-     *  is usually to navigate. `stepKey` comes from a `scenario:<key>#<stepKey>`
-     *  target and is applied AFTER the entry navigation, so an intent can
-     *  answer "why did this pay change" by opening the walkthrough on the
-     *  salary breakdown rather than on the board it starts from. */
+     *  LEARNREV P4 (S3) — the drawer STAYS OPEN. It used to close first,
+     *  because a panel over the screen could not be followed; the Guide now
+     *  docks beside the page (or floats clear of it) and the overlay's card
+     *  keeps clear of it (scenario_overlay.js `_measure`), so the person keeps
+     *  the Guide and its Tasks row says "Playing · step N of M" with Stop. A
+     *  lesson playing in the panel gives way to the walkthrough.
+     *  `stepKey` comes from a `scenario:<key>#<stepKey>` target and is applied
+     *  AFTER the entry navigation, so an intent can answer "why did this pay
+     *  change" by opening the walkthrough on the salary breakdown rather than
+     *  on the board it starts from. */
     async startScenario(key, mode, stepKey) {
-        this.close();
+        if (this.state.lp) {
+            this._lpLeave();
+        }
         try {
             await this.sc.load();
             const started = await this.sc.begin(key, mode || null);
@@ -1990,6 +2002,8 @@ export class CoachHost extends Component {
             // LEARNREV P4 — while a lesson plays, its card is the Understand
             // section (and stays open even when the Guide is folded).
             lessonHTML: this._lpHTML(),
+            // LEARNREV P4 (S3) — a walkthrough running beside the Guide.
+            playing: this._playing(),
         });
         if (!folded) {
             return this._stable("guide", inner);
@@ -2032,6 +2046,18 @@ export class CoachHost extends Component {
        that step, and the Journey hands back when the lesson returns to a real
        control (`LP_RETURN_KEY`). Progress is the Journey's: one
        `learn.progress` row per station. */
+
+    /** The walkthrough running on the real screens, for the Tasks row:
+     *  {key, name, index, total} or null. */
+    _playing() {
+        const s = this.scState;
+        if (!s || !s.active || s.done || !s.key) {
+            return null;
+        }
+        const sc = this.sc.get(s.key);
+        return { key: s.key, name: sc ? tx(sc.name) : "", index: s.index,
+                 total: this.sc.steps(s.key, s.mode).length };
+    }
 
     /** {station, lesson, steps} of the lesson playing, or null. */
     _lpLesson() {
@@ -3334,6 +3360,8 @@ export class CoachHost extends Component {
             }
         } else if (act === "c-lpfinish") {
             this._lpFinish();
+        } else if (act === "c-scstop") {
+            this.sc.stop();
         }
     }
 

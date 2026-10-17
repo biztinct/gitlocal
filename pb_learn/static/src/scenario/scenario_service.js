@@ -206,10 +206,18 @@ export const scenarioService = {
             return promise;
         }
 
+        /* LEARNREV P4 (G23) — TWO DIFFERENT ENDINGS, never confused.
+             · "noaccess": the reader cannot open the screen — known before
+               navigating (`reachable() === false`), or the hub moved them
+               off the tab ("elsewhere"), or the screen itself said so.
+             · "slow": nothing refused anything; the screen simply did not
+               arrive in time. That card says "still loading" with Retry —
+               it used to say "You can't open this screen", which was untrue
+               and sent people to their administrator for a slow network. */
         async function navigateOnce(ref) {
             const screen = screenForRef(screens, ref);
             if (screen && reachable(screen) === false) {
-                block(screen);
+                block(screen, "noaccess", ref);
                 return false;
             }
             // Already standing on that tab: nothing to open, and re-opening
@@ -221,45 +229,63 @@ export const scenarioService = {
                 return true;
             }
             state.navigating = true;
-            let ok = true;
+            let kind = "";
             try {
                 const res = await Promise.race([
                     openScreen(action, screens, screen || ref),
                     new Promise((resolve) => setTimeout(() => resolve(null), NAV_TIMEOUT)),
                 ]);
                 if (!res) {
-                    ok = false;
+                    kind = "slow";
                 } else if (res.place) {
-                    ok = (await waitForPlace(res.place, res.seq)) === "here";
+                    const where = await waitForPlace(res.place, res.seq);
+                    kind = where === "here" ? "" : (where === "elsewhere" ? "noaccess" : "slow");
                 }
             } catch {
-                ok = false;
+                // A navigation that threw did not refuse anybody either.
+                kind = "slow";
             } finally {
                 state.navigating = false;
             }
-            if (!ok) {
-                block(screen);
+            if (kind) {
+                block(screen, kind, ref);
             }
-            return ok;
+            return !kind;
         }
 
-        function block(screen) {
+        function block(screen, kind, ref, reason) {
             if (!state.active) {
                 return;
             }
             state.blocked = {
                 key: screen ? screen.key : "",
                 label: screen ? placeLabel(screens, screen) : "",
+                kind: kind || "noaccess",
+                ref: ref || (screen ? screen.key : ""),
+                reason: reason || "",
             };
-            log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}`);
+            log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}:${kind || "noaccess"}`);
         }
 
         /** LEARN REFRESH step 4 — the overlay saw the screen refuse this
          *  reader after it opened (an access error, a tab the hub will not
          *  show them, a "you need … access" panel where the step's control
-         *  should be). Same ending as a refusal known before navigating. */
-        function refuse(screen) {
-            block(typeof screen === "string" ? screenForRef(screens, screen) : screen);
+         *  should be). Same ending as a refusal known before navigating;
+         *  LEARNREV P4: with the screen's own words as the reason. */
+        function refuse(screen, reason) {
+            const s = typeof screen === "string" ? screenForRef(screens, screen) : screen;
+            block(s, "noaccess", s ? s.key : "", typeof reason === "string" ? reason : "");
+        }
+
+        /** LEARNREV P4 — "still loading" → Retry: open the screen again. The
+         *  overlay re-enters the step once the block is gone. */
+        async function retry() {
+            const b = state.blocked;
+            if (!b || b.kind !== "slow") {
+                return false;
+            }
+            state.blocked = null;
+            return navigate(b.ref);
         }
 
         /** The screen a step stands on (its own, else the last named before
@@ -457,7 +483,7 @@ export const scenarioService = {
             state,
             load, all, get, steps, current, forScreen,
             begin, next, back, goTo, finish, stop,
-            navigate, practiceInstead, refuse, screenOfStep,
+            navigate, practiceInstead, refuse, retry, screenOfStep,
             record, log, logStart, nowServer,
             PROGRESS_PREFIX,
         };
