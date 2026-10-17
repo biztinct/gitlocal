@@ -81,7 +81,7 @@ class CPFSubmissionWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': _('CPF Submission Preview'),
             'res_model': 'hr.payslip',
-            'view_mode': 'tree',
+            'view_mode': 'list',
             'domain': [
                 ('date_from', '<=', self.submission_period),
                 ('date_to', '>=', self.submission_period),

@@ -82,7 +82,7 @@ class ThrPaymentWizard(models.TransientModel):
                 'type': 'ir.actions.act_window',
                 'name': 'THR Payslips',
                 'res_model': 'hr.payslip',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', payslips.ids)],
                 'context': {'default_is_thr': True}
             }

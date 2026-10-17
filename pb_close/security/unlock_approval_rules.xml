@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60). -->
+
+    <record id="rule_unlock_proposal_seat" model="ir.rule">
+        <field name="name">Reopen a day: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_unlock_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_unlock_proposal_manage" model="ir.rule">
+        <field name="name">Reopen a day: the people who close them</field>
+        <field name="model_id" ref="model_pb_unlock_proposal"/>
+        <field name="groups" eval="[
+            (4, ref('hr_attendance.group_hr_attendance_manager')),
+            (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

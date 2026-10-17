@@ -1,0 +1,177 @@
+/* Payobook Driver PWA — standalone stylesheet.
+   pbim palette VALUES copied (this bundle cannot @import backend SCSS). */
+:root {
+    --pbdrv-navy: #5A4BB0;   /* pbim indigo primary (W1); name kept to avoid churn */
+    --pbdrv-ink: #1B1733;
+    --pbdrv-muted: #64748B;
+    --pbdrv-line: #E2E8F0;
+    --pbdrv-bg: #F5F6FA;
+    --pbdrv-green: #2E7D4F;
+    --pbdrv-green-soft: #E3F2E9;
+    --pbdrv-amber: #D97706;
+    --pbdrv-amber-soft: #FEF3C7;
+    --pbdrv-primary: #5A4BB0;
+    --pbdrv-r: 16px;
+    --pbdrv-sh: 0 8px 24px rgba(16, 12, 40, .10);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body.pbdrv-body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--pbdrv-bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--pbdrv-ink);
+    -webkit-font-smoothing: antialiased;
+}
+#pbdrv-root {
+    max-width: 480px; margin: 0 auto; min-height: 100%;
+    display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* header */
+.pbdrv-header {
+    background: var(--pbdrv-navy);
+    color: #fff; display: flex; align-items: center; gap: 14px;
+    padding: calc(18px + env(safe-area-inset-top)) 20px 20px;
+    border-radius: 0 0 22px 22px;
+}
+.pbdrv-avatar {
+    width: 52px; height: 52px; border-radius: 50%; flex: 0 0 auto;
+    background: #ffffff22 center/cover no-repeat; border: 2px solid #ffffff44;
+}
+.pbdrv-hi { min-width: 0; }
+.pbdrv-name { font-size: 19px; font-weight: 700; letter-spacing: .2px; }
+.pbdrv-chip {
+    display: inline-flex; align-items: center; gap: 7px; margin-top: 6px;
+    font-size: 13px; font-weight: 600; padding: 4px 11px; border-radius: 999px;
+    background: #ffffff1a;
+}
+.pbdrv-chip .pbdrv-cdot { width: 8px; height: 8px; border-radius: 50%; background: #9fb0c4; }
+.pbdrv-chip.is-on { background: rgba(46, 125, 79, .22); color: #b6f0cd; }
+.pbdrv-chip.is-on .pbdrv-cdot { background: #38d27f; box-shadow: 0 0 0 0 rgba(56, 210, 127, .6); animation: pbdrv-pulse 1.8s infinite; }
+@keyframes pbdrv-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(56, 210, 127, .55); }
+    70% { box-shadow: 0 0 0 8px rgba(56, 210, 127, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(56, 210, 127, 0); }
+}
+
+/* circular CTA */
+.pbdrv-btnwrap { display: flex; justify-content: center; padding: 30px 0 8px; }
+.pbdrv-cta {
+    width: 168px; height: 168px; border-radius: 50%; border: 0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    font-size: 17px; font-weight: 700; transition: transform .12s ease, box-shadow .2s ease;
+    box-shadow: var(--pbdrv-sh);
+}
+.pbdrv-cta:active { transform: scale(.96); }
+.pbdrv-cta.is-off { background: var(--pbdrv-navy); color: #fff; }
+.pbdrv-cta.is-on {
+    background: #fff; color: var(--pbdrv-navy);
+    border: 3px solid var(--pbdrv-navy);
+}
+.pbdrv-cta__glyph { display: flex; }
+
+/* heartbeat line */
+.pbdrv-heartbeat {
+    text-align: center; min-height: 20px; font-size: 13px; font-weight: 600;
+    color: var(--pbdrv-muted); display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.pbdrv-heartbeat .pbdrv-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pbdrv-heartbeat.is-live { color: var(--pbdrv-green); }
+.pbdrv-heartbeat.is-live .pbdrv-dot { animation: pbdrv-pulse 1.6s infinite; }
+.pbdrv-heartbeat.is-offline { color: var(--pbdrv-amber); }
+
+/* map card */
+.pbdrv-mapcard {
+    margin: 14px 18px 0; height: 240px; border-radius: var(--pbdrv-r);
+    overflow: hidden; box-shadow: var(--pbdrv-sh); background: #dfe6ee;
+}
+#pbdrv-map { width: 100%; height: 100%; }
+.pbdrv-selfpin span {
+    display: block; width: 18px; height: 18px; border-radius: 50%;
+    background: #2e7dea; border: 3px solid #fff; box-shadow: 0 0 0 2px #2e7dea55;
+}
+
+/* footer stats */
+.pbdrv-footer { display: flex; gap: 10px; padding: 16px 18px 24px; }
+.pbdrv-stat {
+    flex: 1; background: #fff; border: 1px solid var(--pbdrv-line);
+    border-radius: 12px; padding: 12px 8px; text-align: center;
+}
+.pbdrv-stat__v { font-size: 18px; font-weight: 700; color: var(--pbdrv-ink); }
+.pbdrv-stat__l { font-size: 11px; color: var(--pbdrv-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: .4px; }
+
+/* bottom sheet */
+.pbdrv-scrim {
+    position: fixed; inset: 0; background: rgba(11, 31, 58, .42);
+    display: flex; align-items: flex-end; z-index: 4000; opacity: 0; transition: opacity .22s ease;
+}
+.pbdrv-scrim.show { opacity: 1; }
+.pbdrv-sheet {
+    background: #fff; width: 100%; max-width: 480px; margin: 0 auto;
+    border-radius: 20px 20px 0 0; padding: 24px 20px calc(28px + env(safe-area-inset-bottom));
+    transform: translateY(100%); transition: transform .26s cubic-bezier(.2, .8, .2, 1);
+}
+.pbdrv-scrim.show .pbdrv-sheet { transform: translateY(0); }
+.pbdrv-sheet__title { font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 16px; }
+.pbdrv-sheet__body { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.pbdrv-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 700;
+    border: 0; cursor: pointer; text-align: center;
+}
+.pbdrv-btn--primary { background: var(--pbdrv-navy); color: #fff; }
+.pbdrv-btn--ghost { background: #fff; color: var(--pbdrv-muted); border: 1px solid var(--pbdrv-line); }
+
+/* spinner */
+.pbdrv-spin {
+    width: 34px; height: 34px; margin: 12px auto; border-radius: 50%;
+    border: 3px solid var(--pbdrv-line); border-top-color: var(--pbdrv-navy);
+    animation: pbdrv-spin 0.8s linear infinite;
+}
+@keyframes pbdrv-spin { to { transform: rotate(360deg); } }
+
+/* toast */
+.pbdrv-toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translate(-50%, 20px);
+    background: var(--pbdrv-ink); color: #fff; padding: 12px 18px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; z-index: 5000; opacity: 0; transition: all .28s ease;
+    box-shadow: var(--pbdrv-sh);
+}
+.pbdrv-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* gates */
+.pbdrv-gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.pbdrv-gate__card {
+    background: #fff; border: 1px solid var(--pbdrv-line); border-radius: var(--pbdrv-r);
+    padding: 32px 26px; text-align: center; max-width: 380px; box-shadow: var(--pbdrv-sh);
+}
+.pbdrv-gate__card h1 { font-size: 20px; margin: 0 0 10px; color: var(--pbdrv-navy); }
+.pbdrv-gate__card p { color: var(--pbdrv-muted); font-size: 14px; line-height: 1.5; margin: 0; }
+
+/* P8 — the anonymous end-of-shift pulse (pb_ess_workforce).
+   The five faces ARE the rating scale, so they are sized as a control, not as
+   text: a thumb has to hit one of them on a phone, in a hurry, outdoors. */
+.pbdrv-faces {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 6px 0 10px;
+}
+.pbdrv-face {
+    flex: 1;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, .06);
+    border-radius: 14px;
+    font-size: 30px;
+    line-height: 1;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: transform .12s ease, background .12s ease;
+}
+.pbdrv-face:active { transform: scale(.92); background: rgba(255, 255, 255, .14); }
+.pbdrv-anon {
+    font-size: 12px;
+    opacity: .68;
+    text-align: center;
+    margin-bottom: 12px;
+}

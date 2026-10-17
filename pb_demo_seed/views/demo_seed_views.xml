@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      One screen, two buttons, and an honest list of what is in the database
+      because of them. The register is on the page rather than hidden behind a
+      developer tool on purpose: "what exactly will Remove take out" is the
+      first question anybody sensible asks, and it should be answerable by
+      scrolling.
+    -->
+    <record id="view_pb_demo_seed_form" model="ir.ui.view">
+        <field name="name">pb.demo.seed.form</field>
+        <field name="model">pb.demo.seed</field>
+        <field name="arch" type="xml">
+            <form string="Demo data">
+                <header>
+                    <!--
+                      NO LOAD BUTTON ON AN ADOPTED PANEL. There is nothing to
+                      build: it holds records the product made while somebody
+                      was demonstrating a screen. A button that would do
+                      nothing is worse than no button.
+                    -->
+                    <button name="action_load" type="object"
+                            string="Load demo data" class="btn-primary"
+                            invisible="state == 'loaded' or profile == 'adopted'"
+                            confirm="This creates five demo people and the records around them. Continue?"/>
+                    <button name="action_preview_remove" type="object"
+                            string="What would be removed" class="btn-secondary"
+                            invisible="state != 'loaded'"/>
+                    <button name="action_remove" type="object"
+                            string="Remove demo data" class="btn-secondary"
+                            invisible="state != 'loaded'"
+                            confirm="This permanently removes every record on the list below. Logins are switched off rather than deleted. Continue?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="empty,loaded"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Demo data"/></h1>
+                    </div>
+                    <div class="alert alert-info" role="status"
+                         invisible="state == 'loaded'">
+                        <p class="mb-0">
+                            Nothing is loaded. Choose a world and press
+                            <b>Load demo data</b>. Everything it creates is
+                            written into the list below, and <b>Remove demo
+                            data</b> takes out exactly those records and
+                            nothing else.
+                        </p>
+                    </div>
+                    <div class="alert alert-warning" role="status"
+                         invisible="state != 'loaded' or profile == 'adopted'">
+                        <p class="mb-0">
+                            Demo data is loaded. Do not use this on a database
+                            that is already live with real people unless you
+                            mean to.
+                        </p>
+                    </div>
+                    <!--
+                      ONE PARAGRAPH, ONE CHILD. The alert is laid out as a row,
+                      so a <b> in the middle of the sentence becomes a column
+                      of its own and the sentence reads in three pieces across
+                      the screen. Everything the reader reads goes inside one
+                      <p>.
+                    -->
+                    <div class="alert alert-info" role="status"
+                         invisible="profile != 'adopted'">
+                        <p class="mb-0">
+                            These are records the app itself made while somebody
+                            was showing it off — demo requests, demo candidates,
+                            demo people. Nothing here was built by a demo world,
+                            so there is nothing to load. <b>Remove demo data</b>
+                            takes out exactly the records listed below; demo
+                            logins are switched off rather than deleted, so the
+                            history that names them still reads properly.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="profile"
+                                   readonly="state == 'loaded'"/>
+                            <field name="company_id"
+                                   readonly="state == 'loaded'"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="loaded_on" invisible="state != 'loaded'"/>
+                            <field name="loaded_by" invisible="state != 'loaded'"/>
+                            <field name="record_count" invisible="state != 'loaded'"/>
+                        </group>
+                    </group>
+                    <group string="What was built" invisible="state != 'loaded'">
+                        <field name="summary" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook invisible="state != 'loaded'">
+                        <page string="Every record it made" name="records">
+                            <field name="record_ids" readonly="1">
+                                <list default_order="sequence desc">
+                                    <field name="sequence" string="Made"/>
+                                    <field name="model_label"/>
+                                    <field name="label"/>
+                                    <field name="res_id" string="Id"/>
+                                    <field name="gone" string="Already gone"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_demo_seed_list" model="ir.ui.view">
+        <field name="name">pb.demo.seed.list</field>
+        <field name="model">pb.demo.seed</field>
+        <field name="arch" type="xml">
+            <list string="Demo data">
+                <field name="name"/>
+                <field name="profile"/>
+                <field name="company_id"/>
+                <field name="state"/>
+                <field name="loaded_on"/>
+                <field name="record_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_demo_record_list" model="ir.ui.view">
+        <field name="name">pb.demo.record.list</field>
+        <field name="model">pb.demo.record</field>
+        <field name="arch" type="xml">
+            <list string="Demo data register" create="false" edit="false">
+                <field name="sequence" string="Made"/>
+                <field name="model_label"/>
+                <field name="label"/>
+                <field name="res_id" string="Id"/>
+                <field name="gone"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_demo_record_search" model="ir.ui.view">
+        <field name="name">pb.demo.record.search</field>
+        <field name="model">pb.demo.record</field>
+        <field name="arch" type="xml">
+            <search string="Demo data register">
+                <field name="label"/>
+                <field name="model_name"/>
+                <separator/>
+                <filter name="group_by_model" string="Kind"
+                        context="{'group_by': 'model_name'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_demo_seed" model="ir.actions.act_window">
+        <field name="name">Demo data</field>
+        <field name="res_model">pb.demo.seed</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Load a demo world</p>
+            <p>Five people with one story each, and everything around them.
+               Everything it creates is remembered, so it can all be taken out
+               again.</p>
+        </field>
+    </record>
+</odoo>

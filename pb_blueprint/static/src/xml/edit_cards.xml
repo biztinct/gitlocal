@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==========================================================
+       The settings cards, folded under whichever step owns them.
+       ========================================================== -->
+  <t t-name="pb_blueprint.SettingsCards">
+    <section class="pbbp-card pbbp-setgrp" t-att-data-group="props.group">
+      <button class="pbbp-setgrp-head" t-on-click="toggleOpen"
+              t-att-aria-expanded="open ? 'true' : 'false'">
+        <span class="pbbp-card-ic" t-out="ic(icon, 18)"/>
+        <span class="pbbp-setgrp-t">
+          <b t-esc="title"/>
+          <small t-esc="lead"/>
+        </span>
+        <span class="pbbp-setgrp-chev">
+          <t t-if="open"><t t-out="ic('chevronUp', 16)"/></t>
+          <t t-else=""><t t-out="ic('chevronDown', 16)"/></t>
+        </span>
+      </button>
+
+      <div class="pbbp-setgrp-body" t-if="open">
+        <div class="pbbp-alert is-err" t-if="props.error">
+          <span class="i" t-out="ic('alert', 18)"/>
+          <div><p t-esc="props.error"/></div>
+        </div>
+
+        <!-- ============ ADVANCED (Start) ============ -->
+        <t t-if="props.group === 'advanced'">
+          <div class="pbbp-fields">
+            <div class="pbbp-field">
+              <label for="pbbp-set-code">Reference code</label>
+              <input id="pbbp-set-code" type="text" class="pbbp-mono"
+                     t-att-value="v.code"
+                     t-on-input="(ev) => this.onText('code', ev)"
+                     t-on-change="(ev) => this.onTextCommit('code', ev)"/>
+              <small>How this configuration is referred to in exports and imports.</small>
+            </div>
+
+            <div class="pbbp-field">
+              <label for="pbbp-set-struct">Legacy payroll structure</label>
+              <select id="pbbp-set-struct"
+                      t-on-change="(ev) => this.onM2OCommit('structure_id', ev)">
+                <option value="" t-att-selected="!v.structure_id">— none —</option>
+                <option t-foreach="structures" t-as="s" t-key="s.id"
+                        t-att-value="s.id" t-att-selected="s.id === v.structure_id"
+                        t-esc="s.name"/>
+              </select>
+              <small>Only for talking to older payroll screens. Nothing in the
+                     workbook import or the calculation reads it.</small>
+            </div>
+          </div>
+
+          <div class="pbbp-setswitches">
+            <label class="pbbp-check">
+              <input type="checkbox" t-att-checked="v.use_color_coded_excel_import"
+                     t-on-change="(ev) => this.onCheckCommit('use_color_coded_excel_import', ev)"/>
+              <span class="pbbp-check-t">
+                <b>Read the colours in an imported workbook</b>
+                <small>Cell colours decide what each column is, instead of its heading.</small>
+              </span>
+            </label>
+            <label class="pbbp-check">
+              <input type="checkbox" t-att-checked="v.export_identity_columns"
+                     t-on-change="(ev) => this.onCheckCommit('export_identity_columns', ev)"/>
+              <span class="pbbp-check-t">
+                <b>Open the pay data file with this configuration's own identity columns</b>
+                <small>Off: the file opens with the standard employee columns.
+                       On: it opens with the columns marked Identity or Employee
+                       profile here, in their own order.</small>
+              </span>
+            </label>
+          </div>
+        </t>
+
+        <!-- ============ PART-MONTH PAY + BACK-PAY (Pay rules) ============ -->
+        <t t-elif="props.group === 'automation'">
+          <div class="pbbp-subcard">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('percent', 16)"/>
+              <b>Part-month pay</b>
+            </div>
+            <p class="pbbp-subcard-lead">Somebody who joins, leaves or is unpaid
+               part of the month is paid for the part they worked.</p>
+            <label class="pbbp-check">
+              <input type="checkbox" t-att-checked="v.use_proration"
+                     t-on-change="(ev) => this.onProrationToggle(ev)"/>
+              <span class="pbbp-check-t">
+                <b>Pay part of the month when somebody is not here for all of it</b>
+              </span>
+            </label>
+
+            <p class="pbbp-note is-warn" t-if="prorationIncomplete" t-esc="prorationNote"/>
+
+            <t t-if="v.use_proration">
+              <div class="pbbp-fields">
+                <div class="pbbp-field">
+                  <label for="pbbp-set-basis">Worked out from</label>
+                  <select id="pbbp-set-basis"
+                          t-on-change="(ev) => this.onSelectCommit('proration_basis', ev)">
+                    <option t-foreach="meta.proration_bases or []" t-as="o" t-key="o.value"
+                            t-att-value="o.value" t-att-selected="o.value === v.proration_basis"
+                            t-esc="o.label"/>
+                  </select>
+                  <small>Every day of the month, or only the working ones.</small>
+                </div>
+                <div class="pbbp-field">
+                  <label for="pbbp-set-round">Rounded to</label>
+                  <input id="pbbp-set-round" type="number" min="0" max="6"
+                         t-att-value="v.proration_rounding"
+                         t-on-change="(ev) => this.onNumberCommit('proration_rounding', ev)"/>
+                  <small>Decimal places on a part-month amount.</small>
+                </div>
+              </div>
+
+              <label class="pbbp-setlabel">Which components are paid part-month</label>
+              <div class="pbbp-chips">
+                <button t-foreach="components" t-as="c" t-key="c.id"
+                        t-attf-class="pbbp-chip-btn {{ hasProrated(c.id) ? 'is-on' : '' }}"
+                        t-att-aria-pressed="hasProrated(c.id) ? 'true' : 'false'"
+                        t-on-click="() => this.toggleProrated(c.id)">
+                  <span class="pbbp-chip-col" t-esc="c.col"/>
+                  <span t-esc="componentLabel(c)"/>
+                </button>
+                <p class="pbbp-note" t-if="!components.length">This configuration
+                   has no components yet, so there is nothing to pay part-month.</p>
+              </div>
+            </t>
+          </div>
+
+          <div class="pbbp-subcard">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('history', 16)"/>
+              <b>Back-pay</b>
+            </div>
+            <p class="pbbp-subcard-lead">A rise agreed today, owed from a month
+               that has already been paid.</p>
+            <label class="pbbp-check">
+              <input type="checkbox" t-att-checked="v.use_auto_retro"
+                     t-on-change="(ev) => this.onRetroToggle(ev)"/>
+              <span class="pbbp-check-t">
+                <b>Work out what is owed for earlier months automatically</b>
+              </span>
+            </label>
+            <p class="pbbp-note is-warn" t-if="retroIncomplete" t-esc="retroNote"/>
+            <div class="pbbp-fields" t-if="v.use_auto_retro">
+              <div class="pbbp-field">
+                <label for="pbbp-set-retro">Paid as</label>
+                <select id="pbbp-set-retro"
+                        t-on-change="(ev) => this.onRetroComponent(ev)">
+                  <option value="" t-att-selected="!v.retro_component_id">— none —</option>
+                  <option t-foreach="components" t-as="c" t-key="c.id"
+                          t-att-value="c.id" t-att-selected="c.id === v.retro_component_id"
+                          t-esc="componentLabel(c)"/>
+                </select>
+                <small>The component the back-pay amount is added to on the payslip.</small>
+              </div>
+            </div>
+          </div>
+        </t>
+
+        <!-- ============ CONNECT ============ -->
+        <t t-elif="props.group === 'connect'">
+          <div class="pbbp-subcard">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('plug', 16)"/>
+              <b>Connected system</b>
+            </div>
+            <p class="pbbp-subcard-lead">The HR system this configuration reads
+               values from.</p>
+            <div class="pbbp-fields">
+              <div class="pbbp-field">
+                <label for="pbbp-set-conn">System</label>
+                <select id="pbbp-set-conn"
+                        t-on-change="(ev) => this.onM2OCommit('connector_id', ev)">
+                  <option value="" t-att-selected="!v.connector_id">— none —</option>
+                  <option t-foreach="connectors" t-as="c" t-key="c.id"
+                          t-att-value="c.id" t-att-selected="c.id === v.connector_id"
+                          t-esc="c.name"/>
+                </select>
+                <small t-if="connectors.length">Leave it on “none” to type or
+                       import values instead.</small>
+                <small t-else="">No system has been connected on this database
+                       yet. Values can still be typed in or imported on the pay run.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbbp-subcard pbbp-lanes">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('route', 16)"/>
+              <b>Where values come from</b>
+            </div>
+            <p class="pbbp-subcard-lead">Set who wins when two sources answer the
+               same question. A lower source may only fill an empty box, never
+               overwrite one.</p>
+            <div t-foreach="lanes" t-as="ln" t-key="ln.key"
+                 t-attf-class="pbbp-lane {{ ln.on ? '' : 'is-off' }}"
+                 tabindex="0" t-on-keydown="(ev) => this.onLaneKeydown(ln.key, ev)">
+              <span class="pbbp-lane-rank" t-esc="ln.rank"/>
+              <span class="pbbp-lane-t">
+                <b t-esc="ln.label"/>
+                <small t-esc="ln.sub"/>
+              </span>
+              <span class="pbbp-lane-n" t-if="ln.count">
+                <t t-esc="ln.count"/> components read this
+              </span>
+              <span class="pbbp-lane-ctl">
+                <button class="pbbp-lane-b" t-att-disabled="ln_index === 0"
+                        title="Move up" t-on-click="() => this.moveLane(ln.key, -1)"
+                        t-out="ic('arrowUp', 14)"/>
+                <button class="pbbp-lane-b" t-att-disabled="ln_index === lanes.length - 1"
+                        title="Move down" t-on-click="() => this.moveLane(ln.key, 1)"
+                        t-out="ic('arrowDown', 14)"/>
+                <label class="pbbp-lane-sw">
+                  <input type="checkbox" t-att-checked="ln.on"
+                         t-on-change="() => this.toggleLane(ln.key)"/>
+                  <span/>
+                </label>
+              </span>
+            </div>
+            <p class="pbbp-note" t-esc="laneSentence"/>
+            <p class="pbbp-note is-warn" t-foreach="laneWarnings" t-as="w" t-key="w_index"
+               t-esc="w"/>
+          </div>
+
+          <div class="pbbp-subcard">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('landmark', 16)"/>
+              <b>Accounting</b>
+            </div>
+            <p class="pbbp-subcard-lead">Where a finished payslip posts in your books.</p>
+            <div class="pbbp-fields">
+              <div class="pbbp-field">
+                <label for="pbbp-set-journal">Payroll journal</label>
+                <select id="pbbp-set-journal"
+                        t-on-change="(ev) => this.onM2OCommit('payroll_journal_id', ev)">
+                  <option value="" t-att-selected="!v.payroll_journal_id">— none —</option>
+                  <option t-foreach="journals" t-as="j" t-key="j.id"
+                          t-att-value="j.id" t-att-selected="j.id === v.payroll_journal_id"
+                          t-esc="j.name"/>
+                </select>
+                <small t-if="!journals.length">No general journal exists for this
+                       company yet.</small>
+              </div>
+              <div class="pbbp-field">
+                <label for="pbbp-set-debit">Default debit account</label>
+                <select id="pbbp-set-debit"
+                        t-on-change="(ev) => this.onM2OCommit('debit_account_id', ev)">
+                  <option value="" t-att-selected="!v.debit_account_id">— none —</option>
+                  <option t-foreach="accounts" t-as="a" t-key="a.id"
+                          t-att-value="a.id" t-att-selected="a.id === v.debit_account_id"
+                          t-esc="a.name"/>
+                </select>
+              </div>
+              <div class="pbbp-field">
+                <label for="pbbp-set-credit">Default credit account</label>
+                <select id="pbbp-set-credit"
+                        t-on-change="(ev) => this.onM2OCommit('credit_account_id', ev)">
+                  <option value="" t-att-selected="!v.credit_account_id">— none —</option>
+                  <option t-foreach="accounts" t-as="a" t-key="a.id"
+                          t-att-value="a.id" t-att-selected="a.id === v.credit_account_id"
+                          t-esc="a.name"/>
+                </select>
+              </div>
+            </div>
+          </div>
+        </t>
+      </div>
+    </section>
+  </t>
+
+  <!-- ==========================================================
+       The last page of an EDIT sitting.
+       ========================================================== -->
+  <t t-name="pb_blueprint.StepSaved">
+    <div class="pbbp-step pbbp-saved">
+      <div class="pbbp-step-head">
+        <span class="pbbp-eyebrow">Save changes</span>
+        <h1 class="pbbp-h1">What you changed</h1>
+        <p class="pbbp-lead" t-esc="lead"/>
+      </div>
+
+      <section class="pbbp-card">
+        <header class="pbbp-card-head">
+          <span class="pbbp-card-ic" t-out="ic('checkCheck', 18)"/>
+          <div>
+            <h2 t-esc="props.configName"/>
+            <p t-if="props.schemeStateLabel">
+              This configuration is <b t-esc="props.schemeStateLabel"/> and stays that way.
+            </p>
+          </div>
+        </header>
+
+        <table class="pbbp-changes" t-if="changes.length">
+          <thead>
+            <tr><th>What</th><th>Was</th><th>Is now</th></tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="changes" t-as="c" t-key="c_index">
+              <td t-esc="c.label"/>
+              <td class="pbbp-was" t-esc="c.before"/>
+              <td class="pbbp-now" t-esc="c.after"/>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pbim-empty" t-else="">
+          <b>Nothing changed</b>
+          <p>You can close this and nothing about the configuration will have moved.</p>
+        </div>
+
+        <p class="pbbp-note" t-esc="note"/>
+      </section>
+
+      <div class="pbbp-saved-doors">
+        <button class="pbim-btn primary" t-att-disabled="props.busy"
+                t-on-click="() => this.props.onSave()">
+          <t t-out="ic('save', 15)"/> Save changes
+        </button>
+        <button class="pbim-btn ghost" t-on-click="() => this.props.onGrid()">
+          <t t-out="ic('table', 15)"/> Open the components grid
+        </button>
+      </div>
+    </div>
+  </t>
+
+</templates>

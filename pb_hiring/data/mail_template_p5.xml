@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         RECRUIT P5 — the mails interviews and scorecards add.
+
+         `noupdate="1"` like every template here: a company's rewording
+         survives an upgrade (new records ARE created on an upgrade). Every
+         one is sent with an explicit `email_to` (R6), and reads public
+         fields only (RC49): `pb_link_url`, `pb_when_local`, `pb_join_url`…
+         ================================================================== -->
+
+    <!-- ============ the panel: you are interviewing, and your scorecard ============ -->
+    <record id="mail_template_panel_invite" model="mail.template">
+        <field name="name">Hiring: you are on an interview panel (with your scorecard link)</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">You are interviewing {{ object.interview_id.candidate_name }} — {{ object.interview_id.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.panel_employee_id.name or ''"/>,</p>
+                <p>
+                    You are on the panel for
+                    <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>,
+                    <t t-out="object.pb_round_label or ''"/>, for
+                    <strong><t t-out="object.interview_id.requisition_id.title or ''"/></strong>.
+                </p>
+                <table style="border-collapse:collapse; margin:16px 0; font-size:14px;">
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">When</td>
+                        <td style="padding:6px 0;"><strong><t t-out="object.interview_id.pb_when_local or ''"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Where</td>
+                        <td style="padding:6px 0;">
+                            <a t-if="object.interview_id.pb_join_url" t-att-href="object.interview_id.pb_join_url" style="color:#4F46E5;"><t t-out="object.interview_id.pb_join_url"/></a>
+                            <t t-else="" t-out="object.interview_id.location or '—'"/>
+                        </td>
+                    </tr>
+                    <tr t-if="object.pb_due_local">
+                        <td style="padding:6px 16px 6px 0; color:#64748B;">Your view, by</td>
+                        <td style="padding:6px 0;"><t t-out="object.pb_due_local"/></td>
+                    </tr>
+                </table>
+                <div t-if="object.interview_id.pb_agenda" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568; white-space:pre-wrap;">
+                    <t t-out="object.interview_id.pb_agenda"/>
+                </div>
+                <p style="margin:22px 0 8px;">
+                    <a t-att-href="object.pb_link_url"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
+                        Your scorecard
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    Open it after the interview — or keep it open during it. It
+                    takes a few minutes, needs no sign-in, and your answers stay
+                    hidden from the other panellists until everyone is in. The
+                    calendar file is attached.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the talent lead: an opinion is two days late ============ -->
+    <record id="mail_template_feedback_lead" model="mail.template">
+        <field name="name">Hiring: an interviewer's opinion is two days late (to the talent lead)</field>
+        <field name="model_id" ref="model_pb_hiring_feedback"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.panel_employee_id.name }} is {{ object.pb_late_days }} days late on {{ object.interview_id.candidate_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.panel_employee_id.name or ''"/></strong>
+                    interviewed
+                    <strong><t t-out="object.interview_id.candidate_name or ''"/></strong>
+                    for <t t-out="object.interview_id.requisition_id.title or ''"/>
+                    (<t t-out="object.pb_round_label or ''"/>) and has not said what
+                    they thought. It was wanted by <t t-out="object.pb_due_local or ''"/>.
+                </p>
+                <p style="color:#4A5568;">
+                    They are reminded every day. The candidate is not held up —
+                    the recruiter can move them on, and can enter the opinion for
+                    them if it arrived another way.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ everybody: the video link arrived after the invitation ============ -->
+    <record id="mail_template_interview_video_link" model="mail.template">
+        <field name="name">Hiring: your video link</field>
+        <field name="model_id" ref="model_pb_hiring_interview"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Your video link — {{ object.requisition_id.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    Here is the link for the interview on
+                    <strong><t t-out="object.pb_when_local or ''"/></strong>
+                    (<t t-out="object.requisition_id.title or ''"/>).
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object.pb_join_url"
+                       style="background:#4F46E5; color:#FFFFFF; text-decoration:none; padding:11px 20px; border-radius:9px; font-weight:600; display:inline-block;">
+                        Join the video call
+                    </a>
+                </p>
+                <p style="color:#4A5568;">
+                    <t t-out="object.pb_join_url or ''"/><br/>
+                    An updated calendar file is attached.
+                </p>
+                <br/>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

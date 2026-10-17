@@ -1,0 +1,840 @@
+/** @odoo-module **/
+
+import {Component} from "@odoo/owl";
+import {DataSources} from "@spreadsheet/data_sources/data_sources";
+import Dialog from "web.OwlDialog";
+import {Field} from "@web/views/fields/field";
+import {loadSpreadsheetDependencies} from "@spreadsheet/helpers/helpers";
+import {migrate} from "@spreadsheet/o_spreadsheet/migration";
+import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
+import {useService} from "@web/core/utils/hooks";
+import {useSetupAction} from "@web/webclient/actions/action_hook";
+import {waitForDataLoaded} from "@spreadsheet/actions/spreadsheet_download_action";
+
+const {Spreadsheet, Model} = spreadsheet;
+const {useSubEnv, useState, onWillStart} = owl;
+const uuidGenerator = new spreadsheet.helpers.UuidGenerator();
+
+
+class SpreadsheetTransportService {
+    constructor(orm, bus_service, model, res_id) {
+        this.orm = orm;
+        this.bus_service = bus_service;
+        this.model = model;
+        this.res_id = res_id;
+        this.channel = "spreadsheet_oca;" + this.model + ";" + this.res_id;
+        this.bus_service.addChannel(this.channel);
+        this.bus_service.addEventListener(
+            "notification",
+            this.onNotification.bind(this)
+        );
+        this.listeners = [];
+    }
+    onNotification({detail: notifications}) {
+        for (const {payload, type} of notifications) {
+            if (
+                type === "spreadsheet_oca" &&
+                payload.res_model === this.model &&
+                payload.res_id === this.res_id
+            ) {
+                // What shall we do if no callback is defined (empty until onNewMessage...) :/
+                for (const {callback} of this.listeners) {
+                    callback(payload);
+                }
+            }
+        }
+    }
+    sendMessage(message) {
+        this.orm.call(this.model, "send_spreadsheet_message", [[this.res_id], message]);
+    }
+    onNewMessage(id, callback) {
+        this.listeners.push({id, callback});
+    }
+    leave(id) {
+        this.listeners = this.listeners.filter((listener) => listener.id !== id);
+    }
+}
+
+export class SpreadsheetRenderer extends Component {
+    setup() {
+        this.orm = useService("orm");
+        this.bus_service = useService("bus_service");
+        this.user = useService("user");
+        this.ui = useService("ui");
+        this.action = useService("action");
+        const dataSources = new DataSources(this.orm);
+        this.state = useState({
+            dialogDisplayed: false,
+            dialogTitle: "Spreadsheet",
+            dialogContent: undefined,
+        });
+        this.confirmDialog = this.closeDialog;
+        this.spreadsheet_model = new Model(
+            migrate(this.props.record.spreadsheet_raw),
+            {
+                evalContext: {env: this.env, orm: this.orm},
+                transportService: new SpreadsheetTransportService(
+                    this.orm,
+                    this.bus_service,
+                    this.props.model,
+                    this.props.res_id
+                ),
+                client: {
+                    id: uuidGenerator.uuidv4(),
+                    name: this.user.name,
+                },
+                mode: this.props.record.mode,
+                dataSources,
+            },
+            this.props.record.revisions
+        );
+        useSubEnv({
+            saveSpreadsheet: this.onSpreadsheetSaved.bind(this),
+            editText: this.editText.bind(this),
+            askConfirmation: this.askConfirmation.bind(this),
+            downloadAsXLXS: this.downloadAsXLXS.bind(this),
+            copySheetAsValues: this.copySheetAsValues.bind(this), // Register the new action
+            copyMasterSheetAsValues: this.copyMasterSheetAsValues.bind(this), // Register the new action
+            createFinalSheetAsValues: this.createFinalSheetAsValues.bind(this), // Register the new action
+
+
+        });
+
+                
+        onWillStart(async () => {
+            await loadSpreadsheetDependencies();
+            await dataSources.waitForAllLoaded();
+            await this.env.importData(this.spreadsheet_model);
+        });
+        useSetupAction({
+            beforeLeave: () => this.onSpreadsheetSaved(),
+        });
+        dataSources.addEventListener("data-source-updated", () => {
+            const sheetId = this.spreadsheet_model.getters.getActiveSheetId();
+            this.spreadsheet_model.dispatch("EVALUATE_CELLS", {sheetId});
+        });
+    }
+    closeDialog() {
+        this.state.dialogDisplayed = false;
+        this.state.dialogTitle = "Spreadsheet";
+        this.state.dialogContent = undefined;
+        this.state.dialogHideInputBox = false;
+    }
+    onSpreadsheetSaved() {
+        const data = this.spreadsheet_model.exportData();
+        this.env.saveRecord({spreadsheet_raw: data});
+        this.spreadsheet_model.leaveSession();
+    }
+    editText(title, callback, options) {
+        this.state.dialogContent = options.placeholder;
+        this.state.dialogTitle = title;
+        this.state.dialogDisplayed = true;
+        this.confirmDialog = () => {
+            callback(this.state.dialogContent);
+            this.closeDialog();
+        };
+    }
+    askConfirmation(content, confirm) {
+        this.state.dialogContent = content;
+        this.state.dialogDisplayed = true;
+        this.state.dialogHideInputBox = true;
+        this.confirmDialog = () => {
+            confirm();
+            this.closeDialog();
+        };
+    }
+    async downloadAsXLXS() {
+        this.ui.block();
+        await waitForDataLoaded(this.spreadsheet_model);
+        await this.action.doAction({
+            type: "ir.actions.client",
+            tag: "action_download_spreadsheet",
+            params: {
+                name: this.props.record.name,
+                xlsxData: this.spreadsheet_model.exportXLSX(),
+            },
+        });
+        this.ui.unblock();
+    }
+    /** Biztinct */
+    /**
+    copySheetAsValues() {
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            console.warn("Spreadsheet model not available.");
+            return;
+        }
+    
+        // Target the specific sheet named "Allowance Details"
+        const sheets = spreadsheetModel.exportData().sheets;
+        const sourceSheetId = Object.keys(sheets).find(
+            (sheetId) => sheets[sheetId].name === "Allowance Details"
+        );
+    
+        if (!sourceSheetId) {
+            console.warn('Worksheet named "Allowance Details" not found.');
+            return;
+        }
+    
+        // Retrieve cells from the source sheet
+        const sourceSheetCells = sheets[sourceSheetId].cells;
+    
+        // Add a new sheet
+        const newSheetId = `${sourceSheetId}_CopyAsValues`;
+        spreadsheetModel.dispatch("ADD_SHEET", { sheetId: newSheetId });
+    
+        // Populate the new sheet with copied values (no formulas)
+        const newSheetCells = {};
+        for (const [cellId, cell] of Object.entries(sourceSheetCells)) {
+            newSheetCells[cellId] = { content: cell.content || "" }; // Copy values only
+        }
+    
+        spreadsheetModel.dispatch("UPDATE_SHEET_CELLS", {
+            sheetId: newSheetId,
+            cells: newSheetCells,
+        });
+    
+        console.log(`Copied "Allowance Details" to the new sheet "${newSheetId}".`);
+    } 
+
+    **/
+   /** 
+    copySheetAsValues() {
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            alert("Spreadsheet model not available.");
+            console.warn("Spreadsheet model not available.");
+            return;
+        }
+        alert("Spreadsheet model found.");
+    
+        // Target the specific sheet named "Allowance Details"
+        const sheets = spreadsheetModel.exportData().sheets;
+        const sheetId = Object.keys(sheets).find(
+            (id) => sheets[id].name === "Allowance Details"
+        );
+    
+        if (!sheetId) {
+            alert('Worksheet named "Allowance Details" not found.');
+            console.warn('Worksheet named "Allowance Details" not found.');
+            return;
+        }
+        alert(`Worksheet "Allowance Details" found with sheet ID: ${sheetId}`);
+    
+        // Retrieve cells from the source sheet
+        const sourceSheetCells = sheets[sheetId].cells;
+        alert(`Number of cells in "Allowance Details": ${Object.keys(sourceSheetCells).length}`);
+    
+        // Determine the maximum column index in the existing sheet
+        const columnIndexes = Object.keys(sourceSheetCells).map((cellId) => {
+            const match = cellId.match(/([A-Z]+)\d+/); // Matches column letters
+            if (match) {
+                return this.columnLettersToNumber(match[1]); // Convert column letters to numbers
+            }
+            return 0;
+        });
+    
+        const maxColumnIndex = Math.max(...columnIndexes);
+        alert(`Maximum existing column index: ${maxColumnIndex}`);
+    
+        // Add new columns with copied evaluated values
+        let copiedCells = 0; // Counter to track the number of cells copied
+        for (const [cellId, cell] of Object.entries(sourceSheetCells)) {
+            const match = cellId.match(/([A-Z]+)(\d+)/); // Matches column and row
+            if (match) {
+                const [, columnLetters, rowNumber] = match;
+                const newColumnIndex = this.columnLettersToNumber(columnLetters) + maxColumnIndex;
+                const newColumnLetters = this.columnNumberToLetters(newColumnIndex);
+    
+                // Define the new cell ID for the copied column
+                const newCellId = `${newColumnLetters}${rowNumber}`;
+    
+                // Use the evaluated value of the cell, which may come from `value` or similar
+                const evaluatedValue = cell.evaluated_value || cell.value || ""; // Adjust key based on API
+                if (copiedCells < 5) {
+                    alert(`Copying cell ${cellId} (evaluated value: "${evaluatedValue}") to ${newCellId}`);
+                }
+    
+                // Copy the evaluated value to the new column
+                spreadsheetModel.dispatch("UPDATE_CELL", {
+                    sheetId,
+                    cellId: newCellId,
+                    content: evaluatedValue, // Use the evaluated value
+                });
+    
+                copiedCells++;
+            }
+        }
+        alert(`Number of cells copied: ${copiedCells}`);
+    
+        console.log('New columns appended with evaluated values to the "Allowance Details" sheet.');
+    }
+    
+    // Helper function to convert column letters (e.g., "A", "AB") to a numeric index
+    columnLettersToNumber(letters) {
+        let number = 0;
+        for (let i = 0; i < letters.length; i++) {
+            number *= 26;
+            number += letters.charCodeAt(i) - "A".charCodeAt(0) + 1;
+        }
+        return number;
+    }
+    
+    // Helper function to convert a numeric index (e.g., 1, 28) to column letters
+    columnNumberToLetters(number) {
+        let letters = "";
+        while (number > 0) {
+            const remainder = (number - 1) % 26;
+            letters = String.fromCharCode("A".charCodeAt(0) + remainder) + letters;
+            number = Math.floor((number - 1) / 26);
+        }
+        return letters;
+    } **/
+   
+    /** Working code  */
+    /**
+    copySheetAsValues = async function (env) {
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            alert("Spreadsheet model not available.");
+            return;
+        }
+        alert("Spreadsheet model found.");
+    
+        // Source sheet: "TEMPLATE Employee Details"
+        const sheets = spreadsheetModel.exportData().sheets;
+        const sourceSheetId = Object.keys(sheets).find(
+            (id) => sheets[id].name === "TEMPLATE Employee Details"
+        );
+    
+        if (!sourceSheetId) {
+            alert('Source sheet "TEMPLATE Employee Details" not found.');
+            return;
+        }
+        alert(`Source sheet found: ${sourceSheetId}`);
+    
+        // Define the source zones
+        const sourceSheetData = sheets[sourceSheetId];
+        if (!sourceSheetData) {
+            alert("Source sheet data is missing or invalid.");
+            return;
+        }
+        
+        const columnCount = sourceSheetData.columnCount || 3; // Default or dynamically calculated value
+        const rowCount = sourceSheetData.rowCount || 3; // Default or dynamically calculated value
+        
+        const allSourceZones = [
+            {
+                sheetId: sourceSheetId,
+                left: 0,
+                top: 0,
+                right: columnCount - 1,
+                bottom: rowCount - 1,
+            },
+        ];
+        alert(`Source Zones: ${JSON.stringify(allSourceZones)}`);
+        
+        spreadsheetModel.dispatch("SELECT", { zones: allSourceZones });
+    
+        // Delay to ensure SELECT dispatch completes
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    
+        // Copy content to clipboard
+        spreadsheetModel.dispatch("COPY", { zones: allSourceZones });
+        const clipboardContent = spreadsheetModel.getters.getClipboardContent(allSourceZones, "onlyValue");
+    
+        if (!clipboardContent) {
+            alert("Clipboard is empty. Nothing to copy.");
+            return;
+        }
+        alert(`Clipboard content (first three rows):\n${clipboardContent.split("\n").slice(0, 3).join("\n")}`);
+    
+        // Destination sheet: "Employee Details"
+        const destinationSheetId = Object.keys(sheets).find(
+            (id) => sheets[id].name === "Employee Details"
+        );
+    
+        if (!destinationSheetId) {
+            alert('Destination sheet "Employee Details" not found.');
+            return;
+        }
+        alert(`Destination sheet found: ${destinationSheetId}`);
+
+        const destinationSheetData = sheets[destinationSheetId];
+        if (!destinationSheetData) {
+            alert("Destination sheet data is missing or invalid.");
+            return;
+        }
+
+        
+        const destinationColumnCount = destinationSheetData.columnCount || 3; // Default or dynamically calculated value
+        const destinationRowCount = destinationSheetData.rowCount || 3; // Default or dynamically calculated value
+        
+        const allDestinationZones = [
+            {
+                sheetId: destinationSheetId,
+                left: 0,
+                top: 0,
+                right: destinationColumnCount - 1,
+                bottom: destinationRowCount - 1,
+            },
+        ];
+        alert(`Destination Zones: ${JSON.stringify(allDestinationZones)}`);
+    
+        // Paste content into the destination worksheet
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones,
+            pasteOption: "onlyValue",
+        });
+        alert("Copied values pasted into destination worksheet.");
+    }
+        
+    */
+
+
+    copySheetAsValues = async function (env) {
+        
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            alert("Spreadsheet model not available.");
+            return;
+        }
+
+        // Source sheet: "TEMPLATE Employee Details"
+
+        const sourceSheetName = "TEMPLATE Employee Details";
+        const sourceSheetId = spreadsheetModel.getters.getSheetIdByName(sourceSheetName);
+        if (!sourceSheetId) {
+            alert('Source sheet "TEMPLATE Employee Details" not found.');
+            return;
+        }
+ 
+        // Force activate the "TEMPLATE Employee Details" sheet
+        const currentActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (currentActiveSheetId !== sourceSheetId) {
+            spreadsheetModel.dispatch("ACTIVATE_SHEET", {
+                sheetIdFrom: currentActiveSheetId,
+                sheetIdTo: sourceSheetId,
+            });
+    
+            // Wait for activation to complete before proceeding
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+  
+        // Re-fetch the active sheet ID to confirm activation
+        
+        const confirmedActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (confirmedActiveSheetId !== sourceSheetId) {
+            alert("Failed to activate the correct sheet. Stopping operation.");
+            return;
+        }
+        
+       
+        const allSourceZones = [
+            {
+                sheetId: sourceSheetId,
+                left: 0,
+                top: 0,
+                right: 3,
+                bottom: 3,
+            },
+        ];
+    
+        // Select and copy content
+        //spreadsheetModel.dispatch("SELECT", { zones: allSourceZones });
+ 
+
+ 
+           
+        // Explicitly call selectAll() on the activated sheet
+        spreadsheetModel.selection.selectAll();
+        // Delay to ensure SELECT dispatch completes
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        spreadsheetModel.dispatch("COPY", { zones: allSourceZones });
+    
+        const clipboardContent = spreadsheetModel.getters.getClipboardContent(allSourceZones, "onlyValue");
+        if (!clipboardContent) {
+            alert("Clipboard is empty. Nothing to copy.");
+            return;
+        }
+
+
+        // Ensure the sheet with the desired name exists or gets created
+        const desiredSheetName = "Employee Details";
+
+        // Check if a sheet with the name "Employee Details" already exists
+        const existingSheetId = spreadsheetModel.getters.getSheetIdByName(desiredSheetName);
+
+        if (existingSheetId) {
+            // Delete the existing sheet
+            spreadsheetModel.dispatch("DELETE_SHEET", { sheetId: existingSheetId });
+        }
+
+
+        // Create a new sheet with the name "Employee Details"
+        const activeSheetId = spreadsheetModel.getters.getActiveSheetId();
+        const position = spreadsheetModel.getters.getSheetIds().findIndex(
+            (sheetId) => sheetId === activeSheetId
+        ) + 1;
+        const newSheetId = spreadsheetModel.uuidGenerator.uuidv4();
+
+        spreadsheetModel.dispatch("CREATE_SHEET", { sheetId: newSheetId, position, name: desiredSheetName });
+        spreadsheetModel.dispatch("ACTIVATE_SHEET", { sheetIdFrom: activeSheetId, sheetIdTo: newSheetId });
+  
+    
+        // Paste content into the destination worksheet
+        const allDestinationZones = [
+            {
+                sheetId: newSheetId,
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+            },
+        ];
+
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones,
+            pasteOption: "onlyValue",
+        });
+        /**
+        const allDestinationZones2 = [
+            {
+                sheetId: newSheetId,
+                left: 1,
+                top: 0,
+                right: 1,
+                bottom: 0,
+            },
+        ];
+
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones2,
+        });
+
+
+        let columns = [1];
+        spreadsheetModel.dispatch("REMOVE_COLUMNS_ROWS", {
+            sheetId: spreadsheetModel.getters.getActiveSheetId(),
+            dimension: "COL",
+            elements: columns,
+        });
+        */
+    };
+    
+    
+
+    copyMasterSheetAsValues = async function (env) {
+        
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            alert("Spreadsheet model not available.");
+            return;
+        }
+    
+
+        const sourceSheetName = "TEMPLATE Master";
+        const sourceSheetId = spreadsheetModel.getters.getSheetIdByName(sourceSheetName);
+        if (!sourceSheetId) {
+            alert('Source sheet "TEMPLATE Master" not found.');
+            return;
+        }
+ 
+        // Force activate the "TEMPLATE Master" sheet
+        const currentActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (currentActiveSheetId !== sourceSheetId) {
+            spreadsheetModel.dispatch("ACTIVATE_SHEET", {
+                sheetIdFrom: currentActiveSheetId,
+                sheetIdTo: sourceSheetId,
+            });
+    
+            // Wait for activation to complete before proceeding
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+    
+        // Re-fetch the active sheet ID to confirm activation
+        
+        const confirmedActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (confirmedActiveSheetId !== sourceSheetId) {
+            alert("Failed to activate the correct sheet. Stopping operation.");
+            return;
+        }
+        
+       
+        const allSourceZones = [
+            {
+                sheetId: sourceSheetId,
+                left: 0,
+                top: 0,
+                right: 3,
+                bottom: 3,
+            },
+        ];
+    
+           
+        // Explicitly call selectAll() on the activated sheet
+        spreadsheetModel.selection.selectAll();
+        // Delay to ensure SELECT dispatch completes
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        spreadsheetModel.dispatch("COPY", { zones: allSourceZones });
+    
+        const clipboardContent = spreadsheetModel.getters.getClipboardContent(allSourceZones, "onlyValue");
+        if (!clipboardContent) {
+            alert("Clipboard is empty. Nothing to copy.");
+            return;
+        }
+
+
+        // Ensure the sheet with the desired name exists or gets created
+        const desiredSheetName = "Staging";
+
+        // Check if a sheet with the name "Staging" already exists
+        const existingSheetId = spreadsheetModel.getters.getSheetIdByName(desiredSheetName);
+
+        if (existingSheetId) {
+            // Delete the existing sheet
+            spreadsheetModel.dispatch("DELETE_SHEET", { sheetId: existingSheetId });
+        }
+
+
+        // Create a new sheet with the name "Staging"
+        const activeSheetId = spreadsheetModel.getters.getActiveSheetId();
+        const position = spreadsheetModel.getters.getSheetIds().findIndex(
+            (sheetId) => sheetId === activeSheetId
+        ) + 1;
+        const newSheetId = spreadsheetModel.uuidGenerator.uuidv4();
+
+        spreadsheetModel.dispatch("CREATE_SHEET", { sheetId: newSheetId, position, name: desiredSheetName });
+        spreadsheetModel.dispatch("ACTIVATE_SHEET", { sheetIdFrom: activeSheetId, sheetIdTo: newSheetId });
+  
+    
+        // Paste content into the destination worksheet
+        const allDestinationZones = [
+            {
+                sheetId: newSheetId,
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+            },
+        ];
+
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones,
+        });
+
+
+        // Ensure the sheet with the TEMP name exists or gets created
+        const desiredSheetName2 = "TEMP";
+
+        // Check if a sheet with the name "TEMP" already exists
+        const existingSheetId2 = spreadsheetModel.getters.getSheetIdByName(desiredSheetName2);
+
+        if (existingSheetId2) {
+            // Delete the existing sheet
+            spreadsheetModel.dispatch("DELETE_SHEET", { sheetId: existingSheetId2 });
+        }
+
+
+        // Create a Temporary sheet with the name "TEMP"
+        const activeSheetId2 = spreadsheetModel.getters.getActiveSheetId();
+        const position2 = spreadsheetModel.getters.getSheetIds().findIndex(
+            (sheetId) => sheetId === activeSheetId2
+        ) + 1;
+        const TempSheetId = spreadsheetModel.uuidGenerator.uuidv4();
+
+        spreadsheetModel.dispatch("CREATE_SHEET", { sheetId: TempSheetId, position2, name: desiredSheetName2 });
+        spreadsheetModel.dispatch("ACTIVATE_SHEET", { sheetIdFrom: activeSheetId2, sheetIdTo: TempSheetId });
+
+
+
+        const allDestinationZones2 = [
+            {
+                sheetId: TempSheetId,
+                left: 0,
+                top: 0,
+                right: 6,
+                bottom: 6,
+            },
+        ];
+
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones2,
+            pasteOption: "onlyValue",
+        });
+        
+        const colarray = Array.from({ length: 75 }, (_, i) => i + 1);
+        spreadsheetModel.dispatch("REMOVE_COLUMNS_ROWS", {
+            sheetId: TempSheetId,
+            dimension: "COL",
+            elements: colarray,
+        });
+        
+        spreadsheetModel.dispatch("COPY");
+        spreadsheetModel.dispatch("ACTIVATE_SHEET", { sheetIdFrom: TempSheetId, sheetIdTo: newSheetId });
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones,
+        });
+        
+        const totalRows = 202;
+        const rowsToDelete = [];
+
+        // Iterate through the rows (assuming a fixed range or you dynamically calculate the row count)
+        for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) { // Adjust the max row range as needed
+            // Get the cell object from column N (index 13)
+            const cellObject = spreadsheetModel.getters.getCell(newSheetId, 13, rowIndex); // 13 = Column N
+        
+            // Extract the evaluated value from the cell object
+            const cellValue = cellObject.formattedValue; // Access the 'value' property or set it to an empty string if undefined
+
+        
+            // Check if the evaluated cell value is blank
+            if (cellValue === undefined || cellValue === null || cellValue.trim() === "") {
+                rowsToDelete.push(rowIndex); // Add the row index to the delete list
+             }
+        }
+
+        
+
+        // Delete rows in reverse order to prevent shifting issues
+        rowsToDelete.reverse().forEach((rowIndex) => {
+            spreadsheetModel.dispatch("REMOVE_COLUMNS_ROWS", {
+                sheetId: newSheetId,
+                dimension: "ROW",
+                elements: [rowIndex],
+            });
+        });
+        
+        //Delet TEMP sheet whose name is defined above in desiredSheetName2
+        const existingSheetId3 = spreadsheetModel.getters.getSheetIdByName(desiredSheetName2);        
+        if (existingSheetId3) {
+            // Delete the existing sheet
+            spreadsheetModel.dispatch("DELETE_SHEET", { sheetId: existingSheetId3 });
+        }
+
+
+    };
+
+    createFinalSheetAsValues = async function (env) {
+        
+        const spreadsheetModel = this.spreadsheet_model;
+    
+        if (!spreadsheetModel) {
+            alert("Spreadsheet model not available.");
+            return;
+        }
+    
+        const sourceSheetName = "Staging";
+        const sourceSheetId = spreadsheetModel.getters.getSheetIdByName(sourceSheetName);
+        if (!sourceSheetId) {
+            alert('Source sheet "Staging" not found.');
+            return;
+        }
+ 
+        // Force activate the "Staging" sheet
+        const currentActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (currentActiveSheetId !== sourceSheetId) {
+            spreadsheetModel.dispatch("ACTIVATE_SHEET", {
+                sheetIdFrom: currentActiveSheetId,
+                sheetIdTo: sourceSheetId,
+            });
+    
+            // Wait for activation to complete before proceeding
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+    
+        // Re-fetch the active sheet ID to confirm activation
+        
+        const confirmedActiveSheetId = spreadsheetModel.getters.getActiveSheetId();
+        if (confirmedActiveSheetId !== sourceSheetId) {
+            alert("Failed to activate the correct sheet. Stopping operation.");
+            return;
+        }
+        
+       
+        const allSourceZones = [
+            {
+                sheetId: sourceSheetId,
+                left: 0,
+                top: 0,
+                right: 3,
+                bottom: 3,
+            },
+        ];
+    
+          
+        // Explicitly call selectAll() on the activated sheet
+        spreadsheetModel.selection.selectAll();
+        // Delay to ensure SELECT dispatch completes
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        spreadsheetModel.dispatch("COPY", { zones: allSourceZones });
+    
+        const clipboardContent = spreadsheetModel.getters.getClipboardContent(allSourceZones, "onlyValue");
+        if (!clipboardContent) {
+            alert("Clipboard is empty. Nothing to copy.");
+            return;
+        }
+
+
+        // Ensure the sheet with the desired name exists or gets created
+        const desiredSheetName = "Final";
+
+        // Check if a sheet with the name "Staging" already exists
+        const existingSheetId = spreadsheetModel.getters.getSheetIdByName(desiredSheetName);
+
+        if (existingSheetId) {
+            // Delete the existing sheet
+            spreadsheetModel.dispatch("DELETE_SHEET", { sheetId: existingSheetId });
+        }
+
+
+        // Create a new sheet with the name "Final"
+        const activeSheetId = spreadsheetModel.getters.getActiveSheetId();
+        const position = spreadsheetModel.getters.getSheetIds().findIndex(
+            (sheetId) => sheetId === activeSheetId
+        ) + 1;
+        const newSheetId = spreadsheetModel.uuidGenerator.uuidv4();
+
+        spreadsheetModel.dispatch("CREATE_SHEET", { sheetId: newSheetId, position, name: desiredSheetName });
+        spreadsheetModel.dispatch("ACTIVATE_SHEET", { sheetIdFrom: activeSheetId, sheetIdTo: newSheetId });
+  
+    
+        // Paste content into the destination worksheet
+        const allDestinationZones = [
+            {
+                sheetId: newSheetId,
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+            },
+        ];
+
+        spreadsheetModel.dispatch("PASTE", {
+            target: allDestinationZones,
+            pasteOption: "onlyValue",
+        });
+
+
+    };
+    
+
+}    
+
+SpreadsheetRenderer.template = "spreadsheet_oca.SpreadsheetRenderer";
+SpreadsheetRenderer.components = {
+    Spreadsheet,
+    Field,
+    Dialog,
+};
+SpreadsheetRenderer.props = {
+    record: Object,
+    res_id: {type: Number, optional: true},
+    model: String,
+    importData: {type: Function, optional: true},
+};

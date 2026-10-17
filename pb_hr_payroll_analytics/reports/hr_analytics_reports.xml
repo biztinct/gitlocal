@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Odoo 19 dropped the <report> shortcut from the data RNG; these are the
+         explicit ir.actions.report equivalents (binding adds the Print-menu entry). -->
 
     <!-- Personnel Costs Report -->
-    <report
-        id="action_report_personnel_costs"
-        model="hr.analytics.personnel.costs"
-        string="Personnel Costs Report"
-        report_type="qweb-pdf"
-        file="pb_hr_payroll_analytics.report_personnel_costs"
-        name="pb_hr_payroll_analytics.report_personnel_costs"
-    />
+    <record id="action_report_personnel_costs" model="ir.actions.report">
+        <field name="name">Personnel Costs Report</field>
+        <field name="model">hr.analytics.personnel.costs</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_analytics.report_personnel_costs</field>
+        <field name="report_file">pb_hr_payroll_analytics.report_personnel_costs</field>
+        <field name="binding_model_id" ref="model_hr_analytics_personnel_costs"/>
+        <field name="binding_type">report</field>
+    </record>
 
     <!-- Statutory Contributions Report -->
-    <report
-        id="action_report_statutory_contrib"
-        model="hr.analytics.statutory.contrib"
-        string="Statutory Contributions Report"
-        report_type="qweb-pdf"
-        file="pb_hr_payroll_analytics.report_statutory_contrib"
-        name="pb_hr_payroll_analytics.report_statutory_contrib"
-    />
+    <record id="action_report_statutory_contrib" model="ir.actions.report">
+        <field name="name">Statutory Contributions Report</field>
+        <field name="model">hr.analytics.statutory.contrib</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_analytics.report_statutory_contrib</field>
+        <field name="report_file">pb_hr_payroll_analytics.report_statutory_contrib</field>
+        <field name="binding_model_id" ref="model_hr_analytics_statutory_contrib"/>
+        <field name="binding_type">report</field>
+    </record>
 
     <!-- Headcount Report -->
-    <report
-        id="action_report_headcount"
-        model="hr.analytics.headcount"
-        string="Headcount Analysis Report"
-        report_type="qweb-pdf"
-        file="pb_hr_payroll_analytics.report_headcount"
-        name="pb_hr_payroll_analytics.report_headcount"
-    />
+    <record id="action_report_headcount" model="ir.actions.report">
+        <field name="name">Headcount Analysis Report</field>
+        <field name="model">hr.analytics.headcount</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_analytics.report_headcount</field>
+        <field name="report_file">pb_hr_payroll_analytics.report_headcount</field>
+        <field name="binding_model_id" ref="model_hr_analytics_headcount"/>
+        <field name="binding_type">report</field>
+    </record>
 
 </odoo>

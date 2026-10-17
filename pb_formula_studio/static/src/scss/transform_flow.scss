@@ -1,0 +1,418 @@
+/**
+ * JOURNEY J4 — the Transformations board.
+ *
+ * Same three structural rules `mapping.scss` states for the canvas, because the
+ * board is the same KIND of object and a reader moving between the tabs must not
+ * have to relearn it:
+ *
+ *   1. `.tfb-board` CLIPS. A wire may end on a lane's edge; nothing drawn
+ *      between the lanes may reach the search bar above them. The popover is a
+ *      SIBLING of the board rather than a child, because it is allowed to
+ *      overhang — and because a bounding-box sweep that cannot tell "covered on
+ *      purpose" from "collided" invents defects (MJ7).
+ *   2. every colour is a bound `--i*`/`--mc-*` variable with the hex fallback
+ *      the canvas already carries. Nothing new is invented here: the amber that
+ *      means "unread output" is the same amber that means "suggested" one tab
+ *      over, which is the whole point of a shared vocabulary.
+ *   3. one object per wire.
+ *
+ * No `min(<length>, calc(…))` anywhere — libsass parses that as its own numeric
+ * `min()` and fails the WHOLE backend bundle, which serves the previous
+ * stylesheet under a red banner and makes every screen on the database look
+ * broken rather than just this one (MJ5).
+ */
+.tfb {
+    position: absolute; inset: 0; outline: none;
+    display: flex; flex-direction: column; min-height: 0;
+    --mc-amber:      var(--i-amber, #D97706);
+    --mc-amber-line: var(--i-amber-line, #FCD34D);
+    --mc-amber-ink:  var(--i-amber-ink, #B45309);
+    --mc-amber-wash: var(--i-amber-wash, #FEF3C7);
+    --mc-rose:       var(--i-rose, #DC2626);
+    --mc-rose-ink:   var(--i-rose-ink, #B91C1C);
+    --mc-rose-wash:  var(--i-rose-wash, #FEE2E2);
+    --mc-slate:      var(--i-slate, #94A3B8);
+    --mc-wash:       var(--i-wash, #F1F5F9);
+    --mc-wash2:      var(--i-wash2, #EEF1F5);
+}
+
+/* ---- the bar over all three lanes ------------------------------------- */
+.tfb .tfb-bar {
+    flex: none; display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px; border-bottom: 1px solid var(--line, #E8E9F3);
+    background: #fff;
+}
+.tfb .tfb-q {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--mc-wash); border: 1px solid var(--line, #E8E9F3);
+    border-radius: 999px; padding: 3px 10px; width: 320px; max-width: 40%;
+}
+.tfb .tfb-q:focus-within { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.tfb .tfb-q__ic { color: var(--muted, #6B7280); display: flex; }
+.tfb .tfb-q input {
+    flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+    font-family: inherit; font-size: 12.5px; color: var(--ink, #1F2233); padding: 2px 0;
+}
+.tfb .tfb-q__x { border: 0; background: transparent; color: var(--muted, #6B7280); cursor: pointer; display: flex; padding: 2px; border-radius: 999px; }
+.tfb .tfb-q__x:hover { background: var(--mc-wash2); color: var(--ink, #1F2233); }
+
+.tfb .tfb-arm {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--i-soft, #EDEAF8); border: 1px solid var(--i-border, #CBC2EE);
+    color: var(--i600, #4A3D96); border-radius: 999px; padding: 4px 6px 4px 12px;
+    font-size: 12px; font-weight: 700;
+}
+.tfb .tfb-arm__x {
+    border: 0; background: #fff; color: var(--i600, #4A3D96); cursor: pointer;
+    border-radius: 999px; padding: 3px 10px; font-family: inherit;
+    font-size: 11.5px; font-weight: 800;
+}
+.tfb .tfb-arm__x:hover { background: var(--i, #5A4BB0); color: #fff; }
+
+/* ---- the board -------------------------------------------------------- */
+/* The lanes are NARROWER than a third of the board, and the space between them
+   is the point: a bezier needs horizontal run to read as a curve rather than as
+   a kink, and with three lanes sharing the width evenly there were 28px between
+   a rule card and the component it feeds. The canvas solves the same problem the
+   same way — fixed-width columns with `auto` margins — and the two boards should
+   not disagree about how much air a wire needs. */
+.tfb .tfb-board {
+    position: relative; flex: 1; min-height: 0;
+    overflow: hidden;      /* fallback */
+    overflow: clip;        /* no scroll container, no escape */
+    display: flex; justify-content: space-between; gap: 0; padding: 0;
+    --tfb-col-w: 310px;
+    --tfb-col-w-mid: 370px;
+}
+.tfb.is-busy .tfb-board { opacity: .55; pointer-events: none; }
+
+.tfb .tfb-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+/* read edges — derived facts, so: dashed, thin, quiet, and NOT clickable. The
+   look is the canvas' "suggested" dash at the canvas' slate, which is the
+   honest reading: a line that is shown but cannot be acted on. */
+.tfb .tfb-reads .tfb-r { fill: none; stroke: var(--mc-slate); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: .7; }
+.tfb .tfb-reads .tfb-r.lit { stroke: var(--i, #5A4BB0); opacity: 1; }
+.tfb .tfb-reads .tfb-rh { fill: var(--mc-slate); opacity: .7; }
+
+/* feed edges — real rows, so: solid, full weight, with a hit area */
+.tfb .tfb-hit { fill: none; stroke: transparent; stroke-width: 16; stroke-linecap: round; pointer-events: stroke; cursor: pointer; }
+/* J6 D2 — a read edge is double-clickable but still not editable, so it keeps
+   the arrow it has always had. A pointer cursor here would promise a click
+   target that does nothing on one click, which is worse than no affordance. */
+.tfb .tfb-hit.read { cursor: default; }
+.tfb .tfb-w { color: var(--i, #5A4BB0); transition: opacity .14s ease; }
+.tfb .tfb-w .tfb-wire { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; transition: stroke-width .12s ease; }
+.tfb .tfb-w .tfb-head { fill: currentColor; }
+.tfb .tfb-w.bind { color: var(--mc-amber); }
+.tfb .tfb-w.bind .tfb-wire { stroke-dasharray: 7 4; }
+.tfb .tfb-w.sev { color: var(--mc-rose); }
+/* J6 D1 — a wire parked on the band edge because its target is scrolled away.
+   No arrowhead (an arrowhead is the symbol for "it ends HERE", and here is not
+   where it ends) and a fade towards the edge. The dock chip carries the count.
+   Deliberately NOT a dash: dashes already mean "binding" one line above, and a
+   second meaning for one mark is how a legend stops being readable. */
+.tfb .tfb-w.dockend .tfb-head { opacity: 0; }
+.tfb .tfb-w.dockend .tfb-wire { opacity: .4; }
+.tfb .tfb-reads .tfb-r.dockend { opacity: .3; }
+.tfb .tfb-w.hot .tfb-wire, .tfb .tfb-w.sel .tfb-wire { stroke-width: 3.6; }
+
+/* The wire's verb. `top`/`left` come from `verbPos`, which has already lifted
+   it VERB_DY clear of the stroke (J6 D3) — the translate here only centres the
+   pill on that point, and must not add an offset of its own or the two would
+   have to agree about a number neither of them owns. */
+.tfb .tfb-wireact {
+    position: absolute; z-index: 6; transform: translate(-50%, -50%);
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(15, 12, 40, .14); padding: 2px;
+    display: flex; align-items: center;
+}
+.tfb .tfb-wireact__x {
+    display: flex; align-items: center; gap: 5px; border: 0; background: transparent;
+    color: var(--mc-rose-ink); cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 800; border-radius: 999px; padding: 3px 10px;
+}
+.tfb .tfb-wireact__x:hover { background: var(--mc-rose-wash); }
+.tfb .tfb-wireact__say { font-size: 11px; font-weight: 700; color: var(--muted, #6B7280); padding: 3px 10px; white-space: nowrap; }
+
+/* ---- lanes ------------------------------------------------------------ */
+.tfb .tfb-col { display: flex; flex-direction: column; min-height: 0; flex: 0 1 auto; width: var(--tfb-col-w); min-width: 0; z-index: 2; }
+/* the middle lane carries a sentence per card, so it earns the extra width */
+/* No `calc()` over a custom property: MJ5's family. libsass has its own
+   opinions about arithmetic functions, and a stylesheet that fails to
+   compile takes the WHOLE backend bundle with it — a second variable
+   costs one line and cannot be mistaken for a Sass call. */
+.tfb .tfb-col.rules { width: var(--tfb-col-w-mid); }
+
+.tfb .tfb-col-h {
+    flex: none; display: flex; flex-direction: column; gap: 5px;
+    padding: 11px 14px 9px;
+}
+.tfb .tfb-col-t { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i600, #4A3D96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tfb .tfb-col-c { font-size: 11px; font-weight: 800; color: var(--muted, #6B7280); background: var(--mc-wash2); border-radius: 999px; padding: 1px 8px; align-self: flex-start; white-space: nowrap; }
+.tfb .tfb-col-n { font-size: 11px; color: var(--muted, #6B7280); font-style: italic; }
+
+.tfb .tfb-new {
+    display: flex; align-items: center; gap: 6px; align-self: flex-start;
+    border: 1px dashed var(--i-border, #CBC2EE); background: #fff;
+    color: var(--i600, #4A3D96); cursor: pointer; border-radius: 999px;
+    padding: 4px 12px; font-family: inherit; font-size: 11.5px; font-weight: 800;
+}
+.tfb .tfb-new:hover { background: var(--i-soft, #EDEAF8); border-style: solid; }
+.tfb .tfb-new:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+
+.tfb .tfb-col-b {
+    flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+    display: flex; flex-direction: column; gap: 7px; padding: 2px 14px 16px;
+}
+.tfb .tfb-col-e { font-size: 12px; color: var(--muted, #6B7280); padding: 14px 2px; text-align: center; }
+
+/* ---- cards ------------------------------------------------------------ */
+.tfb .tfb-item {
+    position: relative; flex: none;
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 11px;
+    padding: 9px 12px; box-shadow: 0 1px 2px rgba(15, 12, 40, .05);
+    transition: border-color .13s, box-shadow .13s;
+}
+.tfb .tfb-item.rule, .tfb .tfb-item.comp { cursor: pointer; }
+/* the read lane is read-only, and the CURSOR is the first thing that says so */
+.tfb .tfb-item.field { cursor: default; }
+.tfb .tfb-item.rule:hover, .tfb .tfb-item.comp:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(15, 12, 40, .08); }
+
+/* JOURNEY J7 D2 — the same rule as the canvas' card, because it is the same
+   defect: "OT Night shift weeken…" is this board's version of "Employee Bank
+   Ac…". The chrome is NOT literally shared (`.tfb-item-l` is this board's own
+   class, `.mc-item-label` is the canvas'), so the fix is stated twice on
+   purpose rather than forked once by accident — see the canvas' block for why
+   `flex-wrap` alone does it and why `break-word` and not `anywhere`. */
+.tfb .tfb-item-l { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; row-gap: 3px; font-size: 12.5px; font-weight: 700; color: var(--ink, #1F2233); min-width: 0; }
+.tfb .tfb-item-l > span:first-child {
+    overflow: hidden; white-space: normal; overflow-wrap: break-word; min-width: 0;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    line-height: 1.32;
+}
+.tfb .tfb-item-l > span.is-clipped {
+    cursor: help;
+    text-decoration: underline dotted currentColor;
+    text-decoration-thickness: 1px; text-underline-offset: 2px;
+}
+.tfb .tfb-item-s { font-size: 11px; color: var(--muted, #6B7280); margin-top: 2px; line-height: 1.35; }
+.tfb .tfb-item-v { font-size: 11px; color: var(--i600, #4A3D96); background: var(--mc-wash); border-radius: 5px; padding: 1px 6px; margin-top: 4px; align-self: flex-start; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tfb .tfb-item-n { font-size: 10.5px; color: var(--muted, #6B7280); margin-top: 4px; }
+.tfb .tfb-item-err { font-size: 10.5px; font-weight: 800; color: var(--mc-rose-ink); background: var(--mc-rose-wash); border-radius: 5px; padding: 2px 7px; margin-top: 5px; align-self: flex-start; display: inline-block; }
+
+/* the output key + its wire dock — the only write gesture on the board */
+.tfb .tfb-item-out { display: flex; align-items: center; gap: 7px; margin-top: 7px; }
+.tfb .tfb-out-k {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px; font-weight: 800; color: var(--i600, #4A3D96);
+    background: var(--i-soft, #EDEAF8); border-radius: 5px; padding: 2px 7px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* J6 D4 — the output PORT: the whole row is the button.
+   The 22px icon that used to carry this gesture is gone. A board with exactly
+   one write gesture should spend its width saying so, and the row already had
+   the space — the key sits left, the sentence takes the middle, the glyph
+   closes it. Full width so the hit target is unmissable rather than pixel-hunted. */
+.tfb .tfb-out.port {
+    display: flex; align-items: center; gap: 7px; width: 100%; margin-top: 7px;
+    border: 1px dashed var(--i-border, #CBC2EE); background: #fff;
+    border-radius: 8px; padding: 4px 8px 4px 4px; cursor: pointer;
+    font-family: inherit; text-align: left; color: var(--i600, #4A3D96);
+    transition: background .12s ease, border-color .12s ease;
+}
+.tfb .tfb-out.port .tfb-out-lbl {
+    font-size: 11px; font-weight: 700; color: var(--muted, #6B7280);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 auto;
+}
+.tfb .tfb-out.port svg { flex: none; }
+.tfb .tfb-out.port:hover {
+    border-color: var(--i, #5A4BB0); border-style: solid; background: var(--i-soft, #EDEAF8);
+}
+.tfb .tfb-out.port:hover .tfb-out-lbl { color: var(--i600, #4A3D96); }
+.tfb .tfb-out.port:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.tfb .tfb-out.port.on {
+    background: var(--i, #5A4BB0); border-color: var(--i, #5A4BB0); border-style: solid; color: #fff;
+}
+.tfb .tfb-out.port.on .tfb-out-k { background: rgba(255, 255, 255, .22); color: #fff; }
+.tfb .tfb-out.port.on .tfb-out-lbl { color: #fff; }
+
+/* MF13 — a per-card affordance comes OUT of the flow, or the label collapses to
+   a single character while looking perfectly correct in the DOM. */
+.tfb .tfb-item-more {
+    position: absolute; top: 7px; right: 8px;
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    border: 0; background: transparent; color: var(--muted, #6B7280);
+    border-radius: 6px; cursor: pointer; opacity: 0; transition: opacity .12s;
+}
+.tfb .tfb-item:hover .tfb-item-more, .tfb .tfb-item-more.on, .tfb .tfb-item-more:focus-visible { opacity: 1; }
+.tfb .tfb-item-more:hover, .tfb .tfb-item-more.on { background: var(--mc-wash2); color: var(--i600, #4A3D96); }
+.tfb .tfb-item-more:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+/* the ⋮ sits where the label ends, so the label stops before it */
+.tfb .tfb-item.rule .tfb-item-l { padding-right: 24px; }
+
+.tfb .tfb-item-lin {
+    display: flex; align-items: center; justify-content: center; flex: none;
+    width: 18px; height: 18px; padding: 0;
+    border: 0; background: transparent; color: var(--mc-slate); cursor: pointer; border-radius: 5px;
+}
+.tfb .tfb-item-lin svg { width: 13px; height: 13px; }
+.tfb .tfb-item-lin:hover { color: var(--i, #5A4BB0); background: var(--mc-wash2); }
+.tfb .tfb-item-lin:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+
+/* health tones — one amber, one rose, the canvas' own */
+.tfb .tfb-item.rule.warn { border-color: var(--mc-amber-line); background: linear-gradient(0deg, var(--mc-amber-wash) 0%, #fff 62%); }
+.tfb .tfb-item.rule.drift { border-color: var(--mc-amber-line); }
+.tfb .tfb-item.rule.sev { border-color: var(--mc-rose); background: linear-gradient(0deg, var(--mc-rose-wash) 0%, #fff 62%); }
+.tfb .tfb-item.rule.off { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(100,116,139,.045) 7px 14px); }
+.tfb .tfb-item.rule.armed { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.tfb .tfb-item.comp.focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.tfb .tfb-item.field.drift { border-style: dashed; border-color: var(--mc-amber-line); }
+/* While an output is armed the board says, in colour, which lane can answer —
+   and J6 D4 makes that a TARGET state rather than a hint. A tinted border on a
+   card that already has one is not a signal the owner could see; the wash and
+   the lifted plug are. A sealed component cannot answer, so it fades instead of
+   lighting: the difference between the two is the whole point of the state. */
+.tfb.is-armed .tfb-item.comp {
+    border-color: var(--i, #5A4BB0); border-style: dashed;
+    background: var(--i-soft, #EDEAF8);
+}
+.tfb.is-armed .tfb-item.comp:hover, .tfb.is-armed .tfb-item.comp:focus-visible {
+    border-style: solid; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8);
+    outline: none;
+}
+.tfb.is-armed .tfb-item.comp.sealed {
+    opacity: .45; border-style: solid; border-color: var(--line, #E8E9F3);
+    background: #fff;
+}
+.tfb.is-armed .tfb-col.reads { opacity: .5; }
+
+.tfb .tfb-chip { border: 1px solid var(--line, #E8E9F3); background: #fff; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 800; color: var(--muted, #6B7280); flex: none; white-space: nowrap; }
+.tfb .tfb-chip.warn { border-color: var(--mc-amber-line); background: var(--mc-amber-wash); color: var(--mc-amber-ink); }
+.tfb .tfb-chip.drift { border-color: var(--mc-amber-line); color: var(--mc-amber-ink); }
+.tfb .tfb-chip.sev { border-color: var(--mc-rose); background: var(--mc-rose-wash); color: var(--mc-rose-ink); }
+.tfb .tfb-chip.rule { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
+.tfb .tfb-chip.off { border-color: var(--mc-slate); color: var(--muted, #6B7280); }
+/* JOURNEY J9 — the ranked source chips, in the canvas' own colours so the two
+   boards cannot drift into two vocabularies. Same `line-height: 0` on the
+   superscript as the canvas: a <sup> otherwise raises the chip's line box, and
+   this board measures its own wire band off these rows. */
+.tfb .tfb-chip.src.s-excel              { border-color: #A7E8CD; background: #D1FAE5; color: #0F8A63; }
+.tfb .tfb-chip.src.s-feed               { border-color: #B9E2EC; background: #E0F4F9; color: #0E7490; }
+.tfb .tfb-chip.src.s-rule               { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
+.tfb .tfb-chip.src.s-contract_component { border-color: #F3DFA0; background: #FEF3C7; color: #B7791F; }
+.tfb .tfb-chip.src.s-employee_field     { border-color: #C6D3E8; background: #E8EEF7; color: #3B5B8C; }
+/* JOURNEY J10 — the record tier's other two spellings, inherited by the
+   transform board because it renders the SAME right column. */
+.tfb .tfb-chip.src.s-contract_field     { border-color: #BFCDE6; background: #E4EBF6; color: #2F4E80; }
+.tfb .tfb-chip.src.s-bank_account       { border-color: #C2D2DC; background: #E7EEF3; color: #35617A; }
+.tfb .tfb-chip.src sup {
+    font-variant-numeric: tabular-nums; font-size: 8px; font-weight: 800;
+    line-height: 0; margin-left: 2px; vertical-align: super;
+}
+
+/* the plug: where a wire meets a card. Same 8px dot the canvas uses. */
+.tfb .tfb-plug { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 1px var(--line, #E8E9F3); transform: translateY(-50%); }
+.tfb .tfb-plug.right { right: -4px; }
+.tfb .tfb-plug.left { left: -4px; }
+
+/* ---- dock chips ------------------------------------------------------- */
+.tfb .tfb-dock {
+    position: absolute; z-index: 5; display: flex; align-items: center; gap: 4px;
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 999px;
+    padding: 2px 9px; font-size: 10.5px; font-weight: 800; color: var(--muted, #6B7280);
+    box-shadow: 0 2px 8px rgba(15, 12, 40, .1); pointer-events: none;
+}
+.tfb .tfb-dock.filt { border-color: var(--mc-amber-line); color: var(--mc-amber-ink); background: var(--mc-amber-wash); }
+/* J6 D1 — the vertical placement is INLINE, from the measured lane band
+   (`dockStyle`). These two are the fallback for the frame before the first
+   measurement, and they are why the rule is `top` on both: a chip anchored to
+   the bottom of `.tfb-board` and a chip anchored to the bottom of the lane band
+   are different places, and only one of them is inside the scroll area. */
+.tfb .tfb-dock { transform: translateX(-50%); max-width: 30%; }
+.tfb .tfb-dock.up { top: 8px; }
+.tfb .tfb-dock.down { top: 100%; transform: translate(-50%, -100%); }
+/* Fallbacks for the frame before the first measurement; `dockStyle` supplies
+   the real X, which is the middle of the lane gap the chip's wires cross. Both
+   are expressed as `left` so the one translate above serves either. */
+.tfb .tfb-dock.left { left: 34%; }
+.tfb .tfb-dock.right { left: 66%; }
+/* A chip that counts what the SEARCH hid is clickable — it clears the search.
+   One that counts what is merely scrolled stays inert (CR21/F1). */
+.tfb .tfb-dock.filt { pointer-events: auto; cursor: pointer; }
+.tfb .tfb-dock.filt:hover { border-color: var(--mc-amber); }
+
+/* ---- J6 D2 — the reveal bar, the canvas' bar in this board's clothes ---- */
+.tfb .tfb-reveal {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    z-index: 7; max-width: calc(100% - 24px);
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 8px 7px 13px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--mc-amber-line);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, .2);
+    font-size: 11.5px; font-weight: 600; color: var(--mc-slate);
+    svg { display: block; }
+}
+.tfb .tfb-reveal__ic { color: var(--mc-amber-ink); flex: none; }
+.tfb .tfb-reveal__t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tfb .tfb-reveal__go {
+    flex: none; border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    background: var(--i, #5A4BB0); color: #fff; font: inherit; font-weight: 700;
+    &:hover { background: var(--i600, #4A3D96); }
+    &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+}
+.tfb .tfb-reveal__x {
+    flex: none; width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0;
+    display: grid; place-items: center; cursor: pointer;
+    background: transparent; color: var(--muted, #6B7280);
+    &:hover { background: var(--mc-wash); }
+    &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+}
+
+/* ---- the popover — a SIBLING of the clip, deliberately ---------------- */
+.tfb .tfb-menu {
+    position: absolute; z-index: 40; transform: translateX(-100%);
+    min-width: 240px; max-width: 340px;
+    background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 12px;
+    box-shadow: 0 12px 34px rgba(15, 12, 40, .18); padding: 6px;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.tfb .tfb-menu__i {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    border: 0; background: transparent; cursor: pointer; text-align: left;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink, #1F2233);
+    border-radius: 8px; padding: 7px 10px;
+}
+.tfb .tfb-menu__i:hover { background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
+.tfb .tfb-menu__i:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.tfb .tfb-menu__n { font-size: 11px; color: var(--muted, #6B7280); padding: 6px 10px 4px; border-top: 1px solid var(--line, #E8E9F3); margin-top: 3px; line-height: 1.4; }
+.tfb .tfb-menu__h { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--muted, #6B7280); padding: 7px 10px 2px; }
+.tfb .tfb-lin__sum { font-size: 12px; color: var(--ink, #1F2233); padding: 0 10px 4px; line-height: 1.4; }
+.tfb .tfb-lin__row { font-size: 11.5px; color: var(--ink, #1F2233); padding: 2px 10px; overflow: hidden; text-overflow: ellipsis; }
+.tfb .tfb-lin__row.prose { color: var(--muted, #6B7280); line-height: 1.4; }
+.tfb .tfb-lin__none { font-size: 11.5px; color: var(--muted, #6B7280); font-style: italic; padding: 2px 10px; }
+.tfb .tfb-lin__open {
+    margin-top: 5px; border: 0; background: var(--i, #5A4BB0); color: #fff;
+    cursor: pointer; border-radius: 8px; padding: 7px 10px;
+    font-family: inherit; font-size: 12px; font-weight: 800;
+}
+.tfb .tfb-lin__open:hover { filter: brightness(1.06); }
+.tfb .tfb-lin__open:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+
+/* ---- 1024: the lanes get narrower, never narrower than readable ------- */
+@media (max-width: 1200px) {
+    .tfb .tfb-board { --tfb-col-w: 250px; --tfb-col-w-mid: 300px; }
+    .tfb .tfb-col-b { padding-left: 9px; padding-right: 9px; }
+    .tfb .tfb-col-h { padding-left: 9px; padding-right: 9px; }
+    .tfb .tfb-q { width: 220px; }
+    .tfb .tfb-item-v { display: none; }
+}
+
+/* a sealed component refusing the wire: the arm chip changes its word rather
+   than a toast appearing somewhere else on the screen (S5 — a sealed card has to
+   answer ON the board) */
+.tfb .tfb-arm.no { background: var(--mc-amber-wash); border-color: var(--mc-amber-line); color: var(--mc-amber-ink); }
+.tfb .tfb-arm.no .tfb-arm__x { color: var(--mc-amber-ink); }
+.tfb .tfb-item.comp.sealed { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(100,116,139,.045) 7px 14px); cursor: default; }
+.tfb .tfb-item.comp.sealed:hover { border-color: var(--line, #E8E9F3); box-shadow: 0 1px 2px rgba(15, 12, 40, .05); }
+.tfb .tfb-item.comp.sealed .tfb-plug { background: #fff; box-shadow: 0 0 0 1px #CBD5E1; }

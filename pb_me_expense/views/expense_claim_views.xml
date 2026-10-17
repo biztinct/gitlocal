@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The backend claim (D10): a plain list + form, the admin's fallback.
+         The product surface is the employee's /my/expenses and the approvals
+         inbox; no cockpit, no rail item (ledger T27). -->
+
+    <record id="pb_expense_claim_view_list" model="ir.ui.view">
+        <field name="name">pb.expense.claim.list</field>
+        <field name="model">pb.expense.claim</field>
+        <field name="arch" type="xml">
+            <list string="Expense claims">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="receipt_count"/>
+                <field name="total" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="submitted_on"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'submitted'"
+                       decoration-success="state in ('approved', 'paid')"
+                       decoration-danger="state == 'refused'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pb_expense_claim_view_form" model="ir.ui.view">
+        <field name="name">pb.expense.claim.form</field>
+        <field name="model">pb.expense.claim</field>
+        <field name="arch" type="xml">
+            <form string="Expense claim">
+                <header>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" invisible="state != 'submitted'"
+                            groups="hr_expense.group_hr_expense_team_approver"/>
+                    <button name="action_refuse" type="object" string="Refuse"
+                            invisible="state != 'submitted'"
+                            groups="hr_expense.group_hr_expense_team_approver"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                            <field name="total" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="receipt_count" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="submitted_on"/>
+                            <field name="decided_on"/>
+                            <field name="paid_on"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="refusal_reason"
+                               readonly="state != 'submitted'"
+                               invisible="state == 'draft' and not refusal_reason"
+                               placeholder="Before you press Refuse: why it is refused. The employee sees this."/>
+                        <field name="note" readonly="1" invisible="not note"/>
+                    </group>
+                    <notebook>
+                        <page string="Receipts" name="receipts">
+                            <field name="expense_ids" readonly="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="payment_mode"/>
+                                    <field name="total_amount_currency" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="pb_expense_claim_view_search" model="ir.ui.view">
+        <field name="name">pb.expense.claim.search</field>
+        <field name="model">pb.expense.claim</field>
+        <field name="arch" type="xml">
+            <search string="Expense claims">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <filter name="waiting" string="Waiting approval" domain="[('state', '=', 'submitted')]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="refused" string="Refused" domain="[('state', '=', 'refused')]"/>
+                <filter name="paid" string="Paid" domain="[('state', '=', 'paid')]"/>
+                <group>
+                    <filter name="by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pb_expense_claim_action" model="ir.actions.act_window">
+        <field name="name">Expense claims</field>
+        <field name="res_model">pb.expense.claim</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="pb_expense_claim_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No expense claims yet</p>
+            <p>Employees send their claims from their own pages. Each claim
+               holds one or more receipts and is decided from Approvals.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_pb_expense_claims" name="Expense claims"
+              parent="hr_expense.menu_hr_expense_root" sequence="2"
+              action="pb_expense_claim_action"
+              groups="hr_expense.group_hr_expense_team_approver"/>
+
+</odoo>

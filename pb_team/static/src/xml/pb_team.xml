@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The one frame of a redirect. It exists so that the half-second before
+       Approvals opens says what is happening, rather than showing an empty
+       page somebody has to guess about. -->
+  <t t-name="pb_team.PbTeamRedirect">
+    <div class="o_action_manager d-flex align-items-center justify-content-center p-5">
+      <div class="text-center">
+        <div class="fw-bold" t-esc="message"/>
+        <div class="text-muted small mt-1">
+          Team approvals moved into the one Approvals inbox, with every other kind of request beside them.
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

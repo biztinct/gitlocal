@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THIS MODULE SHIPS NO MENU AND NO RAIL ITEM. Training is a LENS on
+         the Learn mission, reached from the rail entry that is already
+         there; a second door would be a second place to look.
+         ================================================================== -->
+
+    <!-- The board. A RECORD and never a bare tag: a bare tag reaches the
+         shell with no action NAME, and anything returning through a
+         breadcrumb then reads "Unnamed" (W98). -->
+    <record id="action_pb_training_board" model="ir.actions.client">
+        <field name="name">Training</field>
+        <field name="tag">pb_training_board</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- The employee's own page, as an action so the command bar can open
+         it. The palette contract knows exactly two doors — a client-action
+         tag and an xmlid — so a page reached by URL needs an
+         `ir.actions.act_url` record rather than a raw URL the palette would
+         not understand (the shape `pb_rnr.action_my_recognition` set). -->
+    <record id="action_my_training" model="ir.actions.act_url">
+        <field name="name">My training</field>
+        <field name="url">/my/training</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- ==================================================================
+         THE SKINNED DOORS. Records open natively under the form engine
+         (Option B: skin, do not rebuild), and these are the two lists the
+         command bar and the Settings cog point at. They are RECORDS, so the
+         ORM computes their `views` field and R125 does not apply — that rule
+         is about a dict a facade hands to `doAction`.
+         ================================================================== -->
+
+    <record id="action_pb_training_courses" model="ir.actions.act_window">
+        <field name="name">Courses</field>
+        <field name="res_model">slide.channel</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'default_channel_type': 'training', 'default_visibility': 'members', 'default_enroll': 'invite'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write your first course</p>
+            <p>A course is a handful of lessons — a video, a document, something
+               to read — and, if you want one, a test at the end. Once it is
+               written, put people on it from the Training screen and it appears
+               on their own training page.</p>
+        </field>
+    </record>
+
+    <record id="action_pb_training_tests" model="ir.actions.act_window">
+        <field name="name">Tests</field>
+        <field name="res_model">survey.survey</field>
+        <field name="view_mode">list,form</field>
+        <!-- `survey_type` on this build is survey / live_session /
+             assessment / custom — there is no "certification" value, and the
+             thing that makes a survey a TEST is the `certification` flag
+             beside it. A domain on the wrong one matches nothing and the list
+             opens empty over a database full of tests. -->
+        <field name="domain">[('certification', '=', True)]</field>
+        <field name="context">{'default_survey_type': 'assessment', 'default_certification': True, 'default_scoring_type': 'scoring_with_answers', 'default_scoring_success_min': 70, 'default_users_login_required': True, 'default_access_mode': 'token', 'default_is_attempts_limited': True, 'default_attempts_limit': 3}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write your first test</p>
+            <p>A test is a set of questions with a pass mark and a limited number
+               of goes. Add it to a course as its last item and nobody can take
+               it until they have finished every lesson.</p>
+        </field>
+    </record>
+
+    <record id="action_pb_training_questions" model="ir.actions.act_window">
+        <field name="name">Question bank</field>
+        <field name="res_model">survey.question</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Every question you have written</p>
+            <p>Questions live here whichever test they were written for, so a
+               question you have already asked can be asked again.</p>
+        </field>
+    </record>
+
+</odoo>

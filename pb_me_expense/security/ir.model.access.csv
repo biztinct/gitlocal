@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_expense_claim_user,pb.expense.claim user,model_pb_expense_claim,base.group_user,1,1,1,0
+access_pb_expense_claim_approver,pb.expense.claim team approver,model_pb_expense_claim,hr_expense.group_hr_expense_team_approver,1,1,1,1

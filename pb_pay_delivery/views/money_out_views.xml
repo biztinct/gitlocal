@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The money-out records have a cockpit of their own (Pay & Deliver) and
+         a queue of their own (Approvals). These plain views exist so that the
+         ONE door neither of those owns — "open the record this request is
+         about", pressed from the request drawer — lands somewhere real
+         instead of on an error. Deliberately read-only: nothing here is
+         edited by typing into a form.
+         ================================================================== -->
+
+    <record id="view_pb_bank_file_list" model="ir.ui.view">
+        <field name="name">pb.bank.file.list</field>
+        <field name="model">pb.bank.file</field>
+        <field name="arch" type="xml">
+            <list string="Bank files" create="false" edit="false">
+                <field name="name"/>
+                <field name="run_id"/>
+                <field name="bank_format"/>
+                <field name="row_count"/>
+                <field name="control_total" widget="monetary"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="generated_by"/>
+                <field name="generated_at"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'pending'"
+                       decoration-muted="state in ('superseded', 'rejected')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_bank_file_form" model="ir.ui.view">
+        <field name="name">pb.bank.file.form</field>
+        <field name="model">pb.bank.file</field>
+        <field name="arch" type="xml">
+            <form string="Bank file" create="false" edit="false">
+                <header>
+                    <button name="action_download" type="object"
+                            string="Download the approved file"
+                            class="btn-primary"
+                            invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="run_id" readonly="1"/>
+                            <field name="bank_format" readonly="1"/>
+                            <field name="filename" readonly="1"/>
+                            <field name="byte_size" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="row_count" readonly="1"/>
+                            <field name="excluded_count" readonly="1"/>
+                            <field name="control_total" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="generated_by" readonly="1"/>
+                            <field name="generated_at" readonly="1"/>
+                            <field name="superseded_by_id" readonly="1"
+                                   invisible="not superseded_by_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_payment_release_list" model="ir.ui.view">
+        <field name="name">pb.payment.release.list</field>
+        <field name="model">pb.payment.release</field>
+        <field name="arch" type="xml">
+            <list string="Payment releases" create="false" edit="false">
+                <field name="name"/>
+                <field name="run_id"/>
+                <field name="amount" widget="monetary"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="beneficiaries"/>
+                <field name="bank_reference"/>
+                <field name="released_on"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'released'"
+                       decoration-warning="state == 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_payment_release_form" model="ir.ui.view">
+        <field name="name">pb.payment.release.form</field>
+        <field name="model">pb.payment.release</field>
+        <field name="arch" type="xml">
+            <form string="Payment release" create="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bank_file_id" readonly="1"/>
+                            <field name="run_id" readonly="1"/>
+                            <field name="amount" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="beneficiaries" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="bank_reference"
+                                   readonly="state == 'released'"/>
+                            <field name="evidence_attachment_id"
+                                   readonly="state == 'released'"/>
+                            <field name="released_on" readonly="1"/>
+                            <field name="released_by" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_payroll_journal_list" model="ir.ui.view">
+        <field name="name">pb.payroll.journal.list</field>
+        <field name="model">pb.payroll.journal</field>
+        <field name="arch" type="xml">
+            <list string="Payroll journals" create="false" edit="false">
+                <field name="name"/>
+                <field name="run_id"/>
+                <field name="amount_debit" widget="monetary"/>
+                <field name="amount_credit" widget="monetary"/>
+                <field name="funding_amount" widget="monetary"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-warning="state == 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_payroll_journal_form" model="ir.ui.view">
+        <field name="name">pb.payroll.journal.form</field>
+        <field name="model">pb.payroll.journal</field>
+        <field name="arch" type="xml">
+            <form string="Payroll journal" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="run_id" readonly="1"/>
+                            <field name="move_id" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="amount_debit" readonly="1"/>
+                            <field name="amount_credit" readonly="1"/>
+                            <field name="funding_amount" readonly="1"/>
+                            <field name="posted_on" readonly="1"/>
+                            <field name="posted_by" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,216 @@
+// =============================================================================
+// INLINE EDIT — Card-level edit mode with pencil trigger
+// =============================================================================
+// Each detail card can be independently toggled into edit mode. The pencil
+// icon appears on hover; clicking it activates editing for that card only.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Detail card base (extends vu-card concept with edit support)
+// ---------------------------------------------------------------------------
+.vu-detail-card {
+    position: relative;
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    padding: var(--vu-space-md);
+    box-shadow: var(--vu-shadow-sm);
+    transition: border-color var(--vu-transition-fast), box-shadow var(--vu-transition-fast);
+}
+
+// ---------------------------------------------------------------------------
+// Edit trigger — pencil icon, appears on hover
+// ---------------------------------------------------------------------------
+.vu-detail-card__edit-trigger {
+    position: absolute;
+    top: var(--vu-space-sm);
+    right: var(--vu-space-sm);
+    width: 26px;
+    height: 26px;
+    border-radius: var(--vu-radius-sm);
+    background: var(--vu-surface-muted);
+    border: 1px solid var(--vu-border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--vu-transition-fast), background var(--vu-transition-fast), color var(--vu-transition-fast);
+    color: var(--vu-text-secondary);
+    font-size: 0.6875rem;
+    z-index: 2;
+
+    &:hover {
+        background: var(--vu-brand-primary);
+        color: white;
+        border-color: var(--vu-brand-primary);
+    }
+}
+
+.vu-detail-card:hover .vu-detail-card__edit-trigger {
+    opacity: 1;
+}
+
+// ---------------------------------------------------------------------------
+// Edit mode active
+// ---------------------------------------------------------------------------
+.vu-detail-card--editing {
+    border-color: var(--vu-brand-primary);
+    box-shadow: 0 0 0 3px rgba(90, 75, 176, 0.08), var(--vu-shadow-md);
+
+    .vu-detail-card__edit-trigger {
+        display: none;
+    }
+}
+
+// Save/Cancel controls — visible only in edit mode
+.vu-detail-card__edit-controls {
+    display: none;
+    position: absolute;
+    top: var(--vu-space-sm);
+    right: var(--vu-space-sm);
+    gap: var(--vu-space-xs);
+    z-index: 2;
+}
+
+.vu-detail-card--editing .vu-detail-card__edit-controls {
+    display: flex;
+}
+
+.vu-edit-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--vu-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    border: 1px solid transparent;
+    transition: all var(--vu-transition-fast);
+}
+
+.vu-edit-btn--save {
+    background: var(--vu-status-success);
+    color: white;
+
+    &:hover {
+        box-shadow: 0 2px 6px rgba(23, 107, 71, 0.3);
+    }
+}
+
+.vu-edit-btn--cancel {
+    background: var(--vu-surface-muted);
+    color: var(--vu-text-secondary);
+    border-color: var(--vu-border-soft);
+
+    &:hover {
+        background: var(--vu-status-danger);
+        color: white;
+        border-color: var(--vu-status-danger);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Card header
+// ---------------------------------------------------------------------------
+.vu-detail-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-sm);
+    margin-bottom: var(--vu-space-sm);
+    padding-right: 32px;
+}
+
+.vu-detail-card__icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    flex-shrink: 0;
+}
+
+.vu-detail-card__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--vu-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+// ---------------------------------------------------------------------------
+// Locked card — editing disabled by workflow state
+// ---------------------------------------------------------------------------
+.vu-detail-card--locked {
+    .vu-detail-card__edit-trigger {
+        display: none !important;
+    }
+
+    .vu-detail-card__header {
+        padding-right: var(--vu-space-sm);
+    }
+}
+
+// Lock icon overlay for locked cards
+.vu-detail-card--locked::after {
+    content: '\f023'; // fa-lock
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: var(--vu-space-sm);
+    right: var(--vu-space-sm);
+    font-size: 0.625rem;
+    color: var(--vu-text-secondary);
+    opacity: 0.25;
+}
+
+// ---------------------------------------------------------------------------
+// Odoo form-mode integration — auto-connect to edit/readonly states
+// ---------------------------------------------------------------------------
+
+// In edit mode: cards show subtle editing state, hide pencil
+.o_form_editable .vu-detail-card {
+    border-color: rgba(90, 75, 176, 0.25);
+
+    .vu-detail-card__edit-trigger {
+        display: none;
+    }
+}
+
+// In readonly mode: pencil appears on hover (already handled above)
+// Clicking any field in readonly triggers Odoo's edit mode natively
+
+// Terminal states: lock all detail cards automatically
+.vu-state--completed .vu-col-content .vu-detail-card,
+.vu-state--cancelled .vu-col-content .vu-detail-card,
+.vu-state--closed .vu-col-content .vu-detail-card {
+    .vu-detail-card__edit-trigger {
+        display: none !important;
+    }
+
+    &::after {
+        content: '\f023';
+        font-family: 'FontAwesome';
+        position: absolute;
+        top: var(--vu-space-sm);
+        right: var(--vu-space-sm);
+        font-size: 0.625rem;
+        color: var(--vu-text-secondary);
+        opacity: 0.25;
+    }
+}
+
+// vu-card__title compat — detail cards reuse the same title pattern
+.vu-detail-card > .vu-card__title {
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-xs);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--vu-text-primary);
+    margin-bottom: var(--vu-space-sm);
+    padding-right: 32px;
+}

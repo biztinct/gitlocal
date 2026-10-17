@@ -12,16 +12,16 @@
                             string="Compute Analytics" 
                             type="object" 
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                            invisible="state not in ['draft']"/>
                     <button name="action_approve" 
                             string="Approve" 
                             type="object" 
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                            invisible="state != 'ready'"/>
                     <button name="action_export_analytics" 
                             string="Export to Excel" 
                             type="object"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'computing'])]}"/>
+                            invisible="state in ['draft', 'computing']"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,computing,ready,approved"/>
                 </header>
                 <sheet>
@@ -30,11 +30,7 @@
                             <field name="period_name" placeholder="e.g., January 2024 - Vietnam"/>
                         </h1>
                         <h3>
-                            <span class="country-flag" t-if="record.country_code.raw_value == 'VN'">🇻🇳</span>
-                            <span class="country-flag" t-if="record.country_code.raw_value == 'ID'">🇮🇩</span>
-                            <span class="country-flag" t-if="record.country_code.raw_value == 'IN'">🇮🇳</span>
-                            <span class="country-flag" t-if="record.country_code.raw_value == 'SG'">🇸🇬</span>
-                            <span class="country-flag" t-if="record.country_code.raw_value == 'MY'">🇲🇾</span>
+                            <!-- Country flag shown via country_code field -->
                             <field name="country_code" readonly="1"/>
                         </h3>
                     </div>
@@ -68,7 +64,7 @@
                                                     <field name="total_employees" readonly="1"/>
                                                 </h3>
                                                 <p class="metric-label">Total Employees</p>
-                                                <span class="metric-growth" attrs="{'invisible': [('employee_growth', '=', 0)]}">
+                                                <span class="metric-growth" invisible="employee_growth == 0">
                                                     <field name="employee_growth" widget="percentage" readonly="1"/>
                                                 </span>
                                             </div>
@@ -85,7 +81,7 @@
                                                     <field name="total_payroll" widget="monetary" readonly="1"/>
                                                 </h3>
                                                 <p class="metric-label">Total Payroll</p>
-                                                <span class="metric-growth" attrs="{'invisible': [('payroll_growth', '=', 0)]}">
+                                                <span class="metric-growth" invisible="payroll_growth == 0">
                                                     <field name="payroll_growth" widget="percentage" readonly="1"/>
                                                 </span>
                                             </div>
@@ -102,7 +98,7 @@
                                                     <field name="average_salary" widget="monetary" readonly="1"/>
                                                 </h3>
                                                 <p class="metric-label">Average Salary</p>
-                                                <span class="metric-growth" attrs="{'invisible': [('average_salary_growth', '=', 0)]}">
+                                                <span class="metric-growth" invisible="average_salary_growth == 0">
                                                     <field name="average_salary_growth" widget="percentage" readonly="1"/>
                                                 </span>
                                             </div>
@@ -199,7 +195,7 @@
                             </div>
                         </page>
                         
-                        <page string="Comparison" name="comparison" attrs="{'invisible': [('previous_period_id', '=', False)]}">
+                        <page string="Comparison" name="comparison" invisible="not previous_period_id">
                             <div class="comparison-section">
                                 <h3>Period-over-Period Comparison</h3>
                                 <div class="row">
@@ -266,10 +262,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -279,7 +272,7 @@
         <field name="name">payroll.analytics.tree</field>
         <field name="model">payroll.analytics</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Analytics" decoration-success="state == 'approved'" 
+            <list string="Payroll Analytics" decoration-success="state == 'approved'" 
                   decoration-warning="state == 'ready'" decoration-info="state == 'computing'">
                 <field name="period_name"/>
                 <field name="country_code"/>
@@ -298,7 +291,7 @@
                        decoration-warning="anomaly_count > 0"/>
                 <field name="state" widget="badge"/>
                 <field name="currency_id" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -310,30 +303,19 @@
             <search string="Payroll Analytics">
                 <field name="period_name"/>
                 <field name="country_code"/>
-                <field name="period_start"/>
-                <field name="period_end"/>
                 <field name="state"/>
                 
-                <filter string="Current Year" name="current_year" 
-                        domain="[('period_start', '&gt;=', context_today().strftime('%Y-01-01')),
-                                 ('period_start', '&lt;=', context_today().strftime('%Y-12-31'))]"/>
-                <filter string="Last 6 Months" name="last_6_months" 
-                        domain="[('period_start', '&gt;=', (context_today() - relativedelta(months=6)).strftime('%Y-%m-%d'))]"/>
                 <filter string="Ready for Approval" name="ready" 
                         domain="[('state', '=', 'ready')]"/>
                 <filter string="Approved" name="approved" 
                         domain="[('state', '=', 'approved')]"/>
                 <filter string="Has Anomalies" name="has_anomalies" 
-                        domain="[('anomaly_count', '>', 0)]"/>
-                <filter string="Confidential" name="confidential" 
-                        domain="[('is_confidential', '=', True)]"/>
+                        domain="[('anomaly_count', '&gt;', 0)]"/>
                 
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
-                    <filter string="Period" name="group_period" context="{'group_by': 'period_start:month'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Quarter" name="group_quarter" context="{'group_by': 'period_start:quarter'}"/>
                 </group>
             </search>
         </field>
@@ -356,7 +338,7 @@
                 <field name="state"/>
                 <field name="currency_id"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click analytics-kanban-card">
                             <div class="analytics-card-header">
                                 <div class="country-info">
@@ -465,7 +447,7 @@
     <record id="action_payroll_analytics_dashboard" model="ir.actions.act_window">
         <field name="name">Payroll Analytics Dashboard</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">kanban,tree,form,graph,pivot</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
         <field name="view_id" ref="view_payroll_analytics_kanban"/>
         <field name="context">{
             'search_default_current_year': 1,
@@ -491,7 +473,7 @@
     <record id="action_payroll_analytics_report" model="ir.actions.act_window">
         <field name="name">Analytics Reports</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="view_mode">list,form,graph,pivot</field>
         <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
         <field name="context">{
             'search_default_approved': 1,

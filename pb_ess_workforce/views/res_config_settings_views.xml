@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TIERS T3b D3: the per-company switch for clocking in from the
+         self-service pages, beside the stock "Attendances from Backend"
+         setting (hr_attendance's Modes block). An ir.config_parameter behind
+         a non-stored field — no column on res.company. -->
+    <record id="res_config_settings_view_form_portal_clock" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.ess.portal.clock</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_attendance.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='kiosk_mode_setting_container']" position="inside">
+                <setting id="pb_ess_portal_clock_setting" company_dependent="1"
+                         help="When off, the Clock page and the home button are hidden; devices and the field app still work.">
+                    <field name="pb_ess_portal_clock"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

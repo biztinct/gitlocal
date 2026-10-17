@@ -5,12 +5,13 @@ from pytz import timezone
 
 from odoo import _, api, fields, models
 from odoo.osv import expression
-from odoo.addons.resource.models.resource import Intervals
+from odoo.tools.intervals import Intervals
 from odoo.exceptions import UserError
 
 
 class Employee(models.Model):
-    _inherit = "hr.employee"
+    _name = 'hr.employee'
+    _inherit = ["hr.employee"]
 
     vehicle = fields.Char(string='Company Vehicle', groups="hr.group_hr_user")
     contract_ids = fields.One2many('hr.contract', 'employee_id', string='Employee Contracts')

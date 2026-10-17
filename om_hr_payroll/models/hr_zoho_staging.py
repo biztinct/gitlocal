@@ -7,10 +7,9 @@ import json
 import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
-from pudb import set_trace
 _logger = logging.getLogger(__name__) 
 from openpyxl import Workbook, load_workbook
 from odoo.exceptions import ValidationError
@@ -204,22 +203,43 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
             except requests.exceptions.RequestException as e:
                 raise Exception(f"Error getting Zoho People tokens: {e}")
 
-        # Example usage
-        client_id = "1000.4ZLJF4JSMFITHC41U2VXB7UJWRV11L"
-        client_secret = "989fa207c8fd7360ca8edf5c046d2c406ce9901661"
-        auth_code = "1000.4a0bd2351033e5f8d7435e3b0cb0d4a5.cd4af0153caac730334dc1ba98f95107"  # Obtained from the authorization URL
+        # RETIRED 2026-09-11. These three were LITERALS here — a real client id,
+        # client secret and one-time authorization code — sitting in a PUBLIC git
+        # repository since 2025-06-22. The placeholders below are deliberately
+        # not credentials and are never to be filled in.
+        #
+        # Connections are configured in the application now, on the record, not
+        # in source: model `hr.integration.connector`
+        # (pb_hr_payroll_formula/models/integration_connector.py, `client_id` :90
+        # and `client_secret` :95), reached from Integrations -> Connectors. The
+        # live connectors on abm carry their own keys there and none of them is
+        # the leaked one — checked against the databases on 2026-09-11, not
+        # inferred from a ledger.
+        #
+        # The whole function is kept rather than deleted because a button in
+        # hr_zoho_views.xml still names it; it now explains where the real
+        # screen is instead of dead-ending. The unreachable code below the guard
+        # is left as the record of what this once did.
+        client_id = "PLACEHOLDER-NOT-A-CREDENTIAL"
+        client_secret = "PLACEHOLDER-NOT-A-CREDENTIAL"
+        auth_code = "PLACEHOLDER-NOT-A-CREDENTIAL"
+
+        raise UserError(_(
+            "This button is no longer used.\n\n"
+            "Connections to an outside HR system are set up on the connection "
+            "itself, under Integrations > Connectors. Open the connection you "
+            "want and enter its keys there."))
 
         tokens = get_zoho_people_tokens(client_id, client_secret, auth_code)
 
         access_token = tokens["access_token"]
         refresh_token = tokens["refresh_token"]
 
-        _logger.info(f"Access Token: {access_token}")
-        _logger.info(f"Refresh Token: {refresh_token}")
+        _logger.info("Zoho People tokens refreshed")
 
-        raise UserError("Client Id : " + client_id + " Client secret : " + client_secret + 
-        " Auth Code : " + auth_code + " Access token : " + access_token + 
-        " Refresh token : " + refresh_token   )
+        raise UserError(_(
+            "Access token: %(access)s\n\nRefresh token: %(refresh)s",
+            access=access_token, refresh=refresh_token))
 
     def _get_access_token(self, refresh_token, client_id , client_secret):
         """
@@ -228,8 +248,6 @@ class ZohoStagingTimesheetImporter(models.TransientModel):
         url = "https://accounts.zoho.com/oauth/v2/token"
         data = {
             "refresh_token": refresh_token,
-            #"client_id": "1000.4ZLJF4JSMFITHC41U2VXB7UJWRV11L",
-            #"client_secret": "989fa207c8fd7360ca8edf5c046d2c406ce9901661",
             "client_id": client_id,
             "client_secret": client_secret,
             "grant_type": "refresh_token"

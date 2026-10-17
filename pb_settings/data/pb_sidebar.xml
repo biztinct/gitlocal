@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+
+    <!-- SYSTEM › Settings — the cog, given a rail entry.
+
+         Cycle 3 built the Settings hub and deliberately gave it no rail item:
+         until the cutover the four SETUP items and the six ADMIN items still
+         worked and a second door would have been a second answer. All ten retire
+         in Cycle 5 and this is the one that replaces them, so it claims every
+         one of their tags and xmlids — including the two flows that never had a
+         rail entry of their own (`pb_import_connector_cockpit`, reached from
+         inside Integrations, and `pb_integration_onboarding`, the stepped flow
+         that replaced the connect modal), which used to leave the rail blank.
+
+         UNGATED. The retired items carried four different gates between them and
+         three of those gates were WRONG — pb_hr_payroll_base tiers over models
+         whose `ir.model.access` grants read to an entirely different group
+         family, so a persona holding the rail's group clicked through to an
+         access dialog (W95, found live in Cycle 3). The hub asks each category's
+         real question instead and renders only what this persona can open; a
+         persona who can open none of them gets an explained empty state rather
+         than a blank pane.
+
+         `pb_demo` restricts this item on demo databases — see
+         `pb_demo/hooks.py`, which is where the demo world's lock lives and where
+         the remap from the retired ADMIN section is documented. -->
+    <!-- GATED SINCE ACCESS P4 — and gated by a ROLE ALONE, which is why nothing
+         is added to `groups_id` here.
+
+         Every other entry got an older PERMISSION written into its own hub's
+         data file, because the screens behind those entries already check one.
+         There is no such permission for this cog: the hub is explicitly not a
+         security boundary (it renders only the categories a persona can open,
+         and the target actions' own ACLs are the rail), so the honest gate is
+         the ACCESS TEAM ROLE — and a role can only be put on the row by
+         `pb_vendor_access`, which this module must never depend on. On a build
+         without the Access home this entry therefore stays as it always was.
+
+         `restricted` is the other half of the decision. Somebody who is not on
+         the access team should not simply lose the cog: they would look for it,
+         not find it, and ask. Shown LOCKED they see where the setting lives and
+         who to ask, in one line — which is the whole difference between a menu
+         that hides things and a menu that explains itself.
+
+         The message is written down rather than left to the default, because the
+         default is the demo world's upsell ("available in the full platform"),
+         and that is not true of somebody who works here and simply is not on the
+         access team. -->
+    <record id="item_settings" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_admin"/>
+        <field name="restricted" eval="True"/>
+        <field name="restriction_reason">Settings is looked after by the access team. This is where it lives, and they can change anything in here for you — ask them. To hand your own access to somebody covering for you, use the search box at the top and look for "Hand my access".</field>
+        <field name="name">Settings</field>
+        <field name="icon">settings</field>
+        <field name="sequence">10</field>
+        <field name="action_xmlid">pb_settings.action_pb_settings_hub</field>
+        <field name="action_tag">pb_settings_hub</field>
+        <field name="match_action_tags">pb_settings_hub,pb_formula_studio,pb_structures,pb_statutory,pb_integrations,pb_import_connector_cockpit,pb_integration_onboarding,pb_tenants</field>
+        <field name="match_action_xmlids">base.action_res_users,base.action_res_company_form,pb_sidebar.action_pb_sidebar_item,pb_sidebar.action_pb_sidebar_section,om_hr_payroll.action_hr_payroll_configuration</field>
+        <field name="match_models">hr.integration.connector,hr.formula.config,hr.payroll.structure,hr.salary.rule,vietnam.insurance.policy,vietnam.tax.table,vietnam.tax.slab</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         THE JOB THAT TAKES SOMETHING AWAY. It is deliberately its own record
+         and its own module: switching an application's own reminder mails off
+         must never be able to switch off the thing that closes a security
+         hole.
+
+         IDEMPOTENT BY CONSTRUCTION, not by a stamp: it only ever finds rows in
+         `active`, and the first thing it does is move the state. -->
+
+    <record id="cron_access_auto_revert" model="ir.cron">
+        <field name="name">Access: take back the hand-overs that have ended</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.access.delegation'].cron_auto_revert()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

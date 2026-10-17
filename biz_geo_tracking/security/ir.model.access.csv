@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_biz_geo_ping_user,biz.geo.ping user,model_biz_geo_ping,base.group_user,1,0,1,0
+access_biz_geo_ping_system,biz.geo.ping system,model_biz_geo_ping,base.group_system,1,1,1,1
+access_biz_geo_route_sim_system,biz.geo.route.sim system,model_biz_geo_route_sim,base.group_system,1,1,1,1

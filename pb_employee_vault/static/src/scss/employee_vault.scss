@@ -1,0 +1,251 @@
+// Employee 360 drawer — light-teal .ppl theme over the People roster. pbim
+// tokens with a teal accent. No gradients, no emoji, Lucide only (C11). Mixed-unit
+// min()/max() avoided (C2 SCSS trap) — widths use `max-width`, never `min(px,vw)`.
+
+.pev {
+    // ---- tokens ----
+    --t:   var(--pbim-teal, #0E7C86);
+    --t-s: var(--pbim-teal-soft, #E1F3F4);
+    --ink: var(--pbim-text, #1B1733);
+    --mut: var(--pbim-muted, #64748B);
+    --line: var(--pbim-line, #E2E8F0);
+    --surf: var(--pbim-surface, #fff);
+    --bg:  var(--pbim-bg, #F5F6FA);
+    --green: #2E7D4F; --green-s: #E3F2E9;
+    --amber: #B45309; --amber-s: #FEF3C7;
+    --rose: #DC2668;  --rose-s: #FCE7EF;
+    --cyan: #2563EB;  --cyan-s: #E5EDFD;
+    --indigo: #5A4BB0; --indigo-s: #EDEAF8;
+    --r: 14px; --r-sm: 10px;
+    --sh: 0 18px 50px rgba(16, 12, 40, .18);
+
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    // ---- scrim ----
+    .pev-scrim {
+        position: fixed; inset: 0; z-index: 1040;
+        background: rgba(16, 12, 40, 0);
+        transition: background .18s ease;
+        pointer-events: none;
+        &.shown { background: rgba(16, 12, 40, .34); pointer-events: auto; }
+    }
+
+    // ---- drawer shell ----
+    .pev-drawer {
+        position: fixed; top: 0; right: 0; bottom: 0; z-index: 1041;
+        width: 580px; max-width: 96vw;
+        background: var(--surf); color: var(--ink);
+        box-shadow: var(--sh);
+        display: flex; flex-direction: column;
+        transform: translateX(102%);
+        transition: transform .22s cubic-bezier(.22, .61, .36, 1);
+        font-size: 14px; -webkit-font-smoothing: antialiased;
+        &.shown { transform: translateX(0); }
+    }
+
+    // ---- loading / empty ----
+    .pev-busy, .pev-empty {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 12px; color: var(--mut);
+        padding: 40px; text-align: center;
+        p { margin: 0; font-weight: 600; color: var(--ink); }
+        small { color: var(--mut); }
+        svg { color: var(--line); }
+    }
+    .pev-spin {
+        width: 30px; height: 30px; border-radius: 50%;
+        border: 3px solid var(--t-s); border-top-color: var(--t);
+        animation: pev-spin .8s linear infinite;
+        &.sm { width: 16px; height: 16px; border-width: 2px; }
+    }
+    @keyframes pev-spin { to { transform: rotate(360deg); } }
+
+    // ---- header ----
+    .pev-head {
+        padding: 20px 22px 16px; border-bottom: 1px solid var(--line);
+        background: var(--t-s);
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+    }
+    .pev-head-id { display: flex; gap: 14px; align-items: center; min-width: 0; }
+    .pev-ava {
+        width: 58px; height: 58px; border-radius: 16px; flex: none;
+        background: var(--t) center/cover no-repeat; color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 20px; box-shadow: 0 4px 12px rgba(14, 124, 134, .25);
+    }
+    .pev-head-tx { min-width: 0; }
+    .pev-head-tx h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; }
+    .pev-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pev-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600;
+        background: #fff; border: 1px solid var(--line); color: var(--mut);
+        svg { color: var(--t); }
+        &.tone-ok { color: var(--green); border-color: var(--green-s); svg { color: var(--green); } }
+        &.tone-warn { color: var(--amber); border-color: var(--amber-s); svg { color: var(--amber); } }
+        &.tone-muted { color: var(--mut); }
+    }
+    .pev-head-side { display: flex; align-items: center; gap: 12px; flex: none; }
+    .pev-tenure {
+        text-align: right; line-height: 1.15;
+        .l { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--mut); }
+        .v { display: block; font-size: 16px; font-weight: 700; color: var(--t); }
+    }
+    .pev-x {
+        border: none; background: #fff; border: 1px solid var(--line);
+        width: 34px; height: 34px; border-radius: 10px; cursor: pointer; color: var(--mut);
+        display: flex; align-items: center; justify-content: center;
+        &:hover { color: var(--ink); border-color: var(--t); }
+    }
+
+    // ---- tabs ----
+    .pev-tabs {
+        display: flex; gap: 4px; padding: 10px 16px 0; border-bottom: 1px solid var(--line);
+        background: var(--surf);
+    }
+    .pev-tab {
+        display: inline-flex; align-items: center; gap: 7px;
+        border: none; background: none; cursor: pointer;
+        padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--mut);
+        border-bottom: 2.5px solid transparent; margin-bottom: -1px;
+        svg { color: currentColor; }
+        &:hover { color: var(--ink); }
+        &.on { color: var(--t); border-bottom-color: var(--t); }
+    }
+    .pev-tab-c {
+        background: var(--t-s); color: var(--t); font-size: 11px; font-weight: 700;
+        padding: 1px 7px; border-radius: 999px;
+    }
+
+    // ---- body ----
+    .pev-body { flex: 1; overflow-y: auto; padding: 20px 22px 40px; }
+
+    // ---- profile: contract rail ----
+    .pev-rail {
+        display: flex; align-items: center; gap: 0; margin-bottom: 20px;
+        .pev-rail-step {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            position: relative; color: var(--mut); font-size: 12px; font-weight: 600;
+            .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); border: 2px solid var(--line); z-index: 1; }
+            &:not(:last-child)::after {
+                content: ""; position: absolute; top: 6px; left: 50%; width: 100%; height: 2px; background: var(--line);
+            }
+            &.done { color: var(--t); .dot { background: var(--t); border-color: var(--t); } &::after { background: var(--t); } }
+            &.current { color: var(--t); .dot { background: #fff; border-color: var(--t); box-shadow: 0 0 0 4px var(--t-s); } }
+        }
+    }
+
+    // ---- profile: fact grid ----
+    .pev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pev-cell {
+        background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);
+        padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0;
+        .k { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: .03em; svg { color: var(--t); } }
+        .v { font-size: 15px; font-weight: 600; word-break: break-word; }
+        .v.muted { color: var(--mut); letter-spacing: 2px; }
+    }
+    .pev-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .pev-stat {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid var(--line);
+        &.ok { background: var(--green-s); color: var(--green); border-color: transparent; }
+        &.off { background: var(--bg); color: var(--mut); }
+    }
+
+    // ---- documents ----
+    .pev-uploading { display: flex; align-items: center; gap: 10px; color: var(--t); font-weight: 600; margin-bottom: 14px; }
+    .pev-catblock { margin-bottom: 22px; }
+    .pev-cathead {
+        display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+        .ci { color: var(--t); }
+        .cn { font-weight: 700; font-size: 14px; }
+        .cc { background: var(--t-s); color: var(--t); font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+        .cr { margin-left: auto; font-size: 11px; color: var(--amber); font-weight: 600; }
+    }
+    .pev-docgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pev-doc {
+        border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px;
+        display: flex; flex-direction: column; gap: 8px; background: var(--surf);
+        transition: border-color .15s, box-shadow .15s;
+        &:hover { border-color: var(--t); box-shadow: 0 6px 16px rgba(16, 12, 40, .06); }
+    }
+    .pev-doc-top { display: flex; align-items: center; gap: 8px; }
+    .pev-doc-ic { color: var(--t); flex: none; }
+    .pev-doc-name { font-weight: 600; font-size: 13px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pev-shield { color: var(--line); flex: none; &.on { color: var(--green); } }
+    .pev-doc-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--mut); }
+    .pev-exp {
+        font-weight: 600; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+        &.green { background: var(--green-s); color: var(--green); }
+        &.amber { background: var(--amber-s); color: var(--amber); }
+        &.rose { background: var(--rose-s); color: var(--rose); }
+        &.muted { background: var(--bg); color: var(--mut); }
+    }
+    .pev-doc-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pev-mini {
+        display: inline-flex; align-items: center; gap: 4px; text-decoration: none;
+        border: 1px solid var(--line); background: #fff; color: var(--mut);
+        padding: 4px 9px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+        &:hover { color: var(--t); border-color: var(--t); }
+        &.danger:hover { color: var(--rose); border-color: var(--rose); }
+        &[disabled] { opacity: .5; cursor: default; }
+    }
+    .pev-drop {
+        border: 2px dashed var(--line); border-radius: var(--r-sm);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+        padding: 18px 12px; color: var(--mut); cursor: pointer; text-align: center;
+        transition: border-color .15s, background .15s; min-height: 118px;
+        svg { color: var(--t); }
+        span { font-size: 12px; font-weight: 600; }
+        small { font-size: 10px; letter-spacing: .04em; }
+        &:hover { border-color: var(--t); background: var(--t-s); }
+    }
+    .pev-hidden-file { display: none; }
+
+    // ---- timeline ----
+    .pev-tl { position: relative; padding-left: 6px; }
+    .pev-tl-sep {
+        margin: 14px 0 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .05em; color: var(--mut);
+        span { background: var(--bg); padding: 3px 10px; border-radius: 999px; }
+    }
+    .pev-tl-item {
+        display: flex; gap: 12px; padding: 8px 0 12px; position: relative;
+        &:not(:last-child) { border-left: 2px solid var(--line); margin-left: 14px; padding-left: 18px; }
+        &:last-child { margin-left: 14px; padding-left: 18px; }
+    }
+    .pev-tl-ic {
+        position: absolute; left: -13px; top: 6px; width: 26px; height: 26px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; background: var(--indigo-s); color: var(--indigo);
+        border: 2px solid var(--surf);
+    }
+    .pev-tl-item.tone-teal .pev-tl-ic { background: var(--t-s); color: var(--t); }
+    .pev-tl-item.tone-cyan .pev-tl-ic { background: var(--cyan-s); color: var(--cyan); }
+    .pev-tl-item.tone-green .pev-tl-ic { background: var(--green-s); color: var(--green); }
+    .pev-tl-body { flex: 1; min-width: 0; }
+    .pev-tl-line1 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .pev-tl-line1 .t { font-weight: 600; font-size: 13.5px; }
+    .pev-tl-line1 .when { font-size: 11px; color: var(--mut); flex: none; }
+    .pev-tl-detail { font-size: 13px; color: var(--ink); margin-top: 2px; word-break: break-word; }
+    .pev-tl-actor {
+        display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; color: var(--mut);
+        .a-av { width: 18px; height: 18px; border-radius: 50%; background: var(--line) center/cover no-repeat; flex: none; }
+    }
+    .pev-tl-more {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);
+        .cnt { font-size: 12px; color: var(--mut); }
+    }
+    .pev-btn {
+        border: 1px solid var(--line); background: #fff; color: var(--t);
+        padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+        &:hover { border-color: var(--t); background: var(--t-s); }
+        &[disabled] { opacity: .5; cursor: default; }
+    }
+
+    // narrow drawer: single column
+    @media (max-width: 620px) {
+        .pev-grid, .pev-docgrid { grid-template-columns: 1fr; }
+    }
+}

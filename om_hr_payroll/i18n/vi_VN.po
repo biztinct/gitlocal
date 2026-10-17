@@ -24,6 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:42
 #, python-format
 msgid "%s (copy)"
@@ -140,6 +141,7 @@ msgid ""
 "            payment of the employees. It can be the social security, the\n"
 "            state or anyone that collect or inject money on payslips."
 msgstr ""
+
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payslip_form
@@ -160,7 +162,7 @@ msgstr "Có hiệu lực"
 #. module: om_hr_payroll
 #: model_terms:ir.actions.act_window,help:om_hr_payroll.action_contribution_register_form
 msgid "Add a new contribution register"
-msgstr ""
+msgstr "Thêm sổ đóng góp mới"
 
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payslip_form
@@ -234,6 +236,7 @@ msgstr "Cơ sở"
 #: model:hr.salary.rule,name:om_hr_payroll.hr_rule_basic
 msgid "Basic Salary"
 msgstr "Lương Cơ bản"
+
 #. module: om_hr_payroll
 #: selection:hr.contract,schedule_pay:0
 msgid "Bi-monthly"
@@ -258,6 +261,7 @@ msgstr "Hủy"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payslip_form
 msgid "Cancel Payslip"
 msgstr "Hủy Phiếu lương"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip_line__category_id
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_salary_rule__category_id
@@ -286,6 +290,7 @@ msgstr "Con"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.hr_salary_rule_form
 msgid "Children Definition"
 msgstr "Định nghĩa các Quy tắc con"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contract_advantage_template__code
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip_input__code
@@ -402,6 +407,7 @@ msgstr "Dòng Phiếu lương liên quan đến Ghi nhận Đóng góp"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.hr_contribution_register_tree
 msgid "Contribution Registers"
 msgstr "Ghi nhận Đóng góp"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contract_advantage_template__create_uid
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contribution_register__create_uid
@@ -607,12 +613,14 @@ msgid "Employees"
 msgstr "Nhân viên"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:92
 #, python-format
 msgid "Error! You cannot create recursive hierarchy of Salary Rule Category."
 msgstr "Lỗi! Bạn không thể tạo phân cấp đệ quy của Danh mục quy tắc lương."
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:179
 #, python-format
 msgid "Error! You cannot create recursive hierarchy of Salary Rules."
@@ -639,10 +647,12 @@ msgid "For example, enter 50.0 to apply a percentage of 50%"
 msgstr "Ví dụ, nhập 50,0 để sử dụng 50%"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/report/report_contribution_register.py:35
 #, python-format
 msgid "Form content is missing, this report cannot be printed."
 msgstr "Nội dung trong mẫu đang thiếu, báo cáo này không thể in được."
+
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.hr_salary_rule_form
 msgid "General"
@@ -663,7 +673,9 @@ msgstr "Tạo Phiếu lương"
 #: model:ir.model,name:om_hr_payroll.model_hr_payslip_employees
 msgid "Generate payslips for all selected employees"
 msgstr "Tạo phiếu lương cho toàn bộ nhân viên được chọn"
+
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:182
 #, python-format
 msgid "Global Leaves"
@@ -724,6 +736,7 @@ msgid ""
 msgstr ""
 "Nếu bỏ chọn trường Hiệu lực, nó sẽ cho phép bạn ẩn quy tắc tính lương mà "
 "không cần xóa bỏ nó."
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,help:om_hr_payroll.field_hr_payslip__credit_note
 msgid "Indicates this payslip has a refund of another"
@@ -746,6 +759,7 @@ msgstr "Đầu vào"
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip__note
 msgid "Internal Note"
 msgstr "Ghi chú nội bộ"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,help:om_hr_payroll.field_hr_salary_rule__quantity
 msgid ""
@@ -856,6 +870,7 @@ msgstr "Quản lý"
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_salary_rule__condition_range_max
 msgid "Maximum Range"
 msgstr "Phạm vi tối đa"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip_line__condition_range_min
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_salary_rule__condition_range_min
@@ -873,6 +888,7 @@ msgid "Monthly"
 msgstr "Hàng tháng"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contract_advantage_template__name
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contribution_register__name
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payroll_structure__name
@@ -883,6 +899,7 @@ msgstr "Hàng tháng"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.report_contribution_register
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.report_payslip
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.report_payslip_details
+#: code:addons/om_hr_payroll/controllers/portal.py:0
 msgid "Name"
 msgstr "Tên"
 
@@ -897,6 +914,7 @@ msgid "Net Salary"
 msgstr "Lương Thực Lĩnh"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:201
 #, python-format
 msgid "Normal Working Days paid at 100%"
@@ -921,6 +939,7 @@ msgstr "Số giờ"
 #: model:res.groups,name:om_hr_payroll.group_hr_payroll_user
 msgid "Officer"
 msgstr "Cán bộ"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payroll_structure__parent_id
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_salary_rule_category__parent_id
@@ -962,6 +981,7 @@ msgstr "Chi tiết phiếu lương"
 #: model:ir.actions.act_window,name:om_hr_payroll.action_payslip_lines_contribution_register
 msgid "PaySlip Lines"
 msgstr "Chi tiết phiếu lương"
+
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.report_contribution_register
 msgid "PaySlip Lines by Contribution Register"
@@ -981,7 +1001,7 @@ msgstr "Bảng lương"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_report_hr_payroll_report_contribution_register
 msgid "Payroll Contribution Register Report"
-msgstr ""
+msgstr "Báo cáo sổ đóng góp bảng lương"
 
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.res_config_settings_view_form
@@ -992,6 +1012,7 @@ msgstr "Kế toán Lương"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payroll_structure_filter
 msgid "Payroll Structures"
 msgstr "Cấu trúc lương"
+
 #. module: om_hr_payroll
 #: model:ir.actions.report,name:om_hr_payroll.action_report_payslip
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payslip_form
@@ -999,10 +1020,11 @@ msgid "Payslip"
 msgstr "Phiếu lương"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:82
 #, python-format
 msgid "Payslip 'Date From' must be earlier 'Date To'."
-msgstr ""
+msgstr "'Từ ngày' của phiếu lương phải trước 'Đến ngày'."
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_payslip_run
@@ -1021,12 +1043,12 @@ msgstr "Chi tiết phiếu lương"
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_employee__payslip_count
 msgid "Payslip Count"
-msgstr ""
+msgstr "Số phiếu lương"
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_report_hr_payroll_report_payslip_details
 msgid "Payslip Details Report"
-msgstr ""
+msgstr "Báo cáo chi tiết phiếu lương"
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_payslip_input
@@ -1061,7 +1083,7 @@ msgstr "Dòng Phiếu lương theo Contribution Register"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_payslip_lines_contribution_register
 msgid "Payslip Lines by Contribution Registers"
-msgstr ""
+msgstr "Dòng phiếu lương theo sổ đóng góp"
 
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip__name
@@ -1127,6 +1149,7 @@ msgstr "Tự động tạo các bút toán lương cho kế toán"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_payslip_lines_contribution_register
 msgid "Print"
 msgstr "In"
+
 #. module: om_hr_payroll
 #: selection:hr.payslip.line,amount_select:0
 #: selection:hr.salary.rule,amount_select:0
@@ -1198,6 +1221,7 @@ msgid "Refund"
 msgstr "Hoàn trả"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:102
 #, python-format
 msgid "Refund: "
@@ -1231,7 +1255,7 @@ msgstr "Tính toán Lương"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_salary_rule
 msgid "Salary Rule"
-msgstr ""
+msgstr "Quy tắc lương"
 
 #. module: om_hr_payroll
 #: model:ir.actions.act_window,name:om_hr_payroll.action_hr_salary_rule_category
@@ -1265,6 +1289,7 @@ msgstr "Đầu vào Quy tắc Lương"
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_rule_filter
 msgid "Salary Rules"
 msgstr "Quy tắc lương"
+
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_payroll_structure
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contract__struct_id
@@ -1336,8 +1361,10 @@ msgid "States"
 msgstr "Trạng thái"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip__state
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip_run__state
+#: code:addons/om_hr_payroll/controllers/portal.py:0
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -1406,6 +1433,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.report_payslip_details
 msgid "Total"
 msgstr "Tổng"
+
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_contract_advantage_template__upper_bound
 msgid "Upper Bound"
@@ -1459,31 +1487,37 @@ msgid "Working Schedule"
 msgstr "Thời gian làm việc"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:211
 #, python-format
 msgid "Wrong percentage base or quantity defined for salary rule %s (%s)."
 msgstr ""
 "Sai cơ sở lấy phần trăm hoặc số lượng định nghĩa trong quy tắc lương %s "
 "(%s)."
+
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:204
 #, python-format
 msgid "Wrong quantity defined for salary rule %s (%s)."
 msgstr "Sai số lượng định nghĩa trong quy tắc lương %s (%s)."
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:234
 #, python-format
 msgid "Wrong range condition defined for salary rule %s (%s)."
 msgstr "Sai phạm vi định nghĩa trong quy tắc lương %s (%s)."
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:36
 #, python-format
 msgid "You cannot create a recursive salary structure."
-msgstr ""
+msgstr "Bạn không thể tạo cơ cấu lương đệ quy."
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:127
 #, python-format
 msgid "You cannot delete a payslip which is not draft or cancelled!"
@@ -1491,12 +1525,14 @@ msgstr ""
 "Bạn không thể xoá một phiếu lương mà không ở trạng thái dự thảo hoặc huỷ!"
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/wizard/hr_payroll_payslips_by_employees.py:24
 #, python-format
 msgid "You must select employee(s) to generate payslip(s)."
 msgstr "Bạn phải chọn ít nhất một nhân viên để tạo (các) phiếu lương."
 
 #. module: om_hr_payroll
+#. odoo-python
 #: code:addons/om_hr_payroll/models/hr_payslip.py:525
 #, python-format
 msgid "You must set a contract to create a payslip line."
@@ -1507,3 +1543,9 @@ msgstr "Bạn phải thiết lập một hợp đồng để có thể tạo chi
 #: model:ir.model.fields,help:om_hr_payroll.field_hr_salary_rule__amount_percentage_base
 msgid "result will be affected to a variable"
 msgstr "kết quả sẽ bị ảnh hưởng tới một biến số"
+
+#. module: om_hr_payroll
+#. odoo-python
+#: code:addons/om_hr_payroll/models/hr_payslip.py:0
+msgid "Payslips are emailed once the pay run is approved. This one is not approved yet."
+msgstr "Phiếu lương chỉ được gửi email khi đợt lương đã duyệt. Đợt này chưa được duyệt."

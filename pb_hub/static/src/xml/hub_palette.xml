@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================== global ⌘K palette
+       Mounted by the `pb_hub_palette` service through the Odoo overlay service,
+       so this markup lands in `.o-overlay-container` and never inside a
+       workspace — which is what lets it paint above a cockpit's fixed-position
+       modal without any shell stacking chrome of its own (W37/W43).
+
+       Because it renders OUTSIDE every `.pbim` root, the pbim custom properties
+       do not resolve here and the var() FALLBACKS are what paint (W14). The
+       SCSS is written accordingly. -->
+  <t t-name="pb_hub.HubPalette">
+    <div class="pbhub-pal-scrim" t-on-click="() => props.onClose()">
+      <!-- .stop so a click inside the panel does not reach the scrim's close -->
+      <div class="pbhub-pal" role="dialog" aria-modal="true"
+           aria-label="Command palette" t-on-click.stop="() => {}">
+
+        <div class="pbhub-pal-search">
+          <span class="pbhub-pal-search__ic" t-out="ic('search', 16)"/>
+          <input class="pbhub-pal-input" type="text" t-ref="input"
+                 placeholder="Search surfaces and actions…"
+                 aria-label="Search surfaces and actions"
+                 t-att-value="state.q"
+                 t-on-input="onInput" t-on-keydown="onKeydown"/>
+          <span class="pbhub-pal-esc">ESC</span>
+        </div>
+
+        <div class="pbhub-pal-list">
+          <div class="pbhub-pal-grp" t-foreach="groups" t-as="g" t-key="g.name">
+            <div class="pbhub-pal-grp__h" t-esc="g.name"/>
+            <button t-foreach="g.items" t-as="row" t-key="row.row.id"
+                    class="pbhub-pal-row"
+                    t-att-class="{ 'is-on': state.active === row.idx }"
+                    t-on-mouseenter="() => this.setActive(row.idx)"
+                    t-on-click="() => this.run(row.row)">
+              <span class="pbhub-pal-row__ic" t-out="ic(row.row.icon, 14)"/>
+              <span class="pbhub-pal-row__l" t-esc="row.row.label"/>
+              <span class="pbhub-pal-row__s" t-if="row.row.sublabel"
+                    t-esc="row.row.sublabel"/>
+              <!-- Restriction parity with the rail: a door the sidebar shows
+                   with a padlock is shown with a padlock here too, and pressing
+                   it opens the same upsell instead of navigating. On every
+                   database where nothing is restricted `restricted` is "" and
+                   this element is simply absent. -->
+              <span class="pbhub-pal-row__lock" t-if="row.row.restricted"
+                    t-out="ic('lock', 13)"/>
+            </button>
+          </div>
+
+          <div class="pbhub-pal-empty" t-if="!count">
+            <span t-out="ic('search', 16)"/><span>Nothing matches that.</span>
+          </div>
+        </div>
+
+        <div class="pbhub-pal-foot">
+          <span><b>↑↓</b> move</span>
+          <span><b>↵</b> open</span>
+          <span><b>esc</b> close</span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

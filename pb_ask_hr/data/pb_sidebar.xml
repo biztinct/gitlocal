@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13) — see pb_home_hub/data/pb_sidebar.xml. -->
+<odoo noupdate="0">
+    <!-- OPERATE › Ask HR (TIERS T3a): the HR queue of employees' questions.
+
+         The handover asked for the People section; that section is retired
+         (inactive, sequence 930 — IA redesign), so a record there would never
+         be drawn. The item sits in OPERATE right after People (20) and before
+         Lifecycle (25), gated like both: `hr.group_hr_user`, added with
+         `(4, …)` so a joined group survives the next upgrade.
+
+         Icon `inbox`, not `message-circle-question`: the rail's icon set is a
+         CLOSED dict inlined in pb_sidebar.js, an unknown name renders a plain
+         circle, and pb_sidebar's `test_every_rail_icon_exists_in_the_fixed_set`
+         fails on it. `inbox` is in the set and reads as a queue. -->
+    <record id="item_ask_hr" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="name">Ask HR</field>
+        <field name="icon">inbox</field>
+        <field name="sequence">22</field>
+        <field name="action_xmlid">pb_ask_hr.action_pb_ask_hr_ticket</field>
+        <field name="match_action_xmlids">pb_ask_hr.action_pb_ask_hr_ticket</field>
+        <field name="match_models">pb.ask.hr.ticket</field>
+    </record>
+</odoo>

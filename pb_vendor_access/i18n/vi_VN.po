@@ -1,0 +1,63 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "Already run out"
+msgstr "Đã hết hạn"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "Coming up for renewal"
+msgstr "Sắp đến hạn gia hạn"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "On the register"
+msgstr "Trong danh sách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "With nothing recorded"
+msgstr "Chưa ghi nhận gì"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "You look after"
+msgstr "Bạn phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendor_palette.js:0
+msgid "Vendors"
+msgstr "Nhà cung cấp"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,name:pb_vendor_access.role_tenant_administrator
+msgid "Tenant administrator"
+msgstr "Quản trị viên đơn vị"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,description:pb_vendor_access.role_tenant_administrator
+msgid "Runs this whole application: pay, people, joining and leaving, budgets, reporting, the connected systems, the calculation rules, and who here can do what. It does not include the system administrator permission, so it cannot switch developer mode on, open the raw permission table, or reach anything belonging to the platform this runs on. Growth plans are deliberately not part of it — give those to your head of HR separately."
+msgstr "Điều hành toàn bộ ứng dụng này: lương, nhân sự, vào làm và nghỉ việc, ngân sách, báo cáo, các hệ thống được kết nối, quy tắc tính toán và ai ở đây được làm gì. Không bao gồm quyền quản trị hệ thống, nên không bật được chế độ nhà phát triển, không mở được bảng phân quyền gốc và không đụng đến nền tảng mà hệ thống chạy trên đó. Kế hoạch phát triển được cố ý để riêng — hãy giao phần đó cho trưởng phòng nhân sự."

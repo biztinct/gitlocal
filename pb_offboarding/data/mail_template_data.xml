@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by the
+         next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` in
+         `email_values`. A template's own rendered address can reach mail.mail
+         EMPTY, and the message is then created, queued and addressed to nobody
+         with no error anywhere (R6). The `email_to` field below is kept as
+         documentation of who it is FOR. -->
+
+    <!-- ================= a resignation has been handed in ================= -->
+    <record id="mail_template_resignation_filed" model="mail.template">
+        <field name="name">Offboarding: resignation handed in</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.parent_id.work_email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} has handed in their resignation</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has handed in their resignation
+                    <t t-if="object.department_id"> in <t t-out="object.department_id.name or ''"/></t>.
+                </p>
+                <p>
+                    They have asked for
+                    <strong><t t-out="object.requested_lwd or ''"/></strong>
+                    as their last working day, which is
+                    <t t-out="object.notice_days or 0"/> days' notice.
+                </p>
+                <p t-if="object.reason_text" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.reason_text or ''"/>
+                </p>
+                <p>
+                    Nothing happens to their record until HR approves it. Open
+                    <strong><t t-out="object.name or ''"/></strong> in Payobook to
+                    see it and move it on.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ==================== it has been taken back ==================== -->
+    <record id="mail_template_resignation_withdrawn" model="mail.template">
+        <field name="name">Offboarding: resignation taken back</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.parent_id.work_email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} has taken their resignation back</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has taken back the resignation they handed in
+                    <t t-if="object.submit_date">on <t t-out="object.submit_date or ''"/></t>.
+                </p>
+                <p>
+                    Nothing was changed on their record and no leaving checklist
+                    was started, so there is nothing to undo.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ==================== HR has agreed it ==================== -->
+    <record id="mail_template_resignation_approved" model="mail.template">
+        <field name="name">Offboarding: resignation agreed</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your last working day is confirmed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    Your resignation has been agreed. Your last working day is
+                    <strong><t t-out="object.approved_lwd or object.requested_lwd or ''"/></strong>.
+                </p>
+                <p>
+                    Between now and then there are a few things to work through
+                    together — handing your work over, returning anything of
+                    ours you have, and a short conversation about how it has
+                    been. You can see all of it, and what is left, on your own
+                    page under <strong>My resignation</strong>.
+                </p>
+                <p>
+                    Your experience letter and your final settlement follow once
+                    everything is signed off, and both are emailed to you.
+                </p>
+                <br/>
+                Thank you for everything,<br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ==================== it was not accepted ==================== -->
+    <record id="mail_template_resignation_refused" model="mail.template">
+        <field name="name">Offboarding: resignation not accepted</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">About your resignation</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    Your resignation has not been accepted as it stands, and
+                    nothing has been changed on your record.
+                </p>
+                <p>
+                    This is not a decision anybody wants to leave in an email —
+                    your manager or someone from HR will speak to you about it.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the fifteen-day handover reminder ============ -->
+    <record id="mail_template_kt_ping" model="mail.template">
+        <field name="name">Offboarding: handover still open</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_journey_case"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Handover still open for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    is leaving
+                    <t t-if="object.anchor_date">on <t t-out="object.anchor_date or ''"/></t>,
+                    and
+                    <t t-if="object.kt_open_count == 1">
+                        <strong>one thing</strong> still has not been handed over.
+                    </t>
+                    <t t-else="">
+                        <strong><t t-out="object.kt_open_count or 0"/> things</strong>
+                        still have not been handed over.
+                    </t>
+                </p>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                        style="max-width:560px; border-collapse:collapse; margin:14px 0;">
+                    <tr t-foreach="object.kt_item_ids.filtered(lambda k: k.state != 'done')" t-as="item">
+                        <td style="padding:8px 10px; border-bottom:1px solid #E2E8F0; font-size:14px;">
+                            <strong><t t-out="item.topic or ''"/></strong>
+                            <div style="color:#4A5568; font-size:13px;">
+                                <t t-if="item.to_employee_id">to <t t-out="item.to_employee_id.name or ''"/></t>
+                                <t t-else="">nobody is named to pick this up yet</t>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    You will get this again in a fortnight while anything is
+                    still open, and not before.
+                </p>
+                <br/>
+                Payobook<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the post-exit documents reminder ============ -->
+    <record id="mail_template_postexit_docs" model="mail.template">
+        <field name="name">Offboarding: post-exit documents</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_journey_task"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Documents still to file for {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    left
+                    <t t-if="object.case_id.anchor_date">on <t t-out="object.case_id.anchor_date or ''"/></t>.
+                    A month on, this is the reminder to make sure the last
+                    paperwork is filed against their record:
+                </p>
+                <ul style="font-size:14px; color:#1B1733;">
+                    <li>the signed resignation and the acceptance</li>
+                    <li>the experience letter that was issued</li>
+                    <li>the final settlement statement</li>
+                    <li>anything the social or tax authorities needed</li>
+                </ul>
+                <p>
+                    This step stays open until somebody ticks it — it is a
+                    reminder, not a report.
+                </p>
+                <br/>
+                Payobook<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ==================== the farewell note ====================
+         Sent to the person's own team and nobody else, capped, and behind a
+         switch that is OFF until somebody turns it on. The wording is HR's:
+         `farewell_draft()` returns whatever they typed on the step, and a
+         sensible sentence when they typed nothing. -->
+    <record id="mail_template_farewell" model="mail.template">
+        <field name="name">Offboarding: farewell note to the team</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_journey_task"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="subject">Saying goodbye to {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                        style="max-width:520px; border-collapse:separate; border-spacing:0;
+                               border:1px solid #E2E8F0; border-radius:18px; overflow:hidden;
+                               background:#FFFFFF;">
+                    <tr>
+                        <td style="background:#5A4BB0; padding:26px 28px; color:#FFFFFF;">
+                            <div style="font-size:11px; font-weight:800; letter-spacing:.18em;
+                                        text-transform:uppercase; opacity:.85;">Moving on</div>
+                            <div style="font-size:26px; font-weight:800; margin-top:6px; line-height:1.2;">
+                                <t t-out="object.employee_id.name or ''"/>
+                            </div>
+                            <div t-if="object.employee_id.job_title"
+                                 style="font-size:14px; opacity:.9; margin-top:4px;">
+                                <t t-out="object.employee_id.job_title or ''"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:24px 28px; font-size:15px; line-height:1.65;">
+                            <t t-out="object.farewell_draft() or ''"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <p style="font-size:13px; color:#4A5568;">
+                    Sent to their team only.
+                </p>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

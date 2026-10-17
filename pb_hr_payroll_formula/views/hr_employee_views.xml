@@ -6,30 +6,27 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[.//field[@name='work_email']]/field[@name='company_id']" position="after">
-                <field name="date_of_joining"/>
-                <field name="overtime_status"/>
-                <field name="fire_prevention_officer"/>
-                <field name="tham_gia_bhxh"/>
-            </xpath>
-            <xpath expr="//field[@name='coach_id']" position="after">
-                <field name="level_of_health_compensation"/>
-                <field name="subject_to_pit"/>
-                <field name="trade_union_participation"/>
-                <field name="funeral_fund_participation"/>
-            </xpath>
+            <!-- All custom fields moved to Others page for Odoo 19 compatibility -->
             <xpath expr="//notebook" position="inside">
-                <page name="others" string="Others">
+                <page name="payroll_info" string="Payroll Info">
                     <group>
-                        <group>
+                        <group string="Employee Payroll Settings">
+                            <field name="date_of_joining"/>
+                            <field name="overtime_status"/>
+                            <field name="fire_prevention_officer"/>
+                            <field name="tham_gia_bhxh"/>
+                            <field name="level_of_health_compensation"/>
+                            <field name="subject_to_pit"/>
+                            <field name="trade_union_participation"/>
+                            <field name="funeral_fund_participation"/>
+                        </group>
+                        <group string="Other Settings">
                             <field name="female_excluding_pregnant"/>
                             <field name="osh_worker_code"/>
                             <field name="insurance_code"/>
                             <field name="trade_union_fee_code"/>
                             <field name="basic_overtime_electricity"/>
                             <field name="bd_phsk"/>
-                        </group>
-                        <group>
                             <field name="deduction_of_funeral_money"/>
                             <field name="different_subjects"/>
                             <field name="legal_entity_pays_salary"/>
@@ -43,3 +40,4 @@
     </record>
 
 </odoo>
+

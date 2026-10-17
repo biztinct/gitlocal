@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The running journeys, as native views.
+
+         The cockpit is where this work is DONE; these exist so an
+         administrator can audit, correct and search — and so anything that
+         links to a record (an activity, a chatter mention, a report) has a
+         form to land on rather than a dead end.
+         ================================================================== -->
+
+    <record id="view_journey_case_list" model="ir.ui.view">
+        <field name="name">pb.journey.case.list</field>
+        <field name="model">pb.journey.case</field>
+        <field name="arch" type="xml">
+            <list string="Journeys">
+                <field name="employee_id"/>
+                <field name="case_type"/>
+                <field name="anchor_date" string="Key date"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="open_task_count" string="Still to do"/>
+                <field name="next_due_date" string="Next due" optional="show"/>
+                <field name="red_flag_count" string="Red flags" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'active'"
+                       decoration-warning="state == 'on_hold'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_journey_case_form" model="ir.ui.view">
+        <field name="name">pb.journey.case.form</field>
+        <field name="model">pb.journey.case</field>
+        <field name="arch" type="xml">
+            <form string="Journey">
+                <header>
+                    <button name="action_open" type="object" string="Start it"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_hold" type="object" string="Put on hold"
+                            invisible="state != 'active'"/>
+                    <button name="action_resume" type="object" string="Resume"
+                            invisible="state != 'on_hold'"/>
+                    <button name="action_done" type="object" string="Finish"
+                            invisible="state not in ('active', 'on_hold')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="case_type"/>
+                            <field name="template_id"/>
+                            <field name="anchor_date" string="Key date"/>
+                        </group>
+                        <group>
+                            <field name="progress" widget="progressbar"/>
+                            <field name="open_task_count" string="Still to do"/>
+                            <field name="red_flag_count" string="Red flags"/>
+                            <field name="source"/>
+                            <field name="date_opened"/>
+                            <field name="date_closed"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Steps" name="tasks">
+                            <field name="task_ids">
+                                <list string="Steps" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="step_kind"/>
+                                    <field name="assignee_user_id"/>
+                                    <field name="due_date"/>
+                                    <field name="blocking_ff" optional="show"/>
+                                    <field name="escalated" optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'done'"
+                                           decoration-danger="state == 'blocked'"
+                                           decoration-muted="state == 'skipped'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Check-ins" name="checkins">
+                            <field name="checkin_ids">
+                                <list string="Check-ins" editable="bottom">
+                                    <field name="kind"/>
+                                    <field name="owner_user_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="red_flag"/>
+                                    <field name="red_flag_note"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Letters" name="letters">
+                            <field name="letter_ids" readonly="1">
+                                <list string="Letters">
+                                    <field name="subject"/>
+                                    <field name="template_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_journey_case_search" model="ir.ui.view">
+        <field name="name">pb.journey.case.search</field>
+        <field name="model">pb.journey.case</field>
+        <field name="arch" type="xml">
+            <search string="Journeys">
+                <field name="employee_id"/>
+                <field name="case_type"/>
+                <filter name="f_active" string="Running"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="f_hold" string="On hold"
+                        domain="[('state', '=', 'on_hold')]"/>
+                <!-- No "has a red flag" filter here on purpose: `red_flag_count`
+                     is computed and NOT stored, so a domain on it cannot be
+                     answered. The cockpit filters on it client-side, over a
+                     payload that already carries the number. -->
+                <separator/>
+                <group>
+                    <filter name="g_type" string="Journey type"
+                            context="{'group_by': 'case_type'}"/>
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_journey_case" model="ir.actions.act_window">
+        <field name="name">Journeys</field>
+        <field name="res_model">pb.journey.case</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_journey_case_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No journeys yet</p>
+            <p>Start one from the Journeys screen, or let them open by
+               themselves when the connected system announces a joiner.</p>
+        </field>
+    </record>
+
+    <!-- ===================== check-ins & feedback ===================== -->
+
+    <record id="view_employee_checkin_list" model="ir.ui.view">
+        <field name="name">pb.employee.checkin.list</field>
+        <field name="model">pb.employee.checkin</field>
+        <field name="arch" type="xml">
+            <list string="Check-ins">
+                <field name="scheduled_date"/>
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="owner_user_id"/>
+                <field name="red_flag"/>
+                <field name="red_flag_note" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'missed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_employee_checkin_form" model="ir.ui.view">
+        <field name="name">pb.employee.checkin.form</field>
+        <field name="model">pb.employee.checkin</field>
+        <field name="arch" type="xml">
+            <form string="Check-in">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="kind"/>
+                            <field name="case_id"/>
+                        </group>
+                        <group>
+                            <field name="owner_user_id"/>
+                            <field name="scheduled_date"/>
+                            <field name="state"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Anything that needs attention">
+                        <field name="red_flag"/>
+                        <field name="red_flag_note" invisible="not red_flag"/>
+                    </group>
+                    <field name="notes" placeholder="What was said, in your own words…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_employee_checkin" model="ir.actions.act_window">
+        <field name="name">Check-ins</field>
+        <field name="res_model">pb.employee.checkin</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_feedback_request_list" model="ir.ui.view">
+        <field name="name">pb.feedback.request.list</field>
+        <field name="model">pb.feedback.request</field>
+        <field name="arch" type="xml">
+            <list string="Feedback requests">
+                <field name="subject_employee_id"/>
+                <field name="kind"/>
+                <field name="respondent_user_id" optional="show"/>
+                <field name="respondent_email" optional="show"/>
+                <field name="window_end"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'submitted'"
+                       decoration-muted="state == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_feedback_request_form" model="ir.ui.view">
+        <field name="name">pb.feedback.request.form</field>
+        <field name="model">pb.feedback.request</field>
+        <field name="arch" type="xml">
+            <form string="Feedback request">
+                <header>
+                    <button name="action_send" type="object" class="btn-primary"
+                            string="Send the link"
+                            invisible="state == 'submitted'"/>
+                    <button name="action_extend" type="object"
+                            string="Give another day"
+                            invisible="state == 'submitted'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="subject_employee_id"/>
+                            <field name="kind"/>
+                            <field name="case_id"/>
+                        </group>
+                        <group>
+                            <field name="respondent_user_id"/>
+                            <field name="respondent_email"/>
+                            <field name="window_end"/>
+                            <field name="submitted_at"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Questions" name="questions">
+                            <field name="questions_json"
+                                   placeholder='[{"key": "fit", "label": "How well did they fit the team?", "type": "rating"}, {"key": "more", "label": "Anything else?", "type": "text"}]'/>
+                        </page>
+                        <page string="Answers" name="answers">
+                            <field name="answers_json" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_feedback_request" model="ir.actions.act_window">
+        <field name="name">Feedback requests</field>
+        <field name="res_model">pb.feedback.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="skill_level_beginner" model="hr.skill.level">
+        <field name="name">Beginner</field>
+        <field name="level_value">1</field>
+        <field name="description">Basic understanding and limited practical experience</field>
+        <field name="color">10</field>
+    </record>
+
+    <record id="skill_level_intermediate" model="hr.skill.level">
+        <field name="name">Intermediate</field>
+        <field name="level_value">2</field>
+        <field name="description">Working knowledge with moderate practical experience</field>
+        <field name="color">3</field>
+    </record>
+
+    <record id="skill_level_proficient" model="hr.skill.level">
+        <field name="name">Proficient</field>
+        <field name="level_value">3</field>
+        <field name="description">Strong practical skills and can work independently</field>
+        <field name="color">2</field>
+    </record>
+
+    <record id="skill_level_advanced" model="hr.skill.level">
+        <field name="name">Advanced</field>
+        <field name="level_value">4</field>
+        <field name="description">Deep expertise and can mentor others</field>
+        <field name="color">1</field>
+    </record>
+
+    <record id="skill_level_expert" model="hr.skill.level">
+        <field name="name">Expert</field>
+        <field name="level_value">5</field>
+        <field name="description">Recognized authority and thought leader</field>
+        <field name="color">4</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,215 @@
+// =====================================================================
+//  /my/resignation — .pbof-*
+//
+//  The .pbme kit (pb_me_portal) does the hero, the cards, the buttons and
+//  the stepper; this file only says what is specific to a page about
+//  leaving.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, and every
+//  token is a `--pbim-*` one. The kit's variables are spelt pbim even on
+//  the pbme surfaces (pb_me_portal's own SCSS reads --pbim-line,
+//  --pbim-primary and so on) — a rule written against a --pbme-* name
+//  compiles, renders, and silently uses its fallback forever, so the page
+//  looks right until somebody re-tints the product and this one screen does
+//  not move. The portal is a separate asset bundle and the tokens arrive
+//  from whichever ESS module loaded them, which is why the fallbacks stay.
+//  (R39: the portal is light-only by design, so "check it in both themes"
+//  means checking that every colour RESOLVES, not hunting for a dark
+//  palette.)
+//
+//  No `min()`/`max()` with mixed units anywhere: a px/% pair kills the
+//  ENTIRE frontend bundle, not just this file.
+// =====================================================================
+
+.pbof {
+
+    // ------------------------------------------------------------ notices
+    .pbof-notice {
+        display: flex; align-items: center; gap: 9px;
+        background: var(--pbim-green-soft, #E7F6EE);
+        border: 1px solid var(--pbim-green, #1E9E62);
+        color: var(--pbim-green, #14603C);
+        border-radius: 12px; padding: 11px 15px; margin-bottom: 18px;
+        font-size: 14px; font-weight: 600;
+
+        &.pbof-notice--bad {
+            background: var(--pbim-amber-soft, #FDF3E2);
+            border-color: var(--pbim-amber, #C77700);
+            color: var(--pbim-amber, #7A4A00);
+        }
+    }
+
+    // ------------------------------------------------------------- the hero
+    .pbof-hero {
+        display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+        padding: 26px 28px; margin-bottom: 20px; border-radius: 18px;
+        background: var(--pbim-surface, #FFFFFF);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbof-hero-tx { flex: 1 1 320px; min-width: 0; }
+    .pbof-hero-h1 {
+        font-size: 27px; font-weight: 800; line-height: 1.22; margin: 4px 0 0;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbof-hero-sub {
+        font-size: 14.5px; line-height: 1.6; margin: 8px 0 0;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------------ the notice rule
+    .pbof-policy {
+        display: flex; align-items: center; gap: 16px; margin: 16px 0 20px;
+        padding: 15px 18px; border-radius: 14px;
+        background: var(--pbim-bg, #F6F7FB);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbof-policy-n {
+        font-size: 34px; font-weight: 800; line-height: 1;
+        color: var(--pbim-primary, #5A4BB0);
+        font-variant-numeric: tabular-nums; flex: 0 0 auto;
+    }
+    .pbof-policy-t {
+        min-width: 0;
+        b { display: block; font-size: 14px; color: var(--pbim-ink, #1B1733); }
+        span {
+            display: block; font-size: 13.5px; line-height: 1.55; margin-top: 3px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    // ------------------------------------------------------------- the form
+    .pbof-formgrid { display: flex; flex-direction: column; }
+    .pbof-in, .pbof-ta {
+        width: 100%; border-radius: 11px; padding: 10px 13px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-ink, #1B1733);
+        font: inherit; font-size: 14px; margin-bottom: 16px;
+        resize: vertical;
+
+        &:focus {
+            outline: none;
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+    }
+    .pbof-warn {
+        display: flex; align-items: flex-start; gap: 8px;
+        font-size: 13px; line-height: 1.55; margin: 0 0 16px;
+        svg { flex: 0 0 auto; margin-top: 2px; }
+    }
+    .pbof-send {
+        align-self: flex-start;
+        display: inline-flex; align-items: center; gap: 7px;
+    }
+    .pbof-btn-quiet {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: transparent !important;
+        color: var(--pbim-primary, #5A4BB0) !important;
+        border: 1px solid var(--pbim-line, #E2E8F0) !important;
+
+        &:hover { background: var(--pbim-bg, #F6F7FB) !important; }
+    }
+
+    .pbof-past { border-left: 3px solid var(--pbim-line, #E2E8F0); }
+
+    // ------------------------------------------------------- where it is up to
+    .pbof-stepper { margin: 4px 0 18px; }
+    .pbof-facts {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+        padding-top: 14px; border-top: 1px solid var(--pbim-line, #E2E8F0);
+
+        b { display: block; font-size: 15px; margin-top: 2px;
+            color: var(--pbim-ink, #1B1733); }
+    }
+    .pbof-fact-l {
+        font-size: 10.5px; font-weight: 800; letter-spacing: .05em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+    }
+    .pbof-withdraw {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        margin-top: 18px; padding-top: 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        span { font-size: 12.5px; line-height: 1.5; flex: 1 1 240px; }
+    }
+    .pbof-locked {
+        display: flex; align-items: center; gap: 8px; margin-top: 18px;
+        padding-top: 16px; font-size: 13px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+    }
+
+    // --------------------------------------------------------- the checklist
+    .pbof-step {
+        display: flex; gap: 13px; padding: 12px 0;
+        border-top: 1px solid var(--pbim-line-2, #EEF1F6);
+        &:first-of-type { border-top: none; }
+    }
+    .pbof-step-dot {
+        flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+        display: grid; place-items: center; margin-top: 2px;
+        border: 2px solid var(--pbim-line, #E2E8F0);
+        background: var(--pbim-surface, #FFFFFF);
+        color: var(--pbim-green, #1E9E62);
+    }
+    .pbof-step--done .pbof-step-dot {
+        border-color: var(--pbim-green, #1E9E62);
+        background: var(--pbim-green-soft, #E7F6EE);
+    }
+    .pbof-step--mine .pbof-step-dot {
+        border-color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbof-step--late .pbof-step-dot {
+        border-color: var(--pbim-rose, #C0392B);
+    }
+    .pbof-step-tx {
+        min-width: 0;
+        b { font-size: 14px; color: var(--pbim-ink, #1B1733); }
+        p { font-size: 13px; line-height: 1.55; margin: 4px 0 0;
+            color: var(--pbim-muted, #64748B); }
+    }
+    .pbof-step--done .pbof-step-tx b {
+        color: var(--pbim-muted, #64748B); font-weight: 600;
+        text-decoration: line-through;
+    }
+    .pbof-step-due {
+        font-size: 12px; margin-left: 8px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbof-tag {
+        display: inline-block; margin-left: 8px; border-radius: 999px;
+        padding: 1px 9px; font-size: 10.5px; font-weight: 800;
+        letter-spacing: .04em; text-transform: uppercase;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+
+    // ------------------------------------------------------------- the kit
+    .pbof-asset {
+        display: flex; align-items: center; gap: 10px; padding: 10px 0;
+        font-size: 14px;
+        border-top: 1px solid var(--pbim-line-2, #EEF1F6);
+        &:first-of-type { border-top: none; }
+        b { flex: 1; min-width: 0; color: var(--pbim-ink, #1B1733); }
+    }
+
+    // ------------------------------------------------------------- goodbye
+    .pbof-bye {
+        display: flex; gap: 18px; align-items: flex-start;
+    }
+    .pbof-bye-ic {
+        flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%;
+        display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .pbof-links {
+        display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px;
+    }
+
+    // ---------------------------------------------------------- narrow
+    @media (max-width: 640px) {
+        .pbof-facts { grid-template-columns: 1fr; }
+        .pbof-bye { flex-direction: column; }
+        .pbof-hero-h1 { font-size: 22px; }
+    }
+}

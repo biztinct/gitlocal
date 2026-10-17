@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- RECRUIT P6 (G-58): the two reasons an offer drop is recorded with, so
+         the numbers can tell "turned the offer down" from "signed and never
+         came". Noupdate: a company may reword them. -->
+    <record id="refuse_reason_declined_offer" model="hr.applicant.refuse.reason">
+        <field name="name">Declined the offer</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="refuse_reason_did_not_join" model="hr.applicant.refuse.reason">
+        <field name="name">Accepted the offer but did not join</field>
+        <field name="sequence">41</field>
+    </record>
+</data>
+</odoo>

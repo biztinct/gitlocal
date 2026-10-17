@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- VN per-diem seeds (global fallback — company_id blank matches any co).
+         Tier-1 (Hà Nội / HCMC) 200k VND/day, other cities 150k. Paid via
+         payroll allowance by default (per_diem_channel). -->
+    <record id="policy_vn_tier1" model="pb.trip.policy">
+        <field name="name">Vietnam — Tier 1 (HN / HCMC)</field>
+        <field name="country_id" ref="base.vn"/>
+        <field name="city_tier">tier1</field>
+        <field name="per_diem_rate">200000</field>
+        <field name="currency_id" ref="base.VND"/>
+        <field name="per_diem_channel">payroll</field>
+        <field name="company_id" eval="False"/>
+        <field name="sequence">10</field>
+    </record>
+    <record id="policy_vn_other" model="pb.trip.policy">
+        <field name="name">Vietnam — Other cities</field>
+        <field name="country_id" ref="base.vn"/>
+        <field name="per_diem_rate">150000</field>
+        <field name="currency_id" ref="base.VND"/>
+        <field name="per_diem_channel">payroll</field>
+        <field name="company_id" eval="False"/>
+        <field name="sequence">20</field>
+    </record>
+</odoo>

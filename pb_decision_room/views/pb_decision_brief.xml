@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The printable decision brief.
+
+         Rendered on the server from numbers the ROOM computed, opened in a new
+         tab, and printed with the browser's own dialog — there is no report
+         engine here and no PDF library.
+
+         SELF-CONTAINED BY CONTRACT: no <script>, no <link>, no image, no font
+         and no URL of any kind. A brief is saved to a laptop and mailed on;
+         one whose layout depends on a server it can no longer reach is not a
+         brief. `tests/test_decision_room.py::T24` greps this template for
+         exactly that.
+
+         Every value is escaped by QWeb: a plan called "<b>x</b>" prints those
+         five characters and does not turn the page bold (T25). -->
+
+    <template id="brief" name="Decision brief">
+        <!-- The page is stamped with the READER's language, and every word
+             of it is a translatable template term: a Vietnamese owner prints
+             a Vietnamese brief, with the numbers the room already formatted
+             in Vietnamese, from the same template. -->
+        <html t-att-lang="brief.get('lang') or 'en'">
+        <head>
+            <meta charset="utf-8"/>
+            <title t-esc="brief.get('doc_title') or brief.get('plan_name')"/>
+            <style>
+                @page { margin: 16mm 14mm; }
+                * { box-sizing: border-box; }
+                body { font: 13px/1.75 system-ui, -apple-system, "Segoe UI",
+                       Roboto, Arial, sans-serif; color: #1E1B2E;
+                       max-width: 900px; margin: 40px auto; padding: 0 24px;
+                       background: #fff; }
+                header { border-bottom: 3px solid #5A4BB0; padding-bottom: 18px; }
+                .eyebrow { font-size: 10px; letter-spacing: 1.6px;
+                           font-weight: 700; color: #5A4BB0; }
+                h1 { font-size: 34px; letter-spacing: -1px; font-weight: 600;
+                     margin: 10px 0 6px; }
+                h2 { font-size: 17px; font-weight: 650; margin: 34px 0 10px;
+                     letter-spacing: -.3px; page-break-after: avoid; }
+                p { margin: 8px 0; }
+                .sub { font-size: 11px; color: #64748B; margin: 0; }
+                .lead { font-size: 15px; line-height: 1.7; }
+                table { border-collapse: collapse; width: 100%;
+                        font-size: 12px; page-break-inside: auto; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+                th { text-align: left; font-weight: 650; font-size: 10px;
+                     letter-spacing: .6px; text-transform: uppercase;
+                     color: #64748B; border-bottom: 1px solid #CBC2EE;
+                     padding: 7px 8px; }
+                td { border-bottom: 1px solid #E2E8F0; padding: 7px 8px;
+                     vertical-align: top; }
+                td.num, th.num { text-align: right;
+                                 font-variant-numeric: tabular-nums;
+                                 white-space: nowrap; }
+                .met { color: #2E7D4F; font-weight: 650; }
+                .missed { color: #DC2668; font-weight: 650; }
+                .up { color: #2E7D4F; }
+                .down { color: #DC2668; }
+                .why { font-size: 11px; color: #64748B; display: block; }
+                .foot { margin-top: 34px; border-top: 1px solid #E2E8F0;
+                        padding-top: 14px; font-size: 11px; color: #64748B; }
+                .assume { font-size: 12px; }
+                .assume b { color: #1E1B2E; }
+                ul { padding-left: 18px; }
+                li { margin: 4px 0; }
+                @media print {
+                    body { margin: 0; max-width: none; padding: 0; }
+                    h2 { margin-top: 22px; }
+                }
+            </style>
+        </head>
+        <body>
+            <header>
+                <span class="eyebrow">DECISION BRIEF</span>
+                <h1><t t-esc="brief.get('plan_name')"/></h1>
+                <p class="sub">
+                    <t t-esc="company_name"/> ·
+                    prepared by <t t-esc="reader"/> on <t t-esc="today"/> ·
+                    all figures in <t t-esc="brief.get('currency_code')"/>
+                </p>
+                <p class="sub">
+                    Measured against <t t-esc="brief.get('comparison_name')"/>.
+                </p>
+            </header>
+
+            <h2>In one sentence</h2>
+            <p class="lead"><strong t-esc="brief.get('headline_title')"/></p>
+            <p t-esc="brief.get('headline_copy')"/>
+
+            <h2>Your goals</h2>
+            <table t-if="brief.get('goals')">
+                <tr>
+                    <th>Goal</th><th>Target</th>
+                    <th class="num">Now</th><th>Where it stands</th>
+                </tr>
+                <tr t-foreach="brief.get('goals') or []" t-as="goal">
+                    <td t-esc="goal.get('label')"/>
+                    <td><t t-esc="goal.get('bound')"/> <t t-esc="goal.get('target')"/></td>
+                    <td class="num" t-esc="goal.get('actual')"/>
+                    <td t-attf-class="{{ 'met' if goal.get('met') else 'missed' }}"
+                        t-esc="goal.get('status')"/>
+                </tr>
+            </table>
+            <p t-else="">No goals were switched on for this plan.</p>
+
+            <h2>The year, in total</h2>
+            <table>
+                <tr>
+                    <th>Measure</th>
+                    <th class="num"><t t-esc="brief.get('comparison_name')"/></th>
+                    <th class="num">This plan</th>
+                </tr>
+                <tr t-foreach="brief.get('outcome') or []" t-as="row">
+                    <td t-esc="row.get('label')"/>
+                    <td class="num" t-esc="row.get('ref')"/>
+                    <td class="num" t-esc="row.get('plan')"/>
+                </tr>
+            </table>
+
+            <h2>Why the result is different</h2>
+            <table>
+                <tr><th>Step</th><th class="num">Effect on profit</th></tr>
+                <tr t-foreach="brief.get('bridge') or []" t-as="step">
+                    <td>
+                        <t t-esc="step.get('label')"/>
+                        <span class="why" t-esc="step.get('reason')"/>
+                    </td>
+                    <td t-attf-class="num {{ 'up' if step.get('good') else 'down' }}"
+                        t-esc="step.get('value')"/>
+                </tr>
+                <tr>
+                    <td><strong>Difference in operating profit</strong></td>
+                    <td class="num"><strong t-esc="brief.get('bridge_total')"/></td>
+                </tr>
+            </table>
+            <p class="sub">This reconciles the difference. It does not claim
+                each input acts alone.</p>
+
+            <h2>Decisions that differ from the comparison</h2>
+            <ul t-if="brief.get('changes')">
+                <li t-foreach="brief.get('changes') or []" t-as="line"
+                    t-esc="line"/>
+            </ul>
+            <p t-else="">Nothing differs — this is the comparison itself.</p>
+
+            <h2>Everything that was set</h2>
+            <table>
+                <tr>
+                    <th>Input</th>
+                    <th class="num"><t t-esc="brief.get('comparison_name')"/></th>
+                    <th class="num">This plan</th>
+                </tr>
+                <tr t-foreach="brief.get('inputs') or []" t-as="row">
+                    <td t-esc="row.get('label')"/>
+                    <td class="num" t-esc="row.get('ref')"/>
+                    <td class="num" t-esc="row.get('plan')"/>
+                </tr>
+            </table>
+
+            <h2>Month by month</h2>
+            <table>
+                <tr>
+                    <th>Month</th><th class="num">People</th>
+                    <th class="num">Workforce cost</th>
+                    <th class="num">Demand served</th>
+                    <th class="num">Operating profit</th>
+                </tr>
+                <tr t-foreach="brief.get('months') or []" t-as="row">
+                    <td t-esc="row.get('name')"/>
+                    <td class="num" t-esc="row.get('people')"/>
+                    <td class="num" t-esc="row.get('cost')"/>
+                    <td class="num" t-esc="row.get('served')"/>
+                    <td class="num" t-esc="row.get('profit')"/>
+                </tr>
+            </table>
+
+            <h2>What this picture believed</h2>
+            <p class="assume" t-foreach="brief.get('assumptions') or []"
+               t-as="item">
+                <b><t t-esc="item.get('title')"/>.</b>
+                <t t-esc="item.get('copy')"/>
+            </p>
+
+            <div class="foot">
+                <p>Explore freely. Nothing in payroll, hiring or contracts is
+                    changed by this document. It is a planning sketch built on
+                    the roster and the assumptions above, not a payroll
+                    calculation and not a forecast guarantee.</p>
+                <p>Use your browser's Print command to save this page as a PDF.</p>
+            </div>
+        </body>
+        </html>
+    </template>
+
+</odoo>

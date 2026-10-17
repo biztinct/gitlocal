@@ -1,0 +1,263 @@
+{
+ "_doc": "PAYAI FIX-1 (P4:vi-13/test-2) — one table, read by BOTH the card (normWord/wordMatches, node) and the server (runner._norm_word/word_ok, the Odoo suite). 'out' is the server's fold; the card must produce the same.",
+ "fold": [
+  {
+   "in": "Duyệt",
+   "out": "duyet"
+  },
+  {
+   "in": "DUYỆT",
+   "out": "duyet"
+  },
+  {
+   "in": "duyet",
+   "out": "duyet"
+  },
+  {
+   "in": "  duyệt  ",
+   "out": "duyet"
+  },
+  {
+   "in": "ＤＵＹỆＴ",
+   "out": "duyet"
+  },
+  {
+   "in": "từ chốı",
+   "out": "tu choı"
+  },
+  {
+   "in": "TỪ CHỐI",
+   "out": "tu choi"
+  },
+  {
+   "in": "Từ chối",
+   "out": "tu choi"
+  },
+  {
+   "in": "DUYỆT﻿",
+   "out": "duyet﻿"
+  },
+  {
+   "in": "send  back",
+   "out": "send back"
+  },
+  {
+   "in": " SEND\tBACK ",
+   "out": "send back"
+  },
+  {
+   "in": "Trả lại",
+   "out": "tra lai"
+  },
+  {
+   "in": "TRẢ LẠI",
+   "out": "tra lai"
+  },
+  {
+   "in": "ĐỒNG Ý",
+   "out": "dong y"
+  },
+  {
+   "in": "APPROVE ",
+   "out": "approve"
+  },
+  {
+   "in": "　approve",
+   "out": "approve"
+  },
+  {
+   "in": "approve",
+   "out": "approve"
+  },
+  {
+   "in": "x\u001cy",
+   "out": "x y"
+  },
+  {
+   "in": "İ",
+   "out": "i"
+  },
+  {
+   "in": "ﬁx",
+   "out": "fix"
+  },
+  {
+   "in": "REJECT",
+   "out": "reject"
+  },
+  {
+   "in": "Reject",
+   "out": "reject"
+  },
+  {
+   "in": "approve​",
+   "out": "approve​"
+  },
+  {
+   "in": "",
+   "out": ""
+  }
+ ],
+ "match": [
+  {
+   "typed": "send  back",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "Send Back",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "tra lai",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "TRẢ LẠI",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "send back now",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "APPROVE",
+   "words": [
+    "SEND BACK",
+    "TRẢ LẠI"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "duyệt",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "Duyet",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "ＤＵＹỆＴ",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "duyệt đi",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "approv",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "DUYỆT﻿",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "   ",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "REJECT",
+   "words": [
+    "APPROVE",
+    "DUYỆT"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "từ chốı",
+   "words": [
+    "REJECT",
+    "TỪ CHỐI"
+   ],
+   "ok": false
+  },
+  {
+   "typed": "tu choi",
+   "words": [
+    "REJECT",
+    "TỪ CHỐI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "TỪ CHỐI",
+   "words": [
+    "REJECT",
+    "TỪ CHỐI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "reject",
+   "words": [
+    "REJECT",
+    "TỪ CHỐI"
+   ],
+   "ok": true
+  },
+  {
+   "typed": "Approve",
+   "words": [
+    "REJECT",
+    "TỪ CHỐI"
+   ],
+   "ok": false
+  }
+ ]
+}

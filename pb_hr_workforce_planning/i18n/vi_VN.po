@@ -1,0 +1,4009 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__threshold_pct
+msgid "% Threshold"
+msgstr "Ngưỡng %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "% of workforce with each skill (green ≥50%, amber ≥25%, red <25%)"
+msgstr "Lực lượng lao động % of với từng kỹ năng (xanh ≥50%, hổ phách ≥25%, đỏ <25%)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "% variance"
+msgstr "% phương sai"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/compensation_cycle.py:0
+msgid "%d contracts updated."
+msgstr "Đã cập nhật hợp đồng %d."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/wizards/wfp_tagging_wizard.py:0
+msgid "%d formula rules tagged for workforce planning."
+msgstr "Quy tắc công thức %d được gắn thẻ để lập kế hoạch lực lượng lao động."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "%s (Copy)"
+msgstr "%s (Bản sao)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "/h"
+msgstr "/h"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_performance_rating__1
+msgid "1 — Needs Improvement"
+msgstr "1 - Cần cải thiện"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_performance_rating__2
+msgid "2 — Partially Meets"
+msgstr "2 - Đáp ứng một phần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_performance_rating__3
+msgid "3 — Meets Expectations"
+msgstr "3 - Đáp ứng mong đợi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_performance_rating__4
+msgid "4 — Exceeds Expectations"
+msgstr "4 - Vượt quá mong đợi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "4-6h"
+msgstr "4-6h"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_performance_rating__5
+msgid "5 — Outstanding"
+msgstr "5 - Xuất sắc"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "6-8h"
+msgstr "6-8h"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "8-10h"
+msgstr "8-10h"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "<4h"
+msgstr "<4h"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_kanban
+msgid "<span class=\"wfp-kanban-metric-label\">Employees</span>"
+msgstr "<span class=\"wfp-kanban-metric-label\">Enhân viên</span>"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_kanban
+msgid "<span class=\"wfp-kanban-metric-label\">Increase</span>"
+msgstr "<span class=\"wfp-kanban-metric-label\">Tăng</span>"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid ""
+"<strong>Active guardrails</strong> are checked when recommendations are submitted.\n"
+"                                Warnings show yellow badges; blocks prevent submission entirely."
+msgstr ""
+"<strong>Ran chắn tích cực</strong> được kiểm tra khi đề xuất được gửi.\n"
+"                                Cảnh báo hiển thị phù hiệu màu vàng; khối ngăn chặn việc gửi hoàn toàn."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid ">10h"
+msgstr ">10 giờ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "AVG HOURS/WEEK"
+msgstr "GIỜ AVG/TUẦN"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Absence Impact by Type"
+msgstr "Tác động vắng mặt theo loại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__action
+msgid "Action"
+msgstr "Tác vụ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_needaction
+msgid "Action Needed"
+msgstr "Hành động Cần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__active
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__active
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__active
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__active
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Hoạt động Ngoại lệ Trang trí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_state
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_state
+msgid "Activity State"
+msgstr "Hoạt động Trạng thái"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Hoạt động Loại Biểu tượng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__actual_cost
+msgid "Actual Cost"
+msgstr "Chi phí thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__actual_headcount
+msgid "Actual Headcount"
+msgstr "Số lượng nhân viên thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_increase_rule_form
+msgid "Additional Filters"
+msgstr "Bộ lọc bổ sung"
+
+#. module: pb_hr_workforce_planning
+#: model:res.groups,name:pb_hr_workforce_planning.group_wfp_admin
+msgid "Administrator"
+msgstr "Quản trị viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__all
+msgid "All Employees"
+msgstr "Tất cả Nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_scenarios
+msgid "All Scenarios"
+msgstr "Tất cả các kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__allocated_amount
+msgid "Allocated"
+msgstr "Đã phân bổ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__allowance
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__allowance
+msgid "Allowance"
+msgstr "Phụ cấp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__threshold_amount
+msgid "Amount Limit"
+msgstr "Giới hạn số tiền"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__threshold_amount
+msgid "Amount Threshold"
+msgstr "Ngưỡng số tiền"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Analyzing attendance, overtime, and shift data."
+msgstr "Phân tích dữ liệu chấm công, làm thêm giờ và ca làm việc."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Analyzing compa ratios, cost components, and performance data."
+msgstr "Phân tích tỷ lệ so sánh, thành phần chi phí và dữ liệu hiệu suất."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Analyzing recruitment pipeline, skills, and talent data."
+msgstr "Phân tích quy trình tuyển dụng, kỹ năng và dữ liệu nhân tài."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__annual_delta
+msgid "Annual Delta"
+msgstr "Đồng bằng hàng năm"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__annualized_delta
+msgid "Annualized Delta"
+msgstr "Đồng bằng hàng năm"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_recommendation__state__applied
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__applied_rule_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Applied Rule"
+msgstr "Quy tắc được áp dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__applied
+msgid "Applied to Contracts"
+msgstr "Áp dụng cho hợp đồng"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Apply Tags"
+msgstr "Áp dụng thẻ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__apply_to
+msgid "Apply To"
+msgstr "Áp dụng cho"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__component_target
+msgid "Apply To Component"
+msgstr "Áp dụng cho thành phần"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Apply to Contracts"
+msgstr "Áp dụng cho hợp đồng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__approval_step_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Approval Chain"
+msgstr "Chuỗi phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__approval_progress
+msgid "Approval Progress"
+msgstr "Tiến độ phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_approval_step
+msgid "Approval Step"
+msgstr "Bước phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__state__approved
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__approved
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_recommendation__state__approved
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_planning_scenario__state__approved
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__approve
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__approved
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__approved
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__budget_amount
+msgid "Approved Budget"
+msgstr "Ngân sách được phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__role
+msgid "Approver Role"
+msgstr "Vai trò của người phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__04
+msgid "April"
+msgstr "Tháng 4"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Archive"
+msgstr "Lưu trữ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_planning_scenario__state__archived
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__archive
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__archived
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__archived
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__approver_id
+msgid "Assigned Approver"
+msgstr "Người phê duyệt được chỉ định"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__description
+msgid "Assumptions & Notes"
+msgstr "Giả định & Ghi chú"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_attachment_count
+msgid "Attachment Count"
+msgstr "Tệp đính kèm Số lượng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Attendance by Day"
+msgstr "Tham dự theo ngày"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__attrition
+msgid "Attrition / Resignation"
+msgstr "Tiêu hao / Từ chức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__attrition_pct
+msgid "Attrition Rate %"
+msgstr "Tỷ lệ nghỉ việc Tỷ lệ %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__approval_ids
+msgid "Audit Trail"
+msgstr "Dấu vết kiểm toán"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__08
+msgid "August"
+msgstr "Tháng 8"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__detected_wfp_category
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Auto-Detected"
+msgstr "Tự động phát hiện"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Allowance"
+msgstr "Phụ cấp Trung bình"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Base"
+msgstr "Cơ sở trung bình"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Compa Ratio"
+msgstr "Tỷ lệ so sánh trung bình"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Employer Cost"
+msgstr "Chi phí trung bình của nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Increase"
+msgstr "Tăng trung bình"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__avg_increase_pct
+msgid "Avg Increase %"
+msgstr "Mức tăng trung bình %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Avg Total"
+msgstr "Tổng số trung bình"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__state__active
+msgid "Awaiting Approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__component_target__base_and_allowances
+msgid "Base + Allowances (proportional via formulas)"
+msgstr "Cơ sở + Phụ cấp (tỷ lệ theo công thức)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__base_salary
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__base_salary
+msgid "Base Salary"
+msgstr "Lương cơ bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__component_target__base_only
+msgid "Base Salary Only"
+msgstr "Chỉ Lương Cơ Bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__scenario_id
+msgid "Based on Scenario"
+msgstr "Dựa trên kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__enforcement__block
+msgid "Block (Prevent Submission)"
+msgstr "Chặn (Ngăn chặn gửi)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__bonus
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__bonus
+msgid "Bonus / Variable Pay"
+msgstr "Tiền thưởng / Lương biến đổi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Budget & Actuals"
+msgstr "Ngân sách & Thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__budget_variance
+msgid "Budget - Forecast Total Cost. Positive = under budget."
+msgstr "Ngân sách - Dự báo Tổng chi phí. Tích cực = dưới ngân sách."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Budget Gauge"
+msgstr "Thước đo ngân sách"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_budget_guardrail_form
+msgid "Budget Guardrail"
+msgstr "Lan can ngân sách"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_budget_guardrail
+msgid "Budget Guardrail Rule"
+msgstr "Quy tắc bảo vệ ngân sách"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_budget_guardrail
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__guardrail_ids
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_guardrails
+msgid "Budget Guardrails"
+msgstr "Lan can ngân sách"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Budget Utilization"
+msgstr "Sử dụng ngân sách"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__budget_variance
+msgid "Budget Variance"
+msgstr "Ngân sách Chênh lệch"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_budget_actual
+msgid "Budget vs Actual Tracking"
+msgstr "Theo dõi ngân sách và thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__budget_actual_ids
+msgid "Budget vs Actuals"
+msgstr "Ngân sách so với thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__country
+msgid "By Country"
+msgstr "Bởi Quốc gia"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__department
+msgid "By Department"
+msgstr "Bởi Phòng cấm"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__job
+msgid "By Job Position"
+msgstr "Theo vị trí công việc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__location
+msgid "By Location"
+msgstr "Theo vị trí"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Calculate Forecast"
+msgstr "Tính toán dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_planning_scenario__state__calculated
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__calculate
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__calculated
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__calculated
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Calculated"
+msgstr "Đã tính toán"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__kh
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__kh
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/compensation_cycle.py:0
+msgid ""
+"Cannot submit — guardrail violations:\n"
+"\n"
+"%s"
+msgstr ""
+"Không thể gửi - vi phạm lan can:\n"
+"\n"
+"%s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/compensation_cycle.py:0
+msgid ""
+"Cannot submit — guardrail violations:\n"
+"%s"
+msgstr ""
+"Không thể gửi - vi phạm lan can:\n"
+"%s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Capability"
+msgstr "Khả năng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__category_code
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__change_type
+msgid "Change Type"
+msgstr "Thay đổi loại"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_export_wizard_form
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__code
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__rule_code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__column_letter
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Col"
+msgstr "Cột"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__comment
+msgid "Comment"
+msgstr "Bình luận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Compa Ratio vs Increase %"
+msgstr "Tỷ lệ lương so với mức tăng %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Compa ratio %.2f exceeds maximum %.2f"
+msgstr "Tỷ lệ so sánh %.2f vượt quá %.2f tối đa"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Compa ratio %.2f is below minimum %.2f"
+msgstr "Tỷ lệ so sánh %.2f thấp hơn %.2f tối thiểu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_contract__compa_ratio
+msgid "Compa-Ratio"
+msgstr "Tỷ lệ Compa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__compa_max
+msgid "Compa-Ratio Max"
+msgstr "Tỷ lệ Compa tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__compa_min
+msgid "Compa-Ratio Min"
+msgstr "Tỷ lệ Compa tối thiểu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__company_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Compare with..."
+msgstr "So sánh với..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Comparing forecast projections with real payroll data."
+msgstr "So sánh các dự báo dự báo với dữ liệu bảng lương thực tế."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_compensation_parent
+msgid "Compensation"
+msgstr "Bồi thường"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/compensation_cycle.py:0
+msgid "Compensation Applied"
+msgstr "Áp dụng bồi thường"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_compensation_cycle
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__cycle_id
+msgid "Compensation Cycle"
+msgstr "Chu kỳ bồi thường"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_cycle
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_cycles
+msgid "Compensation Cycles"
+msgstr "Chu kỳ bồi thường"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Compensation Forecasting & Scenario Analysis"
+msgstr "Dự báo thù lao & Phân tích kịch bản"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Compensation Planning"
+msgstr "Lập kế hoạch bồi thường"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_compensation_recommendation
+msgid "Compensation Recommendation"
+msgstr "Khuyến nghị đền bù"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/approval_step.py:0
+msgid "Compensation cycle \"%s\" awaiting your approval (Step: %s)"
+msgstr "Chu kỳ bồi thường \"%s\" đang chờ bạn phê duyệt (Bước: %s)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/compensation_cycle.py:0
+msgid "Compensation cycle \"%s\" needs your approval (%s)"
+msgstr "Chu kỳ bồi thường \"%s\" cần sự chấp thuận của bạn (%s)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_export_wizard__export_type__component
+msgid "Component Breakdown"
+msgstr "Phân tích thành phần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__component_type
+msgid "Component Type"
+msgstr "Loại thành phần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__line_ids
+msgid "Components"
+msgstr "Thành phần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_config_parent
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.actions.act_window,help:pb_hr_workforce_planning.action_wfp_budget_guardrail
+msgid ""
+"Configure rules like max increase %, budget caps, and compa-ratio bounds\n"
+"                to govern compensation recommendations."
+msgstr ""
+"Cấu hình các quy tắc như mức tăng tối đa %, giới hạn ngân sách và giới hạn tỷ lệ lương\n"
+"                để kiểm soát đề xuất đãi ngộ."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__state__confirmed
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__contract_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__contract_id
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__contract_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_grade_tree
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:363
+msgid "Cost Change"
+msgstr "Thay đổi chi phí"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Cost Component Waterfall"
+msgstr "Thác thành phần chi phí"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Cost by Pay Grade"
+msgstr "Chi phí theo bậc lương"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__country_code
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__country_code
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__country_code
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__country_code
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__country_code
+msgid "Country code from formula config."
+msgstr "Mã quốc gia từ cấu hình công thức."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Coverage"
+msgstr "Mức độ bao phủ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Create First Scenario"
+msgstr "Tạo kịch bản đầu tiên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid ""
+"Create a scenario, add increase rules, and click \"Calculate Forecast\" to see results"
+" here."
+msgstr ""
+"Tạo kịch bản, thêm quy tắc tăng và nhấp vào \"Tính toán dự báo\" để xem kết quả tại "
+"đây."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.actions.act_window,help:pb_hr_workforce_planning.action_wfp_scenario
+msgid "Create your first workforce planning scenario"
+msgstr "Tạo kịch bản lập kế hoạch lực lượng lao động đầu tiên của bạn"
+
+#. module: pb_hr_workforce_planning
+#: model:res.groups,comment:pb_hr_workforce_planning.group_wfp_manager
+msgid "Create, calculate, and approve scenarios. Tag components."
+msgstr "Tạo, tính toán và phê duyệt các kịch bản. Gắn thẻ thành phần."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__create
+msgid "Created"
+msgstr "Đã tạo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__created_by_id
+msgid "Created By"
+msgstr "Đã tạo Bởi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__create_date
+msgid "Created On"
+msgstr "Được tạo vào"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__create_date
+msgid "Created on"
+msgstr "Tạo vào"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Cur. Base"
+msgstr "Cur. Căn cứ"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Cur. Employer"
+msgstr "Cur. Nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Cur. Gross"
+msgstr "Cur. Tổng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Cur. TCOW"
+msgstr "Cur. TCOW"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__currency_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:226
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:296
+msgid "Current"
+msgstr "Hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_allowances
+msgid "Current Allowances"
+msgstr "Phụ cấp hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__current_base
+msgid "Current Base"
+msgstr "Cơ sở hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_base
+msgid "Current Base Salary"
+msgstr "Mức lương cơ bản hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_components_json
+msgid "Current Components (JSON)"
+msgstr "Thành phần hiện tại (JSON)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_deductions
+msgid "Current Deductions"
+msgstr "Các khoản khấu trừ hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_employer_cost
+msgid "Current Employer Cost"
+msgstr "Chi phí sử dụng lao động hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_gross
+msgid "Current Gross"
+msgstr "Tổng hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_net
+msgid "Current Net"
+msgstr "Mạng hiện tại"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Current TCOW"
+msgstr "TCOW hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__current_wfp_category
+msgid "Current Tag"
+msgstr "Thẻ hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__total_current_cost
+msgid "Current Total Cost"
+msgstr "Tổng chi phí hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__current_total_cost
+msgid "Current Total Cost (TCOW)"
+msgstr "Tổng chi phí hiện tại (TCOW)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__role__custom
+msgid "Custom Approver"
+msgstr "Người phê duyệt tùy chỉnh"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__custom_domain
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__apply_to__custom_filter
+msgid "Custom Domain"
+msgstr "Tên miền tùy chỉnh"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__cycle_id
+msgid "Cycle"
+msgstr "Chu kỳ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__name
+msgid "Cycle Name"
+msgstr "Tên chu kỳ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Cycle total %s exceeds budget cap %s"
+msgstr "Tổng chu kỳ %s vượt quá giới hạn ngân sách %s"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__effective_date
+msgid "Date when salary increases take effect."
+msgstr "Ngày tăng lương có hiệu lực."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__deadline
+msgid "Deadline for managers to submit recommendations."
+msgstr "Thời hạn để người quản lý gửi đề xuất."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__12
+msgid "December"
+msgstr "Tháng 12"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__decision_date
+msgid "Decision Date"
+msgstr "Ngày quyết định"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__decision_note
+msgid "Decision Notes"
+msgstr "Ghi chú quyết định"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.actions.act_window,help:pb_hr_workforce_planning.action_wfp_budget_guardrail
+msgid "Define budget guardrails"
+msgstr "Xác định rào cản ngân sách"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.actions.act_window,help:pb_hr_workforce_planning.action_wfp_scenario
+msgid ""
+"Define increase rules, select a formula configuration, and run \n"
+"                the simulation engine to forecast total employer costs."
+msgstr ""
+"Xác định quy tắc tăng, chọn cấu hình công thức và chạy \n"
+"                công cụ mô phỏng để dự báo tổng chi phí của người sử dụng lao động."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__delta_vs_current
+msgid "Delta vs Current"
+msgstr "Delta so với hiện tại"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__department_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__department_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__department_breakdown_json
+msgid "Department Breakdown (JSON)"
+msgstr "Phân tích bộ phận (JSON)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__dept_budget_cap
+msgid "Department Budget Cap"
+msgstr "Giới hạn ngân sách của bộ phận"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_graph
+msgid "Department Cost Comparison"
+msgstr "So sánh chi phí bộ phận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Department Cost Heatmap — Average per Employee"
+msgstr "Bản đồ nhiệt chi phí bộ phận - Trung bình mỗi nhân viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Department Impact"
+msgstr "tác động của bộ phận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__department_id
+msgid "Department Scope"
+msgstr "Phạm vi bộ phận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_export_wizard__export_type__summary
+msgid "Department Summary"
+msgstr "Tóm tắt phòng ban"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Department Utilization"
+msgstr "Sử dụng bộ phận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Department total %s exceeds budget cap %s"
+msgstr "Tổng số bộ phận %s vượt quá giới hạn ngân sách %s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Department: Forecast vs Actual"
+msgstr "Bộ phận: Dự báo vs Thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__department_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_department_ids
+msgid "Departments"
+msgstr "Phòng cấm"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Dept"
+msgstr "Phòng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Dept Total"
+msgstr "Tổng số phòng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_scenario_version__note
+msgid "Describe what changed in this version."
+msgstr "Mô tả những gì đã thay đổi trong phiên bản này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__note
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__description
+msgid "Detailed explanation shown to managers when violated."
+msgstr "Giải thích chi tiết cho người quản lý khi vi phạm."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_monthly_projection__delta_vs_current
+msgid "Difference from current monthly run-rate."
+msgstr "Sự khác biệt so với tốc độ chạy hàng tháng hiện tại."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__role__manager
+msgid "Direct Manager"
+msgstr "Người quản lý trực tiếp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_formula_rule__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employer_cost_calculator__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_simulation_engine__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__note
+msgid "Document the business rationale for this rule."
+msgstr "Ghi lại lý do kinh doanh cho quy tắc này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__description
+msgid "Document the rationale and assumptions behind this scenario."
+msgstr "Ghi lại lý do cơ bản và các giả định đằng sau kịch bản này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_recommendation__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_planning_scenario__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__draft
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Duplicate"
+msgstr "Sao chép"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__effective_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__effective_date
+msgid "Effective Date"
+msgstr "Hiệu lực Ngày"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Effective:"
+msgstr "Hiệu quả:"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model,name:pb_hr_workforce_planning.model_hr_employee
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__employee_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__employee_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__deduction
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__deduction
+msgid "Employee Deduction"
+msgstr "Khấu trừ nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_export_wizard__export_type__detail
+msgid "Employee Detail"
+msgstr "Chi tiết nhân viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Employee Forecast Detail"
+msgstr "Chi tiết dự báo nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_forecast
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__employee_forecast_ids
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_forecasts
+msgid "Employee Forecasts"
+msgstr "Dự báo nhân viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Employee Forecasts — %s"
+msgstr "Dự báo nhân viên — %s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Employee Hours & Cost Breakdown"
+msgstr "Giờ làm việc của nhân viên và phân tích chi phí"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Employee Utilization Heatmap — Last 14 Days"
+msgstr "Bản đồ nhiệt về mức sử dụng của nhân viên - 14 ngày qua"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1371
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__employer_cost
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__employer_cost
+msgid "Employer Cost / Contribution"
+msgstr "Chi phí / Đóng góp của nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__enforcement
+msgid "Enforcement"
+msgstr "Thực thi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__estimated_monthly_cost
+msgid "Est. Monthly Cost"
+msgstr "Ước tính. Chi phí hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_employee__wfp_flight_risk
+msgid "Estimated attrition risk level."
+msgstr "Mức độ rủi ro hao mòn ước tính."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_hr_formula_rule
+msgid "Excel Formula Salary Rule"
+msgstr "Excel Công thức Quy tắc lương"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__exclude_probation
+msgid "Exclude Probation"
+msgstr "Loại trừ thử việc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__exclude
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__exclude
+msgid "Exclude from Planning"
+msgstr "Loại trừ khỏi kế hoạch"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__is_excluded
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Excluded"
+msgstr "Đã loại trừ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__exclusion_reason
+msgid "Exclusion Reason"
+msgstr "Lý do loại trừ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__expected_salary
+msgid "Expected Salary"
+msgstr "Mức lương mong đợi"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_budget_guardrail_form
+msgid "Explain this rule to managers..."
+msgstr "Giải thích quy tắc này cho người quản lý..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Export"
+msgstr "Xuất"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__export_file
+msgid "Export File"
+msgstr "Xuất tệp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_export_wizard
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_export
+msgid "Export Forecast"
+msgstr "Dự báo xuất khẩu"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_export_wizard_form
+msgid "Export Scenario"
+msgstr "Kịch bản xuất khẩu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__export_type
+msgid "Export Type"
+msgstr "Loại xuất"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "FY"
+msgstr "FY"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Fcst. Base"
+msgstr "Fcst. Căn cứ"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Fcst. Employer"
+msgstr "Fcst. Nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Fcst. Gross"
+msgstr "Fcst. Tổng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Fcst. TCOW"
+msgstr "Fcst. TCOW"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__02
+msgid "February"
+msgstr "Tháng 2"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__export_filename
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_location
+msgid "Filter by contract location / cost center."
+msgstr "Lọc theo vị trí hợp đồng/trung tâm chi phí."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__role__finance
+msgid "Finance Controller"
+msgstr "Kiểm soát viên tài chính"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_actual__period_month
+msgid "First day of the month this record covers."
+msgstr "Ngày đầu tiên của tháng hồ sơ này bao gồm."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__fiscal_year
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__fiscal_year
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Fiscal Year"
+msgstr "Fiscal Năm"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__increase_amount
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__increase_type__fixed_amount
+msgid "Fixed Amount"
+msgstr "Giá trị cố định"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__increase_amount
+msgid "Fixed increase amount per employee."
+msgstr "Số tiền tăng cố định cho mỗi nhân viên."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_employee__wfp_flight_risk
+msgid "Flight Risk"
+msgstr "Rủi ro chuyến bay"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Flight Risk (High)"
+msgstr "Rủi ro chuyến bay (Cao)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Partners)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__threshold_amount
+msgid "For amount-based rules."
+msgstr "Đối với các quy tắc dựa trên số lượng."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:235
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:304
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1128
+msgid "Forecast"
+msgstr "Dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_allowances
+msgid "Forecast Allowances"
+msgstr "Phụ cấp dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_base
+msgid "Forecast Base Salary"
+msgstr "Dự báo mức lương cơ bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_components_json
+msgid "Forecast Components (JSON)"
+msgstr "Thành phần dự báo (JSON)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__forecast_cost
+msgid "Forecast Cost"
+msgstr "Dự báo chi phí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_deductions
+msgid "Forecast Deductions"
+msgstr "Các khoản khấu trừ dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_employer_cost
+msgid "Forecast Employer Cost"
+msgstr "Dự báo chi phí của nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_gross
+msgid "Forecast Gross"
+msgstr "Tổng dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__forecast_headcount
+msgid "Forecast Headcount"
+msgstr "Dự báo số lượng nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_net
+msgid "Forecast Net"
+msgstr "Mạng dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Forecast Summary"
+msgstr "Tóm tắt dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Forecast TCOW"
+msgstr "Dự báo TCOW"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__total_forecast_cost
+msgid "Forecast Total Cost"
+msgstr "Dự báo tổng chi phí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__forecast_total_cost
+msgid "Forecast Total Cost (TCOW)"
+msgstr "Tổng chi phí dự báo (TCOW)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Forecast vs Actual — Monthly Timeline"
+msgstr "Dự báo so với thực tế - Dòng thời gian hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__forecast_count
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_forecasts_parent
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Forecasts"
+msgstr "Dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Forecasts generated for %d employees."
+msgstr "Dự báo được tạo cho nhân viên %d."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__excel_formula
+msgid "Formula"
+msgstr "Công thức"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Formula Config"
+msgstr "Cấu hình công thức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__formula_config_id
+msgid "Formula Configuration"
+msgstr "Cấu hình công thức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__formula_rule_id
+msgid "Formula Rule"
+msgstr "Quy tắc công thức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__from_state
+msgid "From State"
+msgstr "Từ tiểu bang"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_scenario_version__snapshot_data
+msgid "Full JSON snapshot of scenario KPIs, forecasts, and projections."
+msgstr "Ảnh chụp nhanh JSON đầy đủ về KPI, dự báo và dự đoán của kịch bản."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__current_components_json
+msgid "Full component breakdown: [{code, name, wfp_category, amount}]"
+msgstr "Phân tích thành phần đầy đủ: [{code, name, wfp_category, amount}]"
+
+#. module: pb_hr_workforce_planning
+#: model:res.groups,comment:pb_hr_workforce_planning.group_wfp_admin
+msgid "Full configuration access including grades, matrices, and cycles."
+msgstr "Truy cập cấu hình đầy đủ bao gồm các lớp, ma trận và chu kỳ."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_export_wizard_form
+msgid "Generate Excel"
+msgstr "Tạo Excel"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__grade_id
+msgid "Grade"
+msgstr "Cấp"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_grade_form
+msgid "Grade Info"
+msgstr "Thông tin lớp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__name
+msgid "Grade Name"
+msgstr "Tên lớp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__current_total_cost
+msgid "Gross + Employer Cost = Total Cost of Workforce"
+msgstr "Tổng chi phí + Chi phí sử dụng lao động = Tổng chi phí lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_monthly_projection__total_cost_to_company
+msgid "Gross + Employer Costs"
+msgstr "Tổng chi phí + Nhà tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__gross
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__gross
+msgid "Gross Pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_employee__wfp_potential
+msgid "Growth Potential"
+msgstr "Tiềm năng tăng trưởng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__guardrail_violations
+msgid "Guardrail Violations"
+msgstr "Vi phạm lan can"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Guardrails"
+msgstr "Lan can"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__guardrail_ids
+msgid "Guardrails enforced during this cycle."
+msgstr "Lan can được thi hành trong chu kỳ này."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "HC"
+msgstr "HC"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__role__hr
+msgid "HR Business Partner"
+msgstr "Đối tác kinh doanh nhân sự"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__has_blocking_violation
+msgid "Has Blocking Violation"
+msgstr "Có vi phạm chặn"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__has_message
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__has_message
+msgid "Has Message"
+msgstr "Có Thông báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__headcount
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__headcount
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__total_headcount
+msgid "Headcount"
+msgstr "Số lượng nhân sự"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_headcount
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_headcount
+msgid "Headcount Changes"
+msgstr "Thay đổi số lượng nhân viên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_flight_risk__high
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_potential__high
+msgid "High"
+msgstr "Cao"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "High Performers"
+msgstr "Người có thành tích cao"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Hourly Rate"
+msgstr "Hourly Tỷ lệ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Hours"
+msgstr "Giờ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_formula_rule__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employer_cost_calculator__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_simulation_engine__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để cho biết ngoại lệ hoạt động."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_needaction
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu đã chọn, mới thông báo yêu cầu của bạn chú ý."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_error
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_error
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu đã chọn, một số thông báo có giao lỗi."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__department_id
+msgid "If set, rule only applies to this department."
+msgstr "Nếu được đặt, quy tắc chỉ áp dụng cho bộ phận này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__grade_id
+msgid "If set, rule only applies to this grade."
+msgstr "Nếu được đặt, quy tắc chỉ áp dụng cho lớp này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__department_id
+msgid "If set, this step only applies to this department's recommendations."
+msgstr "Nếu được đặt, bước này chỉ áp dụng cho đề xuất của bộ phận này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__annualized_delta
+msgid "Impact factoring effective date (months remaining in FY)."
+msgstr ""
+"Ngày hiệu lực của bao thanh toán tác động (số tháng còn lại trong năm tài chính)."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Inc. %"
+msgstr "Inc. %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Increase"
+msgstr "Tăng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__recommended_pct
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__increase_pct
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__increase_pct
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__increase_pct
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__total_increase_pct
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_tree
+msgid "Increase %"
+msgstr "Tăng %"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Increase > 5%"
+msgstr "Tăng > 5%"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__recommended_increase
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__increase_amount
+msgid "Increase Amount"
+msgstr "Tăng số tiền"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__rule_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Increase Rules"
+msgstr "Tăng quy tắc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__increase_type
+msgid "Increase Type"
+msgstr "Tăng loại"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Increase amount exceeds limit of %s"
+msgstr "Số tiền tăng vượt quá giới hạn %s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Increase of %.1f%% exceeds maximum %.1f%%"
+msgstr "Mức tăng %.1f%% extăng tối đa %.1f%%"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__in
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__id
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__info
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__info
+msgid "Informational Only"
+msgstr "Chỉ mang tính thông tin"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_is_follower
+msgid "Is Follower"
+msgstr "Là Follower"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__custom_domain
+msgid "JSON domain filter applied to hr.employee (advanced)."
+msgstr "Bộ lọc miền JSON được áp dụng cho hr.employee (nâng cao)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_scenario_approval__snapshot_json
+msgid "JSON snapshot of key metrics at time of action."
+msgstr "Ảnh chụp nhanh JSON của các số liệu chính tại thời điểm hành động."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_monthly_projection__department_breakdown_json
+msgid "JSON: {dept_name: {gross, employer, total, headcount}}"
+msgstr "JSON: {dept_name: {gross, employer, total, headcount}}"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__01
+msgid "January"
+msgstr "Tháng 1"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Job"
+msgstr "Chức vụ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__job_family
+msgid "Job Family"
+msgstr "Nhóm công việc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__job_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__job_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Job Position"
+msgstr "Chức danh Chức vụ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__job_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_job_ids
+msgid "Job Positions"
+msgstr "Vị trí công việc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__07
+msgid "July"
+msgstr "Tháng 7"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__06
+msgid "June"
+msgstr "Tháng 6"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__note
+msgid "Justification"
+msgstr "sự biện minh"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__snapshot_json
+msgid "KPI Snapshot"
+msgstr "Ảnh chụp nhanh KPI"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "LABOR COST (PERIOD)"
+msgstr "CHI PHÍ LAO ĐỘNG (THỜI KỲ)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Labor Analytics"
+msgstr "Phân tích lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Labor Cost"
+msgstr "Chi phí lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Labor Cost Forecast — Next 12 Weeks"
+msgstr "Dự báo chi phí lao động - 12 tuần tới"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__last_calculated
+msgid "Last Calculated"
+msgstr "Tính toán lần cuối"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_employee__wfp_performance_rating
+msgid "Latest annual performance rating (1-5 scale)."
+msgstr "Đánh giá hiệu suất hàng năm mới nhất (thang 1-5)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_employee__wfp_potential
+msgid "Leadership/growth potential assessment."
+msgstr "Đánh giá tiềm năng lãnh đạo/tăng trưởng."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_department_ids
+msgid "Leave empty for all departments."
+msgstr "Để trống cho tất cả các phòng ban."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_job_ids
+msgid "Leave empty for all job positions."
+msgstr "Để trống cho tất cả các vị trí công việc."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__grade_level
+msgid "Level"
+msgstr "Mức độ"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Load & Auto-Detect"
+msgstr "Tải & Tự động phát hiện"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading Analytics..."
+msgstr "Đang tải phân tích..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading Budget & Actuals..."
+msgstr "Đang tải Ngân sách & Thực tế..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading Labor Analytics..."
+msgstr "Đang tải phân tích lao động..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading Workforce Demand Data..."
+msgstr "Đang tải dữ liệu về nhu cầu lực lượng lao động..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading scenario data..."
+msgstr "Đang tải dữ liệu kịch bản..."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__location
+msgid "Location"
+msgstr "Vị trí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__location
+msgid "Location / Cost Center"
+msgstr "Địa điểm / Trung tâm chi phí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__filter_location
+msgid "Location Filter"
+msgstr "Bộ lọc vị trí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_flight_risk__low
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_potential__low
+msgid "Low"
+msgstr "Thấp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__sequence
+msgid "Lower number = earlier in the chain."
+msgstr "Số thấp hơn = sớm hơn trong chuỗi."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__sequence
+msgid "Lower number = higher priority. First matching rule wins."
+msgstr "Số thấp hơn = mức độ ưu tiên cao hơn. Quy tắc phù hợp đầu tiên sẽ thắng."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__my
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__manager_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__manager_id
+#: model:res.groups,name:pb_hr_workforce_planning.group_wfp_manager
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__deadline
+msgid "Manager Deadline"
+msgstr "Hạn chót của người quản lý"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__recommendation_note
+msgid "Manager Justification"
+msgstr "Sự biện minh của người quản lý"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__03
+msgid "March"
+msgstr "Tháng 3"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__location
+msgid "Match against contract.location (cost center)."
+msgstr "Phù hợp với hợp đồng.location (trung tâm chi phí)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__matrix_id
+msgid "Matrix"
+msgstr "Ma trận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__cell_ids
+msgid "Matrix Cells"
+msgstr "Tế bào ma trận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix__name
+msgid "Matrix Name"
+msgstr "Tên ma trận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Maturity"
+msgstr "Kỳ hạn"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__max_salary
+msgid "Max Current Salary"
+msgstr "Mức lương hiện tại tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__max_increase_pct
+msgid "Max Increase %"
+msgstr "Tăng tối đa %"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__max_increase_amount
+msgid "Max Increase Amount"
+msgstr "Số tiền tăng tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__compa_max
+msgid "Maximum Compa Ratio"
+msgstr "Tỷ lệ Compa tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__05
+msgid "May"
+msgstr "Th5"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_flight_risk__medium
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_employee__wfp_potential__medium
+msgid "Medium"
+msgstr "Phương tiện"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_merit_matrix
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_merit_matrices
+msgid "Merit Matrices"
+msgstr "Ma trận công đức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_merit_matrix
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__merit_matrix_id
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__increase_type__merit_matrix
+msgid "Merit Matrix"
+msgstr "Ma trận công đức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_merit_matrix_cell
+msgid "Merit Matrix Cell"
+msgstr "Tế bào ma trận công đức"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_error
+msgid "Message Delivery error"
+msgstr "Thông báo Giao lỗi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_ids
+msgid "Messages"
+msgstr "Thông báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__min_salary
+msgid "Min Current Salary"
+msgstr "Mức lương tối thiểu hiện tại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__min_rating_for_increase
+msgid "Min Performance Rating for Increase"
+msgstr "Xếp hạng hiệu suất tối thiểu để tăng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__min_tenure_months
+msgid "Min Tenure (months)"
+msgstr "Nhiệm kỳ tối thiểu (tháng)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__compa_min
+msgid "Minimum Compa Ratio"
+msgstr "Tỷ lệ Compa tối thiểu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_projection_graph
+msgid "Monthly Cost Projection"
+msgstr "Dự kiến chi phí hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__monthly_delta
+msgid "Monthly Delta"
+msgstr "Đồng bằng hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_projection
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__monthly_projection_ids
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_export_wizard__export_type__monthly
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_projections
+msgid "Monthly Projections"
+msgstr "Dự đoán hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Monthly Projections — %s"
+msgstr "Dự đoán hàng tháng — %s"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "My Hoạt động Hạn chót"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "My Scenarios"
+msgstr "Kịch bản của tôi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__rule_name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Net Change"
+msgstr "Thay đổi ròng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__hr_formula_rule__wfp_category__net
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_tagging_wizard_line__wfp_category__net
+msgid "Net Pay"
+msgstr "Lương ròng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__new_department_id
+msgid "New Department"
+msgstr "Bộ phận mới"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__new_hire
+msgid "New Hire"
+msgstr "Thuê mới"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__new_salary
+msgid "New Salary"
+msgstr "Mức lương mới"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "New Scenario"
+msgstr "Kịch bản mới"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Tiếp theo Hoạt động Calendar Sự kiện"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tiếp theo Hoạt động Hạn chót"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tiếp theo Hoạt động Tóm tắt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tiếp theo Hoạt động Loại"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "No Calculated Scenarios"
+msgstr "Không có kịch bản được tính toán"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+#: code:addons/pb_hr_workforce_planning/models/simulation_engine.py:0
+#: code:addons/pb_hr_workforce_planning/wizards/export_wizard.py:0
+msgid "No Department"
+msgstr "Không có bộ phận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "No Rule"
+msgstr "Không có quy tắc"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "No audit trail entries yet"
+msgstr "Chưa có mục nhập dấu vết kiểm tra nào"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/simulation_engine.py:0
+msgid ""
+"No employees found matching the scenario filters. Check that employees have active "
+"contracts with the correct salary structure."
+msgstr ""
+"Không tìm thấy nhân viên nào phù hợp với bộ lọc kịch bản. Kiểm tra xem nhân viên có "
+"hợp đồng đang hoạt động với cơ cấu lương chính xác hay không."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid ""
+"No formula rules have been tagged with WFP categories. Please use the 'Tag Formula "
+"Components' wizard first to classify components (Base Salary, Allowance, Employer "
+"Cost, Gross, Net, etc.)."
+msgstr ""
+"Không có quy tắc công thức nào được gắn thẻ với danh mục WFP. Trước tiên, vui lòng sử "
+"dụng trình hướng dẫn 'Thành phần Công thức Thẻ' để phân loại các thành phần (Lương cơ "
+"bản, Phụ cấp, Chi phí của nhà tuyển dụng, Tổng, Ròng, v.v.)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__note
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__note
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__note
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_increase_rule_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__11
+msgid "November"
+msgstr "Tháng 11"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số của Hành động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__headcount
+msgid "Number of Positions"
+msgstr "Số vị trí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số của lỗi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số của thông báo yêu cầu hành động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số của thông báo với giao lỗi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_pay_grade__grade_level
+msgid "Numeric level for sorting (1=lowest, 20=highest)"
+msgstr "Cấp số để sắp xếp (1=thấp nhất, 20=cao nhất)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "OVERTIME HOURS"
+msgstr "GIỜ LÀM THÊM"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__10
+msgid "October"
+msgstr "Tháng 10"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__threshold_pct
+msgid "Only activate if any single increase % exceeds this value."
+msgstr "Chỉ kích hoạt nếu một mức tăng riêng lẻ vượt quá tỷ lệ phần trăm này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__threshold_amount
+msgid "Only activate this step if any single increase exceeds this amount."
+msgstr "Chỉ kích hoạt bước này nếu có bất kỳ mức tăng nào vượt quá số tiền này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__max_salary
+msgid "Only apply if current base salary ≤ this amount."
+msgstr "Chỉ áp dụng nếu mức lương cơ bản hiện tại ≤ số tiền này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__min_salary
+msgid "Only apply if current base salary ≥ this amount."
+msgstr "Chỉ áp dụng nếu mức lương cơ bản hiện tại ≥ số tiền này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__min_tenure_months
+msgid "Only apply if employee has been employed >= this many months."
+msgstr "Chỉ áp dụng nếu nhân viên đã được tuyển dụng >= nhiều tháng này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__open
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Open for Recommendations"
+msgstr "Mở cho các đề xuất"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Organizational Capabilities"
+msgstr "Năng lực tổ chức"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Over Market"
+msgstr "Trên thị trường"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Overtime Breakdown (Hours & Cost)"
+msgstr "Phân tích làm thêm giờ (Giờ & Chi phí)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__owner_id
+msgid "Owner"
+msgstr "Người phụ trách"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "PRESENCE RATE"
+msgstr "TỶ LỆ HIỆN TẠI"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_contract__grade_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__grade_id
+msgid "Pay Grade"
+msgstr "Trả lớp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_pay_grade
+msgid "Pay Grade / Salary Band"
+msgstr "Bậc Lương/Bậc Lương"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_grade
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_grades
+msgid "Pay Grades"
+msgstr "Trả điểm"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__state__pending
+msgid "Pending"
+msgstr "Đang chờ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__increase_type__percentage
+msgid "Percentage (%)"
+msgstr "Phần trăm (%)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__increase_pct
+msgid "Percentage increase (e.g. 5.0 for 5%)"
+msgstr "Tỷ lệ phần trăm tăng (ví dụ: 5,0 cho 5%)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_headcount_change__attrition_pct
+msgid "Percentage of department headcount expected to leave."
+msgstr "Tỷ lệ phần trăm số nhân viên bộ phận dự kiến sẽ rời đi."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__performance_max
+msgid "Perf. Max Score"
+msgstr "Hoàn hảo. Điểm tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__performance_min
+msgid "Perf. Min Score"
+msgstr "Hoàn hảo. Điểm tối thiểu"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Performance Distribution"
+msgstr "Phân phối hiệu suất"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_employee__wfp_performance_rating
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__performance_label
+msgid "Performance Rating"
+msgstr "Đánh giá hiệu suất"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/budget_guardrail.py:0
+msgid "Performance rating %d is below minimum %d for an increase"
+msgstr "Xếp hạng hiệu suất %d thấp hơn %d tối thiểu để tăng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__merit_matrix_id
+msgid "Performance × Compa-ratio matrix for increase %."
+msgstr "Hiệu suất × Ma trận tỷ lệ so sánh để tăng %."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__period_label
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__period_month
+msgid "Period (1st of Month)"
+msgstr "Khoảng thời gian (ngày 1 của tháng)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Period:"
+msgstr "Thời kỳ:"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__ph
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__ph
+msgid "Philippines"
+msgstr "Philippines"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__state__planned
+msgid "Planned"
+msgstr "Dự kiến"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Planned Budget"
+msgstr "Ngân sách dự kiến"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__planned_date
+msgid "Planned Date"
+msgstr "Ngày dự kiến"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_headcount_change
+msgid "Planned Headcount Change"
+msgstr "Thay đổi số lượng nhân viên theo kế hoạch"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_dashboard
+msgid "Planning Dashboard"
+msgstr "Trang tổng quan lập kế hoạch"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_scenario
+msgid "Planning Scenarios"
+msgstr "Kịch bản quy hoạch"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Please add at least one increase rule before calculating."
+msgstr "Vui lòng thêm ít nhất một quy tắc tăng trước khi tính toán."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Please select a Salary Structure (Formula Config) first."
+msgstr "Trước tiên, vui lòng chọn Cơ cấu lương (Cấu hình công thức)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_contract__range_penetration
+msgid "Position within the salary range (0% = min, 100% = max)."
+msgstr "Vị trí trong phạm vi lương (0% = tối thiểu, 100% = tối đa)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__is_pre_effective
+msgid "Pre-Effective"
+msgstr "Có hiệu lực trước"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__sequence
+msgid "Priority"
+msgstr "Mức độ ưu tiên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Proficiency Levels"
+msgstr "Mức độ thành thạo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__promotion
+msgid "Promotion"
+msgstr "Khuyến mãi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__new_base
+msgid "Proposed Base"
+msgstr "Cơ sở đề xuất"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__range_max
+msgid "Range Maximum"
+msgstr "Phạm vi tối đa"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__range_mid
+msgid "Range Midpoint"
+msgstr "Điểm giữa của phạm vi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__range_min
+msgid "Range Minimum"
+msgstr "Phạm vi tối thiểu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_contract__range_penetration
+msgid "Range Penetration %"
+msgstr "Mức thâm nhập dải lương %"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__range_spread
+msgid "Range Spread %"
+msgstr "Độ rộng dải lương %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Rate:"
+msgstr "Tỷ lệ:"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__rating_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__recommendation_count
+msgid "Recommendation Count"
+msgstr "Số lượng đề xuất"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__recommendation_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Recommendations"
+msgstr "Khuyến nghị"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__recommender_id
+msgid "Recommended By"
+msgstr "Được đề xuất bởi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Recruitment Pipeline"
+msgstr "Quy trình tuyển dụng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Recruitment by Department"
+msgstr "Tuyển dụng theo bộ phận"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__state__rejected
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_recommendation__state__rejected
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__reject
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__rejected
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__rejected
+msgid "Rejected"
+msgstr "Đã từ chối"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__remaining_amount
+msgid "Remaining"
+msgstr "Còn lại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__replacement
+msgid "Replacement Hire"
+msgstr "Thuê thay thế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__reset
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Reset to Draft"
+msgstr "Đặt lại để Nháp"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_user_id
+msgid "Responsible User"
+msgstr "Phụ trách Người dùng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__elimination
+msgid "Role Elimination"
+msgstr "Loại bỏ vai trò"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Role Names"
+msgstr "Tên vai trò"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Roles"
+msgstr "Vai trò"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_tree
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_budget_guardrail_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_increase_rule_form
+msgid "Rule Definition"
+msgstr "Định nghĩa quy tắc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__description
+msgid "Rule Description"
+msgstr "Mô tả quy tắc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__applied_rule_name
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_budget_guardrail_form
+msgid "Rule Name"
+msgstr "Quy tắc Tên"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__rule_type
+msgid "Rule Type"
+msgstr "Loại quy tắc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__rule_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Rules"
+msgstr "Quy tắc"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS Giao lỗi"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_grade_form
+msgid "Salary Range"
+msgstr "Phạm vi lương"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__formula_config_id
+msgid "Salary Structure (Formula Config)"
+msgstr "Cơ cấu lương (Cấu hình công thức)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_contract__grade_id
+msgid ""
+"Salary grade/band for this contract. Used for compa-ratio calculation and merit "
+"matrix."
+msgstr ""
+"Mức lương/bậc lương cho hợp đồng này. Được sử dụng để tính toán tỷ lệ so sánh và ma "
+"trận thành tích."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_contract__compa_ratio
+msgid ""
+"Salary position relative to grade midpoint. 100 = at midpoint, <100 = below, >100 = "
+"above."
+msgstr ""
+"Vị trí lương tương ứng với điểm giữa của lớp. 100 = ở điểm giữa, <100 = dưới, >100 = "
+"trên."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Save Version"
+msgstr "Lưu phiên bản"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Saved as \"%s\""
+msgstr "Đã lưu dưới dạng \"%s\""
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_export_wizard__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__scenario_id
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__scenario_id
+msgid "Scenario"
+msgstr "Kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_scenario_approval
+msgid "Scenario Approval / Audit Trail"
+msgstr "Phê duyệt kịch bản / Lộ trình kiểm tra"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Scenario Calculated"
+msgstr "Kịch bản được tính toán"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Scenario Comparison"
+msgstr "So sánh kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Scenario Name"
+msgstr "Tên kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_scenario_version
+msgid "Scenario Version Snapshot"
+msgstr "Ảnh chụp nhanh phiên bản kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_scenarios_parent
+msgid "Scenarios"
+msgstr "kịch bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_comparison__scenario_ids
+msgid "Scenarios to Compare"
+msgstr "Kịch bản để so sánh"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_budget_guardrail_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_increase_rule_form
+msgid "Scope"
+msgstr "Phạm vi"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Scope Filters"
+msgstr "Bộ lọc phạm vi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Search employees, departments, rules..."
+msgstr "Tìm kiếm nhân viên, phòng ban, nội quy..."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Select Scenario..."
+msgstr "Chọn kịch bản..."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid ""
+"Select a formula configuration and click \"Load &amp; Auto-Detect\"\n"
+"                        to automatically classify formula components for workforce planning."
+msgstr ""
+"Chọn cấu hình công thức và nhấp vào \"Tải &amp; Tự động phát hiện\"\n"
+"                        để tự động phân loại các thành phần công thức phục vụ cho việc hoạch định nguồn nhân lực."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_monthly_projection__month__09
+msgid "September"
+msgstr "Tháng 9"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__sequence
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Shaded area = ±10% confidence band"
+msgstr "Vùng tô màu = khoảng tin cậy ±10%"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_pay_grade__code
+msgid "Short code e.g. 'G5'"
+msgstr "Mã ngắn, ví dụ: 'G5'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__sg
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Skill"
+msgstr "Kỹ năng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Skills Coverage"
+msgstr "Bảo hiểm kỹ năng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Skills Detail"
+msgstr "Chi tiết kỹ năng"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_approval_step_tree
+msgid "Skip"
+msgstr "Bỏ qua"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__exclude_probation
+msgid "Skip employees with hirestatus = 'new hire'."
+msgstr "Bỏ qua nhân viên với trạng thái thuê = 'thuê mới'."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__state__skipped
+msgid "Skipped"
+msgstr "Đã bỏ qua"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/approval_step.py:0
+msgid "Skipped by %s"
+msgstr "Bị bỏ qua bởi %s"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__snapshot_data
+msgid "Snapshot (JSON)"
+msgstr "Ảnh chụp nhanh (JSON)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__approver_id
+msgid "Specific user for this step. If blank, auto-assigned by role."
+msgstr "Người dùng cụ thể cho bước này. Nếu trống, sẽ tự động được gán theo vai trò."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_grade_tree
+msgid "Spread %"
+msgstr "Độ rộng %"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__state
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__state
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_recommendation__state
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__state
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_state
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên trên hoạt động\n"
+"Quá hạn: Đến hạn ngày là đã đã vượt\n"
+"Hôm nay: Hoạt động ngày là hôm nay\n"
+"Planned: Tương lai hoạt động."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__name
+msgid "Step Name"
+msgstr "Tên bước"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_approval_step__sequence
+msgid "Step Order"
+msgstr "Thứ tự bước"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Submit"
+msgstr "Gửi"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "Submit for Review"
+msgstr "Gửi để xem xét"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_recommendation__state__submitted
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__from_state__submitted
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__to_state__submitted
+msgid "Submitted"
+msgstr "Đã gửi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_scenario_approval__action__submit
+msgid "Submitted for Approval"
+msgstr "Đã gửi để phê duyệt"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__current_employer_cost
+msgid "Sum of all employer-side contributions (SI, HI, etc.)"
+msgstr "Tổng tất cả các khoản đóng góp của phía người sử dụng lao động (SI, HI, v.v.)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__total_current_cost
+msgid "Sum of current total employer costs for all employees."
+msgstr "Tổng chi phí sử dụng lao động hiện tại của tất cả nhân viên."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__total_forecast_cost
+msgid "Sum of projected total employer costs for all employees."
+msgstr "Tổng chi phí sử dụng lao động dự kiến cho tất cả nhân viên."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_projection_tree
+msgid "TCOW"
+msgstr "TCOW"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Tag Components"
+msgstr "Thành phần thẻ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.act_window,name:pb_hr_workforce_planning.action_wfp_tagging_wizard
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_tag_components
+msgid "Tag Formula Components"
+msgstr "Thành phần công thức thẻ"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_tagging_wizard_form
+msgid "Tag Formula Components for Workforce Planning"
+msgstr "Gắn thẻ các thành phần công thức để lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:694
+msgid "Target"
+msgstr "Mục tiêu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__tenure_months
+msgid "Tenure (months)"
+msgstr "Nhiệm kỳ (tháng)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__th
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__th
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__budget_amount
+msgid "The approved budget cap for this scenario."
+msgstr "Giới hạn ngân sách được phê duyệt cho kịch bản này."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__scenario_id
+msgid "The approved planning scenario this cycle is based on."
+msgstr "Kịch bản lập kế hoạch đã được phê duyệt mà chu kỳ này dựa trên."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__formula_config_id
+msgid ""
+"The formula configuration that defines salary components and calculation formulas for "
+"this scenario. Each scenario must use a single config (could be per country, "
+"department, or branch)."
+msgstr ""
+"Cấu hình công thức xác định các thành phần lương và công thức tính toán cho kịch bản "
+"này. Mỗi kịch bản phải sử dụng một cấu hình duy nhất (có thể theo quốc gia, bộ phận "
+"hoặc chi nhánh)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__threshold_value
+msgid "The limit value (%, amount, or rating depending on rule type)."
+msgstr "Giá trị giới hạn (%, số tiền hoặc xếp hạng tùy thuộc vào loại quy tắc)."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__increase_pct
+msgid "The merit increase percentage for this cell."
+msgstr "Phần trăm tăng công đức cho ô này."
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_cycle_form
+msgid "This will update employee contracts with the approved amounts. Continue?"
+msgstr "Điều này sẽ cập nhật hợp đồng nhân viên với số tiền được phê duyệt. Tiếp tục?"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_guardrail__threshold_value
+msgid "Threshold Value"
+msgstr "Giá trị ngưỡng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__to_state
+msgid "To State"
+msgstr "Để Nhà nước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Top Employer Cost Changes"
+msgstr "Thay đổi chi phí sử dụng lao động hàng đầu"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Total Actual Spend"
+msgstr "Tổng chi tiêu thực tế"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_allowances
+msgid "Total Allowances"
+msgstr "Tổng Phụ cấp"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Total Applicants"
+msgstr "Tổng số người nộp đơn"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_base
+msgid "Total Base"
+msgstr "Tổng cơ sở"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__budget_amount
+msgid "Total Budget"
+msgstr "Tổng Ngân sách"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__total_cost
+msgid "Total Cost"
+msgstr "Tổng chi phí"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_cost_to_company
+msgid "Total Cost to Company (TCOW)"
+msgstr "Tổng chi phí cho công ty (TCOW)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__rule_type__total_budget_cap
+msgid "Total Cycle Budget Cap"
+msgstr "Tổng giới hạn ngân sách chu kỳ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_deductions
+msgid "Total Deductions"
+msgstr "Tổng Khấu trừ"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_employer_cost
+msgid "Total Employer Cost"
+msgstr "Tổng Người sử dụng lao động Chi phí"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Total Forecast"
+msgstr "Tổng dự báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__total_gross
+msgid "Total Gross"
+msgstr "Tổng cộng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__total_increase_amount
+msgid "Total Increase"
+msgstr "Tổng mức tăng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__component_target__total_package
+msgid "Total Package"
+msgstr "Tổng gói"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Total Skills Tracked"
+msgstr "Tổng số kỹ năng được theo dõi"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_headcount_change__change_type__transfer
+msgid "Transfer"
+msgstr "Luân chuyển"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_monthly_projection__is_pre_effective
+msgid "True if this month is before the effective date (uses current costs)."
+msgstr "Đúng nếu tháng này trước ngày có hiệu lực (sử dụng chi phí hiện tại)."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Turnover Rate"
+msgstr "Tỷ lệ doanh thu"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__column_type
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "UTILIZATION"
+msgstr "UTILIZATION"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Unassigned"
+msgstr "Chưa phân bổ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Under Market"
+msgstr "Dưới thị trường"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_compensation_cycle__state__review
+msgid "Under Review"
+msgstr "Đang được xem xét"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_approval__user_id
+#: model:res.groups,name:pb_hr_workforce_planning.group_wfp_user
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Utilization"
+msgstr "Sử dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_approval_step__role__vp
+msgid "VP / Executive"
+msgstr "Phó Chủ tịch/Điều hành"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1150
+msgid "Variance"
+msgstr "Phương sai"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__variance_pct
+msgid "Variance %"
+msgstr "Chênh lệch %"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_budget_actual__variance_amount
+msgid "Variance (₫)"
+msgstr "Phương sai (₫)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__version_number
+msgid "Version #"
+msgstr "Phiên bản #"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/scenario_version.py:0
+msgid "Version %d"
+msgstr "Phiên bản %d"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__version_count
+msgid "Version Count"
+msgstr "Số lượng phiên bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__version_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_form
+msgid "Version History"
+msgstr "Lịch sử phiên bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__name
+msgid "Version Label"
+msgstr "Nhãn phiên bản"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_scenario_version__note
+msgid "Version Notes"
+msgstr "Phiên bản Ghi chú"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "Version Saved"
+msgstr "Phiên bản đã lưu"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_increase_rule__country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_pay_grade__country_code__vn
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: pb_hr_workforce_planning
+#: model:res.groups,comment:pb_hr_workforce_planning.group_wfp_user
+msgid "View workforce planning scenarios and forecasts."
+msgstr "Xem các kịch bản và dự báo lập kế hoạch lực lượng lao động."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/wizards/wfp_tagging_wizard.py:0
+msgid "WFP Categories Applied"
+msgstr "Danh mục WFP được áp dụng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_hr_formula_rule__wfp_category
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__wfp_category
+msgid "WFP Category"
+msgstr "Danh mục WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_tagging_wizard
+msgid "WFP Component Tagging Wizard"
+msgstr "Trình hướng dẫn gắn thẻ thành phần WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_employer_cost_calculator
+msgid "WFP Employer Cost Calculator"
+msgstr "Máy tính chi phí sử dụng lao động của WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_export_wizard
+msgid "WFP Export Wizard"
+msgstr "Trình hướng dẫn xuất WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_scenario_comparison
+msgid "WFP Scenario Comparison"
+msgstr "So sánh kịch bản WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_simulation_engine
+msgid "WFP Simulation Engine"
+msgstr "Công cụ mô phỏng WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_tagging_wizard_line
+msgid "WFP Tagging Wizard Line"
+msgstr "Dòng hướng dẫn gắn thẻ WFP"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields.selection,name:pb_hr_workforce_planning.selection__wfp_budget_guardrail__enforcement__warn
+msgid "Warning (Yellow Badge)"
+msgstr "Cảnh báo (Huy hiệu vàng)"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_compensation_cycle__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__website_message_ids
+msgid "Website Messages"
+msgstr "Trang web Thông báo"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__website_message_ids
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__website_message_ids
+msgid "Website communication history"
+msgstr "Trang web giao tiếp history"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Weekly Hours Trend"
+msgstr "Xu hướng giờ hàng tuần"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__component_target
+msgid ""
+"Which component(s) the increase applies to.\n"
+"• Base Salary Only — increase only the base wage; allowances that depend on base via formulas will auto-recalculate.\n"
+"• Base + Allowances — increase base and all allowances proportionally; formula-dependent ones recalculate.\n"
+"• Total Package — increase the total gross package."
+msgstr ""
+"Mức tăng áp dụng cho (các) thành phần nào.\n"
+"• Chỉ Lương Cơ Bản — chỉ tăng lương cơ bản; các khoản phụ cấp phụ thuộc vào cơ sở thông qua công thức sẽ tự động tính toán lại.\n"
+"• Cơ sở + Phụ cấp — tăng cơ sở và tất cả các khoản phụ cấp theo tỷ lệ; những người phụ thuộc vào công thức tính toán lại.\n"
+"• Tổng gói — tăng tổng gói tổng."
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_tagging_wizard_line__wizard_id
+msgid "Wizard"
+msgstr "Thuật sĩ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Workforce Demand"
+msgstr "Nhu cầu lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Workforce Demand Plans"
+msgstr "Kế hoạch nhu cầu lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_pivot
+msgid "Workforce Forecast Analysis"
+msgstr "Phân tích dự báo lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.module.category,name:pb_hr_workforce_planning.module_category_workforce_planning
+#: model:ir.ui.menu,name:pb_hr_workforce_planning.menu_wfp_root
+#: model:res.groups.privilege,name:pb_hr_workforce_planning.res_groups_privilege_workforce_planning
+msgid "Workforce Planning"
+msgstr "Lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.actions.client,name:pb_hr_workforce_planning.action_wfp_dashboard
+msgid "Workforce Planning Dashboard"
+msgstr "Bảng điều khiển lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_employee_forecast
+msgid "Workforce Planning Employee Forecast"
+msgstr "Lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_increase_rule
+msgid "Workforce Planning Increase Rule"
+msgstr "Quy tắc tăng kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_monthly_projection
+msgid "Workforce Planning Monthly Projection"
+msgstr "Lập kế hoạch lực lượng lao động Dự kiến hàng tháng"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model,name:pb_hr_workforce_planning.model_wfp_planning_scenario
+msgid "Workforce Planning Scenario"
+msgstr "Kịch bản hoạch định lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_hr_formula_rule__wfp_category
+msgid ""
+"Workforce Planning category. Used to classify this component for salary simulation and total employer cost forecasting.\n"
+"• Base Salary — the primary wage component\n"
+"• Allowance — additional earnings (HRA, transport, meal, etc.)\n"
+"• Employee Deduction — taxes, employee SI/HI/UI contributions\n"
+"• Employer Cost — employer-side contributions (SI_COMP, BPJS_KES_COMP, CPF_ER, etc.)\n"
+"• Gross Pay — the gross total line\n"
+"• Net Pay — the net total line\n"
+"• Bonus — variable pay, 13th month, incentives\n"
+"• Informational — display only, not used in cost calculations\n"
+"• Exclude — skip entirely in workforce planning"
+msgstr ""
+"Hạng mục Kế hoạch lực lượng lao động. Được sử dụng để phân loại thành phần này nhằm mô phỏng tiền lương và dự báo tổng chi phí của người sử dụng lao động.\n"
+"• Lương cơ bản — thành phần lương cơ bản\n"
+"• Phụ cấp - thu nhập bổ sung (HRA, đi lại, bữa ăn, v.v.)\n"
+"• Khấu trừ nhân viên — thuế, đóng góp SI/HI/UI của nhân viên\n"
+"• Chi phí của Nhà tuyển dụng — đóng góp của phía Nhà tuyển dụng (SI_COMP, BPJS_KES_COMP, CPF_ER, v.v.)\n"
+"• Tổng Lương — tổng dòng tổng\n"
+"• Lương ròng — tổng dòng ròng\n"
+"• Tiền thưởng — lương thay đổi, tháng thứ 13, ưu đãi\n"
+"• Thông tin — chỉ hiển thị, không được sử dụng trong tính toán chi phí\n"
+"• Loại trừ — bỏ qua hoàn toàn việc lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_monthly_projection__year
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "across"
+msgstr "ngang qua"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "across all employees"
+msgstr "trên tất cả nhân viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "budget"
+msgstr "ngân sách"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "compa < 0.90"
+msgstr "độ < 0,90"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "compa > 1.10"
+msgstr "compa > 1.10"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_employee_forecast__applied_rule_name
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_increase_rule__name
+msgid "e.g. '5% for Executives', '3% for Back-Office'"
+msgstr "ví dụ: '5% for Giám đốc điều hành', '3% for Back-Office'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_compensation_cycle__name
+msgid "e.g. 'Annual Merit Review 2027'"
+msgstr "ví dụ: 'Xét khen thưởng thường niên năm 2027'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_pay_grade__job_family
+msgid "e.g. 'Engineering', 'Finance', 'Operations'"
+msgstr "ví dụ: 'Kỹ thuật', 'Tài chính', 'Hoạt động'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__performance_label
+msgid "e.g. 'Exceptional', 'Meets', 'Developing'"
+msgstr "ví dụ: 'Đặc biệt', 'Đáp ứng', 'Đang phát triển'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_planning_scenario__name
+msgid "e.g. 'FY27 Budget — Conservative 3%'"
+msgstr "ví dụ: 'Ngân sách năm tài khóa 27 — Bảo thủ 3%'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_merit_matrix__name
+msgid "e.g. 'FY27 Standard Merit Matrix'"
+msgstr "ví dụ: 'Ma trận thành tích tiêu chuẩn năm tài chính 27'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_pay_grade__name
+msgid "e.g. 'G5 — Senior Professional'"
+msgstr "ví dụ: 'G5 — Chuyên gia cao cấp'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_scenario_version__name
+msgid "e.g. 'Initial Draft', 'Post Finance Review', 'Board Approved'"
+msgstr "ví dụ: 'Dự thảo ban đầu', 'Đánh giá sau tài chính', 'Hội đồng phê duyệt'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_approval_step__name
+msgid "e.g. 'Manager Review', 'HR Validation', 'Finance Check', 'VP Sign-Off'"
+msgstr ""
+"ví dụ: 'Đánh giá của người quản lý', 'Xác thực nhân sự', 'Kiểm tra tài chính', 'Xác "
+"nhận VP'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_budget_guardrail__name
+msgid "e.g. 'Max Increase Cap', 'Department Budget Limit'"
+msgstr "ví dụ: 'Giới hạn tăng tối đa', 'Giới hạn ngân sách của bộ phận'"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__compa_min
+msgid "e.g. 0, 85, 100"
+msgstr "ví dụ: 0, 85, 100"
+
+#. module: pb_hr_workforce_planning
+#: model:ir.model.fields,help:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__compa_max
+msgid "e.g. 85, 100, 115"
+msgstr "ví dụ: 85, 100, 115"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "employees"
+msgstr "nhân viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "employees at risk"
+msgstr "nhân viên gặp rủi ro"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "exits /"
+msgstr "thoát /"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "h"
+msgstr "h"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "h /"
+msgstr "h /"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "hires"
+msgstr "thuê"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "market position"
+msgstr "vị thế thị trường"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "months planned"
+msgstr "tháng dự kiến"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "months with payroll data"
+msgstr "tháng với dữ liệu bảng lương"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "of"
+msgstr "của"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "promotions"
+msgstr "khuyến mãi"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "rated 4+ / 5"
+msgstr "đánh giá 4+ / 5"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "stages"
+msgstr "giai đoạn"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "unique skill types"
+msgstr "các loại kỹ năng độc đáo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+msgid "v%d — %s"
+msgstr "v%d — %s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/wizards/export_wizard.py:0
+msgid ""
+"xlsxwriter library is required for Excel export. Please install it: pip install "
+"xlsxwriter"
+msgstr ""
+"Cần có thư viện xlsxwriter để xuất Excel. Vui lòng cài đặt nó: pip install xlsxwriter"
+
+#. module: pb_hr_workforce_planning
+#: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_kanban
+msgid "· FY"
+msgstr "· Năm tài chính"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:686
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:747
+msgid "Hours Worked"
+msgstr "Giờ làm việc"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:726
+msgid "Check-ins"
+msgstr "Đăng ký"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:755
+msgid "Target Hours"
+msgstr "Số giờ mục tiêu"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:786
+msgid "OT Hours"
+msgstr "Giờ OT"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:795
+msgid "OT Cost"
+msgstr "Chi phí OT"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:833
+msgid "Upper Bound"
+msgstr "Giới hạn Trên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:841
+msgid "Projected Cost"
+msgstr "Chi phí dự kiến"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:852
+msgid "Lower Bound"
+msgstr "Giới hạn Thấp"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:969
+msgid "Applicants"
+msgstr "Các ứng viên"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1014
+msgid "Coverage %"
+msgstr "Tỷ lệ bao phủ (%)"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1137
+msgid "Actual"
+msgstr "Thực tế"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+msgid "Current Total"
+msgstr "Tổng số hiện tại"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+msgid "+ Base Δ"
+msgstr "+ Cơ sở Δ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+msgid "+ Allowance Δ"
+msgstr "+ Phụ cấp Δ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+msgid "+ Employer Δ"
+msgstr "+ Nhà tuyển dụng Δ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+msgid "Forecast Total"
+msgstr "Tổng số dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1452
+msgid "Base"
+msgstr "Cơ sở"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1459
+msgid "Amount"
+msgstr "Số tiền"

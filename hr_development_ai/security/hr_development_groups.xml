@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- ============================================ -->
+    <!-- HR Development Groups (Employee Development) -->
+    <!-- ============================================ -->
+    <!-- These appear as a selection dropdown under "Employee Development" -->
+    <!-- in the Access Rights tab of the user form -->
+
+    <record id="group_hr_development_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_hr_development"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Basic access to employee development features - can view own development data</field>
+    </record>
+
+    <record id="group_hr_development_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_hr_development"/>
+        <field name="implied_ids" eval="[(4, ref('group_hr_development_user'))]"/>
+        <field name="comment">Can manage employee development for team members</field>
+    </record>
+
+    <record id="group_hr_development_admin" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_hr_development"/>
+        <field name="implied_ids" eval="[(4, ref('group_hr_development_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="comment">Full access to all employee development features and configuration</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- BFSI Performance Coaching Groups             -->
+    <!-- ============================================ -->
+    <!-- These appear as a selection dropdown under "AI Performance Coaching" -->
+    <!-- in the Access Rights tab of the user form -->
+
+    <record id="group_bfsi_banker" model="res.groups">
+        <field name="name">Banker</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_bfsi_coaching"/>
+        <field name="implied_ids" eval="[(4, ref('group_hr_development_user'))]"/>
+        <field name="comment">Individual banker - can view own KPIs, receive AI coaching, and manage action plans</field>
+    </record>
+
+    <record id="group_bfsi_branch_manager" model="res.groups">
+        <field name="name">Branch Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_bfsi_coaching"/>
+        <field name="implied_ids" eval="[(4, ref('group_bfsi_banker'))]"/>
+        <field name="comment">Branch manager - can view team KPIs, coaching strategies, and manage branch performance</field>
+    </record>
+
+    <record id="group_bfsi_regional_manager" model="res.groups">
+        <field name="name">Regional Manager</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_bfsi_coaching"/>
+        <field name="implied_ids" eval="[(4, ref('group_bfsi_branch_manager'))]"/>
+        <field name="comment">Regional manager - full oversight of all branches, analytics, and coaching programs</field>
+    </record>
+
+</odoo>

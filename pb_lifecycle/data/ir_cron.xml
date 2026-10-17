@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ONE daily job for the whole module. `numbercall` and `doall` were
+         REMOVED from ir.cron in Odoo 19 — including either aborts the module
+         load — and `nextcall` takes no eval expression in a data file, so the
+         first run is simply the next tick after installation.
+
+         Everything it does is behind `pb_lifecycle.reminders_enabled`, which a
+         deployment can set to 0 to silence lifecycle email entirely. -->
+    <record id="cron_lifecycle_reminders" model="ir.cron">
+        <field name="name">Lifecycle: daily reminders</field>
+        <field name="model_id" ref="model_pb_journey_case"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_lifecycle_reminders()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

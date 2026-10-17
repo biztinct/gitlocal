@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Default Analytics Settings -->
+    <record id="default_analytics_settings" model="payroll.analytics.settings">
+        <field name="name">Default Analytics Settings</field>
+        <field name="variance_threshold">10.0</field>
+        <field name="anomaly_detection_enabled">True</field>
+        <field name="auto_generate_analytics">True</field>
+        <field name="email_notifications">True</field>
+        <field name="chart_library">chartjs</field>
+    </record>
+    
+    <!-- Default Component Mappings for Indonesia -->
+    <record id="indonesia_basic_salary" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BASIC</field>
+        <field name="name">Basic Salary</field>
+        <field name="category">earning</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">1</field>
+    </record>
+    
+    <record id="indonesia_life_insurance" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">MIONEFIVE</field>
+        <field name="name">Life Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">2</field>
+    </record>
+    
+    <record id="indonesia_work_accident" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_JKK</field>
+        <field name="name">Work Accident Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">3</field>
+    </record>
+    
+    <record id="indonesia_bpjs_health_comp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_KES_COMP</field>
+        <field name="name">BPJS Healthcare (Company)</field>
+        <field name="category">employer_contribution</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">4</field>
+    </record>
+    
+    <record id="indonesia_thr" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">LAINALL</field>
+        <field name="name">THR (Religious Holiday Allowance)</field>
+        <field name="category">earning</field>
+        <field name="is_mandatory">False</field>
+        <field name="display_order">5</field>
+    </record>
+    
+    <record id="indonesia_old_age_comp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_JHT_COMP</field>
+        <field name="name">Old Age Fund (Company)</field>
+        <field name="category">employer_contribution</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">6</field>
+    </record>
+    
+    <record id="indonesia_pension_comp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_JP_COMP</field>
+        <field name="name">Pension Fund (Company)</field>
+        <field name="category">employer_contribution</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">7</field>
+    </record>
+    
+    <record id="indonesia_bpjs_health_emp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_KES_EMP</field>
+        <field name="name">BPJS Healthcare (Employee)</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">8</field>
+    </record>
+    
+    <record id="indonesia_old_age_emp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_JHT_EMP</field>
+        <field name="name">Old Age Fund (Employee)</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">9</field>
+    </record>
+    
+    <record id="indonesia_pension_emp" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">BPJS_JP_EMP</field>
+        <field name="name">Pension (Employee)</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">10</field>
+    </record>
+    
+    <record id="indonesia_income_tax" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">MONPIT</field>
+        <field name="name">Income Tax (PPh 21)</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">11</field>
+    </record>
+    
+    <record id="indonesia_net_pay" model="payroll.component.mapping">
+        <field name="country">ID</field>
+        <field name="code">NETPAY</field>
+        <field name="name">Take Home Pay</field>
+        <field name="category">net</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">12</field>
+    </record>
+    
+    <!-- Default Component Mappings for Vietnam -->
+    <record id="vietnam_basic_salary" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">BASIC</field>
+        <field name="name">Basic Salary</field>
+        <field name="category">earning</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">1</field>
+    </record>
+    
+    <record id="vietnam_social_insurance" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">SOCIAL_INS</field>
+        <field name="name">Social Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">2</field>
+    </record>
+    
+    <record id="vietnam_health_insurance" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">HEALTH_INS</field>
+        <field name="name">Health Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">3</field>
+    </record>
+    
+    <record id="vietnam_unemployment_ins" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">UNEMPLOY_INS</field>
+        <field name="name">Unemployment Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">4</field>
+    </record>
+    
+    <record id="vietnam_personal_tax" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">PERSONAL_TAX</field>
+        <field name="name">Personal Income Tax</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">5</field>
+    </record>
+    
+    <record id="vietnam_net_pay" model="payroll.component.mapping">
+        <field name="country">VN</field>
+        <field name="code">NETPAY</field>
+        <field name="name">Net Pay</field>
+        <field name="category">net</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">6</field>
+    </record>
+    
+    <!-- Default Component Mappings for India -->
+    <record id="india_basic_salary" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">BASIC</field>
+        <field name="name">Basic Salary</field>
+        <field name="category">earning</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">1</field>
+    </record>
+    
+    <record id="india_hra" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">HRA</field>
+        <field name="name">House Rent Allowance</field>
+        <field name="category">earning</field>
+        <field name="is_mandatory">False</field>
+        <field name="display_order">2</field>
+    </record>
+    
+    <record id="india_provident_fund" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">PF</field>
+        <field name="name">Provident Fund</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">3</field>
+    </record>
+    
+    <record id="india_esi" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">ESI</field>
+        <field name="name">Employee State Insurance</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">4</field>
+    </record>
+    
+    <record id="india_tds" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">TDS</field>
+        <field name="name">Tax Deducted at Source</field>
+        <field name="category">deduction</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">5</field>
+    </record>
+    
+    <record id="india_net_pay" model="payroll.component.mapping">
+        <field name="country">IN</field>
+        <field name="code">NETPAY</field>
+        <field name="name">Net Pay</field>
+        <field name="category">net</field>
+        <field name="is_mandatory">True</field>
+        <field name="display_order">6</field>
+    </record>
+    
+    <!-- Default Dashboard Tiles Configuration -->
+    <record id="dashboard_config_indonesia" model="dashboard.tile.config">
+        <field name="country">ID</field>
+        <field name="tile_type">payroll_approval</field>
+        <field name="title">Payroll Approval</field>
+        <field name="subtitle">Level 2 Approve</field>
+        <field name="icon">fa-gavel</field>
+        <field name="action_model">payroll.dashboard</field>
+        <field name="action_method">action_open_analytics_dashboard</field>
+        <field name="is_active">True</field>
+        <field name="sequence">10</field>
+    </record>
+    
+    <record id="dashboard_config_indonesia_bank" model="dashboard.tile.config">
+        <field name="country">ID</field>
+        <field name="tile_type">bank_export</field>
+        <field name="title">Bank Export</field>
+        <field name="subtitle">Salary Disbursement</field>
+        <field name="icon">fa-university</field>
+        <field name="action_model">payroll.dashboard</field>
+        <field name="action_method">action_export_bank_file</field>
+        <field name="is_active">True</field>
+        <field name="sequence">20</field>
+    </record>
+    
+</odoo>

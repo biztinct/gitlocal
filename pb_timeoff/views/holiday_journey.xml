@@ -1,0 +1,6 @@
+<odoo>
+  <record id="holiday_batch_company_rule" model="ir.rule"><field name="name">Holiday versions: allowed companies</field><field name="model_id" ref="model_pb_holiday_batch"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="holiday_policy_company_rule" model="ir.rule"><field name="name">Leave policy references: allowed companies</field><field name="model_id" ref="model_pb_holiday_policy_note"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <record id="holiday_policy_list" model="ir.ui.view"><field name="name">Leave policy reference</field><field name="model">pb.holiday.policy.note</field><field name="arch" type="xml"><list editable="bottom"><field name="name"/><field name="country"/><field name="entitlement"/><field name="carry_rule"/><field name="reviewed"/><field name="source"/><field name="company_id" groups="base.group_multi_company"/></list></field></record>
+  <function model="pb.holidays" name="_seed_policy_reference"/>
+</odoo>

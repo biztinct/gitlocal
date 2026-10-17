@@ -1,0 +1,39 @@
+/* Integrations Cycle 6 — the BEFORE state, reconstructed verbatim.
+ *
+ * The fix shipped before this session could photograph the defect, so the
+ * pre-fix rules are restated here EXACTLY as they stood in
+ * `pb_hub/static/src/scss/hub_shell.scss` before commit b5837bd6, and injected
+ * into the live page. The point being reproduced is the SPECIFICITY outcome:
+ * `.pbim.pbms .pbhub-back` is (0,3,0), `.pbhub-back--lite` is (0,1,0), so the
+ * dark tone wins on the Mapping Studio's light bar.
+ *
+ * Nothing here is invented. Compare against `git show b5837bd6^:pb_hub/static/
+ * src/scss/hub_shell.scss`.
+ */
+
+/* the pre-fix DARK block — note there is no :not(--lite) guard */
+.pbim.pbhub .pbhub-back,
+.pbim.pbms  .pbhub-back {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 200px;
+    height: 28px;
+    padding: 0 10px 0 8px;
+    border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+    border-radius: var(--pbim-r-sm, 10px);
+    background: color-mix(in srgb, #fff 9%, transparent);
+    color: #fff;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* the pre-fix WORDMARK */
+.pbms-brand {
+    display: flex; align-items: center; gap: 8px; margin-left: auto;
+    color: var(--pbim-muted);
+    padding: 0; border: 0; background: none; border-radius: 0;
+}

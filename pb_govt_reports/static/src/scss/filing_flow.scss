@@ -1,0 +1,153 @@
+// =====================================================================
+//  The filing flow (.gfw-*) — IA Cycle 4, flow doctrine card 1
+//
+//  The shell is the KIT's `.pplw-*` wizard shell (pb_import_kit/wizard_shell),
+//  imported and never forked (W6): the stepper, the card, the body and the
+//  footer are the same ones the Import and Integrations flows use, so the
+//  fourth stepped flow in the product looks like the first. Everything here is
+//  the filing-specific part.
+//
+//  Every colour is a pbim token carrying its real literal as the fallback: the
+//  root IS a `.pbim` node, so they resolve — the literals are the belt to that
+//  brace, not decoration (W14/W19).
+// =====================================================================
+
+.gfw {
+    // The catalogue and the scope form both want more room than the kit's
+    // 820px reading column.
+    .gfw-card { width: 940px; }
+
+    .gfw-head-right { display: flex; align-items: center; gap: 10px; }
+
+    .gfw-lead {
+        font-size: 13.5px;
+        color: var(--pbim-muted, #64748B);
+        margin-bottom: 14px;
+    }
+
+    .gfw-err {
+        display: flex; align-items: center; gap: 8px;
+        background: var(--pbim-rose-soft, #FCE7EF);
+        color: var(--pbim-rose, #DC2668);
+        border-radius: 9px; padding: 9px 12px;
+        font-size: 13px; font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    // ======================================================= step 1
+    .gfw-countries {
+        display: flex; align-items: center; flex-wrap: wrap;
+        gap: 7px; margin-bottom: 14px;
+    }
+    .gfw-clabel {
+        font-size: 12px; font-weight: 700;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .gfw-cards { display: flex; flex-direction: column; gap: 9px; }
+    .gfw-card-btn {
+        display: flex; align-items: center; gap: 13px; width: 100%;
+        text-align: left; cursor: pointer;
+        background: #fff;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 12px;
+        padding: 13px 15px;
+        font: inherit;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .gfw-card-btn:hover {
+        border-color: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 2px 10px rgba(27, 23, 51, .06);
+    }
+    .gfw-card-ic {
+        display: flex; flex: none;
+        color: var(--pbim-primary-strong, #241F52);
+    }
+    .gfw-card-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .gfw-card-tx .nm { font-weight: 700; color: var(--pbim-ink, #1B1733); }
+    .gfw-card-tx .jb { font-size: 12px; color: var(--pbim-muted, #64748B); }
+    .gfw-card-tx .gp {
+        font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+        margin-top: 3px;
+    }
+    .gfw-card-ar { display: flex; flex: none; color: var(--pbim-muted, #64748B); }
+
+    // ======================================================= step 2
+    .gfw-chosen {
+        display: flex; align-items: center; gap: 11px;
+        background: var(--pbim-soft, #EDEAF8);
+        border-radius: 11px; padding: 11px 14px;
+        margin-bottom: 16px;
+    }
+    .gfw-chosen-ic { display: flex; flex: none; color: var(--pbim-primary-strong, #241F52); }
+    .gfw-chosen-tx { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+    .gfw-chosen-tx .nm { font-weight: 700; }
+    .gfw-chosen-tx .jb { font-size: 12px; color: var(--pbim-muted, #64748B); }
+
+    .gfw-sec + .gfw-sec { margin-top: 18px; }
+    .gfw-field { min-width: 0; }
+    // The employee picker needs the full row: a chip list wrapping inside a
+    // half-width column reads as a broken control.
+    .gfw-field.is-wide { grid-column: 1 / -1; }
+    .gfw-req { color: var(--pbim-rose, #DC2668); margin-left: 3px; }
+
+    .gfw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+    .gfw-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: #fff;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 999px;
+        padding: 3px 5px 3px 10px;
+        font-size: 12px; font-weight: 600;
+    }
+    .gfw-chip-x {
+        border: none; background: transparent; cursor: pointer;
+        color: var(--pbim-muted, #64748B);
+        display: flex; align-items: center; padding: 2px;
+        border-radius: 50%;
+    }
+    .gfw-chip-x:hover { background: var(--pbim-line-2, #F1F5F9); }
+
+    .gfw-hits {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 9px; margin-top: 5px;
+        background: #fff; overflow: hidden;
+        max-height: 210px; overflow-y: auto;
+    }
+    .gfw-hit {
+        display: block; width: 100%; text-align: left;
+        border: none; background: transparent; cursor: pointer;
+        padding: 7px 11px; font: inherit; font-size: 13px;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .gfw-hit:hover { background: var(--pbim-soft, #EDEAF8); }
+
+    .gfw-hint { font-size: 11.5px; color: var(--pbim-muted, #64748B); margin-top: 5px; }
+    .gfw-hidden { font-size: 12.5px; }
+
+    // ======================================================= step 3
+    .gfw-files { display: flex; flex-direction: column; gap: 9px; margin-top: 6px; }
+    .gfw-file {
+        display: flex; align-items: center; gap: 12px; width: 100%;
+        text-align: left; cursor: pointer; font: inherit;
+        background: #fff;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 11px;
+        padding: 12px 15px;
+    }
+    .gfw-file:hover { border-color: var(--pbim-green, #2E7D4F); }
+    .gfw-file-ic { display: flex; flex: none; color: var(--pbim-green, #2E7D4F); }
+    .gfw-file-tx { display: flex; flex-direction: column; min-width: 0; }
+    .gfw-file-tx .nm { font-weight: 700; word-break: break-all; }
+    .gfw-file-tx .jb {
+        font-size: 12px; color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .gfw-msg { margin-top: 14px; }
+
+    @media (max-width: 720px) {
+        .gfw-card { width: 100%; }
+    }
+}

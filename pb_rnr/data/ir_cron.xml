@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the next
+         tick after installation.
+
+         All three jobs are IDEMPOTENT by a row or by a stamp, and every one of
+         them is behind a switch that ships OFF. Switched off they still run,
+         still work out who WOULD have been written to, and log the number
+         (R54) — so the first thing anybody reads about any of them is a real
+         figure rather than silence. -->
+
+    <record id="cron_rnr_celebrations" model="ir.cron">
+        <field name="name">Recognition: birthdays and work anniversaries today</field>
+        <field name="model_id" ref="model_pb_rnr_celebration"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_celebrations_today()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_rnr_manager_week" model="ir.cron">
+        <field name="name">Recognition: the week ahead, to each manager</field>
+        <field name="model_id" ref="model_pb_rnr_celebration"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_manager_week()</field>
+        <!-- Runs daily and does nothing but count on six of those days: the
+             ISO-week stamp is what makes it a Monday job, rather than a
+             `nextcall` a clock change can walk off. -->
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_rnr_digest" model="ir.cron">
+        <field name="name">Recognition: the monthly mood board</field>
+        <field name="model_id" ref="model_pb_rnr_digest"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_monthly_digest()</field>
+        <!-- Daily, and idempotent by the month it has already sent. A monthly
+             interval that misses its tick misses the month; a daily job that
+             knows which month it has done cannot. -->
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

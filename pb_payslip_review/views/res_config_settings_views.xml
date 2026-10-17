@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- LEARN REFRESH step 6: the "Need review" change threshold, in
+         Settings › Payroll defaults. -->
+    <record id="res_config_settings_view_form_review" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.payslip.review</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="om_hr_payroll.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='om_hr_payroll']" position="inside">
+                <block title="Pay run review" name="pb_review_block">
+                    <setting id="pb_review_change_pct" string="Flag a big change in take-home pay"
+                             help="Need review counts a payslip whose take-home pay moved by more than this against the same person's previous payslip in the same pay scheme. New joiners are never flagged for it. 0 switches it off.">
+                        <div class="d-flex align-items-center gap-2">
+                            <field name="pb_review_change_pct" class="o_light_label" style="max-width: 5rem;"/>
+                            <span>%</span>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

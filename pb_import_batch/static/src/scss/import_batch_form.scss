@@ -1,0 +1,32 @@
+/* Import batch form (fallback) — powder-blue accents + segmented source type */
+.pb-import-batch-form {
+    --p: #a9c4fa; --p-strong: #4D6FBF; --p-ink: #1E2A52; --p-soft: #dbe5ff; --p-border: #cdddfb;
+
+    /* radio groups (source_type, payroll_period) → horizontal segmented pills */
+    .pb-imb-segmented { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pb-imb-segmented .o_radio_item { position: relative; }   /* anchor the hidden-input overlay */
+    .pb-imb-segmented .o_radio_item,
+    .pb-imb-segmented label.o_form_label { display: inline-flex; align-items: center; gap: 0; }
+    .pb-imb-segmented .o_radio_item {
+        border: 1px solid var(--p-border); border-radius: 999px; padding: 6px 16px;
+        cursor: pointer; transition: background .14s, border-color .14s; white-space: nowrap;
+    }
+    .pb-imb-segmented .o_radio_item:hover { border-color: var(--p); }
+    .pb-imb-segmented .o_radio_item:has(input:checked) { background: var(--p); border-color: var(--p); }
+    .pb-imb-segmented .o_radio_item:has(input:checked) label { color: var(--p-ink); font-weight: 700; }
+    /* THE FIX: hide the native radio dot but keep it as the full-pill click target
+       so the circle no longer overlaps the label text. */
+    .pb-imb-segmented input[type="radio"] {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        margin: 0; opacity: 0; cursor: pointer; -webkit-appearance: none; appearance: none;
+    }
+    .pb-imb-segmented label.o_form_label { margin: 0; cursor: pointer; position: relative; }
+
+    /* soft cards for the inner config groups */
+    .o_inner_group[name], .o_inner_group { }
+    .o_form_sheet .o_group .o_inner_group { }
+
+    /* powder accent on the form's primary action + smart buttons */
+    .o_form_statusbar .btn-primary { background: var(--p) !important; border-color: var(--p) !important; color: var(--p-ink) !important; }
+    .o_form_statusbar .btn-primary:hover { background: #8fb2f5 !important; }
+}

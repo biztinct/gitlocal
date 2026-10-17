@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payroll templates · Payobook</title>
+  <meta name="description" content="Interactive design preview for employee workbooks, monthly payroll inputs and a configurable two-tab Excel layout.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="overlay"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <input id="file-input" type="file" accept=".xlsx,.xls,.csv" hidden>
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="data.js"></script>
+  <script src="workbooks.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
         <field name="name">payroll.analytics.component.detail.tree</field>
         <field name="model">payroll.analytics.component.detail</field>
         <field name="arch" type="xml">
-            <tree string="Component Detail" create="0" edit="0"
+            <list string="Component Detail" create="0" edit="0"
                   decoration-success="variance_percent &gt; 0"
                   decoration-danger="variance_percent &lt; 0"
                   decoration-muted="variance_percent == 0">
@@ -12,7 +12,7 @@
                 <field name="current_total" string="Current Total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="previous_total" string="Previous Total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="variance_percent" string="Variance %" widget="percentage"/>
-            </tree>
+            </list>
         </field>
     </record>
 </odoo>

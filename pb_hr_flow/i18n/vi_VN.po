@@ -1,19 +1,17 @@
-# Translation of Odoo Server.
-# This file contains the translation of the following modules:
-# 	* pb_hr_flow
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-16 02:53+0000\n"
-"PO-Revision-Date: 2026-01-16 02:53+0000\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -21,6 +19,8 @@ msgid ""
 "<i class=\"fa fa-book secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Journals</span>"
 msgstr ""
+"<i class=\"fa fa-book secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Nhật ký</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -30,13 +30,6 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-calculator primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Lương</span>"
-
-#. module: pb_hr_flow
-#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
-msgid ""
-"<i class=\"fa fa-calendar secondary-badge-icon\"/>\n"
-"                                    <span class=\"secondary-badge-text\">Shift</span>"
-msgstr ""
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -62,6 +55,8 @@ msgid ""
 "<i class=\"fa fa-cog secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Rules</span>"
 msgstr ""
+"<i class=\"fa fa-cog secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Quy tắc</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -78,6 +73,8 @@ msgid ""
 "<i class=\"fa fa-cogs secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Payslip Configuration</span>"
 msgstr ""
+"<i class=\"fa fa-cogs secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Cấu hình phiếu lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -85,6 +82,8 @@ msgid ""
 "<i class=\"fa fa-exchange secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Employee/Contract Mapping</span>"
 msgstr ""
+"<i class=\"fa fa-exchange secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Enhân viên/Bản đồ hợp đồng</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -92,6 +91,8 @@ msgid ""
 "<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">BHXH630</span>"
 msgstr ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">BHXH630</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -99,6 +100,8 @@ msgid ""
 "<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">D01-TS</span>"
 msgstr ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">D01-TS</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -106,6 +109,8 @@ msgid ""
 "<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Giảm LĐ</span>"
 msgstr ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Giảm LĐ</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -113,6 +118,8 @@ msgid ""
 "<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Mẫu 595</span>"
 msgstr ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Mẫu 595</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -120,6 +127,8 @@ msgid ""
 "<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Tăng LĐ</span>"
 msgstr ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Tăng LĐ</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -127,6 +136,8 @@ msgid ""
 "<i class=\"fa fa-file-pdf-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Full and Final</span>"
 msgstr ""
+"<i class=\"fa fa-file-pdf-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Đầy đủ và cuối cùng</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -143,6 +154,8 @@ msgid ""
 "<i class=\"fa fa-file-text-o secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Payslip List</span>"
 msgstr ""
+"<i class=\"fa fa-file-text-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Danh sách phiếu lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -150,6 +163,8 @@ msgid ""
 "<i class=\"fa fa-filter secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Batch Workflow</span>"
 msgstr ""
+"<i class=\"fa fa-filter secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Quy trình làm việc hàng loạt</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -157,6 +172,8 @@ msgid ""
 "<i class=\"fa fa-flask secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Test Calculation</span>"
 msgstr ""
+"<i class=\"fa fa-flask secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Tính toán kiểm tra</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -164,13 +181,8 @@ msgid ""
 "<i class=\"fa fa-history secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">History</span>"
 msgstr ""
-
-#. module: pb_hr_flow
-#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
-msgid ""
-"<i class=\"fa fa-hourglass-end secondary-badge-icon\"/>\n"
-"                                    <span class=\"secondary-badge-text\">Overtime</span>"
-msgstr ""
+"<i class=\"fa fa-history secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Lịch sử</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -178,13 +190,8 @@ msgid ""
 "<i class=\"fa fa-hourglass-half secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Pending</span>"
 msgstr ""
-
-#. module: pb_hr_flow
-#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
-msgid ""
-"<i class=\"fa fa-leaf secondary-badge-icon\"/>\n"
-"                                    <span class=\"secondary-badge-text\">Leaves</span>"
-msgstr ""
+"<i class=\"fa fa-hourglass-half secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Đang chờ xử lý</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -210,6 +217,8 @@ msgid ""
 "<i class=\"fa fa-money secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Payments</span>"
 msgstr ""
+"<i class=\"fa fa-money secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Thanh toán</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -217,6 +226,8 @@ msgid ""
 "<i class=\"fa fa-plug secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Connector</span>"
 msgstr ""
+"<i class=\"fa fa-plug secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Đầu nối</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -224,6 +235,17 @@ msgid ""
 "<i class=\"fa fa-random secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Mid-Cycle Mapping</span>"
 msgstr ""
+"<i class=\"fa fa-random secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Ánh xạ giữa chu kỳ</span>"
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-sitemap primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Workforce<br/>Planning</span>"
+msgstr ""
+"<i class=\"fa fa-sitemap primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Lực lượng lao động<br/>Lập kế hoạch</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -231,13 +253,8 @@ msgid ""
 "<i class=\"fa fa-sliders secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Configure Salary</span>"
 msgstr ""
-
-#. module: pb_hr_flow
-#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
-msgid ""
-"<i class=\"fa fa-table secondary-badge-icon\"/>\n"
-"                                    <span class=\"secondary-badge-text\">Timesheet</span>"
-msgstr ""
+"<i class=\"fa fa-sliders secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Định cấu hình mức lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -245,6 +262,8 @@ msgid ""
 "<i class=\"fa fa-university secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Bank Export</span>"
 msgstr ""
+"<i class=\"fa fa-university secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Xuất khẩu ngân hàng</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -252,6 +271,8 @@ msgid ""
 "<i class=\"fa fa-upload secondary-badge-icon\"/>\n"
 "                                    <span class=\"secondary-badge-text\">Batch Compute</span>"
 msgstr ""
+"<i class=\"fa fa-upload secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Tính toán hàng loạt</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -265,28 +286,28 @@ msgstr ""
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:110
 msgid "Accounting entries"
 msgstr "Bút toán kế toán"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:163
 msgid "Accrual Plan"
 msgstr "Kế hoạch tích lũy"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:163
 msgid "Accrual policies"
 msgstr "Chính sách tích lũy"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:93
 msgid "All payslips"
 msgstr "Tất cả phiếu lương"
 
@@ -303,28 +324,24 @@ msgstr "Loại số tiền"
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Analytics"
 msgstr "Phân tích"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Analytics Dashboard"
 msgstr "Bảng phân tích"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Analytics action will be configured here"
 msgstr "Hành động phân tích sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Analytics module not installed or configured"
 msgstr "Module phân tích chưa được cài đặt hoặc cấu hình"
 
@@ -335,67 +352,80 @@ msgid ""
 "                Use filters and group by options to slice and dice the data.<br>\n"
 "                Export to Excel for further analysis."
 msgstr ""
+"Phân tích các thành phần lương theo nhân viên, giai đoạn và danh mục.<br>\n"
+"                Sử dụng các bộ lọc và nhóm theo các tùy chọn để chia nhỏ dữ liệu.<br>\n"
+"                Xuất sang Excel để phân tích thêm."
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Approval Dashboard"
 msgstr "Bảng phê duyệt"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Approval module not installed or configured"
 msgstr "Module phê duyệt chưa được cài đặt hoặc cấu hình"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:165
 msgid "Approvals"
 msgstr "Phê duyệt"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:135
 msgid "Approve Overtime"
 msgstr "Phê duyệt tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:100
 msgid "Approve current period"
 msgstr "Phê duyệt kỳ hiện tại"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Attendance"
 msgstr "Chấm công"
 
 #. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:114
+msgid "Attendance & Workforce"
+msgstr "Sự tham dự & lực lượng lao động"
+
+#. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Attendance action will be configured here"
 msgstr "Hành động chấm công sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:79
+msgid "BHXH/BHYT/BHTN rates"
+msgstr "Tỷ lệ bệnh tật/BHYT/BHTN"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:172
 msgid "BHXH630"
 msgstr "BHXH 630"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:173
 msgid "BHXHDSTK01-DV_595"
 msgstr "BHXHDSTK01-DV_595"
 
@@ -404,14 +434,13 @@ msgstr "BHXHDSTK01-DV_595"
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:108
 msgid "Bank Export"
 msgstr "Xuất ngân hàng"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Bank export module not installed or configured"
 msgstr "Module xuất ngân hàng chưa được cài đặt hoặc cấu hình"
 
@@ -423,51 +452,58 @@ msgstr "Lương cơ bản"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:91
 msgid "Batch Compute"
 msgstr "Tính toán hàng loạt"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:92
 msgid "Batch Workflow"
 msgstr "Quy trình hàng loạt"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:187
+msgid "Budget → worksheets → approval"
+msgstr "Ngân sách → bảng tính → phê duyệt"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:171
 msgid "Báo cáo thuế tháng"
 msgstr "Báo cáo thuế tháng"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:175
 msgid "Báo giảm lao động"
 msgstr "Báo giảm lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:176
 msgid "Báo tăng lao động"
 msgstr "Báo tăng lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:174
 msgid "Bảng kê D01-TS"
 msgstr "Bảng kê D01-TS"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
-msgid "CLOSE"
-msgstr "ĐÓNG"
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:184
+msgid "Classify formula components"
+msgstr "Phân loại thành phần công thức"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -478,6 +514,13 @@ msgstr "Đóng"
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Company"
 msgstr "Công ty"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:187
+msgid "Compensation Cycles"
+msgstr "Chu kỳ bồi thường"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
@@ -492,28 +535,21 @@ msgstr "Loại thành phần"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
-msgid "Component analysis & insights"
-msgstr "Phân tích thành phần & thông tin"
-
-#. module: pb_hr_flow
-#. odoo-javascript
-#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:75
 msgid "Configure Salary"
 msgstr "Cấu hình lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:136
 msgid "Configure rates and caps"
 msgstr "Cấu hình tỷ lệ & giới hạn"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:74
 msgid "Connector"
 msgstr "Trình kết nối"
 
@@ -555,7 +591,7 @@ msgstr "Năm nay"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:174
 msgid "D01-TS"
 msgstr "D01-TS"
 
@@ -572,35 +608,35 @@ msgstr "Tên hiển thị"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:267
 msgid "Download BHXH630"
 msgstr "Tải xuống BHXH630"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:268
 msgid "Download BHXHDSTK01-DV_595"
 msgstr "Tải xuống BHXHDSTK01-DV_595"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:270
 msgid "Download Báo giảm lao động"
 msgstr "Tải xuống Báo giảm lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:271
 msgid "Download Báo tăng lao động"
 msgstr "Tải xuống Báo tăng lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:269
 msgid "Download Bảng kê D01-TS"
 msgstr "Tải xuống Bảng kê D01-TS"
 
@@ -612,28 +648,48 @@ msgstr "Nhân viên"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:82
+msgid "Employee Dependents"
+msgstr "Người phụ thuộc của nhân viên"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:183
+msgid "Employee Forecasts"
+msgstr "Dự báo nhân viên"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:125
+msgid "Employee pay run comparison"
+msgstr "So sánh việc trả lương nhân viên"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:77
 msgid "Employee/Contract Mapping"
 msgstr "Ánh xạ Nhân viên/Hợp đồng"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Employees"
 msgstr "Nhân viên"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:153
 msgid "Enter and submit hours"
 msgstr "Nhập & gửi giờ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:94
 msgid "Final settlement report"
 msgstr "Báo cáo quyết toán cuối cùng"
 
@@ -642,42 +698,41 @@ msgstr "Báo cáo quyết toán cuối cùng"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__name
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
-#, python-format
 msgid "Flow Dashboard"
 msgstr "Bảng quy trình"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:75
 msgid "Formulas & structures"
 msgstr "Công thức & cấu trúc"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:94
 msgid "Full and Final"
 msgstr "Quyết toán thôi việc"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:108
 msgid "Generate payment files"
 msgstr "Tạo tệp thanh toán"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:138
 msgid "Geofence/reasons & defaults"
 msgstr "Geofence/lý do & mặc định"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:175
 msgid "Giảm LĐ"
 msgstr "Giảm LĐ"
 
@@ -686,14 +741,13 @@ msgstr "Giảm LĐ"
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:169
 msgid "Government Reports"
 msgstr "Báo cáo chính phủ"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Government reports action will be configured here"
 msgstr "Hành động báo cáo chính phủ sẽ được cấu hình tại đây"
 
@@ -703,13 +757,7 @@ msgid "Gross Salary"
 msgstr "Lương gộp"
 
 #. module: pb_hr_flow
-#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
-msgid "Group By"
-msgstr "Nhóm theo"
-
-#. module: pb_hr_flow
 #: model:ir.actions.act_window,name:pb_hr_flow.action_hr_flow_wizard
-#: model:ir.ui.menu,name:pb_hr_flow.menu_hr_workflow_flow
 msgid "HR Workflow Flow"
 msgstr "Luồng quy trình nhân sự"
 
@@ -721,28 +769,28 @@ msgstr "Bảng thông tin luồng quy trình nhân sự"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:74
 msgid "HRIS/Excel connectors"
 msgstr "Kết nối HRIS/Excel"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:101
 msgid "History"
 msgstr "Lịch sử"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:164
 msgid "Holiday calendar"
 msgstr "Lịch nghỉ lễ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:137
 msgid "Hours and costs overview"
 msgstr "Tổng quan giờ & chi phí"
 
@@ -754,21 +802,35 @@ msgstr "ID"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:76
 msgid "Identifiers & labels"
 msgstr "Định danh & nhãn"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:91
 msgid "Import & compute batches"
 msgstr "Nhập & tính toán đợt"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:80
+msgid "Insurance Adjustments"
+msgstr "Điều chỉnh bảo hiểm"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:79
+msgid "Insurance Policies"
+msgstr "Chính sách bảo hiểm"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:110
 msgid "Journals"
 msgstr "Sổ nhật ký"
 
@@ -788,11 +850,6 @@ msgid "Last 6 Months"
 msgstr "6 tháng qua"
 
 #. module: pb_hr_flow
-#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard____last_update
-msgid "Last Modified on"
-msgstr "Chỉnh sửa lần cuối vào"
-
-#. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Cập nhật lần cuối bởi"
@@ -805,99 +862,122 @@ msgstr "Cập nhật lần cuối vào"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:128
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:162
 msgid "Leave Dashboard"
 msgstr "Bảng tin nghỉ phép"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:128
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:162
 msgid "Leave overview"
 msgstr "Tổng quan nghỉ phép"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:165
 msgid "Leave requests"
 msgstr "Yêu cầu nghỉ phép"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:160
 msgid "Leaves"
 msgstr "Nghỉ phép"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:122
+msgid "Live board: who is in, who is late"
+msgstr "Bảng trực tiếp: ai vào, ai trễ"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:147
 msgid "Locations, geofence, reasons"
 msgstr "Địa điểm, geofence, lý do"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:135
 msgid "Manager approval queue"
 msgstr "Hàng chờ phê duyệt quản lý"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:154
 msgid "Manager validation queue"
 msgstr "Hàng chờ xác thực quản lý"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:80
+msgid "Manual adjustments"
+msgstr "Điều chỉnh thủ công"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:77
 msgid "Map fields to components"
 msgstr "Ánh xạ trường vào thành phần"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:78
 msgid "Map mid-cycle to end-cycle"
 msgstr "Ánh xạ giữa kỳ sang cuối kỳ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:186
+msgid "Merit Matrix"
+msgstr "Ma trận công đức"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:78
 msgid "Mid-Cycle Mapping"
 msgstr "Ánh xạ giữa kỳ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:171
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:284
 msgid "Monthly Generated Tax Reports"
 msgstr "Báo cáo thuế tháng đã tạo"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:153
 msgid "My Timesheets"
 msgstr "Bảng chấm công của tôi"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:146
 msgid "My shift calendar"
 msgstr "Lịch ca của tôi"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:173
 msgid "Mẫu 595"
 msgstr "Mẫu 595"
 
@@ -916,65 +996,83 @@ msgstr "Các thành phần khác"
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:132
 msgid "Overtime"
 msgstr "Tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:137
 msgid "Overtime Analytics"
 msgstr "Phân tích tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Overtime Approval Queue"
 msgstr "Hàng đợi phê duyệt làm thêm giờ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:126
+msgid "Overtime Desk"
+msgstr "Bàn Làm Thêm Giờ"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:136
 msgid "Overtime Policy/Rules"
 msgstr "Chính sách/Quy tắc tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:138
 msgid "Overtime Settings"
 msgstr "Cài đặt tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Overtime action will be configured here"
 msgstr "Hành động làm thêm giờ sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:81
+msgid "PIT rates & slabs"
+msgstr "Thuế suất thuế TNCN & tấm"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:101
 msgid "Past approvals & audits"
 msgstr "Phê duyệt & kiểm tra quá khứ"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:185
+msgid "Pay Grades"
+msgstr "Trả điểm"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:106
 msgid "Pay Salary"
 msgstr "Thanh toán lương"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Pay salary action will be configured here"
 msgstr "Hành động thanh toán lương sẽ được cấu hình tại đây"
 
@@ -1001,7 +1099,7 @@ msgstr "Ngày thanh toán: Năm"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:109
 msgid "Payments"
 msgstr "Thanh toán"
 
@@ -1010,28 +1108,34 @@ msgstr "Thanh toán"
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:86
 msgid "Payroll"
 msgstr "Lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:98
 msgid "Payroll Approval"
 msgstr "Phê duyệt lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:72
 msgid "Payroll Configuration"
 msgstr "Cấu hình lương"
 
 #. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:125
+msgid "Payroll Report"
+msgstr "Báo cáo lương"
+
+#. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Payroll action will be configured here"
 msgstr "Hành động lương sẽ được cấu hình tại đây"
 
@@ -1043,51 +1147,72 @@ msgstr "Phiếu lương"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:76
 msgid "Payslip Configuration"
 msgstr "Cấu hình phiếu lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:93
 msgid "Payslip List"
 msgstr "Danh sách phiếu lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:92
 msgid "Payslip batches & runs"
 msgstr "Đợt & lần chạy phiếu lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:100
 msgid "Pending Queue"
 msgstr "Hàng chờ xử lý"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:183
+msgid "Per-employee cost projections"
+msgstr "Dự toán chi phí cho mỗi nhân viên"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:186
+msgid "Performance × compa-ratio grid"
+msgstr "Hiệu suất × lưới tỷ lệ so sánh"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:156
 msgid "Period locks and rules"
 msgstr "Khóa kỳ & quy tắc"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:155
 msgid "Pivot/list by employee"
 msgstr "Pivot/danh sách theo nhân viên"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:144
 msgid "Plan and manage shifts"
 msgstr "Lập kế hoạch & quản lý ca"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:182
+msgid "Planning Scenarios"
+msgstr "Kịch bản quy hoạch"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
@@ -1097,14 +1222,14 @@ msgstr "Tháng trước"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:88
 msgid "Proration Audit"
 msgstr "Kiểm tra phân bổ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:164
 msgid "Public Holidays"
 msgstr "Ngày lễ"
 
@@ -1121,56 +1246,56 @@ msgstr "Hành động báo cáo"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:134
 msgid "Request Overtime"
 msgstr "Yêu cầu tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:126
+msgid "Requests, ceilings and rate rules"
+msgstr "Yêu cầu, mức trần và quy định về giá"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:89
 msgid "Retro Adjustments"
 msgstr "Điều chỉnh hồi tố"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:127
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:145
 msgid "Reusable shift patterns"
 msgstr "Mẫu ca tái sử dụng"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:109
 msgid "Review payments"
 msgstr "Xem lại thanh toán"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:88
 msgid "Review prorated components"
 msgstr "Xem lại thành phần phân bổ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:102
 msgid "Rules"
 msgstr "Quy tắc"
 
 #. module: pb_hr_flow
-#. odoo-javascript
-#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
-msgid "Salary Analytics"
-msgstr "Phân tích lương"
-
-#. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Salary Approval"
 msgstr "Phê duyệt lương"
 
@@ -1201,111 +1326,172 @@ msgstr "Danh mục quy tắc lương"
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Salary approval action will be configured here"
 msgstr "Hành động phê duyệt lương sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:185
+msgid "Salary bands & compa-ratios"
+msgstr "Các mức lương và tỷ lệ so sánh"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:182
+msgid "Salary simulation & forecasting"
+msgstr "Mô phỏng và dự báo lương"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:90
 msgid "Sample data & validation"
 msgstr "Dữ liệu mẫu & xác thực"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:124
+msgid "Schedule"
+msgstr "Lịch trình"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:142
 msgid "Shift"
 msgstr "Ca làm việc"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:146
 msgid "Shift Calendar"
 msgstr "Lịch ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:144
 msgid "Shift Planning"
 msgstr "Kế hoạch ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:147
 msgid "Shift Settings"
 msgstr "Cài đặt ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:127
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:145
 msgid "Shift Templates"
 msgstr "Mẫu ca"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Shift action will be configured here"
 msgstr "Hành động ca làm việc sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:134
 msgid "Submit overtime request"
 msgstr "Gửi yêu cầu tăng ca"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:184
+msgid "Tag Components"
+msgstr "Thành phần thẻ"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:81
+msgid "Tax Tables"
+msgstr "Bảng thuế"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:82
+msgid "Tax deductions"
+msgstr "Khấu trừ thuế"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:90
 msgid "Test Calculation"
 msgstr "Tính thử"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:123
+msgid "Time"
+msgstr "Giờ"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:123
+msgid "Timeline, exceptions and timecards"
+msgstr "Dòng thời gian, ngoại lệ và thẻ thời gian"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:151
 msgid "Timesheet"
 msgstr "Bảng chấm công"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:154
 msgid "Timesheet Approvals"
 msgstr "Phê duyệt bảng chấm công"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:155
 msgid "Timesheet Reports"
 msgstr "Báo cáo bảng chấm công"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:156
 msgid "Timesheet Settings"
 msgstr "Cài đặt bảng chấm công"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Timesheet action will be configured here"
 msgstr "Hành động chấm công sẽ được cấu hình tại đây"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:122
+msgid "Today"
+msgstr "Hôm nay"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_tree_analytics
@@ -1320,34 +1506,47 @@ msgstr "Tổng số tiền"
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:89
 msgid "Track auto retro deltas"
 msgstr "Theo dõi chênh lệch hồi tố tự động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:176
 msgid "Tăng LĐ"
 msgstr "Tăng LĐ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:102
 msgid "Validation & thresholds"
 msgstr "Xác thực & ngưỡng"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
-#, python-format
 msgid "Vietnam Government XLS Reports"
 msgstr "Báo cáo XLS chính phủ Việt Nam"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
-#, python-format
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:124
+msgid "Weekly shift roster"
+msgstr "Danh sách ca hàng tuần"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:180
+msgid "Workforce Planning"
+msgstr "Lập kế hoạch lực lượng lao động"
+
+#. module: pb_hr_flow
+#. odoo-javascript
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
+#: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:172
 msgid "Ốm đau/Thai sản"
 msgstr "Ốm đau/Thai sản"

@@ -9,7 +9,8 @@ _logger = logging.getLogger(__name__)
 
 
 class PayrollDashboardAnalytics(models.Model):
-    _inherit = 'payroll.dashboard'
+    _name = 'payroll.dashboard'
+    _inherit = ['payroll.dashboard']
     
     def action_open_analytics_dashboard(self):
         """Open analytics dashboard for the country"""
@@ -42,22 +43,24 @@ class PayrollDashboardAnalytics(models.Model):
         if not country:
             raise UserError(_('Unable to determine country for analytics dashboard'))
         
-        # Get ALL Level 2 payslip batches and create separate analytics for each
-        level2_batches = self.env['hr.payslip.run'].search([
-            ('state', '=', 'level2')
+        # Every pay run that is WAITING FOR ITS APPROVAL, one analytics record
+        # each. It used to be "every run in level2", the last rung of a ladder
+        # that no longer exists; the honest translation is the state a run is
+        # in while somebody is deciding about it.
+        pending_batches = self.env['hr.payslip.run'].search([
+            ('state', '=', 'approval_pending')
         ], order='date_start desc')  # Most recent first for better UX
-        
+
         generated_analytics = []
-        
-        if level2_batches:
-            _logger.info(f"Found {len(level2_batches)} Level 2 batches to process for {country}")
-            
-            # Process each Level 2 batch separately
-            for batch in level2_batches:
+
+        if pending_batches:
+            _logger.info(f"Found {len(pending_batches)} batches awaiting approval to process for {country}")
+
+            for batch in pending_batches:
                 batch_first_day = batch.date_start
                 batch_last_day = batch.date_end
                 
-                _logger.info(f"Processing Level 2 batch: {batch.name} ({batch_first_day} to {batch_last_day})")
+                _logger.info(f"Processing batch awaiting approval: {batch.name} ({batch_first_day} to {batch_last_day})")
                 
                 # Search for existing analytics for this specific batch period
                 existing_analytics = self.env['payroll.analytics'].search([
@@ -87,7 +90,7 @@ class PayrollDashboardAnalytics(models.Model):
                         new_analytics.write({'state': 'ready', 'payslip_run_id': batch.id})
                         
                         # Force computation of stored fields to ensure fresh data
-                        new_analytics.invalidate_cache()
+                        new_analytics.invalidate_recordset()
                         new_analytics._compute_analytics()
                         
                         generated_analytics.append(new_analytics)
@@ -111,7 +114,7 @@ class PayrollDashboardAnalytics(models.Model):
             try:
                 analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
                 analytics.write({'state': 'ready'})
-                analytics.invalidate_cache()
+                analytics.invalidate_recordset()
                 analytics._compute_analytics()
                 generated_analytics.append(analytics)
             except Exception as e:

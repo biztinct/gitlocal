@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- India Salary Component Templates -->
+        
+        <!-- Basic Salary -->
+        <record id="advantage_template_basic" model="hr.contract.advantage.template">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- HRA -->
+        <record id="advantage_template_hra" model="hr.contract.advantage.template">
+            <field name="name">House Rent Allowance</field>
+            <field name="code">HRA</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Special Allowance -->
+        <record id="advantage_template_special_allowance" model="hr.contract.advantage.template">
+            <field name="name">Special Allowance</field>
+            <field name="code">SPECIAL_ALLOWANCE</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Books and Periodicals -->
+        <record id="advantage_template_books_periodicals" model="hr.contract.advantage.template">
+            <field name="name">Books and Periodicals</field>
+            <field name="code">BOOKS_PERIODICALS</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Telephone and Internet -->
+        <record id="advantage_template_telephone_internet" model="hr.contract.advantage.template">
+            <field name="name">Telephone and Internet</field>
+            <field name="code">TELEPHONE_INTERNET</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Leave Travel Allowance -->
+        <record id="advantage_template_lta" model="hr.contract.advantage.template">
+            <field name="name">Leave Travel Allowance</field>
+            <field name="code">LEAVE_TRAVEL_ALLOWANCE</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Provident Fund -->
+        <record id="advantage_template_pf" model="hr.contract.advantage.template">
+            <field name="name">Provident Fund</field>
+            <field name="code">PF</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Professional Tax -->
+        <record id="advantage_template_prof_tax" model="hr.contract.advantage.template">
+            <field name="name">Professional Tax</field>
+            <field name="code">PROF_TAX</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+        <!-- Income Tax -->
+        <record id="advantage_template_income_tax" model="hr.contract.advantage.template">
+            <field name="name">Income Tax</field>
+            <field name="code">INCOME_TAX</field>
+            <field name="lower_bound">0</field>
+            <field name="upper_bound">0</field>
+            <field name="default_value">0</field>
+        </record>
+        
+    </data>
+</odoo>

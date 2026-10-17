@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_biz_audit_entry_reader,biz.audit.entry reader,model_biz_audit_entry,biz_audit_trail.group_audit_reader,1,0,0,0
+access_biz_audit_entry_system,biz.audit.entry system,model_biz_audit_entry,base.group_system,1,1,1,1
+access_biz_audit_rule_reader,biz.audit.rule reader,model_biz_audit_rule,biz_audit_trail.group_audit_reader,1,0,0,0
+access_biz_audit_rule_system,biz.audit.rule system,model_biz_audit_rule,base.group_system,1,1,1,1

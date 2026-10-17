@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE SWITCHES ARE NOT HERE, and that is the same call P3–P6 all
+         wrote down: they default in code (`comp_common.DEFAULTS`), and
+         shipping a record for a switch freezes whatever value a test run
+         happened to leave behind, because `noupdate="1"` means the next
+         upgrade never corrects it.
+
+         The switches, all OFF except the person's own page:
+           pb_comp_ben.letter_send        off  — email an award letter
+           pb_comp_ben.calendar_reminders off  — the cut-off reminder emails
+           pb_comp_ben.finance_pack       off  — build the pack on approval
+           pb_comp_ben.employee_view      on   — /my/compensation
+
+         What IS here is the pair of settings that are ANSWERS rather than
+         switches, because somebody has to be able to find them.
+         ================================================================== -->
+
+    <record id="param_incentive_code" model="ir.config_parameter">
+        <field name="key">pb_comp_ben.incentive_code</field>
+        <!-- The pay item an award arrives under. The pay scheme a run uses
+             must have an input component with THIS code, or the amount is
+             read by nothing — which is why the preview refuses rather than
+             feeding a number into a scheme that cannot see it. -->
+        <field name="value">INCENTV</field>
+    </record>
+
+    <record id="param_finance_email" model="ir.config_parameter">
+        <field name="key">pb_comp_ben.finance_email</field>
+        <!-- Where the finance pack goes. Empty means nobody, and the run's
+             own notes say so rather than the pack silently going nowhere. -->
+        <field name="value"></field>
+    </record>
+
+</data>
+</odoo>

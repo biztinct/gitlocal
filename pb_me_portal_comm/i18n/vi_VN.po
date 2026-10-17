@@ -1,0 +1,224 @@
+# Translation of the notice board (TIERS T3b) — Vietnamese.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 00:00+0000\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_portal_comm
+#. odoo-python
+#: code:addons/pb_me_portal_comm/models/pb_me_home.py:0
+msgid "1 unread notice"
+msgstr "1 thông báo chưa đọc"
+
+#. module: pb_me_portal_comm
+#. odoo-python
+#: code:addons/pb_me_portal_comm/models/pb_me_home.py:0
+msgid "%s unread notices"
+msgstr "%s thông báo chưa đọc"
+
+#. module: pb_me_portal_comm
+#. odoo-python
+#: code:addons/pb_me_portal_comm/models/pb_me_home.py:0
+msgid "There is a new notice for you."
+msgstr "Có một thông báo mới cho bạn."
+
+#. module: pb_me_portal_comm
+#. odoo-python
+#: code:addons/pb_me_portal_comm/models/pb_me_home.py:0
+msgid "There are %s new notices for you."
+msgstr "Có %s thông báo mới cho bạn."
+
+#. module: pb_me_portal_comm
+#: model:ir.model,name:pb_me_portal_comm.model_pb_me_notice_read
+msgid "Notice opened by an employee"
+msgstr "Thông báo nhân viên đã mở"
+
+#. module: pb_me_portal_comm
+#: model:ir.model,name:pb_me_portal_comm.model_pb_me_notices
+msgid "Employee notice board facts"
+msgstr "Dữ liệu bảng thông báo của nhân viên"
+
+#. module: pb_me_portal_comm
+#: model:ir.model.fields,field_description:pb_me_portal_comm.field_pb_me_notice_read__post_id
+msgid "Notice"
+msgstr "Thông báo"
+
+#. module: pb_me_portal_comm
+#: model:ir.model.fields,field_description:pb_me_portal_comm.field_pb_me_notice_read__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_portal_comm
+#: model:ir.model.fields,field_description:pb_me_portal_comm.field_pb_me_notice_read__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_portal_comm
+#: model:ir.model.fields,field_description:pb_me_portal_comm.field_pb_me_notice_read__read_on
+msgid "Opened on"
+msgstr "Mở lúc"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_breadcrumbs_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_home_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Notices"
+msgstr "Thông báo"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_home_notices
+msgid "What the company announced"
+msgstr "Những gì công ty đã thông báo"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbnb_ago
+msgid "just now"
+msgstr "vừa xong"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbnb_ago
+msgid "min ago"
+msgstr "phút trước"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbnb_ago
+msgid "h ago"
+msgstr "giờ trước"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbnb_ago
+msgid "yesterday"
+msgstr "hôm qua"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbnb_ago
+msgid "d ago"
+msgstr "ngày trước"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+msgid "new"
+msgstr "mới"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "All notices"
+msgstr "Tất cả thông báo"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Unread"
+msgstr "Chưa đọc"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "No notices yet"
+msgstr "Chưa có thông báo nào"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.pbme_card_notices
+msgid "When HR posts one, it lands here."
+msgstr "Khi Nhân sự đăng thông báo, thông báo sẽ xuất hiện ở đây."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "What the company announced, newest first."
+msgstr "Những gì công ty đã thông báo, mới nhất ở trên cùng."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "When HR posts one, it lands here. You will also see it on your home page."
+msgstr "Khi Nhân sự đăng thông báo, thông báo sẽ xuất hiện ở đây. Bạn cũng sẽ thấy nó trên trang chủ của mình."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Back to my home"
+msgstr "Về trang chủ của tôi"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "unread"
+msgstr "chưa đọc"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "in all"
+msgstr "tổng cộng"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "<i class=\"pbnb-dot\" aria-hidden=\"true\"/>New"
+msgstr "<i class=\"pbnb-dot\" aria-hidden=\"true\"/>Mới"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Read the notice"
+msgstr "Đọc thông báo"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Show earlier"
+msgstr "Xem cũ hơn"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notices
+msgid "Tip: use the arrow keys to move between notices, and Enter to open one."
+msgstr "Mẹo: dùng phím mũi tên để di chuyển giữa các thông báo, và Enter để mở."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "<span class=\"pbme-eyebrow\">Notice</span>"
+msgstr "<span class=\"pbme-eyebrow\">Thông báo</span>"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "This notice has no words, only what is attached below."
+msgstr "Thông báo này không có nội dung chữ, chỉ có tệp đính kèm bên dưới."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "Newer"
+msgstr "Mới hơn"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "Older"
+msgstr "Cũ hơn"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_my_notice
+msgid "More notices"
+msgstr "Thêm thông báo"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_notice_missing
+msgid "We could not find that notice"
+msgstr "Không tìm thấy thông báo đó"
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_notice_missing
+msgid "It may have been taken down, or it was not sent to you. Your notices are all on the board."
+msgstr "Có thể thông báo đã bị gỡ, hoặc không được gửi cho bạn. Tất cả thông báo của bạn đều có trên bảng tin."
+
+#. module: pb_me_portal_comm
+#: model_terms:ir.ui.view,arch_db:pb_me_portal_comm.portal_notice_missing
+msgid "Open my notices"
+msgstr "Mở thông báo của tôi"

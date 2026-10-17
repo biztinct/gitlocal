@@ -7,6 +7,8 @@ import base64
 import csv
 import io
 import json
+import re
+from collections import OrderedDict
 from typing import Dict, List, Any, Optional, Tuple
 import logging
 
@@ -19,6 +21,14 @@ except ImportError:
 from .base_connector import BaseHRConnector
 
 _logger = logging.getLogger(__name__)
+
+# The cell note on a generated template's first column. Not translated here on
+# purpose — this module is plain python with no `_` in scope; the caller that
+# has an environment passes a translated heading in (`pk_header`).
+_TEMPLATE_PK_NOTE = (
+    "The employee this row belongs to.\n"
+    "Every row is matched on this column — leave it filled in."
+)
 
 
 class ExcelConnector(BaseHRConnector):
@@ -572,12 +582,69 @@ class ExcelConnector(BaseHRConnector):
     # FILE GENERATION
     # ==========================================
 
-    def generate_template(self, rules: List[Any]) -> bytes:
+    @staticmethod
+    def template_slot_for(rule) -> Tuple[str, str]:
+        """Where a component's column belongs in a generated template.
+
+        Returns `(sheet, header)` — and the header is deliberately **the key
+        the resolver will match on re-import**, not a label:
+
+          * an explicit spreadsheet binding wins. If somebody has already said
+            "this component reads the column called `Gross OT`", the template
+            has to say `Gross OT`, or downloading the template and filling it
+            in would quietly stop feeding the component it was built for;
+          * otherwise the component NAME, which is the candidate
+            `_transform_data_to_formula_inputs` tries after the binding and
+            before the code. The name is what a payroll officer recognises in
+            a column heading; the code is an internal handle.
+
+        A binding key may itself be sheet-qualified (`SEVL|Gross OT`) because
+        that is the shape a multisheet load produces; the sheet half of the key
+        wins over the rule's own `source_sheet_name` when they disagree, since
+        the key is the thing that was actually matched.
         """
-        Generate an Excel template file based on formula rules.
+        binding = (getattr(rule, 'source_binding', '') or '')
+        key = (getattr(rule, 'source_binding_key', '') or '').strip() if binding == 'excel' else ''
+        sheet = (getattr(rule, 'source_sheet_name', '') or '').strip()
+        if key:
+            if '|' in key:
+                bound_sheet, bound_header = key.split('|', 1)
+                return (bound_sheet.strip() or sheet), bound_header.strip()
+            return sheet, key
+        return sheet, ((rule.name or rule.code or '').strip())
+
+    def generate_template(
+        self,
+        rules: List[Any],
+        pk_header: str = 'Employee Code',
+        sheet_title: str = 'Payroll Data',
+    ) -> bytes:
+        """
+        Generate the pay-data workbook a scheme will actually READ BACK.
+
+        This had zero callers for its whole life, and the reason is visible in
+        what it used to emit: one flat sheet of component CODES with a row of
+        default values underneath. Codes are not what the resolver tries first,
+        a multisheet scheme's columns do not live on one sheet, and a template
+        that arrives with a row of data in it is a template somebody imports by
+        accident. All three are now fixed:
+
+          * one column per INPUT component, headed by the key the resolver
+            matches (`template_slot_for`);
+          * the employee-identifier column FIRST on every sheet — it is what
+            each row is matched by, and on a multisheet workbook it is what the
+            sheets are merged on, so a sheet without it contributes nothing;
+          * one sheet per `source_sheet_name` when the scheme is multisheet,
+            one sheet otherwise;
+          * **headings only, no data row.** The file is empty on purpose: the
+            person downloading it is going to fill it with this month's
+            numbers, and a pre-filled example row is a row that gets loaded,
+            matched and — one more click — written into somebody's payslip.
 
         Args:
-            rules: List of hr.formula.rule records
+            rules: hr.formula.rule records (the scheme's whole rule set)
+            pk_header: the employee-identifier column heading to put first
+            sheet_title: sheet name for a single-sheet scheme
 
         Returns:
             Excel file content as bytes
@@ -585,28 +652,63 @@ class ExcelConnector(BaseHRConnector):
         if not OPENPYXL_AVAILABLE:
             raise ImportError("openpyxl required for template generation")
 
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Payroll Data"
+        from openpyxl.utils import get_column_letter
 
-        # Write headers
         input_rules = [r for r in rules if r.column_type == 'input']
-        for col_idx, rule in enumerate(input_rules, start=1):
-            cell = ws.cell(row=1, column=col_idx)
-            cell.value = rule.code
-            cell.font = openpyxl.styles.Font(bold=True)
+        pk_header = (pk_header or 'Employee Code').strip() or 'Employee Code'
 
-            # Add column comment with rule name
-            cell.comment = openpyxl.comments.Comment(
-                text=f"{rule.name}\n{rule.description or ''}",
-                author="Formula Engine"
-            )
+        # group by sheet, preserving each scheme's own component order
+        sheets: "OrderedDict[str, List[Tuple[str, Any]]]" = OrderedDict()
+        for rule in input_rules:
+            sheet, header = self.template_slot_for(rule)
+            if not header:
+                continue
+            sheets.setdefault(sheet, []).append((header, rule))
+        multisheet = any(name for name in sheets)
+        if not multisheet:
+            merged = []
+            for cols in sheets.values():
+                merged.extend(cols)
+            sheets = OrderedDict([(sheet_title, merged)] if merged else [])
 
-        # Add sample row
-        for col_idx, rule in enumerate(input_rules, start=1):
-            ws.cell(row=2, column=col_idx).value = rule.default_value or 0
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+        bold = openpyxl.styles.Font(bold=True)
+        head_fill = openpyxl.styles.PatternFill('solid', fgColor='EAF1FB')
 
-        # Save to bytes
+        if not sheets:
+            sheets = OrderedDict([(sheet_title, [])])
+
+        for name, cols in sheets.items():
+            # openpyxl refuses >31 chars and []:*?/\ in a sheet title
+            safe = re.sub(r'[\[\]:*?/\\]', ' ', str(name or sheet_title)).strip()[:31] \
+                or sheet_title
+            ws = wb.create_sheet(title=safe)
+            seen = {pk_header.lower()}
+            headers = [(pk_header, None)]
+            for header, rule in cols:
+                if header.lower() in seen:
+                    continue
+                seen.add(header.lower())
+                headers.append((header, rule))
+            for col_idx, (header, rule) in enumerate(headers, start=1):
+                cell = ws.cell(row=1, column=col_idx)
+                cell.value = header
+                cell.font = bold
+                cell.fill = head_fill
+                # NB: the body this replaced read `rule.description`, and
+                # `hr.formula.rule` has no such field — so the generator did
+                # not merely lack a caller, it could not have survived one.
+                # Everything named here is a field that exists.
+                note = (_TEMPLATE_PK_NOTE if rule is None
+                        else '\n'.join(str(x) for x in
+                                       [rule.name, rule.code, rule.column_letter] if x))
+                if note:
+                    cell.comment = openpyxl.comments.Comment(text=note, author='Payobook')
+                ws.column_dimensions[get_column_letter(col_idx)].width = \
+                    max(12, min(38, len(header) + 4))
+            ws.freeze_panes = 'A2'
+
         output = io.BytesIO()
         wb.save(output)
         return output.getvalue()
@@ -947,9 +1049,13 @@ class ExcelConnector(BaseHRConnector):
         existing_codes: set
     ) -> str:
         """
-        Generate a unique code from a header value.
+        Generate a readable, converter-safe code from a header value.
 
-        Handles numeric headers (0, 1, 2) and special characters.
+        This is the legacy fallback used only when no ``code_generator`` is injected,
+        and until MAPFIX it emitted UNDERSCORES (``COL_3``, ``BASIC_1``) — a live
+        breach of the converter contract, because the code pass matches
+        ``[A-Z][A-Z0-9]{1,}`` and a token carrying ``_`` reaches the eval raw and
+        reads as zero. It now delegates to the one shared generator.
 
         Args:
             header: Header value
@@ -958,27 +1064,14 @@ class ExcelConnector(BaseHRConnector):
         Returns:
             Generated unique code
         """
-        import re
+        from ..models import component_code
 
         header_str = str(header).strip()
-
-        # Handle pure numeric headers
         if header_str.isdigit():
-            base_code = f'COL_{header_str}'
-        else:
-            # Clean special characters, convert to uppercase
-            base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
-            if not base_code:
-                base_code = 'UNNAMED'
+            header_str = 'COL' + header_str
 
-        # Ensure unique
-        code = base_code
-        suffix = 1
-        while code in existing_codes:
-            code = f"{base_code}_{suffix}"
-            suffix += 1
-
-        return code
+        return component_code.build_component_code(
+            header_str, existing_codes=existing_codes)
 
     def analyze_cross_sheet_formulas(
         self,

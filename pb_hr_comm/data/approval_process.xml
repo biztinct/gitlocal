@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE ONE CATALOGUE ROW THIS MODULE OWNS.
+
+         Every row in the approval catalogue is created by the module that
+         owns the business object, so the catalogue can never claim something
+         is wired up when it is not. That is also what keeps the dependency
+         honest: this module depends on the ENGINE and never on the screen
+         that displays these rows (ledger AM52).
+
+         WITHOUT THIS ROW NOTHING VISIBLY BREAKS, which is why it is worth a
+         comment. `Seed.lay` refuses with one INFO line — "no hr_comm_post
+         row in the catalogue yet" — the install reports success, the module
+         version lands, and the day somebody switches sign-off on, an
+         announcement sent in simply never reaches anybody's inbox. Found
+         exactly that way on another module's first live install (R208).
+
+         SEQUENCE 248 puts it with the other people processes, straight after
+         the two goal ones, which is where somebody setting up who signs off
+         what will look for it.
+
+         `noupdate="1"` so a business that has reworded or re-sequenced this
+         on a live database keeps its wording.
+         ================================================================== -->
+
+    <record id="process_hr_comm_post" model="biz.approval.process">
+        <field name="key">hr_comm_post</field>
+        <field name="name">Announcement</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.hr.comm.post</field>
+        <field name="description">Something the company is about to tell its people: what it says, who gets it and when it goes out. Off by default — most companies do not ask anybody to agree a notice — and switched on with one setting.</field>
+        <field name="sequence">248</field>
+    </record>
+
+</odoo>

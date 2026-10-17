@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- ============================ WHICH MENU ENTRY IS WHICH PART OF THE PRODUCT
+       Five of the nine entries on the left menu are whole missions that can be
+       sold on their own. The other four — Home, Pay Run, People, Settings —
+       deliberately carry NOTHING: a payroll product with no Pay Run is not a
+       payroll product, and a switch nobody would ever flip is a switch that
+       can only be flipped by mistake.
+
+       WHY A FUNCTION AND NOT FIVE `record` LINES. Each entry belongs to the
+       module that ships the mission (`pb_insights_hub`, `pb_mission`,
+       `pb_learn`…), and this module depends on NONE of them on purpose — it is
+       meant to be the cheapest thing on a customer's database. A `record` with
+       a full XML id would make every one of those a hard dependency, and would
+       fail outright on a database that has four of the five. The function
+       below writes what it finds and says nothing about what it does not.
+
+       It runs on install AND on every upgrade, which is what a correction here
+       needs: an entry pointing at a feature key that no longer exists would
+       otherwise stay pointed at it for ever, shown to everybody, with nothing
+       on any screen to say so. -->
+
+  <function model="pb.sidebar.item" name="_seed_feature_keys"/>
+</odoo>

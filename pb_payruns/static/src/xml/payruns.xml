@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules, never a doubled hyphen (W22).
+       PAYRUN BOARD redesign 2026-10-11 — docs/design/PAYRUN_BOARD_REDESIGN.md.
+       The data-coach anchors keep their names so Learn's lessons still land:
+       pk-run, pk-kpis (now the hero), pk-divchips, pk-steps (now the lane
+       headers), pk-tabs (the board), pk-card, pk-card-actions, pk-route,
+       pk-reject-why, pk-rejected. New: pk-hero-next, pk-peek, pk-bulk. -->
+  <t t-name="pb_payruns.PbPayruns">
+    <div class="pbr" t-ref="root" t-att-class="{ 'pbr--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbr-loading"><div class="pbr-spinner"/><span>Loading pay runs…</span></div>
+
+      <div t-else="" class="pbr-wrap">
+        <!-- ===================== header =====================
+             W17: in a hub the title row is the hub's. The "Run payroll" CTA is
+             NOT chrome — it is the board's one create door — so it survives,
+             and only its destination changes (newRun()). It is an OUTLINE
+             button now: the one solid button on this page is the hero's
+             next step, which may itself be "Run payroll". -->
+        <div class="pbr-head">
+          <div t-if="!props.embedded">
+            <h1>Pay runs</h1>
+            <p class="pbr-sub">Every pay run from draft to paid. Approve, pay, report and export without leaving this board.</p>
+          </div>
+          <button class="pbr-btn pbr-new" data-coach="pk-run" t-on-click="newRun">
+            <span class="ic" t-out="ic('zap', 15)"/> Run payroll
+          </button>
+        </div>
+
+        <!-- ===================== this month (the hero) =====================
+             Replaces the numbers line: the month's journey, one sentence whose
+             phrases narrow the board, and ONE next-step button. -->
+        <section t-if="hero" class="pbr-hero" data-coach="pk-kpis" aria-label="This month">
+          <div class="pbr-h-a">
+            <div class="pbr-eyebrow"><span class="ic" t-out="ic('calendar', 13)"/> This month</div>
+            <div class="pbr-month" t-esc="hero.label"/>
+            <div class="pbr-range" t-esc="hero.range"/>
+            <div class="pbr-journey">
+              <div t-foreach="hero.journey" t-as="j" t-key="j.n"
+                   t-attf-class="pbr-jn {{ j.done ? 'done' : '' }} {{ j.now ? 'now' : '' }}">
+                <div class="pbr-jdot"><span t-if="j.done" class="ic" t-out="ic('check', 11)"/></div>
+                <div class="pbr-jl" t-esc="j.label"/>
+              </div>
+            </div>
+            <div class="pbr-stage"><b t-esc="hero.stageLine"/><t t-if="hero.moving"> <span t-esc="hero.movingLine"/></t></div>
+          </div>
+          <div class="pbr-h-b">
+            <div class="pbr-say">
+              <b t-esc="hero.lead"/>
+              <t t-foreach="hero.phrases" t-as="ph" t-key="ph.key">
+                <t t-esc="ph.sep"/><button type="button" t-att-class="ph.on ? 'on' : ''"
+                        t-on-click="() => this.pressPhrase(ph.key)" t-esc="ph.text"/></t><t t-if="hero.phrases.length">.</t>
+            </div>
+            <div t-attf-class="pbr-ask {{ hero.tone }}"><span class="pbr-pd"/><t t-esc="hero.ask"/></div>
+          </div>
+          <div class="pbr-h-c">
+            <div>
+              <div class="pbr-lbl">Net pay this month</div>
+              <div class="pbr-big"><t t-esc="hero.net"/><small t-if="hero.currency" t-esc="hero.currency"/></div>
+              <div class="pbr-meta" t-esc="hero.meta"/>
+            </div>
+            <div class="pbr-next" data-coach="pk-hero-next">
+              <button class="pbr-btn primary lg" t-on-click="heroNext">
+                <span class="ic" t-out="ic(hero.next.icon, 15)"/> <t t-esc="hero.next.label"/>
+              </button>
+              <span t-if="hero.why" class="pbr-why-line" t-esc="hero.why"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- GROUP P3 — two currencies never add up. The total above counts
+             this company's own runs; the board still shows the others, each
+             priced in its own money. -->
+        <div t-if="state.manyCurrencies" class="pbr-note-bar">
+          <t t-out="ic('alert', 14)"/>
+          <span>
+            This board covers more than one currency
+            (<t t-esc="state.currencies.join(', ')"/>). Each run is shown in
+            the money it was paid in, and the total above adds up
+            <t t-esc="state.currencyName"/> only.
+          </span>
+        </div>
+
+        <!-- ===================== toolbar =====================
+             A filter is a way of looking at the board, never a change to what
+             the board is (W82): the lane counts are left alone. -->
+        <div class="pbr-tools">
+          <div t-if="state.period" class="pbr-seg" role="group" aria-label="Months">
+            <button type="button" t-att-class="state.months === 'all' ? 'on' : ''" t-on-click="() => this.setMonths('all')">All months</button>
+            <button type="button" t-att-class="state.months === 'month' ? 'on' : ''" t-on-click="() => this.setMonths('month')" t-esc="monthsOnlyLabel"/>
+          </div>
+          <t t-if="hasDivisions">
+            <span class="pbr-vsep"/>
+            <div class="pbr-divs" data-coach="pk-divchips">
+              <button t-foreach="divisionChips" t-as="dv" t-key="dv.key" type="button"
+                      class="pbr-divchip" t-att-class="{ 'is-on': state.division === dv.key }"
+                      t-on-click="() => this.setDivision(dv.key)">
+                <span t-if="dv.key !== 'all'" t-attf-class="pbr-mg is-{{ hue({division: dv.key}) }}" t-esc="mono({division: dv.key, division_label: dv.label})"/>
+                <t t-esc="dv.label"/>
+              </button>
+            </div>
+          </t>
+          <div class="pbr-grow"/>
+          <label class="pbr-search">
+            <span class="ic" t-out="ic('search', 14)"/>
+            <input type="text" t-ref="search" t-model="state.q" placeholder="Find a pay run" aria-label="Find a pay run"/>
+            <kbd>/</kbd>
+          </label>
+          <div class="pbr-seg" role="group" aria-label="View">
+            <button type="button" t-att-class="state.view === 'board' ? 'on' : ''" title="Board" t-on-click="() => this.setView('board')"><span class="ic" t-out="ic('grid', 13)"/></button>
+            <button type="button" t-att-class="state.view === 'list' ? 'on' : ''" title="List" t-on-click="() => this.setView('list')"><span class="ic" t-out="ic('list', 13)"/></button>
+          </div>
+          <button type="button" class="pbr-btn ghost icon" title="Keyboard shortcuts" aria-label="Keyboard shortcuts" t-on-click="openKeys"><span class="ic" t-out="ic('keyboard', 15)"/></button>
+        </div>
+
+        <div class="pbr-showing">
+          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/><t t-if="liveBatches.length"> · press a step, a division or a phrase in the sentence above to narrow it</t></t>
+          <t t-else="">Showing <b t-esc="showingLine.text"/> <t t-esc="showingLine.where"/>
+            <button type="button" class="pbr-lnk" t-on-click="showAll">Show all</button></t>
+        </div>
+
+        <!-- ===================== the board =====================
+             Three equal lanes. The lane header IS the numbered step: pressing
+             it focuses the lane and folds the other two into slim rails. -->
+        <div t-if="state.view === 'board'" t-attf-class="pbr-board {{ boardClass }}" data-coach="pk-tabs">
+          <div t-foreach="lanes" t-as="ln" t-key="ln.key"
+               t-attf-class="pbr-lane l-{{ ln.key }} {{ ln.collapsed ? 'collapsed' : '' }} {{ ln.on ? 'wide' : '' }}"
+               t-on-click="(ev) => ln.collapsed ? this.pickStep(ln.key) : null">
+            <!-- the step card = the lane header -->
+            <button type="button" class="pbr-lh" data-coach="pk-steps" t-att-class="{ on: ln.on }"
+                    t-att-aria-pressed="ln.on ? 'true' : 'false'"
+                    t-att-title="ln.on ? laneTitles.all : laneTitles.one"
+                    t-on-click="() => this.pickStep(ln.key)">
+              <span class="pbr-lh-row">
+                <span class="pbr-lh-n" t-esc="ln.n"/>
+                <span class="pbr-lh-t" t-esc="ln.title"/>
+                <span class="pbr-lh-c" t-att-class="{ has: ln.count }" t-esc="ln.countLabel"/>
+              </span>
+              <span t-if="ln.flag" t-attf-class="pbr-flag {{ ln.tone }}">
+                <span class="ic" t-out="ic(ln.tone === 'me' ? 'userCheck' : ln.tone === 'rose' ? 'alert' : ln.key === 'done' ? 'banknote' : ln.key === 'draft' ? 'rotate' : 'clock', 13)"/>
+                <t t-esc="ln.flag"/>
+              </span>
+              <span t-else="" class="pbr-lh-hint" t-esc="ln.hint"/>
+              <span class="pbr-lh-arrow" aria-hidden="true"><span class="ic" t-out="ic('arrow', 12)"/></span>
+            </button>
+            <!-- the folded form of a lane in focus mode -->
+            <div class="pbr-slim">
+              <span class="pbr-lh-n" t-esc="ln.n"/>
+              <span class="pbr-slim-t" t-esc="ln.title"/>
+              <span class="pbr-slim-c" t-esc="ln.count"/>
+              <div class="pbr-slim-mgs">
+                <span t-foreach="ln.monos" t-as="b" t-key="b.id" t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/>
+              </div>
+            </div>
+
+            <div t-if="ln.shown.length" class="pbr-cards">
+              <t t-foreach="groups(ln.key)" t-as="g" t-key="g.key || 'one'">
+                <!-- month divider (Draft / Waiting) or fold row (Done) -->
+                <div t-if="g.label and !g.fold" class="pbr-mdiv" t-esc="g.label"/>
+                <button t-if="g.label and g.fold" type="button" class="pbr-mhead" t-att-class="{ open: g.open }"
+                        t-att-aria-expanded="g.open ? 'true' : 'false'" t-on-click="() => this.toggleMonth(g.key)">
+                  <span class="pbr-mch ic" t-out="ic('chevron', 13)"/>
+                  <span class="pbr-mt"><t t-esc="g.label"/><span t-esc="g.sub"/></span>
+                  <span t-if="!g.open" class="pbr-mgs">
+                    <span t-foreach="g.runs.slice(0, 6)" t-as="b" t-key="b.id" t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/>
+                  </span>
+                  <span t-if="g.net" class="pbr-mm" t-esc="g.net"/>
+                </button>
+                <t t-if="g.open">
+                  <t t-foreach="g.runs" t-as="b" t-key="b.id">
+                    <t t-call="pb_payruns.Card"/>
+                  </t>
+                </t>
+              </t>
+            </div>
+            <div t-else="" class="pbr-empty">
+              <span class="pbr-ei ic" t-out="ic(ln.key === 'draft' ? 'pencil' : ln.key === 'done' ? 'checkCircle' : 'inbox', 18)"/>
+              <div><b t-esc="emptyLane(ln.key).title"/><div t-if="emptyLane(ln.key).sub" t-esc="emptyLane(ln.key).sub"/></div>
+              <button t-if="emptyLane(ln.key).cta" type="button" class="pbr-btn" t-on-click="newRun"><span class="ic" t-out="ic('zap', 14)"/> Run payroll</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== list view ===================== -->
+        <div t-else="" class="pbr-tbl">
+          <div class="pbr-tw">
+            <table>
+              <thead><tr>
+                <th t-on-click="() => this.sortBy('name')">Pay run<t t-esc="sortMark('name')"/></th>
+                <th t-on-click="() => this.sortBy('date_end')">Period<t t-esc="sortMark('date_end')"/></th>
+                <th t-on-click="() => this.sortBy('state')">Where it is<t t-esc="sortMark('state')"/></th>
+                <th class="r" t-on-click="() => this.sortBy('employees')">People<t t-esc="sortMark('employees')"/></th>
+                <th class="r" t-on-click="() => this.sortBy('gross')">Gross<t t-esc="sortMark('gross')"/></th>
+                <th class="r" t-on-click="() => this.sortBy('net')">Net pay<t t-esc="sortMark('net')"/></th>
+                <th class="r"/>
+              </tr></thead>
+              <tbody>
+                <tr t-foreach="listRows" t-as="b" t-key="b.id" t-on-click="() => this.openPeek(b.id)">
+                  <td><div class="pbr-tnm"><span t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/><span t-esc="b.name"/></div></td>
+                  <td class="pbr-tpd" t-esc="b.period"/>
+                  <td><span t-attf-class="pbr-pill {{ pill(b).cls }}"><i/><t t-esc="pill(b).text"/></span></td>
+                  <td class="r num" t-esc="int(b.employees)"/>
+                  <td class="r num" t-esc="runGross(b)"/>
+                  <td class="r num strong" t-esc="runMoney(b)"/>
+                  <td class="r" t-on-click.stop="() => {}">
+                    <button t-if="b.state === 'draft' and b.can_act" type="button" class="pbr-btn" t-on-click="() => this.advance(b)">Submit</button>
+                    <button t-elif="b.awaiting_me" type="button" class="pbr-btn" t-on-click="openApprovals">Open the approval</button>
+                    <button t-elif="b.state === 'done' and !isPaid(b)" type="button" class="pbr-btn" t-on-click="() => this.payDeliver(b)">Pay &amp; Deliver</button>
+                    <button t-elif="b.state === 'done'" type="button" class="pbr-btn ghost" t-on-click="() => this.report(b)">Report</button>
+                  </td>
+                </tr>
+                <tr t-if="!listRows.length"><td colspan="7" class="pbr-tempty">Nothing matches.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===================== rejected drawer ===================== -->
+        <div t-if="state.rejectedCount" class="pbr-rejected" data-coach="pk-rejected">
+          <button type="button" class="pbr-rejected-h" t-att-class="{ open: state.showRejected }" t-on-click="toggleRejected">
+            <span class="chev ic" t-out="ic('chevron', 13)"/>
+            Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>
+          </button>
+          <div t-if="state.showRejected" class="pbr-rejected-list">
+            <div t-foreach="rejectedBatches" t-as="b" t-key="b.id" class="pbr-rej-row" t-on-click="() => this.openPeek(b.id)">
+              <span t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/>
+              <div class="pbr-rej-main">
+                <div class="nm" t-esc="b.name"/>
+                <div class="why" t-if="b.reject_note">
+                  <span class="hd">Why<t t-if="b.reject_by"> (<t t-esc="b.reject_by"/>)</t>:</span>
+                  <t t-esc="b.reject_note"/>
+                </div>
+              </div>
+              <span class="pd" t-esc="b.period"/>
+              <span class="em" t-esc="_people(b.employees)"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== layers: quick look, bulk bar, sheets =====================
+           Portaled to <body>: a hub shell may clip or stack its lens, and a
+           fixed panel must never sit under the rail. Styles live under
+           `.pbr-layer`, which carries the same tokens as `.pbr`. -->
+      <t t-portal="'body'">
+        <div class="pbr-layer">
+          <t t-if="peekRun"><t t-call="pb_payruns.Peek"><t t-set="b" t-value="peekRun"/></t></t>
+
+          <div t-if="bulk" class="pbr-bulk" role="toolbar" data-coach="pk-bulk">
+            <span class="n"><t t-esc="bulk.n"/><small t-if="bulk.net" t-esc="bulk.net"/></span>
+            <button t-if="bulk.canSubmit" type="button" class="pbr-btn primary" t-on-click="bulkSubmit"><span class="ic" t-out="ic('send', 14)"/> Submit for approval</button>
+            <button type="button" class="pbr-btn" t-on-click="bulkExcel"><span class="ic" t-out="ic('table', 14)"/> Download Excel</button>
+            <button type="button" class="pbr-btn ghost" t-on-click="clearSelection">Clear</button>
+          </div>
+
+          <div t-if="state.sheet and state.sheet.kind === 'submit'" class="pbr-sheet-bg" t-on-click="closeSheet">
+            <div class="pbr-sheet" role="dialog" aria-label="Submit for approval" t-on-click.stop="() => {}">
+              <h2 t-esc="sheetTitle"/>
+              <p>Each one goes to its own sign-off route. You can still reject a run while it waits.</p>
+              <div class="pbr-lst">
+                <div t-foreach="sheetRuns" t-as="b" t-key="b.id" class="it">
+                  <span t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/><span class="nm" t-esc="b.name"/><span class="v num" t-esc="runMoney(b)"/>
+                </div>
+              </div>
+              <div class="a">
+                <button type="button" class="pbr-btn" t-on-click="closeSheet">Not now</button>
+                <button type="button" class="pbr-btn primary" t-on-click="confirmSheet"><span class="ic" t-out="ic('send', 14)"/> <t t-esc="sheetButton"/></button>
+              </div>
+            </div>
+          </div>
+
+          <div t-if="state.sheet and state.sheet.kind === 'keys'" class="pbr-sheet-bg" t-on-click="closeSheet">
+            <div class="pbr-sheet" role="dialog" aria-label="Keyboard" t-on-click.stop="() => {}">
+              <h2>Keyboard</h2>
+              <p>Move around the board without the mouse.</p>
+              <div class="pbr-keys">
+                <div t-foreach="keys" t-as="k" t-key="k.what"><span t-esc="k.what"/><span><kbd t-foreach="k.keys" t-as="kk" t-key="kk" t-esc="kk"/></span></div>
+              </div>
+              <div class="a"><button type="button" class="pbr-btn primary" t-on-click="closeSheet">Got it</button></div>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+  <!-- ===================== one card ===================== -->
+  <t t-name="pb_payruns.Card">
+    <t t-set="rt" t-value="b.state === 'approval_pending' ? route(b) : null"/>
+    <t t-set="dl" t-value="b.state === 'done' ? delivery(b) : null"/>
+    <article t-attf-class="pbr-card {{ isSelected(b.id) ? 'sel' : '' }} {{ state.busy === b.id ? 'busy' : '' }} {{ b.awaiting_me ? 'me' : '' }} {{ state.cur === b.id ? 'cur' : '' }} {{ state.focusId === b.id ? 'focus' : '' }}"
+             t-att-data-card="b.id" data-coach="pk-card">
+      <button type="button" class="pbr-ck" t-att-aria-pressed="isSelected(b.id) ? 'true' : 'false'" aria-label="Select"
+              t-on-click.stop="(ev) => this.toggleSelect(b, ev)"><span t-if="isSelected(b.id)" class="ic" t-out="ic('check', 11)"/></button>
+      <div class="pbr-card-main" t-on-click="() => this.openPeek(b.id)">
+        <div class="pbr-ct">
+          <span t-attf-class="pbr-mg lg is-{{ hue(b) }}" t-esc="mono(b)"/>
+          <div class="pbr-ct-txt">
+            <div class="pbr-nm" t-esc="b.name"/>
+            <div class="pbr-pd"><t t-esc="b.period"/><span t-if="b.credit_note" class="pbr-k">refund</span></div>
+          </div>
+        </div>
+        <div class="pbr-money"><span class="l">Net pay</span><span class="v num" t-att-class="{ cn: b.credit_note }" t-esc="runMoney(b)"/></div>
+        <div class="pbr-sub" t-esc="subLine(b)"/>
+
+        <!-- what is wrong, and what to do about it -->
+        <div t-foreach="notes(b)" t-as="n" t-key="n_index" t-attf-class="pbr-note {{ n.tone }}">
+          <span class="ic" t-out="ic(n.icon, 14)"/>
+          <div><span class="hd" t-esc="n.head"/><t t-esc="n.text"/><span t-if="n.next" class="nx"><t t-esc="n.next"/> →</span></div>
+        </div>
+
+        <!-- which step a waiting run is on, and whose desk it is on -->
+        <div t-if="rt" class="pbr-route" data-coach="pk-route">
+          <div class="r1"><span t-esc="rt.title"/><span class="st" t-esc="rt.state"/></div>
+          <div t-if="rt.segs.length" class="segs"><i t-foreach="rt.segs" t-as="sg" t-key="sg_index" t-att-class="sg"/></div>
+          <div class="who" t-att-class="{ me: b.awaiting_me }">
+            <span class="avs"><span t-foreach="rt.who" t-as="w" t-key="w" class="av" t-esc="initials(w)"/></span>
+            <b t-if="b.awaiting_me">Waiting on you</b><t t-else="" t-esc="rt.withText"/>
+          </div>
+          <div t-if="rt.blocked" class="why" t-esc="rt.blocked"/>
+        </div>
+
+        <!-- where an approved run's money and payslips have got to -->
+        <div t-if="dl" class="pbr-deliv">
+          <div class="segs"><span t-foreach="dl.steps" t-as="s" t-key="s.key" t-attf-class="{{ s.done ? 'd' : '' }} {{ s.next ? 'n' : '' }} {{ s.optional ? 'o' : '' }}"/></div>
+          <div class="ls"><span t-foreach="dl.steps" t-as="s" t-key="s.key" t-attf-class="{{ s.done ? 'd' : '' }} {{ s.next ? 'n' : '' }}" t-esc="s.label"/></div>
+          <div class="st" t-att-class="{ ok: dl.ok }">
+            <span class="ic" t-out="ic(dl.ok ? 'checkCircle' : dl.paid ? 'mail' : 'banknote', 13)"/><t t-esc="dl.status"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- The reject confirm lives IN the card. A window.confirm is a native
+           dialog on a surface that owns a design system, and it blocks the
+           whole tab while it is up. -->
+      <div t-if="state.confirming === b.id" class="pbr-confirm" data-coach="pk-reject-why">
+        <div class="q">Reject “<t t-esc="b.name"/>”? Every payslip in this batch is cancelled.</div>
+        <label class="pbr-why-l" t-att-for="'pbr-why-' + b.id">Why? <span class="req">(required)</span></label>
+        <textarea class="pbr-why" t-att-id="'pbr-why-' + b.id" rows="2"
+                  t-model="state.rejectNote" t-ref="rejectWhy"
+                  placeholder="For example: made twice by mistake"
+                  t-on-keydown="(ev) => this.onRejectKey(ev, b)"/>
+        <div class="a">
+          <button type="button" class="pbr-btn" t-on-click="cancelReject">Keep it</button>
+          <button type="button" class="pbr-btn danger" t-att-disabled="!rejectNoteOk"
+                  t-on-click="() => this.confirmReject(b)">Reject run</button>
+        </div>
+      </div>
+
+      <div t-else="" class="pbr-foot" data-coach="pk-card-actions">
+        <!-- the one primary per state -->
+        <t t-if="b.state === 'draft'">
+          <button t-if="b.can_act" type="button" class="pbr-btn primary" t-on-click="() => this.advance(b)">
+            <span class="ic" t-out="ic('send', 14)"/> <t t-esc="nextLabel('submit')"/></button>
+          <span t-else="" class="pbr-wait"><span class="ic" t-out="ic('pencil', 13)"/> Still being prepared</span>
+          <button t-if="b.can_reject" type="button" class="pbr-btn ghost danger" t-on-click="() => this.askReject(b)">Reject</button>
+        </t>
+        <t t-elif="b.state === 'approval_pending'">
+          <button t-if="b.awaiting_me" type="button" class="pbr-btn primary" t-on-click="openApprovals">
+            <span class="ic" t-out="ic('userCheck', 14)"/> <t t-esc="nextLabel('decide')"/></button>
+          <span t-else="" class="pbr-wait"><span class="ic" t-out="ic('clock', 13)"/> <t t-esc="rt.withText"/></span>
+        </t>
+        <t t-elif="b.state === 'done'">
+          <button t-if="!dl.paid" type="button" class="pbr-btn primary" t-on-click="() => this.payDeliver(b)">
+            <span class="ic" t-out="ic('banknote', 14)"/> Pay &amp; Deliver</button>
+          <t t-else="">
+            <button type="button" class="pbr-btn" t-on-click="() => this.report(b)"><span class="ic" t-out="ic('fileText', 14)"/> Report</button>
+            <button type="button" class="pbr-btn" t-on-click="() => this.excel(b)"><span class="ic" t-out="ic('table', 14)"/> Excel</button>
+          </t>
+        </t>
+        <!-- everything else lives behind ⋯ -->
+        <div class="pbr-more-wrap">
+          <button type="button" class="pbr-btn ghost icon pbr-more" aria-label="More actions" t-on-click.stop="() => this.toggleMenu(b)"><span class="ic" t-out="ic('more', 15)"/></button>
+          <div t-if="state.menu === b.id" class="pbr-menu" role="menu">
+            <t t-if="b.state === 'done'">
+              <button type="button" t-on-click="() => this.report(b)"><span class="ic" t-out="ic('fileText', 14)"/> Payroll report</button>
+              <button type="button" t-on-click="() => this.excel(b)"><span class="ic" t-out="ic('table', 14)"/> Download Excel</button>
+              <button type="button" t-on-click="() => this.journals(b)"><span class="ic" t-out="ic('journal', 14)"/> Journals</button>
+              <button type="button" t-on-click="() => this.payments(b)"><span class="ic" t-out="ic('wallet', 14)"/> Payments</button>
+              <button t-if="dl.paid" type="button" t-on-click="() => this.payDeliver(b)"><span class="ic" t-out="ic('banknote', 14)"/> Pay &amp; Deliver</button>
+              <div class="sep"/>
+            </t>
+            <t t-if="b.state === 'draft'">
+              <button type="button" t-on-click="() => this.excel(b)"><span class="ic" t-out="ic('table', 14)"/> Download Excel</button>
+              <div class="sep"/>
+            </t>
+            <button type="button" t-on-click="() => this.openPeek(b.id)"><span class="ic" t-out="ic('search', 14)"/> Quick look</button>
+            <button type="button" t-on-click="() => this.openBatch(b.id)"><span class="ic" t-out="ic('external', 14)"/> Open the full run</button>
+            <t t-if="b.can_reject and b.state === 'approval_pending'">
+              <div class="sep"/>
+              <button type="button" class="danger" t-on-click="() => this.askReject(b)"><span class="ic" t-out="ic('x', 14)"/> Reject this run</button>
+            </t>
+          </div>
+        </div>
+      </div>
+    </article>
+  </t>
+
+  <!-- ===================== quick look ===================== -->
+  <t t-name="pb_payruns.Peek">
+    <div class="pbr-peek-bg" t-on-click="closePeek"/>
+    <aside class="pbr-peek" role="dialog" t-att-aria-label="b.name" data-coach="pk-peek">
+      <div class="ph">
+        <span t-attf-class="pbr-mg lg is-{{ hue(b) }}" t-esc="mono(b)"/>
+        <div class="ph-txt">
+          <div class="t" t-esc="b.name"/>
+          <div class="s"><t t-esc="b.period"/> · <t t-esc="_people(b.employees)"/><t t-if="b.division_label"> · <t t-esc="b.division_label"/></t></div>
+        </div>
+        <button type="button" class="pbr-btn ghost icon x" aria-label="Close" t-on-click="closePeek"><span class="ic" t-out="ic('x', 15)"/></button>
+      </div>
+      <div class="pb">
+        <section>
+          <h3>Where it is</h3>
+          <div class="pbr-steps3">
+            <div t-foreach="peekSteps(b)" t-as="s" t-key="s.key" t-attf-class="s {{ s.cls }}"><span class="k" t-esc="s.n"/><t t-esc="s.title"/></div>
+          </div>
+          <p t-if="b.state === 'cancel'" class="pbr-pline rose">Rejected<t t-if="b.reject_by"> by <t t-esc="b.reject_by"/></t>: <span t-esc="b.reject_note"/></p>
+          <p t-elif="b.state === 'draft' and b.return_note" class="pbr-pline amber">Sent back<t t-if="b.return_by"> by <t t-esc="b.return_by"/></t><t t-if="b.return_on"> on <t t-esc="b.return_on"/></t>: <span t-esc="b.return_note"/></p>
+          <p t-elif="b.state === 'draft'" class="pbr-pline">Still being prepared. When the figures are right, submit it and it goes to its sign-off route.</p>
+          <div t-if="b.state === 'approval_pending'" class="pbr-tl">
+            <div t-foreach="peekRoute(b)" t-as="e" t-key="e_index" t-attf-class="e {{ e.done ? 'd' : '' }} {{ e.now ? 'n' : '' }}">
+              <div class="d"><span t-if="e.done" class="ic" t-out="ic('check', 11)"/></div>
+              <div><div class="w" t-esc="e.title"/><div class="m" t-esc="e.meta"/></div>
+            </div>
+            <p t-if="!peekRoute(b).length" class="pbr-pline">On its sign-off route.</p>
+          </div>
+          <div t-if="b.state === 'done'" class="pbr-tl">
+            <div t-foreach="peekDelivery(b)" t-as="e" t-key="e_index" t-attf-class="e {{ e.done ? 'd' : '' }} {{ e.now ? 'n' : '' }}">
+              <div class="d"><span t-if="e.done" class="ic" t-out="ic('check', 11)"/></div>
+              <div><div class="w" t-esc="e.title"/><div class="m" t-esc="e.meta"/></div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>The money</h3>
+          <div class="pbr-fig">
+            <div class="f net"><div class="k">Net pay</div><div class="v num" t-esc="runMoney(b)"/><div class="full num" t-esc="fullMoney(b)"/></div>
+            <div t-foreach="peekFigures(b)" t-as="f" t-key="f.key" class="f"><div class="k" t-esc="f.label"/><div class="v num" t-esc="f.v"/></div>
+          </div>
+          <div class="pbr-chk" t-att-class="{ bad: b.balance_ok === false }">
+            <span class="ic" t-out="ic(b.balance_ok === false ? 'alert' : 'checkCircle', 15)"/>
+            <t t-esc="balanceLine(b)"/>
+          </div>
+          <div t-if="b.unsourced" class="pbr-chk bad"><span class="ic" t-out="ic('alert', 15)"/> <t t-esc="unsourcedLine(b)"/></div>
+        </section>
+        <section t-if="b.history and b.history.length">
+          <h3>What happened</h3>
+          <div class="pbr-tl hist">
+            <div t-foreach="b.history" t-as="h" t-key="h_index" class="e">
+              <div class="d"/>
+              <div><div class="w" t-esc="h[0]"/><div t-if="h[1]" class="m" t-esc="h[1]"/></div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="pf">
+        <t t-if="b.state === 'draft' and b.can_act">
+          <button type="button" class="pbr-btn primary" t-on-click="() => this.advance(b)"><span class="ic" t-out="ic('send', 14)"/> <t t-esc="nextLabel('submit')"/></button>
+        </t>
+        <t t-elif="b.awaiting_me">
+          <button type="button" class="pbr-btn primary" t-on-click="openApprovals"><span class="ic" t-out="ic('userCheck', 14)"/> <t t-esc="nextLabel('decide')"/></button>
+        </t>
+        <t t-elif="b.state === 'done' and !isPaid(b)">
+          <button type="button" class="pbr-btn primary" t-on-click="() => this.payDeliver(b)"><span class="ic" t-out="ic('banknote', 14)"/> Pay &amp; Deliver</button>
+        </t>
+        <t t-elif="b.state === 'done'">
+          <button type="button" class="pbr-btn" t-on-click="() => this.report(b)"><span class="ic" t-out="ic('fileText', 14)"/> Report</button>
+          <button type="button" class="pbr-btn" t-on-click="() => this.excel(b)"><span class="ic" t-out="ic('table', 14)"/> Excel</button>
+        </t>
+        <button type="button" class="pbr-btn ghost open" t-on-click="() => this.openBatch(b.id)">Open the full run <span class="ic" t-out="ic('external', 13)"/></button>
+      </div>
+    </aside>
+  </t>
+
+</templates>

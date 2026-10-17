@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="biz_doc_ocr.DocDrop">
+    <div class="bdo-drop"
+         t-att-class="{ 'bdo-drop--over': state.over, 'bdo-drop--compact': props.compact }"
+         t-on-dragover="onDragOver" t-on-dragleave="onDragLeave"
+         t-on-drop="onDrop" t-on-click="() => this.browse()">
+      <div class="bdo-drop__ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>
+        </svg>
+      </div>
+      <div class="bdo-drop__cta" t-esc="ctaLabel"/>
+      <div class="bdo-drop__hint">JPG · PNG · PDF</div>
+      <div class="bdo-drop__err" t-if="state.error" t-esc="state.error"/>
+      <input type="file" t-ref="file" class="d-none"
+             t-att-accept="accept" t-on-change="onPick"/>
+    </div>
+  </t>
+
+</templates>

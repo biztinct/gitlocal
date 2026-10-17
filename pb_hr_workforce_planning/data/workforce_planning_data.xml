@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_wfp_scenario" model="ir.sequence">
+            <field name="name">WFP Scenario Sequence</field>
+            <field name="code">wfp.planning.scenario</field>
+            <field name="prefix">WFP-</field>
+            <field name="padding">4</field>
+        </record>
+    </data>
+</odoo>

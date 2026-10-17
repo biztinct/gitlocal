@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The console is a bespoke OWL client action — no native list/form views
+         are placed on any menu (handover §4). -->
+    <record id="action_pb_audit" model="ir.actions.client">
+        <field name="name">Audit &amp; Compliance</field>
+        <field name="tag">pb_audit</field>
+    </record>
+</odoo>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The quiet board, shared. Styles: static/src/scss/quiet_board.scss.
+
+  QuietGlance — t-call with, in scope:
+    qGlance     [{ key, n, label, tone: ''|'amber'|'rose'|'green', run: fn|null, zero? }]
+                zero: optional. Without it a figure is grey when n is 0/empty or a
+                formatted nothing ("0%", "$0", "₫0.00"); set it for anything else
+                (e.g. "0% vs 67%")
+    qGlanceOn   key of the figure currently filtering ('' for none)
+  Pressing a figure calls item.run(). A figure with no run is plain text.
+
+  QuietSteps — t-call with, in scope:
+    qSteps      [{ key, n: '01', title, countLabel, count, sub, flag, flagTone: ''|'rose', mine, on }]
+    qStepsLabel aria label, e.g. "Where every role is"
+    qStepPick   fn(key) — pressing the lit step again should clear it
+  An item must be at EXACTLY one step so the counts add up.
+
+  The parameters carry a q prefix on purpose: a t-set inside a t-call body
+  writes onto a context whose prototype is the component, so t-set="glance"
+  throws "Cannot set property glance ... which has only a getter" whenever
+  the component has a getter of that name (found 2026-09-23 on every board).
+-->
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_kit.QuietGlance">
+    <div class="pbim-glance" role="group" aria-label="Numbers at a glance">
+      <t t-foreach="qGlance" t-as="gl" t-key="gl.key">
+        <button type="button" class="pbim-gl" t-att-class="((gl.zero === undefined ? (!gl.n or (('' + gl.n).includes('0') and !('' + gl.n).split('').some((ch) =&gt; '123456789'.includes(ch)))) : gl.zero) ? 'zero ' : '') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and qGlanceOn === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-aria-pressed="gl.run ? (qGlanceOn === gl.key ? 'true' : 'false') : undefined" t-on-click="() =&gt; gl.run and gl.run()">
+          <span t-if="gl.tone" class="pbim-gl-dot"/>
+          <span class="pbim-gl-n" t-esc="gl.n"/>
+          <span class="pbim-gl-l" t-esc="gl.label"/>
+        </button>
+      </t>
+    </div>
+  </t>
+
+  <t t-name="pb_import_kit.QuietSteps">
+    <nav class="pbim-steps" t-att-class="qSteps.length &gt; 4 ? 'is-many' : ''" t-att-style="'--pbim-steps:' + qSteps.length" t-att-aria-label="qStepsLabel">
+      <button t-foreach="qSteps" t-as="st" t-key="st.key" type="button" class="pbim-st" t-att-class="(st.on ? 'on ' : '') + (st.count ? 'has ' : '') + (st.flag ? 'wait' : '')" t-att-aria-pressed="st.on ? 'true' : 'false'" t-on-click="() =&gt; qStepPick(st.key)">
+        <span class="pbim-st-heat"/>
+        <span class="pbim-st-top">
+          <span class="pbim-st-n" t-esc="st.n"/>
+          <span class="pbim-st-t" t-esc="st.title"/>
+          <span class="pbim-st-c" t-esc="st.countLabel"/>
+        </span>
+        <span t-if="st.sub" class="pbim-st-s" t-esc="st.sub"/>
+        <span t-if="st.flag" class="pbim-st-flag" t-att-class="st.flagTone ? 'is-' + st.flagTone : ''">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <t t-esc="st.flag"/>
+        </span>
+        <span class="pbim-st-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </span>
+      </button>
+    </nav>
+  </t>
+
+</templates>

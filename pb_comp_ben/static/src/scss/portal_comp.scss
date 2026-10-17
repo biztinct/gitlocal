@@ -1,0 +1,327 @@
+// ===========================================================================
+// `/my/compensation` — the employee's own pay package page.
+//
+// It reuses pb_me_portal's `.pbme` kit; everything here is under `.pbcp`.
+//
+// R39 — THE PORTAL HAS NO DARK MODE AT ALL. Neither biz_theme's
+// `data-theme="dark"` attribute nor an emulated `prefers-color-scheme: dark`
+// changes a pixel of `/my/…`: the website frontend is light-only by design, and
+// R20's native-list problem is a BACKEND one. So "check it in both themes" is
+// satisfied by every colour RESOLVING — which is why every rule below carries a
+// literal fallback beside its token. Do not go looking for a portal dark palette
+// to fix.
+//
+// Sass `min()`/`max()` with mixed px/% units kills the whole bundle; widths are
+// width/max-width pairs.
+// ===========================================================================
+
+.pbme.pbcp {
+
+    .pbcp-ic { flex: 0 0 auto; }
+
+    // ------------------------------------------------------------- the hero
+    .pbcp-hero {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 22px 24px;
+        border-radius: 14px;
+        background: var(--pbim-soft, #EDEAF8);
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .pbcp-hero-ic {
+        color: var(--pbim-primary, #5A4BB0);
+        display: flex;
+        align-items: center;
+    }
+
+    .pbcp-hero-tx { flex: 1 1 260px; }
+
+    .pbcp-hero-eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+
+    .pbcp-hero-n {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -.02em;
+        color: var(--pbim-ink, #1B1733);
+        margin-top: 2px;
+    }
+
+    .pbcp-hero-u {
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 8px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbcp-hero-s {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+        margin-top: 4px;
+    }
+
+    .pbcp-hero-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 9px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        background: var(--pbim-surface, #ffffff);
+        color: var(--pbim-primary, #5A4BB0);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+            text-decoration: none;
+        }
+    }
+
+    // ------------------------------------------------------------ no package
+    .pbcp-empty {
+        text-align: center;
+        padding: 46px 24px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 14px;
+        background: var(--pbim-surface, #ffffff);
+
+        h3 { margin: 12px 0 6px; font-size: 18px; color: var(--pbim-ink, #1B1733); }
+
+        p {
+            color: var(--pbim-muted, #64748B);
+            max-width: 460px;
+            margin: 0 auto 18px;
+            font-size: 14px;
+        }
+    }
+
+    .pbcp-empty-ic { color: var(--pbim-primary, #5A4BB0); opacity: .5; }
+
+    // ----------------------------------------------------------- the buttons
+    .pbcp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 16px;
+        border-radius: 9px;
+        border: 1px solid var(--pbim-primary, #5A4BB0);
+        background: var(--pbim-primary, #5A4BB0);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover { color: #ffffff; text-decoration: none; opacity: .92; }
+
+        // R26 — equal specificity is decided by SOURCE ORDER, so the outline
+        // variant is qualified rather than relying on where the block sits.
+        &.pbcp-btn--out {
+            background: var(--pbim-surface, #ffffff);
+            color: var(--pbim-primary, #5A4BB0);
+            margin-top: 12px;
+
+            &:hover {
+                background: var(--pbim-soft, #EDEAF8);
+                color: var(--pbim-primary, #5A4BB0);
+            }
+        }
+    }
+
+    .pbcp-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--pbim-primary, #5A4BB0);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover { text-decoration: underline; }
+    }
+
+    // ----------------------------------------------------------- the sections
+    .pbcp-sec { margin-bottom: 26px; }
+
+    .pbcp-sec-h {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+
+        h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+
+    .pbcp-sec-tot {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+        white-space: nowrap;
+    }
+
+    // ------------------------------------------------------------- the table
+    .pbcp-tablewrap {
+        // Wide content scrolls INSIDE its own box; the page body never scrolls
+        // sideways on a phone.
+        overflow-x: auto;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 12px;
+        background: var(--pbim-surface, #ffffff);
+    }
+
+    .pbcp-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--pbim-muted, #64748B);
+            border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+            color: var(--pbim-ink, #1B1733);
+            vertical-align: top;
+        }
+
+        tbody tr:last-child td { border-bottom: 0; }
+
+        th.num, td.num { text-align: right; white-space: nowrap; }
+    }
+
+    .pbcp-note {
+        display: block;
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbcp-awk {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-weight: 600;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+
+    // ------------------------------------------------------------- the cards
+    .pbcp-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+
+        @media (max-width: 780px) { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .pbcp-card {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 12px;
+        padding: 16px 18px 18px;
+        background: var(--pbim-surface, #ffffff);
+    }
+
+    .pbcp-card-h {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+    }
+
+    .pbcp-card-ic {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+        flex: 0 0 auto;
+    }
+
+    .pbcp-card-t {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--pbim-ink, #1B1733);
+    }
+
+    .pbcp-card-s {
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbcp-card-b {
+        margin-top: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--pbim-ink, #1B1733);
+
+        p { margin: 0 0 6px; }
+        ul { margin: 0 0 6px; padding-left: 18px; }
+    }
+
+    .pbcp-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    .pbcp-family {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pbcp-family-l {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+        margin-right: 2px;
+    }
+
+    .pbcp-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 5px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-ink, #1B1733);
+        font-size: 12px;
+        font-weight: 600;
+
+        small { color: var(--pbim-muted, #64748B); font-weight: 500; }
+    }
+}

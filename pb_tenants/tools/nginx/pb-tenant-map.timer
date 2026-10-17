@@ -1,0 +1,15 @@
+[Unit]
+Description=Keep the nginx known-workspace map in step with the databases
+
+[Timer]
+# A tenant created between ticks is unreachable for at most two minutes, which
+# is well inside the time provisioning takes anyway. The script writes and
+# reloads ONLY when the generated content actually changed, so a quiet day costs
+# nothing.
+OnBootSec=2min
+OnUnitActiveSec=2min
+AccuracySec=30s
+Unit=pb-tenant-map.service
+
+[Install]
+WantedBy=timers.target

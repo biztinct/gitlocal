@@ -1,0 +1,407 @@
+// NETROLE P2 — the category review.
+//
+// A full-page takeover rather than a scrim: it is the last step of an import,
+// not an interruption of something else, and it has to hold sixty rows without
+// a nested scrollbar. The shell reuses `.pbfs` (tokens, buttons, 16px icons);
+// everything here is namespaced `.pbcr-*`.
+//
+// Role tints are the ones NETROLE uses everywhere: green adds to pay, rose
+// takes off it, cyan is the employer's own cost, slate is information. No
+// gradients, no emoji, Lucide-shaped strokes only (C11).
+
+.pbfs.pbcr {
+    --earn: #0F8A63;
+    --earn-soft: #E7F6EF;
+    --ded: #B4405B;
+    --ded-soft: #FBECEF;
+    --comp: #0E7490;
+    --comp-soft: #E0F4F9;
+    --note: #64748B;
+    --note-soft: #F1F3F9;
+
+    position: relative;
+
+    .pbcr-center {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-align: center;
+        color: var(--muted);
+
+        h2 { font-size: 18px; font-weight: 800; color: var(--ink); }
+        p { font-size: 13.5px; max-width: 460px; }
+    }
+
+    .pbcr-big {
+        width: 42px;
+        height: 42px;
+        color: var(--i);
+
+        &.ok { color: var(--green); }
+        &.warn { color: var(--amber); }
+    }
+
+    .pbcr-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 34px 24px 26px;
+    }
+
+    .pbcr-card {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+    }
+
+    // ---- header -----------------------------------------------------------
+    .pbcr-head {
+        margin-bottom: 22px;
+
+        .pbcr-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 11px;
+            border-radius: 999px;
+            background: var(--i-soft);
+            color: var(--i);
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 12px 0 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -.015em;
+            color: var(--ink);
+        }
+
+        .pbcr-lede {
+            margin: 6px 0 0;
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--muted);
+            max-width: 640px;
+        }
+    }
+
+    .pbcr-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        margin-top: 16px;
+
+        .lg {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+
+            i {
+                width: 9px;
+                height: 9px;
+                border-radius: 3px;
+                background: var(--note);
+            }
+
+            &.earning i { background: var(--earn); }
+            &.deduction i { background: var(--ded); }
+            &.employer_cost i { background: var(--comp); }
+            &.info i { background: var(--note); }
+        }
+    }
+
+    // ---- empty / degenerate states ---------------------------------------
+    .pbcr-netless,
+    .pbcr-done {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 34px 28px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, .04);
+
+        h2 {
+            margin: 12px 0 0;
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        p {
+            margin: 7px auto 0;
+            max-width: 560px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--muted);
+        }
+    }
+
+    .pbcr-netpick {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 18px;
+
+        label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        select {
+            min-width: 260px;
+            max-width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--ink);
+        }
+    }
+
+    // ---- bulk bar ---------------------------------------------------------
+    .pbcr-bulk {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+
+        .pbcr-bulk-txt {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+
+            b { font-size: 13.5px; color: var(--ink); }
+            span { font-size: 12px; color: var(--muted); }
+        }
+    }
+
+    // ---- groups -----------------------------------------------------------
+    .pbcr-group {
+        margin-bottom: 18px;
+
+        .pbcr-ghead {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 0 4px 8px;
+
+            b {
+                display: block;
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            span {
+                display: block;
+                margin-top: 2px;
+                font-size: 11.5px;
+                color: var(--muted);
+            }
+        }
+
+        .pbcr-gcount {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+    }
+
+    // ---- a row ------------------------------------------------------------
+    .pbcr-row {
+        display: grid;
+        grid-template-columns: 20px minmax(150px, 1.05fr) minmax(170px, .9fr) minmax(200px, 1.5fr);
+        align-items: flex-start;
+        gap: 14px;
+        width: 100%;
+        margin: 0 0 8px;
+        padding: 13px 15px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--line);
+        border-radius: 13px;
+        cursor: pointer;
+        transition: background .12s ease, border-color .12s ease, opacity .12s ease;
+
+        &:hover { background: #FBFBFE; }
+
+        // A skipped row is the row somebody CHOSE to keep — it fades, it never
+        // disappears.
+        &.skipped { opacity: .55; }
+
+        &.flag { border-left-color: var(--amber); }
+
+        input[type="checkbox"] { margin: 3px 0 0; }
+
+        .pbcr-who {
+            min-width: 0;
+
+            b {
+                display: block;
+                font-size: 13.5px;
+                font-weight: 700;
+                color: var(--ink);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .pbcr-code {
+            display: inline-block;
+            margin-top: 3px;
+            padding: 1px 6px;
+            border-radius: 5px;
+            background: var(--line-soft);
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .02em;
+        }
+
+        .pbcr-tag {
+            display: inline-block;
+            margin: 3px 0 0 6px;
+            font-size: 10.5px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .pbcr-move {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            padding-top: 1px;
+
+            svg { width: 14px; height: 14px; color: #B4B8C8; flex: none; }
+        }
+
+        .pbcr-chip {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            background: var(--note-soft);
+            color: var(--note);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.to.earning { background: var(--earn-soft); color: var(--earn); }
+            &.to.deduction { background: var(--ded-soft); color: var(--ded); }
+            &.to.employer_cost { background: var(--comp-soft); color: var(--comp); }
+            &.to.net { background: var(--i-soft); color: var(--i); }
+        }
+
+        .pbcr-why {
+            min-width: 0;
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        .pbcr-conf {
+            display: inline-block;
+            margin-right: 6px;
+            padding: 1px 7px;
+            border-radius: 999px;
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            background: var(--line-soft);
+            color: var(--note);
+
+            &.certain { background: var(--green-soft); color: var(--green); }
+            &.likely { background: var(--cyan-soft); color: var(--cyan); }
+            &.review { background: var(--amber-soft); color: var(--amber); }
+        }
+
+        .pbcr-band {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-top: 6px;
+            padding: 6px 9px;
+            border-radius: 9px;
+            background: var(--amber-soft);
+            color: #7C4A03;
+            font-weight: 600;
+
+            svg { width: 13px; height: 13px; flex: none; margin-top: 1px; }
+        }
+    }
+
+    // ---- footer -----------------------------------------------------------
+    .pbcr-foot {
+        flex: none;
+        background: #fff;
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -6px 20px rgba(16, 24, 40, .05);
+    }
+
+    .pbcr-foot-inner {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .pbcr-fine {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #8B90A3;
+    }
+
+    .pbcr-btns {
+        display: flex;
+        gap: 8px;
+        flex: none;
+    }
+
+    @media (max-width: 860px) {
+        .pbcr-row {
+            grid-template-columns: 20px 1fr;
+            row-gap: 8px;
+
+            .pbcr-move,
+            .pbcr-why { grid-column: 2; }
+        }
+
+        .pbcr-foot-inner { flex-direction: column; align-items: stretch; }
+        .pbcr-btns { justify-content: flex-end; }
+    }
+}

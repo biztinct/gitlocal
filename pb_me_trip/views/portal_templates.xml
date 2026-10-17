@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ETP E2 — business trips on My Payobook. The pages reuse pb_me_portal's
+       .pbme kit (tokens, buttons, chips, empty state, ess_icon); `.pbtr-*` is
+       this module's layer (static/src/scss/me_trip.scss). Every word a person
+       sees is here or in the facade's `_lt` labels; the controller passes
+       facts and keys only, and the script holds no words (it shows and hides
+       what is drawn here). -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_trips" name="Business trips breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'trips'" class="breadcrumb-item active">Business trips</li>
+      <li t-if="page_name in ('trips_new', 'trip', 'trip_edit')" class="breadcrumb-item"><a href="/my/trips">Business trips</a></li>
+      <li t-if="page_name == 'trips_new'" class="breadcrumb-item active">New trip</li>
+      <li t-if="page_name == 'trip' and ref" class="breadcrumb-item active" t-out="ref"/>
+      <li t-if="page_name == 'trip_edit' and trip" class="breadcrumb-item"><a t-att-href="'/my/trips/%s' % trip.id" t-out="ref"/></li>
+      <li t-if="page_name == 'trip_edit'" class="breadcrumb-item active">Change</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home                                 -->
+  <!-- ============================================================= -->
+  <!-- Always drawn for an employee (config_card): the first trip must have a
+       door. The count is the trips waiting on the person (refused or sent
+       back). pb_me_portal's registry (`/my/trips`) gives it the Time section,
+       its words and its plane badge. -->
+  <template id="portal_my_home_trips" name="Business trips home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="27">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Business trips</t>
+        <t t-set="text">Request a trip and follow its approval</t>
+        <t t-set="url" t-value="'/my/trips'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'trip_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Glyphs this module needs beyond pb_me_portal's set (E12)       -->
+  <!-- ============================================================= -->
+  <!-- Lucide, the same stroke and box as `pb_me_portal.ess_icon`. Pass the
+       name with t-value="'name'" (W87). -->
+  <template id="trip_icon" name="Business trips: icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pbme-ic">
+      <t t-if="icon == 'x'"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></t>
+      <t t-elif="icon == 'bed'"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></t>
+      <t t-elif="icon == 'car'"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></t>
+      <t t-elif="icon == 'utensils'"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></t>
+      <t t-elif="icon == 'ellipsis'"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></t>
+      <t t-elif="icon == 'building'"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></t>
+      <t t-elif="icon == 'pencil'"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></t>
+      <t t-elif="icon == 'undo'"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></t>
+      <t t-elif="icon == 'info'"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></t>
+      <t t-elif="icon == 'globe'"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></t>
+      <t t-elif="icon == 'coins'"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></t>
+      <t t-elif="icon == 'calendar-check'"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></t>
+      <t t-elif="icon == 'corner-down-left'"><path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/></t>
+      <t t-elif="icon == 'copy'"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></t>
+      <t t-else=""><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <!-- The quiet status pill: grey at rest, an amber dot while somebody else
+       has it, the one coloured pill when the person must act. `fresh` = it
+       just changed (the page came back from an action): it pops once. -->
+  <template id="pbtr_pill" name="Business trips: status pill">
+    <span t-att-class="'pbtr-pill pbtr-pill--%s%s' % (tone, ' is-fresh' if fresh else '')" role="status">
+      <i class="pbtr-pill-dot" aria-hidden="true"/><t t-out="label"/>
+    </span>
+  </template>
+
+  <!-- One toast per action key; it slides in, then fades by itself. -->
+  <template id="pbtr_toast" name="Business trips: toast">
+    <div t-if="done" class="pbtr-toast" role="status" aria-live="polite">
+      <span class="pbtr-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="done == 'sent'">Sent for approval. Your manager sees it now.</span>
+      <span t-elif="done == 'saved'">Saved as a draft. Send it when you are ready.</span>
+      <span t-elif="done == 'withdrawn'">Taken back. It is no longer waiting for approval.</span>
+      <span t-elif="done == 'reopened'">Back to draft. Fix what is needed, then send it again.</span>
+      <span t-elif="done == 'line_added'">Cost added.</span>
+      <span t-else="">Cost removed.</span>
+    </div>
+  </template>
+
+  <!-- A refusal said in its own plain words, with what to do next. -->
+  <template id="pbtr_alert" name="Business trips: error line">
+    <div t-if="error" class="pbtr-alert" role="alert">
+      <span class="pbtr-alert-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span><b>That did not go through.</b> <t t-out="error"/></span>
+    </div>
+  </template>
+
+  <!-- "in 6 days" / "tomorrow" / "today" / "under way, until 14 Nov". -->
+  <template id="pbtr_when" name="Business trips: how soon">
+    <t t-if="nt['ongoing']">under way, until <t t-out="nt['until']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></t>
+    <t t-elif="nt['in_days'] == 0">today</t>
+    <t t-elif="nt['in_days'] == 1">tomorrow</t>
+    <t t-else="">in <t t-out="nt['in_days']"/> days</t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  THE TRIP CARD — the hero                                      -->
+  <!-- ============================================================= -->
+  <!-- The same card is the live preview on the form (`live`: every value is
+       drawn with a data hook, the script rewrites it as the person types)
+       and the header of the trip page (the record's own computes, D6).
+       `card` comes from `pb.me.trip.card()` or the controller's preview;
+       `status` (optional) draws the pill. -->
+  <template id="pbtr_card" name="Business trips: the trip card">
+    <t t-set="m" t-value="card['money']"/>
+    <article t-att-class="'pbtr-card%s' % (' is-live' if live else '')" t-att-data-pbtr-card="'1' if live else None">
+      <header class="pbtr-card-head">
+        <span class="pbtr-card-badge" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="20"/></t></span>
+        <div class="pbtr-card-title">
+          <div class="pbtr-card-eyebrow"><t t-if="card.get('ref')" t-out="card['ref']"/><t t-else="">Your trip</t></div>
+          <h1 t-if="not live" class="pbtr-card-where" t-out="card['where']"/>
+          <h2 t-else="" class="pbtr-card-where">
+            <span data-pbtr-out="where" t-out="card['where']"/><span class="pbtr-ph" data-pbtr-ph="where" t-att-hidden="'hidden' if card['where'] else None">Where to?</span>
+          </h2>
+          <p class="pbtr-card-when">
+            <span data-pbtr-out="dates" t-out="card['dates']"/><span t-if="live" class="pbtr-ph" data-pbtr-ph="dates" t-att-hidden="'hidden' if card['dates'] else None">Pick your dates</span>
+            <span class="pbtr-card-days" data-pbtr-show="days" t-att-hidden="None if card['days'] else 'hidden'"><b data-pbtr-out="days" t-out="card['days']"/> <span data-pbtr-one="days" t-att-hidden="None if card['days'] == 1 else 'hidden'">day</span><span data-pbtr-many="days" t-att-hidden="'hidden' if card['days'] == 1 else None">days</span></span>
+          </p>
+        </div>
+        <t t-if="status" t-call="pb_me_trip.pbtr_pill">
+          <t t-set="label" t-value="status['label']"/><t t-set="tone" t-value="status['tone']"/>
+          <t t-set="fresh" t-value="bool(done)"/>
+        </t>
+      </header>
+      <dl class="pbtr-money">
+        <div class="pbtr-m">
+          <dt><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'calendar-check'"/><t t-set="isz" t-value="15"/></t>Daily allowance</dt>
+          <dd>
+            <span class="pbtr-m-calc" data-pbtr-show="calc" t-att-hidden="None if card['rate'] and card['days'] else 'hidden'"><span data-pbtr-out="rate" t-out="m['rate']"/> × <span data-pbtr-out="days" t-out="card['days']"/> =</span>
+            <b data-pbtr-out="allowance" t-out="m['allowance']"/>
+          </dd>
+          <p class="pbtr-m-note">
+            <span t-if="live or card['channel'] == 'payroll'" data-pbtr-channel="payroll" t-att-hidden="None if card['channel'] == 'payroll' else 'hidden'">Paid with your salary</span>
+            <span t-if="live or card['channel'] == 'expense'" data-pbtr-channel="expense" t-att-hidden="None if card['channel'] == 'expense' else 'hidden'">Claimed as an expense after the trip</span>
+            <span t-if="live or card['channel'] == 'none'" data-pbtr-channel="none" t-att-hidden="None if card['channel'] == 'none' else 'hidden'">No daily allowance is set for this place</span>
+          </p>
+        </div>
+        <div class="pbtr-m" data-pbtr-show="lines" t-att-hidden="None if card['lines_total'] else 'hidden'">
+          <dt><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'receipt'"/><t t-set="isz" t-value="15"/></t>Other costs, estimated</dt>
+          <dd><b data-pbtr-out="lines" t-out="m['lines']"/></dd>
+        </div>
+        <div class="pbtr-m pbtr-m--total">
+          <dt>Estimated total</dt>
+          <dd><b data-pbtr-out="estimated" t-out="m['estimated']"/></dd>
+        </div>
+        <div class="pbtr-m pbtr-m--advance" data-pbtr-show="advance" t-att-hidden="None if card['advance'] else 'hidden'">
+          <dt><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'coins'"/><t t-set="isz" t-value="15"/></t>Cash advance</dt>
+          <dd><b data-pbtr-out="advance" t-out="m['advance']"/></dd>
+          <p class="pbtr-m-note">Paid to you before you go</p>
+        </div>
+      </dl>
+      <p class="pbtr-card-foot">
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t>
+        <span>Your attendance is marked automatically while you are away.</span>
+      </p>
+    </article>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The approval stepper                                          -->
+  <!-- ============================================================= -->
+  <!-- Sent in → each step of the route with the live names of the people
+       asked → Approved. The step waiting now pulses softly; a refusal stops
+       on the step that said no. -->
+  <template id="pbtr_steps" name="Business trips: approval stepper">
+    <ol t-att-class="'pbtr-steps%s' % (' is-compact' if compact else '')">
+      <li t-foreach="steps" t-as="s" t-att-class="'pbtr-step is-%s' % s['state']"
+          t-att-aria-current="'step' if s['state'] == 'current' else None">
+        <span class="pbtr-step-dot" aria-hidden="true">
+          <t t-if="s['state'] == 'done'" t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="12"/></t>
+          <t t-elif="s['state'] == 'stopped'" t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'x'"/><t t-set="isz" t-value="12"/></t>
+          <t t-elif="s['state'] == 'blocked'" t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="11"/></t>
+        </span>
+        <span class="pbtr-step-body">
+          <b class="pbtr-step-name" t-out="s['name']"/>
+          <span t-if="s['who']" class="pbtr-step-who" t-out="s['who']"/>
+          <time t-if="s.get('when')" class="pbtr-step-when" t-out="s['when']" t-options="{'widget': 'datetime', 'format': 'd MMM'}"/>
+          <span class="visually-hidden">
+            <t t-if="s['state'] == 'done'">Done</t>
+            <t t-elif="s['state'] == 'current'">Waiting here now</t>
+            <t t-elif="s['state'] == 'stopped'">Stopped here</t>
+            <t t-elif="s['state'] == 'blocked'">Nobody to decide this step</t>
+            <t t-else="">Not yet</t>
+          </span>
+        </span>
+      </li>
+    </ol>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/trips — the quiet board                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_my_trips" name="Business trips (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr pbtr-board">
+        <t t-call="pb_me_trip.pbtr_toast"/>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Business trips</t>
+          <t t-set="hero_sub">Ask for a trip, follow its approval, and see what it pays.</t>
+          <t t-set="hero_actions"><a class="pbme-btn pbme-btn--primary" href="/my/trips/new"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="16"/></t>New trip</a></t>
+        </t>
+
+        <div t-if="not counts['all']" class="pbme-empty pbtr-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>No trips yet</h3>
+          <p>When you need to travel for work, ask here and your manager sees it at once.</p>
+          <a class="pbme-btn pbme-btn--primary" href="/my/trips/new">Ask for a trip</a>
+        </div>
+
+        <t t-else="">
+          <p class="pbtr-strip" aria-live="polite">
+            <span t-att-class="'pbtr-stat is-act' if counts['act'] else 'pbtr-stat'"><b t-out="counts['act']"/> waiting on you</span>
+            <span class="pbtr-stat"><b t-out="counts['wait']"/> with someone</span>
+            <span t-if="next_trip" class="pbtr-stat">next trip <b><t t-call="pb_me_trip.pbtr_when"><t t-set="nt" t-value="next_trip"/></t></b></span>
+          </p>
+
+          <a t-if="next_trip and bucket in ('all', 'done')" class="pbtr-next" t-att-href="next_trip['url']">
+            <span class="pbtr-next-badge" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="22"/></t></span>
+            <span class="pbtr-next-body">
+              <span class="pbtr-next-eyebrow">Your next trip</span>
+              <b class="pbtr-next-where" t-out="next_trip['where']"/>
+              <span class="pbtr-next-when"><span class="pbtr-next-soon"><t t-call="pb_me_trip.pbtr_when"><t t-set="nt" t-value="next_trip"/></t></span><span t-out="next_trip['dates']"/><span><t t-out="next_trip['days']"/> <t t-if="next_trip['days'] == 1">day</t><t t-else="">days</t></span></span>
+              <span class="pbtr-next-foot"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t>Your attendance is marked automatically for every trip day.</span>
+            </span>
+            <span class="pbtr-next-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="18"/></t></span>
+          </a>
+
+          <nav class="pbme-chips" aria-label="Show">
+            <a t-att-class="'pbme-chip is-on' if bucket == 'all' else 'pbme-chip'" href="/my/trips" t-att-aria-current="'page' if bucket == 'all' else None">All<span class="pbme-chip-n" t-out="counts['all']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'act' else 'pbme-chip'" href="/my/trips?filter=act" t-att-aria-current="'page' if bucket == 'act' else None">Waiting on you<span class="pbme-chip-n" t-out="counts['act']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'wait' else 'pbme-chip'" href="/my/trips?filter=wait" t-att-aria-current="'page' if bucket == 'wait' else None">With someone<span class="pbme-chip-n" t-out="counts['wait']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'done' else 'pbme-chip'" href="/my/trips?filter=done" t-att-aria-current="'page' if bucket == 'done' else None">Done<span class="pbme-chip-n" t-out="counts['done']"/></a>
+          </nav>
+
+          <ol t-if="rows" class="pbtr-cards" data-pbtr-rows="">
+            <li t-foreach="rows" t-as="r" class="pbtr-cards-li">
+              <a t-att-class="'pbtr-tc is-%s' % r['tone']" t-att-href="r['url']">
+                <span class="pbtr-tc-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="17"/></t></span>
+                <span class="pbtr-tc-body">
+                  <b class="pbtr-tc-where" t-out="r['where']"/>
+                  <span class="pbtr-tc-meta"><span t-out="r['dates']"/><span><t t-out="r['days']"/> <t t-if="r['days'] == 1">day</t><t t-else="">days</t></span><span class="pbtr-tc-ref" t-out="r['ref']"/></span>
+                </span>
+                <span class="pbtr-tc-side">
+                  <t t-call="pb_me_trip.pbtr_pill"><t t-set="label" t-value="r['label']"/><t t-set="tone" t-value="r['tone']"/><t t-set="fresh" t-value="False"/></t>
+                  <span t-if="r['has_money']" class="pbtr-tc-money" t-out="r['estimated']"/>
+                </span>
+              </a>
+            </li>
+          </ol>
+          <div t-else="" class="pbme-empty pbtr-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3 t-if="bucket == 'act'">Nothing is waiting on you</h3>
+            <h3 t-elif="bucket == 'wait'">Nothing is with anyone right now</h3>
+            <h3 t-else="">Nothing finished yet</h3>
+            <p t-if="bucket == 'act'">A trip that needs your answer, or one you have not sent yet, shows here first.</p>
+            <p t-elif="bucket == 'wait'">A trip you send stays here until it is authorised.</p>
+            <p t-else="">An authorised trip, or one you took back, moves here.</p>
+            <a class="pbme-btn pbme-btn--ghost" href="/my/trips">Show all trips</a>
+          </div>
+          <p class="pbtr-keys" aria-hidden="true">Tip: use the arrow keys to move between trips, and Enter to open one.</p>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/trips/new and /my/trips/<id>/edit — ask for a trip         -->
+  <!-- ============================================================= -->
+  <!-- One cost line. `n` is the row's number in the form (`__n__` in the
+       hidden copy the script clones; `tpl` disables its inputs so the copy
+       itself is never posted). -->
+  <template id="pbtr_row" name="Business trips: one cost line">
+    <li class="pbtr-row" t-att-data-pbtr-row="n">
+      <div class="pbtr-cats" role="radiogroup" aria-label="Kind of cost">
+        <label t-foreach="categories" t-as="c" class="pbtr-cat">
+          <input type="radio" class="pbtr-cat-input" t-att-name="'line-%s-category' % n" t-att-value="c['id']"
+                 t-att-checked="'checked' if str(c['id']) == str(row.get('category_id') or '') else None"
+                 t-att-disabled="'disabled' if tpl else None"/>
+          <span class="pbtr-cat-in"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="c['icon']"/><t t-set="isz" t-value="14"/></t><span t-out="c['name']"/></span>
+        </label>
+      </div>
+      <div class="pbtr-row-in">
+        <label class="pbtr-amt">
+          <span class="visually-hidden">Amount</span>
+          <input type="number" inputmode="decimal" min="0" step="any" class="pbtr-input" placeholder="Amount"
+                 t-att-name="'line-%s-amount' % n" t-att-value="row.get('amount') or None"
+                 data-pbtr-in="line" t-att-disabled="'disabled' if tpl else None"/>
+        </label>
+        <label class="pbtr-note">
+          <span class="visually-hidden">What it is for</span>
+          <input type="text" maxlength="120" class="pbtr-input" placeholder="What for, for example: hotel, 2 nights"
+                 t-att-name="'line-%s-note' % n" t-att-value="row.get('description') or None"
+                 data-pbtr-in="note" t-att-disabled="'disabled' if tpl else None"/>
+        </label>
+        <button type="submit" name="action" t-att-value="'remove_line:%s' % n" class="pbtr-x"
+                data-pbtr-remove="" title="Remove this line" t-att-disabled="'disabled' if tpl else None">
+          <t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'x'"/><t t-set="isz" t-value="16"/></t>
+          <span class="visually-hidden">Remove this line</span>
+        </button>
+      </div>
+    </li>
+  </template>
+
+  <template id="portal_trip_form" name="Business trips: ask for a trip (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr pbtr-ask">
+        <t t-call="pb_me_trip.pbtr_toast"/>
+        <form class="pbtr-form" method="post" t-att-action="action_url" data-pbtr-form=""
+              t-att-data-pbtr-facts="facts" t-att-data-pbtr-currency="company_currency_id"
+              t-att-data-pbtr-next="next_row">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <!-- the form's default button: Enter in a field (no script) only
+               redraws the card, it never sends -->
+          <button type="submit" name="action" value="refresh" class="pbtr-default" tabindex="-1" aria-hidden="true">Update the card</button>
+          <div class="pbtr-new">
+            <div class="pbtr-q">
+              <div class="pbme-eyebrow"><t t-if="ref" t-out="ref"/><t t-else="">Business trip</t></div>
+              <h1 t-if="trip" class="pbtr-h1">Change your trip</h1>
+              <h1 t-else="" class="pbtr-h1">Ask for a business trip</h1>
+              <p class="pbtr-lead">Five quick questions. Your trip card fills itself in as you type.</p>
+              <t t-call="pb_me_trip.pbtr_alert"/>
+
+              <fieldset class="pbtr-sec">
+                <legend class="pbtr-sec-h"><span class="pbtr-sec-n">1</span>Where are you going?</legend>
+                <div class="pbtr-two">
+                  <label class="pbtr-field">
+                    <span class="pbtr-label">Country</span>
+                    <select name="destination_country_id" class="pbtr-input" data-pbtr-in="country" required="required">
+                      <optgroup t-if="countries_common" label="Most used">
+                        <option t-foreach="countries_common" t-as="c" t-att-value="c.id" t-att-selected="'selected' if c.id == country_id else None" t-out="c.name"/>
+                      </optgroup>
+                      <optgroup label="All countries">
+                        <option t-foreach="countries_rest" t-as="c" t-att-value="c.id" t-att-selected="'selected' if c.id == country_id else None" t-out="c.name"/>
+                      </optgroup>
+                    </select>
+                  </label>
+                  <label class="pbtr-field">
+                    <span class="pbtr-label">City</span>
+                    <input type="text" name="destination_city" class="pbtr-input" maxlength="80" required="required"
+                           autocomplete="off" data-pbtr-in="city" placeholder="For example: Đà Nẵng"
+                           t-att-value="values.get('destination_city') or None"/>
+                  </label>
+                </div>
+                <label class="pbtr-toggle" data-pbtr-tier="" t-att-hidden="None if card['has_tier1'] else 'hidden'">
+                  <input type="checkbox" name="tier" value="1" class="pbtr-toggle-input" data-pbtr-in="tier"
+                         t-att-checked="'checked' if values.get('tier') else None"/>
+                  <span class="pbtr-toggle-ui" aria-hidden="true"/>
+                  <div class="pbtr-toggle-t"><b>It is a major city</b><small>The biggest cities have a higher daily allowance.</small></div>
+                </label>
+              </fieldset>
+
+              <fieldset class="pbtr-sec">
+                <legend class="pbtr-sec-h"><span class="pbtr-sec-n">2</span>When?</legend>
+                <div class="pbtr-two pbtr-dates">
+                  <label class="pbtr-field">
+                    <span class="pbtr-label">First day</span>
+                    <input type="date" name="date_from" class="pbtr-input" required="required" data-pbtr-in="from"
+                           t-att-value="values.get('date_from') or None"/>
+                  </label>
+                  <label class="pbtr-field">
+                    <span class="pbtr-label">Last day</span>
+                    <input type="date" name="date_to" class="pbtr-input" required="required" data-pbtr-in="to"
+                           t-att-value="values.get('date_to') or None"/>
+                  </label>
+                </div>
+                <p class="pbtr-days" aria-live="polite">
+                  <span data-pbtr-show="days" t-att-hidden="None if card['days'] else 'hidden'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="14"/></t><b data-pbtr-out="days" t-out="card['days']"/> <span data-pbtr-one="days" t-att-hidden="None if card['days'] == 1 else 'hidden'">day away, counting both ends</span><span data-pbtr-many="days" t-att-hidden="'hidden' if card['days'] == 1 else None">days away, counting both ends</span></span>
+                  <span data-pbtr-ph="days" t-att-hidden="'hidden' if card['days'] else None">Pick the first and the last day; the number of days counts itself.</span>
+                </p>
+              </fieldset>
+
+              <fieldset class="pbtr-sec">
+                <legend class="pbtr-sec-h"><span class="pbtr-sec-n">3</span>Why are you going?</legend>
+                <label class="pbtr-field">
+                  <span class="visually-hidden">Purpose of the trip</span>
+                  <textarea name="purpose" class="pbtr-input pbtr-textarea" rows="3" maxlength="2000" required="required"
+                            data-pbtr-autosize="" placeholder="For example: meet the client team and run the quarterly review."><t t-out="values.get('purpose') or ''"/></textarea>
+                </label>
+              </fieldset>
+
+              <fieldset class="pbtr-sec">
+                <legend class="pbtr-sec-h"><span class="pbtr-sec-n">4</span>What will it cost? <span class="pbtr-opt">optional</span></legend>
+                <p class="pbtr-hint">Rough numbers are fine. Your daily allowance is added for you.</p>
+                <ol class="pbtr-rows" data-pbtr-rows-in="">
+                  <t t-foreach="rows" t-as="row">
+                    <t t-call="pb_me_trip.pbtr_row"><t t-set="n" t-value="row['n']"/><t t-set="tpl" t-value="False"/></t>
+                  </t>
+                </ol>
+                <div class="pbtr-tpl" hidden="hidden" data-pbtr-tpl="">
+                  <t t-call="pb_me_trip.pbtr_row"><t t-set="n" t-value="'__n__'"/><t t-set="row" t-value="{}"/><t t-set="tpl" t-value="True"/></t>
+                </div>
+                <div class="pbtr-add-bar">
+                  <button type="submit" name="action" value="add_line" class="pbtr-add" data-pbtr-add="">
+                    <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="15"/></t>Add a line
+                  </button>
+                  <span class="pbtr-kbd"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'corner-down-left'"/><t t-set="isz" t-value="13"/></t>Enter in a line adds the next one</span>
+                </div>
+              </fieldset>
+
+              <fieldset class="pbtr-sec">
+                <legend class="pbtr-sec-h"><span class="pbtr-sec-n">5</span>Do you need cash before you go? <span class="pbtr-opt">optional</span></legend>
+                <label class="pbtr-field pbtr-advance">
+                  <span class="visually-hidden">Cash advance</span>
+                  <input type="number" inputmode="decimal" min="0" step="any" name="advance_amount" class="pbtr-input"
+                         data-pbtr-in="advance" placeholder="Amount" t-att-value="values.get('advance_amount') or None"/>
+                </label>
+                <p class="pbtr-hint">Leave blank if you do not need money up front.</p>
+              </fieldset>
+
+            </div>
+
+            <aside class="pbtr-side" aria-label="Your trip card">
+              <div class="pbtr-side-in">
+                <p class="pbtr-side-lab">Your trip card</p>
+                <t t-call="pb_me_trip.pbtr_card"><t t-set="live" t-value="True"/><t t-set="status" t-value="None"/></t>
+                <section class="pbtr-who" aria-labelledby="pbtr-who-h">
+                  <h2 class="pbtr-who-h" id="pbtr-who-h">Who approves it</h2>
+                  <t t-call="pb_me_trip.pbtr_steps"><t t-set="compact" t-value="True"/></t>
+                </section>
+              </div>
+            </aside>
+            <div class="pbtr-actions">
+              <button type="submit" name="action" value="send" class="pbme-btn pbme-btn--primary pbtr-send" data-pbtr-send="">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send for approval
+              </button>
+              <button type="submit" name="action" value="save" class="pbme-btn pbme-btn--ghost" data-pbtr-save="">Save as draft</button>
+              <a class="pbtr-cancel" t-att-href="'/my/trips/%s' % trip.id if trip else '/my/trips'">Cancel</a>
+              <span class="pbtr-kbd">Ctrl + Enter sends</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/trips/<id> — the trip                                     -->
+  <!-- ============================================================= -->
+  <template id="portal_trip_page" name="Business trips: one trip (ESS)">
+    <t t-call="portal.portal_layout">
+      <t t-set="st" t-value="status"/>
+      <t t-set="can" t-value="st['can']"/>
+      <div class="pbme pbtr pbtr-page">
+        <t t-call="pb_me_trip.pbtr_toast"/>
+        <t t-call="pb_me_trip.pbtr_card"><t t-set="live" t-value="False"/></t>
+        <t t-call="pb_me_trip.pbtr_alert"/>
+
+        <div class="pbtr-grid">
+          <section class="pbtr-panel pbtr-now" aria-labelledby="pbtr-now-h">
+            <h2 class="pbtr-panel-h" id="pbtr-now-h"><t t-if="st['state'] == 'draft' and st['key'] != 'returned'">Who approves it</t><t t-else="">Where it is</t></h2>
+            <t t-if="st['steps']" t-call="pb_me_trip.pbtr_steps"><t t-set="steps" t-value="st['steps']"/><t t-set="compact" t-value="False"/></t>
+
+            <!-- what it means, and the next step -->
+            <div t-att-class="'pbtr-say is-%s' % st['tone']">
+              <t t-if="st['key'] == 'draft'">
+                <p class="pbtr-say-t"><b>Not sent yet.</b> When you send it, your manager sees it at once.</p>
+              </t>
+              <t t-elif="st['key'] in ('refused', 'returned')">
+                <p t-if="st['key'] == 'refused'" class="pbtr-say-t"><b>Refused<t t-if="st['reason_by']"> by <t t-out="st['reason_by']"/></t>.</b> Fix what is needed and send it again.</p>
+                <p t-else="" class="pbtr-say-t"><b>Sent back to you<t t-if="st['reason_by']"> by <t t-out="st['reason_by']"/></t>.</b> Fix what is needed and send it again.</p>
+                <blockquote t-if="st['reason']" class="pbtr-reason" t-out="st['reason']"/>
+              </t>
+              <t t-elif="st['key'] == 'blocked'">
+                <p class="pbtr-say-t"><b>Nobody is set up to approve this yet.</b> HR can fix the route.</p>
+                <p t-if="st['block_reason']" class="pbtr-say-d" t-out="st['block_reason']"/>
+              </t>
+              <t t-elif="st['key'] == 'withdrawn'">
+                <p class="pbtr-say-t"><b>Taken back from Approvals.</b> Nobody is deciding it any more.<t t-if="can['reopen']"> Fix it and send it again when you are ready.</t></p>
+              </t>
+              <t t-elif="st['state'] in ('submitted', 'manager_approved', 'finance_approved')">
+                <p class="pbtr-say-t">
+                  <t t-if="st['current'] and st['current']['who']"><b>Waiting for <t t-out="st['current']['who']"/></b> (<t t-out="st['current']['name']"/>).</t>
+                  <t t-elif="st['current']"><b>Waiting at <t t-out="st['current']['name']"/>.</b></t>
+                  <t t-else=""><b>Waiting for approval.</b></t>
+                  You can take it back until it is authorised.
+                </p>
+              </t>
+              <t t-elif="st['state'] == 'approved'">
+                <p class="pbtr-say-t"><b>Authorised. Have a good trip.</b> <t t-out="st['attendance_sentence']"/></p>
+              </t>
+              <t t-elif="st['state'] == 'cancelled'">
+                <p class="pbtr-say-t"><b>You took this trip back.</b> Nothing more happens with it.</p>
+              </t>
+              <p t-if="st['leave_overlap']" class="pbtr-quiet"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'info'"/><t t-set="isz" t-value="14"/></t><span>These days overlap your approved leave (<t t-out="st['leave_overlap']"/>). The trip can still go ahead; HR sorts out the overlap.</span></p>
+            </div>
+
+            <div class="pbtr-acts">
+              <form t-if="can['send']" method="post" t-att-action="'/my/trips/%s/send' % trip.id" class="pbtr-act-form" data-pbtr-lock="">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Send for approval</button>
+              </form>
+              <a t-if="can['edit']" class="pbme-btn pbme-btn--ghost" t-att-href="'/my/trips/%s/edit' % trip.id"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'pencil'"/><t t-set="isz" t-value="15"/></t>Change the details</a>
+              <form t-if="can['reopen']" method="post" t-att-action="'/my/trips/%s/reopen' % trip.id" class="pbtr-act-form" data-pbtr-lock="">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'pencil'"/><t t-set="isz" t-value="15"/></t>Fix and resend</button>
+              </form>
+              <a t-if="st['key'] == 'blocked' and ask_hr_url" class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>Ask HR</a>
+              <details t-if="can['withdraw']" class="pbtr-confirm">
+                <summary class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="15"/></t>Take it back</summary>
+                <form method="post" t-att-action="'/my/trips/%s/withdraw' % trip.id" class="pbtr-confirm-in" data-pbtr-lock="">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                  <p>It stops waiting for approval and nobody decides it.</p>
+                  <button type="submit" class="pbme-btn pbme-btn--primary">Yes, take it back</button>
+                </form>
+              </details>
+              <a t-if="claim_url" class="pbme-btn pbme-btn--primary" t-att-href="claim_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'receipt'"/><t t-set="isz" t-value="15"/></t>Claim receipts for this trip</a>
+              <a t-if="copy_url" class="pbme-btn pbme-btn--ghost" t-att-href="copy_url"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'copy'"/><t t-set="isz" t-value="15"/></t>Ask again with these details</a>
+            </div>
+            <p t-if="can['ask_hr_cancel']" class="pbtr-quiet">
+              <t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'info'"/><t t-set="isz" t-value="14"/></t>
+              <span>Plans changed? An authorised trip cannot be cancelled here.
+                <a t-if="ask_hr_url" t-att-href="ask_hr_url">Ask HR to cancel an authorised trip</a><t t-else="">Ask HR to cancel an authorised trip.</t></span>
+            </p>
+          </section>
+
+          <section class="pbtr-panel pbtr-details" aria-labelledby="pbtr-why-h">
+            <h2 class="pbtr-panel-h" id="pbtr-why-h">Why</h2>
+            <p class="pbtr-purpose" t-out="card['purpose']"/>
+            <h2 class="pbtr-panel-h pbtr-panel-h--gap" id="pbtr-costs">Costs</h2>
+            <ul t-if="lines" class="pbtr-lines">
+              <li t-foreach="lines" t-as="ln" class="pbtr-line">
+                <span class="pbtr-line-ic" aria-hidden="true"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="ln['icon']"/><t t-set="isz" t-value="15"/></t></span>
+                <span class="pbtr-line-body"><b t-out="ln['description'] or ln['category']"/><span t-if="ln['description'] and ln['category']" t-out="ln['category']"/></span>
+                <span class="pbtr-line-amt" t-out="ln['amount_label']"/>
+                <form t-if="can['edit']" method="post" t-att-action="'/my/trips/%s/line/%s/remove' % (trip.id, ln['id'])" class="pbtr-line-x">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                  <button type="submit" class="pbtr-x" title="Remove this cost"><t t-call="pb_me_trip.trip_icon"><t t-set="icon" t-value="'x'"/><t t-set="isz" t-value="15"/></t><span class="visually-hidden">Remove this cost</span></button>
+                </form>
+              </li>
+            </ul>
+            <p t-else="" class="pbtr-none">No other costs. The daily allowance is worked out for you.</p>
+            <form t-if="can['edit']" method="post" t-att-action="'/my/trips/%s/line/add' % trip.id" class="pbtr-addline" data-pbtr-lock="">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <label class="pbtr-addline-cat">
+                <span class="visually-hidden">Kind of cost</span>
+                <select name="category_id" class="pbtr-input">
+                  <t t-foreach="categories" t-as="c"><option t-att-value="c['id']" t-out="c['name']"/></t>
+                </select>
+              </label>
+              <label class="pbtr-addline-amt"><span class="visually-hidden">Amount</span><input type="number" inputmode="decimal" min="0" step="any" name="amount" class="pbtr-input" placeholder="Amount" required="required"/></label>
+              <label class="pbtr-addline-note"><span class="visually-hidden">What it is for</span><input type="text" maxlength="120" name="description" class="pbtr-input" placeholder="What for"/></label>
+              <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="15"/></t>Add a cost</button>
+            </form>
+          </section>
+        </div>
+
+        <a class="pbtr-back" href="/my/trips"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All my trips</a>
+      </div>
+    </t>
+  </template>
+
+  <!-- Not the person's own (or gone): a styled 404, never a stock page and
+       never a hint about whose it is. -->
+  <template id="portal_trip_missing" name="Business trips: not found (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We could not find that trip</h3>
+          <p>It may have been removed, or the link belongs to somebody else.</p>
+          <a href="/my/trips" class="pbme-btn pbme-btn--primary">Back to my trips</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  "Your next trip" on the home (pb_me_portal's extra cards)      -->
+  <!-- ============================================================= -->
+  <!-- Drawn only while an authorised trip is under way or starts within 14
+       days (the hook adds nothing otherwise: quiet at zero). Home vocabulary
+       (`pbme-b`, `pbme-lab`, `pbme-lab-link`). `card` is in scope. -->
+  <template id="pbme_card_next_trip" name="Employee home: next trip card">
+    <t t-set="nt" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbtr-home" data-pbme-slot="next_trip" aria-labelledby="pbme-trip-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbme-trip-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="15"/></t>Your next trip</h2>
+        <a class="pbme-lab-link" t-att-href="nt['url']">Open the trip</a>
+      </div>
+      <a class="pbtr-home-body" t-att-href="nt['url']">
+        <span class="pbme-badge pbme-badge--pink" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'plane'"/></t></span>
+        <span class="pbtr-home-main">
+          <b class="pbtr-home-where" t-out="nt['where']"/>
+          <span class="pbtr-home-when"><span class="pbtr-home-soon"><t t-call="pb_me_trip.pbtr_when"/></span><span t-out="nt['dates']"/><span><t t-out="nt['days']"/> <t t-if="nt['days'] == 1">day</t><t t-else="">days</t></span></span>
+        </span>
+        <span class="pbtr-home-note"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t>Attendance is marked automatically</span>
+      </a>
+    </section>
+  </template>
+
+</odoo>

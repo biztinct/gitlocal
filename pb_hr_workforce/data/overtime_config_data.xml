@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Vietnam Overtime Rate Configurations -->
+        <record id="ot_config_vn_weekday" model="hr.overtime.config">
+            <field name="name">Vietnam — Weekday Overtime</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="overtime_type">weekday</field>
+            <field name="rate_multiplier">1.5</field>
+            <field name="max_hours_per_day">4</field>
+            <field name="max_hours_per_month">40</field>
+            <field name="requires_approval">True</field>
+            <field name="note"><![CDATA[<p>Vietnam Labor Code Art. 98: Weekday overtime is paid at <strong>150%</strong> of normal hourly rate.</p>]]></field>
+        </record>
+
+        <record id="ot_config_vn_weekend" model="hr.overtime.config">
+            <field name="name">Vietnam — Weekend Overtime</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="overtime_type">weekend</field>
+            <field name="rate_multiplier">2.0</field>
+            <field name="max_hours_per_day">8</field>
+            <field name="max_hours_per_month">40</field>
+            <field name="requires_approval">True</field>
+            <field name="note"><![CDATA[<p>Vietnam Labor Code Art. 98: Weekend/rest-day overtime is paid at <strong>200%</strong> of normal hourly rate.</p>]]></field>
+        </record>
+
+        <record id="ot_config_vn_holiday" model="hr.overtime.config">
+            <field name="name">Vietnam — Public Holiday Overtime</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="overtime_type">holiday</field>
+            <field name="rate_multiplier">3.0</field>
+            <field name="max_hours_per_day">8</field>
+            <field name="max_hours_per_month">40</field>
+            <field name="requires_approval">True</field>
+            <field name="note"><![CDATA[<p>Vietnam Labor Code Art. 98: Public holiday overtime is paid at <strong>300%</strong> of normal hourly rate.</p>]]></field>
+        </record>
+
+        <record id="ot_config_vn_night" model="hr.overtime.config">
+            <field name="name">Vietnam — Night Shift Premium</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="overtime_type">night</field>
+            <field name="rate_multiplier">1.3</field>
+            <field name="max_hours_per_day">8</field>
+            <field name="max_hours_per_month">200</field>
+            <field name="requires_approval">False</field>
+            <field name="time_from">22.0</field>
+            <field name="time_to">6.0</field>
+            <field name="note"><![CDATA[<p>Vietnam Labor Code Art. 97: Night work (22:00–06:00) earns a <strong>30% premium</strong> on top of normal rate.</p>]]></field>
+        </record>
+
+        <!-- Global defaults (fallback for non-Vietnam countries) -->
+        <record id="ot_config_global_weekday" model="hr.overtime.config">
+            <field name="name">Default — Weekday Overtime</field>
+            <field name="overtime_type">weekday</field>
+            <field name="rate_multiplier">1.5</field>
+            <field name="max_hours_per_day">4</field>
+            <field name="max_hours_per_month">40</field>
+            <field name="requires_approval">True</field>
+            <field name="note"><![CDATA[<p>Standard weekday overtime at <strong>150%</strong>. Customize per country as needed.</p>]]></field>
+        </record>
+
+        <record id="ot_config_global_weekend" model="hr.overtime.config">
+            <field name="name">Default — Weekend Overtime</field>
+            <field name="overtime_type">weekend</field>
+            <field name="rate_multiplier">2.0</field>
+            <field name="max_hours_per_day">8</field>
+            <field name="max_hours_per_month">40</field>
+            <field name="requires_approval">True</field>
+        </record>
+
+        <record id="ot_config_global_holiday" model="hr.overtime.config">
+            <field name="name">Default — Holiday Overtime</field>
+            <field name="overtime_type">holiday</field>
+            <field name="rate_multiplier">2.5</field>
+            <field name="max_hours_per_day">8</field>
+            <field name="max_hours_per_month">20</field>
+            <field name="requires_approval">True</field>
+        </record>
+
+    </data>
+</odoo>

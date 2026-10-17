@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Company scoping (global — AND'd with every group rule). A user only
+         sees the young-worker rules/bands of the companies they belong to. -->
+    <record id="yw_rule_company" model="ir.rule">
+        <field name="name">Young worker rule: company</field>
+        <field name="model_id" ref="model_pb_young_worker_rule"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="yw_band_company" model="ir.rule">
+        <field name="name">Young worker band: company</field>
+        <field name="model_id" ref="model_pb_young_worker_band"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

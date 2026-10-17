@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- The Payobook audit wiring: which fields biz_audit_trail watches. DATA,
+         not code — a deployment may toggle or extend these. noupdate=1 so a demo
+         admin can deactivate a rule without a -u re-enabling it. -->
+    <!-- Employee master: only the fields STORED on hr.employee (parent_id,
+         company_id, active). department_id / job_title are non-stored related
+         fields backed by hr.version — audited on that model below. -->
+    <record id="audit_rule_hr_employee" model="biz.audit.rule">
+        <field name="name">Employee master changes</field>
+        <field name="model_name">hr.employee</field>
+        <field name="field_names">parent_id,company_id,active</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- Position attributes live on hr.version in Odoo 19 (see
+         hr_version_audit.py). A write to employee.department_id / job_title
+         routes here. -->
+    <record id="audit_rule_hr_version" model="biz.audit.rule">
+        <field name="name">Position changes</field>
+        <field name="model_name">hr.version</field>
+        <field name="field_names">department_id,job_title</field>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="audit_rule_hr_contract" model="biz.audit.rule">
+        <field name="name">Contract changes</field>
+        <field name="model_name">hr.contract</field>
+        <field name="field_names">wage,state,date_start,date_end,struct_id,structure_type_id</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

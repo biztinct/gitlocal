@@ -8,12 +8,12 @@
             <form string="Zoho Staging Data">
                 <header>
                     <button name="action_process_to_employee" type="object" string="Process to Employee" 
-                            class="btn-primary" attrs="{'invisible': [('processing_status', '=', 'processed')]}"/>
+                            class="btn-primary" invisible="processing_status == 'processed'"/>
                     <field name="processing_status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <div class="oe_stat_button" attrs="{'invisible': [('created_employee_id', '=', False)]}">
+                        <div class="oe_stat_button" invisible="not created_employee_id">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="created_employee_id"/>
@@ -21,7 +21,7 @@
                                 <span class="o_stat_text">Employee</span>
                             </div>
                         </div>
-                        <div class="oe_stat_button" attrs="{'invisible': [('created_contract_id', '=', False)]}">
+                        <div class="oe_stat_button" invisible="not created_contract_id">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="created_contract_id"/>
@@ -32,9 +32,9 @@
                     </div>
 
                     <widget name="web_ribbon" title="Processed" bg_color="bg-success" 
-                            attrs="{'invisible': [('processing_status', '!=', 'processed')]}"/>
+                            invisible="processing_status != 'processed'"/>
                     <widget name="web_ribbon" title="Error" bg_color="bg-danger" 
-                            attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                            invisible="processing_status != 'error'"/>
 
                     <div class="oe_title">
                         <h1>
@@ -79,17 +79,17 @@
                     <notebook>
                         <page string="Tax &amp; Social Security" name="tax_social">
                             <group>
-                                <group string="Vietnam" attrs="{'invisible': [('payroll_country', '!=', 'VN')]}">
+                                <group string="Vietnam" invisible="payroll_country != 'VN'">
                                     <field name="pit_number"/>
                                     <field name="insurance_book_number"/>
                                     <field name="bank_account_number_vnd"/>
                                 </group>
-                                <group string="Indonesia" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
+                                <group string="Indonesia" invisible="payroll_country != 'ID'">
                                     <field name="pan_number"/>
                                     <field name="bank_name"/>
                                     <field name="bank_branch"/>
                                 </group>
-                                <group string="India" attrs="{'invisible': [('payroll_country', '!=', 'IN')]}">
+                                <group string="India" invisible="payroll_country != 'IN'">
                                     <field name="pan_number"/>
                                     <field name="aadhaar_number"/>
                                     <field name="uan_number"/>
@@ -107,7 +107,7 @@
                         <page string="Processing" name="processing">
                             <group>
                                 <field name="processed_date"/>
-                                <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                                <field name="error_message" invisible="processing_status != 'error'"/>
                             </group>
                         </page>
                     </notebook>
@@ -121,7 +121,7 @@
         <field name="name">zoho.staging.data.tree</field>
         <field name="model">zoho.staging.data</field>
         <field name="arch" type="xml">
-            <tree string="Zoho Staging Data" decoration-success="processing_status == 'processed'"
+            <list string="Zoho Staging Data" decoration-success="processing_status == 'processed'"
                   decoration-danger="processing_status == 'error'" decoration-info="processing_status == 'processing'">
                 <field name="employee_id"/>
                 <field name="full_name_en"/>
@@ -131,7 +131,7 @@
                 <field name="payroll_country"/>
                 <field name="processing_status"/>
                 <field name="processed_date"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -171,7 +171,7 @@
     <record id="action_zoho_staging_data" model="ir.actions.act_window">
         <field name="name">Zoho Staging Data</field>
         <field name="res_model">zoho.staging.data</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_zoho_staging_data_tree"/>
         <field name="search_view_id" ref="view_zoho_staging_data_search"/>
         <field name="context">{'search_default_draft': 1}</field>

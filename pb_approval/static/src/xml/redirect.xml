@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Never seen: the component hands over to Home before it paints. It
+         exists because an OWL client action has to render something. -->
+    <t t-name="pb_approval.Redirect">
+        <div class="o_pb_approval_redirect p-4 text-muted">Opening Approvals…</div>
+    </t>
+</templates>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Guided Journey. An OWL client action, following the same shape as
+         Channel Center and the CRM dashboard: an ir.actions.client whose tag is
+         registered in JS. -->
+    <record id="action_learn_journey" model="ir.actions.client">
+        <field name="name">Training</field>
+        <field name="tag">learn_journey</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- RIZE W2 E1. The Learn MISSION: the shell the rail now opens, with the
+         Journey above as its first lens and a soft registry other modules bolt
+         theirs onto. A RECORD and never a bare tag — a bare tag reaches the
+         shell with no action NAME, and anything returning through a breadcrumb
+         then reads "Unnamed" (W98). `action_learn_journey` above is untouched
+         on purpose: the Coach, the first-login greeting, the scenario runner,
+         PayAI and a command-bar row all name it by its xml-id. -->
+    <record id="action_learn_hub" model="ir.actions.client">
+        <field name="name">Learn</field>
+        <field name="tag">learn_hub</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Rize sign-in page. Tenant-only (`rize` database).
+
+    IMPORTANT ordering fact (verified on the live rize DB, 2026-09-11):
+    `website.login_layout` (priority 20) REPLACES the whole `t[@t-call]` of
+    web.login_layout with a `website.layout` call wrapping a bare
+    `<div class="oe_website_login_container" t-out="0"/>`. The stock card,
+    company-logo header and odoo.com footer line no longer exist once the
+    website module is installed — so this view must run AFTER that replace
+    (priority 90) and target `oe_website_login_container`, not the card.
+
+    Odoo's login form markup itself is left untouched and re-emitted through
+    `t-out="0"`: it carries the CSRF token, the OAuth block, the signup /
+    reset-password links and the error and message slots.
+  -->
+  <template id="rize_login_layout" inherit_id="web.login_layout"
+            name="Rize Sign-in Layout" priority="90">
+
+    <xpath expr="//div[hasclass('oe_website_login_container')]" position="before">
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title">Sign in — Rize</t>
+    </xpath>
+
+    <xpath expr="//div[hasclass('oe_website_login_container')]" position="replace">
+      <div class="rz-login">
+        <t t-call="rize_website.rz_field"/>
+
+        <div class="rz-login__card">
+          <a class="rz-login__brand" href="/" aria-label="Rize home">
+            <img src="/rize_website/static/src/img/rize_logo.png" alt="Rize"/>
+          </a>
+          <p class="rz-login__welcome">People &amp; Payroll</p>
+
+          <div class="oe_website_login_container" t-out="0"/>
+
+          <!-- A deliberate statement about who built the platform, not a
+               name that leaked onto a tenant screen. data-biz-brand="keep"
+               stops the white-label layer rewriting it (biz_debrand,
+               ERRORS E3-2). -->
+          <p class="rz-login__foot" data-biz-brand="keep">Powered by Payobook</p>
+        </div>
+      </div>
+    </xpath>
+  </template>
+</odoo>

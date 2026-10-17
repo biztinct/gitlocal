@@ -1,0 +1,1189 @@
+// =============================================================================
+// VU FORM ENGINE — "Indigo Workspace" skin for ALL native Odoo form views
+// -----------------------------------------------------------------------------
+// Activation contract (see vu_form_renderer.js):
+//   - Engine markup (hero, section classes) is ALWAYS compiled into the cached
+//     template, but every rule below applies only under `.o_form_renderer.vu-form`.
+//   - Without `.vu-form` (dialogs, excluded views, kill-switch) the extra
+//     wrappers collapse via `display: contents` / `display: none` and the form
+//     is pixel-identical to stock.
+// HARD RULE: flat mono colors only — no gradients (user requirement).
+// Coexistence: never assume chatter position (bottom in this project);
+// never touch .o_form_sheet_bg/.o_form_sheet structure — style only.
+// =============================================================================
+
+// =========================================================================
+// 0. INERT STATE — stock rendering when .vu-form is absent
+// =========================================================================
+.o_form_renderer:not(.vu-form) {
+    .vu-hero,
+    .vu-hero-main {
+        display: contents;
+    }
+    .vu-hero-glance,
+    .vu-hero-meta,
+    .vu-hero-name {
+        display: none;
+    }
+}
+
+// =========================================================================
+// 1. CANVAS — page background, sheet becomes a transparent container
+// =========================================================================
+.o_form_view .o_form_renderer.vu-form {
+    font-family: var(--vuf-font);
+    background: var(--vuf-bg);
+
+    .o_form_sheet_bg {
+        background: var(--vuf-bg);
+        // XXL renderer is a flex ROW: without this the bg shrinks to fit its
+        // content, making sheet width vary per form (903px vs 1661px…)
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
+    }
+
+    // ONE content width for everything: hero, cards, statusbar, chatter,
+    // attachment preview. Sheet = 1320 incl. 24px side padding → 1272 inner.
+    --vuf-content-w: min(1272px, calc(100% - 2 * var(--vuf-sp-6)));
+
+    // The sheet stops being "the card" — sections are the cards now.
+    // margin auto: legacy backend.scss left-pins the sheet, dumping all
+    // free space on the right ("empty third column" effect on wide screens)
+    .o_form_sheet {
+        --formView-sheet-margin-x: auto;     // legacy pins it left with 0
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        // sheet_bg is a flex column; margin:auto disables stretch → must set
+        // an explicit width so the sheet fills up to the cap on every form
+        width: 100% !important;
+        max-width: 1320px !important;        // uniform across ALL forms
+        margin: 0 auto !important;
+        padding: var(--vuf-sp-4) var(--vuf-sp-6) var(--vuf-sp-7);
+    }
+
+    // title rendered inline (hero suppressed via vu-no-hero / custom header)
+    .o_form_sheet > .oe_title {
+        margin: 0 0 var(--vuf-sp-4);
+
+        h1 { font-weight: 800; letter-spacing: -.01em; }
+    }
+
+    // view brings its own identity header → the native title is redundant
+    &.vu-no-hero .o_form_sheet > .oe_title {
+        display: none;
+    }
+
+    // hr.employee presence row: orphaned after its avatar joined the hero —
+    // tuck the pill neatly right-aligned under the hero
+    .o_form_sheet > div:has(.o_presence_status_pill_wrapper) {
+        justify-content: flex-end;
+        margin: calc(-1 * var(--vuf-sp-2)) 0 var(--vuf-sp-3);
+    }
+}
+
+// =========================================================================
+// 2. HERO — light identity card with a state rail ("Clinical Evolve" style,
+//    user-selected over the navy band: too heavy when fields are empty)
+// =========================================================================
+.o_form_renderer.vu-form .vu-hero {
+    display: flex;
+    align-items: center;
+    gap: var(--vuf-sp-4);
+    flex-wrap: wrap;
+    background: var(--vuf-surface);         // flat mono white — no gradient
+    color: var(--vuf-ink);
+    border: 1px solid var(--vuf-line-soft);
+    border-left: 4px solid var(--vuf-state-draft);   // state rail (recolored below)
+    border-radius: var(--vuf-r-lg);
+    padding: var(--vuf-sp-5) var(--vuf-sp-6);
+    margin-bottom: var(--vuf-sp-4);
+    box-shadow: var(--vuf-sh-md);
+    animation: vuf-fade-up var(--vuf-t-med) var(--vuf-ease);
+
+    // state rail color follows the status chip
+    &:has(.vu-hero-status[data-vu-state="confirmed"]),
+    &:has(.vu-hero-status[data-vu-state="open"]),
+    &:has(.vu-hero-status[data-vu-state="posted"]) { border-left-color: var(--vuf-state-confirmed); }
+    &:has(.vu-hero-status[data-vu-state="assigned"]) { border-left-color: var(--vuf-state-assigned); }
+    &:has(.vu-hero-status[data-vu-state="in_progress"]),
+    &:has(.vu-hero-status[data-vu-state="active"]) { border-left-color: var(--vuf-state-active); }
+    &:has(.vu-hero-status[data-vu-state="done"]),
+    &:has(.vu-hero-status[data-vu-state="completed"]),
+    &:has(.vu-hero-status[data-vu-state="paid"]) { border-left-color: var(--vuf-state-completed); }
+    &:has(.vu-hero-status[data-vu-state="cancel"]),
+    &:has(.vu-hero-status[data-vu-state="cancelled"]) { border-left-color: var(--vuf-state-cancelled); }
+    &:has(.vu-hero-status[data-vu-state="closed"]) { border-left-color: var(--vuf-state-closed); }
+
+    .vu-hero-glance {
+        flex: 0 0 auto;
+    }
+
+    .vu-hero-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        background: var(--vuf-primary-soft);
+        color: var(--vuf-primary);
+        user-select: none;
+    }
+
+    .vu-hero-main {
+        flex: 1 1 240px;
+        min-width: 0;
+
+        // The relocated native .oe_title — same Field component, fully editable
+        .oe_title {
+            margin: 0;
+            max-width: none;
+
+            h1, h2, h3 {
+                margin: 0;
+                font-weight: 800;
+                letter-spacing: -.01em;
+            }
+        }
+
+        .vu-hero-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -.01em;
+        }
+    }
+
+    .vu-hero-meta {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: var(--vuf-sp-3);
+    }
+
+    .vu-hero-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: var(--vuf-r-pill);
+        background: #EEF1F5;                // flat mono light gray
+        color: var(--vuf-muted);
+
+        // state-colored dot
+        &::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--vuf-faint);
+        }
+        &[data-vu-state="draft"]::before { background: var(--vuf-state-draft); }
+        &[data-vu-state="confirmed"]::before,
+        &[data-vu-state="open"]::before,
+        &[data-vu-state="posted"]::before { background: var(--vuf-state-confirmed); }
+        &[data-vu-state="assigned"]::before { background: var(--vuf-state-assigned); }
+        &[data-vu-state="in_progress"]::before,
+        &[data-vu-state="active"]::before { background: var(--vuf-state-active); }
+        &[data-vu-state="done"]::before,
+        &[data-vu-state="completed"]::before,
+        &[data-vu-state="paid"]::before { background: var(--vuf-state-completed); }
+        &[data-vu-state="cancel"]::before,
+        &[data-vu-state="cancelled"]::before { background: var(--vuf-state-cancelled); }
+        &[data-vu-state="closed"]::before { background: var(--vuf-state-closed); }
+    }
+}
+
+// =========================================================================
+// 3. STATUSBAR — floating white action bar (workflow buttons + state pills)
+// =========================================================================
+.o_form_renderer.vu-form .o_form_statusbar {
+    background: var(--vuf-surface);
+    border: 1px solid var(--vuf-line-soft);
+    border-radius: var(--vuf-r-lg);
+    box-shadow: var(--vuf-sh-sm);
+    width: var(--vuf-content-w);
+    margin: var(--vuf-sp-4) auto 0;
+    padding: var(--vuf-sp-2) var(--vuf-sp-4);
+    align-items: center !important;   // buttons and state pills on one midline
+
+    // the state-field wrapper otherwise stretches and pins its chain to the
+    // top edge of the bar
+    > .o_field_widget,
+    .o_field_statusbar,
+    .o_statusbar_buttons {
+        align-self: center !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .btn {
+        border-radius: var(--vuf-r-sm);
+        font-weight: 600;
+        transition: transform var(--vuf-t-fast) var(--vuf-ease),
+                    box-shadow var(--vuf-t-fast) var(--vuf-ease);
+        &:hover { transform: translateY(-1px); }
+    }
+    // Solid indigo primary buttons (design-system: one solid brand colour).
+    .btn-primary {
+        background: var(--vuf-primary) !important;
+        color: var(--vuf-primary-ink) !important;
+        border-color: var(--vuf-primary) !important;
+        box-shadow: none !important;
+        &:hover {
+            background: #4A3D96 !important;
+            color: var(--vuf-primary-ink) !important;
+            border-color: #4A3D96 !important;
+        }
+    }
+    .btn-secondary {
+        background: var(--vuf-surface);
+        color: var(--vuf-ink);
+        border: 1px solid var(--vuf-line);
+        &:hover { background: var(--vuf-primary-soft); color: var(--vuf-primary); }
+    }
+
+    // state field widget: CONNECTED workflow chain — segments joined by
+    // arrow joints, current state solid blue (flat mono), upcoming muted
+    .o_statusbar_status {
+        gap: 0;
+        align-items: center;
+
+        .o_arrow_button {
+            position: relative;
+            border: none !important;
+            border-radius: 0 !important;
+            background: #EEF1F5;            // flat mono light gray
+            color: var(--vuf-muted);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 18px 6px 24px !important;
+            margin: 0 !important;
+            // right arrow head + concave left notch (workflow joint)
+            clip-path: polygon(
+                0 0, calc(100% - 11px) 0, 100% 50%,
+                calc(100% - 11px) 100%, 0 100%, 11px 50%
+            ) !important;
+
+            &:not(:first-child) {
+                margin-left: -7px !important;  // joints overlap → one chain
+            }
+            // Odoo marks display order itself: .o_first = visually RIGHTMOST
+            // (final state), .o_last = visually LEFTMOST (first state) —
+            // the widget runs flex row-reverse and adds hidden dropdown
+            // buttons, so child-position selectors are unreliable.
+            &.o_first {
+                padding-right: 20px !important;
+                border-top-right-radius: var(--vuf-r-pill) !important;
+                border-bottom-right-radius: var(--vuf-r-pill) !important;
+                clip-path: polygon(
+                    0 0, 100% 0, 100% 100%, 0 100%, 11px 50%
+                ) !important;
+            }
+            &.o_last {
+                padding-left: 18px !important;
+                border-top-left-radius: var(--vuf-r-pill) !important;
+                border-bottom-left-radius: var(--vuf-r-pill) !important;
+                clip-path: polygon(
+                    0 0, calc(100% - 11px) 0, 100% 50%,
+                    calc(100% - 11px) 100%, 0 100%
+                ) !important;
+            }
+            &.o_first.o_last {
+                clip-path: none !important;
+                border-radius: var(--vuf-r-pill) !important;
+            }
+
+            &::before,
+            &::after {
+                display: none !important;   // kill the legacy chevron pseudos
+            }
+
+            // CURRENT state: solid flat blue, white text — unmistakable
+            &.o_arrow_button_current {
+                background: var(--vuf-primary) !important;
+                color: var(--vuf-primary-ink) !important;
+            }
+            // states after the current one (DOM-before in row-reverse):
+            // "not reached yet", but still comfortably readable
+            &:has(~ .o_arrow_button_current) {
+                opacity: .7;
+                color: #4B5563;   // one step darker than --vuf-muted
+            }
+            &:disabled { cursor: default; }
+        }
+    }
+}
+
+// when statusbar pins on scroll, keep it readable
+.o_form_renderer.vu-form .o_form_statusbar.shadow-sm {
+    box-shadow: var(--vuf-sh-md) !important;
+}
+
+// =========================================================================
+// 4. SECTION CARDS — every titled <group> becomes an icon card
+// =========================================================================
+.o_form_renderer.vu-form {
+
+    // outer layout grid: restore bootstrap column proportions that legacy
+    // backend.scss overrides (flex: 1 1 420px / width:100% !important made
+    // every column full-width → uneven, clunky stacking)
+    .o_group.row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--vuf-sp-4);
+        align-items: stretch;        // equal card heights side by side
+        padding: 0 !important;       // legacy 12px row padding breaks the grid edge
+        margin: 0 0 var(--vuf-sp-4);
+    }
+
+    .o_group.row > .o_inner_group,
+    .o_group.row > .o_group {
+        flex: 1 1 calc(50% - var(--vuf-sp-4) / 2) !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 300px;
+        margin: 0 !important;
+
+        // honour explicit view proportions (invoice: 8/4 split etc.)
+        &.col-lg-8 { flex: 1 1 calc(66.6% - var(--vuf-sp-4) / 2) !important; }
+        &.col-lg-4 { flex: 1 1 calc(33.3% - var(--vuf-sp-4) / 2) !important; min-width: 260px; }
+        &.col-lg-12 { flex: 1 1 100% !important; }
+    }
+
+    .o_inner_group.vu-sec {
+        background: var(--vuf-surface);
+        border: 1px solid var(--vuf-line-soft);
+        border-radius: var(--vuf-r-lg);
+        box-shadow: var(--vuf-sh-md);
+        // !important: legacy :not(:has()) chains outrank us and crush this
+        // to 8px 0 — labels end up touching the card border
+        padding: var(--vuf-sp-5) var(--vuf-sp-5) var(--vuf-sp-4) !important;
+        contain: layout style;
+        animation: vuf-fade-up var(--vuf-t-med) var(--vuf-ease);
+
+        // all fields invisible → empty cells only → no ghost card pills
+        &:not(:has(.o_cell:not(:empty), .o_horizontal_separator)) {
+            display: none;
+        }
+
+        // `contain: layout` above makes every card its own stacking context.
+        // A many2one / select dropdown opened inside a card overflows the card
+        // box fine (no paint containment → nothing is clipped), but its z-index
+        // is now trapped INSIDE this card's context, so the menu can no longer
+        // rise above LATER sibling cards — the next card simply paints over it
+        // and the menu looks "chopped off" (e.g. res.users → Default Company).
+        // While a card hosts an open menu, promote the whole card so it (and its
+        // overflowing menu) sits above the cards that follow it in the grid.
+        &:has(
+            .o-autocomplete--dropdown-menu,
+            .o_select_menu_menu,
+            .dropdown-menu.show
+        ) {
+            position: relative;
+            z-index: 20;
+        }
+    }
+
+    // bespoke cards (booking cockpit, client profile, CRM contact…) already
+    // provide the card chrome — groups inside them must not double-card
+    .vu-detail-card .o_inner_group.vu-sec,
+    .vu-summary-card .o_inner_group.vu-sec,
+    .vu-side-card .o_inner_group.vu-sec,
+    .vu-card .o_inner_group.vu-sec {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0 !important;
+        animation: none;
+    }
+
+    // …and their title rows need breathing room before the content —
+    // the flattened groups no longer bring their own top padding, so
+    // labels/textareas were touching the title icon
+    .vu-detail-card > .vu-card__title,
+    .vu-summary-card > .vu-card__title,
+    .vu-side-card > .vu-card__title,
+    .vu-card > .vu-card__title {
+        margin-bottom: var(--vuf-sp-3) !important;
+    }
+
+    // the title wrapper must own its full grid row — on multi-column groups
+    // (col="4" etc.) it otherwise spans half and the first field label lands
+    // BESIDE the section title instead of below it
+    .o_inner_group.vu-sec > div:has(> .o_horizontal_separator) {
+        grid-column: 1 / -1 !important;
+    }
+
+    // section title: uppercase label + lucide glyph (compiler sets vu-ico-*)
+    .vu-sec .o_horizontal_separator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: none;
+        margin: 0 0 var(--vuf-sp-3) !important;
+        padding-bottom: var(--vuf-sp-2);
+        border-bottom: 1px solid var(--vuf-line-soft);
+        font-size: 11.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: .08em;
+        color: var(--vuf-muted) !important;
+
+        &::before {
+            // beats backend.scss `.o_form_view .o_horizontal_separator::before { display:none !important }`
+            display: inline-block !important;
+            content: "";
+            flex: 0 0 auto;
+            width: 17px;
+            height: 17px;
+            background-color: var(--vuf-primary);
+            -webkit-mask-image: var(--vuf-ico, url("/biz_theme/static/src/img/lucide/layout-grid.svg"));
+            mask-image: var(--vuf-ico, url("/biz_theme/static/src/img/lucide/layout-grid.svg"));
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+    }
+
+    // field labels
+    .o_cell.o_wrap_label,
+    .o_cell.o_wrap_label label {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--vuf-muted);
+    }
+
+    // ONE typography for every separator, inside or outside cards —
+    // legacy renders sheet-level ones bigger/darker (#424242, 13px) and
+    // bootstrap gutters offset them, which reads as misalignment
+    .o_form_sheet .o_horizontal_separator {
+        font-size: 11.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--vuf-muted) !important;
+    }
+}
+
+// =========================================================================
+// 5. INPUTS — soft boxed controls (replaces legacy underline style)
+// =========================================================================
+.o_form_view .o_form_renderer.vu-form .o_form_sheet {
+
+    .o_field_widget {
+        // text-ish inputs & selects (+ date fields, which render as <button>)
+        input.o_input,
+        select.o_input,
+        textarea.o_input,
+        button.o_input,
+        .o_input_dropdown input {
+            background: #FBFCFE !important;
+            border: 1px solid var(--vuf-line) !important;
+            border-radius: var(--vuf-r-sm) !important;
+            padding: 6px 11px !important;
+            min-height: 34px;
+            color: var(--vuf-ink);
+            transition: border-color var(--vuf-t-fast) var(--vuf-ease),
+                        box-shadow var(--vuf-t-fast) var(--vuf-ease);
+
+            &:focus,
+            &:focus-within {
+                border-color: var(--vuf-primary) !important;
+                box-shadow: var(--vuf-sh-ring) !important;
+                outline: none;
+            }
+            &::placeholder { color: var(--vuf-faint); }
+        }
+
+        textarea.o_input { min-height: 64px; }
+
+        // many2many tags
+        .o_tag {
+            border-radius: var(--vuf-r-pill);
+            font-weight: 600;
+        }
+    }
+
+    // readonly values stay calm
+    .o_field_widget.o_readonly_modifier {
+        input.o_input, select.o_input, textarea.o_input {
+            background: transparent !important;
+            border-color: transparent !important;
+        }
+    }
+
+    // ghost overlay spans (e.g. monetary currency positioner) carry a legacy
+    // underline that floats over the boxed input as a stray horizontal line
+    .o_field_widget span.o_input {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    // readonly values (rendered as plain spans) start flush-left while boxed
+    // inputs indent their text 12px (1px border + 11px padding) — give
+    // input-less field values the same inset so mixed columns line up.
+    // Covers .o_wrap_input AND .o_cell_custom (account.move date rows etc.)
+    // button.o_input is in the exclusion: date fields render as <button>
+    // and already carry the boxed style — padding them double-shifts them.
+    .o_cell > .o_field_widget:not(:has(input, select, textarea, button.o_input)) {
+        padding-left: 12px;
+    }
+
+    // ── compound widgets: ONE box around input + suffix elements so right
+    //    edges align with plain inputs (m2o caret/external-link, monetary
+    //    currency symbol used to sit OUTSIDE the box, ending it short) ──
+    .o_field_many2one .o_field_many2one_selection,
+    .o_field_monetary > div.d-inline-flex {
+        display: flex;
+        align-items: center !important;
+        width: 100%;
+        background: #FBFCFE !important;
+        border: 1px solid var(--vuf-line) !important;
+        border-radius: var(--vuf-r-sm) !important;
+        min-height: 34px;
+        padding-right: 8px;
+        transition: border-color var(--vuf-t-fast) var(--vuf-ease),
+                    box-shadow var(--vuf-t-fast) var(--vuf-ease);
+
+        &:focus-within {
+            border-color: var(--vuf-primary) !important;
+            box-shadow: var(--vuf-sh-ring) !important;
+        }
+
+        .o-autocomplete { flex: 1 1 auto; }
+
+        input.o_input,
+        span.o_input {
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            min-height: 32px;
+
+            &:focus { box-shadow: none !important; }
+        }
+    }
+
+    // ── the monetary currency symbol must not land ON the last digit ──
+    //
+    // The monetary widget draws its symbol in an ABSOLUTELY POSITIONED overlay
+    // that is a sibling of the input: an invisible ghost copy of the value,
+    // then the visible symbol immediately after it. The symbol therefore sits
+    // in the right place ONLY while the ghost's first character starts at the
+    // exact same x as the input's first character — i.e. while the overlay and
+    // the input share their horizontal padding, which they do natively because
+    // both are plain `.o_input`.
+    //
+    // The engine gives inputs an 11px inset (1px border + 11px padding is what
+    // every other boxed field uses); the overlay kept Odoo's 8px. Three pixels
+    // of drift is enough to print "₫" over the final "0" — a wage of
+    // 17,700,000 ₫ read as `17,70Ç`, which is how this was found (live, on the
+    // contract form, 2026-09-01). Re-pin the overlay to the input's inset;
+    // never change one of these two numbers without the other.
+    .o_field_monetary > div > span.o_input {
+        padding-left: 11px !important;
+        padding-right: 11px !important;
+    }
+
+    // ── a paragraph field must never be rendered one label wide ──
+    //
+    // An inner group is a two-column grid: a narrow LABEL column and a wide
+    // VALUE column. A field written `nolabel="1"` with no `colspan` occupies
+    // ONE cell, and the one cell it gets is the narrow one — so a story, a
+    // reason, a note ends up in a ~150px box while 1,000px of the row sits
+    // empty beside it. `colspan="2"` in the arch is the real fix and every
+    // arch in this product now carries it (2026-09-01, 20 of them).
+    //
+    // This is the safety net for the next one somebody writes. It is scoped
+    // to the field types where a narrow box is never a deliberate choice —
+    // multi-line text, html, and the file-drop widget — so a short scalar
+    // deliberately sharing a row is left exactly where the arch put it. No
+    // `!important`: an arch that really means it can still say otherwise.
+    .o_inner_group.grid > .o_cell {
+        &:has(> .o_field_text),
+        &:has(> .o_field_html),
+        &:has(> .o_field_many2many_binary) {
+            grid-column: 1 / -1;
+        }
+    }
+
+    // legacy underline-style draws a stray bottom border on unfocused
+    // editable field wrappers — one lone line in an otherwise boxed form
+    .o_cell .o_field_widget,
+    .o_cell .o_field_widget > div {
+        border-bottom: none !important;
+        box-shadow: none !important;
+    }
+
+    // loose sheet-level fields (e.g. a notes textarea outside any group):
+    // legacy pads the widget 16px, shrinking its input box off the grid edge
+    // (this block is nested in the .o_form_sheet rule — use child selectors)
+    > .o_field_widget,
+    > div > .o_field_widget:only-child {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+// whole-form readonly mode: all inputs render as plain values
+.o_form_view .o_form_renderer.vu-form.o_form_readonly .o_form_sheet .o_field_widget {
+    input.o_input, select.o_input, textarea.o_input {
+        background: transparent !important;
+        border-color: transparent !important;
+    }
+}
+
+// =========================================================================
+// 5b. HERO FIELD OVERRIDES — must outrank the boxed-input rules above
+//     (same .o_form_sheet prefix + .vu-hero, declared later in the cascade)
+//     Light hero: fields render naked (no box), ink text.
+// =========================================================================
+.o_form_view .o_form_renderer.vu-form .o_form_sheet .vu-hero {
+
+    .o_field_widget input.o_input,
+    .o_field_widget select.o_input,
+    .o_field_widget textarea.o_input,
+    .o_field_widget .o_input_dropdown input,
+    input.o_input {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        color: var(--vuf-ink) !important;
+        min-height: 0;
+
+        &:focus {
+            border-bottom: 2px solid var(--vuf-primary) !important;
+        }
+        &::placeholder { color: var(--vuf-faint) !important; }
+    }
+
+    .fa { color: var(--vuf-faint) !important; }
+    label { color: var(--vuf-muted); }
+
+    .o_field_many2many_tags .o_tag {
+        background: var(--vuf-primary-soft) !important;
+        color: var(--vuf-primary) !important;
+    }
+
+    // relocated native avatar/image block
+    .vu-hero-pic {
+        flex: 0 0 auto;
+        margin: 0 !important;
+
+        img {
+            width: 56px !important;
+            height: 56px !important;
+            max-width: 56px;
+            max-height: 56px;
+            object-fit: cover;
+            border-radius: 14px;
+            box-shadow: 0 0 0 1px var(--vuf-line);
+        }
+    }
+
+    // real photo present → hide the synthetic initials
+    // (only when an actual image rendered — empty upload placeholders don't count)
+    &:has(.vu-hero-pic img) .vu-hero-avatar { display: none; }
+}
+
+// inert mode: relocated avatar block flows back as plain content
+.o_form_renderer:not(.vu-form) .vu-hero-pic { display: block; }
+
+// =========================================================================
+// 6. NOTEBOOK — segmented pill tabs on a light track
+// =========================================================================
+.o_form_renderer.vu-form .o_notebook {
+    margin-top: var(--vuf-sp-4) !important;   // legacy squashes it to 2px
+
+    // core gives the headers a -16px bleed; keep the pill track on the grid
+    .o_notebook_headers {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .o_notebook_headers .nav,
+    > .nav {
+        background: #EBEEF6;
+        border: none !important;
+        border-radius: var(--vuf-r-pill);
+        padding: 4px;
+        width: max-content;
+        max-width: 100%;
+        gap: 2px;
+        margin-bottom: var(--vuf-sp-4);
+
+        .nav-item .nav-link {
+            border: none !important;
+            border-radius: var(--vuf-r-pill);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--vuf-muted);
+            padding: 7px 18px;
+            transition: background var(--vuf-t-fast) var(--vuf-ease);
+
+            &:hover { color: var(--vuf-ink); }
+
+            &.active {
+                background: var(--vuf-surface);
+                color: var(--vuf-primary);
+                box-shadow: var(--vuf-sh-sm);
+            }
+        }
+    }
+
+    // page body becomes a card so loose fields don't float on the canvas
+    .tab-content > .tab-pane {
+        background: var(--vuf-surface);
+        border: 1px solid var(--vuf-line-soft);
+        border-radius: var(--vuf-r-lg);
+        box-shadow: var(--vuf-sh-md);
+        padding: var(--vuf-sp-5);
+
+        // …but avoid double-carding groups inside pages
+        .o_inner_group.vu-sec {
+            box-shadow: none;
+            border-color: var(--vuf-line-soft);
+        }
+    }
+}
+
+// =========================================================================
+// 7. X2MANY LISTS — clean embedded tables
+// =========================================================================
+.o_form_renderer.vu-form .o_field_x2many {
+    .o_list_renderer {
+        border: 1px solid var(--vuf-line-soft);
+        border-radius: var(--vuf-r-md);
+        overflow: hidden;
+
+        .o_list_table thead th {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--vuf-muted);
+            background: #F8FAFD;
+        }
+        .o_list_table .o_data_row:hover td {
+            background: var(--vuf-primary-soft);
+        }
+    }
+    .o_field_x2many_list_row_add a {
+        color: var(--vuf-primary);
+        font-weight: 600;
+    }
+}
+
+// =========================================================================
+// 8. SMART BUTTONS (button_box lives in the control panel, outside renderer)
+// =========================================================================
+.o_form_view:has(.o_form_renderer.vu-form) {
+    .oe_stat_button {
+        border: 1px solid var(--vuf-line) !important;
+        border-radius: var(--vuf-r-md) !important;
+        background: var(--vuf-surface);
+        box-shadow: var(--vuf-sh-sm);
+        transition: transform var(--vuf-t-fast) var(--vuf-ease);
+
+        &:hover {
+            transform: translateY(-1px);
+            border-color: var(--vuf-primary) !important;
+            background: var(--vuf-primary-soft);
+        }
+        .o_button_icon { color: var(--vuf-primary); }
+        .o_stat_value { font-weight: 800; color: var(--vuf-ink); }
+        .o_stat_text { color: var(--vuf-muted); }
+    }
+}
+
+// =========================================================================
+// 9. CHATTER — bottom card at the unified content width
+//    (NEVER relocated, only restyled; beats mail's `.w-auto` utility)
+// =========================================================================
+.o_form_renderer.vu-form .o-mail-Form-chatter {
+    background: var(--vuf-surface);
+    border: 1px solid var(--vuf-line-soft);
+    border-radius: var(--vuf-r-lg);
+    box-shadow: var(--vuf-sh-md);
+    width: var(--vuf-content-w) !important;
+    max-width: none !important;
+    margin: 0 auto var(--vuf-sp-6) !important;
+    padding: var(--vuf-sp-2);
+}
+
+// Force the chatter to the BOTTOM (full-width) on every form, at every screen
+// width — including STOCK forms the VU engine skips (e.g. hr.employee), which
+// otherwise keep the side chatter. Odoo 19 only stacks (flex-column) below
+// 1200px and goes side-by-side (flex-nowrap) above; this pins it column-always
+// so the sheet never gets squeezed into a narrow left strip. Scoped to forms
+// that actually have a side chatter (:has(> .o-mail-ChatterContainer)); the
+// flex item then stretches full-width on its own. Exclude the .vu-three-col
+// workspace layout (booking-style side columns) which intentionally wants a row.
+.o_form_view .o_form_renderer:not(:has(.vu-three-col)):has(> .o-mail-ChatterContainer) {
+    flex-direction: column !important;
+}
+// Odoo keeps the side-mode `.o-aside` class (with its fixed width, ~33vw) on the
+// chatter because its JS still believes the screen is wide enough for a side
+// column — so once we stack it, force it full-width so it spans the whole form.
+.o_form_view .o_form_renderer:not(:has(.vu-three-col)) > .o-mail-ChatterContainer.o-aside {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    border-left: 0 !important;
+}
+
+// =========================================================================
+// 9b. ATTACHMENT PREVIEW (mail COMBO layout) — full-width document card
+//     below the chatter instead of the squashed bottom-left mini panel
+// =========================================================================
+.o_form_renderer.vu-form:has(> .o_attachment_preview) {
+    flex-direction: column !important;
+    height: auto !important;
+}
+
+.o_form_renderer.vu-form > .o_attachment_preview {
+    position: static !important;
+    flex: 0 0 auto !important;
+    width: var(--vuf-content-w) !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: 0 auto var(--vuf-sp-6);
+    background: var(--vuf-surface);
+    border: 1px solid var(--vuf-line-soft);
+    border-radius: var(--vuf-r-lg);
+    box-shadow: var(--vuf-sh-md);
+    overflow: hidden;
+
+    // the PDF.js / image viewer must actually fill the card
+    iframe,
+    .o-mail-AttachmentView,
+    .o_attachment_preview_container {
+        display: block;
+        width: 100% !important;
+        height: 80vh !important;
+        min-height: 560px;
+        border: none;
+    }
+}
+
+// =========================================================================
+// 9b-2. CUSTOM VIEW HEADERS (js_class chrome above the form, e.g. the
+//       fin invoice header) — snap onto the same 1272px content grid
+// =========================================================================
+.o_form_view:has(.o_form_renderer.vu-form) .o_content > .fin-invoice-header {
+    width: var(--vuf-content-w) !important;   // raw min(px, calc(%)) breaks Sass
+    max-width: none !important;
+    margin: var(--vuf-sp-4) auto 0 !important;
+}
+
+// =========================================================================
+// 9c. DIALOGS — light CSS-only polish so modals feel consistent
+//     (structure stays 100% stock: no hero, no cards, no relocation)
+// =========================================================================
+.modal .modal-content {
+    border: none;
+    border-radius: var(--vuf-r-lg);
+    box-shadow: var(--vuf-sh-lg);
+}
+
+.modal .o_form_view {
+    // legacy crushes the dialog sheet to "8px 0" — content sticks to the
+    // modal's left border
+    .o_form_sheet {
+        padding: var(--vuf-sp-4) var(--vuf-sp-6) !important;
+    }
+
+    .o_field_widget input.o_input,
+    .o_field_widget select.o_input,
+    .o_field_widget textarea.o_input {
+        background: #FBFCFE;
+        border: 1px solid var(--vuf-line);
+        border-radius: var(--vuf-r-sm);
+        padding: 6px 11px;
+
+        &:focus {
+            border-color: var(--vuf-primary);
+            box-shadow: var(--vuf-sh-ring);
+        }
+    }
+}
+
+.modal .modal-footer .btn,
+.modal .o_form_view .btn {
+    border-radius: var(--vuf-r-sm);
+    font-weight: 600;
+}
+
+.modal .btn-primary {
+    background: var(--vuf-primary) !important;   // flat mono
+    border-color: var(--vuf-primary) !important;
+    color: #fff !important;                      // guarantee a readable label
+}
+.modal .btn-primary .o_button_icon,
+.modal .btn-primary span { color: #fff !important; }
+
+// Close/Discard are dismiss actions — neutral look even when a view
+// tags them btn-primary (e.g. the lone "Close" footer button)
+.modal .btn.o_form_button_cancel {
+    background: var(--vuf-surface) !important;
+    color: var(--vuf-ink) !important;
+    border: 1px solid var(--vuf-line) !important;
+
+    &:hover {
+        background: var(--vuf-primary-soft) !important;
+        color: var(--vuf-primary) !important;
+    }
+}
+
+// =========================================================================
+// 10. THREE-COLUMN WORKSPACE LAYOUT — summary | content | actions
+//     Generic engine feature (owns what three_column.scss used to do).
+//     Any form opts in by wrapping content in:
+//       <div class="vu-three-col">
+//         <div class="vu-col-summary">…  <div class="vu-col-content">…
+//         <div class="vu-col-actions">…
+//     Used by: booking form (ops cockpit), patient form.
+// =========================================================================
+
+// workspace layouts are width-hungry — lift the 1320px sheet cap for them
+.o_form_view .o_form_renderer.vu-form:has(.vu-three-col) .o_form_sheet {
+    max-width: none !important;
+}
+
+// …and the statusbar follows the full width instead of the 1272px grid
+.o_form_view .o_form_renderer.vu-form:has(.vu-three-col) .o_form_statusbar {
+    width: calc(100% - 2 * var(--vuf-sp-6));
+}
+
+// side columns are dense glance panels — engine input chrome (boxes,
+// compound wrappers, readonly insets) is too heavy at 250px wide; render
+// fields compact and naked there. Covers both naming generations:
+// vu-col-summary/vu-col-actions (engine layout) and vu-col-1/vu-col-3
+// (ops booking cockpit arch).
+.o_form_renderer.vu-form :is(.vu-col-summary, .vu-col-actions, .vu-col-1, .vu-col-3) {
+    .o_field_widget input.o_input,
+    .o_field_widget select.o_input,
+    .o_field_widget textarea.o_input,
+    .o_field_widget button.o_input,
+    .o_field_many2one_selection,
+    .o_field_monetary > div.d-inline-flex {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+    }
+
+    .o_cell > .o_field_widget,
+    .o_field_widget {
+        padding-left: 0 !important;
+    }
+
+    // a 250px column can't host a label|value grid — stack label over value
+    .o_inner_group {
+        grid-template-columns: 1fr !important;
+
+        .o_cell {
+            grid-column: 1 / -1 !important;
+            width: 100% !important;
+            max-width: 100%;
+        }
+        .o_cell.o_wrap_label { padding-top: var(--vuf-sp-1); }
+    }
+
+    // the bespoke side cards provide the chrome — no card-within-card
+    .o_inner_group.vu-sec {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    // editable widgets in group cells use the full (narrow) width — but ONLY
+    // those: forcing every field widget to block/100% stacked the inline
+    // phone/ID/age items of the client card vertically
+    .o_cell .o_field_widget,
+    .o_select_menu,
+    .o_input_dropdown {
+        width: 100% !important;
+    }
+}
+
+.o_form_renderer.vu-form {
+
+    .vu-three-col {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr) 300px;
+        gap: var(--vuf-sp-4);
+        width: 100%;
+        min-height: 400px;
+    }
+
+    .vu-col-summary,
+    .vu-col-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--vuf-sp-3);
+        position: sticky;
+        top: var(--vuf-sp-3);
+        align-self: start;
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--vuf-line) transparent;
+    }
+
+    .vu-col-summary { grid-column: 1; }
+    .vu-col-actions { grid-column: 3; }
+
+    .vu-col-content {
+        grid-column: 2;
+        display: flex;
+        flex-direction: column;
+        gap: var(--vuf-sp-3);
+        min-width: 0;
+
+        .o_notebook, .tab-content, .tab-pane { min-width: 0; max-width: 100%; }
+        > * { min-width: 0; max-width: 100%; }
+    }
+    .vu-col-actions > * { min-width: 0; max-width: 100%; }
+
+    // ── summary cards: same design language as section cards ──
+    .vu-summary-card {
+        background: var(--vuf-surface);
+        border: 1px solid var(--vuf-line-soft);
+        border-radius: var(--vuf-r-md);
+        padding: var(--vuf-sp-4);
+        box-shadow: var(--vuf-sh-sm);
+    }
+
+    .vu-summary-header {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: var(--vuf-muted);
+        padding-bottom: var(--vuf-sp-2);
+        border-bottom: 1px solid var(--vuf-line-soft);
+        margin-bottom: var(--vuf-sp-2);
+    }
+
+    .vu-summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: var(--vuf-sp-1) 0;
+        gap: var(--vuf-sp-2);
+
+        &:not(:last-child) { border-bottom: 1px solid var(--vuf-line-soft); }
+    }
+
+    .vu-summary-row__label {
+        font-size: 12px;
+        color: var(--vuf-muted);
+        flex-shrink: 0;
+        min-width: 64px;
+    }
+
+    .vu-summary-row__value {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--vuf-ink);
+        text-align: right;
+        word-break: break-word;
+
+        // summary values are read-only glances — no input chrome
+        .o_field_widget { padding-left: 0 !important; }
+    }
+
+    .vu-summary-divider {
+        height: 1px;
+        background: var(--vuf-line-soft);
+        margin: var(--vuf-sp-1) 0;
+    }
+
+    .vu-summary-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--vuf-sp-1);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--vuf-primary);
+        cursor: pointer;
+        padding: var(--vuf-sp-1) 0;
+        border: none;
+        background: none;
+
+        &:hover { color: #0F4C90; }   // flat darker step of primary
+        .fa { font-size: .65em; }
+    }
+}
+
+@media (max-width: 1280px) {
+    .o_form_renderer.vu-form .vu-three-col {
+        grid-template-columns: 320px minmax(0, 1fr) 270px;
+        gap: var(--vuf-sp-3);
+    }
+}
+
+@media (max-width: 1080px) {
+    .o_form_renderer.vu-form {
+        .vu-three-col { grid-template-columns: minmax(0, 1fr) 250px; }
+
+        .vu-col-summary {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            flex-direction: row;
+            flex-wrap: wrap;
+            position: static;
+            max-height: none;
+            overflow: visible;
+
+            .vu-summary-card { flex: 1 1 200px; }
+        }
+        .vu-col-content { grid-column: 1; grid-row: 2; }
+        .vu-col-actions { grid-column: 2; grid-row: 2; }
+    }
+}
+
+@media (max-width: 768px) {
+    .o_form_renderer.vu-form {
+        .vu-three-col { grid-template-columns: 1fr; }
+
+        .vu-col-summary,
+        .vu-col-content,
+        .vu-col-actions {
+            grid-column: 1;
+            position: static;
+            max-height: none;
+            overflow: visible;
+        }
+        .vu-col-actions { order: -1; }   // next-best-action stays prominent
+    }
+}
+
+// =========================================================================
+// 11. RESPONSIVE
+// =========================================================================
+@media (max-width: 768px) {
+    .o_form_view .o_form_renderer.vu-form {
+        --vuf-content-w: calc(100% - 2 * var(--vuf-sp-3));
+
+        .o_form_sheet { padding: var(--vuf-sp-3); }
+        .vu-hero {
+            padding: var(--vuf-sp-4);
+            .vu-hero-avatar { width: 42px; height: 42px; font-size: 16px; border-radius: 12px; }
+        }
+    }
+}

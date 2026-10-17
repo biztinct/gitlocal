@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by
+         the next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` IN
+         `email_values` (R6). A template's own rendered address can reach
+         mail.mail EMPTY, and the message is then created, queued and
+         addressed to nobody with no error anywhere. The `email_to` field
+         below is kept as documentation of who each one is FOR.
+
+         A template renders against the model it is declared on, so both
+         mails below are on `pb.vendor.agreement`. The two hand-over mails
+         moved to `biz_access` with the model they render against (ACCESS
+         P6). -->
+
+    <!-- ============ an agreement is coming up for renewal ============ -->
+    <record id="mail_template_agreement_renewal" model="mail.template">
+        <field name="name">Vendor: an agreement is coming up for renewal</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.responsible_user_id.email or '' }}</field>
+        <field name="subject">{{ object.vendor_id.name }} — the agreement ends on {{ object.date_end }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    Your agreement with
+                    <strong><t t-out="object.vendor_id.name or ''"/></strong> —
+                    <em><t t-out="object.name or ''"/></em> — ends on
+                    <strong><t t-out="object.date_end or ''"/></strong>.
+                </p>
+                <p>There are three things you can do, and one of them has to happen before that date:</p>
+                <ul>
+                    <li><strong>Renew it.</strong> A new agreement is prepared on
+                        the same terms, taking over the day after this one ends.
+                        The old one is kept and marked as replaced.</li>
+                    <li><strong>Replace it.</strong> Record a new agreement with
+                        whatever you have actually negotiated.</li>
+                    <li><strong>Let it go.</strong> Do nothing and it simply
+                        ends — but you will be reminded once more, and so will
+                        the HR team.</li>
+                </ul>
+                <p>
+                    Open <strong>Settings</strong> in Payobook and go to
+                    <strong>Vendors</strong>. Their card is near the top.
+                </p>
+                <p style="color:#4A5568;">
+                    You are being told early on purpose. A renewal negotiated in
+                    the last fortnight is a renewal the calendar negotiated.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- =============== it ran out and nobody renewed it =============== -->
+    <record id="mail_template_agreement_expired" model="mail.template">
+        <field name="name">Vendor: an agreement has run out</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.responsible_user_id.email or '' }}</field>
+        <field name="subject">{{ object.vendor_id.name }} — the agreement ran out on {{ object.date_end }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The agreement
+                    <em><t t-out="object.name or ''"/></em> with
+                    <strong><t t-out="object.vendor_id.name or ''"/></strong>
+                    ended on
+                    <strong><t t-out="object.date_end or ''"/></strong> and
+                    nothing has replaced it.
+                </p>
+                <p>
+                    That usually means one of two things: it was renewed on
+                    paper and nobody wrote it down here, or the company is still
+                    using a supplier it no longer has terms with. Both are worth
+                    ten minutes.
+                </p>
+                <p>
+                    Open <strong>Settings</strong> in Payobook, go to
+                    <strong>Vendors</strong> and either record the new agreement
+                    or take the old one off the register.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

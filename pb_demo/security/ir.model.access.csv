@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_loan_user,hr.loan.user,model_hr_loan,base.group_user,1,0,0,0
+access_hr_loan_manager,hr.loan.manager,model_hr_loan,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_loan_system,hr.loan.system,model_hr_loan,base.group_system,1,1,1,1
+access_pb_demo_generator_manager,pb.demo.generator.manager,model_pb_demo_generator,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_pb_demo_generator_system,pb.demo.generator.system,model_pb_demo_generator,base.group_system,1,1,1,1

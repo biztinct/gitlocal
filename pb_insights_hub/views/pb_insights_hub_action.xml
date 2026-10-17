@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Insights hub. No menu and no `pb.sidebar.item` on purpose: the rail
+         cutover is Cycle 5, and until then the four rail items keep working
+         exactly as they do today. This cycle reaches the hub through ONE door,
+         the "Insights Hub (preview)" entry in the global command palette.
+
+         Test URL: /odoo/action-pb_insights_hub
+                   (/bizapp/action-pb_insights_hub on the live server, biz_deroute)
+
+         Deep-linking, per pb_hub/static/src/js/hub_nav.js:
+             openHub(actionService, { tag: "pb_insights_hub", lens: "explorer" })
+         which writes `pb_lens` into the action context.
+
+         Declared as a RECORD rather than reached by bare tag, so anything that
+         returns through a breadcrumb sees a named action instead of "Unnamed"
+         (W98). -->
+    <record id="action_pb_insights_hub" model="ir.actions.client">
+        <field name="name">Insights Hub</field>
+        <field name="tag">pb_insights_hub</field>
+    </record>
+</odoo>

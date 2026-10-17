@@ -1,0 +1,568 @@
+// =====================================================================
+//  `/my/training` — .pbtr-*
+//
+//  Everything structural comes from `pb_me_portal`'s .pbme kit (the hero,
+//  the card, the tiles, the empty state). This file only says what is
+//  SPECIFIC to a page about a course: the progress bar, the lesson row,
+//  the test card and the quiz.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK BESIDE ITS TOKEN (R39). The
+//  portal surface is light-only by design — neither the theme's own
+//  `data-theme="dark"` nor an emulated `prefers-color-scheme: dark` changes
+//  a pixel of `/my/...` — so "check it in both themes" is satisfied here by
+//  proving every colour RESOLVES, which is what the fallbacks are for.
+//
+//  No `min()`/`max()` with mixed units anywhere: Sass evaluates those and a
+//  px/% pair kills the ENTIRE asset bundle, not just this file (ledger).
+//
+//  Every @keyframes is at the TOP LEVEL (R85): nested inside a selector,
+//  Sass emits it nested too and no browser plays it. And every keyframe
+//  used with `animation-fill-mode: both` declares BOTH ends (R156) — a
+//  `from`-only keyframe over a rule that already set `opacity: 0` animates
+//  from invisible to invisible and stays there.
+// =====================================================================
+
+@keyframes pbtr-rise {
+    from { transform: translateY(10px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.pbtr {
+    // ------------------------------------------------------- the notices
+    .pbtr-notice {
+        display: flex; gap: 11px; align-items: center;
+        padding: 12px 16px; margin-bottom: 16px; border-radius: 12px;
+        background: #EEF2FF; color: #3730A3;
+        border: 1px solid #C7D2FE;
+        font-size: 13.5px; font-weight: 600;
+
+        &.pbtr-notice--bad {
+            background: #FEF2F2; color: #991B1B; border-color: #FECACA;
+        }
+    }
+
+    // ----------------------------------------------------------- the back
+    .pbtr-back {
+        display: inline-flex; align-items: center; gap: 7px;
+        margin-bottom: 14px; text-decoration: none;
+        font-size: 13px; font-weight: 650; color: #64748B;
+
+        &:hover { color: #4F46E5; text-decoration: none; }
+    }
+
+    .pbtr-muted { color: #64748B; font-size: 13px; }
+    .pbtr-ic { flex: 0 0 auto; vertical-align: middle; }
+
+    // ----------------------------------------------------- the three tiles
+    .pbtr-tiles { margin-bottom: 20px; }
+
+    // ------------------------------------------------------ the course grid
+    .pbtr-grid {
+        display: grid; gap: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 860px) { .pbtr-grid { grid-template-columns: 1fr; } }
+
+    .pbtr-course {
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 20px 22px;
+    }
+    .pbtr-course-top {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 12px;
+    }
+    .pbtr-course-name {
+        margin: 0; font-size: 17px; font-weight: 750; color: #0F172A;
+        line-height: 1.35;
+    }
+    .pbtr-course-blurb {
+        margin: 6px 0 0; font-size: 13px; color: #64748B; line-height: 1.55;
+    }
+    .pbtr-done-seal { color: #047857; flex: 0 0 auto; }
+
+    // ------------------------------------------------------ the progress bar
+    // Padding and box-sizing declared rather than inherited, for the reason
+    // the backend twin carries in full: a track whose content box is
+    // narrower than its border box makes 100% draw as two thirds.
+    .pbtr-bar {
+        height: 8px; border-radius: 999px; background: #E2E8F0;
+        overflow: hidden; padding: 0; box-sizing: border-box;
+    }
+    .pbtr-bar-fill {
+        height: 100%; border-radius: 999px; background: #4F46E5;
+        min-width: 0; padding: 0; box-sizing: border-box; display: block;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbtr-bar-fill { transition: width .4s ease; }
+    }
+    .pbtr-bar-say {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 10px; font-size: 12.5px; color: #475569;
+
+        b { color: #0F172A; }
+        .pbtr-muted { display: inline-flex; align-items: center; gap: 5px; }
+    }
+
+    // ------------------------------------------------------------ the chips
+    .pbtr-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+    .pbtr-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 999px;
+        font-size: 12px; font-weight: 650;
+        border: 1px solid #E2E8F0; background: #F8FAFC; color: #475569;
+
+        &.pbtr-chip--wait { border-color: #E2E8F0; background: #F1F5F9; color: #64748B; }
+        &.pbtr-chip--go   { border-color: #C7D2FE; background: #EEF2FF; color: #3730A3; }
+        &.pbtr-chip--ok   { border-color: #A7F3D0; background: #ECFDF5; color: #047857; }
+        &.pbtr-chip--bad  { border-color: #FECACA; background: #FEF2F2; color: #991B1B; }
+    }
+
+    // ----------------------------------------------------------- the buttons
+    .pbtr-btn--primary {
+        background: #4F46E5; border-color: #4F46E5; color: #FFFFFF;
+        display: inline-flex; align-items: center; gap: 8px;
+
+        &:hover, &:focus { background: #4338CA; border-color: #4338CA; color: #FFFFFF; }
+    }
+    .pbtr-btn--big { padding: 11px 22px; font-size: 14.5px; }
+
+    .pbtr-course-act { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbtr-nextline {
+        margin: 0; font-size: 12.5px; color: #64748B;
+    }
+
+    // ==================================================================
+    //  the course page
+    // ==================================================================
+    .pbtr-progress { padding: 20px 22px; margin-bottom: 20px; }
+    .pbtr-progress-say {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .pbtr-progress-n {
+        font-size: 30px; font-weight: 780; color: #0F172A; line-height: 1;
+        margin-bottom: 5px;
+    }
+
+    .pbtr-group { margin-bottom: 18px; }
+    .pbtr-group-name {
+        margin: 0 0 9px 2px; font-size: 12px; font-weight: 750;
+        letter-spacing: .06em; text-transform: uppercase; color: #64748B;
+    }
+    .pbtr-lessons { padding: 6px 8px; }
+
+    .pbtr-lesson {
+        display: flex; align-items: center; gap: 12px;
+        padding: 13px 12px; border-radius: 11px;
+        text-decoration: none; color: inherit;
+
+        & + .pbtr-lesson { border-top: 1px solid #F1F5F9; border-radius: 0; }
+        &:hover { background: #F8FAFC; text-decoration: none; }
+        &.pbtr-lesson--hi { background: #EEF2FF; }
+    }
+    .pbtr-tick {
+        flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #CBD5E1; background: #FFFFFF;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #FFFFFF;
+
+        &.pbtr-tick--on { border-color: #047857; background: #047857; }
+    }
+    .pbtr-lesson-ic { flex: 0 0 auto; color: #64748B; }
+    .pbtr-lesson-main { flex: 1 1 auto; min-width: 0; }
+    .pbtr-lesson-name {
+        display: block; font-size: 14px; font-weight: 640; color: #0F172A;
+    }
+    .pbtr-lesson-meta {
+        display: block; font-size: 12px; color: #94A3B8; margin-top: 2px;
+    }
+    .pbtr-lesson--done .pbtr-lesson-name { color: #475569; }
+    .pbtr-lesson-go { flex: 0 0 auto; color: #CBD5E1; }
+    .pbtr-lesson:hover .pbtr-lesson-go { color: #4F46E5; }
+
+    // -------------------------------------------------------- the test card
+    .pbtr-test {
+        display: flex; align-items: flex-start; gap: 16px;
+        padding: 22px; margin-top: 4px;
+        border-left: 4px solid #CBD5E1;
+
+        &.pbtr-test--ready  { border-left-color: #4F46E5; background: #FBFBFF; }
+        &.pbtr-test--passed { border-left-color: #047857; background: #F6FEFB; }
+        &.pbtr-test--failed { border-left-color: #B91C1C; background: #FFFAFA; }
+    }
+    .pbtr-test-ic { flex: 0 0 auto; color: #4F46E5; margin-top: 2px; }
+    .pbtr-test--passed .pbtr-test-ic { color: #047857; }
+    .pbtr-test--locked .pbtr-test-ic { color: #94A3B8; }
+    .pbtr-test--failed .pbtr-test-ic { color: #B91C1C; }
+    .pbtr-test-main { flex: 1 1 auto; min-width: 0; }
+    .pbtr-test-name {
+        margin: 0 0 5px; font-size: 16px; font-weight: 740; color: #0F172A;
+    }
+    .pbtr-test-main p { margin: 0; line-height: 1.55; }
+    .pbtr-test-act {
+        flex: 0 0 auto; display: flex; gap: 8px; flex-wrap: wrap;
+        align-items: center;
+    }
+    // ON A PHONE THE TEST CARD STACKS. Found by walking the flow at 390px:
+    // three columns in 340 available pixels put the test's name on three
+    // lines and its sentence into a four-word-wide column beside a button.
+    @media (max-width: 560px) {
+        .pbtr-test { flex-wrap: wrap; }
+        .pbtr-test-main { flex: 1 1 100%; min-width: 0; }
+        .pbtr-test-act { flex: 1 1 100%; }
+        .pbtr-test-act form, .pbtr-test-act .pbme-btn { width: 100%; }
+        .pbtr-test-act button { width: 100%; justify-content: center; }
+    }
+
+    // ==================================================================
+    //  the lesson page
+    // ==================================================================
+    .pbtr-lesson-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .pbtr-lesson-desc {
+        margin: 0 0 16px; font-size: 13.5px; color: #475569; line-height: 1.6;
+        max-width: 68ch;
+    }
+    .pbtr-stage { padding: 0; overflow: hidden; }
+
+    // A 16:9 box that never overflows its column. `aspect-ratio` alone
+    // would leave older engines with a zero-height iframe, so the padding
+    // trick stays underneath it.
+    .pbtr-frame {
+        position: relative; width: 100%; padding-top: 56.25%;
+        background: #0F172A;
+
+        iframe, video, embed, object {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; border: 0;
+        }
+        &.pbtr-frame--doc { padding-top: 120%; background: #F1F5F9; }
+    }
+    @media (max-width: 700px) {
+        .pbtr-frame.pbtr-frame--doc { padding-top: 150%; }
+    }
+
+    .pbtr-image {
+        padding: 18px; text-align: center; background: #F8FAFC;
+
+        img { max-width: 100%; height: auto; border-radius: 10px; }
+    }
+
+    .pbtr-article {
+        padding: 26px 30px; font-size: 15px; line-height: 1.7; color: #1E293B;
+
+        h1, h2, h3, h4 { color: #0F172A; margin-top: 1.4em; }
+        img { max-width: 100%; height: auto; }
+        table { max-width: 100%; }
+    }
+    @media (max-width: 700px) { .pbtr-article { padding: 20px 18px; } }
+
+    // ------------------------------------------------------------- the quiz
+    .pbtr-quiz { padding: 24px 26px; }
+    @media (max-width: 700px) { .pbtr-quiz { padding: 20px 18px; } }
+
+    .pbtr-quiz-say {
+        display: flex; gap: 10px; align-items: center;
+        padding: 12px 14px; border-radius: 11px; margin-bottom: 18px;
+        font-size: 13.5px; font-weight: 640;
+
+        &.pbtr-quiz-say--ok  { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        &.pbtr-quiz-say--bad { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+    }
+
+    .pbtr-q {
+        padding: 16px 18px; border-radius: 12px; margin-bottom: 12px;
+        border: 1px solid #E2E8F0; background: #FFFFFF;
+
+        &.pbtr-q--wrong { border-color: #FECACA; background: #FFFAFA; }
+        &.pbtr-q--right { border-color: #A7F3D0; background: #F6FEFB; }
+    }
+    .pbtr-q-text {
+        margin: 0 0 11px; font-size: 14.5px; font-weight: 680; color: #0F172A;
+        line-height: 1.5;
+    }
+    .pbtr-q-flag {
+        display: inline-block; margin-left: 9px; padding: 2px 9px;
+        border-radius: 999px; background: #FEE2E2; color: #991B1B;
+        font-size: 11px; font-weight: 700; text-transform: none;
+    }
+    .pbtr-a {
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 9px 11px; border-radius: 9px; margin: 0 0 4px;
+        font-size: 13.5px; color: #334155; cursor: pointer; font-weight: 500;
+
+        &:hover { background: #F8FAFC; }
+        input { margin-top: 3px; flex: 0 0 auto; accent-color: #4F46E5; }
+    }
+
+    // ------------------------------------------------------------- the foot
+    .pbtr-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .pbtr-foot-main { flex: 1 1 auto; display: flex; justify-content: center; }
+    .pbtr-foot-gap { flex: 0 0 auto; width: 1px; }
+    .pbtr-foot-next { text-align: right; }
+    @media (max-width: 700px) {
+        .pbtr-foot { flex-direction: column-reverse; align-items: stretch; }
+        .pbtr-foot .pbme-btn { justify-content: center; }
+        .pbtr-foot-main form, .pbtr-foot-main .pbme-btn { width: 100%; }
+        .pbtr-foot-main button { width: 100%; justify-content: center; }
+        .pbtr-foot-gap { display: none; }
+    }
+
+    // ---------------------------------------------------------- the arrival
+    @media (prefers-reduced-motion: no-preference) {
+        .pbtr-course, .pbtr-progress, .pbtr-group, .pbtr-test, .pbtr-stage {
+            animation: pbtr-rise .3s ease both;
+        }
+    }
+}
+
+// =====================================================================
+//  THE TEST ENGINE'S OWN PAGES — ONE RULE, AND WHY ONLY ONE.
+//
+//  The test runs on `/survey/...`, which is not our template and must not
+//  become one: rebuilding a scored-test player is exactly what ruling D14
+//  says not to do. Walking the flow on a phone found three things about
+//  that page, and only ONE of them belongs to this module.
+//
+//    * The teal buttons are `btn-secondary`, and `btn-secondary` is CYAN
+//      EVERYWHERE IN THIS PRODUCT — it is the theme's own secondary colour.
+//      Re-tinting it here would make this one page disagree with every
+//      other dialog in Payobook, which is worse than the thing it fixes.
+//      Left alone, deliberately, and written up in the phase report.
+//    * The dialog itself is full-height on a phone because of the theme's
+//      `o_modal_full`, which every OWL confirmation dialog in the product
+//      shares. A `biz_theme` job with a blast radius of every screen, and
+//      not a feature phase's (the shape R20 and R134 both settle).
+//    * The BODY inside it, though, had no height cap at all, so one short
+//      sentence rendered in an empty box two thousand pixels tall. That is
+//      this page's own, it is reached by pressing a button on our page, and
+//      it is one rule.
+// =====================================================================
+.o_survey_layout .modal-body,
+body:has(.o_survey_form) .modal-body {
+    max-height: 40vh;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+
+// =====================================================================
+//  E2 — the due date, the way out, and the manager's page.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, exactly as
+//  every other rule in this file does, because the employee area is
+//  light-only by design (R39) and there is no portal dark palette to fall
+//  back onto. The point of the fallback is a colour that RESOLVES on a
+//  page the theme has never styled, not a second theme.
+//
+//  Wide content scrolls inside its own container; the page body never
+//  scrolls sideways.
+// =====================================================================
+.pbtr {
+
+    // --------------------------------------------- the line that is loud
+    .pbtr-alarm {
+        display: flex; align-items: flex-start; gap: 11px;
+        padding: 13px 16px; margin: 0 0 18px;
+        border-radius: 12px;
+        border: 1px solid #FECACA; background: #FEF2F2; color: #991B1B;
+        font-size: 13.5px; line-height: 1.6;
+
+        svg { flex: 0 0 auto; margin-top: 2px; }
+    }
+
+    .pbtr-teamline { margin: 0 0 18px; }
+    .pbtr-teamnote {
+        margin: 14px 0 0; font-size: 12.5px; line-height: 1.6;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------ the due-date strip
+    .pbtr-due {
+        display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+        margin: 0 0 12px;
+
+        // R33: the kit capitalises a status word, which is right for
+        // "Passed" and wrong for a sentence. These carry sentences.
+        .pbtr-chip { text-transform: none; }
+    }
+    .pbtr-duecard { padding: 16px 18px; margin-bottom: 16px; }
+
+    // ------------------------------------------------ asking for longer
+    .pbtr-ask {
+        margin-top: 12px;
+
+        > summary {
+            list-style: none; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+            &::-webkit-details-marker { display: none; }
+        }
+    }
+    .pbtr-ask-form {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 16px; margin-top: 13px; padding: 15px 16px;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0; background: #F8FAFC;
+
+        button { grid-column: 1 / -1; justify-self: start; }
+    }
+    @media (max-width: 640px) {
+        .pbtr-ask-form { grid-template-columns: minmax(0, 1fr); }
+    }
+    .pbtr-f {
+        display: flex; flex-direction: column; gap: 6px; min-width: 0;
+
+        > span {
+            font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
+            color: #64748B;
+        }
+        // The .pbme kit styles `input` and `textarea` and NOT `select`
+        // (R135), so a picker on a portal form has to be styled here or one
+        // field looks like the operating system and the rest look like the
+        // product.
+        select, input, textarea {
+            width: 100%; box-sizing: border-box;
+            border: 1px solid #E2E8F0; border-radius: 9px;
+            padding: 9px 11px; font: inherit; font-size: 13.5px;
+            color: #334155; background: #FFFFFF; outline: none;
+            appearance: auto;
+
+            &:focus {
+                border-color: #4F46E5;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, .16);
+            }
+        }
+    }
+    .pbtr-f--wide { grid-column: 1 / -1; }
+    .pbtr-ask-note {
+        grid-column: 1 / -1; margin: 0; font-size: 12px; line-height: 1.6;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------ the manager's page
+    .pbtr-team { padding: 0; overflow-x: auto; }
+    .pbtr-team-row {
+        display: grid; grid-template-columns: 1.3fr 1fr .9fr;
+        gap: 14px; align-items: center;
+        padding: 13px 18px; min-width: 620px;
+
+        & + & { border-top: 1px solid #F1F5F9; }
+    }
+    .pbtr-team-row--late { box-shadow: inset 3px 0 0 #DC2626; }
+    .pbtr-team-who {
+        display: flex; flex-direction: column; gap: 3px; min-width: 0;
+
+        b { font-size: 13.5px; font-weight: 700; color: #0F172A; }
+    }
+    .pbtr-team-bar {
+        display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .pbtr-team-when {
+        display: flex; flex-direction: column; gap: 5px;
+        align-items: flex-start;
+
+        .pbtr-chip { text-transform: none; }
+    }
+
+    // ON A PHONE THE ROW STACKS, IT DOES NOT SCROLL. A horizontal scroller is
+    // the right answer for a wide table nobody reads on a phone; it is the
+    // wrong answer here, because the column it pushes off the screen is the
+    // DATE — the one thing this page exists to show. Found at 390px: three
+    // names, three progress bars and not one "7 days overdue" anywhere.
+    @media (max-width: 680px) {
+        .pbtr-team { overflow-x: visible; }
+        .pbtr-team-row {
+            grid-template-columns: minmax(0, 1fr);
+            min-width: 0; gap: 9px; padding: 15px 18px;
+        }
+        .pbtr-team-bar { max-width: 260px; }
+    }
+}
+
+
+// =====================================================================
+//  E3 — the allowance, and claiming a course back.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, exactly as
+//  every other rule in this file does, because the employee area is
+//  light-only by design (R39) and there is no portal dark palette to fall
+//  back onto.
+//
+//  THE WALLET IS THE HERO AND IT IS ONE NUMBER. Everything else on the
+//  card is smaller than it: what is left to spend is the thing somebody
+//  came for, and a card that gave the allowance, the agreed total and the
+//  remainder the same weight would be three numbers and no answer.
+//
+//  No `min()`/`max()` with mixed units anywhere (ledger): Sass evaluates
+//  those and a px/% pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+.pbtr {
+
+    // ------------------------------------------------------- the wallet
+    .pbtr-wallet {
+        padding: 20px 22px; margin-bottom: 18px;
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: pbtr-rise .32s ease both;
+        }
+    }
+    .pbtr-wallet-top {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .pbtr-wallet-l {
+        font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
+        text-transform: uppercase; color: #64748B; margin-bottom: 4px;
+    }
+    .pbtr-wallet-v {
+        font-size: 30px; font-weight: 750; line-height: 1.1;
+        color: #4F46E5; letter-spacing: -.02em;
+    }
+    .pbtr-wallet-of {
+        font-size: 13px; color: #64748B; text-align: right;
+
+        b { color: #0F172A; font-weight: 700; }
+    }
+    .pbtr-wallet-note {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin: 12px 0 0; font-size: 12.5px; line-height: 1.6;
+        color: #64748B;
+    }
+
+    // ------------------------------------------------------- the form
+    // It is the .pbtr-ask form with one more row in it, so it inherits every
+    // field rule above and only the spacing below it is new.
+    .pbtr-claim-form { margin: 0 0 20px; }
+
+    // ------------------------------------------------------- the claims
+    .pbtr-claim { padding: 18px 20px; }
+    .pbtr-claim-amount {
+        flex: 0 0 auto; font-size: 17px; font-weight: 750;
+        color: #0F172A; white-space: nowrap;
+    }
+    .pbtr-claim-files {
+        display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+        margin-top: 12px;
+
+        .pbme-btn { font-size: 12.5px; }
+    }
+
+    // ON A PHONE THE AMOUNT GOES UNDER THE NAME, IT DOES NOT SHRINK IT. A
+    // course name and a seven-figure amount do not share a 390px row, and
+    // the half that gets squeezed is always the name — which is the half
+    // that says what the claim is about (R187, reached from the card side).
+    @media (max-width: 560px) {
+        .pbtr-wallet-top { flex-direction: column; align-items: flex-start; }
+        .pbtr-wallet-of { text-align: left; }
+        .pbtr-wallet-v { font-size: 26px; }
+        .pbtr-claim .pbtr-course-top {
+            flex-direction: column; align-items: flex-start; gap: 6px;
+        }
+        .pbtr-claim-amount { font-size: 20px; }
+    }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PayAI Full-Page Chat Action (client action) -->
+    <record id="action_payai_chat_full" model="ir.actions.client">
+        <field name="name">PayAI Chat</field>
+        <field name="tag">payai_chat_full</field>
+    </record>
+
+    <!-- PayAI Conversation List View (for history) -->
+    <record id="view_payroll_ai_conversation_tree" model="ir.ui.view">
+        <field name="name">payroll.ai.conversation.tree</field>
+        <field name="model">payroll.ai.conversation</field>
+        <field name="arch" type="xml">
+            <list string="Chat History">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="message_count"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_payai_conversations" model="ir.actions.act_window">
+        <field name="name">Chat History</field>
+        <field name="res_model">payroll.ai.conversation</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

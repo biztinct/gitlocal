@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ETP E1 — Expenses on My Payobook. The pages reuse pb_me_portal's .pbme
+       kit (tokens, buttons, chips, empty state); `.pbex-*` is this module's
+       layer (static/src/scss/expense.scss). Every word a person sees is here
+       or in the facade's status words; the controller passes facts only.
+       Icons: this module's own `ex_icon` (ledger E12 — never a new branch in
+       pb_me_portal's `ess_icon`), always passed as a t-value (W87). -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_expenses" name="Expenses breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'expenses'" class="breadcrumb-item active">Expenses</li>
+      <li t-if="page_name in ('expenses_new', 'expense_claim')" class="breadcrumb-item"><a href="/my/expenses">Expenses</a></li>
+      <li t-if="page_name == 'expenses_new'" class="breadcrumb-item active">New claim</li>
+      <li t-if="page_name == 'expense_claim' and name" class="breadcrumb-item active" t-out="name"/>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home (D9)                            -->
+  <!-- ============================================================= -->
+  <!-- Always drawn for an employee: the first claim must have a door. The
+       count is the claims waiting on the person (drafts and refused ones);
+       pb_me_portal's registry (`/my/expenses`) gives it its section, badge
+       and words. -->
+  <template id="portal_my_home_expenses" name="Expenses home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="26">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Expenses</t>
+        <t t-set="text">Claim back what you paid for</t>
+        <t t-set="url" t-value="'/my/expenses'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'expense_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Icons (Lucide, inline SVG)                                    -->
+  <!-- ============================================================= -->
+  <!-- Call with `icon` as a t-value and `isz` optional. Nothing may sit
+       between a t-elif and its t-else, not even a comment (W23). -->
+  <template id="ex_icon" name="Expenses icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         class="pbme-ic" aria-hidden="true">
+      <t t-if="icon == 'utensils'"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></t>
+      <t t-elif="icon == 'car'"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></t>
+      <t t-elif="icon == 'phone'"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></t>
+      <t t-elif="icon == 'gift'"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></t>
+      <t t-elif="icon == 'camera'"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></t>
+      <t t-elif="icon == 'image-up'"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"/><path d="m14 19.5 3-3 3 3"/><path d="M17 22v-5.5"/><circle cx="9" cy="9" r="2"/></t>
+      <t t-elif="icon == 'trash'"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></t>
+      <t t-elif="icon == 'credit-card'"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></t>
+      <t t-elif="icon == 'pencil'"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></t>
+      <t t-elif="icon == 'undo'"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></t>
+      <t t-elif="icon == 'file-text'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M16 13H8M16 17H8M10 9H8"/></t>
+      <t t-elif="icon == 'x'"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></t>
+      <t t-elif="icon == 'hourglass'"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></t>
+      <t t-elif="icon == 'plane'"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></t>
+      <t t-elif="icon == 'check-circle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14"/><path d="M12 5v14"/></t>
+      <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'chevron-right'"><path d="m9 18 6-6-6-6"/></t>
+      <t t-elif="icon == 'message-circle-question'"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></t>
+      <t t-elif="icon == 'wallet'"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></t>
+      <t t-else=""><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <!-- The status pill. Quiet-board palette: grey at rest, an amber dot while
+       somebody else has it, colour only when the person must act. -->
+  <template id="pbex_pill" name="Expenses: status pill">
+    <span t-att-class="'pbex-pill pbex-pill--%s%s' % (tone, ' is-fresh' if fresh else '')" role="status">
+      <i class="pbex-pill-dot" aria-hidden="true"/>
+      <span t-out="label"/>
+    </span>
+  </template>
+
+  <!-- An error said in plain words. `error` is the sentence. -->
+  <template id="pbex_alert" name="Expenses: error line">
+    <div t-if="error" class="pbex-alert" role="alert">
+      <span class="pbex-alert-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span><b t-if="error_n">Receipt <t t-out="error_n"/>: </b><t t-out="error"/></span>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One receipt: the drop area is the card (the hero)             -->
+  <!-- ============================================================= -->
+  <!-- `blk` = {idx, n, sfx, amount, product_id, date, note, company_card}.
+       Field names carry the block's suffix ('' for the first, '_1', '_2'…;
+       '__SFX__' in the hidden blank the script copies). The warnings are
+       drawn here, hidden, so the script holds no words. -->
+  <template id="pbex_block" name="Expenses: one receipt">
+    <fieldset t-att-class="'pbex-rcpt%s' % ('' if blk['idx'] == 0 else ' is-extra')"
+              t-att-data-pbex-block="str(blk['idx'])" t-att-disabled="'disabled' if blank else None">
+      <div class="pbex-rcpt-head" t-if="blk['idx'] != 0">
+        <span class="pbex-rcpt-n">Receipt <span data-pbex-n=""><t t-out="blk['n']"/></span></span>
+        <button type="button" class="pbex-rcpt-x" data-pbex-unblock="" title="Remove this receipt">
+          <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'x'"/><t t-set="isz" t-value="16"/></t>
+          <span class="visually-hidden">Remove this receipt</span>
+        </button>
+      </div>
+      <div class="pbex-drop" data-pbex-drop="">
+        <label class="pbex-drop-zone">
+          <input type="file" t-attf-name="receipt#{blk['sfx']}" class="pbex-drop-input"
+                 accept="image/*,.pdf,application/pdf" data-pbex-file=""/>
+          <span class="pbex-drop-empty">
+            <span class="pbex-drop-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'image-up'"/><t t-set="isz" t-value="26"/></t></span>
+            <b class="pbex-drop-t">Snap or choose a receipt</b>
+            <span class="pbex-drop-s">A photo or a PDF, up to 10 MB. You can drop it here.</span>
+          </span>
+          <span class="pbex-drop-full d-none" data-pbex-preview="">
+            <img class="pbex-drop-img d-none" alt="Your receipt" data-pbex-img=""/>
+            <span class="pbex-drop-doc d-none" data-pbex-doc="">
+              <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="34"/></t>
+              <span class="pbex-drop-docname" data-pbex-docname=""/>
+            </span>
+            <span class="pbex-drop-change"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'image-up'"/><t t-set="isz" t-value="14"/></t>Choose another</span>
+          </span>
+        </label>
+        <label class="pbex-cam">
+          <input type="file" t-attf-name="receipt_cam#{blk['sfx']}" class="pbex-cam-input"
+                 accept="image/*" capture="environment" data-pbex-file=""/>
+          <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'camera'"/><t t-set="isz" t-value="18"/></t>
+          <span>Take a photo</span>
+        </label>
+      </div>
+      <p class="pbex-warn d-none" data-pbex-warn="size">That file is over 10 MB. Try a smaller photo, or a PDF of the page.</p>
+      <p class="pbex-warn d-none" data-pbex-warn="type">A receipt can be a photo (JPG, PNG or WEBP) or a PDF. Choose another file.</p>
+
+      <div class="pbex-fields" data-pbex-fields="">
+        <label class="pbex-field pbex-amount">
+          <span class="pbex-label">How much</span>
+          <span class="pbex-amount-box">
+            <span t-if="money['position'] == 'before'" class="pbex-cur" t-out="money['symbol']"/>
+            <input type="text" inputmode="decimal" autocomplete="off" class="pbex-amount-input"
+                   t-attf-name="amount#{blk['sfx']}" t-att-value="blk['amount']" placeholder="0"
+                   maxlength="24" data-pbex-amount=""/>
+            <span t-if="money['position'] != 'before'" class="pbex-cur" t-out="money['symbol']"/>
+          </span>
+        </label>
+
+        <fieldset class="pbex-field pbex-cats">
+          <legend class="pbex-label">What it was</legend>
+          <div class="pbex-chips">
+            <label t-foreach="categories" t-as="c" class="pbex-chip">
+              <input type="radio" class="pbex-chip-input" t-attf-name="product_id#{blk['sfx']}"
+                     t-att-value="c['id']" data-pbex-cat=""
+                     t-att-checked="'checked' if c['id'] == blk['product_id'] else None"/>
+              <span class="pbex-chip-in">
+                <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="c['icon']"/><t t-set="isz" t-value="15"/></t>
+                <span t-out="c['name']"/>
+              </span>
+            </label>
+          </div>
+          <p t-if="not categories" class="pbex-hint">Nothing can be claimed yet. HR sets up what expenses can be claimed for.</p>
+        </fieldset>
+
+        <div class="pbex-row">
+          <label class="pbex-field pbex-when">
+            <span class="pbex-label">When</span>
+            <input type="date" class="pbex-date" t-attf-name="date#{blk['sfx']}"
+                   t-att-value="blk['date'] or today" t-att-max="today"/>
+          </label>
+          <label class="pbex-toggle">
+            <input type="checkbox" class="pbex-toggle-input" value="1" t-attf-name="company_card#{blk['sfx']}"
+                   t-att-checked="'checked' if blk['company_card'] else None"/>
+            <span class="pbex-switch" aria-hidden="true"/>
+            <span class="pbex-toggle-t"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'credit-card'"/><t t-set="isz" t-value="15"/></t>Paid with a company card</span>
+          </label>
+        </div>
+
+        <details class="pbex-note" t-att-open="'open' if blk['note'] else None">
+          <summary class="pbex-note-s"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'pencil'"/><t t-set="isz" t-value="14"/></t>Add a note</summary>
+          <textarea class="pbex-input pbex-note-t" rows="2" maxlength="500" t-attf-name="note#{blk['sfx']}"
+                    placeholder="Anything that helps, for example: dinner with the Hanoi client" data-pbex-note=""><t t-out="blk['note'] or ''"/></textarea>
+        </details>
+      </div>
+    </fieldset>
+  </template>
+
+  <!-- The send button: the only solid button on the page. The reasons it can
+       not be pressed yet are drawn here (hidden); the script shows one. -->
+  <template id="pbex_send" name="Expenses: send button">
+    <button type="submit" name="action" value="send" class="pbme-btn pbme-btn--primary pbex-send" data-pbex-send="">
+      <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="16"/></t>
+      <span data-pbex-say="ok">Send for approval</span>
+      <span class="d-none" data-pbex-say="file">Add a receipt first</span>
+      <span class="d-none" data-pbex-say="amount">Type the amount first</span>
+      <span class="d-none" data-pbex-say="cat">Pick what it was first</span>
+    </button>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/expenses — the list (a quiet board)                       -->
+  <!-- ============================================================= -->
+  <template id="portal_my_expenses" name="Expenses (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbex">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Expenses</t>
+          <t t-set="hero_sub">Claim back what you paid for. Snap the receipt and send it in under a minute.</t>
+          <t t-if="counts['all']" t-set="hero_actions"><a class="pbme-btn pbme-btn--primary" href="/my/expenses/new"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'camera'"/><t t-set="isz" t-value="16"/></t>New claim</a></t>
+        </t>
+
+        <div t-if="not counts['all']" class="pbme-empty pbex-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'receipt'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>No claims yet.</h3>
+          <p>Snap a receipt and we take it from there.</p>
+          <a class="pbme-btn pbme-btn--primary" href="/my/expenses/new"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'camera'"/><t t-set="isz" t-value="16"/></t>Snap a receipt</a>
+        </div>
+
+        <t t-else="">
+          <p class="pbex-strip">
+            <span t-if="counts['act']" class="pbex-stat is-act"><b t-out="counts['act']"/> need you</span>
+            <span class="pbex-stat"><b t-out="counts['wait']"/> waiting</span>
+            <span t-if="paid_year" class="pbex-stat"><b t-out="paid_year"/> paid this year</span>
+            <span t-else="" class="pbex-stat">nothing paid yet this year</span>
+          </p>
+          <nav class="pbme-chips" aria-label="Show">
+            <a t-att-class="'pbme-chip is-on' if bucket == 'all' else 'pbme-chip'" href="/my/expenses" t-att-aria-current="'page' if bucket == 'all' else None">All<span class="pbme-chip-n" t-out="counts['all']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'act' else 'pbme-chip'" href="/my/expenses?filter=act" t-att-aria-current="'page' if bucket == 'act' else None">Waiting on you<span class="pbme-chip-n" t-out="counts['act']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'wait' else 'pbme-chip'" href="/my/expenses?filter=wait" t-att-aria-current="'page' if bucket == 'wait' else None">With someone<span class="pbme-chip-n" t-out="counts['wait']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'done' else 'pbme-chip'" href="/my/expenses?filter=done" t-att-aria-current="'page' if bucket == 'done' else None">Done<span class="pbme-chip-n" t-out="counts['done']"/></a>
+          </nav>
+
+          <ul t-if="cards" class="pbex-cards" data-pbex-rows="">
+            <li t-foreach="cards" t-as="c" class="pbex-cards-li">
+              <a t-att-class="'pbex-cc%s%s' % (' is-act' if c['tone'] == 'act' else '', ' is-fresh' if c['id'] == fresh else '')" t-att-href="c['url']">
+                <span class="pbex-cc-media">
+                  <img t-if="c['thumb']" t-att-src="c['thumb']" alt="" loading="lazy" class="pbex-fade"/>
+                  <t t-else="" t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'file-text' if c['is_pdf'] else 'receipt'"/><t t-set="isz" t-value="22"/></t>
+                </span>
+                <span class="pbex-cc-body">
+                  <b class="pbex-cc-title" t-out="c['title']"/>
+                  <span class="pbex-cc-meta">
+                    <span t-if="c['n'] == 1">1 receipt</span>
+                    <span t-else=""><t t-out="c['n']"/> receipts</span>
+                    <span class="pbex-cc-date" t-out="c['date']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/>
+                  </span>
+                </span>
+                <span class="pbex-cc-side">
+                  <b class="pbex-cc-amt" t-out="c['amount']"/>
+                  <t t-call="pb_me_expense.pbex_pill"><t t-set="tone" t-value="c['tone']"/><t t-set="label" t-value="c['label']"/><t t-set="fresh" t-value="False"/></t>
+                </span>
+              </a>
+            </li>
+          </ul>
+          <div t-else="" class="pbme-empty pbex-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3 t-if="bucket == 'act'">Nothing is waiting on you</h3>
+            <h3 t-elif="bucket == 'wait'">Nothing is with anyone right now</h3>
+            <h3 t-else="">Nothing finished yet</h3>
+            <p>Your other claims are under All.</p>
+            <a class="pbme-btn pbme-btn--ghost" href="/my/expenses">Show all claims</a>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/expenses/new — the receipt is the card                     -->
+  <!-- ============================================================= -->
+  <template id="portal_expense_new" name="Expenses: new claim (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbex pbex-newpage">
+        <form class="pbex-form" method="post" action="/my/expenses/new" enctype="multipart/form-data"
+              data-pbex-form="" t-att-data-pbex-max="max_receipts"
+              t-att-data-pbex-decimals="money['decimals']" t-att-data-pbex-thousands="money['thousands']"
+              t-att-data-pbex-point="money['decimal_point']" t-att-data-pbex-symbol="money['symbol']"
+              t-att-data-pbex-position="money['position']">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <header class="pbex-head">
+            <div class="pbme-eyebrow">New claim</div>
+            <h1 class="pbex-h1">Claim back what you paid</h1>
+            <p class="pbex-lead">Snap the receipt, type the amount, pick what it was. We take it from there.</p>
+          </header>
+          <t t-call="pb_me_expense.pbex_alert"/>
+
+          <div class="pbex-stack" data-pbex-stack="">
+            <t t-foreach="blocks" t-as="blk">
+              <t t-call="pb_me_expense.pbex_block"><t t-set="blank" t-value="False"/></t>
+            </t>
+          </div>
+          <!-- the blank receipt "Add another receipt" copies (disabled, so it
+               is never sent as it stands) -->
+          <div class="d-none" data-pbex-blank="">
+            <t t-call="pb_me_expense.pbex_block"><t t-set="blk" t-value="blank"/><t t-set="blank" t-value="True"/></t>
+          </div>
+
+          <label t-if="trips" class="pbex-field pbex-trip">
+            <span class="pbex-label"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="14"/></t>Which trip was this for?</span>
+            <select name="trip_id" class="pbex-input pbex-select">
+              <option value="">Not for a trip</option>
+              <option t-foreach="trips" t-as="tr" t-att-value="tr['id']" t-att-selected="'selected' if tr['id'] == trip_id else None"><t t-out="tr['name']"/><t t-if="tr['where']"> · <t t-out="tr['where']"/></t></option>
+            </select>
+          </label>
+
+          <div class="pbex-total d-none" data-pbex-total-row="">
+            <span>Total</span>
+            <b data-pbex-total="">0</b>
+          </div>
+
+          <div class="pbex-actions">
+            <t t-call="pb_me_expense.pbex_send"/>
+            <button type="submit" name="action" value="add" class="pbex-more" data-pbex-more="">
+              <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="16"/></t>Add another receipt
+            </button>
+            <span class="pbex-kbd">Ctrl + Enter sends</span>
+          </div>
+          <a class="pbex-cancel" href="/my/expenses">Cancel</a>
+        </form>
+
+        <aside class="pbex-next" aria-labelledby="pbex-next-h">
+          <h2 class="pbex-next-h" id="pbex-next-h">What happens next</h2>
+          <ol class="pbex-next-steps">
+            <li><span class="pbex-next-n">1</span><span><b>It goes to the people who approve expenses</b><span>Usually your manager first, then finance.</span></span></li>
+            <li><span class="pbex-next-n">2</span><span><b>You see every step here</b><span>If something needs fixing, you can change it and send it again.</span></span></li>
+            <li><span class="pbex-next-n">3</span><span><b>Finance pays you back</b><span>The claim shows Paid once the money is on its way.</span></span></li>
+          </ol>
+        </aside>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/expenses/<id> — one claim                                  -->
+  <!-- ============================================================= -->
+  <template id="pbex_receipt_card" name="Expenses: receipt card">
+    <li class="pbex-rc">
+      <a t-if="r['full']" class="pbex-rc-media" t-att-href="r['full']" target="_blank" rel="noopener" title="Open the receipt">
+        <img t-if="r['thumb']" t-att-src="r['thumb']" alt="Receipt" loading="lazy" class="pbex-fade"/>
+        <span t-else="" class="pbex-rc-doc">
+          <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="28"/></t>
+          <span class="pbex-rc-docname" t-out="r['filename']"/>
+        </span>
+      </a>
+      <span t-else="" class="pbex-rc-media is-empty">
+        <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'receipt'"/><t t-set="isz" t-value="26"/></t>
+      </span>
+      <div class="pbex-rc-body">
+        <span class="pbex-rc-cat"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="r['icon']"/><t t-set="isz" t-value="14"/></t><t t-out="r['category']"/></span>
+        <b class="pbex-rc-amt" t-out="r['amount']"/>
+        <span class="pbex-rc-meta">
+          <span t-out="r['date']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/>
+          <span t-if="r['company_card']" class="pbex-rc-card">Company card</span>
+        </span>
+        <p t-if="r['note']" class="pbex-rc-note" t-out="r['note']"/>
+      </div>
+      <form t-if="status['can']['remove']" method="post" class="pbex-rc-rm"
+            t-attf-action="/my/expenses/#{id}/receipt/#{r['id']}/remove">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+        <button type="submit" class="pbex-rc-x" title="Remove this receipt">
+          <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'trash'"/><t t-set="isz" t-value="15"/></t>
+          <span class="visually-hidden">Remove this receipt</span>
+        </button>
+      </form>
+    </li>
+  </template>
+
+  <template id="portal_expense_claim" name="Expenses: one claim (ESS)">
+    <t t-call="portal.portal_layout">
+      <t t-set="st" t-value="status"/>
+      <div class="pbme pbex pbex-claimpage">
+        <!-- the toast: it slides in, then fades by itself -->
+        <div t-if="done" class="pbex-toast" role="status" aria-live="polite">
+          <span class="pbex-toast-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+          <span t-if="done == 'sent' and st['step'] and st['step']['who']">Sent to <t t-out="st['step']['who']"/> (<t t-out="st['step']['title']"/>).</span>
+          <span t-elif="done == 'sent' and st['step']">Sent to <t t-out="st['step']['title']"/>.</span>
+          <span t-elif="done == 'sent'">Sent for approval.</span>
+          <span t-elif="done == 'saved'">Saved as a draft. Add the next receipt below.</span>
+          <span t-elif="done == 'added'">Receipt added.</span>
+          <span t-elif="done == 'removed'">Receipt removed.</span>
+          <span t-elif="done == 'withdrawn'">Taken back. It is a draft again, so you can change it.</span>
+          <span t-elif="done == 'reopened'">It is a draft again. Fix what is needed, then send it.</span>
+          <span t-else="">Nothing to do. That was already done.</span>
+        </div>
+
+        <header class="pbex-chead">
+          <div class="pbex-chead-main">
+            <div class="pbme-eyebrow" t-out="name"/>
+            <h1 class="pbex-h1">Expense claim</h1>
+            <p class="pbex-meta">
+              <span t-if="len(receipts) == 1">1 receipt</span>
+              <span t-else=""><t t-out="len(receipts)"/> receipts</span>
+              <span t-if="submitted_on and st['state'] != 'draft'">Sent <t t-out="submitted_on" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/></span>
+              <span t-if="trip"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="13"/></t><t t-out="trip"/></span>
+            </p>
+          </div>
+          <div class="pbex-chead-side">
+            <b class="pbex-big" t-out="total"/>
+            <t t-call="pb_me_expense.pbex_pill"><t t-set="tone" t-value="st['tone']"/><t t-set="label" t-value="st['label']"/><t t-set="fresh" t-value="bool(done)"/></t>
+          </div>
+        </header>
+
+        <div t-if="send_error" class="pbex-alert" role="alert">
+          <span class="pbex-alert-ic"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+          <span><b>It was not sent.</b> <t t-out="send_error"/> Your receipts are kept as a draft.</span>
+        </div>
+        <t t-call="pb_me_expense.pbex_alert"><t t-set="error_n" t-value="None"/></t>
+
+        <!-- where it is, in one sentence, with the next step -->
+        <section t-if="st['state'] == 'refused'" class="pbex-panel is-act">
+          <div class="pbex-panel-t">
+            <b>Refused. Here is why:</b>
+            <p t-if="st['reason']" class="pbex-reason" t-out="st['reason']"/>
+            <p t-else="" class="pbex-reason">No reason was given. Ask your manager what to change.</p>
+            <span>Change what is needed and send it again. Nothing is lost.</span>
+          </div>
+          <form method="post" t-attf-action="/my/expenses/#{id}/reopen">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="pbme-btn pbme-btn--primary"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="16"/></t>Fix and resend</button>
+          </form>
+        </section>
+        <section t-elif="st['state'] == 'draft' and st['reason']" class="pbex-panel">
+          <div class="pbex-panel-t">
+            <b>What to fix, from the last time:</b>
+            <p class="pbex-reason" t-out="st['reason']"/>
+          </div>
+        </section>
+        <section t-elif="st['blocked']" class="pbex-panel is-warn">
+          <div class="pbex-panel-t">
+            <b t-out="st['blocked_text']"/>
+            <span>Your claim is safe and waiting. As soon as HR sets up who approves it, it moves on by itself.</span>
+          </div>
+          <a t-if="ask_hr_url" class="pbme-btn pbme-btn--ghost" t-att-href="ask_hr_url"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="16"/></t>Ask HR</a>
+        </section>
+        <section t-elif="st['state'] == 'submitted'" class="pbex-panel">
+          <span class="pbex-panel-ic is-wait"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'hourglass'"/><t t-set="isz" t-value="16"/></t></span>
+          <div class="pbex-panel-t">
+            <b t-if="st['step'] and st['step']['who']">With <t t-out="st['step']['who']"/> (<t t-out="st['step']['title']"/>)</b>
+            <b t-elif="st['step']">With <t t-out="st['step']['title']"/></b>
+            <b t-else="">Waiting approval</b>
+            <span>You see each step here as it happens. Need to change something? Take it back first.</span>
+          </div>
+        </section>
+        <section t-elif="st['state'] == 'approved'" class="pbex-panel is-ok">
+          <span class="pbex-panel-ic is-ok"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t></span>
+          <div class="pbex-panel-t">
+            <b>Approved<t t-if="decided_on"> on <t t-out="decided_on" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/></t>.</b>
+            <span>Finance pays it back with the next expense payments. It shows Paid once the money is on its way.</span>
+          </div>
+        </section>
+        <section t-elif="st['state'] == 'paid'" class="pbex-panel is-ok">
+          <span class="pbex-panel-ic is-ok"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'wallet'"/><t t-set="isz" t-value="16"/></t></span>
+          <div class="pbex-panel-t">
+            <b>Paid<t t-if="paid_on"> on <t t-out="paid_on" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/></t>.</b>
+            <span>Nothing more to do.</span>
+          </div>
+        </section>
+
+        <!-- the route this claim was really given -->
+        <ol t-if="steps" class="pbex-steps" aria-label="Where it is">
+          <li t-foreach="steps" t-as="s" t-att-class="'pbex-step is-%s' % s['status']">
+            <span class="pbex-step-dot" aria-hidden="true"/>
+            <span class="pbex-step-t">
+              <b t-out="s['title']"/>
+              <span t-if="s['who']" t-out="s['who']"/>
+              <span t-if="s['status'] == 'blocked'">Nobody set up yet</span>
+              <span t-elif="s['status'] == 'refused'">Refused here</span>
+            </span>
+          </li>
+        </ol>
+
+        <ul t-if="receipts" class="pbex-rcs">
+          <t t-foreach="receipts" t-as="r"><t t-call="pb_me_expense.pbex_receipt_card"/></t>
+        </ul>
+        <div t-elif="st['state'] == 'draft'" class="pbex-hint pbex-noreceipt">No receipts on this claim yet. Add one below.</div>
+
+        <!-- a draft: add the next receipt, or send it -->
+        <form t-if="st['state'] == 'draft'" id="pbex-add" class="pbex-form pbex-addform" method="post"
+              t-attf-action="/my/expenses/#{id}/receipt" enctype="multipart/form-data"
+              data-pbex-form="" t-att-data-pbex-have="len(receipts)"
+              t-att-data-pbex-decimals="money['decimals']" t-att-data-pbex-thousands="money['thousands']"
+              t-att-data-pbex-point="money['decimal_point']" t-att-data-pbex-symbol="money['symbol']"
+              t-att-data-pbex-position="money['position']">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <t t-if="st['can']['add']">
+            <h2 class="pbex-h2" t-if="receipts">Add another receipt</h2>
+            <h2 class="pbex-h2" t-else="">Add a receipt</h2>
+            <div class="pbex-stack" data-pbex-stack="">
+              <t t-call="pb_me_expense.pbex_block"><t t-set="blk" t-value="block"/><t t-set="blank" t-value="False"/></t>
+            </div>
+          </t>
+          <div class="pbex-actions">
+            <t t-call="pb_me_expense.pbex_send"/>
+            <button t-if="st['can']['add']" type="submit" name="action" value="add" class="pbex-more">
+              <t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="16"/></t>Add this receipt
+            </button>
+            <span class="pbex-kbd">Ctrl + Enter sends</span>
+          </div>
+        </form>
+
+        <form t-if="st['can']['withdraw']" method="post" class="pbex-withdraw" t-attf-action="/my/expenses/#{id}/withdraw">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <span>Need to change something?</span>
+          <button type="submit" class="pbme-btn pbme-btn--ghost"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="15"/></t>Take back</button>
+        </form>
+
+        <a class="pbex-back" t-attf-href="/my/expenses#{'?fresh=%s' % id if done == 'sent' else ''}"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All my claims</a>
+      </div>
+    </t>
+  </template>
+
+  <!-- Not the person's own (or gone): a styled 404, never a stock page and
+       never a hint about whose it is. -->
+  <template id="portal_expense_missing" name="Expenses: not found (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbex">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We could not find that claim</h3>
+          <p>It may have been removed, or the link belongs to somebody else.</p>
+          <a href="/my/expenses" class="pbme-btn pbme-btn--primary">Back to Expenses</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

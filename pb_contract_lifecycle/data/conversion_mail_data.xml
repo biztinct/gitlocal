@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         THE SAME MACHINE, ASKED A DIFFERENT QUESTION — SO IT HAS TO USE
+         DIFFERENT WORDS.
+
+         A conversion evaluation IS a `pb.probation.review` with `kind =
+         conversion`, which is exactly the reuse P5 designed for. But P5's
+         four emails say "trial period" and "probation" in their subject
+         lines and their prose, and a person being evaluated for a PERMANENT
+         contract after two years on fixed terms is not on probation. The
+         first live conversion sent their manager "RIZE P10 Convert's trial
+         period ends soon — who should we ask?", which is wrong in a way
+         somebody would have to apologise for.
+
+         WHY THESE LIVE HERE AND NOT IN pb_probation. P5's templates are
+         `noupdate="1"` seeds on a live database with live reviews on it,
+         and reloading one takes the `ir_model_data` dance (R57) with a
+         blast radius across every probation review running. So this module
+         ships its own four and swaps them in with a two-line override of
+         `_mail` (probation_review_ext.py). Absent this module, P5 behaves
+         exactly as it did.
+
+         Declared on `pb.probation.review` — the model the review IS — so
+         `object` is the evaluation and every field P5's own templates read
+         is available here too.
+         ================================================================== -->
+
+    <!-- ============= the manager is asked for three to five ============= -->
+    <record id="mail_template_conversion_nominate" model="mail.template">
+        <field name="name">Conversion: choose the colleagues to ask</field>
+        <field name="model_id" ref="pb_probation.model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s contract could become permanent — who should we ask?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    fixed-term contract ends on
+                    <strong><t t-out="object.trial_end or ''"/></strong>, and
+                    they are being considered for a permanent one.
+                </p>
+                <p>
+                    Please choose <strong>three to five colleagues</strong> who
+                    have actually worked with them. Each one gets a private link
+                    and a few days to answer — they do not need to sign in, and
+                    their comments are not shown with their name on.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook and
+                    find their row.
+                </p>
+                <p style="color:#4A5568;">
+                    Three answers is the minimum on purpose: fewer than that and
+                    one bad week decides somebody's future here.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= the answers are in ================= -->
+    <record id="mail_template_conversion_ready" model="mail.template">
+        <field name="name">Conversion: the answers are in</field>
+        <field name="model_id" ref="pb_probation.model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s evaluation is ready to read</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The colleagues you chose have answered about
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>,
+                    and everything they said has been put together on one page —
+                    the ratings, the comments, and the notes from their
+                    check-ins.
+                </p>
+                <p>
+                    The comments are not shown with anybody's name on, which is
+                    why they are worth reading.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook, read
+                    it, have the conversation, and then record whether their
+                    contract becomes permanent.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= it was passed ================= -->
+    <record id="mail_template_conversion_verdict" model="mail.template">
+        <field name="name">Conversion: a decision was recorded</field>
+        <field name="model_id" ref="pb_probation.model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hrbp_user_id.email or '' }}</field>
+        <field name="subject">Evaluation decided: {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    evaluation for a permanent contract has been decided.
+                </p>
+                <p t-if="object.verdict == 'pass'">
+                    They passed. A permanent contract with no end date has been
+                    prepared, their record now says permanent, and the letter is
+                    on its way to them.
+                </p>
+                <p t-else="">
+                    They did not pass this time. <strong>Nothing has been
+                    created and nothing has been cancelled</strong> — the choice
+                    is back on the Contracts board, where somebody can let the
+                    contract end, extend it, or evaluate again.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================= it was not passed ================= -->
+    <record id="mail_template_conversion_notpassed" model="mail.template">
+        <field name="name">Conversion: not passed — HR to pick this up</field>
+        <field name="model_id" ref="pb_probation.model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hrbp_user_id.email or '' }}</field>
+        <field name="subject">Not made permanent: {{ object.employee_id.name }} — please pick this up</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    was evaluated for a permanent contract and it was decided
+                    not to offer one. Their current contract still ends on
+                    <strong><t t-out="object.trial_end or ''"/></strong>.
+                </p>
+                <p>
+                    <strong>Nothing has been started.</strong> No leaving
+                    checklist, no letter to them, no change to their contract.
+                    The choice is back on the Contracts board: let the contract
+                    end, extend it, or evaluate again — and whichever it is,
+                    they should hear it from a person first.
+                </p>
+                <p>
+                    Open <strong>Lifecycle → Contracts</strong> in Payobook.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

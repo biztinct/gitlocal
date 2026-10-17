@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60): the HR lead asked to agree to a
+         letter must be able to open the letter, and the engine re-checks that
+         before it accepts a decision. -->
+
+    <record id="rule_letter_seat" model="ir.rule">
+        <field name="name">Letter: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_hr_letter"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+    </record>
+
+</odoo>

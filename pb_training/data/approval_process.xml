@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE ONE CATALOGUE ROW THIS MODULE OWNS.
+
+         Every row in the approval catalogue is created by the module that
+         owns the business object, so the catalogue can never claim something
+         is wired up when it is not. That is also what keeps the dependency
+         honest: this module depends on the ENGINE and never on the screen
+         that displays these rows (ledger AM52).
+
+         `noupdate="1"` so a business that has reworded or re-sequenced this
+         on a live database keeps its wording.
+         ================================================================== -->
+
+    <record id="process_training_delay" model="biz.approval.process">
+        <field name="key">training_delay</field>
+        <field name="name">More time on a course</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.training.delay</field>
+        <field name="description">Somebody asking for longer to finish a course they have been put on, and why.</field>
+        <field name="sequence">240</field>
+    </record>
+
+    <!-- E3. The second row this module owns. It is a MONEY process and it
+         sits beside the other money ones in the catalogue, because that is
+         where somebody setting up who signs off what will look for it. -->
+    <record id="process_training_claim" model="biz.approval.process">
+        <field name="key">training_claim</field>
+        <field name="name">Training cost claim</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.training.claim</field>
+        <field name="description">Paying somebody back for a course they paid for themselves: what it cost, what is left of their training allowance, and the receipt and certificate behind it.</field>
+        <field name="sequence">245</field>
+    </record>
+
+</odoo>

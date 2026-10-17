@@ -9,7 +9,7 @@
         <field name="name">vietnam.insurance.adjustment.tree</field>
         <field name="model">vietnam.insurance.adjustment</field>
         <field name="arch" type="xml">
-            <tree string="Insurance Adjustments" decoration-info="state == 'draft'" 
+            <list string="Insurance Adjustments" decoration-info="state == 'draft'" 
                   decoration-success="state == 'applied'" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
                 <field name="employee_id"/>
@@ -24,7 +24,7 @@
                        decoration-warning="state == 'confirmed'"
                        decoration-success="state == 'applied'"
                        decoration-danger="state == 'cancelled'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -36,13 +36,13 @@
             <form string="Insurance Adjustment">
                 <header>
                     <button name="action_confirm" string="Confirm" type="object"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}" class="btn-primary"/>
+                            invisible="state != 'draft'" class="btn-primary"/>
                     <button name="action_apply" string="Apply to Payroll" type="object"
-                            attrs="{'invisible': [('state', '!=', 'confirmed')]}" class="btn-primary"/>
+                            invisible="state != 'confirmed'" class="btn-primary"/>
                     <button name="action_cancel" string="Cancel" type="object"
-                            attrs="{'invisible': [('state', 'in', ('applied', 'cancelled'))]}"/>
+                            invisible="state in ('applied', 'cancelled')"/>
                     <button name="action_reset_draft" string="Reset to Draft" type="object"
-                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                            invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,applied"/>
                 </header>
                 <sheet>
@@ -108,7 +108,7 @@
                 <separator/>
                 <filter string="Backdated" name="backdated" domain="[('adjustment_type', '=', 'backdated')]"/>
                 <filter string="Refunds" name="refunds" domain="[('adjustment_type', '=', 'refund')]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Employee" name="employee" context="{'group_by': 'employee_id'}"/>
                     <filter string="Type" name="type" context="{'group_by': 'adjustment_type'}"/>
                     <filter string="Status" name="status" context="{'group_by': 'state'}"/>
@@ -122,7 +122,7 @@
     <record id="action_vietnam_insurance_adjustment" model="ir.actions.act_window">
         <field name="name">Insurance Adjustments</field>
         <field name="res_model">vietnam.insurance.adjustment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_vietnam_insurance_adjustment_search"/>
         <field name="context">{'search_default_draft': 1}</field>
         <field name="help" type="html">

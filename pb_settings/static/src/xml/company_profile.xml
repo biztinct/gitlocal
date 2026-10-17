@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================== "Your company"
+       Section comments use `=` rules: a doubled hyphen inside an XML comment
+       is a parse error that takes the WHOLE template file down and every
+       t-name in it with it (W22).
+
+       Two columns. The left one is what you change; the right one is where it
+       comes out. The right column is the reason this is not a settings form:
+       nobody edits an address for its own sake, they edit it because a payslip
+       prints it, and this shows the payslip changing as they type. -->
+  <t t-name="pb_settings.PbCompanyProfile">
+    <div class="pbim pbco">
+
+      <!-- ======================= header ======================= -->
+      <header class="pbco-top">
+        <span class="pbco-brand">
+          <span class="pbco-brand__ic" t-out="ic('building', 16)"/>
+          <span class="pbco-brand__tx">Your company</span>
+        </span>
+
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+
+        <span class="pbco-sp"/>
+
+        <span t-if="dirty" class="pbco-dirty">
+          <span class="pbco-dirty__dot"/>
+          <span t-esc="dirtyNote"/>
+        </span>
+        <button t-if="dirty" class="pbim-btn ghost pbco-act"
+                t-on-click="() => this.discard()">
+          <span t-out="ic('undo', 14)"/><span>Discard</span>
+        </button>
+        <button class="pbim-btn primary pbco-act"
+                t-att-disabled="!dirty or state.saving"
+                t-on-click="() => this.save()">
+          <span t-out="ic('save', 14)"/>
+          <span t-esc="state.saving ? 'Saving…' : 'Save changes'"/>
+        </button>
+      </header>
+
+      <!-- NOTHING may sit between these three branches, not even a comment:
+           `t-elif` / `t-else` bind to the immediately preceding sibling and a
+           comment silently breaks the chain into a runtime error (W23). -->
+      <div t-if="state.loading" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your company details…</span>
+      </div>
+      <div t-elif="state.refused" class="pbco-none">
+        <span class="pbco-none__ic" t-out="ic('lock', 22)"/>
+        <span class="pbco-none__t">This page is not yours to change</span>
+        <span class="pbco-none__s" t-esc="state.refused"/>
+      </div>
+      <div t-else="" class="pbco-split">
+
+        <!-- =================== the boxes =================== -->
+        <section class="pbco-form">
+
+          <div t-if="state.error" class="pbco-err">
+            <span class="pbco-err__ic" t-out="ic('alert', 15)"/>
+            <span class="pbco-err__tx" t-esc="state.error"/>
+            <button class="pbco-err__x" aria-label="Dismiss"
+                    t-on-click="() => this.state.error = ''"
+                    t-out="ic('x', 13)"/>
+          </div>
+
+          <h1 class="pbco-h">Your company details</h1>
+          <p class="pbco-lede">
+            These are the details this system prints on your people's payslips,
+            on the returns you file, and on the letters it writes for you.
+            Change them here and every one of those follows.
+          </p>
+
+          <!-- ================ the four blocks ================ -->
+          <div t-foreach="sections" t-as="sec" t-key="sec.key" class="pbco-sec">
+            <header class="pbco-sec__h">
+              <span class="pbco-sec__ic" t-out="ic(sec.icon, 15)"/>
+              <span class="pbco-sec__tx">
+                <span class="pbco-sec__t" t-esc="sec.title"/>
+                <span class="pbco-sec__s" t-esc="sec.note"/>
+              </span>
+            </header>
+
+            <!-- The logo sits with the name, because together they are what a
+                 reader recognises the company by. -->
+            <div t-if="sec.key === 'identity'" class="pbco-logo"
+                 t-on-dragover.prevent="() => {}" t-on-drop="(ev) => this.onLogoDrop(ev)">
+              <div class="pbco-logo__box"
+                   t-att-class="{ 'is-fresh': fresh('logo') }">
+                <img t-if="logoSrc" t-att-src="logoSrc" alt="Company logo"/>
+                <span t-else="" class="pbco-logo__ph" t-out="ic('building', 24)"/>
+              </div>
+              <div class="pbco-logo__tx">
+                <span class="pbco-logo__t">Logo</span>
+                <span class="pbco-logo__s">
+                  A PNG or JPG under 4 MB. Drop one here, or choose a file.
+                </span>
+                <div class="pbco-logo__ops">
+                  <label class="pbim-btn ghost pbim-btn-sm pbco-pick">
+                    <span t-out="ic('upload', 13)"/>
+                    <span>Choose a picture</span>
+                    <input type="file" accept="image/*" class="pbco-file"
+                           t-on-change="(ev) => this.onLogoPick(ev)"/>
+                  </label>
+                  <button t-if="logoSrc" class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.removeLogo()">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pbco-grid">
+              <label t-foreach="fieldsOf(sec)" t-as="f" t-key="fieldKey(f)"
+                     class="pbco-f" t-att-class="{ 'is-wide': f.wide }">
+                <span class="pbco-f__l" t-esc="labelOf(f.key)"/>
+                <input t-if="f.kind === 'text'" type="text" class="pbco-in"
+                       t-att-value="state.form[f.key]"
+                       t-att-placeholder="f.key === 'name' ? 'Your company name' : ''"
+                       t-on-input="(ev) => this.onText(f.key, ev)"/>
+                <select t-else="" class="pbco-in"
+                        t-on-change="(ev) => this.onPick(f.key, ev)">
+                  <option value="" t-att-selected="!state.form[f.key]">Not set</option>
+                  <option t-foreach="optionsOf(f.key)" t-as="o" t-key="o.id"
+                          t-att-value="o.id"
+                          t-att-selected="o.id === state.form[f.key]"
+                          t-esc="o.name"/>
+                </select>
+                <span t-if="hintOf(f.key)" class="pbco-f__h" t-esc="hintOf(f.key)"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- ============= what this page will NOT change =============
+               Said out loud, with who to ask. A settings page that quietly
+               leaves things out is one people ask about twice (W5). -->
+          <div class="pbco-fixed">
+            <header class="pbco-fixed__h">
+              <span class="pbco-fixed__ic" t-out="ic('lock', 14)"/>
+              <span>Looked after for you</span>
+            </header>
+            <div t-foreach="state.fixed" t-as="row" t-key="row.label"
+                 class="pbco-fixed__r">
+              <span class="pbco-fixed__l" t-esc="row.label"/>
+              <span class="pbco-fixed__v" t-esc="row.value"/>
+              <span class="pbco-fixed__n" t-esc="row.note"/>
+            </div>
+          </div>
+
+          <!-- =================== recent changes =================== -->
+          <div class="pbco-hist">
+            <header class="pbco-hist__h">
+              <span class="pbco-hist__ic" t-out="ic('history', 14)"/>
+              <span>Recent changes</span>
+            </header>
+            <p t-if="!state.history.length" class="pbco-hist__none">
+              Nothing has been changed here yet. When somebody does, it is
+              recorded — who, what and when.
+            </p>
+            <div t-foreach="state.history" t-as="h" t-key="h_index"
+                 class="pbco-hist__r">
+              <span class="pbco-hist__w">
+                <b t-esc="h.who"/> changed <t t-esc="h.what"/>
+              </span>
+              <span class="pbco-hist__d">
+                <span class="from" t-esc="h.from || '(empty)'"/>
+                <span class="ar" t-out="ic('arrow', 12)"/>
+                <span class="to" t-esc="h.to || '(empty)'"/>
+              </span>
+              <span class="pbco-hist__t" t-esc="h.when"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============== where this shows up ============== -->
+        <aside class="pbco-side">
+          <header class="pbco-side__h">
+            <span class="pbco-side__t">Where this shows up</span>
+            <span class="pbco-side__chip">Live preview</span>
+          </header>
+          <p class="pbco-side__s">
+            Your details, our example employee. Everything below redraws as you
+            type.
+          </p>
+
+          <!-- ===================== a payslip ===================== -->
+          <article class="pbco-pv">
+            <header class="pbco-pv__h">
+              <span class="pbco-pv__ic" t-out="ic('receipt', 14)"/>
+              <span class="pbco-pv__t">The top of a payslip</span>
+            </header>
+            <div class="pbco-paper">
+              <div class="pbco-head">
+                <div class="pbco-head__logo">
+                  <img t-if="logoSrc" t-att-src="logoSrc" alt=""/>
+                  <span t-else="" t-out="ic('building', 18)"/>
+                </div>
+                <div class="pbco-head__id">
+                  <span class="nm" t-att-class="{ 'is-fresh': fresh('name') }"
+                        t-esc="previewName"/>
+                  <span class="ad" t-att-class="{ 'is-fresh': addressFresh }">
+                    <span t-foreach="previewAddress" t-as="l" t-key="l_index"
+                          t-esc="l"/>
+                  </span>
+                  <span t-if="previewVat" class="tx"
+                        t-att-class="{ 'is-fresh': fresh('vat') }">
+                    <t t-esc="labelOf('vat')"/>: <t t-esc="previewVat"/>
+                  </span>
+                </div>
+              </div>
+              <div class="pbco-rule"/>
+              <div class="pbco-slip">
+                <div class="pbco-slip__ttl">
+                  <span>PAYSLIP</span><span t-esc="samplePeriod"/>
+                </div>
+                <div class="pbco-slip__row">
+                  <span t-esc="sampleWho"/><span class="pbco-bar"/>
+                </div>
+                <div class="pbco-slip__row">
+                  <span>Basic</span><span class="pbco-bar"/>
+                </div>
+                <div class="pbco-slip__row is-total">
+                  <span>Net pay</span><span class="pbco-bar is-strong"/>
+                </div>
+              </div>
+            </div>
+            <p class="pbco-pv__cap">
+              Every payslip your people open begins with this block.
+            </p>
+          </article>
+
+          <!-- ===================== a filing ===================== -->
+          <article class="pbco-pv">
+            <header class="pbco-pv__h">
+              <span class="pbco-pv__ic" t-out="ic('landmark', 14)"/>
+              <span class="pbco-pv__t">A statutory filing</span>
+            </header>
+            <div class="pbco-paper">
+              <div class="pbco-file__ttl">EMPLOYER DETAILS</div>
+              <div class="pbco-kv">
+                <span class="k">Employer</span>
+                <span class="v" t-att-class="{ 'is-fresh': fresh('name') }"
+                      t-esc="previewName"/>
+              </div>
+              <div class="pbco-kv">
+                <span class="k" t-esc="labelOf('company_registry')"/>
+                <span class="v"
+                      t-att-class="{ 'is-fresh': fresh('company_registry') }"
+                      t-esc="previewRegistry || 'not filled in'"/>
+              </div>
+              <div class="pbco-kv">
+                <span class="k" t-esc="labelOf('vat')"/>
+                <span class="v" t-att-class="{ 'is-fresh': fresh('vat') }"
+                      t-esc="previewVat || 'not filled in'"/>
+              </div>
+              <div class="pbco-kv">
+                <span class="k">Address</span>
+                <span class="v" t-att-class="{ 'is-fresh': addressFresh }"
+                      t-esc="previewAddress.join(', ') || 'not filled in'"/>
+              </div>
+            </div>
+            <p class="pbco-pv__cap">
+              Returns are checked against these. A wrong number here is a
+              rejected filing.
+            </p>
+          </article>
+
+          <!-- ===================== a letter ===================== -->
+          <article class="pbco-pv">
+            <header class="pbco-pv__h">
+              <span class="pbco-pv__ic" t-out="ic('fileText', 14)"/>
+              <span class="pbco-pv__t">A letter</span>
+            </header>
+            <div class="pbco-paper">
+              <div class="pbco-letter__h">
+                <div class="pbco-head__logo sm">
+                  <img t-if="logoSrc" t-att-src="logoSrc" alt=""/>
+                  <span t-else="" t-out="ic('building', 15)"/>
+                </div>
+                <div class="pbco-letter__id">
+                  <span class="nm" t-att-class="{ 'is-fresh': fresh('name') }"
+                        t-esc="previewName"/>
+                  <span class="ad" t-att-class="{ 'is-fresh': addressFresh }"
+                        t-esc="previewAddress.join(', ')"/>
+                  <span t-if="previewContact" class="ct" t-esc="previewContact"/>
+                </div>
+              </div>
+              <div class="pbco-rule"/>
+              <div class="pbco-letter__b">
+                <span class="dt" t-esc="sampleDate"/>
+                <span class="dr">Dear <t t-esc="sampleWho"/>,</span>
+                <span class="pbco-bar full"/>
+                <span class="pbco-bar full"/>
+                <span class="pbco-bar two-thirds"/>
+                <span class="sg">Yours sincerely,</span>
+                <span class="sn" t-esc="previewName"/>
+              </div>
+            </div>
+            <p class="pbco-pv__cap">
+              Offer letters, confirmations and leavers' letters use this
+              letterhead.
+            </p>
+          </article>
+        </aside>
+      </div>
+    </div>
+  </t>
+
+</templates>

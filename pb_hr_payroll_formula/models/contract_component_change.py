@@ -41,6 +41,10 @@ class HrContractAdvantageChange(models.Model):
     )
     old_amount = fields.Float(string='Old Amount')
     new_amount = fields.Float(string='New Amount')
+    # Text-typed components (COLROLES) leave the two Floats at 0.0 and record the
+    # before/after here instead, so one audit trail still covers both kinds.
+    old_text_value = fields.Char(string='Old Text Value')
+    new_text_value = fields.Char(string='New Text Value')
     effective_date = fields.Date(string='Effective Date', required=True)
     change_source = fields.Selection([
         ('import', 'Import'),

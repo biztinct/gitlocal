@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- noupdate="1", as pb_pay_delivery's is: a tenant that has reworded
+             one of these must not have it reverted by the next upgrade.
+             Outgoing debranding rides automatically (biz_mail_debrand). -->
+
+        <!-- ==================== a step is due ==================== -->
+        <record id="mail_template_task_reminder" model="mail.template">
+            <field name="name">Lifecycle: step due</field>
+            <field name="model_id" ref="model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.assignee_user_id.email or '' }}</field>
+            <field name="subject">Due {{ object.due_date or 'soon' }}: {{ object.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Hello <t t-out="object.assignee_user_id.name or ''"/>,</p>
+                    <p>
+                        <strong><t t-out="object.name or ''"/></strong> is on your list for
+                        <t t-out="object.employee_id.name or 'a colleague'"/>, and it is due on
+                        <t t-out="object.due_date or ''"/>.
+                    </p>
+                    <p t-if="object.description"><t t-out="object.description"/></p>
+                    <p>You can mark it done on the Journeys screen.</p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ================= a step is badly overdue ================= -->
+        <record id="mail_template_task_escalation" model="mail.template">
+            <field name="name">Lifecycle: step overdue</field>
+            <field name="model_id" ref="model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="subject">Overdue: {{ object.name }} ({{ object.employee_id.name }})</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Hello,</p>
+                    <p>
+                        <strong><t t-out="object.name or ''"/></strong> for
+                        <t t-out="object.employee_id.name or ''"/> was due on
+                        <t t-out="object.due_date or ''"/> and is still open.
+                        It sits with <t t-out="object.assignee_user_id.name or 'nobody yet'"/>.
+                    </p>
+                    <p t-if="object.blocking_ff">
+                        This one holds up the final settlement, so it cannot simply wait.
+                    </p>
+                    <p>Open the journey to move it on, or give it to someone else.</p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- =================== a check-in is today =================== -->
+        <record id="mail_template_checkin_today" model="mail.template">
+            <field name="name">Lifecycle: check-in today</field>
+            <field name="model_id" ref="model_pb_employee_checkin"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.owner_user_id.email or '' }}</field>
+            <field name="subject">Today: your check-in with {{ object.employee_id.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Hello <t t-out="object.owner_user_id.name or ''"/>,</p>
+                    <p>
+                        Your check-in with
+                        <strong><t t-out="object.employee_id.name or ''"/></strong>
+                        (<t t-out="object.name or ''"/>) is planned for today.
+                    </p>
+                    <p>
+                        Write down what was said afterwards — and tick
+                        <em>Needs attention</em> if anything came up that HR should look at.
+                    </p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ================== please give us feedback ================== -->
+        <record id="mail_template_feedback_invite" model="mail.template">
+            <field name="name">Lifecycle: feedback invitation</field>
+            <field name="model_id" ref="model_pb_feedback_request"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.respondent_email or (object.respondent_user_id.email or '') }}</field>
+            <field name="subject">A few questions about {{ object.subject_employee_id.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Hello,</p>
+                    <p>
+                        We would like a few words about
+                        <strong><t t-out="object.subject_employee_id.name or ''"/></strong>.
+                        It takes a minute, and no login is needed — the link below is yours.
+                    </p>
+                    <p style="margin: 22px 0;">
+                        <a t-att-href="object._token_url()"
+                           style="background:#5A4BB0; color:#ffffff; padding:11px 22px; border-radius:8px; text-decoration:none; font-weight:700; display:inline-block;">
+                            Answer the questions
+                        </a>
+                    </p>
+                    <p t-if="object.window_end">
+                        The link is open until <t t-out="object.window_end"/>.
+                    </p>
+                    <p>Your answers are read by the HR team only.</p>
+                    <br/>
+                    Thank you,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- ================= here is your letter ================= -->
+        <record id="mail_template_letter_delivery" model="mail.template">
+            <field name="name">Lifecycle: letter delivery</field>
+            <field name="model_id" ref="model_pb_hr_letter"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="subject">{{ object.subject or object.template_id.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Dear <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        Please find your <t t-out="object.subject or object.template_id.name or 'letter'"/>
+                        attached. A copy has also been filed with your records.
+                    </p>
+                    <p>If anything on it does not look right, tell the HR team and we will fix it.</p>
+                    <br/>
+                    Best regards,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+        <!-- =========== a step you can answer from a link =========== -->
+        <record id="mail_template_task_link" model="mail.template">
+            <field name="name">Lifecycle: something to confirm</field>
+            <field name="model_id" ref="model_pb_journey_task"/>
+            <field name="email_from">{{ (user.email_formatted) }}</field>
+            <field name="subject">{{ object.name }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0; padding:0;">
+                    <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                    <p>
+                        There is one thing to confirm before your first day:
+                        <strong><t t-out="object.name or ''"/></strong>.
+                    </p>
+                    <p t-if="object.description"><t t-out="object.description"/></p>
+                    <p style="margin: 22px 0;">
+                        <a t-att-href="object._token_url()"
+                           style="background:#5A4BB0; color:#ffffff; padding:11px 22px; border-radius:8px; text-decoration:none; font-weight:700; display:inline-block;">
+                            Open it
+                        </a>
+                    </p>
+                    <p>No login is needed — the link is yours and it works once.</p>
+                    <br/>
+                    See you soon,<br/>
+                    The HR team<br/>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

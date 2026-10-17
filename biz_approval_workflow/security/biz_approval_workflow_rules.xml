@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY FIRST, ALWAYS.
+
+         A request belongs to the company of the RECORD, never to whichever
+         company happens to be ticked in the top bar (design §6.1). These
+         global rules make that boundary real for every company-bearing
+         model; a cross-company binding can therefore never be seen, let
+         alone chosen.
+         ================================================================== -->
+
+    <record id="rule_responsibility_company" model="ir.rule">
+        <field name="name">Responsibility: company</field>
+        <field name="model_id" ref="model_biz_approval_responsibility"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_delegation_company" model="ir.rule">
+        <field name="name">Hand-over: company</field>
+        <field name="model_id" ref="model_biz_approval_delegation"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_grant_company" model="ir.rule">
+        <field name="name">Exception: company</field>
+        <field name="model_id" ref="model_biz_approval_exception_grant"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_workflow_company" model="ir.rule">
+        <field name="name">Workflow: company</field>
+        <field name="model_id" ref="model_biz_approval_workflow"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_version_company" model="ir.rule">
+        <field name="name">Workflow version: company</field>
+        <field name="model_id" ref="model_biz_approval_workflow_version"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_binding_company" model="ir.rule">
+        <field name="name">Binding: company</field>
+        <field name="model_id" ref="model_biz_approval_binding"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_request_company" model="ir.rule">
+        <field name="name">Request: company</field>
+        <field name="model_id" ref="model_biz_approval_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_request_step_company" model="ir.rule">
+        <field name="name">Request step: company</field>
+        <field name="model_id" ref="model_biz_approval_request_step"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_request_seat_company" model="ir.rule">
+        <field name="name">Request seat: company</field>
+        <field name="model_id" ref="model_biz_approval_request_seat"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_decision_company" model="ir.rule">
+        <field name="name">Decision: company</field>
+        <field name="model_id" ref="model_biz_approval_decision"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_event_company" model="ir.rule">
+        <field name="name">Event: company</field>
+        <field name="model_id" ref="model_biz_approval_event"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_generic_request_company" model="ir.rule">
+        <field name="name">Other request: company</field>
+        <field name="model_id" ref="model_biz_approval_generic_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         WHO SEES A REQUEST.
+
+         An ordinary person sees the ones they are part of: they sent it in,
+         they prepared it, or a seat on it is theirs (their own, or one they
+         are covering). Somebody who sets approvals up sees every request in
+         their companies, because they are the person who has to repair a
+         stuck one.
+         ================================================================== -->
+
+    <record id="rule_request_own" model="ir.rule">
+        <field name="name">Request: mine</field>
+        <field name="model_id" ref="model_biz_approval_request"/>
+        <field name="groups" eval="[(4, ref('group_approval_user'))]"/>
+        <field name="domain_force">['|', '|', '|', ('submitter_uid', '=', user.id), ('maker_user_ids', 'in', [user.id]), ('seat_ids.user_id', '=', user.id), ('seat_ids.acting_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_request_config" model="ir.rule">
+        <field name="name">Request: everyone who sets approvals up</field>
+        <field name="model_id" ref="model_biz_approval_request"/>
+        <field name="groups" eval="[(4, ref('group_approval_config'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- "Other request" carries no pay data, and everyone asked to decide one
+         has to be able to read it, so the company boundary above is the whole
+         rule. What it does NOT allow is editing: the model refuses every
+         change once a request has been sent in. -->
+
+    <!-- A hand-over is arranged by the person going away, or by somebody who
+         looks after approvals on their behalf. -->
+    <record id="rule_delegation_own" model="ir.rule">
+        <field name="name">Hand-over: mine</field>
+        <field name="model_id" ref="model_biz_approval_delegation"/>
+        <field name="groups" eval="[(4, ref('group_approval_user'))]"/>
+        <field name="domain_force">['|', ('principal_user_id', '=', user.id), ('delegate_user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_delegation_admin" model="ir.rule">
+        <field name="name">Hand-over: everyone who looks after approvals</field>
+        <field name="model_id" ref="model_biz_approval_delegation"/>
+        <field name="groups" eval="[(4, ref('group_approval_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

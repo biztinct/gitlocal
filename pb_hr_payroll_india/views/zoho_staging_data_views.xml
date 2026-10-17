@@ -265,7 +265,7 @@
         <record id="action_zoho_staging_data_india" model="ir.actions.act_window">
             <field name="name">India Staging Data</field>
             <field name="res_model">zoho.staging.data</field>
-            <field name="view_mode">tree,form,pivot</field>
+            <field name="view_mode">list,form,pivot</field>
             <field name="domain">['|', ('country', '=', 'IN'), ('country', '=', False)]</field>
             <field name="context">{'default_country': 'IN', 'search_default_country': 1}</field>
             <field name="help" type="html">
@@ -282,7 +282,7 @@
         <record id="action_zoho_employee_data_india" model="ir.actions.act_window">
             <field name="name">India Employee Payroll Data</field>
             <field name="res_model">zoho.employee.data</field>
-            <field name="view_mode">tree,form,pivot</field>
+            <field name="view_mode">list,form,pivot</field>
             <field name="domain">['|', ('country', '=', 'IN'), ('country', '=', False)]</field>
             <field name="context">{'default_country': 'IN', 'search_default_country': 1}</field>
             <field name="help" type="html">
@@ -383,12 +383,12 @@
         
         <!-- Update India Staging Data Action to include Kanban -->
         <record id="action_zoho_staging_data_india" model="ir.actions.act_window">
-            <field name="view_mode">kanban,tree,form,pivot</field>
+            <field name="view_mode">kanban,list,form,pivot</field>
         </record>
         
         <!-- Update India Employee Data Action to include Kanban -->
         <record id="action_zoho_employee_data_india" model="ir.actions.act_window">
-            <field name="view_mode">kanban,tree,form,pivot</field>
+            <field name="view_mode">kanban,list,form,pivot</field>
         </record>
         
     </data>

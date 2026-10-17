@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Integrations Cycle 6 — the fields a feed is EXPECTED to deliver.
+         =============================================================
+         Cycle 1 catalogued the seven Zoho People APIs a connector calls.
+         Cycle 3 filled that catalogue from the legacy ABM inventory. Neither
+         said anything about what comes BACK, so a connector that had never
+         synced had nothing to offer the Mapping Studio, and discovery fell all
+         the way through to `hr.employee`'s own 206 columns — Odoo's internals,
+         printed under the heading "FROM — ZOHO PEOPLE (ABM)".
+
+         Every row below is a key some piece of code in this repository
+         actually reads. The `notes` field names the file and line, because a
+         catalogue nobody can audit is a catalogue somebody will edit from
+         memory. The three sources are:
+
+           * `data/mapping_templates.xml` — the vendor field map Cycle 3 shipped
+             (its `source_path` values, endpoint-stamped);
+           * `om_hr_payroll/models/hr_zoho_staging.py` — the legacy ABM client,
+             which is the only surviving description of the ABM-era payload;
+           * `integrations/zoho_connector.py` / `integrations/darwin_connector.py`
+             — the modern clients, whose `_parse_*` methods enumerate the keys
+             they coalesce.
+
+         `sample_value` is an ILLUSTRATION and nothing else. It is what the
+         studio shows before a first sync, and the studio labels it "expected";
+         no code path may promote it to a value that was received. The samples
+         here are invented, shaped like the real thing, and contain no ABM data.
+
+         Where a modern client accepts several spellings of one idea
+         (`basic` / `basic_salary`), BOTH are catalogued, in preference order,
+         with the coalescing line in `notes`. Offering only the first would hide
+         a path a customer's export legitimately uses.
+
+         W13.1 — `noupdate="1"`. These rows FREEZE in each database the moment
+         they first load; a later correction will NOT arrive on `-u`. Every path
+         was proof-read against its evidence line before the first deploy.
+         Corrections on a live database need the force-write path.
+
+         The instantiated `hr.integration.endpoint.field` is a DIFFERENT record
+         and is never overwritten: `action_sync_endpoint_field_catalog` is
+         create-only on `(endpoint_id, path)`, so a row an operator relabelled,
+         re-sampled or switched off survives every later sync. -->
+    <data noupdate="1">
+
+        <!-- ================= zoho / zohoemployees ================= -->
+        <record id="epf_ze_employeeid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">EmployeeID</field>
+            <field name="label">Employee ID</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">VN0142</field>
+            <field name="is_required" eval="True"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The vendor's own staff number. Legacy ABM's join key into its staging table.</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_ze_zoho_id" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Zoho_ID</field>
+            <field name="label">Zoho record ID</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">3948520000001234</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Zoho's internal id. `_parse_employee_record` falls back to `recordId` when absent (zoho_connector.py:342).</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_ze_recordid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">recordId</field>
+            <field name="label">Record ID (fallback)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">3948520000001234</field>
+            <field name="notes">Only present on some form responses; read as the fallback for Zoho_ID.</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_ze_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Name</field>
+            <field name="label">Display name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Nguyen Van An</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="epf_ze_firstname" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">FirstName</field>
+            <field name="label">First name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">An</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">50</field>
+        </record>
+        <record id="epf_ze_lastname" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">LastName</field>
+            <field name="label">Last name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Nguyen Van</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">60</field>
+        </record>
+        <record id="epf_ze_nick_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Nick_Name</field>
+            <field name="label">English full name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">An Nguyen</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Legacy ABM semantic: this field carried the ENGLISH full name, not a nickname.</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="epf_ze_full_name_vietnamese" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Full_Name_Vietnamese</field>
+            <field name="label">Vietnamese full name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Nguyễn Văn An</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">80</field>
+        </record>
+        <record id="epf_ze_emailid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">EmailID</field>
+            <field name="label">Email</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">an.nguyen@abmauri.com.vn</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The join key the attendance summary matches on (hr_zoho_staging.py:465).</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="epf_ze_mobile" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Mobile</field>
+            <field name="label">Mobile</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">+84 90 123 4567</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">100</field>
+        </record>
+        <record id="epf_ze_department" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Department</field>
+            <field name="label">Department</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Production</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">110</field>
+        </record>
+        <record id="epf_ze_designation" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Designation</field>
+            <field name="label">Job title</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Line Supervisor</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">120</field>
+        </record>
+        <record id="epf_ze_employeestatus" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Employeestatus</field>
+            <field name="label">Employment status</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Active</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">130</field>
+        </record>
+        <record id="epf_ze_employee_type" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Employee_type</field>
+            <field name="label">Employee type</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Permanent</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">140</field>
+        </record>
+        <record id="epf_ze_locationname" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">LocationName</field>
+            <field name="label">Work location</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Bien Hoa Plant</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">150</field>
+        </record>
+        <record id="epf_ze_location" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Location</field>
+            <field name="label">Location (modern)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Bien Hoa Plant</field>
+            <field name="notes">Read by zoho_connector.py:355; the legacy form used LocationName.</field>
+            <field name="sequence">160</field>
+        </record>
+        <record id="epf_ze_reporting_to" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Reporting_To</field>
+            <field name="label">Reports to</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Tran Thi Mai</field>
+            <field name="sequence">170</field>
+        </record>
+        <record id="epf_ze_dateofjoining" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Dateofjoining</field>
+            <field name="label">Date of joining</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">2019-04-01</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Parsed yyyy-MM-dd; an unparseable value became False rather than an error (hr_zoho_staging.py:354-363).</field>
+            <field name="sequence">180</field>
+        </record>
+        <record id="epf_ze_date_of_birth" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Date_of_birth</field>
+            <field name="label">Date of birth</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">1990-07-22</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Same yyyy-MM-dd parse, same silent-False on a bad value.</field>
+            <field name="sequence">190</field>
+        </record>
+        <record id="epf_ze_gender" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Gender</field>
+            <field name="label">Gender</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Male</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Legacy lower-cased this before storing it (hr_zoho_staging.py:395).</field>
+            <field name="sequence">200</field>
+        </record>
+        <record id="epf_ze_no_of_dependents" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">No_of_Dependents</field>
+            <field name="label">Number of dependents</field>
+            <field name="source_data_type">integer</field>
+            <field name="sample_value">2</field>
+            <field name="notes">The declared count. The DEPCOUNT transformation rule counts the dependent rows instead.</field>
+            <field name="sequence">210</field>
+        </record>
+        <record id="epf_ze_bank_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Bank_Name</field>
+            <field name="label">Bank name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Vietcombank</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">220</field>
+        </record>
+        <record id="epf_ze_bank_account_number_vnd" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Bank_Account_Number_VND</field>
+            <field name="label">Bank account (VND)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">0071001234567</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The VND account the legacy ABM payroll paid into.</field>
+            <field name="sequence">230</field>
+        </record>
+        <record id="epf_ze_bank_account_no" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Bank_Account_No</field>
+            <field name="label">Bank account (generic)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">0071001234567</field>
+            <field name="notes">The generic vendor-template path; ABM used Bank_Account_Number_VND.</field>
+            <field name="sequence">240</field>
+        </record>
+        <record id="epf_ze_pit_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">PIT_Number</field>
+            <field name="label">PIT number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">8412345678</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Vietnamese personal income tax code.</field>
+            <field name="sequence">250</field>
+        </record>
+        <record id="epf_ze_insurance_book_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Insurance_Book_Number</field>
+            <field name="label">Social insurance book no.</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">7920123456</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">260</field>
+        </record>
+        <record id="epf_ze_uan_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">UAN_Number</field>
+            <field name="label">UAN number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">100234567890</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">270</field>
+        </record>
+        <record id="epf_ze_pan_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Pan_Number</field>
+            <field name="label">PAN number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">ABCDE1234F</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">280</field>
+        </record>
+        <record id="epf_ze_aadhaar_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">Aadhaar_Number</field>
+            <field name="label">Aadhaar number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">2345 6789 0123</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="sequence">290</field>
+        </record>
+        <record id="epf_ze_pan_or_taxid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoemployees</field>
+            <field name="path">PAN_or_TaxID</field>
+            <field name="label">PAN / tax ID (generic)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">ABCDE1234F</field>
+            <field name="notes">The generic vendor-template path.</field>
+            <field name="sequence">300</field>
+        </record>
+
+        <!-- ================= zoho / zohoattsummary ================= -->
+        <record id="epf_za_emailid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">emailId</field>
+            <field name="label">Email</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">an.nguyen@abmauri.com.vn</field>
+            <field name="is_required" eval="True"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The join key — this report keys on EMAIL, not on the employee id (hr_zoho_staging.py:465).</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_za_employeeid" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">employeeId</field>
+            <field name="label">Employee ID</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">VN0142</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Present in the payload; the legacy code deliberately matched on emailId instead.</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_za_expectedworkinghours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">expectedWorkingHours</field>
+            <field name="label">Expected working hours</field>
+            <field name="source_data_type">integer</field>
+            <field name="sample_value">633600</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">SECONDS. Divide by 3600 for hours (hr_zoho_staging.py:560).</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_za_totalworkedhours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">totalWorkedHours</field>
+            <field name="label">Total worked hours</field>
+            <field name="source_data_type">integer</field>
+            <field name="sample_value">619200</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">SECONDS. Divide by 3600 for hours (:562).</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="epf_za_paidleavehours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">paidLeaveHours</field>
+            <field name="label">Paid leave hours</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">16:30</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">An "H:MM" STRING, not seconds — the one field in this feed that is not (:564-572).</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="epf_za_date" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">date</field>
+            <field name="label">Report date</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">2026-07-31</field>
+            <field name="notes">The window the summary was computed over.</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="epf_za_total_working_days" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoattsummary</field>
+            <field name="path">Total_working_days</field>
+            <field name="label">Total working days</field>
+            <field name="source_data_type">number</field>
+            <field name="sample_value">22</field>
+            <field name="notes">The generic vendor-template path for a working-day count.</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <!-- ================= zoho / zohoovertime ================= -->
+        <record id="epf_zo_employeemailalias" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">EMPLOYEEMAILALIAS</field>
+            <field name="label">Employee email alias</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">an.nguyen@abmauri.com.vn</field>
+            <field name="is_required" eval="True"/>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The searchColumn the legacy client filtered on, one employee per call (hr_zoho_staging.py:474).</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_zo_ot_type" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">OT_Type</field>
+            <field name="label">Overtime type</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">150%</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Exactly "150%", "200%", "210%", "270%", "300%" or "390%" — the OTHRS* rules match these strings.</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_zo_approvalstatus" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">ApprovalStatus</field>
+            <field name="label">Approval status</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Approved</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">Only "Approved" rows are summed.</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_zo_actual_pay_hour" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">Actual_Pay_Hour</field>
+            <field name="label">Payable hours</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">4.5</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">The hours actually paid at this multiplier.</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="epf_zo_ot_date" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">OT_Date</field>
+            <field name="label">Overtime date</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">2026-07-14</field>
+            <field name="is_legacy_abm" eval="True"/>
+            <field name="notes">dd-MM-yyyy in the payload (:507).</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="epf_zo_overtime_hours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohoovertime</field>
+            <field name="path">Overtime_hours</field>
+            <field name="label">Overtime hours (generic)</field>
+            <field name="source_data_type">number</field>
+            <field name="sample_value">12</field>
+            <field name="notes">The generic vendor-template path.</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <!-- ================= zoho / zoholeave ================= -->
+        <record id="epf_zl_employee" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zoholeave</field>
+            <field name="path">Employee</field>
+            <field name="label">Employee</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Nguyen Van An</field>
+            <field name="notes">hr_zoho.py:232.</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_zl_days" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zoholeave</field>
+            <field name="path">Days</field>
+            <field name="label">Leave days</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">1.5</field>
+            <field name="notes">hr_zoho.py:233.</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_zl_type" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zoholeave</field>
+            <field name="path">Type</field>
+            <field name="label">Leave type</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Annual Leave</field>
+            <field name="notes">hr_zoho.py:234.</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_zl_leavetaken" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zoholeave</field>
+            <field name="path">LeaveTaken</field>
+            <field name="label">Leave taken (generic)</field>
+            <field name="source_data_type">number</field>
+            <field name="sample_value">1.5</field>
+            <field name="notes">The generic vendor-template path.</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- ================= zoho / zohosalary ================= -->
+        <record id="epf_zs_employee_id_zoho_id" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohosalary</field>
+            <field name="path">Employee_ID.Zoho_ID</field>
+            <field name="label">Employee link</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">3948520000001234</field>
+            <field name="is_required" eval="True"/>
+            <field name="notes">The searchField the salary form is queried by (zoho_connector.py:412).</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_zs_salary" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohosalary</field>
+            <field name="path">Salary</field>
+            <field name="label">Basic salary</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">18500000</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_zs_other_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">zoho</field>
+            <field name="endpoint_code">zohosalary</field>
+            <field name="path">Other_Allowance</field>
+            <field name="label">Other allowance</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">1500000</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- ================= darwin / darwinemployees ================= -->
+        <record id="epf_de_employee_no" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">employee_no</field>
+            <field name="label">Employee number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">DBX1001</field>
+            <field name="notes">First choice of three: employee_no → employee_id → emp_id (darwin_connector.py:196).</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_de_employee_id" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">employee_id</field>
+            <field name="label">Employee ID (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">DBX1001</field>
+            <field name="notes">Accepted when employee_no is absent.</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_de_emp_id" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">emp_id</field>
+            <field name="label">Employee ID (alt 2)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">DBX1001</field>
+            <field name="notes">Last of the three accepted spellings.</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_de_first_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">first_name</field>
+            <field name="label">First name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Priya</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="epf_de_last_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">last_name</field>
+            <field name="label">Last name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Sharma</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="epf_de_full_name" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">full_name</field>
+            <field name="label">Full name</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Priya Sharma</field>
+            <field name="notes">Built from first_name + last_name when absent (:199).</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="epf_de_office_email_id" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">office_email_id</field>
+            <field name="label">Office email</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">priya.sharma@example.com</field>
+            <field name="notes">Preferred over `email` (:200).</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="epf_de_email" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">email</field>
+            <field name="label">Email (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">priya.sharma@example.com</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="epf_de_phone_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">phone_number</field>
+            <field name="label">Phone</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">+91 98200 12345</field>
+            <field name="notes">Preferred over `mobile` (:201).</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="epf_de_mobile" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">mobile</field>
+            <field name="label">Mobile (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">+91 98200 12345</field>
+            <field name="sequence">100</field>
+        </record>
+        <record id="epf_de_department" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">department</field>
+            <field name="label">Department</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Finance</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="epf_de_designation" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">designation</field>
+            <field name="label">Designation</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Analyst</field>
+            <field name="notes">Preferred over `position` (:203).</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="epf_de_position" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">position</field>
+            <field name="label">Position (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Analyst</field>
+            <field name="sequence">130</field>
+        </record>
+        <record id="epf_de_date_of_joining" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">date_of_joining</field>
+            <field name="label">Date of joining</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">2021-06-14</field>
+            <field name="notes">Preferred over `doj` (:204).</field>
+            <field name="sequence">140</field>
+        </record>
+        <record id="epf_de_doj" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">doj</field>
+            <field name="label">Date of joining (alt)</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">2021-06-14</field>
+            <field name="sequence">150</field>
+        </record>
+        <record id="epf_de_date_of_birth" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">date_of_birth</field>
+            <field name="label">Date of birth</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">1994-02-08</field>
+            <field name="notes">Preferred over `dob` (:205).</field>
+            <field name="sequence">160</field>
+        </record>
+        <record id="epf_de_dob" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">dob</field>
+            <field name="label">Date of birth (alt)</field>
+            <field name="source_data_type">date</field>
+            <field name="sample_value">1994-02-08</field>
+            <field name="sequence">170</field>
+        </record>
+        <record id="epf_de_gender" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">gender</field>
+            <field name="label">Gender</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Female</field>
+            <field name="sequence">180</field>
+        </record>
+        <record id="epf_de_marital_status" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">marital_status</field>
+            <field name="label">Marital status</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Single</field>
+            <field name="sequence">190</field>
+        </record>
+        <record id="epf_de_pan" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">pan</field>
+            <field name="label">PAN</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">ABCDE1234F</field>
+            <field name="notes">Preferred over `tax_code` (:208).</field>
+            <field name="sequence">200</field>
+        </record>
+        <record id="epf_de_tax_code" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">tax_code</field>
+            <field name="label">Tax code (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">ABCDE1234F</field>
+            <field name="sequence">210</field>
+        </record>
+        <record id="epf_de_bank_account_number" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">bank_account_number</field>
+            <field name="label">Bank account</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">50100123456789</field>
+            <field name="notes">Preferred over `bank_account` (:209).</field>
+            <field name="sequence">220</field>
+        </record>
+        <record id="epf_de_bank_account" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">bank_account</field>
+            <field name="label">Bank account (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">50100123456789</field>
+            <field name="sequence">230</field>
+        </record>
+        <record id="epf_de_employee_status" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">employee_status</field>
+            <field name="label">Status</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Active</field>
+            <field name="notes">Preferred over `status`; defaults to "Active" when neither is sent (:210).</field>
+            <field name="sequence">240</field>
+        </record>
+        <record id="epf_de_status" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">status</field>
+            <field name="label">Status (alt)</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">Active</field>
+            <field name="sequence">250</field>
+        </record>
+        <record id="epf_de_dependents_count" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwinemployees</field>
+            <field name="path">dependents_count</field>
+            <field name="label">Dependents</field>
+            <field name="source_data_type">integer</field>
+            <field name="sample_value">1</field>
+            <field name="notes">The generic vendor-template path.</field>
+            <field name="sequence">260</field>
+        </record>
+
+        <!-- ================= darwin / darwincompensation ================= -->
+        <record id="epf_dc_employee_no" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">employee_no</field>
+            <field name="label">Employee number</field>
+            <field name="source_data_type">string</field>
+            <field name="sample_value">DBX1001</field>
+            <field name="is_required" eval="True"/>
+            <field name="notes">The join key back to the directory (darwin_connector.py:227).</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="epf_dc_basic" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">basic</field>
+            <field name="label">Basic salary</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">64000</field>
+            <field name="notes">Preferred over `basic_salary` (:229).</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="epf_dc_basic_salary" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">basic_salary</field>
+            <field name="label">Basic salary (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">64000</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="epf_dc_position_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">position_allowance</field>
+            <field name="label">Position allowance</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">8000</field>
+            <field name="notes">Preferred over `special_allowance` (:230).</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="epf_dc_special_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">special_allowance</field>
+            <field name="label">Special allowance (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">8000</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="epf_dc_meal_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">meal_allowance</field>
+            <field name="label">Meal allowance</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">2200</field>
+            <field name="notes">Preferred over `lunch_allowance` (:231).</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="epf_dc_lunch_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">lunch_allowance</field>
+            <field name="label">Lunch allowance (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">2200</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="epf_dc_transport_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">transport_allowance</field>
+            <field name="label">Transport allowance</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">3000</field>
+            <field name="notes">Preferred over `conveyance` (:232).</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="epf_dc_conveyance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">conveyance</field>
+            <field name="label">Conveyance (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">3000</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="epf_dc_phone_allowance" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">phone_allowance</field>
+            <field name="label">Phone allowance</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">800</field>
+            <field name="sequence">100</field>
+        </record>
+        <record id="epf_dc_overtime_hours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">overtime_hours</field>
+            <field name="label">Overtime hours</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">6</field>
+            <field name="notes">Preferred over `ot_hours` (:234).</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="epf_dc_ot_hours" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">ot_hours</field>
+            <field name="label">Overtime hours (alt)</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">6</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="epf_dc_bonus" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">bonus</field>
+            <field name="label">Bonus</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">5000</field>
+            <field name="notes">First of bonus → kpi_bonus → incentive (:235).</field>
+            <field name="sequence">130</field>
+        </record>
+        <record id="epf_dc_kpi_bonus" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">kpi_bonus</field>
+            <field name="label">KPI bonus (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">5000</field>
+            <field name="sequence">140</field>
+        </record>
+        <record id="epf_dc_incentive" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">incentive</field>
+            <field name="label">Incentive (alt)</field>
+            <field name="source_data_type">currency</field>
+            <field name="sample_value">5000</field>
+            <field name="sequence">150</field>
+        </record>
+        <record id="epf_dc_working_days" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">working_days</field>
+            <field name="label">Working days</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">22</field>
+            <field name="notes">Defaults to 22 when absent (:236).</field>
+            <field name="sequence">160</field>
+        </record>
+        <record id="epf_dc_actual_working_days" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">actual_working_days</field>
+            <field name="label">Actual working days</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">21</field>
+            <field name="notes">Preferred over `days_present`; defaults to 22 (:237).</field>
+            <field name="sequence">170</field>
+        </record>
+        <record id="epf_dc_days_present" model="hr.integration.endpoint.field.template">
+            <field name="connector_type">darwin</field>
+            <field name="endpoint_code">darwincompensation</field>
+            <field name="path">days_present</field>
+            <field name="label">Days present (alt)</field>
+            <field name="source_data_type">float</field>
+            <field name="sample_value">21</field>
+            <field name="sequence">180</field>
+        </record>
+
+    </data>
+</odoo>
