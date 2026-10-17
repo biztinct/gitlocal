@@ -92,18 +92,21 @@ msgstr "Đã gửi"
 #. module: biz_approval_workflow
 #. odoo-python
 #: code:addons/biz_approval_workflow/models/request.py:0
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__approved
 msgid "Approved"
 msgstr "Đã duyệt"
 
 #. module: biz_approval_workflow
 #. odoo-python
 #: code:addons/biz_approval_workflow/models/event.py:0
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__returned
 msgid "Sent back"
 msgstr "Đã trả lại"
 
 #. module: biz_approval_workflow
 #. odoo-python
 #: code:addons/biz_approval_workflow/models/event.py:0
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__rejected
 msgid "Turned down"
 msgstr "Bị từ chối"
 
@@ -1200,3 +1203,48 @@ msgstr "Nhóm"
 #. module: biz_approval_workflow
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__draft
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__pending
+msgid "Waiting for a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__applied
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__cancelled
+msgid "Withdrawn"
+msgstr "Đã thu hồi"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__blocked
+msgid "Stuck — needs setting up"
+msgstr "Đang kẹt — cần thiết lập"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__submitter_uid
+msgid "Sent in by"
+msgstr "Người gửi"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__due_at
+msgid "Due At"
+msgstr "Hạn"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__facts
+msgid "Facts"
+msgstr "Dữ kiện"

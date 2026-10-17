@@ -133,10 +133,17 @@ class HrFormulaRule(models.Model):
     # ==========================================
     # COMPONENT TYPE & DATA SOURCE (Multi-Sheet Import)
     # ==========================================
+    # LEARNREV P1: the help is what the Component treatment field card prints
+    # under "Report group", so it says how the value is filled TODAY — from the
+    # pay role by `_classify_report_groups`, a typed group kept — rather than
+    # the import-only story it used to tell (the Excel section heading now
+    # lives in `imported_component_type`).
     component_type = fields.Char(
         string='Component Type',
-        help="Category from merged cell above column header (e.g., 'Deductions', 'Allowances', 'Earnings'). "
-             "Extracted during multi-worksheet import from merged cells spanning the column."
+        help="The report group: organises the grid and reports, such as "
+             "Earnings or Deductions. Filled from the pay role; a group a person "
+             "types is kept. The spreadsheet's own section heading is kept "
+             "separately."
     )
 
     data_source = fields.Selection([
@@ -807,7 +814,9 @@ class HrFormulaRule(models.Model):
         ('text', 'Text'),
         ('date', 'Date'),
         ('boolean', 'Yes / No'),
-    ], string='Value Kind', default='money', required=True,
+    # LEARNREV P1: labelled as the Component treatment board labels its column
+    # ("Value type"), so a field card and the screen use one word (LR-R4).
+    ], string='Value type', default='money', required=True,
         help="What this component's value IS. Decides whether it is stored as a "
              "number or kept exactly as it arrived, whether it can become a "
              "payslip line, and how it is displayed. The first five are "
@@ -828,7 +837,9 @@ class HrFormulaRule(models.Model):
     payroll_signal = fields.Selection([
         ('employment_status', 'Whether the person is still employed'),
         ('worked_hours', 'Hours actually worked'),
-    ], string='Tells the run', index=True,
+    # LEARNREV P1: "Tells the run" is a retired label (the board's column is
+    # "Run signal"); the truth gate fails a field card that prints one.
+    ], string='Run signal', index=True,
         help="Some components say something about the PERSON rather than about "
              "their pay, and the run has to act on them — whether to produce a "
              "payslip at all, for instance.")

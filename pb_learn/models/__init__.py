@@ -26,3 +26,6 @@ from . import learn_settings
 # LEARN v3. Role paths, month-end, milestones, team readiness. Read by
 # learn_runtime at call time, so its place in this list does not matter.
 from . import learn_path
+# LEARNREV P1 — the content engine: one Guide per screen, read from the
+# product's own fields and the screen's manifest. Reads learn.content.
+from . import learn_guide

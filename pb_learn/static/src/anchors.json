@@ -945,7 +945,7 @@
     "tr-table": {
       "screen": "treatment",
       "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
-      "desc": "Component treatment table: Component, Comes from, Group, Pay role, Subtotal, Tells the run, Value type."
+      "desc": "Component treatment table: Component, Comes from, Report group, Pay role, Included in another total, Run signal, Value type."
     },
     "pp-tabs": {
       "screen": [

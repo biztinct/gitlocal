@@ -1802,6 +1802,7 @@ msgstr "Tự động ánh xạ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_role_source__auto
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind_source__auto
 msgid "Auto-classified"
 msgstr "Tự động phân loại"
 
@@ -2604,7 +2605,7 @@ msgstr "Cột Cài đặt"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "Column Type"
-msgstr "Cột Loại"
+msgstr "Loại cột"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -2798,7 +2799,7 @@ msgstr "Tên thành phần"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_line__component_type
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "Component Type"
-msgstr "Thành phần Loại"
+msgstr "Loại thành phần"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -3277,7 +3278,7 @@ msgstr "Hằng số Cột"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__constant_value
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__constant
 msgid "Constant Value"
-msgstr "Hằng số Giá trị"
+msgstr "Giá trị cố định"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_legislation_item__kind__constant
@@ -3318,7 +3319,7 @@ msgstr "Hợp đồng"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__is_contract_component
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_contract_component
 msgid "Contract Component"
-msgstr "Hợp đồng Thành phần"
+msgstr "Thành phần hợp đồng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model,name:pb_hr_payroll_formula.model_hr_contract_advantage_change
@@ -3908,6 +3909,7 @@ msgstr "Kéo dữ liệu không thành công: %s"
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:96
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:97
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:98
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__date
 msgid "Date"
 msgstr "Ngày"
 
@@ -4443,7 +4445,7 @@ msgstr "Hiển thị Tên của cột"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__name
 msgid "Display name shown in column header"
-msgstr "Hiển thị Tên hiển thị trong cột tiêu đề"
+msgstr "Tên hiển thị ở tiêu đề cột."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__available_columns_display
@@ -5595,7 +5597,7 @@ msgstr "Gấp Json"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__net_role_detail
 msgid "Folded Into a Total"
-msgstr "Gấp thành tổng"
+msgstr "Đã tính trong một tổng khác"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_follower_ids
@@ -6917,7 +6919,7 @@ msgstr "Đầu vào"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__input
 msgid "Input (from data source)"
-msgstr "Đầu vào (từ Nguồn dữ liệu)"
+msgstr "Đầu vào (từ nguồn dữ liệu)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
@@ -7725,7 +7727,7 @@ msgstr "Liên kết Quy tắc lương"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__formula_dependencies
 msgid "List of columns this formula depends on"
-msgstr "Danh sách của cột này công thức phụ thuộc trên"
+msgstr "Danh sách các cột mà công thức này phụ thuộc vào."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__referenced_sheet_names
@@ -7952,7 +7954,7 @@ msgstr "Đánh dấu as Bắt buộc Đầu vào cho bảng lương tính toán"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_contract_component
 msgid "Marks this component as a contract component sourced from contract advantages."
-msgstr "Đánh dấu này Thành phần as Hợp đồng Thành phần nguồn từ Hợp đồng phúc lợi."
+msgstr "Đánh dấu thành phần này là thành phần hợp đồng, lấy từ các khoản trên hợp đồng."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__master_config_id
@@ -8384,7 +8386,7 @@ msgstr "Đường dẫn bảng lồng nhau"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__net_role
 msgid "Net Pay Role"
-msgstr "Vai trò Lương Ròng"
+msgstr "Vai trò trong lương"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__net_role_reason
@@ -11202,6 +11204,8 @@ msgstr "Thiết lập cột từ Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_role_source__user
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind_source__user
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role_source__user
 msgid "Set by a person"
 msgstr "Được thiết lập bởi một người"
 
@@ -11410,7 +11414,7 @@ msgstr "Hiển thị này cột trong Excel Lưới"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__appears_on_payslip
 msgid "Show this component on payslip document"
-msgstr "Hiển thị này Thành phần trên Phiếu lương tài liệu"
+msgstr "Hiển thị thành phần này trên phiếu lương."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_review_share__signed_off
@@ -12144,6 +12148,7 @@ msgstr "Kiểm thử Thất bại"
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:76
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:77
 #: code:addons/pb_hr_payroll_formula/static/src/js/formula_bar.js:78
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__text
 msgid "Text"
 msgstr "Văn bản"
 
@@ -13407,9 +13412,7 @@ msgstr ""
 msgid ""
 "What the net pay formula does with this component. Derived from the scheme's own "
 "formulas, not from the component's name."
-msgstr ""
-"Công thức trả lương ròng làm gì với thành phần này. Bắt nguồn từ các công thức riêng "
-"của lược đồ, không phải từ tên của thành phần."
+msgstr "Công thức lương thực nhận làm gì với thành phần này. Được suy ra từ chính các công thức của chương trình lương, không phải từ tên của thành phần."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_role
@@ -15396,3 +15399,128 @@ msgstr "Các bản ghi này chưa mang kỳ lương nào, nên đang tính theo 
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_proration_line__proration_basis__segment
 msgid "Days Worked Here"
 msgstr "Số ngày làm việc tại đây"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__value_kind
+msgid "Value type"
+msgstr "Loại giá trị"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__value_kind
+msgid "What this component's value IS. Decides whether it is stored as a number or kept exactly as it arrived, whether it can become a payslip line, and how it is displayed. The first five are numbers; the last four are not and are never converted."
+msgstr "Giá trị của thành phần này LÀ gì. Quyết định nó được lưu dưới dạng số hay được giữ đúng như khi đi vào, nó có thể trở thành một dòng phiếu lương hay không, và nó được hiển thị thế nào. Năm loại đầu là số; bốn loại sau không phải số và không bao giờ bị chuyển đổi."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__money
+msgid "Amount (currency)"
+msgstr "Số tiền (tiền tệ)"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__decimal
+msgid "Decimal number"
+msgstr "Số thập phân"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__integer
+msgid "Whole number"
+msgstr "Số nguyên"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__quantity
+msgid "Quantity (hours, days)"
+msgstr "Số lượng (giờ, ngày)"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__rate
+msgid "Percentage / rate"
+msgstr "Phần trăm / tỷ lệ"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__identifier
+msgid "Reference code"
+msgstr "Mã tham chiếu"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__value_kind__boolean
+msgid "Yes / No"
+msgstr "Có / Không"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__value_kind_source
+msgid "Value Kind Source"
+msgstr "Nguồn của loại giá trị"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__value_kind_source
+msgid "Whether the value kind was worked out automatically or chosen by a person. A person's choice is never overwritten."
+msgstr "Loại giá trị được suy ra tự động hay do một người chọn. Lựa chọn của một người không bao giờ bị ghi đè."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__payroll_signal
+msgid "Run signal"
+msgstr "Tín hiệu cho đợt lương"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__payroll_signal
+msgid "Some components say something about the PERSON rather than about their pay, and the run has to act on them — whether to produce a payslip at all, for instance."
+msgstr "Một số thành phần nói lên điều gì đó về NGƯỜI LAO ĐỘNG chứ không phải về tiền lương của họ, và đợt lương phải dựa vào đó để hành động — chẳng hạn có lập phiếu lương cho người đó hay không."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__payroll_signal__employment_status
+msgid "Whether the person is still employed"
+msgstr "Người đó còn đang làm việc hay không"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__payroll_signal__worked_hours
+msgid "Hours actually worked"
+msgstr "Số giờ thực tế đã làm"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__net_role_source
+msgid "Role Decided By"
+msgstr "Vai trò do ai quyết định"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__net_role_source
+msgid "'Set by a person' means re-classifying the scheme leaves this component's pay role and subtotal flag alone."
+msgstr "'Do một người đặt' nghĩa là khi phân loại lại chương trình lương, vai trò trong lương và dấu \"đã tính trong một tổng khác\" của thành phần này được giữ nguyên."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role_source__auto
+msgid "Worked out from the formulas"
+msgstr "Suy ra từ các công thức"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__component_type_source
+msgid "Component Type Source"
+msgstr "Nhóm báo cáo do ai đặt"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__component_type_source__auto
+msgid "Automatic"
+msgstr "Tự động"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__component_type_source__user
+msgid "Set by you"
+msgstr "Do bạn đặt"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__component_type_source__legacy
+msgid "Saved group (kept)"
+msgstr "Nhóm đã lưu (được giữ)"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__imported_component_type
+msgid "Imported Component Type"
+msgstr "Phần gốc trong tệp Excel"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__imported_component_type
+msgid "Original section label in the Excel schema."
+msgstr "Tên phần gốc trong tệp Excel của chương trình lương."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__component_type
+msgid "The report group: organises the grid and reports, such as Earnings or Deductions. Filled from the pay role; a group a person types is kept. The spreadsheet's own section heading is kept separately."
+msgstr "Nhóm báo cáo: sắp xếp lưới và báo cáo, như Thu nhập hoặc Khấu trừ. Được điền theo vai trò trong lương; nhóm do một người gõ được giữ nguyên. Tên phần gốc trong bảng tính được giữ riêng."

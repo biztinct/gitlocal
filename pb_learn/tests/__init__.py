@@ -40,3 +40,6 @@ from . import test_onechat_ui
 from . import test_onechat_content
 # LEARNREV P0 T2 — "Open the lesson" opens this screen's lesson.
 from . import test_learnrev_lesson_door
+# LEARNREV P1 — the content engine: the truth gate and the Guide.
+from . import test_guide_truth
+from . import test_guide

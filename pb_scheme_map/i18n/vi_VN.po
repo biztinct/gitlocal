@@ -534,7 +534,7 @@ msgstr "Gán phương án lương"
 #. module: pb_scheme_map
 #: model:ir.model.fields,field_description:pb_scheme_map.field_hr_payslip_run__pb_formula_config_id
 msgid "Payroll scheme"
-msgstr "Phương án lương"
+msgstr "Chương trình lương"
 
 #. module: pb_scheme_map
 #: model:ir.actions.server,name:pb_scheme_map.cron_recompute_paid_by_ir_actions_server
@@ -693,9 +693,7 @@ msgstr ""
 msgid ""
 "The payroll scheme this run was run for. Set by the Run Payroll screen when "
 "a scheme was chosen there."
-msgstr ""
-"Phương án lương mà kỳ này được chạy cho. Do màn hình Chạy bảng lương đặt khi"
-" có chọn phương án ở đó."
+msgstr "Chương trình lương mà đợt lương này được chạy theo. Được đặt bởi màn hình Chạy lương khi một chương trình lương được chọn ở đó."
 
 #. module: pb_scheme_map
 #. odoo-javascript

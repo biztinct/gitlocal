@@ -2372,13 +2372,17 @@ class HrFormulaConfig(models.Model):
                  # row may hold, and the board has to grey them out in the same
                  # keystroke rather than after a failed save.
                  'money': key in value_kind_classifier.MONEY_ROLE_KINDS}
-                for key, label in field.selection]
+                # LEARNREV P1 (ledger LR9): translated labels, as `pay_roles`
+                # and `signals` below already are — the raw `.selection` is the
+                # English source list, so the board's Value type dropdown was
+                # English on a Vietnamese screen.
+                for key, label in field._description_selection(self.env)]
 
     @api.model
     def _value_kind_label(self, kind):
         """The words a person reads for a value kind, for use in a sentence."""
         field = self.env['hr.formula.rule']._fields['value_kind']
-        return dict(field.selection).get(kind or '', _("untyped"))
+        return dict(field._description_selection(self.env)).get(kind or '', _("untyped"))
 
     def _net_role_reason_net_words(self):
         """LEARNREV P0 (G33, ledger LR3) — what `_net_role_reason_read` needs:

@@ -244,9 +244,13 @@ class HrPayslipRun(models.Model):
         currency_field='pb_currency_id', store=True,
         help="Total gross minus deductions minus net pay. Anything other than "
              "zero means a component is counted under the wrong heading.")
+    # LEARNREV P1: the help is printed on the Runs board's field card, so it
+    # says what the check is in screen words rather than "False when …".
     pb_balance_ok = fields.Boolean(
         string='Figures add up', compute='_compute_pb_totals', store=True,
-        help="False when the run's own figures do not reconcile.")
+        help="Whether gross minus deductions minus net pay comes to nothing, "
+             "allowing for rounding. When it does not, a component is counted "
+             "under the wrong heading.")
     # VALUEKIND P5 — what the employer pays ON TOP of gross, which used to be
     # summed into Deductions because it shares the `COMP` category with them.
     # It is not taken off anybody's pay and it never belonged there.
