@@ -34,11 +34,11 @@ OPEN_RUN_STATES = ('draft', 'approval_pending')
 PAY_HUB = 'pb_payhub.action_pb_pay_hub'
 
 
-def _names(names, lang):
+def _names(names, lang, vi_noun='thành phần'):
     shown = ', '.join(names[:NAMED])
     rest = len(names) - NAMED
     if rest > 0:
-        shown += (' và %d thành phần khác' % rest) if lang == 'vi' \
+        shown += (' và %d %s khác' % (rest, vi_noun)) if lang == 'vi' \
             else (' and %d more' % rest)
     return shown
 
@@ -143,10 +143,10 @@ class HrFormulaConfigLearnRightNow(models.Model):
                      % (n, _names(names, 'en'))),
                     ("Đợt lương %s được tính trước lần thay đổi gần nhất của bạn "
                      "cho chương trình lương này. Hãy tính lại để số liệu dùng "
-                     "thay đổi đó." % _names(names, 'vi')) if n == 1 else
+                     "thay đổi đó." % _names(names, 'vi', 'đợt')) if n == 1 else
                     ("%d đợt lương được tính trước lần thay đổi gần nhất của bạn "
                      "cho chương trình lương này: %s. Hãy tính lại để số liệu dùng "
-                     "thay đổi đó." % (n, _names(names, 'vi')))),
+                     "thay đổi đó." % (n, _names(names, 'vi', 'đợt')))),
                 'action': action,
             })
 
