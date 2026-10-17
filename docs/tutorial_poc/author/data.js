@@ -1365,8 +1365,8 @@ const GLOSSARY = {
   componentTreatment: {
     term: B("Component treatment", "Xử lý thành phần"),
     aliases: { en: ["treatment board"], vi: ["bảng xử lý thành phần"] },
-    def: B("What a scheme does with each component: its pay role, whether it is a subtotal, and its value type. It belongs to the scheme, so it affects every run.",
-           "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị. Nó thuộc về chương trình, nên ảnh hưởng mọi đợt lương."),
+    def: B("What a scheme does with each component: its pay role, whether it is already included in another total, and its value type. It belongs to the scheme, so it affects every run.",
+           "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị. Nó thuộc về chương trình, nên ảnh hưởng mọi đợt lương."),
   },
   payRole: {
     term: B("Pay role", "Vai trò trong lương"),
@@ -1374,9 +1374,11 @@ const GLOSSARY = {
     def: B("What net pay does with a component: adds it, takes it off, is it, counts it as employer cost, or ignores it. Every gross, deductions and net figure is counted from it.",
            "Thực nhận làm gì với một thành phần: cộng vào, trừ đi, chính là nó, tính là chi phí doanh nghiệp, hay bỏ qua. Mọi con số tổng thu nhập, khấu trừ và thực nhận đều đếm từ đây."),
   },
+  // LEARNREV P1: the column was renamed "Included in another total"; the
+  // key and the old words stay as aliases so "subtotal" still finds it.
   subtotal: {
-    term: B("Subtotal", "Tổng phụ"),
-    aliases: { en: ["subtotal lines"], vi: ["dòng tổng phụ"] },
+    term: B("Included in another total", "Đã tính trong một tổng khác"),
+    aliases: { en: ["subtotal", "subtotal lines"], vi: ["tổng phụ", "dòng tổng phụ"] },
     def: B("A line whose parts are already counted elsewhere, like gross income. Ticking it stops the totals counting the same money twice.",
            "Một dòng mà các phần của nó đã được tính ở nơi khác, như tổng thu nhập. Đánh dấu nó giúp các tổng không tính cùng một khoản tiền hai lần."),
   },
@@ -2150,8 +2152,8 @@ const STATIONS = {
         desc: B("What a scheme does with each component: add it to net pay, take it off, or keep it for information only.",
                 "Chương trình lương làm gì với từng thành phần: cộng vào thực nhận, trừ khỏi thực nhận, hay chỉ để tham khảo."),
         outline: {
-          what: B("Mapping › Component treatment. One row per component, with its pay role, whether it is a subtotal, and its value type.",
-                  "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, có phải tổng phụ hay không, và loại giá trị của nó."),
+          what: B("Mapping › Component treatment. One row per component, with its pay role, whether it is already included in another total, and its value type.",
+                  "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị của nó."),
           why: B("The pay role decides the arithmetic from gross to net. A role set wrong makes deductions bigger than gross, and every report counts the wrong thing.",
                  "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Đặt sai vai trò là khấu trừ lớn hơn cả tổng thu nhập, và mọi báo cáo đều đếm sai."),
           when: B("Before a scheme's first pay run, after a workbook import, and whenever a run says \"These figures do not add up\".",
@@ -2161,8 +2163,8 @@ const STATIONS = {
           mistakes: [
             B("Setting hours or days to add to net pay. Hours reach net pay by multiplying an amount; on their own they are information only.",
               "Đặt giờ hoặc ngày công để cộng vào thực nhận. Giờ đi vào thực nhận bằng cách nhân với một số tiền; riêng chúng chỉ để tham khảo."),
-            B("Leaving gross as a normal line. Its parts are already added, so without Subtotal ticked the totals count them twice.",
-              "Để tổng thu nhập như một dòng thường. Các phần của nó đã được cộng rồi, nên nếu không đánh dấu Tổng phụ thì các tổng sẽ tính chúng hai lần."),
+            B("Leaving gross as a normal line. Its parts are already added, so without Included in another total ticked the totals count them twice.",
+              "Để tổng thu nhập như một dòng thường. Các phần của nó đã được cộng rồi, nên nếu không đánh dấu Đã tính trong một tổng khác thì các tổng sẽ tính chúng hai lần."),
             B("Saving and expecting the old payslips to change. Saving never rewrites a payslip; recompute the run to see the new treatment.",
               "Lưu rồi chờ các phiếu lương cũ tự thay đổi. Lưu không bao giờ viết lại phiếu lương; hãy tính lại đợt lương để thấy cách xử lý mới."),
           ],
@@ -4152,8 +4154,8 @@ const LESSONS = {
   L9: {
     id: "L9", station: "treatment", mins: 6,
     title: B("Tell the scheme what each component is", "Cho chương trình lương biết mỗi thành phần là gì"),
-    goal: B("Read the Component treatment board, set a pay role, a subtotal and a value type correctly, and know why a run says its figures do not add up.",
-            "Đọc bảng Xử lý thành phần, đặt đúng vai trò trong lương, tổng phụ và loại giá trị, và biết vì sao một đợt lương báo số liệu không khớp."),
+    goal: B("Read the Component treatment board, set each pay role, Included in another total tick and value type, and know why a run's figures do not add up.",
+            "Đọc bảng Xử lý thành phần, đặt đúng vai trò trong lương, dấu Đã tính trong một tổng khác và loại giá trị, và biết vì sao số liệu một đợt lương không khớp."),
     steps: [
       {
         screen: "treatment", anchor: "tr-head",
@@ -4171,10 +4173,10 @@ const LESSONS = {
       },
       {
         screen: "treatment", anchor: "tr-table",
-        kicker: B("Subtotal", "Tổng phụ"),
-        title: B("A subtotal is already inside another line", "Tổng phụ đã nằm sẵn trong một dòng khác"),
-        body: B("Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Subtotal</b>. Without it, the totals would count the same money twice.",
-                "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Tổng phụ</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."),
+        kicker: B("Included in another total", "Đã tính trong một tổng khác"),
+        title: B("Some lines are already inside another line", "Có những dòng đã nằm sẵn trong một dòng khác"),
+        body: B("Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Included in another total</b>. Without it, the totals would count the same money twice.",
+                "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Đã tính trong một tổng khác</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."),
       },
       {
         screen: "treatment", anchor: "rep-ct-warn",
@@ -7558,8 +7560,8 @@ const SCREEN_CTX = {
   },
   treatment: {
     places: ["pb_mapping_studio:treatment"],
-    blurb: B("What the scheme does with each component: its pay role, whether it is a subtotal, and its value type.",
-             "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị."),
+    blurb: B("What the scheme does with each component: its pay role, whether it is already included in another total, and its value type.",
+             "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị."),
     next: B("Clear the chips first: Needs your answer, then Type says otherwise. After saving, recompute the pay run — saving never rewrites a payslip.",
             "Hãy xử lý các nhãn trước: Cần câu trả lời của bạn, rồi Loại giá trị nói khác. Sau khi lưu, hãy tính lại đợt lương — lưu không bao giờ viết lại phiếu lương."),
     chips: ["notaddup", "wherefrom", "whatnext"],
@@ -8216,8 +8218,8 @@ const SCREEN_CTX = {
                 B("Carry a mid-month advance into the end-of-month run.",
                   "Chuyển khoản tạm ứng giữa tháng sang đợt lương cuối tháng.")],
         treatment: [B("Component treatment", "Xử lý thành phần"),
-                    B("What the scheme does with each component: its pay role, subtotal and value type.",
-                      "Chương trình lương làm gì với từng thành phần: vai trò trong lương, tổng phụ và loại giá trị.")],
+                    B("What the scheme does with each component: its pay role, whether it is included in another total, and its value type.",
+                      "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã tính trong một tổng khác hay chưa, và loại giá trị.")],
         journey: [B("Journey", "Hành trình"),
                   B("The whole picture: every file, system and record that feeds this scheme.",
                     "Toàn cảnh: mọi tệp, hệ thống và hồ sơ cấp dữ liệu cho chương trình lương này.")],
@@ -9357,7 +9359,7 @@ const QA = [
       { k: "steps", v: [
         { t: B("Open Mapping › Component treatment for that scheme", "Mở Ánh xạ › Xử lý thành phần của chương trình đó"), a: "tr-head" },
         { t: B("Clear Needs your answer and Type says otherwise first", "Xử lý Cần câu trả lời của bạn và Loại giá trị nói khác trước"), a: "tr-filters" },
-        { t: B("Check each pay role; tick Subtotal on a line whose parts are already added", "Kiểm tra từng vai trò trong lương; đánh dấu Tổng phụ cho dòng mà các phần của nó đã được cộng"), a: "tr-table" },
+        { t: B("Check each pay role; tick Included in another total on a line whose parts are already added", "Kiểm tra từng vai trò trong lương; đánh dấu Đã tính trong một tổng khác cho dòng mà các phần của nó đã được cộng"), a: "tr-table" },
         { t: B("Save, then recompute the pay run", "Lưu, rồi tính lại đợt lương") },
       ] },
       { k: "warn", v: B("Saving never rewrites a payslip. Until the run is recomputed, it still shows the old figures.",
@@ -11296,8 +11298,8 @@ const SCENARIOS = [
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
     match: ["fix figures", "figures that do not add up", "component treatment", "net pay does not add up", "sửa số liệu", "số liệu không khớp", "cách tính thành phần", "sua so lieu", "so lieu khong khop", "cach tinh thanh phan"],
-    tagline: B("Pay role, subtotal and value type — the three answers that decide net pay.",
-               "Vai trò trong lương, tổng phụ và loại giá trị — ba câu trả lời quyết định thực nhận."),
+    tagline: B("Pay role, Included in another total and Value type — the three answers that decide net pay.",
+               "Vai trò trong lương, Đã tính trong một tổng khác và Loại giá trị — ba câu trả lời quyết định thực nhận."),
     entry: { nav: "treatment", screen: "treatment" },
     steps: [
       {
@@ -11321,9 +11323,9 @@ const SCENARIOS = [
       {
         key: "table", anchor: "tr-table", screen: "treatment", act: "observe",
         say: {
-          title: B("Pay role, subtotal, value type", "Vai trò trong lương, tổng phụ, loại giá trị"),
-          body: B("The pay role decides the arithmetic from gross to net. Subtotal stops a total being counted twice. Only an amount can touch net pay.",
-                  "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Tổng phụ giúp một khoản tổng không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."),
+          title: B("Pay role, Included in another total, Value type", "Vai trò trong lương, Đã tính trong một tổng khác, Loại giá trị"),
+          body: B("The pay role decides the arithmetic from gross to net. Included in another total stops the same money being counted twice. Only an amount can touch net pay.",
+                  "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Đã tính trong một tổng khác giúp cùng một khoản tiền không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."),
         },
       },
       {

@@ -3840,8 +3840,8 @@
     },
     {
       "definition": {
-        "en": "What a scheme does with each component: its pay role, whether it is a subtotal, and its value type. It belongs to the scheme, so it affects every run.",
-        "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị. Nó thuộc về chương trình, nên ảnh hưởng mọi đợt lương."
+        "en": "What a scheme does with each component: its pay role, whether it is already included in another total, and its value type. It belongs to the scheme, so it affects every run.",
+        "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị. Nó thuộc về chương trình, nên ảnh hưởng mọi đợt lương."
       },
       "key": "componentTreatment",
       "match": {
@@ -3888,17 +3888,19 @@
       "key": "subtotal",
       "match": {
         "en": [
+          "included in another total",
           "subtotal lines",
           "subtotal"
         ],
         "vi": [
+          "đã tính trong một tổng khác",
           "dòng tổng phụ",
           "tổng phụ"
         ]
       },
       "term": {
-        "en": "Subtotal",
-        "vi": "Tổng phụ"
+        "en": "Included in another total",
+        "vi": "Đã tính trong một tổng khác"
       }
     },
     {
@@ -8498,8 +8500,8 @@
             {
               "anchor": "tr-table",
               "text": {
-                "en": "Check each pay role; tick Subtotal on a line whose parts are already added",
-                "vi": "Kiểm tra từng vai trò trong lương; đánh dấu Tổng phụ cho dòng mà các phần của nó đã được cộng"
+                "en": "Check each pay role; tick Included in another total on a line whose parts are already added",
+                "vi": "Kiểm tra từng vai trò trong lương; đánh dấu Đã tính trong một tổng khác cho dòng mà các phần của nó đã được cộng"
               }
             },
             {
@@ -14829,8 +14831,8 @@
           "act": "observe",
           "anchor": "tr-table",
           "body": {
-            "en": "The pay role decides the arithmetic from gross to net. Subtotal stops a total being counted twice. Only an amount can touch net pay.",
-            "vi": "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Tổng phụ giúp một khoản tổng không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."
+            "en": "The pay role decides the arithmetic from gross to net. Included in another total stops the same money being counted twice. Only an amount can touch net pay.",
+            "vi": "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Đã tính trong một tổng khác giúp cùng một khoản tiền không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."
           },
           "guard": false,
           "key": "table",
@@ -14844,8 +14846,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Pay role, subtotal, value type",
-            "vi": "Vai trò trong lương, tổng phụ, loại giá trị"
+            "en": "Pay role, Included in another total, Value type",
+            "vi": "Vai trò trong lương, Đã tính trong một tổng khác, Loại giá trị"
           },
           "value": ""
         },
@@ -14898,8 +14900,8 @@
         }
       ],
       "tagline": {
-        "en": "Pay role, subtotal and value type — the three answers that decide net pay.",
-        "vi": "Vai trò trong lương, tổng phụ và loại giá trị — ba câu trả lời quyết định thực nhận."
+        "en": "Pay role, Included in another total and Value type — the three answers that decide net pay.",
+        "vi": "Vai trò trong lương, Đã tính trong một tổng khác và Loại giá trị — ba câu trả lời quyết định thực nhận."
       }
     },
     {
@@ -19179,8 +19181,8 @@
     {
       "action_tags": "pb_mapping_studio",
       "blurb": {
-        "en": "What the scheme does with each component: its pay role, whether it is a subtotal, and its value type.",
-        "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, có phải tổng phụ không, và loại giá trị."
+        "en": "What the scheme does with each component: its pay role, whether it is already included in another total, and its value type.",
+        "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị."
       },
       "hub": null,
       "key": "treatment",
@@ -21925,8 +21927,8 @@
           },
           "treatment": {
             "line": {
-              "en": "What the scheme does with each component: its pay role, subtotal and value type.",
-              "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, tổng phụ và loại giá trị."
+              "en": "What the scheme does with each component: its pay role, whether it is included in another total, and its value type.",
+              "vi": "Chương trình lương làm gì với từng thành phần: vai trò trong lương, đã tính trong một tổng khác hay chưa, và loại giá trị."
             },
             "name": {
               "en": "Component treatment",
@@ -32086,8 +32088,8 @@
         {
           "duration_min": 6,
           "goal": {
-            "en": "Read the Component treatment board, set a pay role, a subtotal and a value type correctly, and know why a run says its figures do not add up.",
-            "vi": "Đọc bảng Xử lý thành phần, đặt đúng vai trò trong lương, tổng phụ và loại giá trị, và biết vì sao một đợt lương báo số liệu không khớp."
+            "en": "Read the Component treatment board, set each pay role, Included in another total tick and value type, and know why a run's figures do not add up.",
+            "vi": "Đọc bảng Xử lý thành phần, đặt đúng vai trò trong lương, dấu Đã tính trong một tổng khác và loại giá trị, và biết vì sao số liệu một đợt lương không khớp."
           },
           "key": "L9",
           "name": {
@@ -32190,13 +32192,13 @@
             {
               "anchor": "tr-table",
               "body": {
-                "en": "Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Subtotal</b>. Without it, the totals would count the same money twice.",
-                "vi": "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Tổng phụ</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."
+                "en": "Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Included in another total</b>. Without it, the totals would count the same money twice.",
+                "vi": "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Đã tính trong một tổng khác</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."
               },
               "consequence": "",
               "kicker": {
-                "en": "Subtotal",
-                "vi": "Tổng phụ"
+                "en": "Included in another total",
+                "vi": "Đã tính trong một tổng khác"
               },
               "lines": [],
               "moment_chain": "",
@@ -32206,8 +32208,8 @@
               "screen": "treatment",
               "tip": "",
               "title": {
-                "en": "A subtotal is already inside another line",
-                "vi": "Tổng phụ đã nằm sẵn trong một dòng khác"
+                "en": "Some lines are already inside another line",
+                "vi": "Có những dòng đã nằm sẵn trong một dòng khác"
               },
               "visual": "none"
             },
@@ -32304,8 +32306,8 @@
             "vi": "Đặt giờ hoặc ngày công để cộng vào thực nhận. Giờ đi vào thực nhận bằng cách nhân với một số tiền; riêng chúng chỉ để tham khảo."
           },
           {
-            "en": "Leaving gross as a normal line. Its parts are already added, so without Subtotal ticked the totals count them twice.",
-            "vi": "Để tổng thu nhập như một dòng thường. Các phần của nó đã được cộng rồi, nên nếu không đánh dấu Tổng phụ thì các tổng sẽ tính chúng hai lần."
+            "en": "Leaving gross as a normal line. Its parts are already added, so without Included in another total ticked the totals count them twice.",
+            "vi": "Để tổng thu nhập như một dòng thường. Các phần của nó đã được cộng rồi, nên nếu không đánh dấu Đã tính trong một tổng khác thì các tổng sẽ tính chúng hai lần."
           },
           {
             "en": "Saving and expecting the old payslips to change. Saving never rewrites a payslip; recompute the run to see the new treatment.",
@@ -32317,8 +32319,8 @@
           "vi": "Quyền vào Cài đặt › Tích hợp › Ánh xạ, và chương trình lương bạn muốn kiểm tra."
         },
         "what": {
-          "en": "Mapping › Component treatment. One row per component, with its pay role, whether it is a subtotal, and its value type.",
-          "vi": "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, có phải tổng phụ hay không, và loại giá trị của nó."
+          "en": "Mapping › Component treatment. One row per component, with its pay role, whether it is already included in another total, and its value type.",
+          "vi": "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị của nó."
         },
         "when": {
           "en": "Before a scheme's first pay run, after a workbook import, and whenever a run says \"These figures do not add up\".",
@@ -34251,5 +34253,5 @@
       }
     }
   ],
-  "version": "bb3557a8f8e3"
+  "version": "b4da1d178a48"
 }

@@ -380,6 +380,12 @@ def screen_texts(screen_key, man, content, anchors, hub_tab_line=None):
     for st in content.get('stations') or ():
         if st['key'] == station_key:
             yield from emit(st.get('lessons') or [], 'lesson of station %s' % station_key)
+            yield from emit({k: v for k, v in st.items() if k != 'lessons'},
+                            'station %s' % station_key)
+    for it in content.get('intents') or ():
+        if screen_key in (it.get('screens') or ()):
+            yield from emit({k: v for k, v in it.items() if k not in ('match', 'phrases')},
+                            'help answer %s' % it.get('key'))
     for sc in content.get('screens') or ():
         if sc['key'] == screen_key:
             for k in ('blurb', 'next_step', 'live_fallback'):
