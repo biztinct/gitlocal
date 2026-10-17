@@ -215,13 +215,30 @@ class TestScenarioEngine(TransactionCase):
                          "the dwell is back; a Watch step can walk on by itself")
         bodies = _method_bodies(code)
         movers = sorted(n for n, b in bodies.items() if 'this.sc.next()' in b)
-        self.assertEqual(movers, ['_awaitRealClick', 'onNext'],
-                         "the step is advanced from %s. Only the learner's Next "
-                         "press and Do-mode's response to the learner's OWN "
-                         "press may move a walkthrough on." % movers)
+        # LEARNREV P4 adds two NAMED exceptions, each re-asking its own
+        # conditions at the moment it fires:
+        #   _skipMissing  Watch only, a step whose control never appeared
+        #                 ("That control is not on this screen right now"
+        #                 moves on after 4 s instead of waiting on nothing);
+        #   _pollCheck    a checked step (Try on the demo company, or Do with
+        #                 a declared check) moves on when the server says the
+        #                 person's own change is there — still the engine
+        #                 noticing what the person did, never deciding.
+        allowed = {'_awaitRealClick', 'onNext', '_skipMissing', '_pollCheck'}
+        self.assertTrue(set(movers) <= allowed and {'_awaitRealClick', 'onNext'} <= set(movers),
+                        "the step is advanced from %s. Only the learner's Next "
+                        "press, Do-mode's response to the learner's OWN press, "
+                        "a missing control in Watch and a passed check may move "
+                        "a walkthrough on." % movers)
         for name in ('_enterStep', '_watchAutoClick'):
             self.assertNotIn('this.sc.next()', bodies[name],
                              "%s advances the walkthrough on its own" % name)
+        skip = bodies.get('_skipMissing', '')
+        if skip:
+            for cond in ('this.isWatch', 'this.ui.hasTarget', 'this.step !== step'):
+                self.assertIn(cond, skip, "_skipMissing does not re-ask %s" % cond)
+            for token in PRESS_TOKENS:
+                self.assertNotIn(token, skip, "_skipMissing presses a control")
 
     # -- the content plane's half ------------------------------------------
     def test_06_every_click_step_states_its_guard(self):

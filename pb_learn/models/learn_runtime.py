@@ -764,4 +764,8 @@ class LearnRuntime(models.AbstractModel):
             # Guide-backed Explain / whatnext. False: the drawer is exactly
             # what shipped before P2 (no Guide call, no (i), no dock).
             'guide': self.env['learn.guide'].enabled(),
+            # LEARNREV P4 — the ACTIVE company's country ("VN", "ID", …, or
+            # ""): a statutory lesson step reads the variant for it and every
+            # other country reads the generic one (coach/lesson_panel.js).
+            'country': (self.env.company.country_id.code or '').upper(),
         }

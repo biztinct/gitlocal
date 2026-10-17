@@ -71,6 +71,10 @@ import { ROLE_ORDER, buildIndex, buildLibrary, libraryHTML, practiceRowHTML, res
     from "./library";
 import { loadFieldIndex } from "../content/field_index";
 import { askHelper, guideAt } from "../coach/guide_door";
+/* LEARNREV P4 — the four-line step renderer the Guide panel uses, and the
+   panel's own "where does this step play" rule, for the hand-back. */
+import { isPracticeAnchor, linesHTML, stepView } from "../coach/lesson_panel";
+const LP_RETURN_KEY = "pbLearnLessonReturn";
 import { openHub } from "@pb_hub/js/hub_nav";
 
 /* Arrival payloads already acted on. HubShell hands the Lessons lens ONE
@@ -155,6 +159,9 @@ export class LearnJourney extends Component {
             // company does not have, or any tab during a lesson (where the
             // lesson moves the screen). Never a dead click.
             shellNote: "",
+            // LEARNREV P4 — set while a lesson the Guide panel handed over
+            // plays here: {station, lesson, from}.
+            handoff: null,
             // LEARN v3 — the path. `role` is the learner's pick, or the guess.
             role: "",
             roleChosen: false,
@@ -224,6 +231,7 @@ export class LearnJourney extends Component {
             Spot.hide();
             document.removeEventListener("keydown", this._onKey, true);
             document.body.classList.remove("lrn-open");
+            document.body.classList.remove("lrn-on-library");
         });
     }
 
@@ -303,6 +311,9 @@ export class LearnJourney extends Component {
             // LEARNREV P3 — the Library's search (terms) and its Practice
             // row's wording (the demo company, or a copy).
             demoWorld: !!runtime.demo_world,
+            // LEARNREV P4 — the company's country: a statutory step reads
+            // the variant for it (coach/lesson_panel.js stepView).
+            country: runtime.country || "",
         };
         setReach(runtime.visible_stations);
         // LEARN REFRESH step 4 — a station whose hub TAB this reader cannot
@@ -832,10 +843,16 @@ export class LearnJourney extends Component {
         const ask = step.act === "input"
             ? T("scExpected") + ": " + tx(step.value) + " — " + T("scTypeHere")
             : T("scPressIt");
+        // LEARNREV P4 — a rewritten walkthrough step is four lines, drawn
+        // by the Guide's own renderer; a step not rewritten keeps its body.
+        const view = stepView(step, (this.bundle && this.bundle.country) || "");
+        const said = view.look && !view.legacy
+            ? linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) })
+            : `<div class="lrn-cbody">${gtx(step.body)}</div>`;
         return `
         ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
         <h3>${esc(tx(step.title))}</h3>
-        <div class="lrn-cbody">${gtx(step.body)}</div>
+        ${said}
         ${acts ? `<div class="lrn-scwait">
             <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
             <p>${esc(ask)}</p>
@@ -919,11 +936,18 @@ export class LearnJourney extends Component {
         // past the end — that blanked the Journey with an owl error
         // (LEARN REFRESH step 5).
         const st = steps[this.state.step] || steps[0];
+        // LEARNREV P4 — handed over by the Guide panel: this step lives only
+        // in the practice copy, and the shell says so in one line.
+        const handed = !!this.state.handoff;
+        // The practice-copy note rides on the card (_coachCardHTML).
         const shell = shellHTML(st.screen, { guided: true, visible: this.visible,
                                              note: this.state.shellNote });
         const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
+        const back = handed
+            ? `<button class="lrn-btn sm" data-act="l-return">${ic("chevron-left")}${esc(T("lpBackReal"))}</button>` : "";
         return `${shell}
         <div class="lrn-playbar" role="group" aria-label="${esc(T("step"))}">
+            ${back}
             <span class="lrn-meter"><i style="width:${pctDone}%"></i></span>
             <span class="lrn-stepno">${esc(T("step"))}${SP}${this.state.step + 1}${SP}${esc(T("of"))}${SP}${steps.length}</span>
             <button class="lrn-btn sm" data-act="l-back" ${this.state.step === 0 ? "disabled" : ""}>
@@ -951,14 +975,25 @@ export class LearnJourney extends Component {
         } else if (st.visual === "morph") {
             moment = `<div class="lrn-moment">${morphHTML(st, this.state.morphSide)}</div>`;
         }
-        return `
+        // LEARNREV P4 — a rewritten step is four lines (Look at · It means ·
+        // It affects · Press), drawn by the same renderer the Guide panel
+        // uses, in the company's country. A step not rewritten keeps its body.
+        const view = stepView(st, (this.bundle && this.bundle.country) || "");
+        const body = view.legacy || !view.look
+            ? `<div class="lrn-cbody">${gtx(st.body)}</div>`
+            : linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) });
+        // Handed over by the Guide: the card itself says why this step is on
+        // the practice copy (a line in the shell sat under the card).
+        const handed = this.state.handoff && isPracticeAnchor(st.anchor)
+            ? `<div class="lrn-lp-note practice">${ic("flask")}<span>${esc(T("lpPracticeNote"))}</span></div>` : "";
+        return `${handed}
         ${st.kicker ? `<div class="lrn-kicker">${esc(tx(st.kicker))}</div>` : ""}
         <h3>${esc(tx(st.title))}</h3>
-        <div class="lrn-cbody">${gtx(st.body)}</div>
+        ${body}
         ${moment}
         ${st.consequence ? `<div class="lrn-conseq"><h4>${ic("alert-triangle")}${esc(T("consequence"))}</h4>
             <p>${esc(tx(st.consequence))}</p></div>` : ""}
-        ${st.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(st.tip))}</span></div>` : ""}`;
+        ${view.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(view.tip))}</span></div>` : ""}`;
     }
 
     /* ------------------------------------------------------------- quiz view */
@@ -1283,6 +1318,10 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        // LEARNREV P4 (S10) — while the Library is showing, the corner Ask
+        // PayAI launcher stays out of its rows when the Guide is on: the rows'
+        // Guide chips and the search's Ask PayAI are the way in (coach.scss).
+        document.body.classList.toggle("lrn-on-library", this.state.view === "map");
         // LEARNREV P3 — a role pick redraws the Continue card and the path
         // strip; they settle in once (CSS, reduced motion respected). The
         // class lives only on this render's DOM, so a later redraw does not
@@ -1606,6 +1645,8 @@ export class LearnJourney extends Component {
             "l-backstep": () => this.back(),
             "l-replay": () => this.replay(),
             "l-exit": () => this.exitLesson(),
+            // LEARNREV P4 — back to the real screen, the lesson in the Guide.
+            "l-return": () => this._handBack(this._returnIndex(), true),
             "l-retry": () => this.retry(),
             "l-finish": () => this.finish(),
             "to-missions": () => this.toMissions(),
@@ -1846,9 +1887,12 @@ export class LearnJourney extends Component {
         if (arrival && arrival.focus && !ctx.pb_focus && !CONSUMED_ARRIVALS.has(arrival)) {
             CONSUMED_ARRIVALS.add(arrival);
             const f = String(arrival.focus);
-            const lm = /^(lesson|suggest):([A-Za-z0-9_]+)$/.exec(f);
+            // LEARNREV P4 — "lesson:<key>:<step>": the Guide panel handing a
+            // step that lives only in the practice copy over to this player.
+            const lm = /^(lesson|suggest):([A-Za-z0-9_]+)(?::(\d+))?$/.exec(f);
             if (lm) {
-                ctx = Object.assign({}, ctx, { [lm[1]]: lm[2] });
+                ctx = Object.assign({}, ctx, { [lm[1]]: lm[2] },
+                                    lm[3] !== undefined ? { lesson_step: Number(lm[3]) } : {});
             } else if (f === "practice") {
                 ctx = Object.assign({}, ctx, { practice: 1 });
             } else {
@@ -1908,7 +1952,76 @@ export class LearnJourney extends Component {
         }
         this.openStation(station.key);
         this.startLesson();
+        if (Number.isInteger(ctx.lesson_step)) {
+            this.state.step = Math.max(0, Math.min(ctx.lesson_step, this.steps.length - 1));
+            this.state.handoff = this._readHandoff(key);
+        }
         this._log("lesson_deeplink");
+    }
+
+    /* ---------------------------------------- LEARNREV P4 — the hand-back
+       The Guide panel plays a lesson beside the real screen and hands over
+       only the steps that live in the practice copy. While handed over, Next
+       or Back onto a step about a real control goes BACK to that screen with
+       the lesson in the Guide, at that step; "Back to the real screen" does
+       the same from wherever the reader is. */
+    _readHandoff(lessonKey) {
+        try {
+            const h = JSON.parse(window.sessionStorage.getItem(LP_RETURN_KEY) || "null");
+            return h && h.lesson === lessonKey ? h : null;
+        } catch {
+            return null;
+        }
+    }
+
+    _clearHandoff() {
+        this.state.handoff = null;
+        try {
+            window.sessionStorage.removeItem(LP_RETURN_KEY);
+        } catch {
+            // Nothing to forget.
+        }
+    }
+
+    /** The step to come back at: this one, or the next real one after a
+     *  practice-only step (or the quiz, past the last step). */
+    _returnIndex() {
+        const steps = this.steps;
+        let i = this.state.step;
+        while (i < steps.length && isPracticeAnchor((steps[i] || {}).anchor)) {
+            i += 1;
+        }
+        return i;
+    }
+
+    /** Hand the lesson back to the Guide at step `index` (steps.length = the
+     *  quiz). False when this is not a hand-over, or that step also lives
+     *  only here (the practice copy plays it, as before). */
+    _handBack(index, force) {
+        const h = this.state.handoff;
+        const steps = this.steps;
+        if (!h || index < 0 || index > steps.length) {
+            return false;
+        }
+        const st = steps[index];
+        if (st && isPracticeAnchor(st.anchor)) {
+            return false;
+        }
+        const screenKey = (st && st.screen) || h.from;
+        const screen = (this.bundle.screens || []).find((s) => s.key === screenKey);
+        if (!screen || (reachable(screen) === false && !force)) {
+            return false;
+        }
+        this._clearHandoff();
+        Spot.hide();
+        guideAt(screenKey, { section: "understand", station: h.station, step: index })
+            .then((res) => {
+                if (res !== "here") {
+                    // Could not open it: stay here, on the practice copy.
+                    this.state.handoff = h;
+                }
+            });
+        return true;
     }
 
     /** The station carrying a lesson KEY (L1, LW…), or null. */
@@ -1959,6 +2072,9 @@ export class LearnJourney extends Component {
         if (this.state.quiz) {
             return;
         }
+        if (this._handBack(this.state.step + 1)) {
+            return;
+        }
         if (this.state.step < this.steps.length - 1) {
             this.state.step += 1;
             this.state.morphSide = "before";
@@ -1976,6 +2092,9 @@ export class LearnJourney extends Component {
             this.state.answered = null;
             return;
         }
+        if (this.state.step > 0 && this._handBack(this.state.step - 1)) {
+            return;
+        }
         if (this.state.step > 0) {
             this.state.step -= 1;
             this.state.morphSide = "before";
@@ -1990,6 +2109,7 @@ export class LearnJourney extends Component {
 
     exitLesson() {
         Spot.hide();
+        this._clearHandoff();
         this.state.view = "outline";
         this.state.quiz = false;
         this._log("lesson_abandon", this.state.step);
@@ -2025,6 +2145,7 @@ export class LearnJourney extends Component {
         });
         this._log("lesson_complete");
         Spot.hide();
+        this._clearHandoff();
         this.state.view = "outline";
         this.state.quiz = false;
         this.state.answered = null;
@@ -2292,7 +2413,9 @@ export class LearnJourney extends Component {
     }
 
     get learnLabel() {
-        return this.state.ready ? T("learn") : "";
+        // LEARNREV P4 (S10): "Learn", the page's own name (the hub title),
+        // not "Payobook · Learning".
+        return this.state.ready ? T("hubTitle") : "";
     }
 
     /** Narration for screen readers: the step title, announced on change. */

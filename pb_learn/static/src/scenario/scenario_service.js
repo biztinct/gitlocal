@@ -107,9 +107,15 @@ export const scenarioService = {
                `{label}` names it in the reader's words; the overlay then shows
                one sentence and a way on instead of step one frozen. */
             blocked: null,
+            /* LEARNREV P4 — Try on the REAL screen (demo-world sessions,
+               for a walkthrough whose steps the server can check), and the
+               step keys it checks (`learn.scenario.checked_steps`). */
+            real: false,
+            checks: [],
         });
 
         let scenarios = null;      // null = not loaded yet, [] = loaded, empty
+        let checked = null;        // {scenario: [step keys]} — LEARNREV P4
         let screens = [];          // the content plane's screens (places)
         let loading = null;
 
@@ -143,10 +149,40 @@ export const scenarioService = {
             return all().find((s) => s.key === key) || null;
         }
 
+        /** LEARNREV P4 — the steps a Try on the real screen plays: the ones
+         *  written for the real product (Do's when it has Do, else Watch's).
+         *  Try's own steps point at the practice copy's drawing. */
+        function realMode(sc) {
+            return ((sc && sc.modes) || []).includes("do") ? "do" : "watch";
+        }
+
         /** The steps of the RUNNING scenario, in the mode it is running in. */
         function steps(key, mode) {
-            return playableSteps(get(key === undefined ? state.key : key),
-                                 mode === undefined ? state.mode : mode);
+            const k = key === undefined ? state.key : key;
+            let m = mode === undefined ? state.mode : mode;
+            if (m === "try" && state.real && k === state.key) {
+                m = realMode(get(k));
+            }
+            return playableSteps(get(k), m);
+        }
+
+        /** {scenario: [step keys]} the server checks for THIS session — empty
+         *  outside a demo-world session, so Try stays on the practice copy. */
+        async function loadChecks() {
+            if (checked) {
+                return checked;
+            }
+            try {
+                checked = (await orm.call("learn.scenario", "checked_steps", [])) || {};
+            } catch {
+                checked = {};
+            }
+            return checked;
+        }
+
+        /** Ask the server whether the person did what step `stepKey` asked. */
+        function check(stepKey, args) {
+            return orm.call("learn.scenario", "check", [state.key, stepKey, args || {}]);
         }
 
         function current() {
@@ -206,10 +242,18 @@ export const scenarioService = {
             return promise;
         }
 
+        /* LEARNREV P4 (G23) — TWO DIFFERENT ENDINGS, never confused.
+             · "noaccess": the reader cannot open the screen — known before
+               navigating (`reachable() === false`), or the hub moved them
+               off the tab ("elsewhere"), or the screen itself said so.
+             · "slow": nothing refused anything; the screen simply did not
+               arrive in time. That card says "still loading" with Retry —
+               it used to say "You can't open this screen", which was untrue
+               and sent people to their administrator for a slow network. */
         async function navigateOnce(ref) {
             const screen = screenForRef(screens, ref);
             if (screen && reachable(screen) === false) {
-                block(screen);
+                block(screen, "noaccess", ref);
                 return false;
             }
             // Already standing on that tab: nothing to open, and re-opening
@@ -221,45 +265,63 @@ export const scenarioService = {
                 return true;
             }
             state.navigating = true;
-            let ok = true;
+            let kind = "";
             try {
                 const res = await Promise.race([
                     openScreen(action, screens, screen || ref),
                     new Promise((resolve) => setTimeout(() => resolve(null), NAV_TIMEOUT)),
                 ]);
                 if (!res) {
-                    ok = false;
+                    kind = "slow";
                 } else if (res.place) {
-                    ok = (await waitForPlace(res.place, res.seq)) === "here";
+                    const where = await waitForPlace(res.place, res.seq);
+                    kind = where === "here" ? "" : (where === "elsewhere" ? "noaccess" : "slow");
                 }
             } catch {
-                ok = false;
+                // A navigation that threw did not refuse anybody either.
+                kind = "slow";
             } finally {
                 state.navigating = false;
             }
-            if (!ok) {
-                block(screen);
+            if (kind) {
+                block(screen, kind, ref);
             }
-            return ok;
+            return !kind;
         }
 
-        function block(screen) {
+        function block(screen, kind, ref, reason) {
             if (!state.active) {
                 return;
             }
             state.blocked = {
                 key: screen ? screen.key : "",
                 label: screen ? placeLabel(screens, screen) : "",
+                kind: kind || "noaccess",
+                ref: ref || (screen ? screen.key : ""),
+                reason: reason || "",
             };
-            log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}`);
+            log("scenario_blocked", `${state.key}:${screen ? screen.key : ""}:${kind || "noaccess"}`);
         }
 
         /** LEARN REFRESH step 4 — the overlay saw the screen refuse this
          *  reader after it opened (an access error, a tab the hub will not
          *  show them, a "you need … access" panel where the step's control
-         *  should be). Same ending as a refusal known before navigating. */
-        function refuse(screen) {
-            block(typeof screen === "string" ? screenForRef(screens, screen) : screen);
+         *  should be). Same ending as a refusal known before navigating;
+         *  LEARNREV P4: with the screen's own words as the reason. */
+        function refuse(screen, reason) {
+            const s = typeof screen === "string" ? screenForRef(screens, screen) : screen;
+            block(s, "noaccess", s ? s.key : "", typeof reason === "string" ? reason : "");
+        }
+
+        /** LEARNREV P4 — "still loading" → Retry: open the screen again. The
+         *  overlay re-enters the step once the block is gone. */
+        async function retry() {
+            const b = state.blocked;
+            if (!b || b.kind !== "slow") {
+                return false;
+            }
+            state.blocked = null;
+            return navigate(b.ref);
         }
 
         /** The screen a step stands on (its own, else the last named before
@@ -287,7 +349,7 @@ export const scenarioService = {
             const sc = get(key);
             stop();
             if (sc && (sc.modes || []).includes("try")) {
-                return begin(key, "try");
+                return begin(key, "try", { replica: true });
             }
             try {
                 await openLearn(action, "practice");
@@ -304,7 +366,7 @@ export const scenarioService = {
          *  callers are a Journey card, a Coach drawer button and a deep link
          *  out of an intent, and none of those may break the screen it is on
          *  because a key went stale between a cached answer and today. */
-        async function begin(key, mode) {
+        async function begin(key, mode, opts) {
             await load();
             const sc = get(key);
             if (!sc) {
@@ -314,7 +376,13 @@ export const scenarioService = {
             if (!wanted) {
                 return false;
             }
-            if (wanted === "try") {
+            // LEARNREV P4 — on the demo company a walkthrough whose steps the
+            // server can check is tried on the REAL screen: the person presses,
+            // and the step moves on when their own change is there. Do keeps
+            // its guard and gains the same checks.
+            const checks = wanted === "watch" || (opts && opts.replica)
+                ? [] : ((await loadChecks())[key] || []);
+            if (wanted === "try" && !checks.length) {
                 // Try belongs to the Journey, over the replica. The deep link
                 // is the handover, and it is the same mechanism PayAI's "Show
                 // me" already uses — one door into that action, not two.
@@ -327,6 +395,8 @@ export const scenarioService = {
                 }
                 return true;
             }
+            state.real = wanted === "try";
+            state.checks = checks;
             state.key = key;
             state.mode = wanted;
             state.index = 0;
@@ -411,6 +481,8 @@ export const scenarioService = {
             state.blocked = null;
             state.key = null;
             state.index = 0;
+            state.real = false;
+            state.checks = [];
             // Closing the closing card is not abandoning it. Logging both would
             // make every completed walkthrough also count as one somebody
             // walked out of, which is the signal these rows exist to carry.
@@ -455,9 +527,9 @@ export const scenarioService = {
 
         return {
             state,
-            load, all, get, steps, current, forScreen,
+            load, all, get, steps, current, forScreen, loadChecks, check,
             begin, next, back, goTo, finish, stop,
-            navigate, practiceInstead, refuse, screenOfStep,
+            navigate, practiceInstead, refuse, retry, screenOfStep,
             record, log, logStart, nowServer,
             PROGRESS_PREFIX,
         };

@@ -24,6 +24,23 @@
     pointer-events: none;
 }
 
+/* LEARNREV P4 — a checked step's "still to do" line, and its pass. */
+.lrn-sccheck {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #8A4B05;
+    &.ok { display: flex; gap: 6px; align-items: center; color: #2E7D4F; font-weight: 650; }
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; }
+}
+
+/* LEARNREV P4 — a refusal quotes the screen's own words, quietly. */
+.lrn-screason {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #6B6787;
+    q { font-style: italic; }
+}
+
 /* The hole. Dimming is a spread shadow around the target rather than a panel
    over the app, so the control being explained is never covered — the binding
    rule the Journey's spotlight already follows. */

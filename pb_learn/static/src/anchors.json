@@ -362,7 +362,8 @@
     "fs-resize": {
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio.xml",
-      "desc": "Cards view: the handle between Components and the editor. Drag it (or arrow keys) to widen a panel; each side panel's ‹ › folds it to a strip and the strip opens it again."
+      "desc": "Cards view: the handle between Components and the editor. Drag it (or arrow keys) to widen a panel; each side panel's ‹ › folds it to a strip and the strip opens it again.",
+      "reserved": true
     },
     "st-new": {
       "screen": "statutory",
@@ -948,6 +949,43 @@
       "screen": "treatment",
       "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
       "desc": "Component treatment table: Component, Comes from, Report group, Pay role, Included in another total, Run signal, Value type."
+    },
+    "tr-col-lane": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Comes from column header (LEARNREV P4): where each value arrives from.",
+      "reserved": true
+    },
+    "tr-col-group": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Report group column header (LEARNREV P4)."
+    },
+    "tr-col-role": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Pay role column header (LEARNREV P4): an amber cell is a row that needs your answer."
+    },
+    "tr-col-rollup": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Included in another total column header (LEARNREV P4)."
+    },
+    "tr-col-signal": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Run signal column header (LEARNREV P4).",
+      "reserved": true
+    },
+    "tr-col-kind": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Value type column header (LEARNREV P4)."
+    },
+    "tr-save": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, Save N change(s) (LEARNREV P4). Saving changes the scheme, never a payslip already computed."
     },
     "pp-tabs": {
       "screen": [
@@ -1806,14 +1844,12 @@
     "dash-needs": {
       "screen": "dashboard",
       "file": "pb_dashboard/static/src/xml/pb_dashboard.xml",
-      "desc": "The Pulse \"Needs you\" line: one chip per open action, or the quiet line when nothing waits. Its (i) opens the Needs you card (LEARNREV P2).",
-      "reserved": true
+      "desc": "The Pulse \"Needs you\" line: one chip per open action, or the quiet line when nothing waits. Its (i) opens the Needs you card (LEARNREV P2)."
     },
     "md-list": {
       "screen": "mapping",
       "file": "pb_formula_studio/static/src/xml/connection_desk.xml",
-      "desc": "Mapping › Connections, the component list: Component / read order and Sample value, one row per input component with its sources in read order.",
-      "reserved": true
+      "desc": "Mapping › Connections, the component list: Component / read order and Sample value, one row per input component with its sources in read order."
     },
     "md-inspector": {
       "screen": "mapping",
@@ -1824,8 +1860,7 @@
     "sx-table": {
       "screen": "formula",
       "file": "pb_formula_studio/static/src/xml/studio_experience.xml",
-      "desc": "Formula Engine, the default Table view: Component, Source / calculation, Value type and Preview value, one row per component.",
-      "reserved": true
+      "desc": "Formula Engine, the default Table view: Component, Source / calculation, Value type and Preview value, one row per component."
     }
   },
   "pattern": {

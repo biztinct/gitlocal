@@ -45,8 +45,12 @@ import { RT, T, tx, esc, ic, SP, reduced } from "../engine/runtime";
    one place `gtx` replaces `tx`. */
 import { gtx, glossaryOpen, setGlossary, installGlossary, closeGlossary }
     from "../engine/glossary";
-import { loadContent, composeScreens } from "../content/content_loader";
-import { flashRing } from "../engine/spotlight";
+import { loadContent, composeScreens, gateSteps } from "../content/content_loader";
+import { flashRing, PanelSpot } from "../engine/spotlight";
+/* LEARNREV P4 — a lesson played inside the Guide panel, beside the real
+   screen: the pure renderer, and the decision of where each step plays. */
+import { doneHTML, lessonCardHTML, pickCountry, placeFor, quizHTML, stepView }
+    from "./lesson_panel";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeWelcome } from "./first_login";
 import { registerFieldRows, registerLessonRows } from "../hub/learn_palette";
@@ -146,7 +150,26 @@ export const COACH_ACTIONS = new Set([
     // LEARNREV P3 — "Show the Guide": the sections fold to their titles while
     // a conversation is under way, and this opens them again. A read.
     "c-gshow",
+    // LEARNREV P4 — the lesson played in the Guide panel: start it, Back /
+    // Next / Leave, Retry a slow screen, open the practice copy for a step
+    // that lives only there, answer the quiz, try again, finish. None
+    // reaches a product method: the spotlight points, and the only writes are
+    // this learner's own `learn.progress` row and learning-log events.
+    "c-lpstart", "c-lpnext", "c-lpback", "c-lpleave", "c-lpretry", "c-lppractice",
+    "c-lpans", "c-lpretryq", "c-lpfinish",
+    // LEARNREV P4 (S3) — Stop on the Tasks row while a walkthrough runs
+    // beside the Guide: the walkthrough's own Leave, nothing else.
+    "c-scstop",
 ]);
+
+/* LEARNREV P4 — the hand-over to the practice copy: which lesson the panel
+   was playing and on which screen, so the Journey can come BACK to the real
+   screen when the next (or previous) step is about a real control. */
+export const LP_RETURN_KEY = "pbLearnLessonReturn";
+/* How long a step waits for its control before saying it is not on screen. */
+const LP_ANCHOR_WAIT = 4000;
+/* How long a navigation may take before the step says "still loading". */
+const LP_NAV_TIMEOUT = 8000;
 
 /* ONECHAT OC2 — ONE CHAT, NO TABS.
 
@@ -240,6 +263,9 @@ export class CoachHost extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.sc = useService("learn.scenario");
+        // LEARNREV P4 — the running walkthrough, observed: the Tasks row
+        // "Playing · step N of M" redraws as it moves.
+        this.scState = useState(this.sc.state);
         this.inputRef = useRef("input");
 
         this.state = useState({
@@ -282,7 +308,12 @@ export class CoachHost extends Component {
             // LEARNREV P3 — the sections folded to their titles because a
             // message was sent (the conversation gets the height).
             gFolded: false,
+            // LEARNREV P4 — the lesson playing in the panel, or null:
+            // {station, lesson, index, quiz, answered, done, note}.
+            lp: null,
         });
+        this._lpSeq = 0;
+        this._lpSecs = null;
         // LEARNREV P3 — a message has been sent in this drawer session (the
         // fold happens once per session), and a Guide asked for by the
         // Library / ⌘K that waits for its screen to be grounded.
@@ -381,6 +412,13 @@ export class CoachHost extends Component {
                     path: runtime.path || {},
                     // LEARNREV P2 — the Guide switch (Learn › Settings).
                     guide: !!runtime.guide,
+                    // LEARNREV P4 — for the lesson played in the panel: this
+                    // reader's progress, which optional features their company
+                    // has (gated steps), and the company's country (statutory
+                    // steps read the variant for it).
+                    progress: runtime.progress || {},
+                    features: runtime.features || {},
+                    country: runtime.country || "",
                 };
                 // Which stations this reader can reach, for the walkthrough
                 // engine's "you don't have access" answer (engine/places.js).
@@ -492,6 +530,7 @@ export class CoachHost extends Component {
                 this._info.stop();
             }
             closeFieldCard(false);
+            PanelSpot.hide();
         });
     }
 
@@ -551,7 +590,9 @@ export class CoachHost extends Component {
                 closeFieldCard(false);
                 this.state.gField = "";
                 this._gQuery = "";
-                this.state.gSec = this._sectionMemory(key);
+                // LEARNREV P4 — a lesson that moved to its next step's
+                // screen keeps the panel to itself: only Understand is open.
+                this.state.gSec = this.state.lp ? this._lpSections() : this._sectionMemory(key);
                 this.state.gFolded = false;
                 this._loadGuide();
             }
@@ -575,6 +616,21 @@ export class CoachHost extends Component {
     _onKey(ev) {
         const typing = /^(INPUT|TEXTAREA)$/.test(ev.target.tagName)
             || ev.target.isContentEditable;
+        // LEARNREV P4 — a lesson in the panel: ← → move it, as in the Journey.
+        // Never while typing, and never while a walkthrough owns the arrows.
+        if (this.state.lp && this.state.open && !typing && !this.sc.state.active
+                && (ev.key === "ArrowRight" || ev.key === "ArrowLeft")
+                && !this.state.lp.done && !(this.state.lp.quiz && ev.key === "ArrowRight")) {
+            // preventDefault only: a branch that closes nothing never
+            // swallows the key (test_assets test_06).
+            ev.preventDefault();
+            if (ev.key === "ArrowRight") {
+                this._lpNext();
+            } else {
+                this._lpBack();
+            }
+            return;
+        }
         if (ev.key === "?" && !typing && !this.state.open) {
             ev.preventDefault();
             this.toggle();
@@ -607,6 +663,13 @@ export class CoachHost extends Component {
                 ev.stopPropagation();
                 this._api.cancelRecording();
                 this.menu.close();
+                return;
+            }
+            // LEARNREV P4 — a lesson playing in the panel is the next rung:
+            // Escape leaves the lesson, and the Guide stays open.
+            if (this.state.lp) {
+                ev.stopPropagation();
+                this._lpExit();
                 return;
             }
             // Only closes the Coach. The screen behind it keeps its own Escape.
@@ -900,6 +963,10 @@ export class CoachHost extends Component {
 
     /** Explain this screen, drawn as a turn in whichever stream is showing. */
     async _explainInto() {
+        // LEARNREV P4 (P3 deploy item) — Explain is a message in the
+        // conversation like a typed one: fold the Guide so the answer gets
+        // the height instead of a short strip under five sections.
+        this._chatSent();
         const answer = await this.explainScreen();
         if (this._api) {
             await this._api.pushGuide(answer, { kind: "explain" });
@@ -1326,6 +1393,11 @@ export class CoachHost extends Component {
     close() {
         this.state.open = false;
         this.menu.close();
+        // LEARNREV P4 — a lesson in the panel ends with the panel (its place
+        // is kept in `learn.progress`, so Start resumes it).
+        if (this.state.lp) {
+            this._lpExit();
+        }
         // A ⌘K sentence or an Explain still waiting for the chat to mount
         // was given up when the person closed the drawer: it must not be
         // sent on some later, unrelated open.
@@ -1703,14 +1775,20 @@ export class CoachHost extends Component {
 
     /** Start a scenario from the drawer.
      *
-     *  The drawer CLOSES first: a walkthrough of the screen behind it cannot
-     *  be followed through a panel sitting on top of it, and Watch's first act
-     *  is usually to navigate. `stepKey` comes from a `scenario:<key>#<stepKey>`
-     *  target and is applied AFTER the entry navigation, so an intent can
-     *  answer "why did this pay change" by opening the walkthrough on the
-     *  salary breakdown rather than on the board it starts from. */
+     *  LEARNREV P4 (S3) — the drawer STAYS OPEN. It used to close first,
+     *  because a panel over the screen could not be followed; the Guide now
+     *  docks beside the page (or floats clear of it) and the overlay's card
+     *  keeps clear of it (scenario_overlay.js `_measure`), so the person keeps
+     *  the Guide and its Tasks row says "Playing · step N of M" with Stop. A
+     *  lesson playing in the panel gives way to the walkthrough.
+     *  `stepKey` comes from a `scenario:<key>#<stepKey>` target and is applied
+     *  AFTER the entry navigation, so an intent can answer "why did this pay
+     *  change" by opening the walkthrough on the salary breakdown rather than
+     *  on the board it starts from. */
     async startScenario(key, mode, stepKey) {
-        this.close();
+        if (this.state.lp) {
+            this._lpExit();
+        }
         try {
             await this.sc.load();
             const started = await this.sc.begin(key, mode || null);
@@ -1922,6 +2000,11 @@ export class CoachHost extends Component {
             stations: (this.bundle && this.bundle.stations) || [],
             text: (pair) => tx(pair),
             watchFor: (card) => !!this._watchStep(card),
+            // LEARNREV P4 — while a lesson plays, its card is the Understand
+            // section (and stays open even when the Guide is folded).
+            lessonHTML: this._lpHTML(),
+            // LEARNREV P4 (S3) — a walkthrough running beside the Guide.
+            playing: this._playing(),
         });
         if (!folded) {
             return this._stable("guide", inner);
@@ -1952,6 +2035,340 @@ export class CoachHost extends Component {
         if (none) {
             none.hidden = shown > 0;
         }
+    }
+
+    // ============================================ LEARNREV P4 — the lesson
+    /* A lesson played INSIDE this panel, beside the real screen. The step card
+       (coach/lesson_panel.js) replaces the Understand section's body; the
+       spotlight (engine/spotlight.js PanelSpot) dims around the real control
+       and draws no card of its own — the panel is the card, so nothing covers
+       what it explains. A step about the practice copy's own drawing, or on a
+       screen this reader cannot open, plays in the practice copy instead, at
+       that step, and the Journey hands back when the lesson returns to a real
+       control (`LP_RETURN_KEY`). Progress is the Journey's: one
+       `learn.progress` row per station. */
+
+    /** The walkthrough running on the real screens, for the Tasks row:
+     *  {key, name, index, total} or null. */
+    _playing() {
+        const s = this.scState;
+        if (!s || !s.active || s.done || !s.key) {
+            return null;
+        }
+        const sc = this.sc.get(s.key);
+        return { key: s.key, name: sc ? tx(sc.name) : "", index: s.index,
+                 total: this.sc.steps(s.key, s.mode).length };
+    }
+
+    /** {station, lesson, steps} of the lesson playing, or null. */
+    _lpLesson() {
+        const lp = this.state.lp;
+        const stations = (this.bundle && this.bundle.stations) || [];
+        const st = lp && stations.find((s) => s.key === lp.station);
+        const lesson = st && ((st.lessons || []).find((l) => l.key === lp.lesson)
+                              || (st.lessons || [])[0]);
+        if (!lesson) {
+            return null;
+        }
+        return { station: st, lesson, steps: gateSteps(lesson.steps, this.bundle.features || {}) };
+    }
+
+    /** The country the lesson speaks to: the open scheme's, else the
+     *  company's (`bootstrap.country`). */
+    get lpCountry() {
+        const g = this.state.guide;
+        const scheme = (g && g.screen && g.screen.country) || "";
+        return pickCountry(this.bundle && this.bundle.country, scheme);
+    }
+
+    /** Only Understand open while a lesson plays: one thing on the panel. */
+    _lpSections() {
+        return { screen: false, now: false, fields: false, tasks: false, understand: true };
+    }
+
+    _lpHTML() {
+        const lp = this.state.lp;
+        if (!lp) {
+            return "";
+        }
+        void this.state.lang;
+        const L = this._lpLesson();
+        if (!L) {
+            return "";
+        }
+        const ui = { text: (p) => tx(p), html: (p) => gtx(p) };
+        if (lp.done) {
+            return doneHTML(L.lesson.name, ui);
+        }
+        if (lp.quiz) {
+            return quizHTML((L.lesson.quizzes || [])[0], Object.assign(ui, { answered: lp.answered }));
+        }
+        const step = L.steps[lp.index] || L.steps[0];
+        return lessonCardHTML(stepView(step, this.lpCountry), Object.assign(ui, {
+            index: lp.index, total: L.steps.length, note: lp.note,
+        }));
+    }
+
+    /** "Start the lesson" (Understand), or a hand-back from the practice copy
+     *  (`at` = the step to play). Resumes a lesson genuinely mid-flight, as
+     *  the Journey does. */
+    startPanelLesson(stationKey, at) {
+        const stations = (this.bundle && this.bundle.stations) || [];
+        const st = stations.find((s) => s.key === stationKey);
+        const lesson = st && (st.lessons || [])[0];
+        if (!lesson) {
+            this.openLesson(null);
+            return;
+        }
+        const steps = gateSteps(lesson.steps, this.bundle.features || {});
+        const p = (this.bundle.progress || {})[stationKey] || {};
+        let index = Number.isInteger(at) ? at
+            : (p.state === "in_progress" && (p.step_index || 0) < steps.length - 1 ? (p.step_index || 0) : 0);
+        index = Math.max(0, Math.min(index, steps.length - 1));
+        if (!this.state.lp) {
+            this._lpSecs = Object.assign({}, this.state.gSec);
+        }
+        this.state.gSec = this._lpSections();
+        this.state.gFolded = false;
+        this.state.lp = { station: stationKey, lesson: lesson.key, index, quiz: !!(at === steps.length),
+                          answered: null, done: false, note: null };
+        if (at === steps.length) {
+            this.state.lp.index = steps.length - 1;
+        }
+        if (!this.state.open) {
+            this.openHelper({});
+        }
+        this._lpProgress({ state: p.state === "done" ? "done" : "in_progress", lang: RT.lang });
+        this._lpLog("lesson_start");
+        this._lpShow();
+        setTimeout(() => {
+            const el = document.querySelector(".lrn-drawer .lrn-guide");
+            if (el) {
+                el.scrollTop = 0;
+            }
+        }, 40);
+    }
+
+    /** Put the step on screen: open its screen if it stands elsewhere, then
+     *  point at its control — or hand it to the practice copy. */
+    async _lpShow() {
+        const lp = this.state.lp;
+        if (!lp || lp.quiz || lp.done) {
+            PanelSpot.hide();
+            return;
+        }
+        const L = this._lpLesson();
+        const step = L && L.steps[lp.index];
+        if (!step) {
+            PanelSpot.hide();
+            return;
+        }
+        const seq = ++this._lpSeq;
+        const screens = (this.bundle && this.bundle.screens) || [];
+        const screen = screens.find((s) => s.key === step.screen) || null;
+        const where = placeFor(step, { reachable: screen ? reachable(screen) : null,
+                                       current: this.state.screen });
+        lp.note = null;
+        if (where.where === "replica") {
+            this._lpToReplica(lp.index);
+            return;
+        }
+        if (where.navigate && screen && canOpen(screen)) {
+            const res = await this._lpNavigate(screen);
+            if (seq !== this._lpSeq || !this.state.lp) {
+                return;
+            }
+            if (res === "elsewhere") {
+                // The hub moved this reader off a tab they cannot open: a
+                // real refusal, so the practice copy plays this step.
+                this._lpToReplica(lp.index);
+                return;
+            }
+            if (res !== "here") {
+                // Slow, not refused: say so, offer Retry, never "no access".
+                this.state.lp.note = { kind: "loading" };
+                PanelSpot.hide();
+                return;
+            }
+        }
+        if (!step.anchor) {
+            PanelSpot.hide();
+            return;
+        }
+        PanelSpot.show(step.anchor);
+        const found = await this._lpWaitAnchor(step.anchor, seq);
+        if (seq !== this._lpSeq || !this.state.lp) {
+            return;
+        }
+        if (!found) {
+            // The card already says what the control is; it says why there
+            // is no ring as well, and Next goes on.
+            this.state.lp.note = { kind: "nothere" };
+        }
+    }
+
+    async _lpNavigate(screen) {
+        try {
+            const res = await Promise.race([
+                openScreen(this.action, this.bundle.screens || [], screen),
+                new Promise((r) => setTimeout(() => r(null), LP_NAV_TIMEOUT)),
+            ]);
+            if (!res) {
+                return "timeout";
+            }
+            if (res.place) {
+                return await waitForPlace(res.place, res.seq, LP_NAV_TIMEOUT);
+            }
+            await new Promise((r) => setTimeout(r, 300));
+            return "here";
+        } catch {
+            return "timeout";
+        }
+    }
+
+    _lpWaitAnchor(anchor, seq) {
+        const t0 = Date.now();
+        return new Promise((resolve) => {
+            const tick = () => {
+                if (seq !== this._lpSeq) {
+                    return resolve(false);
+                }
+                if (PanelSpot.found) {
+                    return resolve(true);
+                }
+                if (Date.now() - t0 > LP_ANCHOR_WAIT) {
+                    return resolve(false);
+                }
+                return setTimeout(tick, 120);
+            };
+            setTimeout(tick, 60);
+        });
+    }
+
+    /** The step lives only in the practice copy: play it there, at this step,
+     *  and remember where to come back to. */
+    _lpToReplica(index) {
+        const lp = this.state.lp;
+        if (!lp) {
+            return;
+        }
+        try {
+            window.sessionStorage.setItem(LP_RETURN_KEY, JSON.stringify(
+                { station: lp.station, lesson: lp.lesson, from: this.state.screen || "" }));
+        } catch {
+            // Without it the practice copy simply plays on to the end.
+        }
+        this._lpProgress({ step_index: index });
+        PanelSpot.hide();
+        this.state.gSec = this._lpSecs || this._sectionMemory(this.state.screen);
+        this.state.lp = null;
+        openLearn(this.action, `lesson:${lp.lesson}:${index}`);
+        this.close();
+    }
+
+    _lpNext() {
+        const lp = this.state.lp;
+        const L = this._lpLesson();
+        if (!lp || !L || lp.done) {
+            return;
+        }
+        if (lp.quiz) {
+            return;
+        }
+        if (lp.index < L.steps.length - 1) {
+            lp.index += 1;
+            this._lpProgress({ step_index: lp.index });
+            this._lpLog("step_view", lp.index);
+            this._lpShow();
+        } else {
+            lp.quiz = true;
+            lp.answered = null;
+            PanelSpot.hide();
+        }
+    }
+
+    _lpBack() {
+        const lp = this.state.lp;
+        if (!lp || lp.done) {
+            return;
+        }
+        if (lp.quiz) {
+            lp.quiz = false;
+            lp.answered = null;
+            this._lpShow();
+        } else if (lp.index > 0) {
+            lp.index -= 1;
+            this._lpShow();
+        }
+    }
+
+    _lpExit() {
+        const lp = this.state.lp;
+        if (!lp) {
+            return;
+        }
+        this._lpSeq += 1;
+        PanelSpot.hide();
+        if (!lp.done) {
+            this._lpLog("lesson_abandon", lp.index);
+        }
+        this.state.gSec = this._lpSecs || this._sectionMemory(this.state.screen);
+        this._lpSecs = null;
+        this.state.lp = null;
+    }
+
+    _lpAnswer(i) {
+        const lp = this.state.lp;
+        const L = this._lpLesson();
+        const quiz = L && (L.lesson.quizzes || [])[0];
+        if (!lp || !quiz || lp.answered !== null || !quiz.options[i]) {
+            return;
+        }
+        const correct = !!quiz.options[i].correct;
+        lp.answered = i;
+        const p = (this.bundle.progress || {})[lp.station] || {};
+        const attempts = (p.attempts || 0) + 1;
+        this._lpProgress({
+            attempts,
+            first_try_correct: attempts === 1 && correct ? true : !!p.first_try_correct,
+        });
+        this._lpLog("quiz_answer", `${i}:${correct ? "y" : "n"}`);
+    }
+
+    _lpFinish() {
+        const lp = this.state.lp;
+        if (!lp) {
+            return;
+        }
+        this._lpProgress({ state: "done", lang: RT.lang,
+                           completed_at: new Date().toISOString().slice(0, 19).replace("T", " ") });
+        this._lpLog("lesson_complete");
+        lp.quiz = false;
+        lp.done = true;
+        PanelSpot.hide();
+    }
+
+    /** The Journey's own progress write, for the same station row. */
+    _lpProgress(vals) {
+        const lp = this.state.lp;
+        if (!lp) {
+            return;
+        }
+        const all = this.bundle.progress || (this.bundle.progress = {});
+        all[lp.station] = Object.assign({}, all[lp.station], vals);
+        this.orm.call("learn.progress", "record", [lp.station, vals]).catch(() => {});
+    }
+
+    _lpLog(kind, detail) {
+        const lp = this.state.lp;
+        const L = this._lpLesson();
+        const step = L && lp && L.steps[lp.index];
+        this.orm.call("learn.event", "log", [kind], {
+            station_key: lp ? lp.station : null,
+            screen: (step && step.screen) || this.state.screen || null,
+            detail: detail === undefined ? null : detail,
+            lang: RT.lang,
+        }).catch(() => {});
     }
 
     /** A walkthrough step that points at this field's anchor: Watch it. */
@@ -2085,6 +2502,9 @@ export class CoachHost extends Component {
     /** Docked: a body class the page makes room for (coach.scss, ≥ 1280 px
      *  only), with the panel's top just under the top bar. */
     _syncDock() {
+        // LEARNREV P4 (S10) — "the Guide exists here": the Library hides the
+        // corner launcher over its rows (coach.scss, body.lrn-on-library).
+        document.body.classList.toggle("lrn-guide-on", !!this.guideOn);
         const on = !!(this.guideOn && this.state.open && this.state.dock === "dock");
         if (on) {
             const nav = document.querySelector(".o_main_navbar");
@@ -2137,6 +2557,13 @@ export class CoachHost extends Component {
             this.state.dock = "dock";
         }
         this.state.gFolded = false;
+        if (want.station) {
+            // LEARNREV P4 — the lesson comes back to the real screen, at the
+            // step the practice copy handed over.
+            setTimeout(() => this.startPanelLesson(want.station,
+                Number.isInteger(want.step) ? want.step : undefined), 0);
+            return;
+        }
         const open = Object.assign({}, this.state.gSec, { [sec]: true });
         if (want.field) {
             open.fields = true;
@@ -2179,7 +2606,9 @@ export class CoachHost extends Component {
         if (reachable(screen) === false || !canOpen(screen)) {
             return "unreachable";
         }
-        const want = { screen: screenKey, section: opts.section || "screen", field: opts.field || "" };
+        const want = { screen: screenKey, section: opts.section || "screen", field: opts.field || "",
+                       // LEARNREV P4 — the practice copy hands a lesson back.
+                       station: opts.station || "", step: opts.step };
         let where = "here";
         try {
             const res = await openScreen(this.action, screens, screen);
@@ -2851,7 +3280,14 @@ export class CoachHost extends Component {
             // Practise (Try) draws its practice turn first; Watch and Do it
             // live start at once, as they always have.
             if (el.dataset.mode === "try") {
-                this._practiseFrom(el.dataset.key, "try");
+                // LEARNREV P4 — on the demo company a checked Try runs on the
+                // REAL screens (the overlay says "Try · demo company"), so the
+                // chat's "on the practice company, nothing real changes" turn
+                // would be untrue: start it directly instead.
+                const key = el.dataset.key;
+                this.sc.loadChecks().then((checks) => (((checks || {})[key] || []).length
+                    ? this.startScenario(key, "try", "")
+                    : this._practiseFrom(key, "try")));
             } else {
                 this.startScenario(el.dataset.key, el.dataset.mode, 0);
             }
@@ -2912,6 +3348,31 @@ export class CoachHost extends Component {
             this._openGuideHere(false);
         } else if (act === "c-gshow") {
             this._showGuide();
+        } else if (act === "c-lpstart") {
+            const doors = (this.state.guide && this.state.guide.doors) || {};
+            this.startPanelLesson(doors.station);
+        } else if (act === "c-lpnext") {
+            this._lpNext();
+        } else if (act === "c-lpback") {
+            this._lpBack();
+        } else if (act === "c-lpleave") {
+            this._lpExit();
+        } else if (act === "c-lpretry") {
+            this._lpShow();
+        } else if (act === "c-lppractice") {
+            if (this.state.lp) {
+                this._lpToReplica(this.state.lp.index);
+            }
+        } else if (act === "c-lpans") {
+            this._lpAnswer(Number(el.dataset.i));
+        } else if (act === "c-lpretryq") {
+            if (this.state.lp) {
+                this.state.lp.answered = null;
+            }
+        } else if (act === "c-lpfinish") {
+            this._lpFinish();
+        } else if (act === "c-scstop") {
+            this.sc.stop();
         }
     }
 

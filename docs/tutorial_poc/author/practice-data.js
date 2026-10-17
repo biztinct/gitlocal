@@ -1501,27 +1501,36 @@ const PRACTICE = {
      rows carry the board's own warnings: OTH is counted in hours yet set to
      add to net pay ("Type says otherwise"), and KPI bonus has no pay role yet
      ("Needs your answer"). GROSS is a subtotal — its parts are already added. */
+  /* LEARNREV P4 (S5) — the board's own words: "Comes from" uses the board's
+     lane labels (component_treatment.js LANE_LABELS), "Report group" its
+     groups (filled from the pay role), and the Run signal column the board
+     has. The replica-truth gate (pb_learn/tests/guide_truth.py
+     check_replica) fails a copy that drifts from the screen again. */
   treatment: {
     rows: [
-      { code: "LCB", name: B("Base salary", "Lương cơ bản"), from: B("Contract component", "Thành phần hợp đồng"),
-        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount" },
-      { code: "PC", name: B("Allowances", "Phụ cấp"), from: B("Connected system", "Hệ thống đã kết nối"),
-        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount" },
+      { code: "LCB", name: B("Base salary", "Lương cơ bản"), from: B("Contract", "Hợp đồng"),
+        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount", signal: "" },
+      { code: "PC", name: B("Allowances", "Phụ cấp"), from: B("Connected system", "Hệ thống được kết nối"),
+        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "amount", signal: "" },
       { code: "OTH", name: B("Overtime hours", "Giờ tăng ca"), from: B("Spreadsheet", "Bảng tính"),
-        group: B("Time", "Thời gian"), role: "add", sub: false, type: "qty", clash: true },
+        group: B("Earnings", "Thu nhập"), role: "add", sub: false, type: "qty", clash: true, signal: "worked_hours" },
       { code: "KPIBONUS", name: B("KPI bonus", "Thưởng KPI"), from: B("Spreadsheet", "Bảng tính"),
-        group: B("Earnings", "Thu nhập"), role: "", sub: false, type: "amount", review: true },
-      { code: "GROSS", name: B("Gross income", "Tổng thu nhập"), from: B("Calculated", "Được tính"),
-        group: B("Totals", "Tổng"), role: "add", sub: true, type: "amount" },
-      { code: "BHXH", name: B("Social insurance", "Bảo hiểm xã hội"), from: B("Calculated", "Được tính"),
-        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount" },
-      { code: "TNCN", name: B("Personal income tax", "Thuế TNCN"), from: B("Calculated", "Được tính"),
-        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount" },
-      { code: "ERSI", name: B("Employer social insurance", "BHXH phần doanh nghiệp"), from: B("Calculated", "Được tính"),
-        group: B("Employer", "Doanh nghiệp"), role: "employer", sub: false, type: "amount" },
-      { code: "THUCNHAN", name: B("Net pay", "Thực nhận"), from: B("Calculated", "Được tính"),
-        group: B("Totals", "Tổng"), role: "net", sub: false, type: "amount" },
+        group: B("Earnings", "Thu nhập"), role: "", sub: false, type: "amount", review: true, signal: "" },
+      { code: "GROSS", name: B("Gross income", "Tổng thu nhập"), from: B("Calculated by a formula", "Tính bằng công thức"),
+        group: B("Earnings", "Thu nhập"), role: "add", sub: true, type: "amount", signal: "" },
+      { code: "BHXH", name: B("Social insurance", "Bảo hiểm xã hội"), from: B("Calculated by a formula", "Tính bằng công thức"),
+        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount", signal: "" },
+      { code: "TNCN", name: B("Personal income tax", "Thuế TNCN"), from: B("Calculated by a formula", "Tính bằng công thức"),
+        group: B("Deductions", "Khấu trừ"), role: "off", sub: false, type: "amount", signal: "" },
+      { code: "ERSI", name: B("Employer social insurance", "BHXH phần doanh nghiệp"), from: B("Calculated by a formula", "Tính bằng công thức"),
+        group: B("Employer costs", "Chi phí doanh nghiệp"), role: "employer", sub: false, type: "amount", signal: "" },
+      { code: "THUCNHAN", name: B("Net pay", "Thực nhận"), from: B("Calculated by a formula", "Tính bằng công thức"),
+        group: B("Net pay", "Lương thực nhận"), role: "net", sub: false, type: "amount", signal: "" },
     ],
+    signals: {
+      employment_status: B("Whether the person is still employed", "Người đó còn đang làm việc hay không"),
+      worked_hours: B("Hours actually worked", "Số giờ thực tế đã làm"),
+    },
     roles: {
       add: B("Added to net pay", "Cộng vào thực nhận"),
       off: B("Taken off net pay", "Trừ khỏi thực nhận"),

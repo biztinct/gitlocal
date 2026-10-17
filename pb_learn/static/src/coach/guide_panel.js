@@ -324,7 +324,18 @@ function fieldsBody(g, ui) {
 const MODE_LABEL = { watch: "scWatch", try: "scPractise", do: "scDo" };
 const MODE_ICON = { watch: "play", try: "flask", do: "zap" };
 
+/** LEARNREV P4 (S3) — the walkthrough running beside the Guide. */
+function playingRow(p) {
+    const label = fmt(T("gPlaying"), { n: (p.index || 0) + 1, m: p.total || 1 });
+    return `<div class="lrn-gplaying" role="status"><span class="lrn-gplayic">${ic("play")}</span>
+        <span class="lrn-gplaytx"><b>${esc(p.name || "")}</b><small>${esc(label)}</small></span>
+        <button type="button" class="lrn-btn sm ghost" data-act="c-scstop">${ic("square")}${esc(T("gStop"))}</button></div>`;
+}
+
 function tasksBody(g, ui) {
+    if (ui.playing) {
+        return playingRow(ui.playing);
+    }
     const offers = ui.offers || (() => true);
     const tasks = ((g.doors || {}).tasks || []).map((t) => {
         const modes = (t.modes || []).filter((m) => MODE_LABEL[m] && offers(t.key, m));
@@ -350,9 +361,13 @@ function understandBody(g, ui) {
     if (d.station) {
         const mins = station && station.duration_min
             ? `<small>${esc(String(station.duration_min))}${SP}${esc(T("min"))}</small>` : "";
+        // LEARNREV P4 — the lesson plays HERE, beside the real screen; the
+        // Learn page's outline stays one press away as the quieter door.
+        const start = d.lesson && ui.canPlay !== false
+            ? `<button type="button" class="lrn-btn sm pri" data-act="c-lpstart">${ic("play")}${esc(T("lpStart"))}</button>` : "";
         parts.push(`<div class="lrn-glesson"><span class="lrn-glessonic">${ic("grad-cap")}</span>
             <span class="lrn-glessontx"><b>${esc(d.station_name || "")}</b>${mins}</span>
-            <button type="button" class="lrn-btn sm pri" data-act="c-lesson">${ic("book-open")}${esc(T("openLesson"))}</button></div>`);
+            ${start}<button type="button" class="lrn-btn sm${start ? " ghost" : " pri"}" data-act="c-lesson">${ic("book-open")}${esc(T("openLesson"))}</button></div>`);
     } else {
         parts.push(`${stateLine("info", T("gNoLessonMap"), "mute")}
             <button type="button" class="lrn-btn sm ghost" data-act="c-gmap">${ic("map")}${esc(T("gLessonMap"))}</button>`);
@@ -388,14 +403,23 @@ export function sectionsHTML(g, ui = {}) {
         }
         return `<div class="lrn-gsecs">${stateLine("hourglass", T("gLoading"), "mute")}${skeleton()}</div>`;
     }
+    // LEARNREV P4 — while a lesson plays, it is the only thing in the Guide:
+    // one rail, its Back / Next / Leave always in view. Leave brings the
+    // five sections back as they were.
+    if (ui.lessonHTML) {
+        return `<div class="lrn-gsecs lrn-gsecs-lesson">${section("understand", true, ui.lessonHTML)}</div>`;
+    }
     const n = actionable(g).length;
     const fields = (g.fields || []).length;
     const out = [
         section("screen", !!open.screen, screenBody(g)),
         section("now", !!open.now, nowBody(g, ui), badge(n, "warn")),
         section("fields", !!open.fields, fieldsBody(g, ui), badge(fields, "mute")),
-        section("tasks", !!open.tasks, tasksBody(g, ui)),
-        section("understand", !!open.understand, understandBody(g, ui)),
+        section("tasks", !!open.tasks || !!ui.playing, tasksBody(g, ui)),
+        // LEARNREV P4 — while a lesson plays, its step card IS this section.
+        ui.lessonHTML
+            ? section("understand", true, ui.lessonHTML)
+            : section("understand", !!open.understand, understandBody(g, ui)),
     ];
     return `<div class="lrn-gsecs${ui.loading ? " busy" : ""}">${out.join("")}</div>`;
 }

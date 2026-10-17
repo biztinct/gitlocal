@@ -60,7 +60,8 @@ import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
    raw-HTML insertion in this overlay, so it is the only `gtx`. */
 import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
 import { navPlace } from "../engine/places";
-import { DOCK_BELOW } from "../engine/spotlight";
+import { DOCK_BELOW, placeCard } from "../engine/spotlight";
+import { linesHTML, stepView } from "../coach/lesson_panel";
 import { hubPlace } from "@pb_hub/js/hub_place";
 
 /* LEARN REFRESH step 4 — the words a screen uses when it refuses its reader,
@@ -79,22 +80,44 @@ const REFUSAL_BOXES = [
     ".o_error_dialog", ".o_notification", "[role=alert]", ".alert",
     "[class*=error]", "[class*=denied]", "[class*=noaccess]", "[class*=no-access]",
     "[class*=blocked]", "[class*=refus]", "[class*=forbid]", "[class*=locked]",
+    // LEARNREV P4 — the Component treatment board writes a refusal into its
+    // own `.pct-empty` box (component_treatment.xml `state.error`).
+    ".pct-empty",
 ].join(",");
 const REFUSAL_GRACE = 700;     // ms a screen gets to load before we listen
 const REFUSAL_PROBE = 2500;    // ms an anchorless step keeps listening
+/* LEARNREV P4 — in Watch, a step whose control is not on the screen says
+   what the control does and moves on by itself after this long (Watch is
+   being shown something; Do and Try still wait for the person). */
+const MISSING_SKIP = 4000;
+/* LEARNREV P4 — a checked step (Try on the demo company, or Do with a
+   declared check) asks the server this often whether the person's change is
+   there (the live capstone's own rhythm, live_mission.js), and shows a passed
+   check's note for a beat before moving on. */
+const CHECK_EVERY = 3000;
+const CHECK_OK_BEAT = 1400;
+/* How far back a check looks for the person's change (clock skew between the
+   browser and the server, and a change made just before the step opened). */
+const CHECK_SLACK_MS = 120000;
 
 function shown(el) {
     const r = el.getBoundingClientRect();
     return r.width > 0 && r.height > 0;
 }
 
+function said(el) {
+    return " ".concat((el.textContent || "").split(/\s+/).join(" ")).trim().slice(0, 200);
+}
+
 /** Has the screen this step stands on refused its reader? Three signals:
  *  an error dialog, a tab the hub will not show this person, or a refusal
- *  sentence in an alert-like box on the page. */
+ *  sentence in an alert-like box on the page. LEARNREV P4: the answer is the
+ *  screen's OWN WORDS when it said any (the card quotes them), `true` for a
+ *  hidden tab, `false` when nothing refused. */
 export function refusalOnScreen(expected) {
     for (const d of document.querySelectorAll(".o_error_dialog")) {
         if (shown(d)) {
-            return true;
+            return said(d) || true;
         }
     }
     const pl = expected && navPlace(expected);
@@ -108,7 +131,7 @@ export function refusalOnScreen(expected) {
         }
         const text = (el.textContent || "").slice(0, 400);
         if (REFUSED_TEXT.test(text) && shown(el)) {
-            return true;
+            return said(el) || true;
         }
     }
     return false;
@@ -137,6 +160,11 @@ export class ScenarioOverlay extends Component {
             resolving: false,
             hasTarget: false,
             waiting: false,        // Do mode: listening for the learner's press
+            // LEARNREV P4 — a checked step: waiting for the server to see the
+            // person's own change, what is still missing, and the pass.
+            checking: false,
+            checkNote: null,
+            checkOk: false,
             typed: "",             // Watch mode: the value being "typed"
             hole: { top: 0, left: 0, w: 0, h: 0 },
             card: { top: 0, left: 0 },
@@ -148,6 +176,7 @@ export class ScenarioOverlay extends Component {
         this._clickCleanup = null;
         this._timer = null;
         this._typer = null;
+        this._poll = null;
         this._destroyed = false;
 
         this._onKey = this._onKey.bind(this);
@@ -284,6 +313,9 @@ export class ScenarioOverlay extends Component {
         this.ui.hasTarget = false;
         this.ui.waiting = false;
         this.ui.typed = "";
+        this.ui.checking = false;
+        this.ui.checkNote = null;
+        this.ui.checkOk = false;
         this._targetEl = null;
 
         const step = this.step;
@@ -310,7 +342,7 @@ export class ScenarioOverlay extends Component {
         // control they will never see.
         if (got === REFUSED) {
             this.ui.resolving = false;
-            this.sc.refuse(this.sc.screenOfStep(this.state.index));
+            this.sc.refuse(this.sc.screenOfStep(this.state.index), this._refusal);
             return;
         }
         const el = got;
@@ -336,6 +368,15 @@ export class ScenarioOverlay extends Component {
             this._measure();
         }
 
+        // LEARNREV P4 — a CHECKED step (Try on the demo company, or Do with a
+        // declared check): nothing is pressed for the person and a click is
+        // not taken as done — the step moves on when the server sees their
+        // own change (`_pollCheck`). The person can always Skip.
+        if (!this.isWatch && (this.state.checks || []).includes(step.key)) {
+            this._startCheck(step);
+            return;
+        }
+
         if (step.act === "click" && el) {
             // THE GUARD BRANCH, and the only place `_watchAutoClick` is called
             // from. Read it with the function's own first statement, which asks
@@ -355,6 +396,14 @@ export class ScenarioOverlay extends Component {
 
         if (step.act === "input" && this.isWatch) {
             this._typeIntoCard(step);
+        }
+
+        // LEARNREV P4 (G23) — Watch, and the control never appeared: the card
+        // says what it does ("That control is not on this screen right now")
+        // and the walkthrough moves on by itself, instead of waiting on a
+        // step nobody can see. Do and Try still wait for the person.
+        if (!el && step.anchor && this.isWatch) {
+            this._timer = window.setTimeout(() => this._skipMissing(step), MISSING_SKIP);
         }
 
         // AND THEN IT WAITS. There is deliberately no timer here in either
@@ -392,9 +441,10 @@ export class ScenarioOverlay extends Component {
                     || this.state.blocked) {
                 return;
             }
-            if (Date.now() - t0 > REFUSAL_GRACE
-                    && refusalOnScreen(this.sc.screenOfStep(this.state.index))) {
-                this.sc.refuse(this.sc.screenOfStep(this.state.index));
+            const refused = Date.now() - t0 > REFUSAL_GRACE
+                && refusalOnScreen(this.sc.screenOfStep(this.state.index));
+            if (refused) {
+                this.sc.refuse(this.sc.screenOfStep(this.state.index), refused);
                 return;
             }
             if (Date.now() - t0 < REFUSAL_PROBE) {
@@ -429,8 +479,10 @@ export class ScenarioOverlay extends Component {
                         return resolve(el);
                     }
                 }
-                if (Date.now() - t0 > REFUSAL_GRACE
-                        && refusalOnScreen(this.sc.screenOfStep(this.state.index))) {
+                const refused = Date.now() - t0 > REFUSAL_GRACE
+                    && refusalOnScreen(this.sc.screenOfStep(this.state.index));
+                if (refused) {
+                    this._refusal = refused;
                     return resolve(REFUSED);
                 }
                 if (Date.now() > deadline) {
@@ -444,6 +496,17 @@ export class ScenarioOverlay extends Component {
 
     // ------------------------------------------------------------ geometry
     _measure() {
+        // LEARNREV P4 (walk B3) — a screen that redraws its control (the
+        // treatment board reloads its table after Save) leaves the old node
+        // detached: find the control again by its anchor instead of saying
+        // it is not on the screen and re-centring the card over the board.
+        const step = this.step;
+        if (this._targetEl && !this._targetEl.isConnected && step && step.anchor) {
+            const again = document.querySelector(`[data-coach="${step.anchor}"]`);
+            if (again) {
+                this._targetEl = again;
+            }
+        }
         const el = this._targetEl;
         if (!el || !el.isConnected) {
             this.ui.hasTarget = false;
@@ -454,14 +517,24 @@ export class ScenarioOverlay extends Component {
             this.ui.hasTarget = false;
             return;
         }
+        if (!this.ui.hasTarget) {
+            // Back on screen after a redraw (see above).
+            this.ui.hasTarget = true;
+        }
         const pad = 8;
         // LEARNREV P2 — the docked Guide takes 420 px on the right (≥ 1280).
-        const vw = window.innerWidth - (document.body.classList.contains("lrn-docked") && window.innerWidth >= 1280 ? 420 : 0);
+        // LEARNREV P4 — Watch now keeps the Guide open, docked OR floating,
+        // so the strip it holds on the right is measured, not assumed.
+        const W = window.innerWidth;
+        const drawer = document.querySelector(".lrn-drawer");
+        const dr = drawer ? drawer.getBoundingClientRect() : null;
+        const guideW = dr && dr.width && dr.left > W / 2 ? Math.max(0, W - dr.left + 8) : 0;
+        const vw = W - guideW;
         const vh = window.innerHeight;
         const hole = {
             top: Math.max(4, r.top - pad),
             left: Math.max(4, r.left - pad),
-            w: Math.min(vw - 8, r.width + pad * 2),
+            w: Math.min(W - 8, r.width + pad * 2),
             h: Math.min(vh - 8, r.height + pad * 2),
         };
         this._setUi("hole", hole);
@@ -471,29 +544,13 @@ export class ScenarioOverlay extends Component {
             this._setUi("card", { top: Math.max(12, vh - ch - 12), left: 12, docked: true });
             return;
         }
-        // right -> left -> below -> above, clamped: the same order the Journey's
-        // spotlight uses, so a learner who has done a lesson finds the card in
-        // the place they already expect it.
-        const gap = 20;
-        let top;
-        let left;
-        if (r.right + CARD_W + gap + 8 < vw) {
-            left = r.right + gap;
-            top = r.top + r.height / 2 - ch / 2;
-        } else if (r.left - CARD_W - gap - 8 > 0) {
-            left = r.left - CARD_W - gap;
-            top = r.top + r.height / 2 - ch / 2;
-        } else if (hole.top + hole.h + gap + ch < vh - 12) {
-            top = hole.top + hole.h + gap;
-            left = hole.left + hole.w / 2 - CARD_W / 2;
-        } else {
-            top = Math.max(12, hole.top - gap - ch);
-            left = hole.left + hole.w / 2 - CARD_W / 2;
-        }
-        this._setUi("card", {
-            top: Math.max(12, Math.min(top, vh - ch - 12)),
-            left: Math.max(12, Math.min(left, vw - CARD_W - 12)),
-        });
+        // right -> left -> below -> above: the same rule the lessons use
+        // (engine/spotlight.js placeCard, tested never to cover the control),
+        // with the Guide's strip kept clear.
+        const p = placeCard({ top: hole.top, left: hole.left, width: hole.w, height: hole.h,
+                              right: hole.left + hole.w, bottom: hole.top + hole.h },
+                            { W, H: vh, cw: CARD_W, ch, guard: 12, dock: guideW });
+        this._setUi("card", { top: Math.round(p.top), left: Math.round(p.left) });
     }
 
     /** Write a geometry box into `ui` ONLY when it moved.
@@ -579,10 +636,77 @@ export class ScenarioOverlay extends Component {
         }, PRESS_SETTLE);
     }
 
+    /** LEARNREV P4 — start waiting on a checked step. */
+    _startCheck(step) {
+        this.ui.checking = true;
+        this.ui.waiting = true;
+        this.ui.checkNote = null;
+        this.ui.checkOk = false;
+        this._checkSince = new Date(Date.now() - CHECK_SLACK_MS).toISOString()
+            .slice(0, 19).replace("T", " ");
+        this._pollCheck(step);
+    }
+
+    /** One poll of a checked step: ask the server whether the person's own
+     *  change is there (`learn.scenario.check`, read-only), say what is still
+     *  missing, and move on — after a beat that shows the pass — when it is.
+     *  Re-asks the step, the mode and that the walkthrough is still running
+     *  after every await; presses nothing, ever. */
+    async _pollCheck(step) {
+        if (this._destroyed || !this.state.active || this.state.blocked
+                || this.step !== step || this.isWatch) {
+            return;
+        }
+        // The scheme Mapping published, remembered for the walkthrough: a
+        // later step ("recompute the run") is checked from the Runs board.
+        const extra = (hubPlace && hubPlace.extra) || {};
+        if (Number(extra.config_id)) {
+            this._cfg = { key: this.state.key, id: Number(extra.config_id) };
+        }
+        const cfg = this._cfg && this._cfg.key === this.state.key ? this._cfg.id : 0;
+        let res = null;
+        try {
+            res = await this.sc.check(step.key, { since: this._checkSince, config_id: cfg });
+        } catch {
+            res = null;
+        }
+        if (this._destroyed || !this.state.active || this.step !== step || this.isWatch) {
+            return;
+        }
+        this.ui.checkNote = res && res.note ? res.note : null;
+        if (res && res.ok) {
+            this.ui.checkOk = true;
+            this._timer = window.setTimeout(() => {
+                if (this.state.active && this.step === step && !this.isWatch) {
+                    this.sc.next();
+                }
+            }, CHECK_OK_BEAT);
+            return;
+        }
+        this._poll = window.setTimeout(() => this._pollCheck(step), CHECK_EVERY);
+    }
+
+    /** LEARNREV P4 — the one automatic step change in Watch, and only for a
+     *  step whose control never appeared: re-asks every condition at the
+     *  moment it fires (the step, the mode, that the control is still not
+     *  there, that nothing blocked the walkthrough) and presses nothing. */
+    _skipMissing(step) {
+        if (!this.state.active || this.state.blocked || this.state.done
+                || this.step !== step || !this.isWatch || this.ui.hasTarget) {
+            return;
+        }
+        this.sc.next();
+    }
+
     _clearTimer() {
         if (this._timer) {
             window.clearTimeout(this._timer);
             this._timer = null;
+        }
+        // LEARNREV P4 — a checked step's poll goes with every other timer.
+        if (this._poll) {
+            window.clearTimeout(this._poll);
+            this._poll = null;
         }
     }
 
@@ -686,6 +810,9 @@ export class ScenarioOverlay extends Component {
             this._clearTimer();
             this._clearTyper();
             this.sc.practiceInstead();
+        } else if (act === "s-retry") {
+            // LEARNREV P4 — a slow screen, opened again.
+            this.sc.retry();
         } else if (act === "s-next" || act === "s-skip") {
             this.onNext();
         } else if (act === "s-back") {
@@ -737,7 +864,8 @@ export class ScenarioOverlay extends Component {
 
     // -------------------------------------------------------------- render
     get modeBadge() {
-        return T("scRealBadge");
+        // LEARNREV P4 — Try on the real screen of the demo company.
+        return T(this.state.real ? "scTryReal" : "scRealBadge");
     }
 
     // t-out RENDERS A PLAIN STRING AS TEXT. Every one of these getters builds
@@ -767,15 +895,25 @@ export class ScenarioOverlay extends Component {
         const lang = this.state.lang;
         void lang;
         if (this.state.blocked) {
+            // LEARNREV P4 (G23) — a screen that is merely SLOW says so, with
+            // Retry; it is never told it has no access.
+            if (this.state.blocked.kind === "slow") {
+                return `
+            <h3>${esc(tx(this.scenario ? this.scenario.name : ""))}</h3>
+            <div class="lrn-cbody">${esc(T("scSlowBody"))}</div>`;
+            }
             // LEARN REFRESH step 1 — the screen could not be opened for this
             // reader. One sentence that names it and says what to do instead;
             // never step one waiting for an anchor that is not coming.
             const label = this.state.blocked.label
                 || tx(this.scenario ? this.scenario.name : "");
+            // LEARNREV P4 — and the screen's own words, when it said any.
+            const reason = this.state.blocked.reason
+                ? `<p class="lrn-screason">${esc(T("scRefusedBecause"))}${SP}<q>${esc(this.state.blocked.reason)}</q></p>` : "";
             // The header chip already says "You can't open this screen".
             return `
             <h3>${esc(tx(this.scenario ? this.scenario.name : ""))}</h3>
-            <div class="lrn-cbody">${esc(T("scNoAccessA"))}${SP}<b>${esc(label)}</b>${esc(T("scNoAccessB"))}</div>`;
+            <div class="lrn-cbody">${esc(T("scNoAccessA"))}${SP}<b>${esc(label)}</b>${esc(T("scNoAccessB"))}</div>${reason}`;
         }
         if (this.state.done) {
             return `
@@ -792,9 +930,25 @@ export class ScenarioOverlay extends Component {
             parts.push(`<div class="lrn-kicker">${esc(tx(step.kicker))}</div>`);
         }
         parts.push(`<h3>${esc(tx(step.title))}</h3>`);
-        parts.push(`<div class="lrn-cbody">${gtx(step.body)}</div>`);
+        // LEARNREV P4 — a rewritten step is four lines (Look at · It means ·
+        // It affects · Press), drawn by the Guide's own renderer; a step not
+        // rewritten keeps its body.
+        const view = stepView(step, "");
+        parts.push(view.look && !view.legacy
+            ? linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) })
+            : `<div class="lrn-cbody">${gtx(step.body)}</div>`);
 
-        if (this.guardedInWatch) {
+        if (this.ui.checking) {
+            // LEARNREV P4 — a checked step: do it on the screen, I look.
+            const note = this.ui.checkNote ? esc(tx(this.ui.checkNote)) : "";
+            const line = this.ui.checkOk
+                ? `<p class="lrn-sccheck ok">${ic("check-circle")}<span>${esc(T("scCheckOk"))}${SP}${note}</span></p>`
+                : (note ? `<p class="lrn-sccheck">${esc(T("scCheckMissing"))}${SP}${note}</p>` : "");
+            parts.push(`<div class="lrn-scwait">
+                <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
+                <p>${esc(T("scCheckWait"))}</p>${line}
+            </div>`);
+        } else if (this.guardedInWatch) {
             // The card says what pressing WOULD do, and says who is not
             // pressing it. Both halves matter: a spotlight on a Compute button
             // with no explanation reads as an invitation.
@@ -817,8 +971,10 @@ export class ScenarioOverlay extends Component {
         }
 
         if (!this.ui.hasTarget && !this.ui.resolving && step.anchor) {
+            // LEARNREV P4 — in Watch it then moves on by itself (_skipMissing).
+            const soon = this.isWatch ? `${SP}${esc(T("scSkipSoon"))}` : "";
             parts.push(`<div class="lrn-tip">${ic("info")}
-                <span>${esc(T("scNotOnScreen"))}</span></div>`);
+                <span>${esc(T("scNotOnScreen"))}${soon}</span></div>`);
         }
 
         if (step.tip) {
@@ -829,6 +985,14 @@ export class ScenarioOverlay extends Component {
     }
 
     _toolsStr() {
+        if (this.state.blocked && this.state.blocked.kind === "slow") {
+            return `<div class="lrn-ctools">
+                <button class="lrn-btn sm pri" data-act="s-retry"
+                    >${ic("rotate-ccw")}${esc(T("retry"))}</button>
+                <button class="lrn-btn sm ghost" data-act="s-leave"
+                    >${ic("x")}${esc(T("exit"))}</button>
+            </div>`;
+        }
         if (this.state.blocked) {
             return `<div class="lrn-ctools">
                 <button class="lrn-btn sm pri" data-act="s-practice"
@@ -873,7 +1037,9 @@ export class ScenarioOverlay extends Component {
             return "";
         }
         if (this.state.blocked) {
-            return `<div class="lrn-schead"><span class="lrn-chip">${ic("lock")}${esc(T("scNoAccessT"))}</span></div>`;
+            const slow = this.state.blocked.kind === "slow";
+            return `<div class="lrn-schead"><span class="lrn-chip">${ic(slow ? "hourglass" : "lock")}${
+                esc(T(slow ? "scSlowT" : "scNoAccessT"))}</span></div>`;
         }
         const counter = this.state.done
             ? ""

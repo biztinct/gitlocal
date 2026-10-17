@@ -49,3 +49,5 @@ from . import test_learnrev_p2
 # LEARNREV P3 — the Library: field index, menu order, retired page words,
 # the LR30 gate rule, Explain never rewritten when it is the Guide's (S10).
 from . import test_learnrev_p3
+# LEARNREV P4 — checked Try, country, the replica gate, the panel player.
+from . import test_learnrev_p4

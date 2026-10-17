@@ -121,6 +121,14 @@ class TestGuideTruth(TransactionCase):
                                      po_for)
         self.assertFalse(errors, "\n" + "\n".join(errors))
 
+    def test_02b_practice_copies_say_what_the_screens_say(self):
+        """LEARNREV P4 (S5) — every manifest column is in the practice copy,
+        and every header the copy draws is on the real screen."""
+        errors = []
+        for key, man in sorted(self.manifests.items()):
+            errors += gt.check_replica(key, man, read_rel)
+        self.assertFalse(errors, "\n" + "\n".join(errors))
+
     def test_03_fields_choices_and_methods_exist(self):
         errors = []
         for key, man in sorted(self.manifests.items()):
@@ -198,6 +206,17 @@ class TestGuideTruth(TransactionCase):
             rmodel, _dot, meth = rn.rpartition('.')
             if rmodel not in self.env or not hasattr(self.env[rmodel], meth):
                 err('right_now %s does not exist' % rn)
+        # LEARNREV P4 — a walkthrough check names a method that exists, on a
+        # scenario step that exists.
+        scenarios = {s['key']: {st['key'] for st in s.get('steps') or ()}
+                     for s in self.content.get('scenarios') or ()}
+        for ref, target in (man.get('checks') or {}).items():
+            sc_key, _dot, step_key = str(ref).partition('.')
+            if step_key not in scenarios.get(sc_key, ()):
+                err('check %s names no walkthrough step' % ref)
+            cmodel, _dot, meth = str(target).rpartition('.')
+            if cmodel not in self.env or not hasattr(self.env[cmodel], meth):
+                err('check %s → %s does not exist' % (ref, target))
         p = man.get('path') or {}
         xmlids = [p['xmlid']] if p.get('xmlid') else []
         if p.get('tag'):

@@ -410,6 +410,9 @@ export const SCREENS = {
                 <div class="lrn-heyebrow">${esc(tx(B("July 2026 payroll", "Kỳ lương tháng 7/2026")))}</div>
                 <div class="lrn-hh1">${esc(tx(B("July payroll is at step 2 of 5", "Kỳ lương tháng 7 đang ở bước 2 trên 5")))}</div>
                 <p class="lrn-note">${esc(sentence)}</p>
+                <div class="lrn-strip" data-coach="dash-needs"><b>${ic("alert-triangle")}${esc(tx(B("Needs you", "Cần bạn")))}</b>
+                    <span class="lrn-chip warn">${esc(tx(B("Settlement to check", "Quyết toán cần kiểm tra")))}</span>
+                    <span class="lrn-chip warn">${esc(tx(B("Contract renewal to start", "Gia hạn hợp đồng cần bắt đầu")))}</span></div>
                 <ol class="lrn-hjourney">${steps}</ol>
                 <button class="lrn-btn pri" data-coach="dash-runpayroll">${ic("play")}${
                     esc(tx(B("Continue preparing F&B", "Tiếp tục chuẩn bị F&B")))}</button>
@@ -471,7 +474,8 @@ export const SCREENS = {
                 <div class="lrn-reqmain">
                     <div class="lrn-reqt"><b>${esc(tx(r.title))}</b>${badge}</div>
                     <div class="lrn-sub2">${esc(sub)}</div>
-                    <div class="lrn-reqfacts"><span class="lrn-chip">${esc(ROUTE.name)}${SP}· v1</span>
+                    <div class="lrn-reqfacts"><span class="lrn-chip warn">${esc(tx(B("Waiting for a decision", "Đang chờ quyết định")))}</span>
+                        <span class="lrn-chip">${esc(ROUTE.name)}${SP}· v1</span>
                         <span class="lrn-sub2">${esc(tx(B("Waiting for", "Đang chờ")))}${SP}${esc(who)}</span></div>
                     <div class="lrn-rt" ${routeAnchor}>${routeDots(steps, r.at)}</div>
                 </div>
@@ -1934,6 +1938,7 @@ export const SCREENS = {
                 <td>${esc(tx(r.group))}</td>
                 <td>${r.role ? esc(tx(t.roles[r.role])) : `<span class="lrn-chip warn">${esc(tx(B("needs your answer", "cần câu trả lời của bạn")))}</span>`}</td>
                 <td class="c">${r.sub ? ic("check") : ""}</td>
+                <td>${r.signal ? esc(tx(t.signals[r.signal])) : `<span class="lrn-faint">—</span>`}</td>
                 <td>${esc(tx(t.types[r.type]))}</td>
             </tr>`).join("");
         return `
@@ -1943,7 +1948,7 @@ export const SCREENS = {
                     <h3>${ic("settings")}${esc(tx(B("How each component is treated", "Cách xử lý từng thành phần")))}</h3>
                     <span class="lrn-push"></span>
                     <button class="lrn-btn sm">${ic("rotate-ccw")}${esc(tx(B("Re-classify from the formulas", "Phân loại lại từ các công thức")))}</button>
-                    <button class="lrn-btn sm pri" disabled="disabled">${esc(tx(B("Save", "Lưu")))}</button>
+                    <button class="lrn-btn sm pri" disabled="disabled" data-coach="tr-save">${esc(tx(B("Save", "Lưu")))}</button>
                 </div>
                 <div class="lrn-strip" data-coach="tr-filters">
                     <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}${SP}${N(c.all)}</span>
@@ -1956,9 +1961,10 @@ export const SCREENS = {
                 <div class="lrn-ztablewrap">
                 <table class="lrn-ztable" data-coach="tr-table">
                     <thead><tr>
-                        <th>${esc(tx(B("Component", "Thành phần")))}</th><th>${esc(tx(B("Comes from", "Đến từ")))}</th>
-                        <th>${esc(tx(B("Group", "Nhóm")))}</th><th>${esc(tx(B("Pay role", "Vai trò trong lương")))}</th>
-                        <th class="c">${esc(tx(B("Subtotal", "Tổng phụ")))}</th><th>${esc(tx(B("Value type", "Loại giá trị")))}</th>
+                        <th>${esc(tx(B("Component", "Thành phần")))}</th><th data-coach="tr-col-lane">${esc(tx(B("Comes from", "Đến từ")))}</th>
+                        <th data-coach="tr-col-group">${esc(tx(B("Report group", "Nhóm báo cáo")))}</th><th data-coach="tr-col-role">${esc(tx(B("Pay role", "Vai trò trong lương")))}</th>
+                        <th class="c" data-coach="tr-col-rollup">${esc(tx(B("Included in another total", "Đã tính trong một tổng khác")))}</th>
+                        <th data-coach="tr-col-signal">${esc(tx(B("Run signal", "Tín hiệu cho đợt lương")))}</th><th data-coach="tr-col-kind">${esc(tx(B("Value type", "Loại giá trị")))}</th>
                     </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>

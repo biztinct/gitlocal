@@ -967,7 +967,7 @@
    (spotlight.js DOCK_BELOW) so it never sits on the control it explains. The
    grip folds it to its title line and back; motion only on the height. */
 .lrn-coachfold { display: none; }
-body.lrn-docked .lrn-screen { padding-bottom: 55vh; }
+body.lrn-spot-docked .lrn-screen { padding-bottom: 55vh; }
 .lrn-coach.docked {
     max-height: 46vh;
     border-radius: var(--vuf-r-lg, 16px);

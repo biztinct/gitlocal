@@ -168,6 +168,10 @@ never hand-edited here).
             'pb_learn/static/src/content/field_index.js',
             'pb_learn/static/src/coach/guide_door.js',
             'pb_learn/static/src/engine/*.js',
+            # LEARNREV P4 — the four-line step card and the "where does this
+            # step play" rule: read by the Guide panel AND the Journey's
+            # practice copy, so it loads before both.
+            'pb_learn/static/src/coach/lesson_panel.js',
             # The scenario state machine. BEFORE the Journey and the Coach:
             # both look it up as a service, and the overlay it drives is
             # registered in main_components rather than through the WebClient

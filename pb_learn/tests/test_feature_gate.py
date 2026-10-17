@@ -33,7 +33,9 @@ from odoo.addons.pb_learn.models.learn_runtime import (
 
 from .common import load_content
 
-PROSE = ('kicker', 'title', 'body', 'consequence')
+PROSE = ('kicker', 'title', 'body', 'consequence',
+         # LEARNREV P4 — a rewritten step says it in four lines, not a body.
+         'look', 'means', 'affects', 'press')
 ALL_ON = {k: True for k in FEATURE_SWITCHES}
 ALL_OFF = {k: False for k in FEATURE_SWITCHES}
 
@@ -50,6 +52,13 @@ ACTING_WORDS = re.compile(r'\b(Do it|the plan|prepares?|prepared|approves?|compu
 
 def _en(pair):
     return (pair or {}).get('en', '') if isinstance(pair, dict) else (pair or '')
+
+
+def _said(step, lang='en', fields=('body', 'look', 'means', 'affects', 'press', 'tip')):
+    """Everything a step says in one language (LEARNREV P4: the four lines
+    as well as a legacy body)."""
+    return ' '.join((step.get(f) or {}).get(lang, '') if isinstance(step.get(f), dict) else ''
+                    for f in fields)
 
 
 def _lesson_steps(tree, station_key):
@@ -114,12 +123,12 @@ class TestFeatureGate(TransactionCase):
             self.assertFalse(ACTING_WORDS.search(_en(help_[0].get(f))),
                              "the ungated help step promises acting: %s" % f)
         for old in ('It explains', 'what to do next', 'never computes a run'):
-            self.assertNotIn(old, _en(help_[0]['body']))
-        self.assertIn('speak', _en(help_[0]['body']))
+            self.assertNotIn(old, _said(help_[0]))
+        self.assertIn('speak', _said(help_[0]))
         act = [s for s in steps if s.get('requires') == 'payai_prepare']
         self.assertEqual(len(act), 1)
-        self.assertIn('Do it', _en(act[0]['body']))
-        self.assertIn('Thực hiện', act[0]['body']['vi'])
+        self.assertIn('Do it', _said(act[0]))
+        self.assertIn('Thực hiện', _said(act[0], 'vi'))
         # The acting step follows the help step, and only it goes when off.
         self.assertEqual(steps.index(act[0]), steps.index(help_[0]) + 1)
         for feats in (None, ALL_OFF):
@@ -227,9 +236,14 @@ class TestFeatureGate(TransactionCase):
         bad_vi = re.compile(r'(Nháp|nháp) trong 10 phút')
         step = next(s for s in _lesson_steps(self.tree, 'payruns')
                     if s.get('requires') == 'payai_prepare')
-        for f in ('body', 'tip'):
+        # LEARNREV P4 — the step's lines (its "It affects" says the ten
+        # minutes now) and its tip, each read in both languages.
+        for f in ('body', 'means', 'affects', 'tip'):
+            if not isinstance(step.get(f), dict):
+                continue
             self.assertFalse(bad_en.search(step[f]['en']), step[f]['en'])
             self.assertFalse(bad_vi.search(step[f]['vi']), step[f]['vi'])
+        for f in ('affects', 'tip'):
             self.assertIn('10 minutes', step[f]['en'])
             self.assertIn('10 phút', step[f]['vi'])
 

@@ -40,6 +40,13 @@ MANIFESTS = {
                   "lương, phiếu lương và báo cáo đều tính nó đúng cách.",
         },
         'path': {'tag': 'pb_mapping_studio', 'lens': 'treatment'},
+        # LEARNREV P4 — the "Fix figures that do not add up" walkthrough's Try
+        # on the demo company waits for the person's own change, checked here
+        # (read-only, as the person; pb_learn gates it to demo sessions).
+        'checks': {
+            'sc_treatment.fix': 'hr.formula.config.learn_check_treatment',
+            'sc_treatment.recompute': 'hr.formula.config.learn_check_treatment',
+        },
         'before': [
             {'screen': 'formula',
              'why': {'en': "Most answers on this board are worked out from the "

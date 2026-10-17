@@ -17,9 +17,9 @@
                 <span class="lrn-mark">
                     <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-grad-cap"/></svg>
                 </span>
-                <b t-esc="brandLabel"/>
-                <span class="lrn-sep" t-if="learnLabel">·</span>
-                <span t-esc="learnLabel"/>
+                <!-- LEARNREV P4 (S10): the page is called "Learn", nothing
+                     more — the product's name is already on the top bar. -->
+                <b t-esc="learnLabel"/>
             </span>
 
             <!-- LEARNREV P3: the header is "Learn" and the language, nothing
