@@ -830,6 +830,11 @@
         div + div { margin-top: 4px; }
         small { display: block; color: var(--i, #5A4BB0); margin-top: 8px; }
     }
+    .mc-item.armed {
+        .mc-item-details, .mc-detail-values, .mc-item-expand, .mc-detail-warning { color: #fff; }
+        .mc-item-details { border-top-color: rgba(255, 255, 255, .45); }
+        .mc-item-expand:hover, .mc-item-expand:focus-visible { color: var(--i, #5A4BB0); }
+    }
     @media (max-width: 900px) {
         --mc-col-w: 42%;
         .mc-item-label { flex-wrap: wrap; }
