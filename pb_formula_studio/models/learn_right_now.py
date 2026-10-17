@@ -126,11 +126,13 @@ class HrFormulaConfigLearnRightNow(models.Model):
         if stale:
             n = len(stale)
             names = [run.name or '' for run in stale]
+            # LEARNREV P2 (§6.3): the shape the panel's openHub takes — the
+            # Runs board highlights the `focus` run's card on arrival.
             action = ({'kind': 'open', 'xmlid': PAY_HUB, 'lens': 'runs',
-                       'lens_key': 'pb_lens', 'ids': [run.id for run in stale]}
+                       'lens_key': 'pb_lens', 'focus': str(stale[0].id), 'context': {}}
                       if self.env.ref(PAY_HUB, raise_if_not_found=False) else
-                      {'kind': 'open_record', 'model': 'hr.payslip.run',
-                       'id': stale[0].id})
+                      {'kind': 'open_record', 'res_model': 'hr.payslip.run',
+                       'res_id': stale[0].id})
             items.append({
                 'key': 'recompute', 'count': n, 'severity': 'warn',
                 'names': names[:NAMED],

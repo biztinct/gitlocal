@@ -215,11 +215,13 @@ class TestGuide(TransactionCase):
         self.assertIn('897,000', hits[0]['text']['en'])
         self.assertIn('897.000', hits[0]['text']['vi'])
         action = hits[0]['action']
+        # LEARNREV P2 §6.3/6.4: the shape the panel's openHub / doAction take.
         if action['kind'] == 'open':
             self.assertEqual(action['lens'], 'treatment')
-            self.assertEqual(action['config_id'], self.config.id)
+            self.assertEqual(action['context'], {'pb_config': self.config.id})
+            self.assertNotIn('config_id', action)
         else:
-            self.assertEqual(action['id'], run.id)
+            self.assertEqual(action['res_id'], run.id)
         self.assertNotIn('ok', [i['key'] for i in items])
         # The same item through the Guide, in Vietnamese.
         out = self._guide('vi_VN', key='payruns')

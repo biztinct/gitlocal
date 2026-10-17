@@ -19,7 +19,7 @@
  * field and a computed column alike — none of them holds the type.
  */
 import { Component, useState, onWillStart, onWillUpdateProps } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
@@ -75,6 +75,16 @@ export class ComponentTreatmentBoard extends Component {
             error: "",
         });
         onWillStart(() => this.load());
+        // LEARNREV P2 — the helper's "Right now" has a Show / Fix button per
+        // chip ("3 rows still need your answer"). It SETS the chip (a second
+        // press must not toggle it off again); this board never imports the
+        // helper, it only listens on the bus.
+        useBus(this.env.bus, "pb-learn:act", ({ detail }) => {
+            if (detail && detail.kind === "filter"
+                    && ["", "review", "conflict", "drift"].includes(detail.value || "")) {
+                this.state.filter = detail.value || "";
+            }
+        });
         onWillUpdateProps((next) => {
             if (next.configId !== this.props.configId || next.runId !== this.props.runId) {
                 this.load(next);
@@ -262,7 +272,7 @@ export class ComponentTreatmentBoard extends Component {
                 "hr.formula.config", "reclassify_from_formulas",
                 [[this.state.board.config_id]]
             );
-            const bits = [_t("Types, pay roles, subtotal flags and report groups checked. %s component(s) changed.", res.changed)];
+            const bits = [_t("Value types, pay roles, report groups and the Included in another total ticks checked. %s component(s) changed.", res.changed)];
             if (res.kept) {
                 bits.push(_t("%s left as you set them.", res.kept));
             }

@@ -322,6 +322,9 @@ export class MappingStudio extends Component {
             lenses: this.modes.map((m) => ({ key: m.id, label: m.label, icon: m.icon })),
             ready: this.state.loaded,
             switchTo: (key) => this.setMode(key),
+            // LEARNREV P2 — the scheme on show, so the helper's "Right now"
+            // reads the same scheme as the board.
+            extra: { config_id: this.state.configId || 0 },
         });
     }
 

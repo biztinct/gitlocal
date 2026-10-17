@@ -34,6 +34,10 @@ const EMPTY = {
     lens: "",       // the lens (tab) on screen
     lenses: [],     // [{key, label, icon, locked}] the tabs this person sees
     ready: false,   // true once the shell has resolved who may see what
+    // LEARNREV P2 — plain ids a reader may need about what the tab shows
+    // (Mapping: `{config_id}`, the scheme picked). Carried through as given;
+    // no hub but Mapping sets it today.
+    extra: {},
 };
 
 export const hubPlace = reactive({
@@ -85,6 +89,7 @@ export function publishPlace(token, place) {
         lens: String(place.lens || ""),
         lenses,
         ready: !!place.ready,
+        extra: place.extra && typeof place.extra === "object" ? { ...place.extra } : {},
     });
 }
 
@@ -95,7 +100,7 @@ export function clearPlace(token) {
     }
     owner = null;
     switcher = null;
-    Object.assign(hubPlace, { ...EMPTY, lenses: [] });
+    Object.assign(hubPlace, { ...EMPTY, lenses: [], extra: {} });
     hubPlace.subs = {};
 }
 

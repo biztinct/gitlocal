@@ -37,14 +37,28 @@ class PbPayrunsLearn(models.AbstractModel):
     _inherit = 'pb.payruns'
 
     @api.model
-    def _learn_open(self, xmlid, **extra):
+    def _learn_open(self, xmlid, lens=None, lens_key=None, ids=None, config_id=None):
         """An `open` action when the target exists on this database, else None
-        (a door that goes nowhere is worse than no door)."""
+        (a door that goes nowhere is worse than no door).
+
+        LEARNREV P2 (§6.3): the shape the panel hands to `openHub` — `focus`
+        is the first run's id (the Runs board highlights that card on
+        arrival) and `context` carries `pb_config` for Mapping, which opens
+        on that scheme. Never `ids` / `config_id` on the wire."""
         if not self.env.ref(xmlid, raise_if_not_found=False):
             return None
-        out = {'kind': 'open', 'xmlid': xmlid}
-        out.update(extra)
+        out = {'kind': 'open', 'xmlid': xmlid,
+               'focus': str(ids[0]) if ids else None,
+               'context': {'pb_config': config_id} if config_id else {}}
+        if lens:
+            out['lens'] = lens
+            out['lens_key'] = lens_key or 'pb_lens'
         return out
+
+    @api.model
+    def _learn_record(self, run_id):
+        """Open that pay run's own form (§6.4)."""
+        return {'kind': 'open_record', 'res_model': 'hr.payslip.run', 'res_id': run_id}
 
     @api.model
     def _learn_scheme(self, run_id):
@@ -79,8 +93,7 @@ class PbPayrunsLearn(models.AbstractModel):
                           ("%d đợt lương đang chờ bạn quyết định: %s."
                            % (n, _names(names, 'vi'))),
                 },
-                'action': self._learn_open(INBOX) or {
-                    'kind': 'open_record', 'model': 'hr.payslip.run', 'id': mine[0]['id']},
+                'action': self._learn_open(INBOX) or self._learn_record(mine[0]['id']),
             })
 
         unbalanced = [b for b in open_runs if b.get('balance_ok') is False]
@@ -102,8 +115,8 @@ class PbPayrunsLearn(models.AbstractModel):
                           "của %s." % (b['name'], gap_vi, where_vi),
                 },
                 'action': self._learn_open(MAPPING, lens='treatment', lens_key='pb_mode',
-                                           config_id=config_id or None) or {
-                    'kind': 'open_record', 'model': 'hr.payslip.run', 'id': b['id']},
+                                           config_id=config_id or None)
+                          or self._learn_record(b['id']),
             })
 
         unsourced = [b for b in open_runs if b.get('unsourced')]
@@ -125,9 +138,8 @@ class PbPayrunsLearn(models.AbstractModel):
                           "lương thật. Hãy kiểm tra Ánh xạ › Liên kết trước khi gửi."
                           % (n, _names(names, 'vi')),
                 },
-                'action': self._learn_open(MAPPING, lens='desk', lens_key='pb_mode') or {
-                    'kind': 'open_record', 'model': 'hr.payslip.run',
-                    'id': unsourced[0]['id']},
+                'action': self._learn_open(MAPPING, lens='desk', lens_key='pb_mode')
+                          or self._learn_record(unsourced[0]['id']),
             })
 
         flagged = {b['id'] for b in unbalanced} | {b['id'] for b in unsourced}
@@ -150,8 +162,8 @@ class PbPayrunsLearn(models.AbstractModel):
                            "%s." % (n, _names(names, 'vi'))),
                 },
                 'action': self._learn_open(PAY_HUB, lens='runs', lens_key='pb_lens',
-                                           ids=[b['id'] for b in ready]) or {
-                    'kind': 'open_record', 'model': 'hr.payslip.run', 'id': ready[0]['id']},
+                                           ids=[b['id'] for b in ready])
+                          or self._learn_record(ready[0]['id']),
             })
 
         if not items:
