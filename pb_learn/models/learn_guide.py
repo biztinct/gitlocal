@@ -199,7 +199,7 @@ class LearnGuide(models.AbstractModel):
                 'after': self._neighbours(man.get('after'), lang),
             },
             'right_now': self._right_now(man, args, lang, missing),
-            'fields': self._fields(man, lang, missing),
+            'fields': self._field_cards(man, lang, missing),
             'actions': [self._action(a, lang) for a in man.get('actions') or ()],
             'doors': self._doors(man, screen_key, lang),
             'lang': lang,
@@ -268,7 +268,9 @@ class LearnGuide(models.AbstractModel):
 
     # ------------------------------------------------------------ fields
     @api.model
-    def _fields(self, man, lang, missing):
+    def _field_cards(self, man, lang, missing):
+        # NOT `_fields`: that name is every model's field registry, and a
+        # method called `_fields` shadows it (LEARNREV ledger LR16).
         model = man.get('model')
         meta = {}
         if model:
