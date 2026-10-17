@@ -309,6 +309,114 @@
       "en": "Explain this screen",
       "vi": "Giải thích màn hình này"
     },
+    "fbkD30": {
+      "en": "Last 30 days",
+      "vi": "30 ngày qua"
+    },
+    "fbkD7": {
+      "en": "Last 7 days",
+      "vi": "7 ngày qua"
+    },
+    "fbkD90": {
+      "en": "Last 90 days",
+      "vi": "90 ngày qua"
+    },
+    "fbkExport": {
+      "en": "Download as CSV",
+      "vi": "Tải về tệp CSV"
+    },
+    "fbkFailed": {
+      "en": "The numbers could not be read. Try again in a moment.",
+      "vi": "Chưa đọc được số liệu. Hãy thử lại sau ít phút."
+    },
+    "fbkFieldsHide": {
+      "en": "Hide the list",
+      "vi": "Ẩn danh sách"
+    },
+    "fbkFieldsShow": {
+      "en": "Show each field and step",
+      "vi": "Xem từng trường và bước"
+    },
+    "fbkHelpful": {
+      "en": "Marked helpful",
+      "vi": "Được đánh giá hữu ích"
+    },
+    "fbkLead": {
+      "en": "Which help people found useful, and what they searched for and did not find. Counts only: no names, no pay figures.",
+      "vi": "Phần hướng dẫn nào hữu ích, và mọi người đã tìm gì mà không thấy. Chỉ có số đếm: không có tên người, không có số liệu lương."
+    },
+    "fbkLoading": {
+      "en": "Reading the numbers…",
+      "vi": "Đang đọc số liệu…"
+    },
+    "fbkMissEmpty": {
+      "en": "None in this period: every question found an answer.",
+      "vi": "Không có trong khoảng này: câu hỏi nào cũng đã có câu trả lời."
+    },
+    "fbkMissTitle": {
+      "en": "Questions PayAI could not answer",
+      "vi": "Câu hỏi PayAI chưa trả lời được"
+    },
+    "fbkNoAnswer": {
+      "en": "PayAI had no answer",
+      "vi": "PayAI chưa trả lời được"
+    },
+    "fbkNoResult": {
+      "en": "Searches with no result",
+      "vi": "Lượt tìm không có kết quả"
+    },
+    "fbkNoScreen": {
+      "en": "Not tied to a screen",
+      "vi": "Không gắn với màn hình nào"
+    },
+    "fbkNotHelpful": {
+      "en": "Marked not helpful",
+      "vi": "Bị đánh giá chưa hữu ích"
+    },
+    "fbkPeriod": {
+      "en": "Period",
+      "vi": "Khoảng thời gian"
+    },
+    "fbkRatingsEmpty": {
+      "en": "No ratings yet. They appear when someone presses a thumb on a field card, a lesson step or a walkthrough card.",
+      "vi": "Chưa có đánh giá nào. Đánh giá xuất hiện khi ai đó bấm nút thích hoặc không thích trên thẻ trường, một bước bài học hay một thẻ hướng dẫn."
+    },
+    "fbkRatingsTitle": {
+      "en": "Ratings by screen",
+      "vi": "Đánh giá theo màn hình"
+    },
+    "fbkRetry": {
+      "en": "Try again",
+      "vi": "Thử lại"
+    },
+    "fbkSearchEmpty": {
+      "en": "None in this period: every search found something.",
+      "vi": "Không có trong khoảng này: lượt tìm nào cũng có kết quả."
+    },
+    "fbkSearchHidden": {
+      "en": "Search words are not kept, so only their counts show. Switch on Learn from the questions people ask, above, to read the words.",
+      "vi": "Từ khóa tìm kiếm không được lưu, nên chỉ hiện số lượt tìm. Bật Học hỏi từ câu hỏi của mọi người ở phía trên để xem được từ khóa."
+    },
+    "fbkSearchHiddenOne": {
+      "en": "Words not kept",
+      "vi": "Từ khóa không được lưu"
+    },
+    "fbkSearchTitle": {
+      "en": "Top searches with no result",
+      "vi": "Những lượt tìm không có kết quả nhiều nhất"
+    },
+    "fbkShowLess": {
+      "en": "Show fewer",
+      "vi": "Thu gọn"
+    },
+    "fbkShowMore": {
+      "en": "Show all screens",
+      "vi": "Xem mọi màn hình"
+    },
+    "fbkTitle": {
+      "en": "What people asked and rated",
+      "vi": "Mọi người đã hỏi gì và đánh giá ra sao"
+    },
     "figuresOnScreen": {
       "en": "Here are the figures you asked for — they are on screen.",
       "vi": "Đây là các số liệu bạn hỏi — chúng đang hiển thị trên màn hình."
@@ -36728,5 +36836,5 @@
       }
     }
   ],
-  "version": "fb2119ac5158"
+  "version": "54530e0e4e1c"
 }
