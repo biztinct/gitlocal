@@ -445,12 +445,20 @@
     .lrn-ic { width: 13px; height: 13px; }
     &:hover, &:focus-visible { border-bottom-color: currentColor; outline: none; }
 }
-// The header's "Guide · Component treatment": one line, never wrapped.
-.lrn-drawer.lrn-has-guide .lrn-dname b {
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+// The header's "Guide · Component treatment": up to two lines at the docked
+// width (never cut to "Component …"), and the language pill on one line.
+.lrn-drawer.lrn-has-guide {
+    .lrn-dname { min-width: 0; }
+    .lrn-dname b {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-size: 13.5px;
+        line-height: 1.25;
+        white-space: normal;
+    }
+    .lrn-langpill { white-space: nowrap; }
 }
 
 // ------------------------------------------------------------- the dock

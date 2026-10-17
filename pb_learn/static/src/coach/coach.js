@@ -2152,8 +2152,9 @@ export class CoachHost extends Component {
                 ? root && root.querySelector(`.lrn-gfield[data-field="${field}"]`)
                 : root && root.querySelector(`.lrn-gsec[data-sec="${sec}"]`);
             if (target) {
-                target.scrollIntoView({ block: field ? "center" : "start",
-                                        behavior: reduced() ? "auto" : "smooth" });
+                // "start": a field's card is taller than the panel, and its
+                // name is the part that says you landed in the right place.
+                target.scrollIntoView({ block: "start", behavior: reduced() ? "auto" : "smooth" });
                 return;
             }
             // The Guide for a screen just opened is still on its way.

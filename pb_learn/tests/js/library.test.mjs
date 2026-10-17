@@ -245,6 +245,15 @@ function searchSuite() {
     const hits = lib.search(index, "pay role");
     check(hits.length && hits[0].kind === "field" && hits[0].field === "pay_role",
           "\"pay role\" returns the field row first", hits.slice(0, 3).map((h) => `${h.kind}:${h.key}`).join(" | "));
+    // The same column on two screens: the one whose own search words name it
+    // (Component treatment) comes first, Mapping's Pay role after it.
+    const twice = FIELD_ROWS.concat([{ screen: "mapping", screen_name: "Mapping",
+        screen_names: ["Mapping", "Ánh xạ"], key: "pay_role", column: "Pay role",
+        columns: ["Pay role", "Vai trò trong lương"], line: "How the component counts." }]);
+    const both2 = lib.search(lib.buildIndex(SRC, twice), "pay role").filter((h) => h.kind === "field");
+    check(both2.length === 2 && both2[0].screen === "treatment" && both2[1].screen === "mapping",
+          "a column on two screens: its home screen first (treatment, then Mapping)",
+          both2.map((h) => h.screen).join(","));
     const html = lib.resultsHTML(hits, "pay role");
     check(html.includes(runtime.esc(lib.fmt(T("libFieldOn"), { screen: "Component treatment" }))),
           "… saying where it is (Field on Component treatment)");

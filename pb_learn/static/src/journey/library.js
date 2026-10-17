@@ -495,9 +495,14 @@ export function buildIndex(src, fieldRows) {
             both(s.name), [...both(s.summary), ...both(s.search)]);
     }
     for (const r of fieldRows || []) {
+        // The same column can sit on two screens (Pay role: Component
+        // treatment's board AND Mapping's inspector). The screen whose own
+        // authored search words name it is where people go for it, so that
+        // one wins a tie (`home`, read by `search`).
+        const owner = nameOf.get(r.screen);
         add({ kind: "field", key: `${r.screen}.${r.key}`, screen: r.screen, field: r.key,
               title: r.column, sub: fmt(T("libFieldOn"), { screen: r.screen_name || r.screen }),
-              line: r.line || "" },
+              line: r.line || "", home: fold(both(owner && owner.search).join(" ")) },
             [r.column, ...(r.columns || [])], [r.line || "", ...(r.screen_names || [])]);
     }
     for (const g of src.glossary || []) {
@@ -551,7 +556,8 @@ export function search(index, query, max = MAX_HITS) {
             s = 30;
         }
         if (s) {
-            scored.push([s - KINDS.indexOf(e.kind) * 0.5, e]);
+            const home = e.home && e.titles.some((t) => e.home.includes(t)) ? 0.4 : 0;
+            scored.push([s - KINDS.indexOf(e.kind) * 0.5 + home, e]);
         }
     }
     scored.sort((a, b) => b[0] - a[0]);

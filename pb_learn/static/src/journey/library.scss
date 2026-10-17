@@ -267,14 +267,15 @@
 /* ------------------------------------------------------------- path strip */
 .lrn-lib-path {
     margin-top: 10px;
+    /* Wraps rather than scrolls: a long path (Owner: 10) must still show
+       every step and the "Change role" chip at the end. */
     ol {
         display: flex;
+        flex-wrap: wrap;
         gap: 6px;
         margin: 0;
         padding: 2px 2px 4px;
         list-style: none;
-        overflow-x: auto;
-        scrollbar-width: thin;
     }
 }
 .lrn-lib-step {
