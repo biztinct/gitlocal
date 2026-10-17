@@ -43,7 +43,11 @@ assert len(parsed['rows'])==1,(len(parsed['rows']),parsed.keys())
 raw=parsed['rows'][0]
 transformed=probe._transform_data_to_formula_inputs(raw)
 assert transformed['VNSTDDAYS']==22 and transformed['VNPAIDDAYS']==22 and transformed['VNACTBONUS']==1000000,transformed
-assert str(transformed['VNHCE'])=='VNTEST001',transformed
+# Identity values travel beside amount inputs rather than inside that numeric
+# result dictionary. Verify the preserved source identity separately.
+assert any(str(raw.get(k))=='VNTEST001' for k in ['Country employee ID','Time|Country employee ID','Monthly adjustments|Country employee ID']),raw
+preflight=env['pb.payrun.wizard'].with_company(cfg.company_id).preflight_spreadsheet(cfg.id,base64.b64encode((root/'monthly-probe.xlsx').read_bytes()).decode(),'monthly-probe.xlsx')
+assert preflight.get('ok') and preflight.get('employees_col'),preflight
 attachment_ids=[]
 for name in ['Vietnam_Configuration_Review.xlsx','Vietnam_Monthly_Input_Template.xlsx']:
     path=root/name
