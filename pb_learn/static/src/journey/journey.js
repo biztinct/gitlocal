@@ -231,6 +231,7 @@ export class LearnJourney extends Component {
             Spot.hide();
             document.removeEventListener("keydown", this._onKey, true);
             document.body.classList.remove("lrn-open");
+            document.body.classList.remove("lrn-on-library");
         });
     }
 
@@ -1306,6 +1307,10 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
+        // LEARNREV P4 (S10) — while the Library is showing, the corner Ask
+        // PayAI launcher stays out of its rows when the Guide is on: the rows'
+        // Guide chips and the search's Ask PayAI are the way in (coach.scss).
+        document.body.classList.toggle("lrn-on-library", this.state.view === "map");
         // LEARNREV P3 — a role pick redraws the Continue card and the path
         // strip; they settle in once (CSS, reduced motion respected). The
         // class lives only on this render's DOM, so a later redraw does not
@@ -2397,7 +2402,9 @@ export class LearnJourney extends Component {
     }
 
     get learnLabel() {
-        return this.state.ready ? T("learn") : "";
+        // LEARNREV P4 (S10): "Learn", the page's own name (the hub title),
+        // not "Payobook · Learning".
+        return this.state.ready ? T("hubTitle") : "";
     }
 
     /** Narration for screen readers: the step title, announced on change. */

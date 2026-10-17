@@ -787,6 +787,11 @@
 .lrn-coach .lrn-lp-lines { margin: 6px 0; }
 .lrn-coach .lrn-lp-line { grid-template-columns: 84px 1fr; }
 
+// S10 — on the Library, with the Guide on, the corner launcher does not float
+// over the rows: each row's Guide chip and the search's Ask PayAI are the way
+// in (journey.js sets lrn-on-library, coach.js lrn-guide-on).
+body.lrn-on-library.lrn-guide-on .lrn-fab { display: none; }
+
 // S3 — a walkthrough running beside the Guide (Tasks section).
 .lrn-gplaying {
     display: flex;

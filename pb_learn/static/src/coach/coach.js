@@ -2502,6 +2502,9 @@ export class CoachHost extends Component {
     /** Docked: a body class the page makes room for (coach.scss, ≥ 1280 px
      *  only), with the panel's top just under the top bar. */
     _syncDock() {
+        // LEARNREV P4 (S10) — "the Guide exists here": the Library hides the
+        // corner launcher over its rows (coach.scss, body.lrn-on-library).
+        document.body.classList.toggle("lrn-guide-on", !!this.guideOn);
         const on = !!(this.guideOn && this.state.open && this.state.dock === "dock");
         if (on) {
             const nav = document.querySelector(".o_main_navbar");
