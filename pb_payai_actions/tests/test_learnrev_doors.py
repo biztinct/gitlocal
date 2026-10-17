@@ -28,16 +28,21 @@ class TestLearnrevDoors(TransactionCase):
         Users = cls.env['res.users'].with_context(no_reset_password=True)
         g = cls.env.ref
         base = g('base.group_user').id
+        # PayAI's conversation needs "PayAI User". The module makes every
+        # internal user one, but a database can take that away (payobook has),
+        # so the fixture says it rather than inheriting it.
+        payai = g('pb_payroll_ai_insights.group_payai_user').id
         company = cls.env.company
         cls.officer = Users.create({
             'name': 'Learnrev Officer', 'login': 'learnrev.officer@test.invalid',
             'lang': 'en_US', 'company_id': company.id, 'company_ids': [(6, 0, [company.id])],
-            'group_ids': [(6, 0, [base, g('pb_hr_payroll_base.group_payroll_base_officer').id,
+            'group_ids': [(6, 0, [base, payai,
+                                  g('pb_hr_payroll_base.group_payroll_base_officer').id,
                                   g('om_hr_payroll.group_hr_payroll_user').id])]})
         cls.plain = Users.create({
             'name': 'Learnrev Plain', 'login': 'learnrev.plain@test.invalid',
             'lang': 'en_US', 'company_id': company.id, 'company_ids': [(6, 0, [company.id])],
-            'group_ids': [(6, 0, [base])]})
+            'group_ids': [(6, 0, [base, payai])]})
 
     def _ctx(self, user):
         """A request context whose conversation carries NO ⌘K rows."""

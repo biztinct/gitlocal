@@ -73,36 +73,13 @@ def _target(hub, lens):
 
 
 def _visible_hubs(env, user, hubs):
-    """{hub tag: True} for the hubs this person can open."""
-    out = {}
-    Item = env['pb.sidebar.item'].sudo()
+    """{hub tag: True} for the hubs this person can open (`gate.hub_open_for`,
+    the one place PayAI reads the left menu)."""
     try:
-        vis = env['pb.sidebar.item'].visibility_for(user)
+        return gate.hub_open_for(env, user, list(hubs))
     except Exception:                                       # noqa: BLE001
         _logger.warning("payai: left-menu visibility unavailable", exc_info=True)
-        return out
-    items = vis.get('items') or {}
-    sections = vis.get('sections') or {}
-    for hub in hubs:
-        tag, xmlid = hub.get('tag') or '', hub.get('xmlid') or ''
-        entries = Item.search(['|', ('action_tag', '=', tag or '-'),
-                               ('action_xmlid', '=', xmlid or '-')])
-        if entries:
-            out[tag] = any(
-                items.get(e.id) == 'on'
-                and sections.get(e.section_id.id, 'on') == 'on'
-                and (not e.parent_id or items.get(e.parent_id.id) == 'on')
-                for e in entries)
-            continue
-        # No left-menu entry of its own: the screen's own permissions.
-        act = env.ref(xmlid, raise_if_not_found=False) if xmlid else None
-        if not act:
-            out[tag] = False
-            continue
-        act = act.sudo()
-        groups = act.group_ids if 'group_ids' in act._fields else env['res.groups']
-        out[tag] = not groups or bool(groups & user.sudo().all_group_ids)
-    return out
+        return {}
 
 
 def server_doors(env, user=None):

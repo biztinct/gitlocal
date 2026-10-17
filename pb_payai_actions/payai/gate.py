@@ -462,6 +462,41 @@ def tier_on_somewhere(env, user, tier):
     return any(tier_on(env, tier, company) for company in companies)
 
 
+def hub_open_for(env, user, hubs):
+    """LEARNREV P0 (G24) — {hub tag: True/False} for the hubs (`{tag, xmlid}`
+    dicts, from the Learn content plane) this person can open: the hub's
+    left-menu entry is 'on' for them, under an entry and in a block that are
+    'on' too (`visibility_for`, the rule the left menu is drawn from); a hub
+    with no left-menu entry of its own (Mapping opens from Settings) asks
+    the screen's own permissions. Lives here because the left menu's model
+    is one PayAI may only READ, and only gate.py names it (test fb08).
+    Read only: navigation offers, never a write."""
+    out = {}
+    Item = env['pb.sidebar.item']
+    vis = Item.visibility_for(user)
+    items = vis.get('items') or {}
+    sections = vis.get('sections') or {}
+    for hub in hubs:
+        tag, xmlid = hub.get('tag') or '', hub.get('xmlid') or ''
+        entries = Item.sudo().search(['|', ('action_tag', '=', tag or '-'),
+                                      ('action_xmlid', '=', xmlid or '-')])
+        if entries:
+            out[tag] = any(
+                items.get(e.id) == 'on'
+                and sections.get(e.section_id.id, 'on') == 'on'
+                and (not e.parent_id or items.get(e.parent_id.id) == 'on')
+                for e in entries)
+            continue
+        act = env.ref(xmlid, raise_if_not_found=False) if xmlid else None
+        if not act:
+            out[tag] = False
+            continue
+        act = act.sudo()
+        groups = act.group_ids if 'group_ids' in act._fields else None
+        out[tag] = not groups or bool(groups & user.sudo().all_group_ids)
+    return out
+
+
 def screen_item(env, action):
     """The Action's screen: the first ACTIVE sidebar item it names, or None."""
     for xmlid in action.screen_keys:
