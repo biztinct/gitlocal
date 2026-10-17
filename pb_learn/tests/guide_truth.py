@@ -386,6 +386,148 @@ def check_files(screen_key, man, read, content, anchors, po_for):
     return errs
 
 
+# ---------------------------------------------------------------- replicas
+#: The practice replica's file, and how one screen's builder is found in it.
+REPLICA_FILE = 'pb_learn/static/src/engine/screens.js'
+_B_PAIR = re.compile(r'B\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"\s*\)')
+_TH = re.compile(r'<th\b[^>]*>\s*\$\{\s*esc\(\s*tx\(\s*B\(\s*"((?:[^"\\]|\\.)*)"\s*,\s*"((?:[^"\\]|\\.)*)"')
+
+
+def replica_region(src, screen_key):
+    """The body of `SCREENS.<screen_key>()` in screens.js, or None. Builders
+    are methods at four-space indent ending at a four-space `},` (the same
+    shallow rule test_scenario's method parser uses)."""
+    lines = (src or '').split('\n')
+    start = None
+    for i, line in enumerate(lines):
+        if start is None and re.match(r'^    %s\(\)\s*\{' % re.escape(screen_key), line):
+            start = i
+            continue
+        if start is not None and re.match(r'^    \},?\s*$', line):
+            return '\n'.join(lines[start:i + 1])
+    return None
+
+
+#: Columns a practice copy leaves out ON PURPOSE, each with its reason. The
+#: list is the decision, written down; a column missing for any other reason
+#: fails. (Generating the replicas from the screen definitions is P5.)
+REPLICA_ABSENT = {
+    'mapping': {
+        '*': "the practice copy draws Mapping › Journey; the manifest describes "
+             "Mapping › Connections (LEARNREV LR24) — Connections has no copy yet",
+    },
+    'formula': {
+        '*': "the practice copy draws Formula Studio's Cards view; the manifest "
+             "describes the Table view (LEARNREV P2 S6)",
+    },
+    'payruns': {
+        'Where it is': "the board's card view has no header for it; the copy "
+                       "shows the state on each card",
+        "Figures don't add up": "drawn only on a run that does not balance; "
+                                "every practice run balances",
+        'payslips have no source data': "drawn only on a run with unsourced "
+                                        "payslips; every practice payslip has its source",
+    },
+}
+
+#: Where `statusChip()` reads its labels (the generated fixture).
+FIXTURE_FILE = 'pb_learn/static/src/engine/fixture.js'
+
+
+def check_replica(screen_key, man, read):
+    """LEARNREV P4 (S5) — the practice copy says what the screen says.
+
+    For a manifest screen the replica draws: every manifest column is written
+    somewhere in the replica's builder (either language; a state label drawn
+    through `statusChip()` counts), and every column header the replica draws
+    is a manifest column or a whole text of the real template (either
+    language). `REPLICA_ABSENT` holds the deliberate exceptions. Returns error
+    sentences; [] when the screen has no replica."""
+    src = read(REPLICA_FILE)
+    region = replica_region(src, screen_key)
+    if not region:
+        return []
+    errs = []
+    where = 'replica %s' % screen_key
+    blob = _replica_blob(src, region, read)
+    said = {norm(_unq(s)).lower() for pair in _B_PAIR.findall(blob) for s in pair}
+    # Chrome strings the builder draws through T("key") count as well.
+    chrome = _chrome(read)
+    for key in re.findall(r'\bT\(\s*"([A-Za-z0-9_.]+)"\s*\)', blob):
+        for v in (chrome.get(key) or {}).values():
+            said.add(norm(v).lower())
+    said_blob = ' | '.join(sorted(said))
+    tpl_raw = raw_text('\n'.join(read(rel) or '' for rel in man.get('templates') or ())).lower()
+    absent = REPLICA_ABSENT.get(screen_key) or {}
+    columns = set()
+    for f in man.get('fields') or ():
+        col = f.get('column') or {}
+        en, vi = norm(col.get('en')).lower(), norm(col.get('vi')).lower()
+        if en:
+            columns.update({en, vi} - {''})
+        if '*' in absent or col.get('en') in absent:
+            continue
+        if en and en not in said_blob and (not vi or vi not in said_blob):
+            errs.append('%s: column "%s" is on the screen but not in the practice copy'
+                        % (where, col.get('en')))
+
+    def on_template(text):
+        # A WHOLE text of the template (one text node), not a substring of a
+        # longer one — "Group" must not pass because "Report group" exists.
+        return bool(text) and re.search(r'>\s*%s\s*<' % re.escape(text), tpl_raw) is not None
+
+    for en, vi in _TH.findall(region):
+        e, v = norm(_unq(en)).lower(), norm(_unq(vi)).lower()
+        if e in columns or v in columns or on_template(e) or on_template(v):
+            continue
+        errs.append('%s: header "%s" is not on the real screen (its manifest '
+                    'columns or its template)' % (where, _unq(en)))
+    return errs
+
+
+def _replica_blob(src, region, read):
+    """What one practice screen actually draws: its builder, the top-level
+    helpers it calls (`runCard(…)`), the practice data blocks it reads
+    (`PRACTICE.approvals`), and the state labels `statusChip()` prints."""
+    parts = [region]
+    for name in sorted(set(re.findall(r'^function (\w+)\(', src or '', re.M))):
+        # Called (`runCard(row)`) or handed on (`rows.map(runCard)`).
+        if re.search(r'\b%s\b' % re.escape(name), region):
+            m = re.search(r'^function %s\(.*?^\}' % re.escape(name), src, re.M | re.S)
+            if m:
+                parts.append(m.group(0))
+    fixture = read(FIXTURE_FILE) or ''
+    for name in sorted(set(re.findall(r'PRACTICE\.(\w+)', ' '.join(parts)))):
+        # A plain block (`  treatment: {`) or a computed one (`  get inbox() {`).
+        m = re.search(r'^  (?:%s: \{|get %s\(\) \{).*?^  \},?$' % (re.escape(name), re.escape(name)),
+                      fixture, re.M | re.S)
+        if m:
+            parts.append(m.group(0))
+    if 'statusChip(' in ' '.join(parts):
+        at = fixture.find('STATUS_LABELS')
+        parts.append(fixture[at:at + 6000] if at >= 0 else '')
+    return '\n'.join(parts)
+
+
+_CHROME = {}
+
+
+def _chrome(read):
+    """The content plane's chrome map ({key: {en, vi}}), read once."""
+    if 'map' not in _CHROME:
+        import json
+        try:
+            _CHROME['map'] = json.loads(read('pb_learn/static/content/learn_content.json')
+                                        or '{}').get('chrome') or {}
+        except ValueError:
+            _CHROME['map'] = {}
+    return _CHROME['map']
+
+
+def _unq(s):
+    return s.replace('\\"', '"').replace("\\'", "'").replace('\\\\', '\\')
+
+
 def screen_texts(screen_key, man, content, anchors, hub_tab_line=None):
     """(lang, '', text, where) for every piece of learning text about this
     screen: its lesson(s), its walkthrough steps, its blurb and next step, its

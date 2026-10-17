@@ -121,6 +121,14 @@ class TestGuideTruth(TransactionCase):
                                      po_for)
         self.assertFalse(errors, "\n" + "\n".join(errors))
 
+    def test_02b_practice_copies_say_what_the_screens_say(self):
+        """LEARNREV P4 (S5) — every manifest column is in the practice copy,
+        and every header the copy draws is on the real screen."""
+        errors = []
+        for key, man in sorted(self.manifests.items()):
+            errors += gt.check_replica(key, man, read_rel)
+        self.assertFalse(errors, "\n" + "\n".join(errors))
+
     def test_03_fields_choices_and_methods_exist(self):
         errors = []
         for key, man in sorted(self.manifests.items()):
