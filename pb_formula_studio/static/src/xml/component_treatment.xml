@@ -15,7 +15,7 @@
             <span t-if="state.reclassifying">Re-classifying…</span>
             <span t-else="">Re-classify from the formulas</span>
           </button>
-          <button t-if="!props.readonly" class="pct-btn primary" t-on-click="save"
+          <button t-if="!props.readonly" class="pct-btn primary" t-on-click="save" data-coach="tr-save"
                   t-att-disabled="(dirtyCount and !state.saving) ? 0 : 1">
             <span t-if="state.saving">Saving…</span>
             <span t-elif="dirtyCount">Save <t t-esc="dirtyCount"/> change(s)</span>
@@ -95,12 +95,12 @@
           <thead>
             <tr>
               <th>Component</th>
-              <th>Comes from</th>
-              <th title="Organises the grid and reports; editable here.">Report group</th>
-              <th title="How reports count this value. Suggested from formulas; your choice takes priority.">Pay role</th>
-              <th class="c" title="Already counted inside another component; prevents double counting in reports."><span class="pct-th-wrap">Included in another total</span></th>
-              <th title="Identifies a special run input, such as employment status or hours worked.">Run signal</th>
-              <th title="How the value is read and displayed: money, quantity, text, date and so on.">Value type</th>
+              <th data-coach="tr-col-lane">Comes from</th>
+              <th data-coach="tr-col-group" title="Organises the grid and reports; editable here.">Report group</th>
+              <th data-coach="tr-col-role" title="How reports count this value. Suggested from formulas; your choice takes priority.">Pay role</th>
+              <th class="c" data-coach="tr-col-rollup" title="Already counted inside another component; prevents double counting in reports."><span class="pct-th-wrap">Included in another total</span></th>
+              <th data-coach="tr-col-signal" title="Identifies a special run input, such as employment status or hours worked.">Run signal</th>
+              <th data-coach="tr-col-kind" title="How the value is read and displayed: money, quantity, text, date and so on.">Value type</th>
             </tr>
           </thead>
           <tbody>

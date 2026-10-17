@@ -1948,7 +1948,7 @@ export const SCREENS = {
                     <h3>${ic("settings")}${esc(tx(B("How each component is treated", "Cách xử lý từng thành phần")))}</h3>
                     <span class="lrn-push"></span>
                     <button class="lrn-btn sm">${ic("rotate-ccw")}${esc(tx(B("Re-classify from the formulas", "Phân loại lại từ các công thức")))}</button>
-                    <button class="lrn-btn sm pri" disabled="disabled">${esc(tx(B("Save", "Lưu")))}</button>
+                    <button class="lrn-btn sm pri" disabled="disabled" data-coach="tr-save">${esc(tx(B("Save", "Lưu")))}</button>
                 </div>
                 <div class="lrn-strip" data-coach="tr-filters">
                     <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}${SP}${N(c.all)}</span>
@@ -1961,10 +1961,10 @@ export const SCREENS = {
                 <div class="lrn-ztablewrap">
                 <table class="lrn-ztable" data-coach="tr-table">
                     <thead><tr>
-                        <th>${esc(tx(B("Component", "Thành phần")))}</th><th>${esc(tx(B("Comes from", "Đến từ")))}</th>
-                        <th>${esc(tx(B("Report group", "Nhóm báo cáo")))}</th><th>${esc(tx(B("Pay role", "Vai trò trong lương")))}</th>
-                        <th class="c">${esc(tx(B("Included in another total", "Đã tính trong một tổng khác")))}</th>
-                        <th>${esc(tx(B("Run signal", "Tín hiệu cho đợt lương")))}</th><th>${esc(tx(B("Value type", "Loại giá trị")))}</th>
+                        <th>${esc(tx(B("Component", "Thành phần")))}</th><th data-coach="tr-col-lane">${esc(tx(B("Comes from", "Đến từ")))}</th>
+                        <th data-coach="tr-col-group">${esc(tx(B("Report group", "Nhóm báo cáo")))}</th><th data-coach="tr-col-role">${esc(tx(B("Pay role", "Vai trò trong lương")))}</th>
+                        <th class="c" data-coach="tr-col-rollup">${esc(tx(B("Included in another total", "Đã tính trong một tổng khác")))}</th>
+                        <th data-coach="tr-col-signal">${esc(tx(B("Run signal", "Tín hiệu cho đợt lương")))}</th><th data-coach="tr-col-kind">${esc(tx(B("Value type", "Loại giá trị")))}</th>
                     </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>

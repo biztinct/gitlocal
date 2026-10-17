@@ -280,6 +280,9 @@ class LearnGuide(models.AbstractModel):
                 'path': self._path(man, screen, lang, missing),
                 'before': self._neighbours(man.get('before'), lang),
                 'after': self._neighbours(man.get('after'), lang),
+                # LEARNREV P4 — the open scheme's country wins over the
+                # company's for a lesson played beside this screen.
+                'country': self._scheme_country(args),
             },
             'right_now': self._right_now(man, args, lang, missing),
             'fields': self._field_cards(man, lang, missing),
@@ -289,6 +292,22 @@ class LearnGuide(models.AbstractModel):
             'missing': missing,
         }
         return out
+
+    @api.model
+    def _scheme_country(self, args):
+        """The country code of the pay scheme a Mapping / Studio screen has
+        open (`args.config_id`), or "". As the person; never raises."""
+        try:
+            cfg = int((args or {}).get('config_id') or 0)
+        except (TypeError, ValueError):
+            return ''
+        if not cfg or 'hr.formula.config' not in self.env:
+            return ''
+        try:
+            config = self.env['hr.formula.config'].browse(cfg).exists()
+            return (config.country_code or '').upper() if config else ''
+        except AccessError:
+            return ''
 
     # ------------------------------------------------------------ "You are here"
     @api.model

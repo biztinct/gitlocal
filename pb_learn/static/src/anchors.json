@@ -949,6 +949,41 @@
       "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
       "desc": "Component treatment table: Component, Comes from, Report group, Pay role, Included in another total, Run signal, Value type."
     },
+    "tr-col-lane": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Comes from column header (LEARNREV P4): where each value arrives from."
+    },
+    "tr-col-group": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Report group column header (LEARNREV P4)."
+    },
+    "tr-col-role": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Pay role column header (LEARNREV P4): an amber cell is a row that needs your answer."
+    },
+    "tr-col-rollup": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Included in another total column header (LEARNREV P4)."
+    },
+    "tr-col-signal": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Run signal column header (LEARNREV P4)."
+    },
+    "tr-col-kind": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, the Value type column header (LEARNREV P4)."
+    },
+    "tr-save": {
+      "screen": "treatment",
+      "file": "pb_formula_studio/static/src/xml/component_treatment.xml",
+      "desc": "Component treatment, Save N change(s) (LEARNREV P4). Saving changes the scheme, never a payslip already computed."
+    },
     "pp-tabs": {
       "screen": [
         "paybands",

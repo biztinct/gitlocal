@@ -15275,16 +15275,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "tr-head",
-          "body": {
-            "en": "It belongs to the scheme, so a change affects every run. Re-classify from the formulas works the answers out again and keeps the rows you set.",
-            "vi": "Nó thuộc về chương trình lương, nên một thay đổi ảnh hưởng mọi đợt lương. Phân loại lại từ các công thức tính lại các câu trả lời và giữ nguyên những dòng bạn tự đặt."
+          "affects": {
+            "en": "Every pay run of this scheme, once it is recomputed.",
+            "vi": "Mọi đợt lương của chương trình này, khi được tính lại."
           },
+          "anchor": "tr-head",
+          "body": "",
           "guard": false,
           "key": "head",
           "kicker": {
             "en": "Mapping › Component treatment",
             "vi": "Ánh xạ › Xử lý thành phần"
+          },
+          "look": {
+            "en": "The heading How each component is treated, and its two buttons.",
+            "vi": "Tiêu đề Cách xử lý từng thành phần, và hai nút của nó."
+          },
+          "means": {
+            "en": "The board belongs to the pay scheme. It tells every pay run what each component is.",
+            "vi": "Bảng này thuộc về chương trình lương. Nó cho mọi đợt lương biết mỗi thành phần là gì."
           },
           "modes": [
             "watch",
@@ -15305,19 +15314,32 @@
         },
         {
           "act": "observe",
-          "anchor": "tr-filters",
-          "body": {
-            "en": "Needs your answer: no pay role yet. Type says otherwise: a pay role the value type disagrees with. Clear these first.",
-            "vi": "Cần câu trả lời của bạn: chưa có vai trò trong lương. Loại giá trị nói khác: vai trò mà loại giá trị không khớp. Hãy xử lý những dòng này trước."
+          "affects": {
+            "en": "Clear these first: they are what usually makes a run not add up.",
+            "vi": "Hãy xử lý những dòng này trước: chúng thường là lý do một đợt lương không khớp."
           },
+          "anchor": "tr-filters",
+          "body": "",
           "guard": false,
           "key": "filters",
           "kicker": "",
+          "look": {
+            "en": "The chips Needs your answer and Type says otherwise.",
+            "vi": "Các nhãn Cần câu trả lời của bạn và Loại giá trị nói khác."
+          },
+          "means": {
+            "en": "Each chip counts rows waiting for a decision from you.",
+            "vi": "Mỗi nhãn đếm các dòng đang chờ bạn quyết định."
+          },
           "modes": [
             "watch",
             "try"
           ],
           "nav": "",
+          "press": {
+            "en": "Needs your answer, to see only those rows.",
+            "vi": "Cần câu trả lời của bạn, để chỉ xem những dòng đó."
+          },
           "screen": "treatment",
           "timeout": 0,
           "tip": "",
@@ -15329,14 +15351,24 @@
         },
         {
           "act": "observe",
-          "anchor": "tr-table",
-          "body": {
-            "en": "The pay role decides the arithmetic from gross to net. Included in another total stops the same money being counted twice. Only an amount can touch net pay.",
-            "vi": "Vai trò trong lương quyết định phép tính từ tổng thu nhập xuống thực nhận. Đã tính trong một tổng khác giúp cùng một khoản tiền không bị tính hai lần. Chỉ số tiền mới được chạm tới thực nhận."
+          "affects": {
+            "en": "Reports use the new role from now on. Payslips already computed keep the old role until you recompute the run.",
+            "vi": "Từ giờ các báo cáo dùng vai trò mới. Các phiếu lương đã tính giữ vai trò cũ cho tới khi bạn tính lại đợt lương."
           },
+          "anchor": "tr-col-role",
+          "body": "",
+          "field": "treatment.pay_role",
           "guard": false,
-          "key": "table",
+          "key": "role",
           "kicker": "",
+          "look": {
+            "en": "The Pay role column. An amber cell still needs your answer.",
+            "vi": "Cột Vai trò trong lương. Một ô màu cam vẫn đang cần câu trả lời của bạn."
+          },
+          "means": {
+            "en": "What the net pay formula does with this component.",
+            "vi": "Công thức lương thực nhận làm gì với thành phần này."
+          },
           "modes": [
             "watch",
             "try"
@@ -15346,21 +15378,81 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Pay role, Included in another total, Value type",
-            "vi": "Vai trò trong lương, Đã tính trong một tổng khác, Loại giá trị"
+            "en": "The pay role decides the arithmetic",
+            "vi": "Vai trò trong lương quyết định phép tính"
+          },
+          "uses": [
+            {
+              "en": "Every payslip line, when payslips are computed",
+              "vi": "Mọi dòng phiếu lương, khi phiếu lương được tính"
+            },
+            {
+              "en": "Payslips made from imported pay data",
+              "vi": "Phiếu lương tạo từ dữ liệu lương được nhập"
+            },
+            {
+              "en": "Pay run totals: Gross, Deductions, Net",
+              "vi": "Tổng của đợt lương: Tổng thu nhập, Khấu trừ, Thực nhận"
+            }
+          ],
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "From now on, reports and run totals count it as a deduction.",
+            "vi": "Từ giờ, báo cáo và tổng của đợt lương tính nó là một khoản khấu trừ."
+          },
+          "anchor": "tr-table",
+          "body": "",
+          "guard": false,
+          "key": "fix",
+          "kicker": "",
+          "look": {
+            "en": "A row that needs your answer, like Loan Installment.",
+            "vi": "Một dòng cần câu trả lời của bạn, như Loan Installment."
+          },
+          "means": {
+            "en": "A loan repayment is money taken from the person's pay.",
+            "vi": "Một khoản trả nợ vay là tiền bị trừ vào lương của người lao động."
+          },
+          "modes": [
+            "watch",
+            "try"
+          ],
+          "nav": "",
+          "press": {
+            "en": "Its Pay role cell, choose Taken off net pay, then press Save.",
+            "vi": "Ô Vai trò trong lương của nó, chọn Trừ khỏi thực nhận, rồi bấm Lưu."
+          },
+          "screen": "treatment",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Answer the row, then Save",
+            "vi": "Trả lời dòng đó, rồi bấm Lưu"
           },
           "value": ""
         },
         {
           "act": "observe",
-          "anchor": "rep-ct-warn",
-          "body": {
-            "en": "The board warns you and offers to set them all to Information only. Hours reach pay through the overtime formula, not by themselves.",
-            "vi": "Bảng sẽ cảnh báo và đề nghị đặt tất cả thành Chỉ để tham khảo. Giờ đi vào lương qua công thức tăng ca, không tự đi vào."
+          "affects": {
+            "en": "Hours reach pay through the overtime formula, not by themselves.",
+            "vi": "Giờ đi vào lương qua công thức tăng ca, không tự đi vào."
           },
+          "anchor": "rep-ct-warn",
+          "body": "",
           "guard": false,
           "key": "warn",
           "kicker": "",
+          "look": {
+            "en": "The amber warning above the table.",
+            "vi": "Cảnh báo màu cam phía trên bảng."
+          },
+          "means": {
+            "en": "Hours are not money. Only an amount can be added to or taken off net pay.",
+            "vi": "Giờ không phải là tiền. Chỉ số tiền mới được cộng vào hoặc trừ khỏi thực nhận."
+          },
           "modes": [
             "try"
           ],
@@ -15376,14 +15468,71 @@
         },
         {
           "act": "observe",
-          "anchor": "",
-          "body": {
-            "en": "Saving never rewrites a payslip. Recompute the pay run, and the \"These figures do not add up\" line goes away when the treatment is right.",
-            "vi": "Lưu không bao giờ viết lại phiếu lương. Hãy tính lại đợt lương, và dòng \"Các số liệu này không khớp\" sẽ biến mất khi cách xử lý đã đúng."
+          "affects": {
+            "en": "Totals start or stop counting this line, so the same money is never counted twice. The line still shows on the payslip. Recompute the run to update payslips already computed.",
+            "vi": "Các tổng bắt đầu hoặc thôi tính dòng này, để cùng một khoản tiền không bao giờ bị tính hai lần. Dòng này vẫn hiện trên phiếu lương. Hãy tính lại đợt lương để cập nhật các phiếu lương đã tính."
           },
+          "anchor": "tr-col-rollup",
+          "body": "",
+          "field": "treatment.rollup",
+          "guard": false,
+          "key": "rollup",
+          "kicker": "",
+          "look": {
+            "en": "The Included in another total column.",
+            "vi": "Cột Đã tính trong một tổng khác."
+          },
+          "means": {
+            "en": "This component is already included in another component of the same kind, so a pay run counts the total and not this line.",
+            "vi": "Thành phần này đã được bao gồm trong một thành phần khác cùng loại, do đó, một kỳ lương sẽ tính tổng chứ không phải dòng này."
+          },
+          "modes": [
+            "watch",
+            "try"
+          ],
+          "nav": "",
+          "screen": "treatment",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Counted once, never twice",
+            "vi": "Chỉ tính một lần, không bao giờ hai lần"
+          },
+          "uses": [
+            {
+              "en": "Every payslip line, when payslips are computed",
+              "vi": "Mọi dòng phiếu lương, khi phiếu lương được tính"
+            },
+            {
+              "en": "Pay run totals: Gross, Deductions, Net",
+              "vi": "Tổng của đợt lương: Tổng thu nhập, Khấu trừ, Thực nhận"
+            },
+            {
+              "en": "Gross, Deductions and Net on every payslip",
+              "vi": "Tổng thu nhập, Khấu trừ và Thực nhận trên mọi phiếu lương"
+            }
+          ],
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "The These figures do not add up line goes away once the treatment is right.",
+            "vi": "Dòng Các số liệu này không khớp sẽ biến mất khi cách xử lý đã đúng."
+          },
+          "anchor": "",
+          "body": "",
           "guard": false,
           "key": "recompute",
           "kicker": "",
+          "look": {
+            "en": "The pay run this scheme pays, on Pay Run › Runs.",
+            "vi": "Đợt lương mà chương trình này trả, ở Đợt lương › Các đợt lương."
+          },
+          "means": {
+            "en": "Saving never rewrites a payslip. A recompute does.",
+            "vi": "Lưu không bao giờ viết lại phiếu lương. Chỉ tính lại mới làm vậy."
+          },
           "modes": [
             "watch",
             "try"
@@ -28512,17 +28661,22 @@
               "visual": "none"
             },
             {
-              "anchor": "lg-drawer",
-              "body": {
-                "en": "A row opens its drawer: basic salary, <b>Unused leave</b> paid out, then social, health and unemployment insurance. Net payable is earnings minus deductions.",
-                "vi": "Một dòng mở ra ngăn chi tiết: lương cơ bản, <b>Phép chưa nghỉ</b> được trả, rồi bảo hiểm xã hội, y tế và thất nghiệp. Thực trả là thu nhập trừ khấu trừ."
+              "affects": {
+                "en": "Net payable is earnings minus deductions. It is the amount the leaver is paid.",
+                "vi": "Thực trả là thu nhập trừ khấu trừ. Đó là số tiền người nghỉ việc được nhận."
               },
+              "anchor": "lg-drawer",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The breakdown",
                 "vi": "Phần chi tiết"
               },
               "lines": [],
+              "look": {
+                "en": "A row's drawer: the earnings first, then the deductions.",
+                "vi": "Ngăn chi tiết của một dòng: thu nhập trước, rồi tới khấu trừ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -28532,6 +28686,20 @@
               "title": {
                 "en": "Earnings less deductions",
                 "vi": "Thu nhập trừ khấu trừ"
+              },
+              "variants": {
+                "VN": {
+                  "means": {
+                    "en": "Basic salary and Unused leave paid out, less social, health and unemployment insurance.",
+                    "vi": "Lương cơ bản và Phép chưa nghỉ được trả, trừ bảo hiểm xã hội, y tế và thất nghiệp."
+                  }
+                },
+                "generic": {
+                  "means": {
+                    "en": "Basic salary and Unused leave paid out, less the employee's share of your country's insurance and tax.",
+                    "vi": "Lương cơ bản và Phép chưa nghỉ được trả, trừ phần người lao động đóng bảo hiểm và thuế của nước bạn."
+                  }
+                }
               },
               "visual": "none"
             },
@@ -31281,56 +31449,61 @@
                 {
                   "correct": false,
                   "feedback": {
-                    "en": "Let's rethink that. There is no version history to fall back on. The old declared rate is simply gone, and so is the record of what the company was declaring while July was being paid. That record is exactly what an inspection asks to see.",
-                    "vi": "Hãy nghĩ lại một chút. Không có lịch sử phiên bản nào để quay lại. Mức đã khai báo trước đó đơn giản là mất, và bằng chứng về mức doanh nghiệp khai báo trong lúc trả lương tháng 7 cũng mất theo. Chính bản ghi đó là thứ đoàn kiểm tra yêu cầu được xem."
+                    "en": "Let's rethink that. There is no version history to fall back on. The old rate is gone, and so is the record of what the company declared while July was paid.",
+                    "vi": "Hãy nghĩ lại một chút. Không có lịch sử phiên bản để quay lại. Tỷ lệ cũ mất đi, và cùng với nó là bằng chứng về những gì công ty đã khai báo khi trả lương tháng 7."
                   },
                   "label": {
                     "en": "Edit the rate on the policy that is in force now",
-                    "vi": "Sửa tỷ lệ ngay trên chính sách đang có hiệu lực"
+                    "vi": "Sửa tỷ lệ trên chính sách đang có hiệu lực"
                   }
                 },
                 {
                   "correct": true,
                   "feedback": {
-                    "en": "Yes. The date records what the decree says, and the old record stays as evidence of what you declared before it. Then the half people forget: the rate that actually prices pay is a parameter on each division's configuration. Somebody has to change that too, before August runs.",
-                    "vi": "Đúng vậy. Ngày hiệu lực ghi đúng những gì nghị định nêu, và bản ghi cũ ở lại làm bằng chứng cho mức bạn đã khai báo trước đó. Rồi tới phần người ta hay quên: tỷ lệ thực sự tính ra tiền là một tham số trong cấu hình của từng bộ phận. Phải có người sửa cả chỗ đó, trước khi tháng 8 chạy lương."
+                    "en": "Yes. The date records what the rule says, and the old record stays as evidence. Then the half people forget: the rate that prices pay is a parameter on each pay scheme.",
+                    "vi": "Đúng vậy. Ngày đó ghi lại đúng quy định, và bản cũ ở lại làm bằng chứng. Rồi đến nửa việc hay bị quên: tỷ lệ tính ra tiền là một tham số của từng chương trình lương."
                   },
                   "label": {
-                    "en": "Create a new policy record dated 01/08, and plan the configuration change with it",
-                    "vi": "Tạo bản ghi chính sách mới ghi ngày 01/08, và lên kế hoạch sửa cấu hình cùng lúc"
+                    "en": "Create a new policy dated 01/08, and plan the pay scheme change with it",
+                    "vi": "Tạo chính sách mới với ngày 01/8, và lên kế hoạch sửa chương trình lương cùng lúc"
                   }
                 },
                 {
                   "correct": false,
                   "feedback": {
-                    "en": "Let's rethink that. The instinct is right and the date is wrong. Today means 20 July, and the decree does not say 20 July. The declaration would then record a legal start the company cannot evidence. Create the record now if you like — put 01/08 in the effective date, and tell whoever is reviewing July that the rates on this screen are next month's.",
-                    "vi": "Hãy nghĩ lại một chút. Ý thức cẩn thận là đúng, chỉ có ngày là sai. Hôm nay là 20/7, mà nghị định không nói 20/7. Bản khai báo sẽ ghi một mốc pháp lý mà doanh nghiệp không chứng minh được. Cứ tạo bản ghi ngay bây giờ cũng được — hãy điền 01/08 vào ngày hiệu lực, và báo cho người đang soát xét tháng 7 rằng tỷ lệ trên màn hình này là của tháng sau."
+                    "en": "Let's rethink that. The instinct is right and the date is wrong. Create the record now if you like, but put 01/08 as its effective date.",
+                    "vi": "Hãy nghĩ lại một chút. Ý định thì đúng nhưng ngày thì sai. Bạn có thể tạo bản ghi ngay, nhưng hãy đặt ngày hiệu lực là 01/8."
                   },
                   "label": {
                     "en": "Create the new policy now with today's date so nothing is forgotten",
-                    "vi": "Tạo chính sách mới ngay hôm nay với ngày hiệu lực là hôm nay cho khỏi quên"
+                    "vi": "Tạo chính sách mới ngay với ngày hôm nay để khỏi quên"
                   }
                 }
               ],
               "prompt": {
-                "en": "A decree raises BHYT's employee share from 1 August. It is 20 July and the July run is still Waiting for approval. What do you do?",
-                "vi": "Một nghị định nâng phần đóng BHYT của người lao động từ 1/8. Hôm nay là 20/7 và đợt lương tháng 7 vẫn đang Chờ phê duyệt. Bạn làm gì?"
+                "en": "A new rule raises the employee's health insurance share from 1 August. It is 20 July and the July run is still Waiting for approval. What do you do?",
+                "vi": "Một quy định mới nâng phần đóng bảo hiểm y tế của người lao động từ 1/8. Hôm nay là 20/7 và đợt lương tháng 7 vẫn đang Chờ phê duyệt. Bạn làm gì?"
               }
             }
           ],
           "steps": [
             {
-              "anchor": "st-kpis",
-              "body": {
-                "en": "This screen holds what the law has already decided: the <b>BHXH</b>, <b>BHYT</b> and <b>BHTN</b> rates, the base they are charged on, and the <b>thuế TNCN</b> table. Your job is not to choose them — it is to keep them current, and to be able to show where each one came from.",
-                "vi": "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ <b>BHXH</b>, <b>BHYT</b>, <b>BHTN</b>, mức lương làm căn cứ đóng, và biểu <b>thuế TNCN</b>. Việc của bạn không phải chọn chúng — mà là giữ chúng luôn đúng hiện hành, và chỉ ra được từng con số đến từ đâu."
+              "affects": {
+                "en": "What the company declares and reports. Your job is to keep it current and show where each figure came from.",
+                "vi": "Những gì công ty khai báo và báo cáo. Việc của bạn là giữ chúng luôn hiện hành và chỉ ra từng con số đến từ đâu."
               },
+              "anchor": "st-kpis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The figures at the top: contributions, the employee and employer shares, policies and tax tables.",
+                "vi": "Các con số ở trên cùng: tiền đóng bảo hiểm, phần người lao động và phần doanh nghiệp, các chính sách và biểu thuế."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -31341,47 +31514,122 @@
                 "en": "You do not invent these numbers",
                 "vi": "Bạn không tự nghĩ ra những con số này"
               },
+              "variants": {
+                "ID": {
+                  "means": {
+                    "en": "This screen holds what the law has decided: the BPJS rates for JHT, pension, accident, death and health, and the PTKP allowances.",
+                    "vi": "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ BPJS cho JHT, hưu trí, tai nạn, tử tuất và y tế, cùng các mức giảm trừ PTKP."
+                  }
+                },
+                "IN": {
+                  "means": {
+                    "en": "This screen holds what the law has decided: the EPF and ESI rates, Professional Tax and the standard deduction.",
+                    "vi": "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ EPF và ESI, Professional Tax và khoản giảm trừ tiêu chuẩn."
+                  }
+                },
+                "SG": {
+                  "means": {
+                    "en": "This screen holds what the law has decided: the CPF ordinary wage ceiling, the CPF rates by age band, and the SDL rate.",
+                    "vi": "Màn hình này lưu những gì pháp luật đã quyết: mức trần lương thường CPF, tỷ lệ CPF theo nhóm tuổi, và tỷ lệ SDL."
+                  }
+                },
+                "VN": {
+                  "means": {
+                    "en": "This screen holds what the law has decided: the BHXH, BHYT and BHTN rates, their base, and the thuế TNCN table.",
+                    "vi": "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ BHXH, BHYT, BHTN, mức căn cứ đóng, và biểu thuế TNCN."
+                  }
+                },
+                "generic": {
+                  "means": {
+                    "en": "This screen holds what the law has decided: your country's insurance rates, their base, and the tax table.",
+                    "vi": "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ bảo hiểm của nước bạn, mức căn cứ đóng, và biểu thuế."
+                  }
+                }
+              },
               "visual": "none"
             },
             {
-              "anchor": "st-rates",
-              "body": {
-                "en": "Each scheme has an <b>employee share</b>, deducted from the payslip, and an <b>employer share</b>, which is a company cost and never appears in anybody's net. BHXH 8% / 17.5% · BHYT 1.5% / 3% · BHTN 1% / 1%. The employee pays 10.5% in total and the company pays 21.5% — twice as much, on top.",
-                "vi": "Mỗi loại bảo hiểm có <b>phần người lao động</b>, khấu trừ trên phiếu lương, và <b>phần doanh nghiệp</b>, là chi phí công ty và không bao giờ xuất hiện trong thực nhận của ai. BHXH 8% / 17,5% · BHYT 1,5% / 3% · BHTN 1% / 1%. Người lao động đóng tổng 10,5% còn doanh nghiệp đóng 21,5% — gấp đôi, và là khoản cộng thêm."
+              "affects": {
+                "en": "The employee's share comes off every payslip. The employer's share is a company cost on top, and never reaches anyone's net pay.",
+                "vi": "Phần người lao động bị trừ trên mọi phiếu lương. Phần doanh nghiệp là chi phí công ty cộng thêm, và không bao giờ vào lương thực nhận của ai."
               },
+              "anchor": "st-rates",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Reading the policy",
                 "vi": "Đọc chính sách"
               },
               "lines": [],
+              "look": {
+                "en": "The rates table: each scheme, its employee share and its employer share.",
+                "vi": "Bảng tỷ lệ: từng loại bảo hiểm, phần người lao động và phần doanh nghiệp."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "statutory",
-              "tip": {
-                "en": "Somebody will tell you they pay a third of their salary in insurance. This table is the answer: they pay 10.5% of the insurance base, and the company pays the rest.",
-                "vi": "Sẽ có người nói với bạn rằng họ đóng cả một phần ba lương cho bảo hiểm. Bảng này chính là câu trả lời: họ đóng 10,5% trên mức lương đóng bảo hiểm, phần còn lại do công ty đóng."
-              },
+              "tip": "",
               "title": {
                 "en": "Who pays what — and the bigger half is not yours",
                 "vi": "Ai đóng bao nhiêu — và phần lớn hơn không phải của bạn"
               },
+              "variants": {
+                "ID": {
+                  "means": {
+                    "en": "Each BPJS programme has an employee share, an employer share, or both. Accident (JKK) and death (JKM) are the company's alone.",
+                    "vi": "Mỗi chương trình BPJS có phần người lao động, phần doanh nghiệp, hoặc cả hai. Tai nạn (JKK) và tử tuất (JKM) do công ty đóng hoàn toàn."
+                  }
+                },
+                "IN": {
+                  "means": {
+                    "en": "EPF and ESI each have an employee share and an employer share. ESI applies only below its eligibility ceiling.",
+                    "vi": "EPF và ESI đều có phần người lao động và phần doanh nghiệp. ESI chỉ áp dụng dưới mức trần đủ điều kiện của nó."
+                  }
+                },
+                "SG": {
+                  "means": {
+                    "en": "CPF has an employee rate and an employer rate for each age band. SDL is paid by the company alone.",
+                    "vi": "CPF có tỷ lệ người lao động và tỷ lệ doanh nghiệp cho từng nhóm tuổi. SDL do công ty đóng hoàn toàn."
+                  }
+                },
+                "VN": {
+                  "means": {
+                    "en": "BHXH 8% / 17.5% · BHYT 1.5% / 3% · BHTN 1% / 1%. The employee pays 10.5% in total and the company pays 21.5%.",
+                    "vi": "BHXH 8% / 17,5% · BHYT 1,5% / 3% · BHTN 1% / 1%. Người lao động đóng tổng 10,5% còn doanh nghiệp đóng 21,5%."
+                  },
+                  "tip": {
+                    "en": "Somebody will say they pay a third of their salary in insurance. They pay 10.5% of the insurance base; the company pays the rest.",
+                    "vi": "Sẽ có người nói họ đóng một phần ba lương cho bảo hiểm. Họ đóng 10,5% trên mức lương đóng bảo hiểm; phần còn lại do công ty đóng."
+                  }
+                },
+                "generic": {
+                  "means": {
+                    "en": "Each insurance has an employee's share, deducted from the payslip, and an employer's share the company pays on top.",
+                    "vi": "Mỗi loại bảo hiểm có phần người lao động, bị trừ trên phiếu lương, và phần doanh nghiệp do công ty đóng thêm."
+                  }
+                }
+              },
               "visual": "none"
             },
             {
-              "anchor": "st-rates",
-              "body": {
-                "en": "Contributions apply to the <b>insurance base</b> — for Mai, the 12,000,000 ₫ in her contract, not her 14,280,000 ₫ gross. They also stop at the ceiling in the last column. Above <b>20,000,000 ₫</b> the deduction does not grow, so two people on very different salaries can pay exactly the same BHXH.",
-                "vi": "Bảo hiểm tính trên <b>mức lương đóng bảo hiểm</b> — với Mai là 12.000.000 ₫ ghi trong hợp đồng, không phải tổng thu nhập 14.280.000 ₫. Nó cũng dừng ở mức trần tại cột cuối. Trên <b>20.000.000 ₫</b> thì khoản khấu trừ không tăng nữa, nên hai người lương rất khác nhau vẫn có thể đóng BHXH bằng nhau."
+              "affects": {
+                "en": "Two people on very different salaries can pay exactly the same contribution.",
+                "vi": "Hai người lương rất khác nhau vẫn có thể đóng bảo hiểm bằng nhau."
               },
+              "anchor": "st-rates",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The base & the ceiling",
                 "vi": "Mức đóng & trần"
               },
               "lines": [],
+              "look": {
+                "en": "The ceiling, in the last column of the rates table.",
+                "vi": "Mức trần, ở cột cuối của bảng tỷ lệ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -31392,41 +31640,110 @@
                 "en": "Charged on the registered base, up to a ceiling",
                 "vi": "Tính trên mức đã đăng ký, tới một mức trần"
               },
+              "variants": {
+                "ID": {
+                  "means": {
+                    "en": "Pension (JP) and health contributions stop at their salary caps. Above the cap the deduction stops growing.",
+                    "vi": "Đóng hưu trí (JP) và y tế dừng ở mức trần lương của chúng. Trên mức trần, khoản khấu trừ không tăng nữa."
+                  }
+                },
+                "IN": {
+                  "means": {
+                    "en": "EPF is charged on wages up to the EPF wage ceiling. Above it the deduction stops growing.",
+                    "vi": "EPF được tính trên tiền lương tới mức trần lương EPF. Trên mức đó, khoản khấu trừ không tăng nữa."
+                  }
+                },
+                "SG": {
+                  "means": {
+                    "en": "CPF is charged on ordinary wages up to the CPF ordinary wage ceiling. Above it the contribution stops growing.",
+                    "vi": "CPF được tính trên lương thường tới mức trần lương thường CPF. Trên mức đó, khoản đóng không tăng nữa."
+                  }
+                },
+                "VN": {
+                  "means": {
+                    "en": "Contributions apply to the insurance base in the contract, not to gross pay. Above 20,000,000 ₫ the deduction stops growing.",
+                    "vi": "Bảo hiểm tính trên mức lương đóng bảo hiểm trong hợp đồng, không phải tổng thu nhập. Trên 20.000.000 ₫ khoản khấu trừ không tăng nữa."
+                  }
+                },
+                "generic": {
+                  "means": {
+                    "en": "Contributions are charged on the insurance base, not always on gross pay, and stop at a ceiling.",
+                    "vi": "Bảo hiểm được tính trên mức căn cứ đóng, không phải lúc nào cũng trên tổng thu nhập, và dừng ở một mức trần."
+                  }
+                }
+              },
               "visual": "none"
             },
             {
-              "anchor": "st-slabs",
-              "body": {
-                "en": "Taxable income is gross <b>less insurance</b>, less <b>11,000,000 ₫</b> for yourself and <b>4,400,000 ₫</b> per dependant. Mai: 14,280,000 − 1,260,000 − 11,000,000 = <b>2,020,000 ₫</b>, which sits entirely in the 5% band, so her tax is <b>101,000 ₫</b>. The bands only bite further up.",
-                "vi": "Thu nhập chịu thuế là tổng thu nhập <b>trừ bảo hiểm</b>, trừ <b>11.000.000 ₫</b> giảm trừ bản thân và <b>4.400.000 ₫</b> mỗi người phụ thuộc. Với Mai: 14.280.000 − 1.260.000 − 11.000.000 = <b>2.020.000 ₫</b>, nằm trọn trong bậc 5%, nên thuế là <b>101.000 ₫</b>. Các bậc cao chỉ ảnh hưởng khi thu nhập lớn hơn nhiều."
+              "affects": {
+                "en": "A rise near the bottom of the table costs little tax. The higher bands only bite further up.",
+                "vi": "Một khoản tăng ở bậc thấp chỉ tốn ít thuế. Các bậc cao chỉ áp dụng khi thu nhập lớn hơn nhiều."
               },
+              "anchor": "st-slabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The tax table",
                 "vi": "Biểu thuế"
               },
               "lines": [],
+              "look": {
+                "en": "The tax table, band by band.",
+                "vi": "Biểu thuế, từng bậc một."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "statutory",
-              "tip": {
-                "en": "Insurance comes off BEFORE the deductions, which is why a rise in a contribution rate always costs a little less net than it costs in contribution.",
-                "vi": "Bảo hiểm được trừ TRƯỚC các khoản giảm trừ, nên khi một tỷ lệ đóng tăng, phần thực nhận mất đi luôn nhỏ hơn phần đóng thêm một chút."
-              },
+              "tip": "",
               "title": {
-                "en": "PIT is progressive, and kind at the bottom",
-                "vi": "Thuế TNCN luỹ tiến, và nhẹ ở bậc thấp"
+                "en": "Income tax goes up in steps",
+                "vi": "Thuế thu nhập tăng theo từng bậc"
+              },
+              "variants": {
+                "ID": {
+                  "means": {
+                    "en": "Taxable income is pay less the occupational cost allowance and PTKP, the allowance for yourself and your dependants.",
+                    "vi": "Thu nhập chịu thuế là tiền lương trừ khoản chi phí nghề nghiệp và PTKP, mức giảm trừ cho bản thân và người phụ thuộc."
+                  }
+                },
+                "IN": {
+                  "means": {
+                    "en": "Taxable income is pay less the standard deduction. The 87A rebate removes the tax below its income threshold.",
+                    "vi": "Thu nhập chịu thuế là tiền lương trừ khoản giảm trừ tiêu chuẩn. Khoản hoàn 87A xoá thuế dưới ngưỡng thu nhập của nó."
+                  }
+                },
+                "VN": {
+                  "affects": {
+                    "en": "Mai's 2,020,000 ₫ sits in the 5% band, so her thuế TNCN is 101,000 ₫. The higher bands only bite further up.",
+                    "vi": "2.020.000 ₫ của Mai nằm trong bậc 5%, nên thuế TNCN của cô ấy là 101.000 ₫. Các bậc cao chỉ áp dụng khi thu nhập lớn hơn nhiều."
+                  },
+                  "means": {
+                    "en": "Taxable income is gross less insurance, less 11,000,000 ₫ for yourself and 4,400,000 ₫ per dependant.",
+                    "vi": "Thu nhập chịu thuế là tổng thu nhập trừ bảo hiểm, trừ 11.000.000 ₫ giảm trừ bản thân và 4.400.000 ₫ mỗi người phụ thuộc."
+                  },
+                  "tip": {
+                    "en": "Insurance comes off before the allowances, so a higher contribution rate costs a little less net than it costs in contribution.",
+                    "vi": "Bảo hiểm được trừ trước các khoản giảm trừ, nên khi tỷ lệ đóng tăng, phần thực nhận mất đi nhỏ hơn phần đóng thêm một chút."
+                  }
+                },
+                "generic": {
+                  "means": {
+                    "en": "Taxable income is pay less what the law lets you take off first. The bands then tax it step by step.",
+                    "vi": "Thu nhập chịu thuế là tiền lương trừ những gì luật cho phép trừ trước. Sau đó các bậc tính thuế theo từng bước."
+                  }
+                }
               },
               "visual": "none"
             },
             {
-              "anchor": "st-rates",
-              "body": {
-                "en": "The <b>1.5%</b> on the BHYT row is what the company <b>declares</b>. The <b>−180,000 ₫</b> on Mai's July slip is what her division's configuration actually <b>charged</b> — 1.5% of her registered base of 12,000,000 ₫. Today they agree, and this line is how you check that. They are two records, though: editing the rate here would not move that đồng by itself.",
-                "vi": "Con số <b>1,5%</b> ở dòng BHYT là mức doanh nghiệp <b>khai báo</b>. Khoản <b>−180.000 ₫</b> trên phiếu tháng 7 của Mai là mức mà cấu hình của bộ phận cô ấy <b>đã tính</b> — 1,5% trên mức đóng đã đăng ký 12.000.000 ₫. Hôm nay hai bên khớp nhau, và đường nối này chính là cách bạn kiểm tra điều đó. Nhưng đây là hai bản ghi khác nhau: chỉ sửa tỷ lệ ở đây thì đồng bạc kia không nhúc nhích."
+              "affects": {
+                "en": "They are two records. Editing the rate here does not move a payslip by itself.",
+                "vi": "Đây là hai bản ghi khác nhau. Chỉ sửa tỷ lệ ở đây thì không phiếu lương nào thay đổi."
               },
+              "anchor": "st-rates",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The connection",
@@ -31438,36 +31755,72 @@
               "moment_to": "rep-slipline",
               "moment_which": "",
               "screen": "statutory",
-              "tip": {
-                "en": "The number that priced that line is a parameter on Retail's configuration — <b>EEHI</b>, at the bottom of the component list in Formula Engine. That is where a rate actually moves a payslip.",
-                "vi": "Con số đã tính ra dòng đó là một tham số trong cấu hình của Bán lẻ — <b>EEHI</b>, nằm cuối danh sách thành phần trong Công thức lương. Đó mới là nơi một tỷ lệ thật sự làm thay đổi phiếu lương."
-              },
+              "tip": "",
               "title": {
                 "en": "Check the declared rate against the charged one",
                 "vi": "Đối chiếu tỷ lệ khai báo với tỷ lệ đã tính"
               },
+              "variants": {
+                "VN": {
+                  "look": {
+                    "en": "The 1.5% employee share on the BHYT row.",
+                    "vi": "Phần người lao động 1,5% ở dòng BHYT."
+                  },
+                  "means": {
+                    "en": "That 1.5% is what the company declares. The −180,000 ₫ on Mai's July payslip is what her pay scheme charged.",
+                    "vi": "1,5% đó là mức doanh nghiệp khai báo. Khoản −180.000 ₫ trên phiếu lương tháng 7 của Mai là mức chương trình lương của cô ấy đã tính."
+                  },
+                  "tip": {
+                    "en": "The number that priced that line is EEHI, a parameter at the bottom of the component list in Formula Engine.",
+                    "vi": "Con số đã tính ra dòng đó là EEHI, một tham số ở cuối danh sách thành phần trong Công thức lương."
+                  }
+                },
+                "generic": {
+                  "look": {
+                    "en": "An employee share in the rates table.",
+                    "vi": "Một phần người lao động trong bảng tỷ lệ."
+                  },
+                  "means": {
+                    "en": "The rate here is what the company declares. The amount on a payslip is what the pay scheme charged.",
+                    "vi": "Tỷ lệ ở đây là mức doanh nghiệp khai báo. Số tiền trên phiếu lương là mức chương trình lương đã tính."
+                  },
+                  "tip": {
+                    "en": "The rate that prices a payslip line is a parameter on the pay scheme, in Formula Engine.",
+                    "vi": "Tỷ lệ tính ra một dòng phiếu lương là một tham số của chương trình lương, trong Công thức lương."
+                  }
+                }
+              },
               "visual": "trace"
             },
             {
-              "anchor": "st-roster",
-              "body": {
-                "en": "There is <b>no version history</b> on a policy. When a decree changes a rate, you create a <b>new policy record</b> with its own code and its own <b>effective date</b>. Codes are unique per company. The old record stays as the evidence of what you declared before it. Archiving that record takes it off this list, so the list shows live declarations rather than the whole history.",
-                "vi": "Chính sách <b>không có lịch sử phiên bản</b>. Khi một nghị định thay đổi tỷ lệ, bạn tạo một <b>bản ghi chính sách mới</b> với mã riêng và <b>ngày hiệu lực</b> riêng. Mã là duy nhất trong mỗi công ty. Bản cũ ở lại làm bằng chứng cho mức bạn đã khai báo trước đó. Lưu trữ bản đó sẽ đưa nó ra khỏi danh sách này, nên danh sách ở đây là các bản khai báo còn hiệu lực chứ không phải toàn bộ lịch sử."
+              "affects": {
+                "en": "The old record stays as the evidence of what you declared before it.",
+                "vi": "Bản ghi cũ ở lại làm bằng chứng cho mức bạn đã khai báo trước đó."
               },
+              "anchor": "st-roster",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The mechanics",
                 "vi": "Cơ chế thật"
               },
               "lines": [],
+              "look": {
+                "en": "The policy list, one row per declaration.",
+                "vi": "Danh sách chính sách, mỗi dòng là một lần khai báo."
+              },
+              "means": {
+                "en": "A policy has no version history. A rate change is a new policy with its own code and effective date.",
+                "vi": "Chính sách không có lịch sử phiên bản. Đổi tỷ lệ là tạo một chính sách mới với mã và ngày hiệu lực riêng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "statutory",
               "tip": {
-                "en": "The rates table above shows the ACTIVE policy with the latest effective date. It does not compare that date to today, and it does not read the end date. So a policy dated from next month is displayed the moment you save it.",
-                "vi": "Bảng tỷ lệ ở trên hiển thị chính sách đang BẬT có ngày hiệu lực mới nhất. Nó không so ngày đó với hôm nay, và cũng không đọc ngày kết thúc. Nên một chính sách ghi hiệu lực từ tháng sau sẽ hiển thị ngay khi bạn vừa lưu."
+                "en": "The rates table shows the active policy with the latest effective date, even one dated next month.",
+                "vi": "Bảng tỷ lệ hiển thị chính sách đang bật có ngày hiệu lực mới nhất, kể cả khi ngày đó là tháng sau."
               },
               "title": {
                 "en": "A rate change is a new record, not an edit",
@@ -31476,24 +31829,37 @@
               "visual": "none"
             },
             {
-              "anchor": "st-new",
-              "body": {
-                "en": "Saving a new policy changes what this screen, the contribution analytics and the statutory reports say. It changes <b>no payslip</b>. The rate that prices pay is a parameter on each division's formula configuration. So a rate change is two pieces of work: declare it here, and change it there. Until both are done, the two disagree — and this screen, not the payslip, is telling the truth about what the company intends.",
-                "vi": "Lưu một chính sách mới sẽ thay đổi những gì màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc nói ra. Nó không làm thay đổi <b>một phiếu lương nào</b>. Tỷ lệ tính ra tiền là một tham số trong cấu hình công thức của từng bộ phận. Nên đổi tỷ lệ là hai phần việc: khai báo ở đây, và sửa ở đó. Khi chưa làm đủ cả hai thì hai bên còn lệch — và chính màn hình này, chứ không phải phiếu lương, mới nói đúng điều doanh nghiệp muốn."
+              "affects": {
+                "en": "The rate that prices pay is a parameter on each pay scheme, so change it there too.",
+                "vi": "Tỷ lệ tính ra tiền là một tham số của từng chương trình lương, nên hãy sửa cả ở đó."
               },
+              "anchor": "st-new",
+              "body": "",
               "consequence": {
-                "en": "Affects what is <b>declared and reported</b>, company-wide: this cockpit, the contribution analytics and the statutory reports. It does not reprice a single payslip on its own. Reversible: <b>yes</b> — archive the record and the previous declaration is displayed again, because nothing downstream has been recomputed from it. Verify first: that you know which configurations have to change too, and who is going to change them.",
-                "vi": "Ảnh hưởng tới phần <b>khai báo và báo cáo</b> trên toàn công ty: màn hình này, phần phân tích chi phí bảo hiểm và các báo cáo bắt buộc. Tự nó không tính lại một phiếu lương nào. Hoàn tác: <b>được</b> — lưu trữ bản ghi là bản khai báo trước đó hiển thị trở lại, vì chưa có gì phía sau được tính lại từ nó. Kiểm tra trước: bạn đã biết những cấu hình nào cũng phải sửa, và ai sẽ sửa chúng."
+                "en": "Affects what is declared and reported, company-wide. It does not reprice a single payslip on its own. Reversible: yes — archive the record and the previous declaration shows again. Verify first: which pay schemes have to change too, and who will change them.",
+                "vi": "Ảnh hưởng tới phần khai báo và báo cáo trên toàn công ty. Tự nó không tính lại phiếu lương nào. Hoàn tác: được — lưu trữ bản ghi là bản khai báo trước đó hiển thị lại. Kiểm tra trước: những chương trình lương nào cũng phải sửa, và ai sẽ sửa."
               },
               "kicker": {
                 "en": "Before you act",
                 "vi": "Trước khi thao tác"
               },
               "lines": [],
+              "look": {
+                "en": "The Insurance policy button, top right.",
+                "vi": "Nút Chính sách bảo hiểm, góc trên bên phải."
+              },
+              "means": {
+                "en": "Saving a policy changes what this screen and the statutory reports say. It changes no payslip.",
+                "vi": "Lưu một chính sách sẽ thay đổi những gì màn hình này và các báo cáo bắt buộc nói. Nó không thay đổi phiếu lương nào."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Insurance policy, and give it the date the new rule starts.",
+                "vi": "Chính sách bảo hiểm, và đặt ngày quy định mới bắt đầu."
+              },
               "screen": "statutory",
               "tip": "",
               "title": {
@@ -31504,10 +31870,7 @@
             },
             {
               "anchor": "rep-slipline",
-              "body": {
-                "en": "Say BHYT's employee share went from 1.5% to 2.0%. Mai's deduction grows 60,000 ₫, and her net falls <b>57,000 ₫</b> — not 60,000. Insurance comes off before tax, so her thuế TNCN falls 3,000 with it. Toggle the two sides and read which lines move.",
-                "vi": "Giả sử phần người lao động của BHYT tăng từ 1,5% lên 2,0%. Khoản khấu trừ của Mai tăng 60.000 ₫, còn thực nhận giảm <b>57.000 ₫</b> — không phải 60.000. Bảo hiểm được trừ trước khi tính thuế, nên thuế TNCN của cô ấy giảm theo 3.000. Hãy chuyển qua lại hai bên và xem những dòng nào thay đổi."
-              },
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Before & after",
@@ -31560,6 +31923,10 @@
                   "value": "delta"
                 }
               ],
+              "look": {
+                "en": "One person's payslip, before and after a rate change.",
+                "vi": "Phiếu lương của một người, trước và sau khi đổi tỷ lệ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -31569,6 +31936,28 @@
               "title": {
                 "en": "What half a percentage point costs",
                 "vi": "Nửa điểm phần trăm đáng giá bao nhiêu"
+              },
+              "variants": {
+                "VN": {
+                  "affects": {
+                    "en": "Insurance comes off before tax, so her thuế TNCN falls 3,000 ₫ with it.",
+                    "vi": "Bảo hiểm được trừ trước khi tính thuế, nên thuế TNCN của cô ấy giảm theo 3.000 ₫."
+                  },
+                  "means": {
+                    "en": "Say BHYT's employee share rose from 1.5% to 2.0%. Mai's deduction grows 60,000 ₫ and her net falls 57,000 ₫.",
+                    "vi": "Giả sử phần người lao động của BHYT tăng từ 1,5% lên 2,0%. Khoản khấu trừ của Mai tăng 60.000 ₫ và thực nhận giảm 57.000 ₫."
+                  }
+                },
+                "generic": {
+                  "affects": {
+                    "en": "Where tax is worked out after insurance, net pay falls a little less than the deduction grows.",
+                    "vi": "Ở nơi thuế được tính sau bảo hiểm, lương thực nhận giảm ít hơn một chút so với khoản khấu trừ tăng."
+                  },
+                  "means": {
+                    "en": "When an employee's share rises, their deduction grows by that share of their insurance base.",
+                    "vi": "Khi phần người lao động tăng, khoản khấu trừ của họ tăng theo phần đó trên mức căn cứ đóng."
+                  }
+                }
               },
               "visual": "morph"
             }
@@ -32643,95 +33032,172 @@
           ],
           "steps": [
             {
-              "anchor": "tr-head",
-              "body": {
-                "en": "Mapping › <b>Component treatment</b>. Set once per component, it holds however the value arrives. It belongs to the scheme, so a change affects every run of it. <b>Re-classify from the formulas</b> works the answers out again and leaves rows you set yourself alone.",
-                "vi": "Ánh xạ › <b>Xử lý thành phần</b>. Đặt một lần cho mỗi thành phần, và giữ nguyên dù giá trị đến bằng đường nào. Nó thuộc về chương trình lương, nên một thay đổi ảnh hưởng mọi đợt lương của chương trình đó. <b>Phân loại lại từ các công thức</b> tính lại các câu trả lời và để nguyên những dòng bạn tự đặt."
+              "affects": {
+                "en": "Run totals, every payslip and the bank file count it the way you answer.",
+                "vi": "Tổng của đợt lương, mọi phiếu lương và tệp ngân hàng đều tính nó theo câu trả lời của bạn."
               },
-              "consequence": "",
-              "kicker": {
-                "en": "What & why",
-                "vi": "Là gì & vì sao"
-              },
-              "lines": [],
-              "moment_chain": "",
-              "moment_from": "",
-              "moment_to": "",
-              "moment_which": "",
-              "screen": "treatment",
-              "tip": "",
-              "title": {
-                "en": "One board per scheme, for every run",
-                "vi": "Mỗi chương trình một bảng, cho mọi đợt lương"
-              },
-              "visual": "none"
-            },
-            {
-              "anchor": "tr-table",
-              "body": {
-                "en": "<b>Added to net pay</b>, <b>Taken off net pay</b>, <b>Net pay itself</b>, <b>Employer cost</b>, <b>Information only</b>, or <b>Both added and taken off</b>. Gross, deductions and net on every report are counted from this column.",
-                "vi": "<b>Cộng vào thực nhận</b>, <b>Trừ khỏi thực nhận</b>, <b>Chính là thực nhận</b>, <b>Chi phí doanh nghiệp</b>, <b>Chỉ để tham khảo</b>, hoặc <b>Vừa cộng vừa trừ</b>. Tổng thu nhập, khấu trừ và thực nhận trên mọi báo cáo đều được đếm từ cột này."
-              },
+              "anchor": "tr-col-role",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Pay role",
                 "vi": "Vai trò trong lương"
               },
               "lines": [],
+              "look": {
+                "en": "The amber cell in the Pay role column, on a row like Loan Installment.",
+                "vi": "Ô màu cam ở cột Vai trò trong lương, trên một dòng như Loan Installment."
+              },
+              "means": {
+                "en": "The formulas could not tell whether this component reaches net pay, so the board asks you.",
+                "vi": "Các công thức không xác định được thành phần này có đi tới lương thực nhận hay không, nên bảng hỏi bạn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The amber cell, then choose Taken off net pay for a loan repayment.",
+                "vi": "Ô màu cam, rồi chọn Trừ khỏi thực nhận cho một khoản trả nợ vay."
+              },
               "screen": "treatment",
               "tip": "",
               "title": {
-                "en": "The pay role decides the arithmetic",
-                "vi": "Vai trò trong lương quyết định phép tính"
+                "en": "An amber cell is a question for you",
+                "vi": "Một ô màu cam là một câu hỏi dành cho bạn"
               },
               "visual": "none"
             },
             {
-              "anchor": "tr-table",
-              "body": {
-                "en": "Gross income is base salary plus allowances plus overtime. Those are already added, so gross carries a tick under <b>Included in another total</b>. Without it, the totals would count the same money twice.",
-                "vi": "Tổng thu nhập là lương cơ bản cộng phụ cấp cộng tăng ca. Những khoản đó đã được cộng rồi, nên tổng thu nhập có dấu tích ở cột <b>Đã tính trong một tổng khác</b>. Không có dấu đó, các tổng sẽ tính cùng một khoản tiền hai lần."
+              "affects": {
+                "en": "Totals start or stop counting this line, so the same money is never counted twice. The line still shows on the payslip. Recompute the run to update payslips already computed.",
+                "vi": "Các tổng bắt đầu hoặc thôi tính dòng này, để cùng một khoản tiền không bao giờ bị tính hai lần. Dòng này vẫn hiện trên phiếu lương. Hãy tính lại đợt lương để cập nhật các phiếu lương đã tính."
               },
+              "anchor": "tr-col-rollup",
+              "body": "",
               "consequence": "",
+              "field": "treatment.rollup",
               "kicker": {
                 "en": "Included in another total",
                 "vi": "Đã tính trong một tổng khác"
               },
               "lines": [],
+              "look": {
+                "en": "The Included in another total column. Gross income carries a tick there.",
+                "vi": "Cột Đã tính trong một tổng khác. Tổng thu nhập có một dấu tích ở đó."
+              },
+              "means": {
+                "en": "This component is already included in another component of the same kind, so a pay run counts the total and not this line.",
+                "vi": "Thành phần này đã được bao gồm trong một thành phần khác cùng loại, do đó, một kỳ lương sẽ tính tổng chứ không phải dòng này."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A tick to add or clear it on that row.",
+                "vi": "Một dấu tích để thêm hoặc bỏ nó trên dòng đó."
+              },
               "screen": "treatment",
               "tip": "",
               "title": {
                 "en": "Some lines are already inside another line",
                 "vi": "Có những dòng đã nằm sẵn trong một dòng khác"
               },
+              "uses": [
+                {
+                  "en": "Every payslip line, when payslips are computed",
+                  "vi": "Mọi dòng phiếu lương, khi phiếu lương được tính"
+                },
+                {
+                  "en": "Pay run totals: Gross, Deductions, Net",
+                  "vi": "Tổng của đợt lương: Tổng thu nhập, Khấu trừ, Thực nhận"
+                },
+                {
+                  "en": "Gross, Deductions and Net on every payslip",
+                  "vi": "Tổng thu nhập, Khấu trừ và Thực nhận trên mọi phiếu lương"
+                }
+              ],
               "visual": "none"
             },
             {
-              "anchor": "rep-ct-warn",
-              "body": {
-                "en": "A <b>value type</b> says what a value is: an amount, a quantity like hours or days, a percentage, text or a date. Only an amount can be added to or taken off net pay. When a quantity is set to add to net pay, the board warns you and offers <b>Set all of them to Information only</b>.",
-                "vi": "<b>Loại giá trị</b> cho biết một giá trị là gì: số tiền, số lượng như giờ hoặc ngày, phần trăm, chữ hay ngày tháng. Chỉ số tiền mới được cộng vào hoặc trừ khỏi thực nhận. Khi một số lượng được đặt để cộng vào thực nhận, bảng sẽ cảnh báo và đề nghị <b>Đặt tất cả thành Chỉ để tham khảo</b>."
+              "affects": {
+                "en": "New values are read the new way. Values already stored on payslips stay as they were until you recompute the run. Choosing a type that is not an amount sets its pay role to Information only.",
+                "vi": "Các giá trị mới được đọc theo cách mới. Các giá trị đã lưu trên phiếu lương giữ nguyên cho tới khi bạn tính lại đợt lương. Chọn một loại không phải số tiền sẽ đặt vai trò trong lương của nó thành Chỉ để tham khảo."
               },
+              "anchor": "tr-col-kind",
+              "body": "",
               "consequence": "",
+              "field": "treatment.value_kind",
               "kicker": {
                 "en": "Value type",
                 "vi": "Loại giá trị"
               },
               "lines": [],
+              "look": {
+                "en": "The Value type column, beside the pay role.",
+                "vi": "Cột Loại giá trị, bên cạnh vai trò trong lương."
+              },
+              "means": {
+                "en": "What this component's value IS.",
+                "vi": "Giá trị của thành phần này LÀ gì."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "treatment",
               "tip": "",
+              "title": {
+                "en": "Amount, quantity, percentage, text or date",
+                "vi": "Số tiền, số lượng, phần trăm, chữ hay ngày tháng"
+              },
+              "uses": [
+                {
+                  "en": "Which components become payslip lines",
+                  "vi": "Thành phần nào trở thành dòng phiếu lương"
+                },
+                {
+                  "en": "Reading the month's spreadsheet",
+                  "vi": "Đọc bảng tính của tháng"
+                },
+                {
+                  "en": "Payslips made from imported pay data",
+                  "vi": "Phiếu lương tạo từ dữ liệu lương được nhập"
+                }
+              ],
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Left as it is, twelve hours would add twelve đồng to net pay.",
+                "vi": "Nếu để nguyên, mười hai giờ sẽ cộng mười hai đồng vào thực nhận."
+              },
+              "anchor": "rep-ct-warn",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Value type",
+                "vi": "Loại giá trị"
+              },
+              "lines": [],
+              "look": {
+                "en": "The amber warning above the table, when hours are set to add to net pay.",
+                "vi": "Cảnh báo màu cam phía trên bảng, khi số giờ được đặt để cộng vào thực nhận."
+              },
+              "means": {
+                "en": "Only an amount can be added to or taken off net pay. Hours reach pay through the overtime formula.",
+                "vi": "Chỉ số tiền mới được cộng vào hoặc trừ khỏi thực nhận. Số giờ đi vào lương qua công thức tăng ca."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "treatment",
+              "tip": {
+                "en": "Set all of them to Information only fixes every such row at once.",
+                "vi": "Đặt tất cả thành Chỉ để tham khảo sẽ sửa mọi dòng như vậy cùng một lúc."
+              },
               "title": {
                 "en": "Hours are not money",
                 "vi": "Giờ không phải là tiền"
@@ -32739,38 +33205,89 @@
               "visual": "none"
             },
             {
-              "anchor": "tr-filters",
-              "body": {
-                "en": "The chips count what to look at. <b>Needs your answer</b> is a component with no pay role yet — a new column from a spreadsheet, say. <b>Type says otherwise</b> is a pay role the value type disagrees with.",
-                "vi": "Các nhãn đếm những gì cần xem. <b>Cần câu trả lời của bạn</b> là thành phần chưa có vai trò trong lương — chẳng hạn một cột mới từ bảng tính. <b>Loại giá trị nói khác</b> là một vai trò mà loại giá trị không khớp."
+              "affects": {
+                "en": "Nothing changes until you answer the row and press Save.",
+                "vi": "Không có gì thay đổi cho tới khi bạn trả lời dòng đó và bấm Lưu."
               },
+              "anchor": "tr-filters",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What needs you",
                 "vi": "Những gì cần bạn"
               },
               "lines": [],
+              "look": {
+                "en": "The chips above the table: Needs your answer and Type says otherwise.",
+                "vi": "Các nhãn phía trên bảng: Cần câu trả lời của bạn và Loại giá trị nói khác."
+              },
+              "means": {
+                "en": "Needs your answer is a row with no pay role yet. Type says otherwise is a pay role its value type disagrees with.",
+                "vi": "Cần câu trả lời của bạn là dòng chưa có vai trò trong lương. Loại giá trị nói khác là vai trò mà loại giá trị không khớp."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Needs your answer, to see only the rows waiting for you.",
+                "vi": "Cần câu trả lời của bạn, để chỉ xem những dòng đang chờ bạn."
+              },
               "screen": "treatment",
               "tip": {
-                "en": "After an Excel workbook is imported, the same questions come up in a review window before the scheme is used.",
-                "vi": "Sau khi nhập một sổ tính Excel, cũng những câu hỏi này hiện ra trong một cửa sổ xem lại trước khi chương trình được dùng."
+                "en": "After an Excel workbook is imported, the same questions come up in a review window first.",
+                "vi": "Sau khi nhập một sổ tính Excel, cũng những câu hỏi này hiện ra trước trong một cửa sổ xem lại."
               },
               "title": {
-                "en": "Needs your answer, and Type says otherwise",
-                "vi": "Cần câu trả lời của bạn, và Loại giá trị nói khác"
+                "en": "The chips count what to look at",
+                "vi": "Các nhãn đếm những gì cần xem"
               },
               "visual": "none"
             },
             {
-              "anchor": "tr-head",
-              "body": {
-                "en": "When gross less deductions is not take-home pay, the pay run shows that line with the gap. Almost always a component is treated wrongly. Fix it here, save, then <b>recompute the run</b>.",
-                "vi": "Khi tổng thu nhập trừ khấu trừ không bằng thực nhận, đợt lương hiện dòng đó kèm khoản chênh. Gần như luôn là một thành phần bị xử lý sai. Hãy sửa ở đây, lưu, rồi <b>tính lại đợt lương</b>."
+              "affects": {
+                "en": "Only where a component is shown changes. No amount changes.",
+                "vi": "Chỉ nơi thành phần được hiển thị thay đổi. Không số tiền nào thay đổi."
               },
+              "anchor": "tr-col-group",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Report group",
+                "vi": "Nhóm báo cáo"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Report group column. Its grey hint says whether you set it.",
+                "vi": "Cột Nhóm báo cáo. Gợi ý màu xám cho biết bạn có tự đặt nó hay không."
+              },
+              "means": {
+                "en": "It sorts components on screens and reports, such as Earnings or Deductions. It follows the pay role unless you type one.",
+                "vi": "Nó sắp xếp các thành phần trên màn hình và báo cáo, như Thu nhập hoặc Khấu trừ. Nó theo vai trò trong lương trừ khi bạn tự gõ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "A Report group cell, to type one of your own.",
+                "vi": "Một ô Nhóm báo cáo, để tự gõ một nhóm."
+              },
+              "screen": "treatment",
+              "tip": "",
+              "title": {
+                "en": "Where a component sits on screens and reports",
+                "vi": "Thành phần nằm ở đâu trên màn hình và báo cáo"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "A run that said These figures do not add up stays wrong until you recompute it.",
+                "vi": "Một đợt lương báo Các số liệu này không khớp vẫn sai cho tới khi bạn tính lại."
+              },
+              "anchor": "tr-save",
+              "body": "",
               "consequence": {
                 "en": "Affects every run of this scheme, past and future, once recomputed. Reversible: yes — change the row back. Verify first: saving never rewrites a payslip; only a recompute does.",
                 "vi": "Ảnh hưởng: mọi đợt lương của chương trình, cũ và mới, khi được tính lại. Hoàn tác: có — đổi dòng đó lại. Kiểm tra trước: lưu không bao giờ viết lại phiếu lương; chỉ tính lại mới làm vậy."
@@ -32780,15 +33297,27 @@
                 "vi": "Cảnh báo của đợt lương"
               },
               "lines": [],
+              "look": {
+                "en": "The Save button. It counts the rows you changed.",
+                "vi": "Nút Lưu. Nó đếm số dòng bạn đã thay đổi."
+              },
+              "means": {
+                "en": "Saving changes the pay scheme. It never rewrites a payslip already computed.",
+                "vi": "Lưu sẽ thay đổi chương trình lương. Nó không bao giờ viết lại một phiếu lương đã tính."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Save, then open the pay run and recompute it.",
+                "vi": "Lưu, rồi mở đợt lương và tính lại."
+              },
               "screen": "treatment",
               "tip": "",
               "title": {
-                "en": "\"These figures do not add up\" sends you here",
-                "vi": "\"Các số liệu này không khớp\" đưa bạn tới đây"
+                "en": "Save, then recompute the pay run",
+                "vi": "Lưu, rồi tính lại đợt lương"
               },
               "visual": "none"
             }
@@ -34754,5 +35283,5 @@
       }
     }
   ],
-  "version": "b9e876576359"
+  "version": "754e7a00fddc"
 }

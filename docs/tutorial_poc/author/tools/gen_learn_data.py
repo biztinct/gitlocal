@@ -741,7 +741,7 @@ def _shape_problems(where, holder, anchor, product, problems):
     # A line may sit on the step itself or on its generic variant (the one
     # every country without its own reads).
     generic = variants.get('generic') or {}
-    if en_of(holder.get('look')) and not (
+    if (en_of(holder.get('look')) or en_of(generic.get('look'))) and not (
             (en_of(holder.get('means')) or en_of(generic.get('means')))
             and (en_of(holder.get('affects')) or en_of(generic.get('affects')))):
         problems.append('%s: a step with "look" must also say "means" and '
@@ -806,7 +806,8 @@ def content_lesson(lkey, lesson, data, bi, product=None, problems=None):
     for i, step in enumerate(lesson['steps']):
         sw = '%s step %d' % (where, i)
         moment = step.get('moment') or {}
-        if not en_of(step.get('body')) and not en_of(step.get('look')):
+        generic_look = ((step.get('variants') or {}).get('generic') or {}).get('look')
+        if not en_of(step.get('body')) and not en_of(step.get('look')) and not en_of(generic_look):
             problems.append('%s: neither a body nor the four lines' % sw)
         _shape_problems(sw, step, step.get('anchor') or '', product, problems)
         node['steps'].append(dict({
