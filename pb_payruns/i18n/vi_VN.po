@@ -16,7 +16,7 @@ msgstr ""
 #. module: pb_payruns
 #: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
 msgid "<span class=\"k\">Employees</span>"
-msgstr "<span class=\"k\">Enhân viên</span>"
+msgstr "<span class=\"k\">Nhân viên</span>"
 
 #. module: pb_payruns
 #: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
@@ -26,12 +26,12 @@ msgstr "<span class=\"k\">Lương thực nhận</span>"
 #. module: pb_payruns
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
 msgid "<span class=\"pb-pk-l\">Deductions</span>"
-msgstr "<span class=\"pb-pk-l\">DCác khoản khấu trừ</span>"
+msgstr "<span class=\"pb-pk-l\">Các khoản khấu trừ</span>"
 
 #. module: pb_payruns
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
 msgid "<span class=\"pb-pk-l\">Employees</span>"
-msgstr "<span class=\"pb-pk-l\">Enhân viên</span>"
+msgstr "<span class=\"pb-pk-l\">Nhân viên</span>"
 
 #. module: pb_payruns
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
