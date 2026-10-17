@@ -223,6 +223,14 @@ class LearnEvent(models.Model):
             # LEARNREV P2 — a field card's thumbs: `<field>:up|down` in
             # `detail`, the screen in `screen`, no free text (P5 reads it).
             ('guide_feedback', self.env._('Field card rated')),
+            # LEARNREV P5a (S4) — the Library's rows were logging
+            # `library_guide` / `library_search_open` since P3, but neither
+            # kind was declared, so `log` dropped every one (LR63). And the
+            # search that found nothing: the phrase is HASHED, never stored
+            # (detail `h:<12 hex>`), the screen is `library`.
+            ('library_guide', self.env._('Library: Guide opened')),
+            ('library_search_open', self.env._('Library: search result opened')),
+            ('library_miss', self.env._('Library: search found nothing')),
         ]
 
     # -- append-only ------------------------------------------------------

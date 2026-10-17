@@ -51,3 +51,9 @@ from . import test_learnrev_p2
 from . import test_learnrev_p3
 # LEARNREV P4 — checked Try, country, the replica gate, the panel player.
 from . import test_learnrev_p4
+# LEARNREV P5a — manifests for 8 more screens (providers), the feedback loop.
+from . import test_learnrev_p5
+from . import test_learnrev_p5_s3a
+from . import test_learnrev_p5_s3b
+from . import test_learnrev_p5_s3c
+from . import test_learnrev_p5_s3d
