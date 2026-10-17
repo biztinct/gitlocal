@@ -147,6 +147,8 @@ never hand-edited here).
     'assets': {
         'web.assets_backend': [
             'pb_learn/static/src/journey/journey.scss',
+            # LEARNREV P3 — the Library (the Learning page's map view).
+            'pb_learn/static/src/journey/library.scss',
             # Scenario chrome: the overlay on the real product AND the Journey's
             # scenario cards, which is why it loads with the Journey's own
             # stylesheet rather than beside the overlay's JS.
@@ -161,6 +163,10 @@ never hand-edited here).
             # it: the Journey, the Coach and the live runner all compose their
             # own bundle from (the JSON) + (learn.runtime.bootstrap).
             'pb_learn/static/src/content/content_loader.js',
+            # LEARNREV P3 — the field index (Library search, ⌘K field rows)
+            # and the drawer's door for the surfaces that are not the drawer.
+            'pb_learn/static/src/content/field_index.js',
+            'pb_learn/static/src/coach/guide_door.js',
             'pb_learn/static/src/engine/*.js',
             # The scenario state machine. BEFORE the Journey and the Coach:
             # both look it up as a service, and the overlay it drives is
@@ -170,6 +176,7 @@ never hand-edited here).
             'pb_learn/static/src/scenario/scenario_service.js',
             'pb_learn/static/src/scenario/scenario_overlay.js',
             'pb_learn/static/src/scenario/scenario_overlay.xml',
+            'pb_learn/static/src/journey/library.js',
             'pb_learn/static/src/journey/journey.js',
             'pb_learn/static/src/journey/icons.xml',
             'pb_learn/static/src/journey/journey.xml',
