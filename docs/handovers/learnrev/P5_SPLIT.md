@@ -22,7 +22,13 @@ writing quality (lessons, walkthroughs, natural Vietnamese) goes to Opus afterwa
 - **S1** the 31 lessons, **S2** the 19 walkthroughs (+ `checks`), **S5** the full Vietnamese pass (including a review
   of P5a's new VI strings), **S6 P4 items** (replica fallback note in Vietnamese; `press` lines in the reader's
   language), **S7** `P5_REPLICA_NOTE.md`.
-- Tests T1, T2 (anchors/replica gate), T4; Browser B1, B2, B4, B8.
+- **Added from P5A_REPORT open items (2026-10-18):** (a) thumbs up/down on each lesson step and walkthrough card in
+  the panel player, sent through the existing `rpc_feedback` seam with the step id (the P5a report already counts any
+  rating row — see `P5A_REPORT.md`); this is the one player change allowed. (b) Move the feedback card's bilingual
+  string pairs out of `learn_settings.js` into the normal content/translation path, and review all P5a Vietnamese
+  (manifests, card, Connections tabs) in the S5 pass.
+- Tests T1, T2 (anchors/replica gate), T4; Browser B1, B2, B4, B8, plus: a thumbs-down on a lesson step appears in the
+  Learn › Settings card.
 - Report: `P5B_REPORT.md`.
 
 Everything else in `P5_HANDOVER.md` (design bar, non-goals, plumbing, clone rules, commit rules) binds both builders.
