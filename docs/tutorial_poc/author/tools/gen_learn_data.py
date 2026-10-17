@@ -737,11 +737,15 @@ def _shape_problems(where, holder, anchor, product, problems):
     """The step-shape gate (T1): a `look` step says what it means and what it
     affects; `press` only on a real control; country variants carry a generic
     fallback and only the lines a variant may change."""
-    if en_of(holder.get('look')) and not (en_of(holder.get('means'))
-                                          and en_of(holder.get('affects'))):
+    variants = holder.get('variants') or {}
+    # A line may sit on the step itself or on its generic variant (the one
+    # every country without its own reads).
+    generic = variants.get('generic') or {}
+    if en_of(holder.get('look')) and not (
+            (en_of(holder.get('means')) or en_of(generic.get('means')))
+            and (en_of(holder.get('affects')) or en_of(generic.get('affects')))):
         problems.append('%s: a step with "look" must also say "means" and '
                         '"affects"' % where)
-    variants = holder.get('variants') or {}
     pressing = en_of(holder.get('press')) or any(
         en_of((v or {}).get('press')) for v in variants.values())
     if pressing and not _press_anchor_ok(anchor, product):

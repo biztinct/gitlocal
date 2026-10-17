@@ -350,9 +350,13 @@ function understandBody(g, ui) {
     if (d.station) {
         const mins = station && station.duration_min
             ? `<small>${esc(String(station.duration_min))}${SP}${esc(T("min"))}</small>` : "";
+        // LEARNREV P4 — the lesson plays HERE, beside the real screen; the
+        // Learn page's outline stays one press away as the quieter door.
+        const start = d.lesson && ui.canPlay !== false
+            ? `<button type="button" class="lrn-btn sm pri" data-act="c-lpstart">${ic("play")}${esc(T("lpStart"))}</button>` : "";
         parts.push(`<div class="lrn-glesson"><span class="lrn-glessonic">${ic("grad-cap")}</span>
             <span class="lrn-glessontx"><b>${esc(d.station_name || "")}</b>${mins}</span>
-            <button type="button" class="lrn-btn sm pri" data-act="c-lesson">${ic("book-open")}${esc(T("openLesson"))}</button></div>`);
+            ${start}<button type="button" class="lrn-btn sm${start ? " ghost" : " pri"}" data-act="c-lesson">${ic("book-open")}${esc(T("openLesson"))}</button></div>`);
     } else {
         parts.push(`${stateLine("info", T("gNoLessonMap"), "mute")}
             <button type="button" class="lrn-btn sm ghost" data-act="c-gmap">${ic("map")}${esc(T("gLessonMap"))}</button>`);
@@ -395,7 +399,10 @@ export function sectionsHTML(g, ui = {}) {
         section("now", !!open.now, nowBody(g, ui), badge(n, "warn")),
         section("fields", !!open.fields, fieldsBody(g, ui), badge(fields, "mute")),
         section("tasks", !!open.tasks, tasksBody(g, ui)),
-        section("understand", !!open.understand, understandBody(g, ui)),
+        // LEARNREV P4 — while a lesson plays, its step card IS this section.
+        ui.lessonHTML
+            ? section("understand", true, ui.lessonHTML)
+            : section("understand", !!open.understand, understandBody(g, ui)),
     ];
     return `<div class="lrn-gsecs${ui.loading ? " busy" : ""}">${out.join("")}</div>`;
 }

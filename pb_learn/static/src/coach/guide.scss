@@ -694,3 +694,116 @@
     body.lrn-docked .lrn-drawer { animation: none; }
 }
 .lrn-still .lrn-gsecb, .lrn-still .lrn-gfcard { animation: none; }
+
+// ============================================================ LEARNREV P4
+// The lesson played INSIDE the Guide panel (coach/lesson_panel.js). One step,
+// four lines; the panel is the card, so nothing is drawn over the screen but
+// the dim around the real control (engine/spotlight.js PanelSpot).
+.lrn-drawer.lrn-lp-on { --lrn-guide-max: 76%; }
+
+.lrn-lp {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 2px 0 6px;
+    animation: lrn-lp-in .16s ease-out;
+}
+@keyframes lrn-lp-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+}
+.lrn-lp-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    .lrn-ic { width: 13px; height: 13px; margin-right: 4px; vertical-align: -2px; }
+}
+.lrn-lp-kicker {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #5A4BB0;
+}
+.lrn-lp-count { color: #6B6787; white-space: nowrap; }
+.lrn-lp-meter {
+    height: 4px;
+    border-radius: 999px;
+    background: #ECEAF6;
+    overflow: hidden;
+    i { display: block; height: 100%; background: #5A4BB0; transition: width .2s; }
+}
+.lrn-lp-title { margin: 2px 0 0; font-size: 15px; line-height: 1.3; font-weight: 700; color: #241F52; }
+.lrn-lp-lines { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.lrn-lp-line {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 8px;
+    align-items: start;
+    padding: 7px 9px;
+    border: 1px solid #ECEAF6;
+    border-radius: 10px;
+    background: #fff;
+
+    dt {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        font-size: 11px;
+        font-weight: 700;
+        color: #5A4BB0;
+        .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; }
+    }
+    dd { margin: 0; min-width: 0; font-size: 12.5px; line-height: 1.45; color: #2B2745; }
+    dd p { margin: 0; }
+    &.press { border-color: #CBC2EE; background: #F6F4FD; }
+    &.press dd { font-weight: 650; color: #241F52; }
+}
+.lrn-lp-uses { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.lrn-lp-note, .lrn-lp-tip, .lrn-lp-conseq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    > .lrn-ic { width: 15px; height: 15px; flex: 0 0 auto; }
+    > span { flex: 1 1 180px; min-width: 0; }
+}
+.lrn-lp-note { background: #EDEAF8; color: #3F3593; }
+.lrn-lp-note.loading { background: #FFF7EB; color: #8A4B05; }
+.lrn-lp-tip { background: #F7F7FA; color: #4B4766; }
+.lrn-lp-conseq { background: #FFF7EB; color: #8A4B05; }
+.lrn-lp-p { margin: 0; font-size: 12.5px; color: #4B4766; }
+.lrn-lp-foot { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.lrn-lp-quiz .lrn-opts { display: flex; flex-direction: column; gap: 6px; }
+.lrn-lp-done .lrn-lp-kicker { color: #2E7D4F; }
+// The practice copy's card draws the same four lines (journey.js).
+.lrn-coach .lrn-lp-lines { margin: 6px 0; }
+.lrn-coach .lrn-lp-line { grid-template-columns: 84px 1fr; }
+
+// The dim around the real control. Under the drawer (1040) so the panel is
+// never dimmed; it takes no clicks, so the control can still be pressed.
+.lrn-pspot { position: fixed; inset: 0; z-index: 1030; pointer-events: none; }
+.lrn-pspot-hole {
+    position: fixed;
+    display: none;
+    pointer-events: none;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px #5A4BB0, 0 0 0 9999px rgba(24, 20, 56, .38);
+    transition: top .2s, left .2s, width .2s, height .2s;
+}
+// A floating Guide that would sit on the control moves to the other side.
+body.lrn-pspot-flip .lrn-drawer:not(.lrn-dockable),
+body.lrn-pspot-flip:not(.lrn-docked) .lrn-drawer { right: auto; left: 22px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-lp { animation: none; }
+    .lrn-pspot-hole, .lrn-lp-meter i { transition: none; }
+}
+.lrn-still .lrn-lp { animation: none; }

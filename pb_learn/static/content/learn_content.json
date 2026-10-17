@@ -477,6 +477,10 @@
       "en": "Open run",
       "vi": "Mở đợt lương"
     },
+    "gPlaying": {
+      "en": "Playing · step {n} of {m}",
+      "vi": "Đang chạy · bước {n} / {m}"
+    },
     "gReadFailed": {
       "en": "The live list could not be read just now.",
       "vi": "Chưa đọc được danh sách trực tiếp lúc này."
@@ -512,6 +516,10 @@
     "gShowGuide": {
       "en": "Show the Guide",
       "vi": "Hiện lại Hướng dẫn"
+    },
+    "gStop": {
+      "en": "Stop",
+      "vi": "Dừng"
     },
     "gTerms": {
       "en": "Words on this screen",
@@ -1005,6 +1013,66 @@
       "en": "Waiting for you to do this in Payobook",
       "vi": "Đang chờ bạn thao tác trong Payobook"
     },
+    "lpAffects": {
+      "en": "It affects",
+      "vi": "Ảnh hưởng tới"
+    },
+    "lpBackReal": {
+      "en": "Back to the real screen",
+      "vi": "Quay lại màn hình thật"
+    },
+    "lpClose": {
+      "en": "Close",
+      "vi": "Đóng"
+    },
+    "lpDone": {
+      "en": "Lesson done",
+      "vi": "Đã xong bài học"
+    },
+    "lpDoneBody": {
+      "en": "Your progress is saved in Learn.",
+      "vi": "Tiến độ của bạn đã được lưu trong Học tập."
+    },
+    "lpLesson": {
+      "en": "Lesson",
+      "vi": "Bài học"
+    },
+    "lpLoading": {
+      "en": "The screen is still loading.",
+      "vi": "Màn hình vẫn đang tải."
+    },
+    "lpLook": {
+      "en": "Look at",
+      "vi": "Nhìn vào"
+    },
+    "lpMeans": {
+      "en": "It means",
+      "vi": "Nghĩa là"
+    },
+    "lpNotHere": {
+      "en": "That control is not on this screen right now. The lines above say what it does.",
+      "vi": "Nút đó hiện không có trên màn hình này. Các dòng ở trên cho biết nó làm gì."
+    },
+    "lpOpenPractice": {
+      "en": "Open the practice copy",
+      "vi": "Mở bản thực hành"
+    },
+    "lpPracticeNote": {
+      "en": "This step shows the practice copy.",
+      "vi": "Bước này hiển thị trên bản thực hành."
+    },
+    "lpPress": {
+      "en": "Press",
+      "vi": "Bấm"
+    },
+    "lpStart": {
+      "en": "Start the lesson",
+      "vi": "Bắt đầu bài học"
+    },
+    "lpUnreachableNote": {
+      "en": "You can't open this screen, so this step plays on the practice copy.",
+      "vi": "Bạn không mở được màn hình này, nên bước này chạy trên bản thực hành."
+    },
     "match": {
       "en": "Match…",
       "vi": "Khớp…"
@@ -1409,6 +1477,18 @@
       "en": "Run payroll",
       "vi": "Chạy bảng lương"
     },
+    "scCheckMissing": {
+      "en": "Still to do:",
+      "vi": "Còn phải làm:"
+    },
+    "scCheckOk": {
+      "en": "Done. Moving on.",
+      "vi": "Xong. Sang bước tiếp theo."
+    },
+    "scCheckWait": {
+      "en": "Do it on the screen. I check every few seconds and move on when it is done.",
+      "vi": "Hãy làm trên màn hình. Cứ vài giây tôi kiểm tra một lần và sang bước tiếp khi xong."
+    },
     "scDo": {
       "en": "Do it live",
       "vi": "Làm thật"
@@ -1469,9 +1549,25 @@
       "en": "Real screens",
       "vi": "Màn hình thật"
     },
+    "scRefusedBecause": {
+      "en": "The screen says:",
+      "vi": "Màn hình báo:"
+    },
     "scSkip": {
       "en": "Skip this step",
       "vi": "Bỏ qua bước này"
+    },
+    "scSkipSoon": {
+      "en": "Moving on in a moment.",
+      "vi": "Sẽ sang bước tiếp theo ngay."
+    },
+    "scSlowBody": {
+      "en": "The screen is still loading. Retry, or leave and come back to it later.",
+      "vi": "Màn hình vẫn đang tải. Hãy thử lại, hoặc thoát rồi quay lại sau."
+    },
+    "scSlowT": {
+      "en": "Still loading",
+      "vi": "Vẫn đang tải"
     },
     "scSwitch": {
       "en": "Switch mode",
@@ -1492,6 +1588,10 @@
     "scTryPractice": {
       "en": "Try in practice",
       "vi": "Thử trong công ty thực hành"
+    },
+    "scTryReal": {
+      "en": "Try · demo company",
+      "vi": "Thử · công ty demo"
     },
     "scTypeHere": {
       "en": "Type it in the field I am pointing at, then press Enter.",
@@ -34634,5 +34734,5 @@
       }
     }
   ],
-  "version": "ecc3d3284781"
+  "version": "c02ef633fb5a"
 }

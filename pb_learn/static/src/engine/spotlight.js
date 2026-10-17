@@ -214,8 +214,10 @@ export const Spot = {
 
     _applyFold() {
         // Room under the last control, so even the bottom of a board can be
-        // scrolled clear of a docked sheet.
-        document.body.classList.toggle("lrn-docked", !!this.card && docked());
+        // scrolled clear of a docked sheet. LEARNREV P4: `lrn-spot-docked`,
+        // NOT `lrn-docked` — that one is the Guide's dock (coach.js
+        // _syncDock), and a lesson leaving used to undock the Guide.
+        document.body.classList.toggle("lrn-spot-docked", !!this.card && docked());
         if (!this.card) {
             return;
         }
@@ -276,6 +278,7 @@ export const Spot = {
         }
         c.style.top = "0px";
         c.style.left = "0px";
+        c.style.maxHeight = "";
         const cw = Math.min(372, W - 32);
         // Width BEFORE measuring height: measured at the previous (or auto)
         // width the text wraps less, the card reads shorter than it renders,
@@ -283,27 +286,17 @@ export const Spot = {
         // (Hiring set-up's card row, LEARN REFRESH 2 browser walk).
         c.style.width = cw + "px";
         const ch = c.offsetHeight || 260;
-        let top;
-        let left;
-        if (!r) {
-            top = Math.max(16, (usable - ch) / 2);
-            left = (W - cw) / 2;
-        } else if (r.right + cw + 28 < W) {
-            left = r.right + 20;
-            top = r.top + r.height / 2 - ch / 2;
-        } else if (r.left - cw - 28 > 0) {
-            left = r.left - cw - 20;
-            top = r.top + r.height / 2 - ch / 2;
-        } else if (r.bottom + ch + 28 < usable) {
-            top = r.bottom + 20;
-            left = Math.min(Math.max(16, r.left), W - cw - 16);
-        } else {
-            top = Math.max(16, r.top - ch - 20);
-            left = Math.min(Math.max(16, r.left), W - cw - 16);
+        // LEARNREV P4 — the pure placement (tested: never on the control),
+        // with the docked Guide's column kept clear on the right.
+        const dock = document.body.classList.contains("lrn-docked") && W >= 1280 ? 420 : 0;
+        const p = placeCard(r, { W, H, cw, ch, guard: bottomGuard, dock });
+        c.style.top = p.top + "px";
+        c.style.left = p.left + "px";
+        c.style.width = p.width + "px";
+        if (p.maxHeight) {
+            c.style.maxHeight = p.maxHeight + "px";
+            c.style.overflowY = "auto";
         }
-        c.style.top = Math.max(12, Math.min(top, usable - ch)) + "px";
-        c.style.left = Math.max(12, Math.min(left, W - cw - 12)) + "px";
-        c.style.width = cw + "px";
     },
 
     hide() {
@@ -315,8 +308,183 @@ export const Spot = {
         }
         this.folded = false;
         this._lastRect = null;
-        document.body.classList.remove("lrn-docked");
+        document.body.classList.remove("lrn-spot-docked");
         Trace.clear();
+    },
+};
+
+/* -------------------------------------------------------------- placement
+   LEARNREV P4 — WHERE THE CARD GOES, as a pure function, so "never cover the
+   control it explains" is a tested fact and not a hope. Right → left → below
+   → above, as before; the change is the last resort. The old fallback clamped
+   an "above" card to the top of the window, which put it ON a headline at the
+   top of the page. Now, when no side holds the whole card, it takes the side
+   with more room and is told how tall it may be (it scrolls inside).
+
+   `r`  the control's rectangle {top, left, right, bottom, width, height};
+   `g`  {W, H, cw, ch, guard, dock, gap, margin}: the window, the card's width
+        and height, the strip the play bar holds at the bottom, and the width
+        the docked Guide holds on the right.
+   Returns {top, left, width, maxHeight|null, side}. */
+export function placeCard(r, g) {
+    const margin = g.margin === undefined ? 12 : g.margin;
+    const gap = g.gap === undefined ? 20 : g.gap;
+    const W = g.W - (g.dock || 0);
+    const H = g.H - (g.guard === undefined ? 12 : g.guard);
+    const cw = Math.min(g.cw, W - margin * 2);
+    const ch = g.ch;
+    const clampTop = (t, h) => Math.max(margin, Math.min(t, H - h - margin));
+    const clampLeft = (l) => Math.max(margin, Math.min(l, W - cw - margin));
+    const fitsH = ch <= H - margin * 2;
+    if (!r) {
+        return { top: Math.max(margin, (H - ch) / 2), left: (W - cw) / 2, width: cw,
+                 maxHeight: fitsH ? null : H - margin * 2, side: "centre" };
+    }
+    const mid = r.top + r.height / 2 - ch / 2;
+    if (r.right + gap + cw + margin <= W) {
+        return { top: clampTop(mid, Math.min(ch, H - margin * 2)), left: r.right + gap, width: cw,
+                 maxHeight: fitsH ? null : H - margin * 2, side: "right" };
+    }
+    if (r.left - gap - cw >= margin) {
+        return { top: clampTop(mid, Math.min(ch, H - margin * 2)), left: r.left - gap - cw, width: cw,
+                 maxHeight: fitsH ? null : H - margin * 2, side: "left" };
+    }
+    const below = H - margin - (r.bottom + gap);
+    const above = r.top - gap - margin;
+    if (ch <= below) {
+        return { top: r.bottom + gap, left: clampLeft(r.left), width: cw, maxHeight: null, side: "below" };
+    }
+    if (ch <= above) {
+        return { top: r.top - gap - ch, left: clampLeft(r.left), width: cw, maxHeight: null, side: "above" };
+    }
+    // Neither side holds it whole: the roomier one, and the card scrolls.
+    if (below >= above) {
+        return { top: r.bottom + gap, left: clampLeft(r.left), width: cw,
+                 maxHeight: Math.max(0, below), side: "below" };
+    }
+    return { top: margin, left: clampLeft(r.left), width: cw,
+             maxHeight: Math.max(0, above), side: "above" };
+}
+
+/** Do two rectangles overlap? (For the tests and the floating Guide.) */
+export function overlaps(a, b) {
+    return !!a && !!b && a.left < b.right && b.left < a.right
+        && a.top < b.bottom && b.top < a.bottom;
+}
+
+/* ------------------------------------------------------------ PanelSpot
+   LEARNREV P4 — the spotlight for a lesson played INSIDE the Guide panel.
+   The panel is the card, so this draws no card at all: it dims around the
+   real control (`[data-coach="…"]`, the same global query `Spot` uses) and
+   follows it while the page scrolls. Below the drawer in the stack (z 1030
+   < 1040), so the panel itself is never dimmed; `pointer-events: none`, so
+   the person can still press the control it is drawn around.
+
+   A floating Guide that sits on the control moves to the other side of the
+   window (`lrn-pspot-flip`, coach.scss): nothing covers what it explains. */
+export const PanelSpot = {
+    host: null,
+    hole: null,
+    key: "",
+    el: null,
+    raf: null,
+    found: false,
+    _box: "",
+
+    show(key) {
+        this.key = key || "";
+        this.el = null;
+        this.found = false;
+        if (!this.host) {
+            this.host = document.createElement("div");
+            this.host.className = "lrn-pspot";
+            this.host.setAttribute("aria-hidden", "true");
+            this.hole = document.createElement("div");
+            this.hole.className = "lrn-pspot-hole";
+            this.host.appendChild(this.hole);
+            document.body.appendChild(this.host);
+        }
+        this.hole.style.display = "none";
+        this._box = "";
+        if (!this.raf) {
+            const tick = () => {
+                this.raf = this.host ? requestAnimationFrame(tick) : null;
+                this._measure();
+            };
+            this.raf = requestAnimationFrame(tick);
+        }
+        this._measure(true);
+    },
+
+    _measure(scroll) {
+        if (!this.host || !this.key) {
+            return;
+        }
+        if (!this.el || !this.el.isConnected) {
+            this.el = anchorEl(this.key);
+            if (this.el) {
+                scroll = true;
+            }
+        }
+        const el = this.el;
+        const r = el ? el.getBoundingClientRect() : null;
+        if (!r || (r.width === 0 && r.height === 0)) {
+            this.found = false;
+            if (this.hole.style.display !== "none") {
+                this.hole.style.display = "none";
+            }
+            document.body.classList.remove("lrn-pspot-flip");
+            return;
+        }
+        if (scroll) {
+            try {
+                el.scrollIntoView({ block: "center", behavior: reduced() ? "auto" : "smooth" });
+            } catch {
+                // A detached element is simply not pointed at.
+            }
+        }
+        this.found = true;
+        const pad = 6;
+        const box = `${Math.round(r.top - pad)}|${Math.round(r.left - pad)}|${
+            Math.round(r.width + pad * 2)}|${Math.round(r.height + pad * 2)}`;
+        if (box !== this._box) {
+            this._box = box;
+            const [t, l, w, h] = box.split("|");
+            Object.assign(this.hole.style, { display: "block", top: `${t}px`, left: `${l}px`,
+                                             width: `${w}px`, height: `${h}px` });
+        }
+        const drawer = document.querySelector(".lrn-drawer");
+        const docked = document.body.classList.contains("lrn-docked") && window.innerWidth >= 1280;
+        if (drawer && !docked) {
+            const flipped = document.body.classList.contains("lrn-pspot-flip");
+            // Measured where the drawer WOULD sit unflipped, so it does not
+            // flap back and forth across the control every frame.
+            const dr = drawer.getBoundingClientRect();
+            const home = flipped
+                ? { top: dr.top, bottom: dr.bottom, left: window.innerWidth - 22 - dr.width,
+                    right: window.innerWidth - 22 }
+                : dr;
+            document.body.classList.toggle("lrn-pspot-flip", overlaps(home, r));
+        } else {
+            document.body.classList.remove("lrn-pspot-flip");
+        }
+    },
+
+    hide() {
+        if (this.raf) {
+            cancelAnimationFrame(this.raf);
+            this.raf = null;
+        }
+        if (this.host) {
+            this.host.remove();
+        }
+        this.host = null;
+        this.hole = null;
+        this.el = null;
+        this.key = "";
+        this.found = false;
+        this._box = "";
+        document.body.classList.remove("lrn-pspot-flip");
     },
 };
 
