@@ -165,6 +165,14 @@ const MONTH_END_SKIP = "pbLearnMonthEndSkip";
 const MONTH_END_TODAY = "pbLearnMonthEndShown";
 /* Milestones are asked of the server at most this often. */
 const MILESTONE_EVERY_MS = 60000;
+/* LEARNREV P0 (G2) — said when "Open the lesson" finds no lesson for the
+   screen. Written here, in both languages, because P0 may not regenerate the
+   content plane; the P1 generator takes it over as a chrome string. */
+const NO_LESSON_NOTE = {
+    key: "noLessonHere",
+    en: "No lesson for this screen yet. Opening the lesson map.",
+    vi: "Chưa có bài học cho màn hình này. Đang mở bản đồ bài học.",
+};
 const MILESTONE_COPY = {
     m_employee: ["msEmployeeT", "msEmployeeB"],
     m_run: ["msRunT", "msRunB"],
@@ -301,6 +309,9 @@ export class CoachHost extends Component {
                     // LEARN v3 — for the next-step card's title. The key alone
                     // is not something a learner can read.
                     stations: content.stations || [],
+                    // LEARNREV P0 — a retired screen's lesson door lands on
+                    // the station it folded into (the Journey's own rule).
+                    station_aliases: content.station_aliases || {},
                     // LEARN v3 — the month-end date, for the Dashboard nudge.
                     path: runtime.path || {},
                 };
@@ -497,6 +508,12 @@ export class CoachHost extends Component {
             // The chat focuses its own box when it mounts; the guide-only
             // stream has its box here.
             setTimeout(() => this.inputRef.el?.focus(), 60);
+            // LEARNREV P0 (G4): the guide-only stream renders afresh on every
+            // open too — show the latest turn, not the first. (The PayAI chat
+            // scrolls itself on mount.)
+            if (!this.chat) {
+                setTimeout(() => this._scrollFallback(), 80);
+            }
         }
     }
 
@@ -1448,10 +1465,66 @@ export class CoachHost extends Component {
         }
     }
 
-    openLesson() {
-        // Inside the Learn hub (rail visible), on the lesson map.
+    /** "Open the lesson" opens THIS screen's lesson (LEARNREV P0, G2, ledger
+     *  LR-R2), in the Learn hub (rail visible), on the station's outline:
+     *    1. the station whose key is this screen's key (station keys equal
+     *       screen keys for content screens), or the station a retired screen
+     *       folded into (`station_aliases`, the Journey's own rule), or the
+     *       station whose lesson walks this screen;
+     *    2. else, for a button under an answer, the station whose lesson steps
+     *       point at the answer's `show_me` anchors, or whose key is a screen
+     *       the answer's walkthrough (`watch` / `try`) plays on;
+     *    3. else the lesson map, and the drawer says so in a note and stays
+     *       open — never a silent landing at the top. Hubs (`hub_*`) land here. */
+    openLesson(answer) {
+        const key = this._lessonStationFor(this.state.screen, answer);
+        if (key) {
+            openLearn(this.action, `station:${key}`);
+            this.close();
+            return;
+        }
+        this._pushTurn({ kind: "note", note: Object.assign({}, NO_LESSON_NOTE) });
         openLearn(this.action, "");
-        this.close();
+    }
+
+    _lessonStationFor(screen, answer) {
+        const stations = (this.bundle && this.bundle.stations) || [];
+        const has = (k) => !!k && stations.some((s) => s.key === k);
+        const walks = (pred) => {
+            const st = stations.find((s) => (s.lessons || []).some(
+                (l) => (l.steps || []).some(pred)));
+            return st ? st.key : "";
+        };
+        if (screen && !screen.startsWith("hub_")) {
+            if (has(screen)) {
+                return screen;
+            }
+            const alias = ((this.bundle && this.bundle.station_aliases) || {})[screen];
+            if (has(alias)) {
+                return alias;
+            }
+            const walked = walks((step) => step.screen === screen);
+            if (walked) {
+                return walked;
+            }
+        }
+        if (answer) {
+            const anchors = new Set(answer.show_me || []);
+            if (anchors.size) {
+                const pointed = walks((step) => anchors.has(step.anchor));
+                if (pointed) {
+                    return pointed;
+                }
+            }
+            for (const sk of [answer.watch, answer["try"]]) {
+                const sc = sk ? this.sc.get(sk) : null;
+                const on = ((sc && sc.screens) || []).find((s) => has(s));
+                if (on) {
+                    return on;
+                }
+            }
+        }
+        return "";
     }
 
     /** Start a scenario from the drawer.
@@ -2062,7 +2135,8 @@ export class CoachHost extends Component {
         } else if (act === "c-simpler") {
             this._toggleSimpler(turnId);
         } else if (act === "c-lesson") {
-            this.openLesson();
+            const turn = this._findTurn(turnId);
+            this.openLesson(turn && turn.answer);
         } else if (act === "c-lang") {
             this.toggleLang();
         } else if (act === "c-consent-yes") {

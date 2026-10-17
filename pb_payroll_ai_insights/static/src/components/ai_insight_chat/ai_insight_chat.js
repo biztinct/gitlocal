@@ -2031,6 +2031,12 @@ export class AiInsightChatEmbedded extends AiInsightChat {
                     this.props.helper.attach(this.api);
                 }
                 this._noteScreen(this.props.screen);
+                // LEARNREV P0 (G4, ledger LR-R3): the drawer mounts this chat
+                // afresh on every open, so it starts at the top; only a pushed
+                // message used to scroll it (and `_noteScreen` pushes one only
+                // when the screen changed). Open at the latest message — the
+                // restored turns and the loaded history have rendered by now.
+                this._scrollToBottom(true);
             });
             setTimeout(() => this.inputRef.el?.focus(), 80);
         });

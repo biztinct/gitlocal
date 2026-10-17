@@ -38,3 +38,5 @@ from . import test_helper_route
 from . import test_onechat_ui
 # ONECHAT OC4 — Learn content follows the one PayAI chat (keys, lessons, phrases).
 from . import test_onechat_content
+# LEARNREV P0 T2 — "Open the lesson" opens this screen's lesson.
+from . import test_learnrev_lesson_door
