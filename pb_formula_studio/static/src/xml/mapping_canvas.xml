@@ -46,6 +46,64 @@
     </div>
   </t>
 
+  <t t-name="pb_formula_studio.McRightItem">
+                <div data-side="right" t-att-data-id="it.id" t-att-data-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
+                     t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
+                     t-on-click="() => this.clickRight(it.id)"
+                     t-on-mouseenter="(ev) => this.enterItem('right', it.id, ev)"
+                     t-on-mouseleave="() => this.leaveItem()">
+                  <span class="mc-plug left"/>
+                  <button t-if="props.compact" type="button" class="mc-item-expand"
+                          t-att-aria-label="(isExpanded('right', it.id) ? 'Collapse details for ' : 'Expand details for ') + it.label"
+                          t-att-aria-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
+                          t-att-title="isExpanded('right', it.id) ? 'Collapse details' : 'Expand details'"
+                          t-on-click="(ev) => this.toggleDetails('right', it.id, ev)"
+                          t-out="ic(isExpanded('right', it.id) ? 'chevronDown' : 'chevron', 12)"/>
+                  <div class="mc-item-main">
+                    <!-- SOURCING S6 — the SAME label block as the left column.
+                         S16 and S18 were both this: two item templates that did
+                         not share a label, so every chip had to be added twice and
+                         the right column silently omitted whichever addition
+                         forgot — which looks like a data bug and is a template
+                         one. D1 is that failure a third time. It shares now. -->
+                    <t t-call="pb_formula_studio.McItemLabel">
+                      <t t-set="mcSide" t-value="'right'"/>
+                    </t>
+                    <div t-if="it.meta and it.meta.constantDisplay !== undefined" class="mc-constant-value">Fixed value: <t t-esc="it.meta.constantDisplay"/></div>
+                    <t t-if="props.compact and isExpanded('right', it.id)" t-call="pb_formula_studio.McCompactDetails"/>
+                    <div class="mc-item-sub mc-secondary"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                    <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
+                         selection's permitted values (with the stored code, which
+                         is what the file has to contain), or whether a many2one
+                         creates what it cannot find. Rendered only for cards that
+                         carry a note, so every other board is unchanged. -->
+                    <!-- MAPFIX E1 — and when the card had to CUT the list, the
+                         note is the way to open it. The tooltip was the only
+                         place the rest of the values existed: slow, unselectable,
+                         cut off by the viewport, and absent on touch. Only a
+                         truncated note becomes a button — the adapter sends
+                         `values` only when it hid something, so an affordance
+                         that would do nothing never appears. -->
+                    <t t-if="note(it)">
+                      <button t-if="noteValues(it)" type="button"
+                              t-attf-class="mc-item-note mc-secondary act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
+                              t-att-title="note(it).title"
+                              t-att-aria-label="noteMenuLabel(it)"
+                              aria-haspopup="dialog"
+                              t-att-aria-expanded="isNoteOpen(it) ? 'true' : 'false'"
+                              t-on-click="(ev) => this.toggleNoteMenu(it, ev)">
+                        <span class="mc-item-note__t"><t t-esc="note(it).text"/><span
+                              class="mc-item-note__x" t-out="ic('chevronDown', 11)"/></span>
+                      </button>
+                      <div t-else="" t-attf-class="mc-item-note mc-secondary {{ note(it).tone }}"
+                           t-att-title="note(it).title" t-esc="note(it).text"/>
+                    </t>
+                  </div>
+                  <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
+                          t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
+                </div>
+  </t>
+
   <t t-name="pb_formula_studio.MappingCanvas">
     <div t-attf-class="mapping-canvas {{ props.compact ? 'is-compact' : '' }} {{ focusSet.on ? 'is-focus' : '' }} {{ props.busy ? 'is-busy' : '' }} {{ ui.pulse ? 'is-pulse' : '' }}"
          t-ref="root" tabindex="0" t-on-keydown="onKeydown">
@@ -261,65 +319,12 @@
               </div>
             </div>
             <div class="mc-col-body" t-ref="rbody" t-on-scroll="onColScroll">
-              <t t-set="rview" t-value="rightView"/>
+              <t t-set="rview" t-value="rightMainView"/>
               <t t-foreach="rview" t-as="it" t-key="it.id">
                 <!-- opt-in group header, the mirror of the left column's. Only
                      boards whose right items carry a `group` grow one. -->
                 <div t-if="rightGroupHead(rview, it_index)" class="mc-group" t-esc="rightGroupHead(rview, it_index)"/>
-                <div data-side="right" t-att-data-id="it.id" t-att-data-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
-                     t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }} {{ itemTone('right', it.id) }} {{ isFlashing('right', it.id) ? 'flash' : '' }}"
-                     t-on-click="() => this.clickRight(it.id)"
-                     t-on-mouseenter="(ev) => this.enterItem('right', it.id, ev)"
-                     t-on-mouseleave="() => this.leaveItem()">
-                  <span class="mc-plug left"/>
-                  <button t-if="props.compact" type="button" class="mc-item-expand"
-                          t-att-aria-label="(isExpanded('right', it.id) ? 'Collapse details for ' : 'Expand details for ') + it.label"
-                          t-att-aria-expanded="isExpanded('right', it.id) ? 'true' : 'false'"
-                          t-att-title="isExpanded('right', it.id) ? 'Collapse details' : 'Expand details'"
-                          t-on-click="(ev) => this.toggleDetails('right', it.id, ev)"
-                          t-out="ic(isExpanded('right', it.id) ? 'chevronDown' : 'chevron', 12)"/>
-                  <div class="mc-item-main">
-                    <!-- SOURCING S6 — the SAME label block as the left column.
-                         S16 and S18 were both this: two item templates that did
-                         not share a label, so every chip had to be added twice and
-                         the right column silently omitted whichever addition
-                         forgot — which looks like a data bug and is a template
-                         one. D1 is that failure a third time. It shares now. -->
-                    <t t-call="pb_formula_studio.McItemLabel">
-                      <t t-set="mcSide" t-value="'right'"/>
-                    </t>
-                    <t t-if="props.compact and isExpanded('right', it.id)" t-call="pb_formula_studio.McCompactDetails"/>
-                    <div class="mc-item-sub mc-secondary"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
-                    <!-- MAPFIX D4/D5 — what this destination will ACCEPT. A
-                         selection's permitted values (with the stored code, which
-                         is what the file has to contain), or whether a many2one
-                         creates what it cannot find. Rendered only for cards that
-                         carry a note, so every other board is unchanged. -->
-                    <!-- MAPFIX E1 — and when the card had to CUT the list, the
-                         note is the way to open it. The tooltip was the only
-                         place the rest of the values existed: slow, unselectable,
-                         cut off by the viewport, and absent on touch. Only a
-                         truncated note becomes a button — the adapter sends
-                         `values` only when it hid something, so an affordance
-                         that would do nothing never appears. -->
-                    <t t-if="note(it)">
-                      <button t-if="noteValues(it)" type="button"
-                              t-attf-class="mc-item-note mc-secondary act {{ note(it).tone }} {{ isNoteOpen(it) ? 'on' : '' }}"
-                              t-att-title="note(it).title"
-                              t-att-aria-label="noteMenuLabel(it)"
-                              aria-haspopup="dialog"
-                              t-att-aria-expanded="isNoteOpen(it) ? 'true' : 'false'"
-                              t-on-click="(ev) => this.toggleNoteMenu(it, ev)">
-                        <span class="mc-item-note__t"><t t-esc="note(it).text"/><span
-                              class="mc-item-note__x" t-out="ic('chevronDown', 11)"/></span>
-                      </button>
-                      <div t-else="" t-attf-class="mc-item-note mc-secondary {{ note(it).tone }}"
-                           t-att-title="note(it).title" t-esc="note(it).text"/>
-                    </t>
-                  </div>
-                  <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
-                          t-on-click="(ev) => this.removeRight(it.id, ev)" t-out="ic('x', 12)"/>
-                </div>
+                <t t-call="pb_formula_studio.McRightItem"/>
               </t>
               <div t-if="!rview.length" class="mc-col-empty">
                 <t t-if="props.rightItems.length">
@@ -328,6 +333,19 @@
                 </t>
                 <t t-else="">Nothing to show on this side.</t>
               </div>
+              <button t-if="rightGroupLabel" type="button" class="mc-collapsed-group"
+                      t-att-aria-expanded="ui.rightGroupOpen ? 'true' : 'false'"
+                      t-on-click="toggleRightGroup">
+                <t t-out="ic(ui.rightGroupOpen ? 'chevronDown' : 'chevron', 13)"/>
+                <span t-esc="rightGroupLabel"/> (<t t-esc="rightGroupedView.length"/>)
+              </button>
+              <t t-if="rightGroupLabel and ui.rightGroupOpen">
+                <p class="mc-collapsed-note">Mapping a constant changes it to an input. Its current value is kept as the default.</p>
+                <t t-foreach="rightGroupedView" t-as="it" t-key="it.id">
+                  <t t-call="pb_formula_studio.McRightItem"/>
+                </t>
+                <p t-if="!rightGroupedView.length" class="mc-collapsed-note">No constants match this filter.</p>
+              </t>
             </div>
           </div>
         </div>

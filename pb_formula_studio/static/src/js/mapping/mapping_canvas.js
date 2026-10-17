@@ -109,6 +109,7 @@ export class MappingCanvas extends Component {
             armedLeft: null,      // a left item id awaiting a right click (draw mode)
             hoverWire: null,
             expanded: {},
+            rightGroupOpen: false,
             tip: null,
             hoverItem: null,      // {side, id} — the card the pointer is on
             selWire: null,        // the wire whose hub stays open
@@ -218,6 +219,7 @@ export class MappingCanvas extends Component {
                 this.resetQuery("left");
                 this.resetQuery("right");
                 this.ui.expanded = {};
+                this.ui.rightGroupOpen = false;
                 this.leaveItem();
                 this.ui.selWire = null;
                 this.ui.reveal = null;
@@ -414,6 +416,10 @@ export class MappingCanvas extends Component {
      * different thing with a different counter, decided before this is asked.
      */
     isFilteredOut(side, id) {
+        if (side === "right" && !this.ui.rightGroupOpen
+                && this.props.rightItems.find((it) => String(it.id) === String(id))?.meta?.collapsedGroup) {
+            return true;
+        }
         if (!this.hasFilter(side)) { return false; }
         const { L, R } = this._indexes();
         const idx = side === "left" ? L : R;
@@ -843,9 +849,24 @@ export class MappingCanvas extends Component {
         if (!this.hasFilter("left")) { return this.props.leftItems; }
         return this.props.leftItems.filter((it) => this._passes("left", it));
     }
+    get rightMainView() {
+        return this.props.rightItems.filter((it) => !it.meta?.collapsedGroup
+            && (!this.hasFilter("right") || this._passes("right", it)));
+    }
+    get rightGroupedView() {
+        return this.props.rightItems.filter((it) => it.meta?.collapsedGroup
+            && (!this.hasFilter("right") || this._passes("right", it)));
+    }
+    get rightGroupLabel() {
+        return this.props.rightItems.find((it) => it.meta?.collapsedGroup)?.meta.collapsedGroup || "";
+    }
     get rightView() {
-        if (!this.hasFilter("right")) { return this.props.rightItems; }
-        return this.props.rightItems.filter((it) => this._passes("right", it));
+        return [...this.rightMainView, ...(this.ui.rightGroupOpen ? this.rightGroupedView : [])];
+    }
+    toggleRightGroup() {
+        this.ui.rightGroupOpen = !this.ui.rightGroupOpen;
+        this._relocateFocus("right");
+        this._schedule();
     }
     /** "12 of 200" while filtering, plain "200" otherwise. */
     countLabel(side) {

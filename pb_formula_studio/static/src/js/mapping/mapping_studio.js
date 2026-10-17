@@ -59,6 +59,7 @@ import { Component, useState, useEffect, onWillStart, onWillUnmount,
          useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useAutofocus, useService } from "@web/core/utils/hooks";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
@@ -167,6 +168,7 @@ export class MappingStudio extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notif = useService("notification");
+        this.dialog = useService("dialog");
 
         // Read ONCE, from props, never written back — the arrival protocol's
         // rule since the IA shell. Everything here is optional and everything
@@ -1331,6 +1333,32 @@ export class MappingStudio extends Component {
      */
     async draw(leftId, rightId) {
         const p = this.prefix;
+        const fixed = p === "import" && this.rightItems.find(
+            (it) => String(it.id) === String(rightId) && it.meta?.collapsedGroup);
+        if (fixed) {
+            const source = this.leftItems.find((it) => String(it.id) === String(leftId));
+            this.dialog.add(ConfirmationDialog, {
+                title: _t("Change constant to input?"),
+                body: _t("Mapping “%s” to “%s” changes it from a constant to an input. "
+                    + "The current fixed value, %s, becomes the default when no input is supplied. "
+                    + "Formulas that use this component will read the input value. Continue?",
+                    source?.label || leftId, fixed.label, fixed.meta.constantDisplay),
+                confirmLabel: _t("Change to input and map"),
+                confirm: async () => {
+                    const result = await this.orm.call(MODEL, "import_mapping_use_constant",
+                        [this.state.configId, this.state.batchId || false, leftId, rightId,
+                         fixed.meta.constantValue]);
+                    if (!result?.ok) {
+                        this.notif.add(result?.msg || _t("Could not map this constant."), { type: "warning" });
+                        return;
+                    }
+                    this.notif.add(_t("Changed to an input. The previous fixed value is its default."),
+                        { type: "success" });
+                    await this.load();
+                },
+            });
+            return;
+        }
         if (p === "api" || p === "import") {
             let probe = null;
             try {

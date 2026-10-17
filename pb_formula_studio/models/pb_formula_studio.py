@@ -9252,6 +9252,21 @@ class PbFormulaStudio(models.AbstractModel):
         right = self._mc_right_column(
             config, _acts, _emp, wirable_only=True, wire_dests=_wires,
             lineage=self._lineage_for_config(config), board='import')
+        # Fixed parameters are an opt-in section after the ordinary inputs.
+        # Drawing to one requests conversion; the normal create RPC still
+        # refuses constants and every formula remains absent from this board.
+        for rule in config.rule_ids.filtered(
+                lambda r: r.column_type == 'constant').sorted('sequence'):
+            item = self._mc_right_item(rule, {'kind': 'constant', 'key': ''})
+            item['meta'].update({
+                'collapsedGroup': _('Constants'),
+                'wirable': True,
+                'constantValue': rule.constant_value,
+                'constantDisplay': format(rule.constant_value, ',.12g'),
+                'badgeHint': _('Mapping this fixed value asks you to change it '
+                               'to an input. Its current value is kept as the default.'),
+            })
+            right.append(item)
         wires, mapped_rules = [], set()
         for r in input_rules:
             # The BINDING is the wire. `data_source_field` still draws one for a
@@ -9676,6 +9691,38 @@ class PbFormulaStudio(models.AbstractModel):
             rule.clear_source_binding('rule')
         rule.set_source_binding('excel', col, origin='board')
         return {'ok': True, 'replaced': replaced}
+
+    @api.model
+    def import_mapping_use_constant(self, config_id, batch_id, column,
+                                    target_rule_id, expected_value):
+        """Explicitly turn a fixed parameter into an uploaded input, atomically.
+
+        Merely showing/expanding a constant cannot write anything. The ordinary
+        mapping endpoint keeps rejecting it; only the confirmation dialog calls
+        this endpoint, carrying the value that the person reviewed.
+        """
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('No permission.')}
+        rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id)).exists()
+        if (not rule or rule.config_id.id != self._as_id(config_id)
+                or rule.column_type != 'constant'):
+            return {'ok': False, 'msg': _('This component is no longer a constant '
+                                        'in this scheme. Reload the board.')}
+        if expected_value is None or expected_value != rule.constant_value:
+            return {'ok': False, 'msg': _('The fixed value changed. Reload the '
+                                        'board and review it again.')}
+        try:
+            with self.env.cr.savepoint():
+                rule.with_context(formula_version_reason='edit').write({
+                    'column_type': 'input', 'default_value': rule.constant_value,
+                })
+                result = self.import_mapping_create(
+                    config_id, batch_id, column, rule.id)
+                if not result.get('ok'):
+                    raise UserError(result.get('msg') or _('Could not map this input.'))
+        except (UserError, ValidationError) as exc:
+            return {'ok': False, 'msg': str(exc)}
+        return dict(result, converted_constant=True)
 
     @api.model
     def import_mapping_delete(self, rule_id):

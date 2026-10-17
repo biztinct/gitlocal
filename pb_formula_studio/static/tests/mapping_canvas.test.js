@@ -58,6 +58,34 @@ import { srcIcon } from "@pb_formula_studio/js/source_vocab";
 describe.current.tags("desktop");
 defineMailModels();
 
+test("optional constant destinations start collapsed and expand after the inputs", async () => {
+    const draws = [];
+    const canvas = await mountWithCleanup(MappingCanvas, { props: {
+        leftItems: [{id: 'source', label: 'Factor'}],
+        rightItems: [
+            {id: 1, label: 'Salary', meta: {type: 'input'}},
+            {id: 2, label: 'Factor', meta: {type: 'constant', collapsedGroup: 'Constants',
+                                         constantValue: 12, constantDisplay: '12', wirable: true}},
+        ],
+        wires: [], canEdit: true, compact: true,
+        onDraw: (l, r) => draws.push([l, r]),
+    }});
+    expect('.mc-col.right .mc-item').toHaveCount(1);
+    expect('.mc-collapsed-group').toHaveAttribute('aria-expanded', 'false');
+    canvas.toggleRightGroup();
+    await animationFrame();
+    expect('.mc-col.right .mc-item').toHaveCount(2);
+    expect('.mc-constant-value').toHaveText('Fixed value: 12');
+    expect(canvas.rightView.map(i => i.id)).toEqual([1, 2]);
+    canvas.clickLeft('source');
+    canvas.clickRight(2);
+    expect(draws).toEqual([['source', 2]]);
+    canvas.toggleRightGroup();
+    await animationFrame();
+    expect('.mc-col.right .mc-item').toHaveCount(1);
+    expect(canvas.rightView.map(i => i.id)).toEqual([1]);
+});
+
 // ---------------------------------------------------------------- fixtures
 function items(n, prefix) {
     return Array.from({ length: n }, (_, i) => ({
