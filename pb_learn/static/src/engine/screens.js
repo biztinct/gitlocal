@@ -1253,7 +1253,13 @@ export const SCREENS = {
         const k = PRACTICE.importKpis;
         const pipe = stepButtons(PRACTICE.importPipe.map((p) => ({ label: p.label, count: p.count })),
                                  B("batches", "đợt"));
-        const batches = PRACTICE.importBatches.map((b) => `
+        // LEARNREV P5a: the real list has a header row (Batch … Status); the
+        // practice copy says the same two words (replica truth gate).
+        const batches = `
+            <div class="lrn-row">
+                <span class="lrn-sub2">${esc(tx(B("Batch", "Đợt")))}</span>
+                <span class="lrn-rr lrn-sub2">${esc(tx(B("Status", "Trạng thái")))}</span>
+            </div>` + PRACTICE.importBatches.map((b) => `
             <div class="lrn-row">
                 <span><span class="lrn-nm">${esc(tx(b.name))}</span><br>
                     <span class="lrn-sub2">${N(b.rows)}${SP}${esc(tx(B("rows", "dòng")))}</span></span>
@@ -2113,7 +2119,7 @@ export const SCREENS = {
                     </div>
                     <div class="lrn-ztablewrap">
                     <table class="lrn-ztable" data-coach="rep-rd-grid">
-                        <thead><tr><th>${esc(tx(B("Employee", "Nhân viên")))}</th>${head}</tr></thead>
+                        <thead><tr><th>${esc(tx(B("Person", "Người")))}</th>${head}</tr></thead>
                         <tbody>${rows}</tbody>
                     </table>
                     </div>

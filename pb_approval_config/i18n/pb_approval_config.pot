@@ -1735,6 +1735,12 @@ msgstr ""
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
+msgid "No approval needed for all"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/sentence.js:0
 msgid "No approval needed · applied at once and recorded"
 msgstr ""
