@@ -13,7 +13,7 @@
  * the person it would teach.
  */
 import { registry } from "@web/core/registry";
-import { _t } from "@web/core/l10n/translation";
+import { _t, translationIsReady } from "@web/core/l10n/translation";
 import { user } from "@web/core/user";
 
 import { RT, tx, SP } from "../engine/runtime";
@@ -93,7 +93,14 @@ export function registerLessonRows(content) {
     }
 }
 
-loadContent().then(registerLessonRows).catch((e) => {
-    // No rows; the search works without them.
-    console.warn("pb_learn: lesson rows not added to the search", e);
-});
+// LEARNREV P0 (G16, ledger LR1): the rows' group and sublabels go through
+// `_t`, which throws "translations have not been loaded" when called at module
+// load — so wait for the localization service's own signal before building
+// them. (coach.js registers them again once it has the content; the call is
+// idempotent, whichever gets there first wins.)
+Promise.all([loadContent(), translationIsReady])
+    .then(([content]) => registerLessonRows(content))
+    .catch((e) => {
+        // No rows; the search works without them.
+        console.warn("pb_learn: lesson rows not added to the search", e);
+    });
