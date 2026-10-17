@@ -18,12 +18,16 @@ class TemplateMapping(models.AbstractModel):
         facade = self.env['pb.payroll.templates']
         identities = facade._identity_columns(cfg)
         aliases = {}
-        for rule in cfg.rule_ids.filtered(lambda r: r.column_type == 'input'):
+        inputs = cfg.rule_ids.filtered(lambda r: r.column_type == 'input')
+        names = inputs.mapped('name')
+        for rule in inputs:
             label = rule.name or rule.code
+            canonical = rule.code if names.count(rule.name) > 1 else label
+            entry = (canonical, label, rule.source_sheet_name or '', rule.column_letter or '')
             keys = [s.key for s in rule.source_ids if s.kind == 'excel' and s.key]
             keys += batch._rule_header_candidates(rule, allow_column_letter=False)
             for key in keys:
-                aliases.setdefault(key, label)
+                aliases.setdefault(key, entry)
         # Older internally generated files carried these five fixed helpers.
         # Fold only this proven engine format; user uploads keep every column.
         for kind, keys in [('code', ('Employee ID', 'employee_code')),
@@ -31,7 +35,7 @@ class TemplateMapping(models.AbstractModel):
             column = next(c for c in identities if c['kind'] == kind)
             if column['rule_id']:
                 for key in keys:
-                    aliases.setdefault(key, column['label'])
+                    aliases.setdefault(key, (column['label'], column['label'], '', ''))
         raw = self._import_batch_row(batch)
         legacy_email = 'email' in raw and not any(r.name == 'email' or r.source_ids.filtered(
             lambda s: s.kind == 'excel' and s.key == 'email') for r in cfg.rule_ids)
@@ -42,9 +46,12 @@ class TemplateMapping(models.AbstractModel):
                 key = cid[2:]
                 if key == 'email' and legacy_email:
                     continue
-                label = aliases.get(key)
-                if label:
-                    card = dict(card, id='c:' + label, label=label)
+                entry = aliases.get(key)
+                if entry:
+                    canonical, label, sheet, letter = entry
+                    card = dict(card, id='c:' + canonical, label=label)
+                    if canonical != label:
+                        card['meta'] = dict(card.get('meta') or {}, sheet=sheet, letter=letter)
                     cid = card['id']
             if cid not in seen:
                 left.append(card)
@@ -53,7 +60,7 @@ class TemplateMapping(models.AbstractModel):
         for wire in data['wires']:
             source = str(wire.get('leftId') or '')
             if source.startswith('c:') and source[2:] in aliases:
-                label = aliases[source[2:]]
-                wire['leftId'] = 'c:' + label
-                wire['source'] = label
+                canonical = aliases[source[2:]][0]
+                wire['leftId'] = 'c:' + canonical
+                wire['source'] = canonical
         return data

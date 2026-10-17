@@ -179,9 +179,9 @@ class TestPayrollTemplates(TransactionCase):
         self.apply(self.review(wb));raw,ids=self.api._engine_file(self.cfg,'2026-10')
         probe=self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True).new({'formula_config_id':self.cfg.id})
         parsed=probe._parse_source_file(raw,'file.xlsx');blob=probe._raw_data_from_row(parsed['headers'],parsed['rows'][0])
-        self.assertEqual(blob['Paid days'],20)
-        self.assertEqual(blob['Monthly bonus'],0)
-        self.assertEqual(blob['Salary'],1000)
+        headers = list(openpyxl.load_workbook(io.BytesIO(raw)).active.values)[0]
+        self.assertIn('Paid days', headers)
+        self.assertNotIn('Payroll|Paid days', headers)
         aliases=probe._template_alias_row(blob)
         self.assertEqual(aliases['Payroll|Paid days'],20)
         self.assertEqual(aliases['Payroll|Monthly bonus'],0)
@@ -572,6 +572,47 @@ class TestPayrollTemplates(TransactionCase):
         reviewed = self.review(wb, 'records')
         self.assertFalse(reviewed['issues'])
         self.assertEqual(reviewed['changes'][0]['value'], 1250)
+
+    def test_records_shared_component_names_keep_stable_field_columns(self):
+        cards = self.api._cards(self.cfg)
+        salary = dict(cards['f:hr.contract:wage'])
+        cards['f:hr.contract:name'] = dict(salary, id='f:hr.contract:name',
+            field='name', ttype='char', editable=True)
+        with patch.object(type(self.api), '_cards', return_value=cards):
+            wb = self.export('records')
+            ws = wb['Employee records']
+            self.assertEqual([c.value for c in ws[1]].count(self.salary.name), 2)
+            columns = {c.comment.text.splitlines()[0][7:]: c.column for c in ws[1]
+                if c.comment and c.comment.text.startswith('field: ')}
+            ws.cell(2, columns['f:hr.contract:wage'], 1250)
+            review = self.review(wb, 'records')
+            self.assertFalse(review['issues'])
+            self.assertEqual(len(review['changes']), 1)
+            self.assertEqual(review['changes'][0]['field_id'], 'f:hr.contract:wage')
+
+    def test_repeated_component_names_keep_distinct_monthly_and_engine_values(self):
+        other = self.rule(self.bonus.name, 'WBOTHERBONUS', 'money')
+        other.set_source_binding('excel', 'Other|' + other.name)
+        self.env['pb.payroll.month.inputs'].create({'config_id': self.cfg.id,
+            'company_id': self.env.company.id, 'employee_id': self.emp.id, 'period': '2026-10',
+            'payload': {'rule:%s' % self.paid.id: 20, 'rule:%s' % self.bonus.id: 45,
+                        'rule:%s' % other.id: 90}})
+        wb = self.export()
+        self.assertEqual([c.value for c in wb['Monthly adjustments'][1]].count(self.bonus.name), 2)
+        reviewed = self.review(wb)
+        self.assertFalse(reviewed['issues'])
+        self.assertEqual(self.cell(reviewed, self.bonus)['value'], 45)
+        self.assertEqual(self.cell(reviewed, other)['value'], 90)
+        raw, ids = self.api._engine_file(self.cfg, '2026-10')
+        headers = list(openpyxl.load_workbook(io.BytesIO(raw)).active.values)[0]
+        self.assertEqual(headers.count(self.bonus.name), 2)
+        probe = self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True,
+            pb_template_monthly_codes=[self.paid.code, self.bonus.code, other.code]).new({'formula_config_id': self.cfg.id})
+        parsed = probe._parse_source_file(raw, 'generated.xlsx')
+        blob = probe._raw_data_from_row(parsed['headers'], parsed['rows'][0])
+        values = probe._transform_data_to_formula_inputs(blob, contract=self.contract, employee=self.emp)
+        self.assertEqual(values[self.bonus.code], 45)
+        self.assertEqual(values[other.code], 90)
 
     def test_schema_identity_rename_uses_download_receipt(self):
         code, name = self.schema_identity()

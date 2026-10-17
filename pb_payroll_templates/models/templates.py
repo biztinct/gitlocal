@@ -363,7 +363,11 @@ class PayrollTemplates(models.AbstractModel):
             ws = wb.create_sheet(sheet_name)
             identity = [c['label'] for c in identity_columns]
             headers = identity + [c['label'] for c in cols] + ['_row']
-            if len(set(headers)) != len(headers):
+            # Record columns are keyed by their saved field IDs in comments.
+            # Two destinations may legitimately share a component name (e.g.
+            # Wage and its contract component). Only identity headings must be
+            # unique, because those are matched by heading on import.
+            if not self._validate_identity_headers(headers, identity_columns):
                 raise UserError(_('Two workbook columns have the same component name. Give them distinct names in the payroll scheme before downloading.'))
             ws.append(headers)
             for ci, cell in enumerate(ws[1], 1):
@@ -646,6 +650,7 @@ class PayrollTemplates(models.AbstractModel):
         freshly from records.
         """
         import openpyxl
+        from openpyxl.comments import Comment
         if cfg.state != 'active':
             raise UserError(_('Activate this payroll configuration before using its monthly inputs in Pay Run.'))
         people = self._roster(cfg, period)
@@ -693,12 +698,17 @@ class PayrollTemplates(models.AbstractModel):
         for c in catalog:
             cols.append(c)
             headers.append(c['label'])
-        if len(set(headers)) != len(headers):
-            raise UserError(_('Two payroll components have the same name. Give them distinct names before preparing the pay data.'))
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = 'Payroll'
         ws.append(headers)
+        # Names can repeat across worksheets in the original scheme. Keep the
+        # familiar headings and bind each physical column by its stable code.
+        component_codes = [cfg.rule_ids.browse(c['rule_id']).code if c['rule_id'] else ''
+                           for c in identity_cols] + [c['code'] for c in cols]
+        for cell, code in zip(ws[1], component_codes):
+            if code:
+                cell.comment = Comment('component: ' + code, 'Payobook')
         for e in people:
             vals = [self._identity_value(e, c) for c in identity_cols]
             for c in cols:
@@ -789,17 +799,18 @@ class TemplateBatch(models.Model):
         if not (self.env.context.get('pb_template_engine') or self._template_period()):
             return raw_data
         data = dict(raw_data or {})
+        original = dict(data)
         for rule in self.formula_config_id.rule_ids.filtered(lambda r: r.column_type == 'input'):
             label = rule.name or rule.code
             aliases = [s.key for s in rule.source_ids if s.kind == 'excel' and s.key]
             aliases += self._rule_header_candidates(rule, allow_column_letter=False)
-            if label not in data:
-                source = next((key for key in aliases if key in data), None)
-                if source is None:
-                    continue
-                data[label] = data[source]
+            source = next((key for key in aliases if key in original), None)
+            if source is None:
+                continue
+            value = original[source]
+            data.setdefault(label, value)
             for alias in aliases:
-                data.setdefault(alias, data[label])
+                data.setdefault(alias, value)
         return data
 
     def _identity_from_file_row(self, raw_data):
@@ -873,9 +884,25 @@ class TemplateBatch(models.Model):
                            single_sheet_fallback=False):
         if self.env.context.get('pb_template_engine'):
             import openpyxl
-            wb = openpyxl.load_workbook(io.BytesIO(file_content), read_only=True, data_only=True)
-            rows = list(wb['Payroll'].values)
-            return {'headers': list(rows[0]), 'rows': [list(r) for r in rows[1:]], 'multisheet': False}
+            wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
+            ws = wb['Payroll']
+            headers, used = [], set()
+            by_code = {r.code: r for r in self.formula_config_id.rule_ids}
+            for cell in ws[1]:
+                key = cell.value
+                tagged = False
+                if cell.comment and cell.comment.text.startswith('component: '):
+                    rule = by_code.get(cell.comment.text[11:])
+                    if rule:
+                        tagged = True
+                        keys = [s.key for s in rule.source_ids if s.kind == 'excel' and s.key]
+                        key = next((k for k in keys if k not in used), rule.code)
+                if tagged and key in used:
+                    raise UserError(_('The generated pay data contains duplicate input bindings. Review the component sources.'))
+                headers.append(key)
+                used.add(key)
+            rows = list(ws.iter_rows(min_row=2, values_only=True))
+            return {'headers': headers, 'rows': [list(r) for r in rows], 'multisheet': False}
         return super()._parse_source_file(file_content, filename, connector=connector,
                                           single_sheet_fallback=single_sheet_fallback)
 
