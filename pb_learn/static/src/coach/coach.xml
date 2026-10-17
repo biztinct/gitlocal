@@ -51,9 +51,12 @@
                     <span class="lrn-dmark" aria-hidden="true">
                         <svg class="lrn-ic"><use href="#lrn-i-sparkles"/></svg>
                     </span>
-                    <span class="lrn-dname">
-                        <b t-esc="coachName"/>
-                        <small t-if="screenLabel" class="lrn-dplace" t-key="screenLabel"><t t-esc="onScreenText"/> <t t-esc="screenLabel"/></small>
+                    <!-- LEARNREV P3 (S8a): "Guide · Component treatment" while the
+                         Guide shows (the full place is the tooltip); the helper's
+                         name and "On: …" otherwise. -->
+                    <span class="lrn-dname" t-att-title="headHint">
+                        <b t-esc="headTitle"/>
+                        <small t-if="screenLabel and !guideShown" class="lrn-dplace" t-key="screenLabel"><t t-esc="onScreenText"/> <t t-esc="screenLabel"/></small>
                     </span>
                 </span>
                 <!-- Routed through the delegated handler on the root, like every

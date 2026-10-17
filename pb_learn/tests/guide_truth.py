@@ -29,6 +29,13 @@ def norm(s):
     return ' '.join(s.split())
 
 
+def raw_text(s):
+    """Whitespace-normalised and entities resolved, TAGS KEPT: a label is one
+    text node only if it is found in this as written (LEARNREV P3, LR30)."""
+    s = html.unescape(str(s or '')).replace('’', "'")
+    return ' '.join(s.split())
+
+
 def pairs(node, path=''):
     """Every authored `{en, vi}` leaf under `node`, with its path. A dict that
     has only one of the two keys is yielded too, so the gate can fail it."""
@@ -207,6 +214,12 @@ def check_files(screen_key, man, read, content, anchors, po_for):
         else:
             tpl_text[rel] = src
     tpl_norm = norm('\n'.join(tpl_text.values()))
+    # LEARNREV P3 (LR30): the same text with its tags KEPT. OWL translates
+    # each text node on its own, so a header written `Included in<br/>another
+    # total` is two terms and stays English on a Vietnamese screen, while the
+    # tag-stripped `tpl_norm` above still finds it. A column must be ONE text
+    # node: found here as written, not only once the tags are gone.
+    tpl_raw = raw_text('\n'.join(tpl_text.values()))
     tpl_modules = sorted({rel.split('/', 1)[0] for rel in templates})
 
     def vi_on_screen(english):
@@ -216,14 +229,21 @@ def check_files(screen_key, man, read, content, anchors, po_for):
                 return hit
         return None
 
-    def on_screen(where_, what, pair):
+    def on_screen(where_, what, pair, one_node=False):
         """A header or button text: in the screen's files, in English, and its
-        Vietnamese is exactly what the screen shows in Vietnamese."""
+        Vietnamese is exactly what the screen shows in Vietnamese. A column
+        (`one_node`) must also be one text node in the template (LR30)."""
         en_text = pair.get('en')
         if not en_text or not tpl_text:
             return
         if norm(en_text) not in tpl_norm:
             err('%s: %s "%s" is not in %s' % (where_, what, en_text, ', '.join(templates)))
+            return
+        if one_node and raw_text(en_text) not in tpl_raw:
+            err('%s: %s "%s" is split by a tag in %s — OWL translates each text '
+                'node on its own, so it would stay English on a Vietnamese '
+                'screen; write it as one text and wrap it with CSS (LR30)'
+                % (where_, what, en_text, ', '.join(templates)))
             return
         vi = vi_on_screen(en_text)
         if not vi:
@@ -298,7 +318,7 @@ def check_files(screen_key, man, read, content, anchors, po_for):
         for lang in ('en', 'vi'):
             if col.get(lang):
                 current_labels[lang].add(col[lang])
-        on_screen(fwhere, 'column', col)
+        on_screen(fwhere, 'column', col, one_node=True)
         if f.get('anchor') and not anchor_ok(f['anchor']):
             err('%s: anchor %s is not registered or in the template' % (fwhere, f['anchor']))
         if f.get('derived'):

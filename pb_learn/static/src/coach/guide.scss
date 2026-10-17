@@ -423,6 +423,36 @@
     .lrn-ic { width: 13px; height: 13px; color: #5A4BB0; }
 }
 
+// ------------------------------------------------------------- folded (P3)
+// LEARNREV P3 (S8b): while a conversation is under way the five sections
+// show their titles only, and one quiet link opens them again.
+.lrn-gfolded .lrn-gsecs { gap: 0; }
+.lrn-gshow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 12px 8px;
+    padding: 4px 2px;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5A4BB0;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover, &:focus-visible { border-bottom-color: currentColor; outline: none; }
+}
+// The header's "Guide · Component treatment": one line, never wrapped.
+.lrn-drawer.lrn-has-guide .lrn-dname b {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 // ------------------------------------------------------------- the dock
 // `.lrn-dhead .lrn-hbtn` sets display; match its specificity to hide it.
 .lrn-dhead .lrn-dockbtn { display: none; }
