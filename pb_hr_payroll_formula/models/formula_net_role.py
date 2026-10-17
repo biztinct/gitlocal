@@ -608,12 +608,12 @@ class HrFormulaRuleNetRole(models.Model):
             ('info', 'Information only'),
             ('mixed', 'Both added and taken off'),
         ],
-        string='Net Pay Role',
+        string='Pay role',
         help="What the net pay formula does with this component. Derived from "
              "the scheme's own formulas, not from the component's name.",
     )
     net_role_detail = fields.Boolean(
-        string='Folded Into a Total',
+        string='Included in another total',
         help="This component is already included in another component of the "
              "same kind, so a pay run counts the total and not this line. The "
              "line still shows on the payslip.",
@@ -650,7 +650,7 @@ class HrFormulaRuleNetRole(models.Model):
         ],
         string='Role Decided By',
         help="'Set by a person' means re-classifying the scheme leaves this "
-             "component's pay role and subtotal flag alone.",
+             "component's pay role and the Included in another total tick alone.",
     )
 
 

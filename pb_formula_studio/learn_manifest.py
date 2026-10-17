@@ -440,7 +440,8 @@ MANIFESTS = {
         'station': 'treatment',
         'tasks': ['sc_treatment'],
         'terms': ['componentTreatment', 'payRole', 'subtotal', 'valueType'],
-        'retired_labels': {'en': ["Group", "Subtotal", "Tells the run"],
+        'retired_labels': {'en': ["Group", "Subtotal", "Tells the run",
+                                  "Net Pay Role", "Folded Into a Total"],
                            'vi': ["Tổng phụ", "Báo cho đợt lương"]},
     },
 }
