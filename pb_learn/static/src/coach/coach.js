@@ -49,7 +49,7 @@ import { loadContent, composeScreens, gateSteps } from "../content/content_loade
 import { flashRing, PanelSpot } from "../engine/spotlight";
 /* LEARNREV P4 — a lesson played inside the Guide panel, beside the real
    screen: the pure renderer, and the decision of where each step plays. */
-import { doneHTML, lessonCardHTML, pickCountry, placeFor, quizHTML, stepView }
+import { doneHTML, lessonCardHTML, pickCountry, placeFor, quizHTML, stepRef, stepView }
     from "./lesson_panel";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeWelcome } from "./first_login";
@@ -157,6 +157,9 @@ export const COACH_ACTIONS = new Set([
     // this learner's own `learn.progress` row and learning-log events.
     "c-lpstart", "c-lpnext", "c-lpback", "c-lpleave", "c-lpretry", "c-lppractice",
     "c-lpans", "c-lpretryq", "c-lpfinish",
+    // LEARNREV P5b — thumbs on a lesson step: one `learn.event` rating row
+    // through `learn.guide.rpc_feedback` (the field cards' seam), no text.
+    "c-lprate",
     // LEARNREV P4 (S3) — Stop on the Tasks row while a walkthrough runs
     // beside the Guide: the walkthrough's own Leave, nothing else.
     "c-scstop",
@@ -292,6 +295,9 @@ export class CoachHost extends Component {
             // this reader any more).
             loadFailed: false,
             gotoFailed: false,
+            // LEARNREV P5b — lesson steps rated in this page's life
+            // ({"lesson.L10.3": "down"}); never stored, the server has it.
+            rated: {},
             // LEARNREV P2 — the Guide for the screen on show (`learn.guide.
             // rpc_guide`), the call's key, its progress, which sections are
             // open, which Fields row is expanded, docked or floating.
@@ -2110,9 +2116,29 @@ export class CoachHost extends Component {
             return quizHTML((L.lesson.quizzes || [])[0], Object.assign(ui, { answered: lp.answered }));
         }
         const step = L.steps[lp.index] || L.steps[0];
+        const ref = this._lpRef(L, step);
         return lessonCardHTML(stepView(step, this.lpCountry), Object.assign(ui, {
             index: lp.index, total: L.steps.length, note: lp.note,
+            rateRef: ref, rated: (this.state.rated || {})[ref] || "",
         }));
+    }
+
+    /** LEARNREV P5b — the step's thumbs reference. The index counts the
+     *  lesson's steps AS SHIPPED (a feature gate may hide one from this
+     *  reader), which is what the server checks it against. */
+    _lpRef(L, step) {
+        return stepRef("lesson", L && L.lesson && L.lesson.key, ((L && L.lesson.steps) || []).indexOf(step));
+    }
+
+    /** A thumbs press on a lesson step or a walkthrough card: remembered for
+     *  this drawer (the card redraws with the choice and a thank-you) and
+     *  sent once through the field cards' seam. Never any free text. */
+    _rateStep(ref, up) {
+        if (!ref || (this.state.rated || {})[ref]) {
+            return;
+        }
+        this.state.rated = Object.assign({}, this.state.rated, { [ref]: up ? "up" : "down" });
+        this.orm.call("learn.guide", "rpc_feedback", [this.state.screen || "", ref, !!up]).catch(() => {});
     }
 
     /** "Start the lesson" (Understand), or a hand-back from the practice copy
@@ -3378,6 +3404,8 @@ export class CoachHost extends Component {
             }
         } else if (act === "c-lpfinish") {
             this._lpFinish();
+        } else if (act === "c-lprate") {
+            this._rateStep(el.dataset.key, el.dataset.v === "up");
         } else if (act === "c-scstop") {
             this.sc.stop();
         }

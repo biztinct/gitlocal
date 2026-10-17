@@ -525,12 +525,24 @@ export const scenarioService = {
             log("scenario_start", `${key}:${mode}`);
         }
 
+        /** LEARNREV P5b — a thumbs press on a walkthrough card: one rating
+         *  row through the field cards' seam (`walk.<scenario>.<step key>`;
+         *  the server checks the step and counts it under the step's own
+         *  screen). Never any free text; a failure is silent, like the cards'. */
+        function rate(scenarioKey, stepKey, up) {
+            if (!scenarioKey || !stepKey) {
+                return Promise.resolve(false);
+            }
+            return orm.call("learn.guide", "rpc_feedback",
+                ["", `walk.${scenarioKey}.${stepKey}`, !!up]).catch(() => false);
+        }
+
         return {
             state,
             load, all, get, steps, current, forScreen, loadChecks, check,
             begin, next, back, goTo, finish, stop,
             navigate, practiceInstead, refuse, retry, screenOfStep,
-            record, log, logStart, nowServer,
+            record, log, logStart, nowServer, rate,
             PROGRESS_PREFIX,
         };
     },

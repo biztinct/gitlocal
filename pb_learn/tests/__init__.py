@@ -57,3 +57,5 @@ from . import test_learnrev_p5_s3a
 from . import test_learnrev_p5_s3b
 from . import test_learnrev_p5_s3c
 from . import test_learnrev_p5_s3d
+# LEARNREV P5b — thumbs on every step, every lesson in the four lines.
+from . import test_learnrev_p5b

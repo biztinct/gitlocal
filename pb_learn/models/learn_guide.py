@@ -63,6 +63,11 @@ ACCESS_LENSES = ('access', 'nav')
 
 #: The one learn.event kind a field card's thumbs write (no free text).
 FEEDBACK_KIND = 'guide_feedback'
+#: LEARNREV P5b — the same thumbs on a lesson step and a walkthrough card:
+#: `lesson.<lesson>.<step index>` / `walk.<scenario>.<step key>`.
+STEP_PREFIXES = ('lesson.', 'walk.')
+#: The screen a walkthrough step with no screen of its own is counted under.
+STEP_SCREEN_FALLBACK = 'hub_learn'
 
 
 def is_access_target(open_=None, tag=None, lens=None):
@@ -591,17 +596,87 @@ class LearnGuide(models.AbstractModel):
 
     @api.model
     def rpc_feedback(self, screen_key, field_key, up):
-        """A field card's thumbs. One `learn.event` row, the drawer's own
-        logging seam: the screen, `<field>:up|down`, never any free text.
-        A screen or field the manifests do not declare writes nothing."""
-        man = self.manifest(str(screen_key or ''))
-        keys = {f.get('key') for f in (man or {}).get('fields') or ()}
-        if not man or field_key not in keys:
-            return False
+        """A field card's thumbs — or, since LEARNREV P5b, a lesson step's or a
+        walkthrough card's. One `learn.event` row, the drawer's own logging
+        seam: the screen, `<item>:up|down`, never any free text.
+
+        `field_key` is a manifest field key of `screen_key`, or a STEP
+        reference (`step_ref`): `lesson.<lesson key>.<step index>` or
+        `walk.<scenario key>.<step key>`. A step is checked against the shipped
+        content and logged under the step's OWN screen (what the client sent is
+        ignored), so the report groups it with that screen's field cards; the
+        lesson index counts the lesson's steps as shipped, before any feature
+        gate drops one (the client sends that index). A
+        screen, field or step the content does not declare writes nothing."""
+        field_key = str(field_key or '')
+        if field_key.startswith(STEP_PREFIXES):
+            screen = self.step_ref(field_key)
+            if screen is None:
+                return False
+            screen_key = screen
+        else:
+            man = self.manifest(str(screen_key or ''))
+            keys = {f.get('key') for f in (man or {}).get('fields') or ()}
+            if not man or field_key not in keys:
+                return False
         detail = ('%s:%s' % (field_key, 'up' if up else 'down'))[:64]
         return bool(self.env['learn.event'].log(
             FEEDBACK_KIND, screen=str(screen_key)[:64], detail=detail,
             lang='vi' if is_vi(self._lang()) else 'en'))
+
+    @api.model
+    def _step_of(self, ref):
+        """`(kind, holder, step)` for a step reference, or None. `holder` is
+        the lesson or the scenario node from learn_content.json."""
+        kind, _dot, rest = str(ref or '').partition('.')
+        key, _dot, which = rest.rpartition('.')
+        if not key or not which:
+            return None
+        content = self.env['learn.content']
+        if kind == 'lesson':
+            if not which.isdigit():
+                return None
+            for st in content.stations():
+                for lesson in st.get('lessons') or ():
+                    if lesson.get('key') == key:
+                        steps = lesson.get('steps') or []
+                        i = int(which)
+                        return (kind, lesson, steps[i]) if i < len(steps) else None
+            return None
+        if kind == 'walk':
+            sc = content.scenario(key)
+            step = next((s for s in (sc or {}).get('steps') or () if s.get('key') == which), None)
+            return (kind, sc, step) if step else None
+        return None
+
+    @api.model
+    def step_ref(self, ref):
+        """The screen key a step reference rates (the step's own screen, else
+        its walkthrough's first screen, else `learn`), or None when the content
+        has no such step."""
+        found = self._step_of(ref)
+        if not found:
+            return None
+        _kind, holder, step = found
+        return (step.get('screen') or ((holder.get('screens') or [None])[0])
+                or STEP_SCREEN_FALLBACK)
+
+    @api.model
+    def step_label(self, ref, lang):
+        """What the report calls a rated step: "<lesson> · Step 3: <title>"
+        or "<walkthrough> · <title>", in `lang`. The reference itself when the
+        content no longer has the step (a rating outlives a rewrite)."""
+        found = self._step_of(ref)
+        if not found:
+            return ref
+        kind, holder, step = found
+        name = text(holder.get('name'), lang)
+        title = text(step.get('title'), lang)
+        if kind == 'lesson':
+            n = int(ref.rpartition('.')[2]) + 1
+            word = self.env['learn.content'].chrome_text('step', lang)
+            return '%s · %s %d: %s' % (name, word, n, title)
+        return '%s · %s' % (name, title)
 
     @api.model
     def explain_material(self, screen_key, columns=3):

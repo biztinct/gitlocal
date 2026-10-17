@@ -150,7 +150,10 @@
                   </div>
                   <ul class="lrn-fbk-sub" t-if="state.fb.open[row.screen]">
                     <t t-foreach="row.fields" t-as="fld" t-key="fld.key">
-                      <li>
+                      <li t-att-data-kind="fld.kind or 'field'">
+                        <!-- LEARNREV P5b: a lesson step or walkthrough card
+                             rated beside the screen's field cards. -->
+                        <svg class="lrn-ic lrn-fbk-kind" aria-hidden="true"><use t-att-href="fld.kind === 'step' ? '#lrn-i-book-open' : '#lrn-i-table'"/></svg>
                         <span class="lrn-fbk-name" t-esc="fld.label"/>
                         <span class="lrn-fbk-n up"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-up"/></svg><t t-esc="fld.up"/></span>
                         <span class="lrn-fbk-n down"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-down"/></svg><t t-esc="fld.down"/></span>

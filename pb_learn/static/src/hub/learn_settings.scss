@@ -483,6 +483,10 @@
 
     li { display: flex; align-items: center; gap: 12px; padding: 5px 0; }
     .lrn-fbk-name { font-weight: 600; font-size: 12.5px; }
+    /* LEARNREV P5b — a rated lesson step / walkthrough card: its long label
+       ("<lesson> · Step 3: <title>") wraps and pushes the counts right. */
+    .lrn-fbk-kind { width: 13px; height: 13px; flex: none; color: #6B6787; margin-right: -6px; }
+    li[data-kind="step"] .lrn-fbk-name { flex: 1 1 auto; min-width: 0; font-weight: 550; }
 }
 
 .lrn-fbk-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }

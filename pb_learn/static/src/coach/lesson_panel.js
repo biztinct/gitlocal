@@ -158,6 +158,36 @@ export function linesHTML(view, ui) {
     ].join("")}</dl>`;
 }
 
+/** LEARNREV P5b — the reference a step's thumbs send through the field
+ *  cards' seam (`learn.guide.rpc_feedback`): `lesson.<key>.<index as
+ *  shipped>` or `walk.<scenario>.<step key>`. "" when there is nothing to
+ *  rate (no key), so a card without one simply draws no thumbs. */
+export function stepRef(kind, holderKey, which) {
+    if (!holderKey || which === undefined || which === null || which === "" || which < 0) {
+        return "";
+    }
+    return `${kind === "walk" ? "walk" : "lesson"}.${holderKey}.${which}`;
+}
+
+/** The thumbs under a lesson step or a walkthrough card: the field card's
+ *  own buttons and words ("Was this helpful?"), so one look everywhere.
+ *  `rated`: "up" | "down" | "" — a rated step shows its choice and thanks,
+ *  and cannot be rated twice in the same play. `act` is the host's action. */
+export function rateHTML(ref, rated, act = "c-lprate") {
+    if (!ref) {
+        return "";
+    }
+    const btn = (v, icon, label) => {
+        const on = rated === v;
+        // The space before aria-label sits in its own interpolation (the
+        // minifier strips whitespace straight after a `}`).
+        return `<button type="button" class="lrn-fbbtn${on ? " on" : ""}" data-act="${act}" data-v="${v}" data-key="${esc(ref)}"${rated ? " disabled" : ""}${SP}aria-label="${esc(T(label))}" title="${esc(T(label))}" aria-pressed="${on ? "true" : "false"}">${ic(icon)}</button>`;
+    };
+    return `<div class="lrn-lp-rate"><span class="lrn-fb" role="group" aria-label="${esc(T("gHelpful"))}">
+        <span class="lrn-lp-ratel">${esc(T("gHelpful"))}</span>${btn("up", "thumbs-up", "gHelpfulYes")}${btn("down", "thumbs-down", "gHelpfulNo")}${rated
+            ? `<span class="lrn-fbthanks" role="status">${esc(T("gThanks"))}</span>` : ""}</span></div>`;
+}
+
 export function lessonCardHTML(view, ui) {
     const v = view || {};
     const n = (ui.index || 0) + 1;
@@ -177,6 +207,7 @@ export function lessonCardHTML(view, ui) {
         <h4 class="lrn-lp-title">${esc(ui.text(v.title))}</h4>
         ${lines}
         ${noteHTML(ui.note)}${tip}${conseq}
+        ${rateHTML(ui.rateRef || "", ui.rated || "")}
         <div class="lrn-lp-foot">
             <button type="button" class="lrn-btn sm" data-act="c-lpback"${ui.index ? "" : " disabled"}>${ic("chevron-left")}${esc(T("back"))}</button>
             <button type="button" class="lrn-btn sm pri" data-act="c-lpnext">${esc(last ? T("check") : T("next"))}${ic("chevron-right")}</button>
