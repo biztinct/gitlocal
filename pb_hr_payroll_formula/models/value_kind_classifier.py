@@ -299,6 +299,17 @@ def formula_result_kind(formula):
     return None
 
 
+def calendar_date_label(label, personal=False):
+    """A calendar field, not a payment named after an event such as a birthday."""
+    if re.search(r'\b(?:DAYS|DAY COUNT|DATEDIF)\b', label):
+        return False
+    if re.search(r'\bDATE\b|NGAY\s+(?:BAT DAU|KY|KET THUC)', label):
+        return True
+    return personal and bool(re.search(r'\b(?:BIRTHDAY|COMMENCEMENT)\b', label)) and not bool(
+        re.search(r'\b(?:COMPENS\w*|BONUS|ALLOWANCE|AMOUNT|PAY|PAYMENT|'
+                  r'INCENTIVE|BENEFIT|PRESENT|GIFT|SALARY|WAGE|AWARD|REWARD|ADJUST\w*|COST|EARNING|DEDUCT\w*|CONTRIBUT\w*|TAX|REIMBURSE\w*|INSURANCE)\b', label))
+
+
 def classify_value_kind(code='', name='', column_role='payroll', net_role='',
                         column_type='input', contexts=(), quantity=False,
                         vendor_type='', sample_values=None,
@@ -336,15 +347,12 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
     if column_type == 'formula' and _all(shape, 'texty') and not shape['numeric']:
         return KIND_TEXT, 'every cached Excel formula result is text'
 
-    if column_type == 'input' and re.search(
-            r'\b(?:DATE|BIRTHDAY|COMMENCEMENT)\b|NGAY\s+(?:BAT DAU|KY|KET THUC)', label) \
-            and not re.search(r'\b(?:DAYS|DAY COUNT|DATEDIF)\b', label):
+    if column_type == 'input' and calendar_date_label(label, personal=column_role != 'payroll'):
         return KIND_DATE, 'the column names a calendar date'
 
     # --- 2. DIRECT evidence of arithmetic ----------------------------------
-    # A computed or constant column is arithmetic by construction; so is
-    # anything an operator adds, multiplies or divides. These two are the only
-    # signals strong enough to outrank the values themselves.
+    # Without explicit result-type evidence, computed/constant columns use
+    # the numeric default, as does an input used in arithmetic.
     #
     # This rung outranks the text rung ONLY on `arith`. A bare reference with no
     # operator context is noise — `formula_dependencies` holds column LETTERS,
@@ -380,8 +388,7 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
         return KIND_TEXT, 'every value seen is text'
 
     # No cached rows are required to recognise an explicitly named date field.
-    if re.search(r'\b(?:DATE|BIRTHDAY|COMMENCEMENT)\b|NGAY\s+(?:BAT DAU|KY|KET THUC)', label) \
-            and not re.search(r'\b(?:DAYS|DAY COUNT|DATEDIF)\b', label):
+    if calendar_date_label(label, personal=column_role != 'payroll'):
         return KIND_DATE, 'the column names a calendar date'
     if quantity:
         return KIND_QUANTITY, 'the column measures hours, days or a count'

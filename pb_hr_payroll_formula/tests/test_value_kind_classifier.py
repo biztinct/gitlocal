@@ -182,6 +182,10 @@ class TestValueKindLadder(unittest.TestCase):
         self.assertEqual(self.kind(sample_values=[True, False]), 'boolean')
         self.assertEqual(self.kind(column_type='formula', formula='=IF(A2>0,"YES","NO")'), 'text')
         self.assertEqual(self.kind(name='Start date', contexts={'arith'}), 'date')
+        self.assertEqual(self.kind(name='Birthday compensation'), 'money')
+        self.assertEqual(self.kind(name='Birthday (Company)'), 'money')
+        self.assertEqual(self.kind(name='Birthday bonus', contexts={'arith'}), 'money')
+        self.assertEqual(self.kind(name='Birthday', column_role='profile', contexts={'arith'}), 'date')
         self.assertEqual(self.kind(column_type='formula', sample_values=['#VALUE!']), 'money')
 
     def test_10e_quantity_is_split_out_of_money(self):

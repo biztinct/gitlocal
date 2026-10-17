@@ -167,3 +167,22 @@ class TestTreatmentClassification(TransactionCase):
         self.config.set_component_setup({'BASICT': {'group': ''}})
         self.assertEqual(self.rules['BASICT'].component_type, 'Earnings')
         self.assertEqual(self.rules['BASICT'].component_type_source, 'auto')
+
+    def test_09_birthday_payment_is_money_not_a_calendar_field(self):
+        rule = self.rules['ALLOWT']
+        rule.name = 'Birthday compensation'
+        self.config.reclassify_from_formulas()
+        self.assertEqual(rule.value_kind, 'money')
+        self.assertEqual(rule.net_role, 'earning')
+        self.assertEqual(rule.component_type, 'Earnings')
+
+    def test_10_event_payment_replaces_a_previous_automatic_date_guess(self):
+        rule = self.rules['ALLOWT']
+        rule.write({'name': 'Birthday (Company)', 'value_kind': 'date',
+                    'value_kind_source': 'auto', 'net_role': 'info',
+                    'net_role_source': 'auto', 'component_type': 'Information',
+                    'component_type_source': 'auto'})
+        self.config.reclassify_from_formulas()
+        self.assertEqual(rule.value_kind, 'money')
+        self.assertEqual(rule.net_role, 'earning')
+        self.assertEqual(rule.component_type, 'Earnings')
