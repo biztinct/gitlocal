@@ -46,3 +46,6 @@ from . import test_guide
 # LEARNREV P2 — the Guide panel (node) and its server halves.
 from . import test_guide_client
 from . import test_learnrev_p2
+# LEARNREV P3 — the Library: field index, menu order, retired page words,
+# the LR30 gate rule, Explain never rewritten when it is the Guide's (S10).
+from . import test_learnrev_p3

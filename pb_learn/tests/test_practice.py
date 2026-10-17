@@ -316,7 +316,10 @@ class TestPracticeMode(TransactionCase):
         """The map card and the Coach entry. Two doors, ONE view: the Coach
         opens the same client action with a context key rather than growing a
         sandbox of its own."""
-        self.assertIn('data-act="to-practice"', self.journey)
+        # LEARNREV P3: the map card is the Library's Practice row — drawn by
+        # journey/library.js, put on the page by journey.js `_practiceCardHTML`.
+        self.assertIn('data-act="to-practice"', _read('static/src/journey/library.js'))
+        self.assertIn('_practiceCardHTML(model)', self.journey)
         self.assertIn('ctx.practice', self.journey)
         self.assertIn('data-act="c-practice"', self.coach)
         # LEARN REFRESH step 1: the Coach opens it inside the Learn hub now,
