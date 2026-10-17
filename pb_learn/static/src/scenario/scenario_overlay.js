@@ -61,6 +61,7 @@ import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
 import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
 import { navPlace } from "../engine/places";
 import { DOCK_BELOW, placeCard } from "../engine/spotlight";
+import { linesHTML, stepView } from "../coach/lesson_panel";
 import { hubPlace } from "@pb_hub/js/hub_place";
 
 /* LEARN REFRESH step 4 — the words a screen uses when it refuses its reader,
@@ -914,7 +915,13 @@ export class ScenarioOverlay extends Component {
             parts.push(`<div class="lrn-kicker">${esc(tx(step.kicker))}</div>`);
         }
         parts.push(`<h3>${esc(tx(step.title))}</h3>`);
-        parts.push(`<div class="lrn-cbody">${gtx(step.body)}</div>`);
+        // LEARNREV P4 — a rewritten step is four lines (Look at · It means ·
+        // It affects · Press), drawn by the Guide's own renderer; a step not
+        // rewritten keeps its body.
+        const view = stepView(step, "");
+        parts.push(view.look && !view.legacy
+            ? linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) })
+            : `<div class="lrn-cbody">${gtx(step.body)}</div>`);
 
         if (this.ui.checking) {
             // LEARNREV P4 — a checked step: do it on the screen, I look.

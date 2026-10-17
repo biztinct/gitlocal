@@ -843,10 +843,16 @@ export class LearnJourney extends Component {
         const ask = step.act === "input"
             ? T("scExpected") + ": " + tx(step.value) + " — " + T("scTypeHere")
             : T("scPressIt");
+        // LEARNREV P4 — a rewritten walkthrough step is four lines, drawn
+        // by the Guide's own renderer; a step not rewritten keeps its body.
+        const view = stepView(step, (this.bundle && this.bundle.country) || "");
+        const said = view.look && !view.legacy
+            ? linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) })
+            : `<div class="lrn-cbody">${gtx(step.body)}</div>`;
         return `
         ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
         <h3>${esc(tx(step.title))}</h3>
-        <div class="lrn-cbody">${gtx(step.body)}</div>
+        ${said}
         ${acts ? `<div class="lrn-scwait">
             <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
             <p>${esc(ask)}</p>
@@ -933,8 +939,9 @@ export class LearnJourney extends Component {
         // LEARNREV P4 — handed over by the Guide panel: this step lives only
         // in the practice copy, and the shell says so in one line.
         const handed = !!this.state.handoff;
-        const note = handed && isPracticeAnchor(st.anchor) ? T("lpPracticeNote") : this.state.shellNote;
-        const shell = shellHTML(st.screen, { guided: true, visible: this.visible, note });
+        // The practice-copy note rides on the card (_coachCardHTML).
+        const shell = shellHTML(st.screen, { guided: true, visible: this.visible,
+                                             note: this.state.shellNote });
         const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
         const back = handed
             ? `<button class="lrn-btn sm" data-act="l-return">${ic("chevron-left")}${esc(T("lpBackReal"))}</button>` : "";
@@ -975,7 +982,11 @@ export class LearnJourney extends Component {
         const body = view.legacy || !view.look
             ? `<div class="lrn-cbody">${gtx(st.body)}</div>`
             : linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) });
-        return `
+        // Handed over by the Guide: the card itself says why this step is on
+        // the practice copy (a line in the shell sat under the card).
+        const handed = this.state.handoff && isPracticeAnchor(st.anchor)
+            ? `<div class="lrn-lp-note practice">${ic("flask")}<span>${esc(T("lpPracticeNote"))}</span></div>` : "";
+        return `${handed}
         ${st.kicker ? `<div class="lrn-kicker">${esc(tx(st.kicker))}</div>` : ""}
         <h3>${esc(tx(st.title))}</h3>
         ${body}

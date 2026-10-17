@@ -795,7 +795,9 @@
 .lrn-lp-quiz .lrn-opts { display: flex; flex-direction: column; gap: 6px; }
 .lrn-lp-done .lrn-lp-kicker { color: #2E7D4F; }
 // The practice copy's card draws the same four lines (journey.js).
-.lrn-coach .lrn-lp-lines { margin: 6px 0; }
+.lrn-coach .lrn-lp-lines, .lrn-sccard .lrn-lp-lines { margin: 6px 0; }
+.lrn-sccard .lrn-lp-line { grid-template-columns: 84px 1fr; }
+.lrn-coach > .lrn-lp-note { margin-bottom: 8px; }
 .lrn-coach .lrn-lp-line { grid-template-columns: 84px 1fr; }
 
 // S10 — on the Library, with the Guide on, the corner launcher does not float
