@@ -29,3 +29,6 @@ from . import learn_path
 # LEARNREV P1 — the content engine: one Guide per screen, read from the
 # product's own fields and the screen's manifest. Reads learn.content.
 from . import learn_guide
+# LEARNREV P4 — a walkthrough's Try, checked against what the person did
+# (read-only, demo-world sessions only). Reads learn.guide's manifests.
+from . import learn_scenario

@@ -22,7 +22,7 @@ still be recomputed (draft, waiting for approval).
 """
 import logging
 
-from odoo import api, models
+from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
 _logger = logging.getLogger(__name__)
@@ -163,6 +163,79 @@ class HrFormulaConfigLearnRightNow(models.Model):
                 'action': None,
             })
         return items
+
+    # ------------------------------------------------------------ LEARNREV P4
+    @api.model
+    def learn_check_treatment(self, scenario, step, args=None):
+        """The "Fix figures that do not add up" walkthrough, checked on the
+        demo company (declared in learn_manifest.py `checks`; called by
+        pb_learn's `learn.scenario.check`, which has already refused anyone
+        outside a demo-world session). READ-ONLY, as the person.
+
+          fix        a pay role on this scheme was chosen by THIS person
+                     (`net_role_source == 'user'`, written by them since the
+                     step began): the named row, and the role they chose;
+          recompute  Right now has no "computed before your last change" item.
+        `{ok, note: {en, vi}}`."""
+        args = dict(args or {})
+        try:
+            config_id = int(args.get('config_id') or 0)
+        except (TypeError, ValueError):
+            config_id = 0
+        config = self.browse(config_id).exists() if config_id else self.browse()
+        if not config:
+            return {'ok': False, 'note': _pair(
+                "Open a pay scheme in Mapping › Component treatment first.",
+                "Hãy mở một chương trình lương ở Ánh xạ › Xử lý thành phần trước.")}
+        if step == 'recompute':
+            items = self.learn_right_now(dict(args, config_id=config.id))
+            items = items.get('items') if isinstance(items, dict) else items
+            stale = next((i for i in items or () if i.get('key') == 'recompute'), None)
+            if stale:
+                return {'ok': False, 'note': stale['text']}
+            return {'ok': True, 'note': _pair(
+                "Every open pay run of this scheme now uses your change.",
+                "Mọi đợt lương đang mở của chương trình này giờ đã dùng thay đổi của bạn.")}
+        domain = [('id', 'in', config.rule_ids.ids),
+                  ('net_role', '!=', False),
+                  ('net_role_source', '=', 'user'),
+                  ('write_uid', '=', self.env.uid)]
+        since = args.get('since')
+        if since:
+            try:
+                domain.append(('write_date', '>=', fields.Datetime.to_datetime(since)))
+            except (TypeError, ValueError):
+                pass
+        rule = self.env['hr.formula.rule'].search(domain, order='write_date desc, id desc', limit=1)
+        if rule:
+            role = self._learn_role_labels(rule.net_role)
+            name = rule.name or rule.code or ''
+            return {'ok': True, 'note': _pair(
+                "%s is now %s, set by you." % (name, role['en']),
+                "%s giờ là %s, do bạn đặt." % (name, role['vi']))}
+        board = config.value_kind_board()
+        review = [r['name'] for r in board.get('rows') or () if r.get('needs_review')]
+        if review:
+            return {'ok': False, 'note': _pair(
+                "Choose a pay role for %s, then press Save." % _names(review, 'en'),
+                "Hãy chọn vai trò trong lương cho %s, rồi bấm Lưu." % _names(review, 'vi'))}
+        return {'ok': False, 'note': _pair(
+            "Choose a pay role for a row, then press Save.",
+            "Hãy chọn vai trò trong lương cho một dòng, rồi bấm Lưu.")}
+
+    @api.model
+    def _learn_role_labels(self, value):
+        """A pay role's label in both languages, from the field (LR28: an
+        uninstalled Vietnamese falls back to English, never raises)."""
+        field = self.env['hr.formula.rule']._fields['net_role']
+        out = {}
+        for tag, lang in (('en', 'en_US'), ('vi', 'vi_VN')):
+            try:
+                labels = dict(field._description_selection(self.with_context(lang=lang).env))
+            except Exception:                                 # noqa: BLE001
+                labels = dict(field.selection) if isinstance(field.selection, list) else {}
+            out[tag] = labels.get(value) or value or ''
+        return out
 
     def _learn_stale_runs(self, config):
         """Open runs whose newest payslip write is older than the scheme's

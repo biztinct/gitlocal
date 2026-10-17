@@ -89,6 +89,15 @@ const REFUSAL_PROBE = 2500;    // ms an anchorless step keeps listening
    what the control does and moves on by itself after this long (Watch is
    being shown something; Do and Try still wait for the person). */
 const MISSING_SKIP = 4000;
+/* LEARNREV P4 — a checked step (Try on the demo company, or Do with a
+   declared check) asks the server this often whether the person's change is
+   there (the live capstone's own rhythm, live_mission.js), and shows a passed
+   check's note for a beat before moving on. */
+const CHECK_EVERY = 3000;
+const CHECK_OK_BEAT = 1400;
+/* How far back a check looks for the person's change (clock skew between the
+   browser and the server, and a change made just before the step opened). */
+const CHECK_SLACK_MS = 120000;
 
 function shown(el) {
     const r = el.getBoundingClientRect();
@@ -150,6 +159,11 @@ export class ScenarioOverlay extends Component {
             resolving: false,
             hasTarget: false,
             waiting: false,        // Do mode: listening for the learner's press
+            // LEARNREV P4 — a checked step: waiting for the server to see the
+            // person's own change, what is still missing, and the pass.
+            checking: false,
+            checkNote: null,
+            checkOk: false,
             typed: "",             // Watch mode: the value being "typed"
             hole: { top: 0, left: 0, w: 0, h: 0 },
             card: { top: 0, left: 0 },
@@ -161,6 +175,7 @@ export class ScenarioOverlay extends Component {
         this._clickCleanup = null;
         this._timer = null;
         this._typer = null;
+        this._poll = null;
         this._destroyed = false;
 
         this._onKey = this._onKey.bind(this);
@@ -297,6 +312,9 @@ export class ScenarioOverlay extends Component {
         this.ui.hasTarget = false;
         this.ui.waiting = false;
         this.ui.typed = "";
+        this.ui.checking = false;
+        this.ui.checkNote = null;
+        this.ui.checkOk = false;
         this._targetEl = null;
 
         const step = this.step;
@@ -347,6 +365,15 @@ export class ScenarioOverlay extends Component {
                 // A detached or exotic element must not end the walkthrough.
             }
             this._measure();
+        }
+
+        // LEARNREV P4 — a CHECKED step (Try on the demo company, or Do with a
+        // declared check): nothing is pressed for the person and a click is
+        // not taken as done — the step moves on when the server sees their
+        // own change (`_pollCheck`). The person can always Skip.
+        if (!this.isWatch && (this.state.checks || []).includes(step.key)) {
+            this._startCheck(step);
+            return;
         }
 
         if (step.act === "click" && el) {
@@ -593,6 +620,56 @@ export class ScenarioOverlay extends Component {
         }, PRESS_SETTLE);
     }
 
+    /** LEARNREV P4 — start waiting on a checked step. */
+    _startCheck(step) {
+        this.ui.checking = true;
+        this.ui.waiting = true;
+        this.ui.checkNote = null;
+        this.ui.checkOk = false;
+        this._checkSince = new Date(Date.now() - CHECK_SLACK_MS).toISOString()
+            .slice(0, 19).replace("T", " ");
+        this._pollCheck(step);
+    }
+
+    /** One poll of a checked step: ask the server whether the person's own
+     *  change is there (`learn.scenario.check`, read-only), say what is still
+     *  missing, and move on — after a beat that shows the pass — when it is.
+     *  Re-asks the step, the mode and that the walkthrough is still running
+     *  after every await; presses nothing, ever. */
+    async _pollCheck(step) {
+        if (this._destroyed || !this.state.active || this.state.blocked
+                || this.step !== step || this.isWatch) {
+            return;
+        }
+        // The scheme Mapping published, remembered for the walkthrough: a
+        // later step ("recompute the run") is checked from the Runs board.
+        const extra = (hubPlace && hubPlace.extra) || {};
+        if (Number(extra.config_id)) {
+            this._cfg = { key: this.state.key, id: Number(extra.config_id) };
+        }
+        const cfg = this._cfg && this._cfg.key === this.state.key ? this._cfg.id : 0;
+        let res = null;
+        try {
+            res = await this.sc.check(step.key, { since: this._checkSince, config_id: cfg });
+        } catch {
+            res = null;
+        }
+        if (this._destroyed || !this.state.active || this.step !== step || this.isWatch) {
+            return;
+        }
+        this.ui.checkNote = res && res.note ? res.note : null;
+        if (res && res.ok) {
+            this.ui.checkOk = true;
+            this._timer = window.setTimeout(() => {
+                if (this.state.active && this.step === step && !this.isWatch) {
+                    this.sc.next();
+                }
+            }, CHECK_OK_BEAT);
+            return;
+        }
+        this._poll = window.setTimeout(() => this._pollCheck(step), CHECK_EVERY);
+    }
+
     /** LEARNREV P4 — the one automatic step change in Watch, and only for a
      *  step whose control never appeared: re-asks every condition at the
      *  moment it fires (the step, the mode, that the control is still not
@@ -609,6 +686,11 @@ export class ScenarioOverlay extends Component {
         if (this._timer) {
             window.clearTimeout(this._timer);
             this._timer = null;
+        }
+        // LEARNREV P4 — a checked step's poll goes with every other timer.
+        if (this._poll) {
+            window.clearTimeout(this._poll);
+            this._poll = null;
         }
     }
 
@@ -766,7 +848,8 @@ export class ScenarioOverlay extends Component {
 
     // -------------------------------------------------------------- render
     get modeBadge() {
-        return T("scRealBadge");
+        // LEARNREV P4 — Try on the real screen of the demo company.
+        return T(this.state.real ? "scTryReal" : "scRealBadge");
     }
 
     // t-out RENDERS A PLAIN STRING AS TEXT. Every one of these getters builds
@@ -833,7 +916,17 @@ export class ScenarioOverlay extends Component {
         parts.push(`<h3>${esc(tx(step.title))}</h3>`);
         parts.push(`<div class="lrn-cbody">${gtx(step.body)}</div>`);
 
-        if (this.guardedInWatch) {
+        if (this.ui.checking) {
+            // LEARNREV P4 — a checked step: do it on the screen, I look.
+            const note = this.ui.checkNote ? esc(tx(this.ui.checkNote)) : "";
+            const line = this.ui.checkOk
+                ? `<p class="lrn-sccheck ok">${ic("check-circle")}<span>${esc(T("scCheckOk"))}${SP}${note}</span></p>`
+                : (note ? `<p class="lrn-sccheck">${esc(T("scCheckMissing"))}${SP}${note}</p>` : "");
+            parts.push(`<div class="lrn-scwait">
+                <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
+                <p>${esc(T("scCheckWait"))}</p>${line}
+            </div>`);
+        } else if (this.guardedInWatch) {
             // The card says what pressing WOULD do, and says who is not
             // pressing it. Both halves matter: a spotlight on a Compute button
             // with no explanation reads as an invitation.

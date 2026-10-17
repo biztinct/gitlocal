@@ -885,6 +885,18 @@
       "en": "Done — every step on its route has said yes.",
       "vi": "Hoàn tất — mọi bước trên lộ trình phê duyệt đã đồng ý."
     },
+    "live.checkFailed": {
+      "en": "This step could not be checked just now. Press Next to go on.",
+      "vi": "Lúc này chưa kiểm tra được bước này. Hãy bấm Tiếp theo để đi tiếp."
+    },
+    "live.checkNoAccess": {
+      "en": "You cannot read what this step checks, so it cannot tell whether it is done. Press Next to go on.",
+      "vi": "Bạn không đọc được dữ liệu mà bước này kiểm tra, nên không biết đã xong hay chưa. Hãy bấm Tiếp theo để đi tiếp."
+    },
+    "live.checkUnavailable": {
+      "en": "This step has nothing to check on this database. Press Next to go on.",
+      "vi": "Bước này không có gì để kiểm tra trên cơ sở dữ liệu này. Hãy bấm Tiếp theo để đi tiếp."
+    },
     "live.computed": {
       "en": "%(count)s payslips computed for %(division)s.",
       "vi": "Đã tính %(count)s phiếu lương cho %(division)s."
@@ -924,6 +936,14 @@
     "live.notVerified": {
       "en": "Step '%(step)s' is not verified by the server.",
       "vi": "Bước '%(step)s' không được máy chủ xác minh."
+    },
+    "live.recordsDone": {
+      "en": "%(person)s: %(field)s changed by you.",
+      "vi": "%(person)s: bạn đã đổi %(field)s."
+    },
+    "live.recordsWaiting": {
+      "en": "Change one demo employee's bank details, press Review, then Apply.",
+      "vi": "Hãy đổi thông tin ngân hàng của một nhân viên demo, bấm Xem lại, rồi Áp dụng."
     },
     "live.stateDone": {
       "en": "Done",
@@ -34734,5 +34754,5 @@
       }
     }
   ],
-  "version": "c02ef633fb5a"
+  "version": "b9e876576359"
 }
