@@ -202,14 +202,14 @@ MANIFESTS = {
         ],
         'actions': [
             {'label': {'en': "Insurance policy", 'vi': "Chính sách bảo hiểm"},
-             'method': 'pb.statutory.create_policy',
+             'method': 'pb.statutory.wizard.create_policy',
              'effect': {'en': "Opens a form for a new policy. Saving it applies it, or "
                               "sends it for approval first if your company asks for one.",
                         'vi': "Mở biểu mẫu cho một chính sách mới. Lưu là áp dụng, hoặc "
                               "gửi đi phê duyệt trước nếu công ty bạn yêu cầu."},
              'writes': True},
             {'label': {'en': "Tax table", 'vi': "Bảng thuế"},
-             'method': 'pb.statutory.create_tax_table',
+             'method': 'pb.statutory.wizard.create_tax_table',
              'effect': {'en': "Opens a form for a new tax table. Saving it applies it, "
                               "or sends it for approval first if your company asks "
                               "for one.",

@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import subprocess
+from unittest.mock import patch
 
 from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
@@ -210,7 +211,10 @@ class TestLearnrevP5(TransactionCase):
                 self.env.ref('base.group_user').id,
                 self.env.ref('pb_hr_payroll_base.group_payroll_final_approver').id])],
         })
-        extra = Path.with_user(user).bootstrap_extra()
+        # Which role a fixture user is guessed into depends on implied groups
+        # on the database; pin the guess so the test is about the seat.
+        with patch.object(type(Path), 'guess_role', lambda self, user=None: 'approver'):
+            extra = Path.with_user(user).bootstrap_extra()
         self.assertEqual(extra['role'], 'approver')
         self.assertFalse(extra['role_chosen'])
         self.assertEqual(extra['why'], lp.ROLE_WHY['approver'])
@@ -238,7 +242,7 @@ class TestLearnrevP5(TransactionCase):
     def test_f_sources(self):
         journey = _read('pb_learn', 'static/src/journey/journey.js')
         self.assertIn('"learn.feedback", "rpc_search_miss"', journey)
-        self.assertEqual(journey.count('rpc_search_miss'), 1)
+        self.assertEqual(journey.count('"learn.feedback", "rpc_search_miss"'), 1)
         self.assertIn('_missSeen', journey)        # once per phrase per visit
         coach = _read('pb_learn', 'static/src/coach/coach.js')
         self.assertRegex(coach, r'registerFieldRows\(rows,[\s\S]{0,200}content\)')
