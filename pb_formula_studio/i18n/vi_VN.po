@@ -47,6 +47,12 @@ msgstr "Hợp đồng"
 
 #. module: pb_formula_studio
 #. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/component_treatment.js:34
+msgid "Calculated by a formula"
+msgstr "Tính bằng công thức"
+
+#. module: pb_formula_studio
+#. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/component_treatment.js:30
 msgid "Computed here"
 msgstr "Đã tính ở đây"

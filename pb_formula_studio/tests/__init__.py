@@ -69,3 +69,6 @@ from . import test_tax_input_preview
 
 from . import test_studio_experience
 from . import test_mapping_experience
+
+# LEARNREV P0 T4 — every lane the server emits has a label on the board.
+from . import test_lane_labels

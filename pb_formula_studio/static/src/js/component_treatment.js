@@ -27,6 +27,11 @@ const LANE_LABELS = {
     feed: _t("Connected system"),
     excel: _t("Spreadsheet"),
     contract_component: _t("Contract"),
+    // LEARNREV P0 (G21, ledger LR2): the server's lane for a formula row is
+    // `calculated` (formula_config._value_kind_lane); `formula` stays for the
+    // callers that still pass it. Every lane the server emits needs a key
+    // here — pinned by pb_formula_studio/tests/test_lane_labels.py.
+    calculated: _t("Calculated by a formula"),
     formula: _t("Computed here"),
     record: _t("Employee record"),
     constant: _t("Fixed value"),
