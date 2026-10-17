@@ -1730,6 +1730,13 @@ class LearnIntent(models.AbstractModel):
                 'capability': self._capability(screen_key),
                 'suggest': self._suggestions(screen_key),
             }
+        if floor.get('guide_door'):
+            # LEARNREV P3 (S10): the floor is the Guide's own answer (purpose,
+            # "You are here", the column lines, the source), read from the
+            # screen's manifest — the truth-gated text. A rewrite would trade
+            # it for one model paragraph, so it is never offered one. The
+            # composer still rewrites screens that have no manifest.
+            return floor
         if not self._compose_enabled():
             return floor
         return self._explain_composed(floor, screen_key, lang) or floor

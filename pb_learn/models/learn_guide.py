@@ -38,6 +38,7 @@ elevation call and fails the build on one.
 import importlib
 import importlib.util
 import logging
+import re
 
 from odoo import api, models
 from odoo.exceptions import AccessError, UserError
@@ -135,6 +136,20 @@ def is_vi(lang):
     return str(lang or '').startswith('vi')
 
 
+#: LEARNREV P3 — how long a field's one line may be in the Library search.
+INDEX_LINE_MAX = 120
+_FIRST_SENTENCE = re.compile(r'^.*?[.!?](?=\s|$)', re.S)
+
+
+def first_sentence(value, limit=INDEX_LINE_MAX):
+    """The first sentence of a help text, at most `limit` characters (the
+    Guide's own Fields-row rule, `guide_panel.js fieldLine`)."""
+    t = ' '.join(str(value or '').split())
+    hit = _FIRST_SENTENCE.match(t)
+    first = hit.group(0) if hit else t
+    return first if len(first) <= limit else first[:limit - 1].rstrip() + '…'
+
+
 def hub_screen(screens, tag):
     """The orientation screen of the hub whose action tag is `tag`, or None
     (precedent: `engine/places.js hubScreenOf`)."""
@@ -184,6 +199,50 @@ class LearnGuide(models.AbstractModel):
     def rpc_guide(self, screen_key, args=None):
         """The public door the panel calls. Same answer as `guide()`."""
         return self.guide(screen_key, args=args)
+
+    @api.model
+    def rpc_index(self):
+        """LEARNREV P3 — every field card of every screen, light, for the
+        Library's one search and the ⌘K field rows: `[{screen, screen_name,
+        key, column, line, columns, screen_names}]` in the person's language,
+        `line` being the first sentence of the field's help (its "how it is
+        filled" when it has none), at most 120 characters. `columns` and
+        `screen_names` carry both spellings so a search in either language
+        finds the row. Runs as the person, like the Guide: a screen whose
+        model this person cannot read is simply absent. Never raises."""
+        lang = self._lang()
+        content = self.env['learn.content']
+        out = []
+        for screen_key, man in sorted(self._manifests().items()):
+            screen = content.screen(screen_key) or {}
+            try:
+                try:
+                    cards = self._field_cards(man, lang, [])
+                except UserError:
+                    # Vietnamese is not switched on here (LR28): English cards.
+                    cards = self._field_cards(man, 'en_US', [])
+            except AccessError:
+                continue
+            except Exception:                                 # noqa: BLE001
+                _logger.exception("pb_learn: field index for %s failed", screen_key)
+                continue
+            name = text(screen.get('name'), lang) or screen_key
+            names = [n for n in (text(screen.get('name'), 'en_US'),
+                                 text(screen.get('name'), 'vi_VN')) if n]
+            for card in cards:
+                column = card.get('column') or card.get('label') or card['key']
+                line = card.get('filled_by') if card.get('derived') else (
+                    card.get('help') or card.get('filled_by'))
+                out.append({
+                    'screen': screen_key,
+                    'screen_name': name,
+                    'screen_names': names,
+                    'key': card['key'],
+                    'column': column,
+                    'columns': card.get('columns') or [column],
+                    'line': first_sentence(line),
+                })
+        return out
 
     @api.model
     def guide(self, screen_key, args=None):
