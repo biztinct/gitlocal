@@ -44,7 +44,7 @@
         <div class="lrn-momenthost" t-if="state.moment and !state.open" t-out="momentHTML"/>
 
         <aside class="lrn-drawer" t-if="state.open" role="dialog"
-               t-att-class="{ 'lrn-still': isStill, 'lrn-has-chat': !!chat }"
+               t-att-class="{ 'lrn-still': isStill, 'lrn-has-chat': !!chat, 'lrn-has-guide': guideShown, 'lrn-dockable': guideOn and state.dock === 'dock' }"
                t-att-aria-label="coachName">
             <header class="lrn-dhead">
                 <span class="lrn-dtitle">
@@ -68,6 +68,12 @@
                 <button t-if="covered" class="lrn-btn sm ghost lrn-hbtn" data-act="c-explain"
                         t-att-title="explainLabel" t-att-aria-label="explainLabel">
                     <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-scan-text"/></svg>
+                </button>
+                <!-- LEARNREV P2 — docked beside the page or floating over
+                     it; shown only where docking exists (≥ 1280 px). -->
+                <button t-if="guideOn" class="lrn-btn sm ghost lrn-hbtn lrn-dockbtn" data-act="c-gdock"
+                        t-att-title="dockLabel" t-att-aria-label="dockLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use t-attf-href="#lrn-i-#{dockIcon}"/></svg>
                 </button>
                 <button class="lrn-btn sm ghost lrn-langpill" data-act="c-lang">
                     <span t-esc="langLabel"/>
@@ -97,9 +103,19 @@
                  it on a language flip (helper never changes identity). It is
                  mounted while the drawer is open and unmounted on close, so a
                  recording in progress is discarded with it. -->
+            <!-- LEARNREV P2 — THE GUIDE: five sections (This screen, Right
+                 now, Fields on this screen, Tasks, Understand) above the one
+                 chat, which is the sixth (Ask) and keeps its composer in view.
+                 Built in coach.js / guide_panel.js so every control in it is a
+                 declared data-act; the Fields search filters in place. -->
+            <div t-if="guideShown" class="lrn-guide" t-on-input="onGuideInput" t-out="guideHTML"/>
+            <div t-if="guideShown" class="lrn-gask">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-message-circle"/></svg>
+                <span t-esc="askTitle"/>
+            </div>
             <t t-if="chat">
                 <t t-component="chat.Component" helper="helper" lang="state.lang"
-                   screen="state.screen || ''" place="placeKey" close="closeHelper"/>
+                   screen="state.screen || ''" place="chatPlace" close="closeHelper"/>
             </t>
             <!-- No PayAI chat for this person: the same router, guide-only,
                  in a stream of this drawer's own. No microphone here (voice

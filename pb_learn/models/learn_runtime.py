@@ -760,4 +760,8 @@ class LearnRuntime(models.AbstractModel):
             # company has, so a lesson step about one of them is drawn only
             # where it is true (content_loader.js `gateSteps`).
             'features': self.features(),
+            # LEARNREV P2 — the Guide panel, the (i) field cards and the
+            # Guide-backed Explain / whatnext. False: the drawer is exactly
+            # what shipped before P2 (no Guide call, no (i), no dock).
+            'guide': self.env['learn.guide'].enabled(),
         }

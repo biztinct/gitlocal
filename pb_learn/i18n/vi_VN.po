@@ -1092,3 +1092,9 @@ msgstr "%s phút"
 #: model:learn.tenant.override,value:pb_learn.slot_standardworkingdays
 msgid "22"
 msgstr "22"
+
+#. module: pb_learn
+#. odoo-python
+#: code:addons/pb_learn/models/learn_progress.py:0
+msgid "Field card rated"
+msgstr "Thẻ trường đã được đánh giá"

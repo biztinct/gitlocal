@@ -48,6 +48,30 @@ _logger = logging.getLogger(__name__)
 
 MANIFEST_MODULE = 'learn_manifest'
 
+#: LEARNREV P2 — the Guide panel, the (i) field cards and the Guide-backed
+#: Explain / whatnext answers. OFF by default: with it off the drawer, Explain
+#: and the whatnext answer are exactly what shipped before P2.
+GUIDE_FLAG = 'pb_learn.guide_enabled'
+
+#: Settings › Access and delegations and the left-menu editor (owner ruling
+#: 2026-10-13, ONECHAT OC19): the Guide never offers a door into them, even
+#: when a manifest names one. The client applies the same filter.
+ACCESS_HUB_XMLID = 'pb_settings.action_pb_settings_hub'
+ACCESS_TAG = 'pb_settings_hub'
+ACCESS_LENSES = ('access', 'nav')
+
+#: The one learn.event kind a field card's thumbs write (no free text).
+FEEDBACK_KIND = 'guide_feedback'
+
+
+def is_access_target(open_=None, tag=None, lens=None):
+    """True for a door into Settings › Access and delegations / the menu
+    editor: an `open` dict ({xmlid, lens}) or a manifest path (tag, lens)."""
+    if open_:
+        return (open_.get('xmlid') == ACCESS_HUB_XMLID
+                and (open_.get('lens') or '') in ACCESS_LENSES)
+    return tag == ACCESS_TAG and (lens or '') in ACCESS_LENSES
+
 #: The reasons `missing` can hold. Plain words: a panel may show them.
 NO_MANIFEST = 'no manifest for this screen yet'
 RN_NONE = 'right_now: nothing live for this screen yet'
@@ -233,6 +257,10 @@ class LearnGuide(models.AbstractModel):
     @api.model
     def _path(self, man, screen, lang, missing):
         p = man.get('path') or {}
+        if is_access_target(tag=p.get('tag'), lens=p.get('lens')):
+            # The Access ruling: never a door into Access and delegations.
+            missing.append('path: not offered here')
+            return []
         if p.get('tag'):
             return self._place_path(p['tag'], p.get('lens'), lang, missing)
         if p.get('xmlid'):
@@ -251,9 +279,19 @@ class LearnGuide(models.AbstractModel):
                      'open': {'xmlid': hub.get('xmlid')}}]
         for place in screen.get('places') or ():
             parsed = parse_place(place)
-            if parsed:
+            if parsed and not is_access_target(tag=parsed[0], lens=parsed[1]):
                 return self._place_path(parsed[0], parsed[1], lang)
         return []
+
+    @api.model
+    def _screen_path(self, screen_key, lang):
+        """Where another screen lives, as path labels: its manifest's path
+        when it has one, else its first hub place (for "Next: Pay Run › Run")."""
+        screen = self.env['learn.content'].screen(screen_key) or {}
+        man = self.manifest(screen_key)
+        if man:
+            return self._path(man, screen, lang, [])
+        return self._path_from_places(screen, lang)
 
     @api.model
     def _neighbours(self, items, lang):
@@ -261,6 +299,10 @@ class LearnGuide(models.AbstractModel):
         out = []
         for item in items or ():
             other = content.screen(item.get('screen')) or {}
+            places = [pp for pp in map(parse_place, other.get('places') or ()) if pp]
+            if places and all(is_access_target(tag=t, lens=l) for t, l in places):
+                # A neighbour that lives only behind the Access ruling.
+                continue
             out.append({'screen': item.get('screen'),
                         'name': text(other.get('name'), lang) or item.get('screen'),
                         'why': text(item.get('why'), lang)})
@@ -286,7 +328,11 @@ class LearnGuide(models.AbstractModel):
                 names, attributes=FIELD_ATTRS)
         out = []
         for f in man.get('fields') or ():
-            card = {'key': f['key'], 'column': text(f.get('column'), lang),
+            col = f.get('column') or {}
+            card = {'key': f['key'], 'column': text(col, lang),
+                    # LEARNREV P2: both spellings, so the (i) finds its header
+                    # whichever language the screen itself is drawn in.
+                    'columns': [c for c in (text(col, 'en_US'), text(col, 'vi_VN')) if c],
                     'anchor': f.get('anchor') or '',
                     'if_changed': text(f.get('if_changed'), lang)}
             if f.get('derived'):
@@ -343,14 +389,43 @@ class LearnGuide(models.AbstractModel):
     # ------------------------------------------------------------ right now
     @api.model
     def _right_now(self, man, args, lang, missing):
+        raw = self._right_now_raw(man, args, missing)
+        if raw is None:
+            return {'ok': False, 'items': [], 'provider': bool(man.get('right_now'))}
+        items, ok = raw
+        return {'ok': ok, 'items': [self._item(i, lang) for i in items],
+                'provider': True}
+
+    @api.model
+    def right_now_pairs(self, screen_key, args=None):
+        """LEARNREV P2 — the right-now items with their text kept in BOTH
+        languages (`{en, vi}`), for an answer the drawer renders bilingually
+        (the whatnext intent). None when the screen has no provider here."""
+        man = self.manifest(screen_key)
+        if not man or not man.get('right_now'):
+            return None
+        missing = []
+        raw = self._right_now_raw(man, dict(args or {}), missing)
+        if raw is None:
+            return {'items': [], 'missing': missing}
+        items, _ok = raw
+        return {'items': [dict(self._item(i, 'en_US'),
+                               text={'en': text(i.get('text'), 'en_US'),
+                                     'vi': text(i.get('text'), 'vi_VN')})
+                          for i in items], 'missing': missing}
+
+    @api.model
+    def _right_now_raw(self, man, args, missing):
+        """(provider items as returned, ok) — or None, with the reason in
+        `missing`, when there is nothing to show."""
         ref = man.get('right_now')
         if not ref:
             missing.append(RN_NONE)
-            return {'ok': False, 'items': []}
+            return None
         model, _dot, method = ref.rpartition('.')
         if model not in self.env or not hasattr(self.env[model], method):
             missing.append(RN_UNAVAILABLE)
-            return {'ok': False, 'items': []}
+            return None
         try:
             # A savepoint, because a provider that fails half-way through a
             # query would otherwise poison the request's transaction and the
@@ -359,11 +434,11 @@ class LearnGuide(models.AbstractModel):
                 result = getattr(self.env[model], method)(dict(args))
         except AccessError:
             missing.append(RN_NO_ACCESS)
-            return {'ok': False, 'items': []}
+            return None
         except Exception:                                     # noqa: BLE001
             _logger.exception("pb_learn: right-now provider %s failed", ref)
             missing.append(RN_FAILED)
-            return {'ok': False, 'items': []}
+            return None
         # A provider returns a list of items, or {"items": [...], "missing":
         # "<reason>"} when it cannot answer for a reason worth naming (no
         # scheme selected, for instance).
@@ -375,15 +450,20 @@ class LearnGuide(models.AbstractModel):
             ok = not result.get('missing')
         else:
             items, ok = result or [], True
-        return {'ok': ok, 'items': [self._item(i, lang) for i in items]}
+        return items, ok
 
     @api.model
     def _item(self, item, lang):
+        action = item.get('action') or None
+        if action and action.get('kind') == 'open' \
+                and is_access_target({'xmlid': action.get('xmlid'),
+                                      'lens': action.get('lens')}):
+            action = None
         out = {'key': item.get('key') or '',
                'count': item.get('count') or 0,
                'severity': item.get('severity') or 'info',
                'text': text(item.get('text'), lang),
-               'action': item.get('action') or None}
+               'action': action}
         if item.get('names'):
             out['names'] = list(item['names'])
         return out
@@ -423,6 +503,62 @@ class LearnGuide(models.AbstractModel):
                               'definition': text(g.get('definition'), lang)})
         doors.update(tasks=tasks, terms=terms)
         return doors
+
+    # ------------------------------------------------------------ P2
+    @api.model
+    def enabled(self):
+        """The Guide switch (`learn.settings` 'guide')."""
+        from .learn_question import _flag_on   # late: learn_question imports widely
+        return _flag_on(self.env, GUIDE_FLAG)
+
+    @api.model
+    def rpc_feedback(self, screen_key, field_key, up):
+        """A field card's thumbs. One `learn.event` row, the drawer's own
+        logging seam: the screen, `<field>:up|down`, never any free text.
+        A screen or field the manifests do not declare writes nothing."""
+        man = self.manifest(str(screen_key or ''))
+        keys = {f.get('key') for f in (man or {}).get('fields') or ()}
+        if not man or field_key not in keys:
+            return False
+        detail = ('%s:%s' % (field_key, 'up' if up else 'down'))[:64]
+        return bool(self.env['learn.event'].log(
+            FEEDBACK_KIND, screen=str(screen_key)[:64], detail=detail,
+            lang='vi' if is_vi(self._lang()) else 'en'))
+
+    @api.model
+    def explain_material(self, screen_key, columns=3):
+        """What "Explain this screen" says from the Guide, in BOTH languages
+        (the drawer picks): the purpose, "You are here", the first screen
+        after this one, the first `columns` field cards as "Column — help",
+        and whether a live right-now list exists. None without a manifest.
+        Never runs the right-now provider (the panel shows the live list)."""
+        man = self.manifest(screen_key)
+        if not man:
+            return None
+        content = self.env['learn.content']
+        screen = content.screen(screen_key) or {}
+        out = {'purpose': {}, 'path': {}, 'next': {}, 'columns': [],
+               'provider': bool(man.get('right_now'))}
+        cols = {}
+        for tag, lang in (('en', 'en_US'), ('vi', 'vi_VN')):
+            out['purpose'][tag] = text(man.get('purpose'), lang)
+            out['path'][tag] = ' › '.join(
+                p['label'] for p in self._path(man, screen, lang, []) if p.get('label'))
+            after = (man.get('after') or [{}])[0].get('screen')
+            out['next'][tag] = ' › '.join(
+                p['label'] for p in self._screen_path(after, lang) if p.get('label')) \
+                if after else ''
+            try:
+                cards = self._field_cards(man, lang, [])[:columns]
+            except UserError:
+                # Vietnamese is not switched on here (LR28): English cards.
+                cards = self._field_cards(man, 'en_US', [])[:columns]
+            for card in cards:
+                cols.setdefault(card['key'], {})[tag] = (
+                    card.get('column') or '',
+                    (card.get('help') or card.get('filled_by') or '').strip())
+        out['columns'] = [cols[k] for k in cols if 'en' in cols[k]]
+        return out
 
     @api.model
     def _doors_without_manifest(self, screen_key, lang):

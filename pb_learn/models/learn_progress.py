@@ -220,6 +220,9 @@ class LearnEvent(models.Model):
             # screens people are sent to and cannot reach.
             ('coach_goto', self.env._('Helper switched tab')),
             ('scenario_blocked', self.env._('Walkthrough could not open its screen')),
+            # LEARNREV P2 — a field card's thumbs: `<field>:up|down` in
+            # `detail`, the screen in `screen`, no free text (P5 reads it).
+            ('guide_feedback', self.env._('Field card rated')),
         ]
 
     # -- append-only ------------------------------------------------------

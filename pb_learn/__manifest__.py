@@ -188,9 +188,15 @@ never hand-edited here).
             # The always-on Coach, mounted in the web client shell so it
             # reaches every screen without per-screen work.
             'pb_learn/static/src/coach/coach.scss',
+            # LEARNREV P2 — the Guide panel, the dock and the field cards.
+            'pb_learn/static/src/coach/guide.scss',
             # The demo first-login greeting and the launcher-stack body class.
             # Loaded before coach.js, which imports both.
             'pb_learn/static/src/coach/first_login.js',
+            # LEARNREV P2 — the Guide's renderer and the (i) layer, before
+            # coach.js, which imports both.
+            'pb_learn/static/src/coach/guide_panel.js',
+            'pb_learn/static/src/coach/field_info.js',
             'pb_learn/static/src/coach/coach.js',
             'pb_learn/static/src/coach/coach.xml',
             # The live capstone's docked card. Mounted through the same

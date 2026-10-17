@@ -36,6 +36,7 @@ import logging
 from odoo import api, models
 from odoo.exceptions import AccessError
 
+from .learn_guide import GUIDE_FLAG
 from .learn_intent import COMPOSE_FLAG
 from .learn_question import COLLECT_FLAG, _flag_on
 from .learn_runtime import NEXT_BEST_FLAG, SKILL_TREE_FLAG
@@ -55,6 +56,9 @@ SWITCHES = (
     ('compose', COMPOSE_FLAG),
     ('voice', VOICE_FLAG),
     ('collect', COLLECT_FLAG),
+    # LEARNREV P2 — the Guide panel and the (i) field cards. Stays on the
+    # server like the first two: it only changes what the drawer draws.
+    ('guide', GUIDE_FLAG),
 )
 SWITCH_PARAM = dict(SWITCHES)
 

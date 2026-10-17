@@ -57,6 +57,14 @@ import { hubPlace, placeSub, switchLens } from "@pb_hub/js/hub_place";
 import { ic as railIc } from "@pb_import_kit/js/import_icons";
 import { hubScreenOf, openLearn, resolveLensReach, screenAtPlace, setReach, tabName }
     from "../engine/places";
+/* LEARNREV P2 — the Guide panel (six sections above the one chat) and the
+   (i) field cards. Both are behind the `guide` switch (bootstrap); with it
+   off nothing below is called and the drawer is what shipped before. */
+import { openHub } from "@pb_hub/js/hub_nav";
+import { actionable, askChips, dropAccess, fieldMatches, fmt, hasProvider, runAction,
+         sectionsHTML } from "./guide_panel";
+import { InfoLayer, closeFieldCard, fieldCardOpen, markFeedback, openFieldCard }
+    from "./field_info";
 
 /* The one sentence the drawer needs when the content plane itself failed to
    load — and so cannot supply it. Mirrors the `helperFailed` chrome key. */
@@ -120,6 +128,16 @@ export const COACH_ACTIONS = new Set([
     // shell's own lens switch (the same call its rail buttons make); it
     // reaches no product method and writes nothing.
     "c-goto",
+    // LEARNREV P2 — the Guide panel. Opening and closing a section, the
+    // "You are here" chips (each opens a screen the way its tab would), a
+    // Right now button (filter the board on screen / open a screen / open a
+    // record's form — what a person could click themselves), a Fields row,
+    // Retry, the lesson map, dock / float, and "Open the Guide" under an
+    // Explain answer and on the first-visit card. None reaches a product
+    // method: the board's own filter is set through the bus, and an open is
+    // the hub's own arrival protocol (openHub).
+    "c-gsec", "c-gpath", "c-gscreen", "c-gact", "c-gfield", "c-gretry", "c-gmap",
+    "c-gdock", "c-guide", "c-fvguide",
 ]);
 
 /* ONECHAT OC2 — ONE CHAT, NO TABS.
@@ -173,6 +191,10 @@ const NO_LESSON_NOTE = {
     en: "No lesson for this screen yet. Opening the lesson map.",
     vi: "Chưa có bài học cho màn hình này. Đang mở bản đồ bài học.",
 };
+/* LEARNREV P2 — docked (a right-hand column, ≥ 1280 px) or floating, and
+   which Guide sections this person left open, per screen. */
+const DOCK_KEY = "pbLearnDock";
+const SECTIONS_KEY = "pbLearnGuideSec";
 const MILESTONE_COPY = {
     m_employee: ["msEmployeeT", "msEmployeeB"],
     m_run: ["msRunT", "msRunB"],
@@ -231,7 +253,29 @@ export class CoachHost extends Component {
             // this reader any more).
             loadFailed: false,
             gotoFailed: false,
+            // LEARNREV P2 — the Guide for the screen on show (`learn.guide.
+            // rpc_guide`), the call's key, its progress, which sections are
+            // open, which Fields row is expanded, docked or floating.
+            guide: null,
+            gKey: "",
+            gLoading: false,
+            gError: false,
+            gSec: {},
+            gField: "",
+            // Bumped whenever a Guide arrives: the chat's opening card
+            // carries chips built from it, and redraws on its `place` prop.
+            gTick: 0,
+            dock: lsGet(DOCK_KEY, "dock") === "float" ? "float" : "dock",
         });
+        // One Guide per screen + arguments + language, for the drawer's life;
+        // "Right now" is read again on every open (`_loadGuide({refresh})`).
+        this._guideCache = new Map();
+        this._gInflight = "";
+        // The Fields search words: NOT reactive, so typing never redraws the
+        // panel (the box would lose focus); rows are hidden in place.
+        this._gQuery = "";
+        this._info = null;
+        this._markups = {};
         // LEARN REFRESH step 1 — WHERE AM I. The hubs publish the hub and tab
         // on screen (pb_hub/js/hub_place.js); `useState` on that store is the
         // subscription, and `placeKey` (read by the template root) is what
@@ -314,6 +358,8 @@ export class CoachHost extends Component {
                     station_aliases: content.station_aliases || {},
                     // LEARN v3 — the month-end date, for the Dashboard nudge.
                     path: runtime.path || {},
+                    // LEARNREV P2 — the Guide switch (Learn › Settings).
+                    guide: !!runtime.guide,
                 };
                 // Which stations this reader can reach, for the walkthrough
                 // engine's "you don't have access" answer (engine/places.js).
@@ -348,7 +394,16 @@ export class CoachHost extends Component {
         // LEARN REFRESH step 1 — and when the TAB changes, which is not an
         // action change at all. After the patch, so it is a read of the
         // store and a write of this component's own state only.
-        useEffect(() => { this._resolveScreen(); }, () => [this.placeKey]);
+        useEffect(() => {
+            this._resolveScreen();
+            // LEARNREV P2 — a scheme picked on Mapping is a new Guide (its
+            // Right now is that scheme's); the same key is a cache hit.
+            this._loadGuide();
+        }, () => [this.placeKey]);
+        // LEARNREV P2 — docked: the page makes room on the right (coach.scss,
+        // ≥ 1280 px only). Follows open / the person's choice / the switch.
+        useEffect(() => { this._syncDock(); },
+                  () => [this.state.open, this.state.dock, this.guideOn]);
         onMounted(() => {
             this._resolveScreen();
             // CAPTURE PHASE, and it is not a style choice. "document, not
@@ -393,6 +448,12 @@ export class CoachHost extends Component {
             document.body.classList.remove("lrn-one-helper");
             // The card is on document.body, not in this component's tree.
             closeGlossary();
+            // LEARNREV P2 — the field card, the (i) and the dock likewise.
+            document.body.classList.remove("lrn-docked");
+            if (this._info) {
+                this._info.stop();
+            }
+            closeFieldCard(false);
         });
     }
 
@@ -446,6 +507,15 @@ export class CoachHost extends Component {
             // ONECHAT OC2 — the conversation is NOT cleared any more: it is
             // one thread across screens, and the chat marks the move with a
             // context card ("On: Pay Run › Runs") instead.
+            // LEARNREV P2 — a new screen is a new Guide: its sections as this
+            // person left them there, no field card from the last screen.
+            if (this.guideOn) {
+                closeFieldCard(false);
+                this.state.gField = "";
+                this._gQuery = "";
+                this.state.gSec = this._sectionMemory(key);
+                this._loadGuide();
+            }
         }
     }
 
@@ -470,7 +540,9 @@ export class CoachHost extends Component {
             // would take both, and which one it took would depend on which
             // surface finished loading first (both listeners are on document
             // at capture now).
-            if (glossaryOpen()) {
+            // LEARNREV P2: a field card is the same kind of rung — its own
+            // listener closes it and swallows the key (field_info.js).
+            if (glossaryOpen() || fieldCardOpen()) {
                 return;
             }
             // ONECHAT OC2 — two rungs above "close the drawer", in this
@@ -505,6 +577,8 @@ export class CoachHost extends Component {
         this.menu.close();
         if (this.state.open) {
             this._log("coach_open");
+            // LEARNREV P2 — "Right now" is read afresh on every open.
+            this._loadGuide({ refresh: true });
             // The chat focuses its own box when it mounts; the guide-only
             // stream has its box here.
             setTimeout(() => this.inputRef.el?.focus(), 60);
@@ -604,11 +678,24 @@ export class CoachHost extends Component {
                 return markup("");
             }
             icon = "compass";
-            title = `${T("fvOn")}${SP}${tx(s.name)}?`;
-            body = tx(s.blurb);
-            tools = `<button class="lrn-btn sm pri" data-act="c-fvexplain">${ic("info")}${esc(T("explainScreen"))}</button>
-                ${m.watch ? `<button class="lrn-btn sm" data-act="c-fvwatch">${ic("play")}${esc(T("scWatch"))}</button>` : ""}
-                <button class="lrn-btn sm ghost" data-act="c-mlater">${esc(T("fvLater"))}</button>`;
+            const g = this.guideOn ? this.state.guide : null;
+            if (this.guideOn) {
+                // LEARNREV P2 (G25) — the nudge has one job: say what the
+                // screen is for (the Guide's purpose, not the blurb) and
+                // open the Guide. Watch only when a walkthrough offers it.
+                const watch = this._guideWatchKey();
+                title = fmt(T("gFirstOn"), { screen: tx(s.name) });
+                body = (g && g.screen && g.screen.purpose) || tx(s.blurb);
+                tools = `<button class="lrn-btn sm pri" data-act="c-fvguide">${ic("panel-right")}${esc(T("gOpenGuide"))}</button>
+                    ${watch ? `<button class="lrn-btn sm" data-act="c-fvwatch">${ic("play")}${esc(T("scWatch"))}</button>` : ""}
+                    <button class="lrn-btn sm ghost" data-act="c-mlater">${esc(T("fvLater"))}</button>`;
+            } else {
+                title = `${T("fvOn")}${SP}${tx(s.name)}?`;
+                body = tx(s.blurb);
+                tools = `<button class="lrn-btn sm pri" data-act="c-fvexplain">${ic("info")}${esc(T("explainScreen"))}</button>
+                    ${m.watch ? `<button class="lrn-btn sm" data-act="c-fvwatch">${ic("play")}${esc(T("scWatch"))}</button>` : ""}
+                    <button class="lrn-btn sm ghost" data-act="c-mlater">${esc(T("fvLater"))}</button>`;
+            }
         }
         return markup(`<div class="lrn-hmoment ${m.kind}" role="status">
             <span class="lrn-momentic">${ic(icon)}</span>
@@ -646,9 +733,18 @@ export class CoachHost extends Component {
             // ONECHAT OC2 — through the queue: the chat has not mounted yet,
             // so the answer is held until it attaches (ledger OC4).
             this.openHelper({ explain: true });
-        } else if (act === "c-fvwatch" && m.watch) {
-            this.startScenario(m.watch, "watch", "");
+        } else if (act === "c-fvwatch" && (this.guideOn ? this._guideWatchKey() : m.watch)) {
+            this.startScenario(this.guideOn ? this._guideWatchKey() : m.watch, "watch", "");
+        } else if (act === "c-fvguide") {
+            this._openGuideHere(true);
         }
+    }
+
+    /** LEARNREV P2 — the first walkthrough the Guide lists that offers Watch. */
+    _guideWatchKey() {
+        const tasks = ((this.state.guide && this.state.guide.doors) || {}).tasks || [];
+        const t = tasks.find((x) => (x.modes || []).includes("watch") && this._offers(x.key, "watch"));
+        return t ? t.key : "";
     }
 
     // ------------------------------------------------------- ONECHAT OC2
@@ -680,6 +776,7 @@ export class CoachHost extends Component {
             this.state.open = true;
             this.state.moment = null;
             this._log("coach_open");
+            this._loadGuide({ refresh: true });
         }
         if (!this.chat) {
             if (opts.explain) {
@@ -803,6 +900,9 @@ export class CoachHost extends Component {
             explainFor: (screenKey) => this._explainFor(screenKey),
             answerFor: (key) => this._answerFor(key),
             startPractice: (key, mode) => this.startScenario(key, mode, ""),
+            // LEARNREV P2 — the Guide's arguments (the Mapping scheme), sent
+            // with a routed sentence so whatnext reads the same Right now.
+            guideArgs: () => (this.guideOn ? this._guideArgs() : {}),
             openPracticeMode: () => this.openPractice(),
             attach: (api) => this._attach(api),
             detach: (api) => this._detach(api),
@@ -1108,7 +1208,9 @@ export class CoachHost extends Component {
     get placeKey() {
         const p = this.place;
         const sub = p.subs[`${p.tag}:${p.lens}`] || "";
-        return `${p.seq}|${p.tag}|${p.lens}|${sub}|${p.detail}|${p.lenses.length}`;
+        // LEARNREV P2 — and the scheme a Mapping tab shows (its Right now).
+        const cfg = (p.extra && p.extra.config_id) || 0;
+        return `${p.seq}|${p.tag}|${p.lens}|${sub}|${p.detail}|${p.lenses.length}|${cfg}`;
     }
 
     /** True while the action on screen is the hub that published the place. */
@@ -1240,9 +1342,12 @@ export class CoachHost extends Component {
         this.state.turns.push({ id: this._turnId(), kind: "person", text: q, screen: this.state.screen });
         this._scrollFallback();
         try {
-            const r = await this.orm.call("learn.helper", "route", [q], {
-                screen_key: this.state.screen, lang: RT.lang, session_id: null,
-            });
+            const kwargs = { screen_key: this.state.screen, lang: RT.lang, session_id: null };
+            const guideArgs = this.guideOn ? this._guideArgs() : {};
+            if (Object.keys(guideArgs).length) {
+                kwargs.context = { pb_guide_args: guideArgs };
+            }
+            const r = await this.orm.call("learn.helper", "route", [q], kwargs);
             await this._fallbackDispatch(q, r || {});
         } catch {
             this._pushTurn({ kind: "note", note: this._pair("routeFailed") });
@@ -1582,6 +1687,353 @@ export class CoachHost extends Component {
         }
     }
 
+    // ============================================ LEARNREV P2 — the Guide
+    /** The switch is on (Learn › Settings, `bootstrap.guide`). */
+    get guideOn() {
+        return !!(this.bundle && this.bundle.guide);
+    }
+
+    /** The Guide is drawn above the chat: switch on, content loaded, and the
+     *  helper knows which Learn screen this is. */
+    get guideShown() {
+        return this.guideOn && this.state.ready && !!this.state.screen;
+    }
+
+    /** The chat's `place` prop: the tab on screen, plus a tick per Guide —
+     *  its only job is to redraw the chat's opening card. */
+    get chatPlace() {
+        return `${this.placeKey}|${this.state.gTick}`;
+    }
+
+    get askTitle() {
+        void this.state.lang;
+        return T("gSecAsk");
+    }
+
+    get dockLabel() {
+        void this.state.lang;
+        return T(this.state.dock === "dock" ? "gFloat" : "gDock");
+    }
+
+    get dockIcon() {
+        return this.state.dock === "dock" ? "picture-in-picture" : "panel-right";
+    }
+
+    /** What the screen's Right now needs to know: the scheme picked on a
+     *  Mapping tab (MappingStudio publishes it with its place). */
+    _guideArgs() {
+        const extra = (this.place && this.place.extra) || {};
+        const cfg = Number(extra.config_id) || 0;
+        return this.place && this.place.tag === "pb_mapping_studio" && cfg ? { config_id: cfg } : {};
+    }
+
+    /** Fetch the Guide for the screen on show. Cached per screen, arguments
+     *  and language; `refresh` reads it again (Right now changes). Never
+     *  throws: a failure is `gError`, drawn as its reason with a Retry. */
+    async _loadGuide({ refresh = false } = {}) {
+        if (!this.guideOn || !this.state.screen) {
+            if (this.state.guide || this.state.gKey) {
+                this.state.guide = null;
+                this.state.gKey = "";
+            }
+            if (this._info) {
+                this._info.stop();
+            }
+            return;
+        }
+        const screen = this.state.screen;
+        const args = this._guideArgs();
+        const lang = RT.lang === "vi" ? "vi_VN" : "en_US";
+        const key = [screen, JSON.stringify(args), lang].join("|");
+        const cached = this._guideCache.get(key) || null;
+        if (this.state.gKey !== key) {
+            this.state.gKey = key;
+            this.state.guide = cached;
+            this.state.gError = false;
+            this._startInfo();
+        }
+        if ((cached && !refresh) || this._gInflight === key) {
+            return;
+        }
+        this._gInflight = key;
+        this.state.gLoading = true;
+        try {
+            const raw = await this.orm.call("learn.guide", "rpc_guide", [screen, args],
+                                            { context: { lang } });
+            const g = dropAccess(raw);
+            this._guideCache.set(key, g);
+            if (this.state.gKey === key) {
+                this.state.guide = g;
+                this.state.gTick += 1;
+                this.state.gError = false;
+                if (actionable(g).length) {
+                    // Right now is always open when it has something to do.
+                    this.state.gSec = Object.assign({}, this.state.gSec, { now: true });
+                }
+                this._startInfo();
+            }
+        } catch {
+            if (this.state.gKey === key && !this.state.guide) {
+                this.state.gError = true;
+            }
+        } finally {
+            if (this._gInflight === key) {
+                this._gInflight = "";
+            }
+            if (this.state.gKey === key) {
+                this.state.gLoading = false;
+            }
+        }
+    }
+
+    /** Which sections were left open on this screen (default: This screen,
+     *  Right now and Tasks open; Fields and Understand folded). */
+    _sectionMemory(screen) {
+        let all = {};
+        try {
+            all = JSON.parse(lsGet(SECTIONS_KEY, "{}")) || {};
+        } catch {
+            all = {};
+        }
+        return Object.assign({ screen: true, now: true, fields: false, tasks: true, understand: false },
+                             all[screen] || {});
+    }
+
+    _rememberSections() {
+        let all = {};
+        try {
+            all = JSON.parse(lsGet(SECTIONS_KEY, "{}")) || {};
+        } catch {
+            all = {};
+        }
+        all[this.state.screen] = Object.assign({}, this.state.gSec);
+        lsSet(SECTIONS_KEY, JSON.stringify(all));
+    }
+
+    _toggleSection(sec) {
+        this.state.gSec = Object.assign({}, this.state.gSec, { [sec]: !this.state.gSec[sec] });
+        this._rememberSections();
+    }
+
+    /** The same Markup object while the HTML is unchanged, so a redraw for
+     *  any other reason leaves the panel's DOM (and its scroll, and the
+     *  search box's focus) alone — the OWL markup-flicker rule. */
+    _stable(slot, html) {
+        const prev = this._markups[slot];
+        if (prev !== undefined && String(prev) === html) {
+            return prev;
+        }
+        const m = markup(html);
+        this._markups[slot] = m;
+        return m;
+    }
+
+    get guideHTML() {
+        void this.state.lang;
+        const s = this.screenInfo;
+        return this._stable("guide", sectionsHTML(this.state.guide, {
+            open: this.state.gSec,
+            loading: this.state.gLoading,
+            error: this.state.gError,
+            fallbackNext: s && s.next_step ? tx(s.next_step) : "",
+            query: this._gQuery,
+            expanded: this.state.gField,
+            offers: (k, m) => this._offers(k, m),
+            stations: (this.bundle && this.bundle.stations) || [],
+            text: (pair) => tx(pair),
+            watchFor: (card) => !!this._watchStep(card),
+        }));
+    }
+
+    /** The Fields search box: rows hide in place, nothing re-renders. */
+    onGuideInput(ev) {
+        const box = ev.target;
+        if (!box || !box.matches || !box.matches("[data-gfind]")) {
+            return;
+        }
+        this._gQuery = box.value || "";
+        const fields = (this.state.guide && this.state.guide.fields) || [];
+        const root = box.closest(".lrn-gsecb");
+        let shown = 0;
+        for (const card of fields) {
+            const row = root && root.querySelector(`.lrn-gfield[data-field="${card.key}"]`);
+            const ok = fieldMatches(card, this._gQuery);
+            if (row) {
+                row.hidden = !ok;
+            }
+            shown += ok ? 1 : 0;
+        }
+        const none = root && root.querySelector(".lrn-gnomatch");
+        if (none) {
+            none.hidden = shown > 0;
+        }
+    }
+
+    /** A walkthrough step that points at this field's anchor: Watch it. */
+    _watchStep(card) {
+        if (!card || !card.anchor || !this.state.guide) {
+            return null;
+        }
+        for (const t of ((this.state.guide.doors || {}).tasks || [])) {
+            const sc = this.sc.get(t.key);
+            if (!sc || !this._offers(t.key, "watch")) {
+                continue;
+            }
+            const step = (sc.steps || []).find((st) => st.anchor === card.anchor);
+            if (step) {
+                return { scenario: t.key, key: step.key || "" };
+            }
+        }
+        return null;
+    }
+
+    _startInfo() {
+        const fields = ((this.state.guide && this.state.guide.fields) || []).filter((f) => f.anchor);
+        if (!this.guideOn || !fields.length) {
+            if (this._info) {
+                this._info.stop();
+            }
+            return;
+        }
+        if (!this._info) {
+            this._info = new InfoLayer(document,
+                () => ((this.state.guide && this.state.guide.fields) || []).filter((f) => f.anchor),
+                (key, btn) => this._openFieldCard(key, btn));
+        }
+        // After the board has drawn: the anchor may still be loading.
+        setTimeout(() => this._info && this.guideOn && this._info.start(), 0);
+    }
+
+    _openFieldCard(key, btn) {
+        const card = ((this.state.guide && this.state.guide.fields) || []).find((f) => f.key === key);
+        if (!card) {
+            return;
+        }
+        openFieldCard(btn, card, {
+            watch: !!this._watchStep(card),
+            onAction: (kind, k) => this._fieldAct(kind, k),
+        });
+    }
+
+    /** A field card's footer, from the floating card or a Fields row. */
+    _fieldAct(kind, key) {
+        const card = ((this.state.guide && this.state.guide.fields) || []).find((f) => f.key === key);
+        if (kind === "guide") {
+            if (!this.state.open) {
+                this.openHelper({});
+            }
+            this.state.gSec = Object.assign({}, this.state.gSec, { fields: true });
+            this.state.gField = key;
+            setTimeout(() => {
+                const row = document.querySelector(`.lrn-drawer .lrn-gfield[data-field="${key}"]`);
+                if (row) {
+                    row.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+                }
+            }, 90);
+        } else if (kind === "watch") {
+            const step = this._watchStep(card);
+            if (step) {
+                this.startScenario(step.scenario, "watch", step.key);
+            }
+        } else if (kind === "up" || kind === "down") {
+            const up = kind === "up";
+            markFeedback(key, up);
+            this.orm.call("learn.guide", "rpc_feedback", [this.state.screen, key, up]).catch(() => {});
+        }
+    }
+
+    /** A Right now button. */
+    _guideAct(index) {
+        const item = (((this.state.guide || {}).right_now || {}).items || [])[index];
+        const done = item ? runAction(item.action, {
+            action: this.action, openHub, bus: this.env.bus,
+            doAction: (act) => this.action.doAction(act),
+        }) : null;
+        if (!done) {
+            return;
+        }
+        if (done.kind === "filter") {
+            // The board's chips into view, then Right now read again.
+            setTimeout(() => {
+                const chips = document.querySelector("[data-coach='tr-filters']");
+                if (chips) {
+                    chips.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+                }
+            }, 60);
+            setTimeout(() => this._loadGuide({ refresh: true }), 400);
+        }
+    }
+
+    /** A "You are here" chip: the hub, or the hub's tab. */
+    _openPath(index) {
+        const p = (((this.state.guide || {}).screen || {}).path || [])[index];
+        const open = p && p.open;
+        if (!open || !open.xmlid) {
+            return;
+        }
+        runAction({ kind: "open", xmlid: open.xmlid, lens: open.lens, lens_key: open.lens_key },
+                  { action: this.action, openHub });
+    }
+
+    /** A before / next chip: that screen, at its first place. */
+    _openScreen(key) {
+        const screens = (this.bundle && this.bundle.screens) || [];
+        const s = screens.find((x) => x.key === key);
+        if (!s) {
+            return;
+        }
+        for (const place of s.places || []) {
+            const [tag, lens] = String(place).split(":");
+            const hub = hubScreenOf(screens, tag);
+            if (hub && hub.hub && hub.hub.xmlid && lens) {
+                runAction({ kind: "open", xmlid: hub.hub.xmlid, lens, lens_key: hub.hub.lens_key || "pb_lens" },
+                          { action: this.action, openHub });
+                return;
+            }
+        }
+        const nav = (s.navs || [])[0];
+        if (nav) {
+            this.action.doAction(nav);
+        }
+    }
+
+    /** Docked: a body class the page makes room for (coach.scss, ≥ 1280 px
+     *  only), with the panel's top just under the top bar. */
+    _syncDock() {
+        const on = !!(this.guideOn && this.state.open && this.state.dock === "dock");
+        if (on) {
+            const nav = document.querySelector(".o_main_navbar");
+            const top = nav ? Math.max(0, Math.round(nav.getBoundingClientRect().bottom)) : 0;
+            document.documentElement.style.setProperty("--lrn-dock-top", `${top}px`);
+            document.body.classList.add("lrn-docked");
+        } else {
+            document.body.classList.remove("lrn-docked");
+        }
+    }
+
+    _toggleDock() {
+        this.state.dock = this.state.dock === "dock" ? "float" : "dock";
+        lsSet(DOCK_KEY, this.state.dock);
+    }
+
+    /** "Open the Guide" (under Explain, on the first-visit card): the drawer
+     *  open, docked, with This screen expanded. */
+    _openGuideHere(dock) {
+        if (dock && this.state.dock !== "dock") {
+            this.state.dock = "dock";
+        }
+        this.state.gSec = Object.assign({}, this.state.gSec, { screen: true });
+        if (!this.state.open) {
+            this.openHelper({});
+        }
+        setTimeout(() => {
+            const el = document.querySelector(".lrn-drawer .lrn-guide");
+            if (el) {
+                el.scrollTop = 0;
+            }
+        }, 60);
+    }
+
     // -------------------------------------------------------------- rendering
     get bodyHTML() {
         // THE SUBSCRIPTION. Read during render, so flipping the language
@@ -1763,9 +2215,21 @@ export class CoachHost extends Component {
      *  which needs no vocabulary at all. */
     _notSureHTML(opts) {
         const s = this.screenInfo;
-        const list = ((s ? s.suggest : (this.bundle?.global_suggest || [])) || []).slice(0, MAX_CHIPS);
+        // LEARNREV P2 — with the Guide showing, "What should I do next
+        // here?" is the panel's own Right now when the screen has a live
+        // list, so the chip goes; and two questions built from the Guide
+        // join the screen's own ("What reads the pay role?", "Why does
+        // Loan Installment need my answer?").
+        const g = this.guideShown ? this.state.guide : null;
+        const live = !!(g && hasProvider(g));
+        const list = ((s ? s.suggest : (this.bundle?.global_suggest || [])) || [])
+            .filter((i) => !(live && i.key === "whatnext")).slice(0, MAX_CHIPS);
         const chips = list.map((i) => `<button type="button" class="lrn-cq" data-act="c-suggest"
             data-key="${esc(i.key)}" data-label="${esc(tx(i.label))}">${ic("help-circle")}<span>${esc(tx(i.label))}</span></button>`);
+        for (const q of g ? askChips(g) : []) {
+            chips.push(`<button type="button" class="lrn-cq" data-act="c-say"
+                data-text="${esc(q.text)}">${ic("help-circle")}<span>${esc(q.text)}</span></button>`);
+        }
         if (opts && opts.canAct) {
             chips.push(`<button type="button" class="lrn-cq" data-act="c-say"
                 data-text="${esc(T("whatCanYouDo"))}">${ic("sparkles")}<span>${esc(T("whatCanYouDo"))}</span></button>`);
@@ -1981,6 +2445,11 @@ export class CoachHost extends Component {
             tools.push(`<button class="lrn-btn sm" data-act="c-simpler"
                 >${ic("lightbulb")}${esc(simplerOn ? T("less") : T("simpler"))}</button>`);
         }
+        // LEARNREV P2 — an explanation built from the Guide opens it.
+        if (a.guide_door && this.guideOn) {
+            tools.push(`<button class="lrn-btn sm pri" data-act="c-guide"
+                >${ic("panel-right")}${esc(T("gOpenGuide"))}</button>`);
+        }
         if (a.source_kind !== "capability") {
             tools.push(`<button class="lrn-btn sm ghost" data-act="c-lesson"
                 >${ic("book-open")}${esc(T("openLesson"))}</button>`);
@@ -2113,6 +2582,14 @@ export class CoachHost extends Component {
         if (this.menu.open && !ev.target.closest(".lrn-menu, [data-act='c-more']")) {
             this.menu.close();
         }
+        // LEARNREV P2 — a field card opened as a Fields row: Watch and the
+        // thumbs (the same footer the floating card has).
+        const fc = ev.target.closest(".lrn-gfcard [data-fc]");
+        if (fc) {
+            ev.preventDefault();
+            this._fieldAct(fc.dataset.fc, fc.dataset.key || this.state.gField);
+            return;
+        }
         const el = ev.target.closest("[data-act]");
         if (!el) {
             return;
@@ -2185,8 +2662,27 @@ export class CoachHost extends Component {
         } else if (act === "c-goto") {
             this.goTab(el.dataset.lens);
         } else if (["c-mgo", "c-mok", "c-fvexplain", "c-fvwatch", "c-mlater",
-                    "c-mewatch", "c-meskip"].includes(act)) {
+                    "c-mewatch", "c-meskip", "c-fvguide"].includes(act)) {
             this._momentAct(act);
+        } else if (act === "c-gsec") {
+            this._toggleSection(el.dataset.sec);
+        } else if (act === "c-gpath") {
+            this._openPath(Number(el.dataset.i));
+        } else if (act === "c-gscreen") {
+            this._openScreen(el.dataset.screen);
+        } else if (act === "c-gact") {
+            this._guideAct(Number(el.dataset.i));
+        } else if (act === "c-gfield") {
+            this.state.gField = this.state.gField === el.dataset.key ? "" : el.dataset.key;
+        } else if (act === "c-gretry") {
+            this._loadGuide({ refresh: true });
+        } else if (act === "c-gmap") {
+            openLearn(this.action, "");
+            this.close();
+        } else if (act === "c-gdock") {
+            this._toggleDock();
+        } else if (act === "c-guide") {
+            this._openGuideHere(false);
         }
     }
 
@@ -2248,6 +2744,13 @@ export class CoachHost extends Component {
     toggleLang() {
         this.state.lang = this.state.lang === "en" ? "vi" : "en";
         RT.lang = this.state.lang;
+        // LEARNREV P2 — the Guide is read in the helper's language.
+        if (this.guideOn) {
+            if (this._info) {
+                this._info.stop();
+            }
+            this._loadGuide();
+        }
         // And the scenario overlay, which is a SECOND component reading the
         // same non-reactive RT.lang and would otherwise stay in the old
         // language until a reload — with a walkthrough running on top of the

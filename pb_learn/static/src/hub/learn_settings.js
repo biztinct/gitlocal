@@ -28,6 +28,8 @@ const COPY = {
     voice: { title: "swVoiceTitle", body: "swVoiceBody", icon: "message-circle",
              leaves: "swVoiceLeaves", notReady: "swNoSpeech" },
     collect: { title: "swCollectTitle", body: "swCollectBody", icon: "lightbulb" },
+    // LEARNREV P2
+    guide: { title: "swGuideTitle", body: "swGuideBody", icon: "book-open" },
 };
 
 export class LearnSettings extends Component {

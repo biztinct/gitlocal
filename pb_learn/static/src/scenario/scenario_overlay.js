@@ -455,7 +455,8 @@ export class ScenarioOverlay extends Component {
             return;
         }
         const pad = 8;
-        const vw = window.innerWidth;
+        // LEARNREV P2 — the docked Guide takes 420 px on the right (≥ 1280).
+        const vw = window.innerWidth - (document.body.classList.contains("lrn-docked") && window.innerWidth >= 1280 ? 420 : 0);
         const vh = window.innerHeight;
         const hole = {
             top: Math.max(4, r.top - pad),

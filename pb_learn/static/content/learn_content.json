@@ -293,6 +293,10 @@
       "en": "Leave",
       "vi": "Thoát"
     },
+    "explainField": {
+      "en": "Explain",
+      "vi": "Giải thích"
+    },
     "explainHint": {
       "en": "What this screen is, what to do next, and what its numbers mean.",
       "vi": "Màn hình này là gì, nên làm gì tiếp, và các con số ở đây nghĩa là gì."
@@ -336,6 +340,198 @@
     "fvOn": {
       "en": "First time on",
       "vi": "Lần đầu ở"
+    },
+    "gAndMore": {
+      "en": "and {n} more",
+      "vi": "và {n} chỗ khác"
+    },
+    "gAskReads": {
+      "en": "What reads the {field}?",
+      "vi": "{field} được dùng ở những đâu?"
+    },
+    "gAskWhy": {
+      "en": "Why does {name} need my answer?",
+      "vi": "Vì sao {name} cần câu trả lời của tôi?"
+    },
+    "gBefore": {
+      "en": "Before this",
+      "vi": "Trước đó"
+    },
+    "gChoices": {
+      "en": "Choices",
+      "vi": "Các lựa chọn"
+    },
+    "gDock": {
+      "en": "Dock to the side",
+      "vi": "Ghim vào cạnh màn hình"
+    },
+    "gFailed": {
+      "en": "The guide for this screen could not load just now.",
+      "vi": "Chưa tải được hướng dẫn cho màn hình này lúc này."
+    },
+    "gFilled": {
+      "en": "How it is filled",
+      "vi": "Cách được điền"
+    },
+    "gFindField": {
+      "en": "Find a field…",
+      "vi": "Tìm một trường…"
+    },
+    "gFirstOn": {
+      "en": "First time on {screen}?",
+      "vi": "Lần đầu ở {screen}?"
+    },
+    "gFix": {
+      "en": "Fix",
+      "vi": "Sửa"
+    },
+    "gFloat": {
+      "en": "Float over the screen",
+      "vi": "Thả nổi trên màn hình"
+    },
+    "gHelpful": {
+      "en": "Was this helpful?",
+      "vi": "Thông tin này có hữu ích không?"
+    },
+    "gHelpfulNo": {
+      "en": "No, this did not help",
+      "vi": "Không, thông tin này chưa hữu ích"
+    },
+    "gHelpfulYes": {
+      "en": "Yes, this helped",
+      "vi": "Có, thông tin này hữu ích"
+    },
+    "gHereLine": {
+      "en": "You are here: {path}",
+      "vi": "Bạn đang ở đây: {path}"
+    },
+    "gIfChanged": {
+      "en": "If you change it",
+      "vi": "Nếu bạn thay đổi"
+    },
+    "gLessonMap": {
+      "en": "Open the lesson map",
+      "vi": "Mở bản đồ bài học"
+    },
+    "gLoading": {
+      "en": "Loading the board…",
+      "vi": "Đang tải bảng…"
+    },
+    "gMistakes": {
+      "en": "Mistakes this prevents",
+      "vi": "Những lỗi bài này giúp tránh"
+    },
+    "gNextLine": {
+      "en": "Next: {path}",
+      "vi": "Tiếp theo: {path}"
+    },
+    "gNoAccess": {
+      "en": "You cannot see this screen's live list.",
+      "vi": "Bạn không xem được danh sách trực tiếp của màn hình này."
+    },
+    "gNoFieldMatch": {
+      "en": "No field matches that.",
+      "vi": "Không có trường nào khớp."
+    },
+    "gNoFields": {
+      "en": "No field cards for this screen yet.",
+      "vi": "Màn hình này chưa có thẻ trường."
+    },
+    "gNoLessonMap": {
+      "en": "No lesson for this screen yet, here is the map.",
+      "vi": "Chưa có bài học cho màn hình này, đây là bản đồ."
+    },
+    "gNoScheme": {
+      "en": "No scheme selected: pick one above.",
+      "vi": "Chưa chọn chương trình lương: hãy chọn ở phía trên."
+    },
+    "gNoTask": {
+      "en": "No walkthrough for this screen yet.",
+      "vi": "Màn hình này chưa có hướng dẫn từng bước."
+    },
+    "gNothingHere": {
+      "en": "Nothing needs you here.",
+      "vi": "Ở đây không có việc gì cần bạn."
+    },
+    "gNothingLive": {
+      "en": "Nothing live for this screen yet.",
+      "vi": "Màn hình này chưa có danh sách trực tiếp."
+    },
+    "gOpen": {
+      "en": "Open",
+      "vi": "Mở"
+    },
+    "gOpenGuide": {
+      "en": "Open the Guide",
+      "vi": "Mở Hướng dẫn"
+    },
+    "gOpenInGuide": {
+      "en": "Open in the Guide",
+      "vi": "Mở trong Hướng dẫn"
+    },
+    "gOpenRun": {
+      "en": "Open run",
+      "vi": "Mở đợt lương"
+    },
+    "gReadFailed": {
+      "en": "The live list could not be read just now.",
+      "vi": "Chưa đọc được danh sách trực tiếp lúc này."
+    },
+    "gSecAsk": {
+      "en": "Ask",
+      "vi": "Hỏi"
+    },
+    "gSecFields": {
+      "en": "Fields on this screen",
+      "vi": "Các trường trên màn hình này"
+    },
+    "gSecNow": {
+      "en": "Right now",
+      "vi": "Ngay lúc này"
+    },
+    "gSecScreen": {
+      "en": "This screen",
+      "vi": "Màn hình này"
+    },
+    "gSecTasks": {
+      "en": "Tasks",
+      "vi": "Tác vụ"
+    },
+    "gSecUnderstand": {
+      "en": "Understand",
+      "vi": "Hiểu rõ"
+    },
+    "gShow": {
+      "en": "Show",
+      "vi": "Hiện"
+    },
+    "gTerms": {
+      "en": "Words on this screen",
+      "vi": "Thuật ngữ trên màn hình này"
+    },
+    "gThanks": {
+      "en": "Thanks, noted.",
+      "vi": "Cảm ơn, đã ghi nhận."
+    },
+    "gUnavailable": {
+      "en": "This system does not keep a live list for this screen.",
+      "vi": "Hệ thống này không có danh sách trực tiếp cho màn hình này."
+    },
+    "gUsedBy": {
+      "en": "Used by",
+      "vi": "Được dùng ở"
+    },
+    "gValues": {
+      "en": "What it can say",
+      "vi": "Các giá trị có thể có"
+    },
+    "gWatchField": {
+      "en": "Watch this field",
+      "vi": "Xem trường này"
+    },
+    "gWorkedOut": {
+      "en": "How it is worked out",
+      "vi": "Cách được tính ra"
     },
     "gatedBody": {
       "en": "You don't have access to this in your company — you can still read the lesson.",
@@ -1304,6 +1500,14 @@
     "swComposeTitle": {
       "en": "Written answers from the guide",
       "vi": "Câu trả lời soạn từ tài liệu hướng dẫn"
+    },
+    "swGuideBody": {
+      "en": "Adds the Guide to PayAI: what each screen is for and what needs you right now. Each column gets an (i) that explains it.",
+      "vi": "Thêm phần Hướng dẫn vào PayAI: mỗi màn hình để làm gì và việc gì đang cần bạn. Mỗi cột có một nút (i) giải thích cột đó."
+    },
+    "swGuideTitle": {
+      "en": "Guide panel and field cards",
+      "vi": "Bảng hướng dẫn và thẻ trường"
     },
     "swNextBody": {
       "en": "The lesson map shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
@@ -19077,8 +19281,8 @@
     {
       "action_tags": "pb_mapping_studio",
       "blurb": {
-        "en": "Where every value a pay scheme reads comes from: FROM a source, TO a scheme, drawn as one journey.",
-        "vi": "Mỗi giá trị mà chương trình lương đọc đến từ đâu: TỪ một nguồn, ĐẾN một chương trình lương, vẽ thành một hành trình."
+        "en": "Connect each input component to where its value comes from, and decide how payroll keeps it. The Journey tab draws the whole picture.",
+        "vi": "Nối mỗi thành phần đầu vào với nơi giá trị của nó đến từ, và quyết định bảng lương lưu giá trị đó thế nào. Tab Hành trình vẽ toàn cảnh."
       },
       "hub": null,
       "key": "mapping",
@@ -19092,11 +19296,12 @@
         "pb_formula_studio.action_pb_mapping_studio"
       ],
       "next_step": {
-        "en": "Read the line above the lanes first: anything not fed will be computed as empty. Open a card to see its fields; the arrow in its corner opens the tab that edits it.",
-        "vi": "Hãy đọc dòng phía trên các làn trước: thứ gì chưa có nguồn sẽ được tính là trống. Mở một thẻ để xem các trường; mũi tên ở góc thẻ mở tab để sửa nó."
+        "en": "Pick a component to see where its value comes from, in read order. Change the order, storage, value type or pay role, then press Save setup.",
+        "vi": "Chọn một thành phần để xem giá trị của nó đến từ đâu, theo thứ tự đọc. Đổi thứ tự, cách lưu, loại giá trị hoặc vai trò trong lương, rồi bấm Lưu thiết lập."
       },
       "open": "",
       "places": [
+        "pb_mapping_studio:desk",
         "pb_mapping_studio:journey",
         "pb_mapping_studio:api",
         "pb_mapping_studio:transform",
@@ -34253,5 +34458,5 @@
       }
     }
   ],
-  "version": "b4da1d178a48"
+  "version": "f854cf167c3e"
 }
