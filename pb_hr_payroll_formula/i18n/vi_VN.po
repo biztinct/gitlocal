@@ -13914,8 +13914,9 @@ msgstr "bị thiếu trong tập tin"
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_net_role.py:0
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 msgid "net pay"
-msgstr "lương ròng"
+msgstr "lương thực nhận"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python

@@ -1697,7 +1697,11 @@ class HrFormulaConfigNetRole(models.Model):
                     break
 
     def _net_role_write_reasons(self, classification, net_rule, outgoing, best):
-        net_name = net_rule.name or net_rule.code or _("net pay")
+        # LEARNREV P0 (G33, ledger LR3): the sentence says "net pay" in the
+        # reader's words, never the NET component's own name — on a
+        # Vietnamese scheme that put "Số tiền thực nhận VND" inside an English
+        # sentence. `%(via)s` keeps naming a real component on purpose.
+        net_name = _("net pay")
         rules_by_id = {r.id: r for r in classification.rules}
         for rule in classification.rules:
             if rule.id == net_rule.id:

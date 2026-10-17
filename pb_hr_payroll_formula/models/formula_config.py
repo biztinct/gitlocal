@@ -2380,6 +2380,48 @@ class HrFormulaConfig(models.Model):
         field = self.env['hr.formula.rule']._fields['value_kind']
         return dict(field.selection).get(kind or '', _("untyped"))
 
+    def _net_role_reason_net_words(self):
+        """LEARNREV P0 (G33, ledger LR3) — what `_net_role_reason_read` needs:
+        a pattern for the NET component's own words (name and code, longest
+        first) and the OTHER components' names that contain them (a reason's
+        `via` names a real component on purpose and is never rewritten).
+        None when the scheme has no NET component."""
+        self.ensure_one()
+        nets = self.rule_ids.filtered(lambda r: r.net_role == 'net')
+        if not nets and hasattr(self, '_net_role_find_net_rule'):
+            try:
+                nets = self._net_role_find_net_rule(self.rule_ids)
+            except Exception:                                   # noqa: BLE001
+                nets = self.env['hr.formula.rule']
+        words = {w.strip() for r in nets for w in (r.name, r.code)
+                 if w and len(w.strip()) >= 3}
+        if not words:
+            return None
+        alt = '|'.join(re.escape(w) for w in sorted(words, key=len, reverse=True))
+        pattern = re.compile(r'(?<!\w)(?:%s)(?!\w)' % alt)
+        keep = sorted({(r.name or '').strip() for r in self.rule_ids - nets
+                       if r.name and r.name.strip() not in words
+                       and pattern.search(r.name)}, key=len, reverse=True)
+        return pattern, keep
+
+    def _net_role_reason_read(self, reason, net_words):
+        """A stored reason as a person reads it: the NET component's name in
+        it (written by a classifier older than LEARNREV P0) is said as "net
+        pay", so existing rows read right without a re-classify. Read only —
+        nothing is written back."""
+        if not reason or net_words is None:
+            return reason or ''
+        pattern, keep = net_words
+        held = []
+        for name in keep:
+            if name in reason:
+                held.append(name)
+                reason = reason.replace(name, '\x00%d\x00' % (len(held) - 1))
+        reason = pattern.sub(lambda _m: _("net pay"), reason)
+        for i, name in enumerate(held):
+            reason = reason.replace('\x00%d\x00' % i, name)
+        return reason
+
     def value_kind_board(self, run_id=None):
         """Everything the Field types board shows, in one call.
 
@@ -2400,6 +2442,7 @@ class HrFormulaConfig(models.Model):
                 if wire.target_rule_id:
                     wires[wire.target_rule_id.id] = wire
 
+        net_words = self._net_role_reason_net_words()
         rows = []
         for rule in self.rule_ids.sorted(key=lambda r: (r.sequence, r.id)):
             wire = wires.get(rule.id)
@@ -2429,7 +2472,8 @@ class HrFormulaConfig(models.Model):
                 'pay_role': rule.net_role or '',
                 'pay_role_source': rule.net_role_source or '',
                 'pay_role_confidence': rule.net_role_confidence or '',
-                'pay_role_reason': rule.net_role_reason or '',
+                'pay_role_reason': self._net_role_reason_read(
+                    rule.net_role_reason, net_words),
                 'rollup': bool(rule.net_role_detail),
                 'signal': rule.payroll_signal or '',
                 'needs_review': not rule.net_role
