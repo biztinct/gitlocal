@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Import Cockpit',
     'summary': 'Data import cockpit (batches, connectors, map → validate → commit)',
-    'version': '19.0.1.6.1',
+    'version': '19.0.1.6.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
