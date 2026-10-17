@@ -36,8 +36,8 @@ await studio.draw('c:Factor',2);
 assert.equal(calls.length,0,'Opening the confirmation must make no write call');
 assert.ok(dialog.body.includes('0'),'The reviewed fixed value, including zero, must be visible');
 assert.equal(dialog.confirmLabel,'Change to input and map');
-// Cancelling the native dialog has no callback and therefore no write.
-assert.equal(dialog.cancel,undefined);
+assert.equal(dialog.cancelLabel,'Cancel');
+dialog.cancel();
 assert.equal(calls.length,0);
 await dialog.confirm();
 assert.equal(calls[0][1],'import_mapping_use_constant');

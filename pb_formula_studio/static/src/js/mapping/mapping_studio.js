@@ -1344,6 +1344,8 @@ export class MappingStudio extends Component {
                     + "Formulas that use this component will read the input value. Continue?",
                     source?.label || leftId, fixed.label, fixed.meta.constantDisplay),
                 confirmLabel: _t("Change to input and map"),
+                cancelLabel: _t("Cancel"),
+                cancel: () => {},
                 confirm: async () => {
                     const result = await this.orm.call(MODEL, "import_mapping_use_constant",
                         [this.state.configId, this.state.batchId || false, leftId, rightId,
