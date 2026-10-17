@@ -25,7 +25,8 @@ from odoo.addons.pb_learn.models.learn_guide import discover
 from . import guide_truth as gt
 
 #: The screens P1 promises a manifest for. The gate fails if one disappears.
-EXPECTED = {'treatment'}
+EXPECTED = {'treatment', 'mapping', 'runpayroll', 'payruns', 'payslips',
+            'approvals', 'dashboard', 'formula'}
 
 FIELD_ATTRS = ['string', 'help', 'selection', 'type']
 
@@ -48,8 +49,8 @@ _PO = {}
 
 def po_for(module):
     if module not in _PO:
-        src = read_rel('%s/i18n/vi_VN.po' % module)
-        _PO[module] = gt.parse_po(src) if src else {}
+        _PO[module] = gt.live_po(read_rel('%s/i18n/vi_VN.po' % module),
+                                 read_rel('%s/i18n/%s.pot' % (module, module)))
     return _PO[module]
 
 

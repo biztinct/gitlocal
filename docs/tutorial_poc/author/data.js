@@ -8191,6 +8191,12 @@ const SCREEN_CTX = {
     hub: {
       tag: "pb_mapping_studio", xmlid: "pb_formula_studio.action_pb_mapping_studio", lens_key: "pb_mode",
       tabs: {
+        // LEARNREV P1 (ledger LR7): Connections is Mapping's default tab
+        // (mapping_studio.js MODES `desk`) and was the one tab not described,
+        // so a Guide could not say "Mapping › Connections".
+        desk: [B("Connections", "Liên kết"),
+               B("Sources, storage and payroll treatment, one component at a time.",
+                 "Nguồn, cách lưu trữ và cách bảng lương xử lý, từng thành phần một.")],
         api: [B("System fields → Scheme", "Trường hệ thống → Chương trình lương"),
               B("Wire the fields a connected system sends onto the scheme's inputs.",
                 "Nối các trường mà hệ thống đã kết nối gửi về vào đầu vào của chương trình lương.")],

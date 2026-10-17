@@ -2605,7 +2605,7 @@ msgstr "Cột Cài đặt"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "Column Type"
-msgstr "Cột Loại"
+msgstr "Loại cột"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -3278,7 +3278,7 @@ msgstr "Hằng số Cột"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__constant_value
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__constant
 msgid "Constant Value"
-msgstr "Hằng số Giá trị"
+msgstr "Giá trị cố định"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_legislation_item__kind__constant
@@ -3319,7 +3319,7 @@ msgstr "Hợp đồng"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__is_contract_component
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_contract_component
 msgid "Contract Component"
-msgstr "Hợp đồng Thành phần"
+msgstr "Thành phần hợp đồng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model,name:pb_hr_payroll_formula.model_hr_contract_advantage_change
@@ -4445,7 +4445,7 @@ msgstr "Hiển thị Tên của cột"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__name
 msgid "Display name shown in column header"
-msgstr "Hiển thị Tên hiển thị trong cột tiêu đề"
+msgstr "Tên hiển thị ở tiêu đề cột."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__available_columns_display
@@ -6919,7 +6919,7 @@ msgstr "Đầu vào"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__input
 msgid "Input (from data source)"
-msgstr "Đầu vào (từ Nguồn dữ liệu)"
+msgstr "Đầu vào (từ nguồn dữ liệu)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
@@ -7727,7 +7727,7 @@ msgstr "Liên kết Quy tắc lương"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__formula_dependencies
 msgid "List of columns this formula depends on"
-msgstr "Danh sách của cột này công thức phụ thuộc trên"
+msgstr "Danh sách các cột mà công thức này phụ thuộc vào."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__referenced_sheet_names
@@ -7954,7 +7954,7 @@ msgstr "Đánh dấu as Bắt buộc Đầu vào cho bảng lương tính toán"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_contract_component
 msgid "Marks this component as a contract component sourced from contract advantages."
-msgstr "Đánh dấu này Thành phần as Hợp đồng Thành phần nguồn từ Hợp đồng phúc lợi."
+msgstr "Đánh dấu thành phần này là thành phần hợp đồng, lấy từ các khoản trên hợp đồng."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__master_config_id
@@ -11414,7 +11414,7 @@ msgstr "Hiển thị này cột trong Excel Lưới"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__appears_on_payslip
 msgid "Show this component on payslip document"
-msgstr "Hiển thị này Thành phần trên Phiếu lương tài liệu"
+msgstr "Hiển thị thành phần này trên phiếu lương."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_review_share__signed_off

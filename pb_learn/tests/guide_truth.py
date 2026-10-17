@@ -90,6 +90,35 @@ def parse_po(src):
     return out
 
 
+def live_po(po_src, pot_src=None):
+    """The entries of a module's vi_VN.po that actually reach a screen. When
+    the module ships `<module>.pot`, the loader merges it in and every .po
+    entry missing from the .pot is dropped as obsolete (ledger PA58)."""
+    po = parse_po(po_src or '')
+    if pot_src:
+        template = set(_msgids(pot_src))
+        po = {k: v for k, v in po.items() if k in template}
+    return po
+
+
+def _msgids(src):
+    cur = None
+    for raw in src.split('\n'):
+        line = raw.strip()
+        m = re.match(r'msgid\s+(".*")$', line)
+        if m:
+            if cur is not None:
+                yield cur
+            cur = _unquote(m.group(1))
+        elif line.startswith('"') and cur is not None:
+            cur += _unquote(line)
+        elif cur is not None:
+            yield cur
+            cur = None
+    if cur is not None:
+        yield cur
+
+
 def _unquote(s):
     s = s[1:-1]
     return (s.replace('\\n', '\n').replace('\\t', '\t').replace('\\"', '"')
@@ -124,8 +153,8 @@ def symbol_region(src, symbol, is_python):
     if is_python:
         pat = re.compile(r'^\s*(?:(?:async\s+)?(?:def|class)\s+%s\b|%s\s*=)' % (esc, esc))
     else:
-        pat = re.compile(r'^\s*(?:async\s+|static\s+|export\s+|function\s+)*%s\s*'
-                         r'(?:\(|:|=)' % esc)
+        pat = re.compile(r'^\s*(?:async\s+|static\s+|export\s+|function\s+|const\s+|'
+                         r'let\s+|var\s+|get\s+)*%s\s*(?:\(|:|=)' % esc)
     for i, line in enumerate(lines):
         if not pat.match(line):
             continue
@@ -187,6 +216,28 @@ def check_files(screen_key, man, read, content, anchors, po_for):
                 return hit
         return None
 
+    def on_screen(where_, what, pair):
+        """A header or button text: in the screen's files, in English, and its
+        Vietnamese is exactly what the screen shows in Vietnamese."""
+        en_text = pair.get('en')
+        if not en_text or not tpl_text:
+            return
+        if norm(en_text) not in tpl_norm:
+            err('%s: %s "%s" is not in %s' % (where_, what, en_text, ', '.join(templates)))
+            return
+        vi = vi_on_screen(en_text)
+        if not vi:
+            err('%s: %s "%s" has no Vietnamese in %s' % (
+                where_, what, en_text,
+                ', '.join('%s/i18n/vi_VN.po' % m for m in tpl_modules)))
+        elif vi.startswith('~'):
+            if norm(pair.get('vi')) not in vi[1:]:
+                err('%s: %s vi "%s" is not what the screen shows ("%s")'
+                    % (where_, what, pair.get('vi'), vi[1:]))
+        elif norm(pair.get('vi')) != vi:
+            err('%s: %s vi "%s" is not what the screen shows ("%s")'
+                % (where_, what, pair.get('vi'), vi))
+
     # -- content keys ------------------------------------------------------------
     screens = {s['key']: s for s in content.get('screens') or ()}
     stations = {s['key'] for s in content.get('stations') or ()}
@@ -200,6 +251,8 @@ def check_files(screen_key, man, read, content, anchors, po_for):
     for key in man.get('tasks') or ():
         if key not in scenarios:
             err('task %s does not exist' % key)
+        elif scenarios[key].get('retired'):
+            err('task %s is retired' % key)
     for key in man.get('terms') or ():
         if key not in glossary:
             err('term %s does not exist' % key)
@@ -245,20 +298,7 @@ def check_files(screen_key, man, read, content, anchors, po_for):
         for lang in ('en', 'vi'):
             if col.get(lang):
                 current_labels[lang].add(col[lang])
-        if col.get('en') and tpl_text and norm(col['en']) not in tpl_norm:
-            err('%s: column "%s" is not in %s' % (fwhere, col['en'], ', '.join(templates)))
-        elif col.get('en') and tpl_text:
-            vi = vi_on_screen(col['en'])
-            if not vi:
-                err('%s: column "%s" has no Vietnamese in %s' % (
-                    fwhere, col['en'], ', '.join('%s/i18n/vi_VN.po' % m for m in tpl_modules)))
-            elif vi.startswith('~'):
-                if norm(col.get('vi')) not in vi[1:]:
-                    err('%s: column vi "%s" is not what the screen shows ("%s")'
-                        % (fwhere, col.get('vi'), vi[1:]))
-            elif norm(col.get('vi')) != vi:
-                err('%s: column vi "%s" is not what the screen shows ("%s")'
-                    % (fwhere, col.get('vi'), vi))
+        on_screen(fwhere, 'column', col)
         if f.get('anchor') and not anchor_ok(f['anchor']):
             err('%s: anchor %s is not registered or in the template' % (fwhere, f['anchor']))
         if f.get('derived'):
@@ -269,8 +309,15 @@ def check_files(screen_key, man, read, content, anchors, po_for):
                 err('%s: derived from %s, which does not exist' % (fwhere, f.get('from')))
             else:
                 for value in (f.get('values') or {}):
-                    if ("'%s'" % value) not in region and ('"%s"' % value) not in region:
-                        err('%s: %s never produces "%s"' % (fwhere, f.get('from'), value))
+                    quoted = ("'%s'" % value, '"%s"' % value)
+                    if any(q in region for q in quoted):
+                        continue
+                    # A value named by a constant in the same file
+                    # (`MODE_ONCE = "once"`) is produced by that file too.
+                    if re.search(r'^\s*(?:export\s+)?(?:const\s+)?[A-Z][A-Z0-9_]*\s*=\s*[\'"]%s[\'"]'
+                                 % re.escape(value), src, re.M):
+                        continue
+                    err('%s: %s never produces "%s"' % (fwhere, f.get('from'), value))
         elif not f.get('field'):
             err('%s: neither a field nor derived' % fwhere)
         for u in f.get('used_by') or ():
@@ -293,6 +340,7 @@ def check_files(screen_key, man, read, content, anchors, po_for):
 
     for a in man.get('actions') or ():
         if a.get('label'):
+            on_screen('action %s' % a.get('method'), 'button', a['label'])
             for lang in ('en', 'vi'):
                 if a['label'].get(lang):
                     current_labels[lang].add(a['label'][lang])

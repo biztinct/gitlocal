@@ -679,3 +679,9 @@ msgstr "“%s” đang chờ phê duyệt."
 #: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
 msgid "PayAI filled this in from your request. Check it, then run it when you are ready."
 msgstr "PayAI đã điền sẵn theo yêu cầu của bạn. Hãy kiểm tra, rồi chạy khi bạn sẵn sàng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Update records"
+msgstr "Cập nhật hồ sơ"

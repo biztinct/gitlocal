@@ -21863,6 +21863,16 @@
               "vi": "Giữa ↔ Cuối chu kỳ"
             }
           },
+          "desk": {
+            "line": {
+              "en": "Sources, storage and payroll treatment, one component at a time.",
+              "vi": "Nguồn, cách lưu trữ và cách bảng lương xử lý, từng thành phần một."
+            },
+            "name": {
+              "en": "Connections",
+              "vi": "Liên kết"
+            }
+          },
           "employee": {
             "line": {
               "en": "Values kept on employee and contract records, read back when a file or feed has nothing.",
@@ -34241,5 +34251,5 @@
       }
     }
   ],
-  "version": "85ea7ba089f8"
+  "version": "bb3557a8f8e3"
 }

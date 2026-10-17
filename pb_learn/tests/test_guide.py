@@ -221,6 +221,27 @@ class TestGuide(TransactionCase):
         else:
             self.assertEqual(action['id'], run.id)
         self.assertNotIn('ok', [i['key'] for i in items])
+        # The same item through the Guide, in Vietnamese.
+        out = self._guide('vi_VN', key='payruns')
+        self.assertTrue(out['right_now']['ok'], out['missing'])
+        texts = [i['text'] for i in out['right_now']['items']
+                 if i['key'] == 'not_balanced']
+        self.assertTrue(any('Guide Scheme' in t and 'không khớp' in t for t in texts),
+                        texts)
+
+    # ------------------------------------------------------------ all eight
+    def test_05_every_screen_answers_in_both_languages(self):
+        for key in ('treatment', 'mapping', 'runpayroll', 'payruns', 'payslips',
+                    'approvals', 'dashboard', 'formula'):
+            for lang in ('en_US', 'vi_VN'):
+                out = self._guide(lang, key=key)
+                self.assertTrue(out['screen']['purpose'], key)
+                self.assertTrue(out['screen']['path'], key)
+                self.assertTrue(out['fields'], key)
+                self.assertTrue(all(f['column'] for f in out['fields']), key)
+                self.assertFalse([m for m in out['missing']
+                                  if not m.startswith('right_now')], (key, lang))
+                self.assertEqual(out['doors']['station'], key)
 
     # ------------------------------------------------------------ T6
     def test_06_board_value_types_are_translated(self):

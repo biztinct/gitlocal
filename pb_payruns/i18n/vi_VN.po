@@ -549,12 +549,12 @@ msgstr "Tổng Khấu trừ"
 #. module: pb_payruns
 #: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_total_gross
 msgid "Total Gross"
-msgstr "Tổng cộng"
+msgstr "Tổng thu nhập"
 
 #. module: pb_payruns
 #: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_total_net
 msgid "Total Net"
-msgstr "Tổng số tiền ròng"
+msgstr "Tổng thực nhận"
 
 #. module: pb_payruns
 #. odoo-python
@@ -2125,3 +2125,18 @@ msgstr "Đã gửi đi phê duyệt"
 #: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "nobody yet"
 msgstr "chưa có ai"
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_balance_ok
+msgid "Figures add up"
+msgstr "Số liệu khớp"
+
+#. module: pb_payruns
+#: model:ir.model.fields,help:pb_payruns.field_hr_payslip_run__pb_balance_ok
+msgid "Whether gross minus deductions minus net pay comes to nothing, allowing for rounding. When it does not, a component is counted under the wrong heading."
+msgstr "Tổng thu nhập trừ khấu trừ trừ thực nhận có bằng không hay không, có tính đến làm tròn. Nếu không, có một thành phần đang bị tính sai mục."
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_unsourced_count
+msgid "Payslips With No Source Data"
+msgstr "Phiếu lương không có dữ liệu nguồn"
