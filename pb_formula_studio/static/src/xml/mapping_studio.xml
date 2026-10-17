@@ -417,6 +417,13 @@
         </div>
 
         <!-- ==== the board ==== -->
+        <p t-if="state.mode === 'import' and state.data and state.data.formula_columns_hidden"
+           class="pbms-formula-columns">
+          <t t-esc="state.data.formula_columns_hidden"/> calculated Excel columns hidden from mapping.
+          <t t-if="state.data.hidden_formula_mappings">
+            <t t-esc="state.data.hidden_formula_mappings"/> saved mappings use those columns; their definitions are preserved.
+          </t>
+        </p>
         <div class="pbms-board">
           <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
@@ -525,6 +532,7 @@
                              onLeftAction="isEmp ? ((it, act) => this.empAction(it, act)) : undefined"
                              onRemoveRight="isEmp ? ((id) => this.removeRightField(id)) : undefined"
                              canAddLeft="canAddLeft"
+                             blockedLeftKeys="state.data.blocked_column_keys or []"
                              addLeftLabel="addLeftLabel"
                              onAddLeft="(text) => this.addLeftColumn(text)"/>
             </div>

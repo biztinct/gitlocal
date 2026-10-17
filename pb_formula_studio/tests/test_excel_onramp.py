@@ -525,3 +525,52 @@ class TestExcelOnRamp(TransactionCase):
             self.assertNotIn(forbidden, body,
                              "the header reader must only ever read: %s" % forbidden)
         self.assertIn('.new(', body, "…on an in-memory probe record")
+
+    def test_formula_columns_are_hidden_for_saved_and_loaded_files(self):
+        """Scan all data rows; blanks and cached values cannot disguise Age."""
+        cfg = self._config('Formula source columns')
+        payload = self._workbook({'People': [
+            ['Employee Code', 'Basic Salary', 'Age', 'Mixed salary', 'Literal equals'],
+            ['E001', 100, None, 50, 'ordinary text'],
+            ['E002', 200, '=10+20', '=25*2', 'ordinary text'],
+            ['E003', 300, '=20+20', None, 'ordinary text'],
+        ]})
+        result = self.Studio.import_mapping_read_headers(
+            cfg.id, base64.b64encode(payload).decode(), 'formula-sources.xlsx')
+        self.assertTrue(result['ok'], result)
+        ids = {c['id'] for c in result['left']}
+        self.assertNotIn('c:Age', ids)
+        self.assertIn('c:Mixed salary', ids)
+        mixed = next(c for c in result['left'] if c['id'] == 'c:Mixed salary')
+        self.assertEqual(mixed['meta']['badge'], 'Mixed')
+        self.assertEqual(result['formula_columns_hidden'], 1)
+        self.assertIn('Age', result['blocked_column_keys'])
+        self.assertIn('C', result['blocked_column_keys'])
+        basic = cfg.rule_ids.filtered(lambda r: r.code == 'BASIC')
+        before = basic.source_ids.ids
+        for alias in ('Age', 'C', 'People|Age', 'People|C'):
+            refused = self.Studio.import_mapping_create(cfg.id, 'sample', 'c:' + alias, basic.id)
+            self.assertFalse(refused['ok'], (alias, refused))
+            self.assertIn('calculated in Excel', refused['msg'])
+        self.assertEqual(basic.source_ids.ids, before)
+        accepted = self.Studio.import_mapping_create(cfg.id, 'sample', 'c:Mixed salary', basic.id)
+        self.assertTrue(accepted['ok'], accepted)
+        # A legacy binding remains stored, but does not restore a calculated
+        # source as an orphan card or produce a wire without a source card.
+        basic.set_source_binding('excel', 'Age', origin='board')
+        again = self.Studio.import_mapping_data(cfg.id, 'sample')
+        self.assertEqual(basic.source_binding_key, 'Age')
+        self.assertNotIn('c:Age', {c['id'] for c in again['left']})
+        self.assertEqual(again['hidden_formula_mappings'], 1)
+        self.assertTrue(all(w['leftId'] in {c['id'] for c in again['left']} for w in again['wires']))
+        batch = self.Batch.create({'name': 'Formula source file', 'formula_config_id': cfg.id,
+                                   'import_file': base64.b64encode(payload), 'import_filename': 'formula-sources.xlsx',
+                                   'file_sheet_name': 'People'})
+        self.env['hr.payroll.import.line'].create({
+            'batch_id': batch.id, 'row_number': 1,
+            'raw_data_json': json.dumps({'Employee Code': 'E001', 'A': 'E001',
+                                        'Basic Salary': 100, 'B': 100, 'Age': 30, 'C': 30})})
+        loaded = self.Studio.import_mapping_data(cfg.id, batch.id)
+        self.assertNotIn('c:Age', {c['id'] for c in loaded['left']})
+        refused = self.Studio.import_mapping_create(cfg.id, batch.id, 'c:Age', basic.id)
+        self.assertFalse(refused['ok'], refused)

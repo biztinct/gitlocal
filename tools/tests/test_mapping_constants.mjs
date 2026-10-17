@@ -44,3 +44,19 @@ assert.equal(calls[0][1],'import_mapping_use_constant');
 assert.deepEqual(calls[0][2],[1,false,'c:Factor',2,0]);
 assert.equal(calls[1][0],'reload');
 console.log('Constant group, no-write confirmation/cancel, and explicit conversion checks passed');
+
+canvas.props.blockedLeftKeys = ['Age', 'People|Age', 'C'];
+canvas.props.canAddLeft = true;
+const added = [];
+canvas.props.onAddLeft = value => added.push(value);
+for (const key of ['Age','age','People|Age','C']) {
+    canvas.ui.q.left = key;
+    assert.equal(canvas.showAddLeft,false);
+    canvas.addLeft();
+}
+assert.deepEqual(added,[],'A calculated source cannot be restored through the Add column shortcut');
+canvas.ui.q.left = 'New input';
+assert.equal(canvas.showAddLeft,true);
+canvas.addLeft();
+assert.deepEqual(added,['New input']);
+console.log('Calculated-source aliases cannot be re-added from destination search');

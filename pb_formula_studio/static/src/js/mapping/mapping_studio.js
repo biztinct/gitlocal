@@ -777,6 +777,8 @@ export class MappingStudio extends Component {
         // "Already used by this scheme" lane, which is what makes the affordance
         // honest: a card you never wired does not survive, and one you did does.
         const extra = this.state.extraCols
+            .filter((c) => !(this.state.data?.blocked_column_keys || [])
+                .some((key) => key.toLowerCase() === c.trim().toLowerCase()))
             .filter((c) => !server.some((x) => String(x.id) === "c:" + c))
             .map((c) => ({ id: "c:" + c, label: c, sublabel: "",
                            group: _t("Added here"), meta: {} }));

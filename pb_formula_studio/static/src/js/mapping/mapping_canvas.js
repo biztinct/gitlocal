@@ -102,6 +102,7 @@ export class MappingCanvas extends Component {
         canAddLeft: { type: Boolean, optional: true },
         addLeftLabel: { type: String, optional: true },   // "…“%s”…"
         onAddLeft: { type: Function, optional: true },    // (text)
+        blockedLeftKeys: { type: Array, optional: true },
     };
 
     setup() {
@@ -1625,6 +1626,7 @@ export class MappingCanvas extends Component {
         const q = (this.ui.q.left || "").trim();
         if (!q) { return false; }
         const k = q.toLowerCase();
+        if (this.props.blockedLeftKeys?.some((key) => key.toLowerCase() === k)) { return false; }
         return !this.props.leftItems.some(
             (x) => String(x.label || "").trim().toLowerCase() === k);
     }
@@ -1634,7 +1636,7 @@ export class MappingCanvas extends Component {
     }
     addLeft() {
         const q = (this.ui.q.left || "").trim();
-        if (q && this.props.onAddLeft) { this.props.onAddLeft(q); }
+        if (q && this.showAddLeft && this.props.onAddLeft) { this.props.onAddLeft(q); }
     }
 
     /**

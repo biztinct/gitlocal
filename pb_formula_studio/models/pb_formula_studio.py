@@ -9,6 +9,7 @@ import re
 import unicodedata
 from collections import defaultdict
 from difflib import SequenceMatcher
+from .spreadsheet_columns import classify_xlsx_columns
 
 try:
     import requests
@@ -8854,6 +8855,46 @@ class PbFormulaStudio(models.AbstractModel):
         return cols if isinstance(cols, list) else []
 
     @api.model
+    def _import_column_types(self, config, batch=None, raw_row=None):
+        """Inspect the selected file, including files saved before this feature.
+
+        Cached values and headings cannot reveal whether a cell was calculated.
+        Read the retained XLSX with formulas intact; do not rewrite metadata or
+        invoke the payroll loader just to inspect a mapping board.
+        """
+        if batch:
+            filename = batch.import_filename or ''
+            encoded = batch.with_context(bin_size=False).import_file
+            keys = list((raw_row if raw_row is not None else self._import_batch_row(batch)).keys())
+            preferred = {c['key'] for c in self._column_alias_fold(keys)}
+            columns = []
+            for key in keys:
+                sheet, header = key.split('|', 1) if '|' in key else ('', key)
+                letter = header if re.fullmatch(r'[A-Z]{1,3}', header) else ''
+                columns.append((key, sheet, '' if letter else header, letter, key in preferred))
+            sheet_name = batch.file_sheet_name or ''
+            start = batch.file_data_start_row or 0
+        else:
+            filename = config.import_sample_filename or ''
+            encoded = config.with_context(bin_size=False).import_sample_file
+            columns = [(c.get('key') or '', c.get('sheet') or '', c.get('header') or '',
+                        c.get('letter') or '', bool(c.get('preferred')))
+                       for c in self._import_sample_columns(config)]
+            sheet_name, start = '', 0
+        if not encoded or not filename.lower().endswith(('.xlsx', '.xlsm')):
+            return {}
+        try:
+            return classify_xlsx_columns(base64.b64decode(encoded), tuple(columns), sheet_name, start)
+        except Exception:
+            _logger.warning('Could not inspect formula cell types in %s', filename, exc_info=True)
+            return {}
+
+    @staticmethod
+    def _import_column_type(types, key):
+        return types.get(key) or next((info for alias, info in types.items()
+                                      if alias.casefold() == key.casefold()), {})
+
+    @api.model
     def _sample_alias_map(self, config):
         """`{any spelling of a stored-file column: the key its card carries}`.
 
@@ -9244,6 +9285,8 @@ class PbFormulaStudio(models.AbstractModel):
         # drawn by hand.
         left = self._import_left_columns(batch, cols, input_rules, config=config,
                                          raw_row=raw_row, source=source)
+        column_types = self._import_column_types(
+            config, batch if source == 'batch' else None, raw_row=raw_row)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
@@ -9328,6 +9371,22 @@ class PbFormulaStudio(models.AbstractModel):
                              'sublabel': _("this file has no such column"),
                              'group': lane, 'meta': {'orphan': True}})
             self._dedupe_card_labels(left)
+        hidden_columns, hidden_ids = set(), set()
+        for card in left:
+            if not str(card['id']).startswith('c:'):
+                continue
+            info = self._import_column_type(column_types, card['id'][2:])
+            if info.get('kind') == 'formula':
+                hidden_ids.add(card['id'])
+                hidden_columns.add((info['sheet'], info['letter']))
+            elif info.get('kind') == 'mixed':
+                card['meta'].update({
+                    'badge': _('Mixed'), 'badgeTone': 'warn',
+                    'badgeHint': _('This Excel column contains both entered values and formula cells.'),
+                })
+        hidden_mapping_count = sum(w['leftId'] in hidden_ids for w in wires)
+        left = [card for card in left if card['id'] not in hidden_ids]
+        wires = [wire for wire in wires if wire['leftId'] not in hidden_ids]
         # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
         # drawn FROM, are the real columns. A suggestion whose `leftId` has no
         # card on the board is the exact shape of the MAPFIX-D canvas crash.
@@ -9395,6 +9454,10 @@ class PbFormulaStudio(models.AbstractModel):
             # upload is every column.
             'can_add': True,
             'add_label': _("Use “%s” as a spreadsheet column"),
+            'formula_columns_hidden': len(hidden_columns),
+            'hidden_formula_mappings': hidden_mapping_count,
+            'blocked_column_keys': [key for key, info in column_types.items()
+                                    if info['kind'] == 'formula'],
             'contexts': contexts,
             # `'sample'` is a FROM id like any other — the client round-trips it
             # straight back as `batch_id`, so it is returned as the string it is.
@@ -9658,6 +9721,15 @@ class PbFormulaStudio(models.AbstractModel):
         rule = self.env['hr.formula.rule'].browse(self._as_id(target_rule_id))
         if not (col and rule.exists()):
             return {'ok': False, 'msg': self._ec_bad_spec_msg()}
+        if not is_pay_run:
+            batch = self.env['hr.payroll.import.batch'].browse(self._as_id(batch_id)).exists()
+            if batch and batch.formula_config_id != rule.config_id:
+                return {'ok': False, 'msg': _('Pick a file belonging to this scheme.')}
+            types = self._import_column_types(rule.config_id, batch or None)
+            if self._import_column_type(types, col).get('kind') == 'formula':
+                return {'ok': False, 'msg': _(
+                    '“%s” is calculated in Excel and cannot be mapped as an input. '
+                    'Map its source columns instead.') % col}
         sealed = self._mc_refuse_sealed(rule)
         if sealed:
             return sealed

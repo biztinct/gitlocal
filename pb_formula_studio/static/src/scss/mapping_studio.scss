@@ -1086,3 +1086,8 @@
     p { padding: 10px 12px; margin: 6px 0 0; max-width: 680px; white-space: normal;
         background: var(--pbim-soft); border: 1px solid var(--pbim-line); border-radius: 9px; line-height: 1.5; }
 }
+
+.pbms-formula-columns {
+    flex-shrink: 0; margin: 6px 20px; color: var(--pbim-muted, #475569);
+    font-size: 12px;
+}
