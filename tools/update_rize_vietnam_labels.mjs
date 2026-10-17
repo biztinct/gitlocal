@@ -21,16 +21,20 @@ if(mode!=='preview'){
  const guide=monthly.worksheets.getItem('Instructions');
  guide.getRange('B5').values=[[String(guide.getRange('B5').values[0][0]).replace('Country employee ID',names.get('VNHCE')).replace('Employee name',names.get('VNHCF'))]];
  // Header cell edits do not refresh imported table-column metadata in this
- // runtime. Refresh only the four affected table objects, retaining their
+ // runtime. Refresh only affected table objects, retaining their
  // ranges, names and presentation so Excel has one consistent header name.
- const tableRefs=JSON.parse(await fs.readFile(`${workDir}/tables.json`,'utf8'));
  for(const [book,tabs]of [[review,['Source exceptions','Roster review']],[monthly,['Time','Monthly adjustments']]])for(const tab of tabs){
   const sh=book.worksheets.getItem(tab);
-  for(const ref of tableRefs[tab]){
-   const old=sh.tables.items.find(t=>t.name===ref.name);
+  if(sh.tables.items.length===0)continue;
+  if(sh.tables.items.length!==1)throw Error(`Review table layout changed on ${tab}`);
+  const metadata=await book.inspect({kind:'table',sheetId:tab,maxChars:2000,tableMaxRows:0,tableMaxCols:0});
+  const ref=metadata.ndjson.split('\n').map(s=>{try{return JSON.parse(s)}catch{return {}}}).find(t=>t.kind==='table'&&t.sheet===tab);
+  if(!ref?.address)throw Error(`Cannot inspect the table range on ${tab}`);
+  for(const old of [...sh.tables.items]){
+   const tableName=old.name;
    const props={style:old.style,showHeaders:old.showHeaders,showTotals:old.showTotals,showBandedColumns:old.showBandedColumns,showFilterButton:old.showFilterButton};
    old.delete();
-   const updated=sh.tables.add(ref.ref,props.showHeaders,ref.name);
+   const updated=sh.tables.add(ref.address,props.showHeaders,tableName);
    updated.style=props.style;
    updated.showTotals=props.showTotals;updated.showBandedColumns=props.showBandedColumns;updated.showFilterButton=props.showFilterButton;
   }

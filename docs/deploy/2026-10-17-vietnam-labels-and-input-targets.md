@@ -40,7 +40,7 @@ not apply the original blueprint's destination flags over the owner's edits.
 
 The two delivery workbooks retain the approved 70-person roster (68 Active,
 2 Notice Period), ten remaining review decisions and blank monthly pay inputs.
-Only names and identity headings change. The four affected table headers are
+Only names and identity headings change. The two affected native table headers are
 synchronized with native Excel table metadata. New local copies are placed in
 `outputs/rize-vn-labels-20261017/` to preserve the owner's open earlier files.
 
@@ -63,3 +63,44 @@ review IDs through the deployed parser and preserved 107 employees, 102
 contracts, 183 payslips, four runs and 4,234 contract advantage rows. Deployment
 and Chrome results are recorded after the production checks. Test-generated
 PNG files are removed before completion.
+
+## Deployed result
+
+Implementation commit **93417260e** was deployed from the latest combined
+branch 19.1. Under `/tmp/payobook-studio-deploy.lock`, the complete module tree
+was compared with production: only the model and regression-test files differed.
+The full committed tree was synchronized and verified byte-for-byte; the shared
+`odoo-server` service was restarted and is active. Rize's local and public login
+endpoints returned HTTP 200. No schema/module-data upgrade or asset refresh was
+required. Existing module versions and unrelated local changes were preserved.
+
+The deployed guard regression passed on **payobook, rize, payobook_template,
+abm, p0clone and lrp4clone**. Each database accepted an input link, rejected
+formula and constant links without source writes, and retained the full
+catalogue. Fixture changes were rolled back. Real configurations were also
+checked wherever present; every spreadsheet destination and wire target was an
+input. Vietnam 4639 returned exactly 93 destinations from its 116 components.
+Business counts remained unchanged in all six databases.
+
+The rize label/artifact transaction committed 62 label changes, passed all
+30 stored payroll scenarios and rejoined all 70 unique review identities. All
+protected rule, source, destination and configuration fields, old VN rules and
+business counts were unchanged. Replacement attachment hashes were verified.
+The two workbooks retain the owner's approved roster and ten pending decisions;
+no employee data import, live assignments or payroll activation occurred.
+
+Chrome end-to-end verification on rize confirmed the renamed components, a
+93-input spreadsheet destination list, and zero results for calculated Net
+payment VND in destination search. Journey's separate "23 calculated or fixed"
+group expands to show the formulas/constants, including Cash gross pay VND,
+Resident progressive PIT VND and Net payment VND. No mapping was drawn or
+removed during UI testing. The final tab is returned to spreadsheet mapping.
+
+The workbook updater now discovers affected native table ranges through the
+public inspection API. A rerun on private copies preserved all workbook values,
+validation, panes, table names/styles and header metadata. No private external
+manifest is needed. Python/Node syntax and diff checks passed. Test PNGs were
+removed; earlier files open in the owner's Excel session were left untouched.
+
+Protected backup and receipts:
+`Payobook19v2:/odoo/backups/vn-labels-input-targets-20261017-93417260e/`.
