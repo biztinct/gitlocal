@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 from unittest.mock import patch
 
 import openpyxl
@@ -97,7 +98,7 @@ class TestPayrollTemplates(TransactionCase):
         self.assertIsNone(next_month['Monthly adjustments'].cell(2,col).value)
 
     def test_records_diff_apply_and_blank_ignore(self):
-        wb=self.export('records');self.set_value(wb,'Employee records','Wage',1200)
+        wb=self.export('records');self.set_value(wb,'Employee records','Salary',1200)
         review=self.review(wb,'records')
         self.assertFalse(review['issues']);self.assertEqual(len(review['changes']),1)
         self.assertEqual(self.contract.wage,1000)
@@ -106,16 +107,16 @@ class TestPayrollTemplates(TransactionCase):
     def test_employee_name_editable_identity_locked(self):
         wb=self.export('records');ws=wb['Employee records']
         self.assertTrue(ws.protection.sheet)
-        self.assertEqual(ws['A1'].value,'Employee ID');self.assertEqual(ws['B1'].value,'Email')
+        self.assertEqual(ws['A1'].value,'Employee ID');self.assertEqual(ws['B1'].value,'Employee email')
         self.assertTrue(ws['A2'].protection.locked);self.assertTrue(ws['B2'].protection.locked)
         self.assertEqual(ws['C2'].value,self.emp.name);self.assertFalse(ws['C2'].protection.locked)
         ws['C2']='Workbook renamed'
         r=self.review(wb,'records');self.assertFalse(r['issues']);self.assertEqual(len(r['changes']),1)
 
     def test_id_and_email_cannot_change(self):
-        for label,value in [('Employee ID','000002'),('Email','other@example.test')]:
+        for label,value in [('Employee ID','000002'),('Employee email','other@example.test')]:
             wb=self.export('records');self.set_value(wb,'Employee records',label,value)
-            self.set_value(wb,'Employee records','Wage',1200)
+            self.set_value(wb,'Employee records','Salary',1200)
             review=self.review(wb,'records');self.assertTrue(review['issues'])
             with self.assertRaises(UserError):self.apply(review)
         self.assertEqual(self.contract.wage,1000)
@@ -134,7 +135,7 @@ class TestPayrollTemplates(TransactionCase):
         with self.assertRaisesRegex(UserError,'changed after review'):self.apply(stale)
 
     def test_concurrent_change_after_review(self):
-        wb=self.export('records');self.set_value(wb,'Employee records','Wage',1200)
+        wb=self.export('records');self.set_value(wb,'Employee records','Salary',1200)
         review=self.review(wb,'records');self.contract.wage=1100
         with self.assertRaises(UserError):self.apply(review)
         self.assertEqual(self.contract.wage,1100)
@@ -178,9 +179,13 @@ class TestPayrollTemplates(TransactionCase):
         self.apply(self.review(wb));raw,ids=self.api._engine_file(self.cfg,'2026-10')
         probe=self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True).new({'formula_config_id':self.cfg.id})
         parsed=probe._parse_source_file(raw,'file.xlsx');blob=probe._raw_data_from_row(parsed['headers'],parsed['rows'][0])
-        self.assertEqual(blob['Payroll|Paid days'],20)
-        self.assertEqual(blob['Payroll|Monthly bonus'],0)
-        self.assertEqual(blob['Payroll|Salary'],1000)
+        self.assertEqual(blob['Paid days'],20)
+        self.assertEqual(blob['Monthly bonus'],0)
+        self.assertEqual(blob['Salary'],1000)
+        aliases=probe._template_alias_row(blob)
+        self.assertEqual(aliases['Payroll|Paid days'],20)
+        self.assertEqual(aliases['Payroll|Monthly bonus'],0)
+        self.assertEqual(aliases['Payroll|Salary'],1000)
         self.assertEqual(self.contract.wage,1000)
 
     def test_current_recurring_salary_wins_over_saved_monthly_zero(self):
@@ -193,8 +198,8 @@ class TestPayrollTemplates(TransactionCase):
             raw,_ids=self.api._engine_file(self.cfg,'2026-10')
             wb=openpyxl.load_workbook(io.BytesIO(raw))
             row=dict(zip([c.value for c in wb.active[1]],[c.value for c in wb.active[2]]))
-            self.assertEqual(row['Payroll|Salary'],salary)
-            self.assertEqual(row['Payroll|Monthly bonus'],0)
+            self.assertEqual(row['Salary'],salary)
+            self.assertEqual(row['Monthly bonus'],0)
 
     def test_salary_candidate_uses_scheme_currency(self):
         cfg=self.env['hr.formula.config'].create({'name':'VND salary source',
@@ -439,7 +444,7 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual(result['reviewed'],3)
         raw,_ids=self.api._engine_file(self.cfg,'2026-10')
         row=dict(zip(*list(openpyxl.load_workbook(io.BytesIO(raw)).active.values)))
-        self.assertEqual(row['Payroll|Salary'],1200)
+        self.assertEqual(row['Salary'],1200)
         batch=self.env['hr.payroll.import.batch'].create({'name':'Inline edit recompute',
             'formula_config_id':self.cfg.id,'company_id':self.env.company.id,
             'one_time':True,'date_from':'2026-10-01','date_to':'2026-10-31',
@@ -534,3 +539,122 @@ class TestPayrollTemplates(TransactionCase):
         self.salary.value_kind='quantity'
         with self.assertRaisesRegex(UserError,'saved-record source changed'):
             self.review(wb)
+
+    def schema_identity(self):
+        code = self.rule('Mã nhân viên\n(Code)', 'WBEMPCODE', 'identifier')
+        name = self.rule('Họ và tên (Full name)', 'WBEMPNAME', 'text')
+        self.map_field(code, 'hr.employee', 'employee_id')
+        self.map_field(name, 'hr.employee', 'name')
+        self.emp.employee_id = 'SCHEMA-001'
+        return code, name
+
+    def test_schema_identity_headers_and_mapped_values_round_trip(self):
+        code, name = self.schema_identity()
+        for mode in ('monthly', 'template'):
+            wb = self.export(mode)
+            for sheet in ('Time', 'Monthly adjustments'):
+                self.assertEqual([c.value for c in wb[sheet][1]][:2], [code.name, name.name])
+                self.assertEqual(wb[sheet]['A2'].value, 'SCHEMA-001')
+                self.assertEqual(wb[sheet]['B2'].value, self.emp.name)
+                self.assertNotIn('employee_code', [c.value for c in wb[sheet][1]])
+            self.assertFalse(self.review(wb)['issues'])
+        data = self.api.workspace(self.cfg.id, '2026-10')
+        self.assertEqual(data['identity_labels'], {'code': code.name, 'name': name.name})
+
+    def test_schema_records_headers_and_values_round_trip(self):
+        code, name = self.schema_identity()
+        wb = self.export('records')
+        headers = [c.value for c in wb['Employee records'][1]]
+        self.assertEqual(headers[:2], [code.name, self.email.name])
+        self.assertIn(name.name, headers)
+        self.assertIn(self.salary.name, headers)
+        self.set_value(wb, 'Employee records', self.salary.name, 1250)
+        reviewed = self.review(wb, 'records')
+        self.assertFalse(reviewed['issues'])
+        self.assertEqual(reviewed['changes'][0]['value'], 1250)
+
+    def test_schema_identity_rename_uses_download_receipt(self):
+        code, name = self.schema_identity()
+        wb = self.export()
+        code.name = 'Updated employee code'
+        name.name = 'Updated employee name'
+        self.set_value(wb, 'Monthly adjustments', self.bonus.name, 25)
+        reviewed = self.review(wb)
+        self.assertFalse(reviewed['issues'])
+        self.assertEqual(self.cell(reviewed, self.bonus)['value'], 25)
+
+    def test_schema_identity_edits_and_duplicate_headers_refused(self):
+        code, name = self.schema_identity()
+        wb = self.export()
+        self.set_value(wb, 'Time', code.name, 'SOMEONE-ELSE')
+        self.assertTrue(self.review(wb)['issues'])
+        wb = self.export()
+        wb['Time']['C1'] = code.name
+        self.assertTrue(self.review(wb)['issues'])
+        self.emp.employee_id = ''
+        with self.assertRaisesRegex(UserError, 'unique value'):
+            self.export()
+
+    def test_legacy_generic_identity_download_still_imports(self):
+        wb = self.export()
+        receipt = self.env['pb.payroll.workbook.exchange'].search([('token', '=', wb['_Payobook']['B1'].value)])
+        payload = dict(receipt.payload)
+        payload.pop('identity_columns')
+        for person in payload['employees'].values():
+            person.pop('identity_values')
+        receipt.payload = payload
+        self.schema_identity()
+        self.set_value(wb, 'Monthly adjustments', self.bonus.name, 30)
+        reviewed = self.review(wb)
+        self.assertFalse(reviewed['issues'])
+        self.assertEqual(self.cell(reviewed, self.bonus)['value'], 30)
+
+    def test_engine_uses_only_component_headers_and_resolves_old_bindings(self):
+        code, name = self.schema_identity()
+        self.bonus.set_source_binding('excel', 'C')
+        self.env['pb.payroll.month.inputs'].create({'config_id': self.cfg.id,
+            'company_id': self.env.company.id, 'employee_id': self.emp.id, 'period': '2026-10',
+            'payload': {'rule:%s' % self.paid.id: 20, 'rule:%s' % self.bonus.id: 45}})
+        raw, ids = self.api._engine_file(self.cfg, '2026-10')
+        rows = list(openpyxl.load_workbook(io.BytesIO(raw)).active.values)
+        self.assertEqual(rows[0][:2], (code.name, name.name))
+        self.assertEqual(rows[1][:2], ('SCHEMA-001', self.emp.name))
+        self.assertNotIn('employee_code', rows[0])
+        self.assertNotIn('Employee ID', rows[0])
+        self.assertNotIn('email', rows[0])
+        self.assertTrue(all(h in self.cfg.rule_ids.mapped('name') for h in rows[0]))
+        probe = self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True,
+            pb_template_monthly_codes=[self.paid.code, self.bonus.code]).new({'formula_config_id': self.cfg.id})
+        blob = probe._raw_data_from_row(rows[0], rows[1])
+        self.assertNotIn('C', blob)
+        self.assertEqual(probe._identity_from_file_row(blob)[0], 'SCHEMA-001')
+        values = probe._transform_data_to_formula_inputs(blob, contract=self.contract, employee=self.emp)
+        self.assertEqual(values[self.paid.code], 20)
+        self.assertEqual(values[self.bonus.code], 45)
+        self.assertEqual(values[self.salary.code], 1000)
+        self.assertNotIn('Payroll|Paid days', blob)
+
+    def test_generated_mapping_folds_legacy_helpers_only(self):
+        code, name = self.schema_identity()
+        Batch = self.env['hr.payroll.import.batch']
+        raw = Batch._raw_data_from_row(['Employee ID', 'employee_code', 'Employee name',
+            'employee_name', 'email', 'Payroll|' + code.name, 'Payroll|' + name.name,
+            'Payroll|Paid days'], ['SCHEMA-001', 'SCHEMA-001', self.emp.name,
+            self.emp.name, self.emp.work_email, 'SCHEMA-001', self.emp.name, 20])
+        batch = Batch.create({'name': 'Schema headings mapping', 'formula_config_id': self.cfg.id,
+            'one_time': True, 'date_from': '2026-10-01', 'date_to': '2026-10-31',
+            'import_filename': 'Payobook-month-2026-10.xlsx'})
+        self.env['hr.payroll.import.line'].create({'batch_id': batch.id, 'raw_data_json': json.dumps(raw)})
+        studio = self.env['pb.formula.studio']
+        data = studio.import_mapping_data(self.cfg.id, batch.id)
+        labels = [c['label'] for c in data['left'] if c['id'].startswith('c:')]
+        self.assertEqual(labels.count(code.name), 1)
+        self.assertEqual(labels.count(name.name), 1)
+        self.assertFalse({'Employee ID', 'employee_code', 'Employee name', 'employee_name', 'email'} & set(labels))
+        self.assertTrue(all(w['leftId'] in {c['id'] for c in data['left']} for w in data['wires']))
+        self.assertEqual(batch.import_line_ids.get_raw_data(), raw)
+        batch.import_filename = 'User-supplied.xlsx'
+        data = studio.import_mapping_data(self.cfg.id, batch.id)
+        labels = [c['label'] for c in data['left']]
+        self.assertIn('employee_code', labels)
+        self.assertIn('email', labels)

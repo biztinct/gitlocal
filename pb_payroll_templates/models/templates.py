@@ -123,7 +123,8 @@ class PayrollTemplates(models.AbstractModel):
 
     def _cards(self, cfg):
         variable_ids = set(cfg.rule_ids.filtered(lambda r: r.value_kind == 'quantity' or VARIABLE.search(r.name or '')).ids)
-        return {k: v for k, v in self.env['pb.records.desk']._cards(cfg.id).items()
+        return {k: dict(v, label=(v.get('component') or {}).get('name') or v['label'])
+                for k, v in self.env['pb.records.desk']._cards(cfg.id).items()
                 if v.get('field') not in IDENTITY and not (
                     v.get('group') == 'component' and (v.get('component') or {}).get('id') in variable_ids)}
 
@@ -140,6 +141,59 @@ class PayrollTemplates(models.AbstractModel):
             elif text in ('name', 'employee name', 'full name', 'họ và tên', 'họ và tên (full name)'):
                 found.setdefault(r.id, 'name')
         return found
+
+    def _identity_columns(self, cfg, mode='monthly'):
+        """Visible identity headings belong to the scheme, not the DB adapter.
+
+        The field is retained separately so translated/renamed headings never
+        change where a cell's value comes from. Unmapped schemes retain the
+        legacy fallback; no synthetic component is created for that fallback.
+        """
+        roles = self._identity_rules(cfg)
+        mappings = self.env['pb.records.desk']._mappings(cfg.id)
+        result = []
+        for kind, fallback in [('code', _('Employee ID')),
+                               ('email', _('Email')) if mode == 'records'
+                               else ('name', _('Employee name'))]:
+            rules = cfg.rule_ids.filtered(lambda r: r.column_type == 'input'
+                and roles.get(r.id) == kind).sorted(key=lambda r: (r.sequence, r.id))
+            rule = rules[:1]
+            mapping = mappings.filtered(lambda m: m.component_id == rule
+                and m.destination_type == 'field'
+                and m.target_model_id.model == 'hr.employee'
+                and m.target_field_id.name in (IDENTITY | {'name'}))[:1] if rule else mappings.browse()
+            result.append({'kind': kind, 'label': rule.name or rule.code if rule else fallback,
+                           'rule_id': rule.id if rule else False,
+                           'field': mapping.target_field_id.name if mapping else False})
+        return result
+
+    def _identity_value(self, employee, column):
+        field = column.get('field')
+        if field:
+            value = employee[field]
+        else:
+            value = {'code': self._code(employee), 'name': employee.name,
+                     'email': employee.work_email or ''}[column['kind']]
+        text = str(value or '')
+        return text.strip() if column['kind'] == 'code' else text
+
+    @staticmethod
+    def _workbook_identity(snapshot, mode='monthly'):
+        """Use the export receipt, so old downloads and later renames work."""
+        return snapshot.get('identity_columns') or [
+            {'kind': 'code', 'label': 'Employee ID'},
+            {'kind': 'email', 'label': 'Email'} if mode == 'records'
+            else {'kind': 'name', 'label': 'Employee name'}]
+
+    def _validate_identity_headers(self, headers, columns):
+        required = [c['label'] for c in columns] + ['_row']
+        return all(headers.count(label) == 1 for label in required)
+
+    def _workbook_code_unchanged(self, employee, snapshot_person, column, value):
+        # Older export receipts used the engine identifier for both values.
+        old = snapshot_person.get('identity_values', {}).get('code', snapshot_person['code'])
+        current = self._identity_value(employee, column) if column.get('field') else self._code(employee)
+        return str(value or '').strip() == old and current == old
 
     def _catalog(self, cfg):
         cards = self._cards(cfg)
@@ -201,6 +255,8 @@ class PayrollTemplates(models.AbstractModel):
                 'state': cfg.state,
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'record_columns': len(cards), 'fields': catalog,
+                'identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg)},
+                'record_identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg, 'records')},
                 'calculated_fields': [{'id': r.id, 'label': r.name or r.code,
                                        'code': r.code, 'column': r.column_letter,
                                        'formula': r.excel_formula or ''}
@@ -284,9 +340,10 @@ class PayrollTemplates(models.AbstractModel):
         reusable = mode == 'template'
         period = period or fields.Date.context_today(self).strftime('%Y-%m')
         people = self._roster(cfg, period)
-        codes = [self._code(e) for e in people]
+        identity_columns = self._identity_columns(cfg, mode)
+        codes = [self._identity_value(e, identity_columns[0]) for e in people]
         if any(not c for c in codes) or len(set(codes)) != len(codes):
-            raise UserError(_('Every employee needs a unique Employee ID before downloading. Update missing or duplicate IDs in People.'))
+            raise UserError(_('Every employee needs a unique value for %s before downloading. Update missing or duplicate values in the mapped employee field.') % identity_columns[0]['label'])
         cards = self._cards(cfg)
         records = self._record_values(cfg, people, cards)
         catalog = self._catalog(cfg)
@@ -295,7 +352,7 @@ class PayrollTemplates(models.AbstractModel):
         by_id = {c['id']: c for c in catalog}
         ordered_cards = sorted(cards.items(), key=lambda pair: pair[0] != 'f:hr.employee:name')
         columns = {'Employee records': [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable')} for fid, c in ordered_cards]} if mode == 'records' else {TABS[k]: [by_id[i] for i in layout[k]] for k in TABS}
-        snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'employees': {}}
+        snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
@@ -304,8 +361,10 @@ class PayrollTemplates(models.AbstractModel):
         wb.remove(wb.active)
         for sheet_name, cols in columns.items():
             ws = wb.create_sheet(sheet_name)
-            identity = ['Employee ID', 'Email'] if mode == 'records' else ['Employee ID', 'Employee name']
+            identity = [c['label'] for c in identity_columns]
             headers = identity + [c['label'] for c in cols] + ['_row']
+            if len(set(headers)) != len(headers):
+                raise UserError(_('Two workbook columns have the same component name. Give them distinct names in the payroll scheme before downloading.'))
             ws.append(headers)
             for ci, cell in enumerate(ws[1], 1):
                 cell.fill = PatternFill('solid', fgColor='5A4BB0')
@@ -319,6 +378,7 @@ class PayrollTemplates(models.AbstractModel):
                 key = str(e.id)
                 if key not in snapshot['employees']:
                     snapshot['employees'][key] = {'code': self._code(e), 'email': e.work_email or '', 'name': e.name,
+                                                 'identity_values': {c['kind']: self._identity_value(e, c) for c in identity_columns},
                                                  'records': records[e.id], 'monthly': monthly[e.id], 'row': uuid.uuid4().hex}
                 person = snapshot['employees'][key]
                 values = records[e.id] if mode == 'records' else monthly[e.id]
@@ -329,7 +389,7 @@ class PayrollTemplates(models.AbstractModel):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
                     vals.append(value)
-                ws.append([person['code'], person['email'] if mode == 'records' else e.name] + vals + [person['row']])
+                ws.append([person['identity_values'][c['kind']] for c in identity_columns] + vals + [person['row']])
                 for ci, cell in enumerate(ws[ws.max_row], 1):
                     if isinstance(cell.value, str):
                         cell.data_type = 's'  # Excel must never execute imported text.
@@ -400,6 +460,8 @@ class PayrollTemplates(models.AbstractModel):
         if '_Payobook' not in wb:
             raise UserError(_('Use a workbook downloaded from Payroll templates. Other records files can be imported in Records Desk.'))
         snapshot = self._get_exchange(cfg, wb['_Payobook']['B1'].value, 'export').payload
+        identity_columns = self._workbook_identity(snapshot, mode)
+        identity_labels = {c['kind']: c['label'] for c in identity_columns}
         if mode != snapshot['mode'] or (mode == 'monthly' and not snapshot.get('reusable') and period != snapshot['period']):
             raise UserError(_('This workbook belongs to a different workflow or pay month. Download the selected month and try again.'))
         catalog = self._catalog(cfg)
@@ -430,8 +492,7 @@ class PayrollTemplates(models.AbstractModel):
                         issues.append(_('Duplicate field column: %s') % fid)
                     ids[fid] = ci
             expected = {c['id'] for c in cols}
-            identity_headers = ('Employee ID', 'Email', '_row') if mode == 'records' else ('Employee ID', 'Employee name', '_row')
-            if set(ids) != expected or not all(h in header for h in identity_headers):
+            if set(ids) != expected or not self._validate_identity_headers(header, identity_columns):
                 issues.append(_('The columns in %s changed. Start with a fresh download.') % sheet_name)
                 continue
             seen = set()
@@ -450,9 +511,11 @@ class PayrollTemplates(models.AbstractModel):
                     continue
                 seen.add(eid)
                 emp = people.browse(eid)
-                if str(vals[header.index('Employee ID')] or '').strip() != old['code'] or self._code(emp) != old['code']:
+                if not self._workbook_code_unchanged(emp, old, identity_columns[0], vals[header.index(identity_labels['code'])]):
                     issues.append(_('%s row %s: Employee ID cannot be changed.') % (sheet_name, rn))
-                if mode == 'records' and ('Email' not in header or (vals[header.index('Email')] or '') != old['email'] or (emp.work_email or '') != old['email']):
+                old_email = old.get('identity_values', {}).get('email', old['email'])
+                if mode == 'records' and ((vals[header.index(identity_labels['email'])] or '') != old_email
+                        or self._identity_value(emp, identity_columns[1]) != old_email):
                     issues.append(_('%s row %s: email cannot be changed.') % (sheet_name, rn))
                 for c in cols:
                     cell = row[ids[c['id']]]
@@ -577,10 +640,10 @@ class PayrollTemplates(models.AbstractModel):
                  'pending': r.payload.get('result', {}).get('pending', False)} for r in rows]
 
     def _engine_file(self, cfg, period):
-        """Materialize one joined, authoritative input row for the existing loader.
+        """Use component headings; adapt engine bindings only while resolving.
 
-        Alias each current component's original source key. Layout edits never
-        change formula bindings. Recurring fields come freshly from records.
+        Layout edits never change formula bindings. Recurring fields come
+        freshly from records.
         """
         import openpyxl
         if cfg.state != 'active':
@@ -612,26 +675,32 @@ class PayrollTemplates(models.AbstractModel):
                     missing_salary.append('%s · %s' % (employee.name, c['label']))
         if missing_salary:
             raise UserError(_('Recurring salary is missing. Update employee / contract records or provide the required salary input before computing payroll:\n%s') % '\n'.join(missing_salary[:20]))
-        headers = ['Employee ID', 'employee_code', 'Employee name', 'employee_name', 'email']
-        identity_cols = []
-        for rid, kind in self._identity_rules(cfg).items():
-            rule = cfg.rule_ids.filtered(lambda r: r.id == rid)
-            aliases = [s.key for s in rule.source_ids if s.kind == 'excel'] or self.env['hr.payroll.import.batch']._rule_header_candidates(rule, allow_column_letter=False)
-            for alias in aliases:
-                if alias not in headers:
-                    headers.append(alias)
-                    identity_cols.append(kind)
+        identity_cols = self._identity_columns(cfg)
+        roles = self._identity_rules(cfg)
+        # Additional identity components (e.g. email) only exist if the schema
+        # defines them. Never emit the adapter's duplicate ID/name aliases.
+        for rule in cfg.rule_ids.sorted(key=lambda r: (r.sequence, r.id)):
+            if rule.id in roles and rule.id not in {c['rule_id'] for c in identity_cols}:
+                mapping = self.env['pb.records.desk']._mappings(cfg.id).filtered(lambda m:
+                    m.component_id == rule and m.target_model_id.model == 'hr.employee')[:1]
+                identity_cols.append({'kind': roles[rule.id], 'label': rule.name or rule.code,
+                    'rule_id': rule.id, 'field': mapping.target_field_id.name if mapping else False})
+        headers = [c['label'] for c in identity_cols]
+        codes = [self._identity_value(e, identity_cols[0]) for e in people]
+        if any(not c for c in codes) or len(set(codes)) != len(codes):
+            raise UserError(_('Every employee needs a unique value for %s in the mapped employee field before preparing pay data.') % identity_cols[0]['label'])
         cols = []
         for c in catalog:
             cols.append(c)
-            headers.extend(c['source_keys'])
+            headers.append(c['label'])
+        if len(set(headers)) != len(headers):
+            raise UserError(_('Two payroll components have the same name. Give them distinct names before preparing the pay data.'))
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = 'Payroll'
         ws.append(headers)
         for e in people:
-            vals = [self._code(e), self._code(e), e.name, e.name, e.work_email or '']
-            vals.extend({'code': self._code(e), 'name': e.name, 'email': e.work_email or ''}[kind] for kind in identity_cols)
+            vals = [self._identity_value(e, c) for c in identity_cols]
             for c in cols:
                 # Saved recurring values are current record context. Earlier
                 # uploads/monthly-layout values (including stale zeros) cannot
@@ -640,8 +709,12 @@ class PayrollTemplates(models.AbstractModel):
                 if value is None and not c.get('readonly') and c['kind'] in ('money', 'decimal', 'integer', 'quantity', 'rate'):
                     value = 0
                 # No previous month's amounts enter this path.
-                vals.extend([value] * len(c['source_keys']))
+                vals.append(value)
             ws.append(vals)
+        for row in ws:
+            for cell in row:
+                if isinstance(cell.value, str):
+                    cell.data_type = 's'
         out = io.BytesIO()
         wb.save(out)
         return out.getvalue(), people.ids
@@ -704,6 +777,34 @@ class TemplatePayrun(models.AbstractModel):
 class TemplateBatch(models.Model):
     _inherit = 'hr.payroll.import.batch'
 
+    def _raw_data_from_row(self, headers, row):
+        if self.env.context.get('pb_template_engine'):
+            # Workbook positions belong to the export layout. Original Excel
+            # letter bindings are restored from the component, not that layout.
+            return dict(row) if isinstance(row, dict) else dict(zip(headers, row))
+        return super()._raw_data_from_row(headers, row)
+
+    def _template_alias_row(self, raw_data):
+        """Adapt schema headings to existing bindings in memory, never in Excel."""
+        if not (self.env.context.get('pb_template_engine') or self._template_period()):
+            return raw_data
+        data = dict(raw_data or {})
+        for rule in self.formula_config_id.rule_ids.filtered(lambda r: r.column_type == 'input'):
+            label = rule.name or rule.code
+            aliases = [s.key for s in rule.source_ids if s.kind == 'excel' and s.key]
+            aliases += self._rule_header_candidates(rule, allow_column_letter=False)
+            if label not in data:
+                source = next((key for key in aliases if key in data), None)
+                if source is None:
+                    continue
+                data[label] = data[source]
+            for alias in aliases:
+                data.setdefault(alias, data[label])
+        return data
+
+    def _identity_from_file_row(self, raw_data):
+        return super()._identity_from_file_row(self._template_alias_row(raw_data))
+
     def _template_period(self):
         if len(self) != 1 or not self.one_time or not self.formula_config_id or not self.date_from:
             return None
@@ -718,6 +819,7 @@ class TemplateBatch(models.Model):
         # The persisted batch outlives the initial upload's context. Recompute
         # must join current recurring records again, rather than reusing the
         # original generated workbook's salary/allowance snapshot.
+        raw_data = self._template_alias_row(raw_data)
         period = self._template_period()
         if not period or not employee:
             return super()._transform_data_to_formula_inputs(raw_data, contract=contract,

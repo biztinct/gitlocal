@@ -204,6 +204,8 @@ class PayrollInputReview(models.AbstractModel):
         if '_Payobook' not in wb:
             raise UserError(_('Use a workbook downloaded from Configure Templates.'))
         snapshot = self._get_exchange(cfg, wb['_Payobook']['B1'].value, 'export').payload
+        identity_columns = self._workbook_identity(snapshot)
+        code_header = identity_columns[0]['label']
         if snapshot['mode'] != 'monthly' or (not snapshot.get('reusable') and snapshot['period'] != period):
             raise UserError(_('This workbook belongs to a different workflow or pay month.'))
         base_catalog = self._catalog(cfg)
@@ -242,7 +244,7 @@ class PayrollInputReview(models.AbstractModel):
                     if fid in ids:
                         structural.append(_('Duplicate field column: %s') % fid)
                     ids[fid] = ci
-            if set(ids) != {c['id'] for c in cols} or not all(h in headers for h in ('Employee ID', 'Employee name', '_row')):
+            if set(ids) != {c['id'] for c in cols} or not self._validate_identity_headers(headers, identity_columns):
                 structural.append(_('The columns in %s changed. Start with a fresh download.') % sheet_name)
                 continue
             seen = set()
@@ -259,7 +261,7 @@ class PayrollInputReview(models.AbstractModel):
                     structural.append(_('%s row %s: duplicate Employee ID.') % (sheet_name, rn))
                     continue
                 seen.add(eid)
-                if str(vals[headers.index('Employee ID')] or '').strip() != old['code'] or self._code(people.browse(eid)) != old['code']:
+                if not self._workbook_code_unchanged(people.browse(eid), old, identity_columns[0], vals[headers.index(code_header)]):
                     structural.append(_('%s row %s: Employee ID cannot be changed.') % (sheet_name, rn))
                 for c in cols:
                     value = cells[ids[c['id']]].value
