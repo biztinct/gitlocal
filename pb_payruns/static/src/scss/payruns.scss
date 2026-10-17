@@ -311,6 +311,25 @@
         .pbr-lh-arrow { display: none; }
         .pbr-lane.wide .pbr-cards { grid-template-columns: 1fr; }
     }
+    /* LEARNREV P3 (S8c) — the Guide docked beside the board (pb_learn, body
+       class `lrn-docked`, ≥ 1280 px, 420 px wide) narrows the board by 420 px
+       without the viewport changing, so the viewport rule above never fired
+       and the month summary clipped its button. Content is the viewport −
+       256 (rail) − 420 (Guide): at ≤ 1600 px that is the 1180 px layout's
+       width, so the same two-column hero applies. */
+    @media (min-width: 1280px) and (max-width: 1600px) {
+        body.lrn-docked & {
+            .pbr-hero { grid-template-columns: 1fr 1fr; }
+            .pbr-h-c { grid-column: 1 / -1; border-top: 1px solid var(--i-soft2); flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+            .pbr-h-b { border-right: 0; }
+            .pbr-board, .pbr-board.f1, .pbr-board.f2, .pbr-board.f3 { grid-template-columns: 1fr; }
+            .pbr-lane.collapsed { min-height: 0; flex-direction: row; padding: 8px 14px; }
+            .pbr-lane.collapsed .pbr-slim { flex-direction: row; padding: 0; }
+            .pbr-slim-t { writing-mode: horizontal-tb; transform: none; }
+            .pbr-lh-arrow { display: none; }
+            .pbr-lane.wide .pbr-cards { grid-template-columns: 1fr; }
+        }
+    }
     @media (max-width: 760px) {
         .pbr-wrap { padding: 16px 16px 120px; }
         .pbr-hero { grid-template-columns: 1fr; }

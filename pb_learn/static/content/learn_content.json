@@ -389,6 +389,10 @@
       "en": "Float over the screen",
       "vi": "Thả nổi trên màn hình"
     },
+    "gHead": {
+      "en": "Guide · {screen}",
+      "vi": "Hướng dẫn · {screen}"
+    },
     "gHelpful": {
       "en": "Was this helpful?",
       "vi": "Thông tin này có hữu ích không?"
@@ -410,8 +414,8 @@
       "vi": "Nếu bạn thay đổi"
     },
     "gLessonMap": {
-      "en": "Open the lesson map",
-      "vi": "Mở bản đồ bài học"
+      "en": "Open Learn",
+      "vi": "Mở trang Học tập"
     },
     "gLoading": {
       "en": "Loading the board…",
@@ -438,8 +442,8 @@
       "vi": "Màn hình này chưa có thẻ trường."
     },
     "gNoLessonMap": {
-      "en": "No lesson for this screen yet, here is the map.",
-      "vi": "Chưa có bài học cho màn hình này, đây là bản đồ."
+      "en": "No lesson for this screen yet. Learn lists every screen.",
+      "vi": "Chưa có bài học cho màn hình này. Trang Học tập liệt kê mọi màn hình."
     },
     "gNoScheme": {
       "en": "No scheme selected: pick one above.",
@@ -504,6 +508,10 @@
     "gShow": {
       "en": "Show",
       "vi": "Hiện"
+    },
+    "gShowGuide": {
+      "en": "Show the Guide",
+      "vi": "Hiện lại Hướng dẫn"
     },
     "gTerms": {
       "en": "Words on this screen",
@@ -626,8 +634,8 @@
       "vi": "Các tab trên trang này"
     },
     "hubTitle": {
-      "en": "Your journey",
-      "vi": "Hành trình của bạn"
+      "en": "Learn",
+      "vi": "Học tập"
     },
     "journals": {
       "en": "Journals",
@@ -652,6 +660,162 @@
     "letMePractise": {
       "en": "Let me practise this",
       "vi": "Cho tôi thực hành việc này"
+    },
+    "libAllDone": {
+      "en": "Everything on your path is done",
+      "vi": "Bạn đã xong mọi bài trên lộ trình"
+    },
+    "libAllDoneLead": {
+      "en": "Every screen below is still open, and the practice company is always there.",
+      "vi": "Mọi màn hình bên dưới vẫn mở, và công ty thực hành luôn sẵn sàng."
+    },
+    "libAsk": {
+      "en": "Ask PayAI",
+      "vi": "Hỏi PayAI"
+    },
+    "libBrowse": {
+      "en": "Every screen, in the order of your menu",
+      "vi": "Mọi màn hình, theo thứ tự trong menu"
+    },
+    "libChange": {
+      "en": "Change",
+      "vi": "Đổi"
+    },
+    "libChangeRole": {
+      "en": "Change role",
+      "vi": "Đổi vai trò"
+    },
+    "libExtra": {
+      "en": "Everything required is done. This one is extra, and useful.",
+      "vi": "Các bài bắt buộc đã xong. Bài này là bài thêm, và rất có ích."
+    },
+    "libFieldOn": {
+      "en": "Field on {screen}",
+      "vi": "Trường trên {screen}"
+    },
+    "libGuide": {
+      "en": "Guide",
+      "vi": "Hướng dẫn"
+    },
+    "libKField": {
+      "en": "Field",
+      "vi": "Trường"
+    },
+    "libKLesson": {
+      "en": "Lesson",
+      "vi": "Bài học"
+    },
+    "libKScreen": {
+      "en": "Screen",
+      "vi": "Màn hình"
+    },
+    "libKTask": {
+      "en": "Task",
+      "vi": "Việc"
+    },
+    "libKTerm": {
+      "en": "Term",
+      "vi": "Thuật ngữ"
+    },
+    "libKbdHint": {
+      "en": "Search everything from any screen with ⌘K",
+      "vi": "Tìm mọi thứ từ bất kỳ màn hình nào bằng ⌘K"
+    },
+    "libLessonStep": {
+      "en": "Step {n} of the lesson {lesson}",
+      "vi": "Bước {n} của bài {lesson}"
+    },
+    "libMonthEnd": {
+      "en": "Watch the refresher on checking payslips before then.",
+      "vi": "Hãy xem bài ôn về kiểm tra phiếu lương trước hạn đó."
+    },
+    "libNoMatch": {
+      "en": "Nothing matches “{q}”.",
+      "vi": "Không có gì khớp với “{q}”."
+    },
+    "libNotInMenuNote": {
+      "en": "Not in your menu — here is what it does.",
+      "vi": "Không có trong menu của bạn — đây là việc màn hình này làm."
+    },
+    "libPathTitle": {
+      "en": "Your path",
+      "vi": "Lộ trình của bạn"
+    },
+    "libPick": {
+      "en": "Pick what you do",
+      "vi": "Chọn việc bạn làm"
+    },
+    "libPickLead": {
+      "en": "Your choice decides which lessons are required for you. Every lesson stays open to everyone.",
+      "vi": "Lựa chọn của bạn quyết định bài nào là bắt buộc. Mọi bài học vẫn mở cho tất cả mọi người."
+    },
+    "libPractice": {
+      "en": "Practice company",
+      "vi": "Công ty thực hành"
+    },
+    "libPracticeCopy": {
+      "en": "Practice on a copy",
+      "vi": "Thực hành trên một bản sao"
+    },
+    "libPracticeDemo": {
+      "en": "Practice on the demo company",
+      "vi": "Thực hành trên công ty demo"
+    },
+    "libPracticeLead": {
+      "en": "Open it and click around; nothing reaches a real record.",
+      "vi": "Mở ra và bấm thoải mái; không gì chạm tới dữ liệu thật."
+    },
+    "libReqFor": {
+      "en": "Required for you as {role}.",
+      "vi": "Bắt buộc với vai trò {role} của bạn."
+    },
+    "libResults": {
+      "en": "{n} found",
+      "vi": "Tìm thấy {n}"
+    },
+    "libRingDone": {
+      "en": "Done",
+      "vi": "Đã xong"
+    },
+    "libRingNone": {
+      "en": "Not started",
+      "vi": "Chưa học"
+    },
+    "libRingStarted": {
+      "en": "Started",
+      "vi": "Đang học"
+    },
+    "libRoleGuessed": {
+      "en": "Your role was picked from your access; change it if that is not you.",
+      "vi": "Vai trò được chọn theo quyền truy cập của bạn; hãy đổi nếu chưa đúng."
+    },
+    "libStarted": {
+      "en": "You started this one.",
+      "vi": "Bạn đã bắt đầu bài này."
+    },
+    "libSteps": {
+      "en": "{n} steps, one screen at a time.",
+      "vi": "{n} bước, từng màn hình một."
+    },
+    "libTeam": {
+      "en": "Team readiness",
+      "vi": "Mức sẵn sàng của nhóm"
+    },
+    "libTeamLead": {
+      "en": "Who on your team is ready for month-end.",
+      "vi": "Ai trong nhóm của bạn đã sẵn sàng cho kỳ chốt lương cuối tháng."
+    },
+    "libTeamOpen": {
+      "en": "Open Team",
+      "vi": "Mở Nhóm"
+    },
+    "libTour": {
+      "en": "New here? Take the tour of the screens you use most: {n} steps.",
+      "vi": "Mới dùng? Đi một vòng các màn hình bạn dùng nhiều nhất: {n} bước."
+    },
+    "libYourPath": {
+      "en": "Your path as {role} · {done} of {total} done",
+      "vi": "Lộ trình {role} · đã xong {done}/{total}"
     },
     "lifeTrailHere": {
       "en": "Nam is here",
@@ -878,8 +1042,8 @@
       "vi": "phút"
     },
     "missions": {
-      "en": "Practice missions",
-      "vi": "Nhiệm vụ thực hành"
+      "en": "Guided practice",
+      "vi": "Thực hành có hướng dẫn"
     },
     "missionsLead": {
       "en": "Do it once where it cannot matter, before you do it where it can.",
@@ -982,7 +1146,7 @@
       "vi": "Các bài bắt buộc đã xong. Bài này là bài tự chọn, và rất đáng học."
     },
     "nbRequired": {
-      "en": "This is the next lesson the map asks for.",
+      "en": "This is the next lesson on your path.",
       "vi": "Đây là bài kế tiếp mà lộ trình yêu cầu."
     },
     "nbResume": {
@@ -1378,8 +1542,8 @@
       "vi": "Từ hướng dẫn của chính màn hình này"
     },
     "search": {
-      "en": "Search the journey",
-      "vi": "Tìm trong hành trình"
+      "en": "Search any screen, field, term or task",
+      "vi": "Tìm màn hình, trường, thuật ngữ hay việc cần làm"
     },
     "send": {
       "en": "Send",
@@ -1509,9 +1673,21 @@
       "en": "Guide panel and field cards",
       "vi": "Bảng hướng dẫn và thẻ trường"
     },
+    "swMotionBody": {
+      "en": "Lessons, walkthroughs and PayAI move less on this device. Your system's own setting is always respected.",
+      "vi": "Bài học, hướng dẫn và PayAI ít chuyển động hơn trên thiết bị này. Cài đặt của hệ thống luôn được tôn trọng."
+    },
+    "swMotionTitle": {
+      "en": "Reduce motion",
+      "vi": "Giảm chuyển động"
+    },
+    "swMotionWhere": {
+      "en": "Saved on this device only",
+      "vi": "Chỉ lưu trên thiết bị này"
+    },
     "swNextBody": {
-      "en": "The lesson map shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
-      "vi": "Bản đồ bài học gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook."
+      "en": "The Continue card on Learn shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
+      "vi": "Thẻ Học tiếp trên trang Học tập gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook."
     },
     "swNextTitle": {
       "en": "Suggest the next step",
@@ -1738,8 +1914,8 @@
       "vi": "Bạn đang ở đây"
     },
     "yourJourney": {
-      "en": "Your journey",
-      "vi": "Hành trình của bạn"
+      "en": "Learn",
+      "vi": "Học tập"
     }
   },
   "columns": [
@@ -8942,8 +9118,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Good instinct. The practice missions run on a made-up company, not {{companyDisplayName}}. There is no server behind it, so nothing you do can reach a real employee, payslip or pay run. Three are playable: running a pay run, fixing a run that was sent back, and applying a statutory rate change.",
-            "vi": "Bản năng tốt. Các nhiệm vụ thực hành chạy trên một công ty giả lập, không phải {{companyDisplayName}}. Phía sau nó không có máy chủ nào, nên mọi thao tác đều không chạm tới nhân viên, phiếu lương hay đợt lương thật. Ba nhiệm vụ chơi được: chạy một đợt lương, sửa một đợt bị trả lại, và áp dụng một thay đổi tỷ lệ luật định."
+            "en": "Good instinct. Guided practice runs on a made-up company, not {{companyDisplayName}}. There is no server behind it, so nothing you do can reach a real employee, payslip or pay run. Three are playable: running a pay run, fixing a run that was sent back, and applying a statutory rate change.",
+            "vi": "Bản năng tốt. Phần thực hành có hướng dẫn chạy trên một công ty giả lập, không phải {{companyDisplayName}}. Phía sau nó không có máy chủ nào, nên mọi thao tác đều không chạm tới nhân viên, phiếu lương hay đợt lương thật. Ba nhiệm vụ chơi được: chạy một đợt lương, sửa một đợt bị trả lại, và áp dụng một thay đổi tỷ lệ luật định."
           },
           "capability": "any",
           "kind": "p",
@@ -8962,8 +9138,8 @@
         },
         {
           "body": {
-            "en": "The practice missions in Learn › Lessons.",
-            "vi": "Các nhiệm vụ thực hành trong Học cùng Payobook › Bài học."
+            "en": "The Practice company row at the end of Learn › Lessons.",
+            "vi": "Dòng Công ty thực hành ở cuối Học cùng Payobook › Bài học."
           },
           "capability": "any",
           "kind": "source",
@@ -21697,8 +21873,8 @@
         "tabs": {
           "lessons": {
             "line": {
-              "en": "Your lesson map: short lessons, walkthroughs and practice tasks in a safe practice company.",
-              "vi": "Bản đồ bài học của bạn: bài học ngắn, hướng dẫn từng bước và bài thực hành trong một công ty thực hành an toàn."
+              "en": "Every screen in the order of your menu, with its guide, walkthroughs and a safe practice company.",
+              "vi": "Mọi màn hình theo thứ tự trong menu, kèm hướng dẫn, các bước làm mẫu và một công ty thực hành an toàn."
             },
             "name": {
               "en": "Lessons",
@@ -21748,8 +21924,8 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Open Lessons and press the next lesson on your path. Each one takes a few minutes.",
-        "vi": "Hãy mở Bài học và bấm bài tiếp theo trên lộ trình của bạn. Mỗi bài chỉ mất vài phút."
+        "en": "Press Continue at the top of Lessons. It opens the next lesson on your path, one screen at a time.",
+        "vi": "Hãy bấm Học tiếp ở đầu trang Bài học. Nút này mở bài tiếp theo trên lộ trình của bạn, từng màn hình một."
       },
       "open": "",
       "places": [],
@@ -34458,5 +34634,5 @@
       }
     }
   ],
-  "version": "f854cf167c3e"
+  "version": "ecc3d3284781"
 }

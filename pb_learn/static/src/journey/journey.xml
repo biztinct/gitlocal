@@ -5,7 +5,7 @@
      engine as a markup string: the spotlight and trace measure and decorate
      live DOM, which reactive re-rendering fights rather than helps. -->
 <t t-name="pb_learn.Journey">
-    <div class="lrn-root" t-att-data-motion="state.motion" t-att-lang="state.lang === 'vi' ? 'vi' : 'en'"
+    <div class="lrn-root" t-ref="root" t-att-data-motion="state.motion" t-att-lang="state.lang === 'vi' ? 'vi' : 'en'"
          t-on-click="onClick" t-on-input="onInput"
          t-on-keydown="onKeydown" t-on-focusout="onFocusOut"
          t-on-mousedown="onMouseDown">
@@ -22,12 +22,9 @@
                 <span t-esc="learnLabel"/>
             </span>
 
+            <!-- LEARNREV P3: the header is "Learn" and the language, nothing
+                 else. "Reduce motion" moved to Learn › Settings (G13). -->
             <div class="lrn-tbactions">
-                <button class="lrn-btn sm ghost" t-on-click="toggleMotion"
-                        t-att-aria-pressed="state.motion === 'reduced'">
-                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-sparkles"/></svg>
-                    <span t-esc="motionLabel"/>
-                </button>
                 <button class="lrn-btn sm" t-on-click="toggleLang">
                     <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-globe"/></svg>
                     <span t-esc="langLabel"/>

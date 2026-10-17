@@ -262,7 +262,17 @@ export const hubPaletteService = {
                 // PAYAI P1 — a row that answers ANY typed text ("Ask PayAI
                 // to…"): shown after the matches whenever something is typed.
                 anyQuery: !!e.anyQuery,
+                // LEARNREV P3 — `door: false` marks a row that is a ⌘K result
+                // only (a field card), never a screen another surface may open
+                // by name: `entries()` below leaves it out.
+                door: e.door !== false,
             }));
+        }
+
+        /** The person's SCREENS (every row that is a door), for a surface
+         *  outside the palette that opens screens by name (PayAI). */
+        async function doorEntries() {
+            return (await resolveEntries()).filter((r) => r.door);
         }
 
         function run(id, query = "") {
@@ -354,7 +364,7 @@ export const hubPaletteService = {
         // assistant resolves "open the runs board" against the first and
         // opens through the second, so it can never reach a door ⌘K would not.
         return {
-            open, close, entries: resolveEntries, run,
+            open, close, entries: doorEntries, run,
             get isOpen() { return !!removeOverlay; },
         };
     },

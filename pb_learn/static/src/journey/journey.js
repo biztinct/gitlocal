@@ -57,24 +57,21 @@ const MISSION_HOME = {
  * That is deliberate: a new section must never be able to disappear from the
  * map because somebody forgot a second file. */
 const LINE_ORDER = ["overview", "payrun", "setup", "people", "lifecycle", "workforce", "insights", "compliance"];
-const LINE_ICON = {
-    overview: "grid",
-    payrun: "zap",
-    people: "users",
-    insights: "trending-up",
-    compliance: "shield-check",
-    setup: "plug",
-    // LEARN REFRESH step 4
-    lifecycle: "git-branch",
-    workforce: "compass",
-};
 import { SCREENS, practiceShellHTML, shellHTML } from "../engine/screens";
 import { INPUT_ANCHORS } from "../engine/fixture";
 import { looseMatch } from "../engine/input_match";
 import { playableSteps } from "../scenario/scenario_service";
 import { LiveState } from "../live/live_state";
-import { canOpen, lensReachable, openScreen, placeLabel, resolveLensReach, setReach }
-    from "../engine/places";
+import { canOpen, lensReachable, openScreen, placeLabel, reachable, resolveLensReach, setReach,
+         LEARN_HUB_XMLID } from "../engine/places";
+/* LEARNREV P3 — the Library (the map view's renderer and its one search),
+   the field index it searches, and the drawer's door for "open this screen
+   with its Guide" / "Ask PayAI". */
+import { ROLE_ORDER, buildIndex, buildLibrary, libraryHTML, practiceRowHTML, resultsHTML, search }
+    from "./library";
+import { loadFieldIndex } from "../content/field_index";
+import { askHelper, guideAt } from "../coach/guide_door";
+import { openHub } from "@pb_hub/js/hub_nav";
 
 /* Arrival payloads already acted on. HubShell hands the Lessons lens ONE
    arrival object per hub visit, so remembering it by identity is what stops a
@@ -83,33 +80,13 @@ const CONSUMED_ARRIVALS = new WeakSet();
 import { morphHTML, calcHTML, pipeHTML, runMeter, runPipeline, runTick } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
-/* Held as a constant: a quoted separator inside an interpolation trips the
-   minifier (LR2). */
-const DOT = " · ";
 
-/* LEARN REFRESH step 5 — SIX CHAPTERS over the final station set, in the
-   order the lines are read (LINE_ORDER): find your way around, run a month,
-   set up the rules, the people and their journeys, the team's week, and
-   understanding and compliance. A line in no chapter is drawn in the last
-   one rather than disappearing. */
-const CHAPTERS = [
-    { key: "ch1", lines: ["overview"] },
-    { key: "ch2", lines: ["payrun"] },
-    { key: "ch3", lines: ["setup"] },
-    { key: "ch4", lines: ["people", "lifecycle"] },
-    { key: "ch5", lines: ["workforce"] },
-    { key: "ch6", lines: ["insights", "compliance"] },
-];
-const ROLE_ORDER = ["officer", "approver", "hr", "manager", "owner"];
-const ROLE_LABEL = { officer: "roleOfficer", approver: "roleApprover", hr: "roleHr",
-                     manager: "roleManager", owner: "roleOwner" };
-const ROLE_ICON = { officer: "calculator", approver: "clipboard-check", hr: "users",
-                    manager: "user-check", owner: "trending-up" };
-/* LEARN REFRESH step 4 — the Lifecycle line's road, in the order one person
-   lives it, and where the walker stood on the last visit (per browser). */
-const LIFE_TRAIL = ["hiring", "joiners", "probation", "exits"];
-const LIFE_TRAIL_KEY = "pbLearnLifeTrail";
-/* Per-browser "skip this month" for the month-end card. */
+/* LEARNREV P3 — the chapters, the Lifecycle road, the overall ring, the badge,
+   the streak chip and the tier chips are GONE from this page (owner decision
+   2026-10-17): the Library groups screens like the left menu instead
+   (journey/library.js MENU_ORDER). The `skill_tree` / `streak` bootstrap keys
+   are still read below — other tenants' code may — but nothing draws them. */
+/* Per-browser "skip this month" for the month-end line. */
 const MONTH_END_SKIP = "pbLearnMonthEndSkip";
 
 export class LearnJourney extends Component {
@@ -188,7 +165,25 @@ export class LearnJourney extends Component {
             lang: "en",
             motion: "auto",
             error: "",
+            // LEARNREV P3 — the Library: the role chips shown in the Continue
+            // card, the menu groups opened on a phone, whether this person
+            // may read Team readiness, and the grey "not in your menu" note
+            // on an outline reached from a Guide chip.
+            rolesOpen: false,
+            openGroups: [],
+            team: false,
+            outlineNote: false,
         });
+        this.rootRef = useRef("root");
+        // The search words and what they found: NOT reactive, so typing
+        // redraws only the results list and the box keeps its caret.
+        this._q = "";
+        this._hits = [];
+        this._openTerm = "";
+        this._fieldRows = [];
+        this._index = null;
+        this._indexKey = "";
+        this._markups = {};
 
         this.bundle = null;
         this.progress = {};
@@ -305,6 +300,9 @@ export class LearnJourney extends Component {
             screens: content.screens || [],
             // LEARN REFRESH step 5 — retired station keys → their new home.
             stationAliases: content.station_aliases || {},
+            // LEARNREV P3 — the Library's search (terms) and its Practice
+            // row's wording (the demo company, or a copy).
+            demoWorld: !!runtime.demo_world,
         };
         setReach(runtime.visible_stations);
         // LEARN REFRESH step 4 — a station whose hub TAB this reader cannot
@@ -353,6 +351,15 @@ export class LearnJourney extends Component {
             this.state.lang = this.bundle.user?.lang || "en";
             RT.lang = this.state.lang;
         }
+        // LEARNREV P3 — two answers the page draws when they arrive, never
+        // waits for: the field cards the search finds, and whether this
+        // person may read Team readiness (learn.path re-asks the gate).
+        this._loadFieldRows();
+        this.orm.call("learn.path", "can_see_team", []).then((ok) => {
+            this.state.team = !!ok;
+        }).catch(() => {
+            // No answer: no Team row, which is what a non-manager sees.
+        });
         this.state.ready = true;
     }
 
@@ -496,30 +503,11 @@ export class LearnJourney extends Component {
         } catch {
             // The pick still drives this page; the server re-syncs next load.
         }
-        // The redraw plays once the path AND the next suggestion are both in,
-        // so the continue card and the chapters change together.
+        // The redraw happens once the path AND the next suggestion are both
+        // in, so the Continue card and the path strip change together.
+        this.state.rolesOpen = false;
         this.state.pathTick = (this.state.pathTick || 0) + 1;
         this.render(true);
-    }
-
-    skipMonthEnd() {
-        const me = (this.bundle.path && this.bundle.path.month_end) || {};
-        this.state.monthEndSkipped = true;
-        try {
-            window.localStorage.setItem(MONTH_END_SKIP, me.month || "1");
-        } catch {
-            // A locked-down profile only loses the memory of the skip.
-        }
-    }
-
-    get doneCount() {
-        return this.stations.filter((s) => this.stateOf(s.key) === "done").length;
-    }
-
-    get badgeEarned() {
-        return this.stations
-            .filter((s) => s.star)
-            .every((s) => this.stateOf(s.key) === "done");
     }
 
     /* ------------------------------------------------- LEARNOS Phase 6 */
@@ -536,47 +524,6 @@ export class LearnJourney extends Component {
 
     get nextBest() {
         return (this.bundle && this.bundle.nextBest) || {};
-    }
-
-    get skillTree() {
-        return !!(this.bundle && this.bundle.skillTree);
-    }
-
-    get streak() {
-        return (this.bundle && this.bundle.streak) || {};
-    }
-
-    /** done / total for one line. Derived on every render from the same
-     *  progress the cards read — there is no per-line counter anywhere, and a
-     *  stored one would be a second truth to keep in step. */
-    lineProgress(list) {
-        const total = list.length;
-        const done = list.filter((s) => this.stateOf(s.key) === "done").length;
-        return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
-    }
-
-    /** bronze | silver | gold | "" — DERIVED, NEVER STORED.
-     *
-     *  Read off the two fields the lesson already writes: `first_try_correct`
-     *  and `attempts`. Gold is the understanding check answered correctly on
-     *  the first answer; silver is getting there on the second; bronze is
-     *  finishing, which is the point and is never presented as a failure.
-     *
-     *  ONLY FOR LESSONS. An outline station has no understanding check, so it
-     *  has no attempts either — grading one bronze would be marking somebody
-     *  down for reading the kind of page that has nothing to answer. */
-    tierOf(station) {
-        if (!this.skillTree || station.kind !== "lesson") {
-            return "";
-        }
-        if (this.stateOf(station.key) !== "done") {
-            return "";
-        }
-        const p = this.progress[station.key] || {};
-        if (p.first_try_correct) {
-            return "gold";
-        }
-        return (p.attempts || 0) <= 2 ? "silver" : "bronze";
     }
 
     // ------------------------------------------------------------- persistence
@@ -630,356 +577,182 @@ export class LearnJourney extends Component {
         if (this.state.view === "outline") {
             return markup(this._outlineBody());
         }
-        return markup(this._mapBody());
+        // LEARNREV P3 — the SAME Markup while the Library's HTML is unchanged,
+        // so a redraw for any other reason leaves its DOM (the search box and
+        // its caret, the results drawn into it) alone — the OWL markup-flicker
+        // rule (coach.js `_stable`).
+        void this.state.lang;
+        const html = this._mapBody();
+        const prev = this._markups.map;
+        if (prev !== undefined && String(prev) === html) {
+            return prev;
+        }
+        this._markups.map = markup(html);
+        return this._markups.map;
     }
 
-    /* -------------------------------------------------------------- map view */
+    /* ------------------------------------------- LEARNREV P3 — the Library
+       The map view is the Library (journey/library.js renders it, pure):
+       Continue, the path strip, every screen in menu order, Practice. The
+       search draws its results into the page WITHOUT a re-render — the box
+       keeps its caret — and everything else here is a door through a method
+       this component already had (openStation, startLesson, openScenario,
+       openPractice) or through the drawer's door (coach/guide_door.js). */
+    get libraryModel() {
+        const b = this.bundle;
+        return buildLibrary({
+            stations: b.stations,
+            screens: b.screens,
+            scenarios: b.scenarios,
+            missions: b.missions,
+            progress: this.progress,
+            path: Object.assign({}, b.path, { role: this.state.role, role_chosen: this.state.roleChosen }),
+            nextBest: b.nextBest,
+            demoWorld: b.demoWorld,
+            team: this.state.team,
+        });
+    }
+
     _mapBody() {
-        const q = this.state.search.trim().toLowerCase();
-        const lines = {};
-        for (const s of this.stations) {
-            (lines[s.line] = lines[s.line] || []).push(s);
-        }
-        const match = (s) =>
-            !q || tx(s.name).toLowerCase().includes(q) || tx(s.summary).toLowerCase().includes(q);
+        const model = this.libraryModel;
+        return libraryHTML(model, this.bundle.screens, {
+            practice: this._practiceCardHTML(model),
+            query: this._q,
+            rolesOpen: this.state.rolesOpen,
+            openGroups: new Set(this.state.openGroups),
+            monthEndSkipped: this.state.monthEndSkipped,
+            scenarioKeys: new Set(this.scenarios.filter((s) => !s.retired).map((s) => s.key)),
+        });
+    }
 
-        // Scenarios ride on the same lines as the stations, so a learner meets
-        // "run a pay run, three ways" in the Pay Run section rather than in a
-        // second list somewhere else. A line whose stations are all filtered
-        // out by the search still shows its scenarios if they match.
-        const screnLines = {};
-        // LEARN REFRESH step 2: a RETIRED walkthrough stays in the content
-        // (its progress rows keep meaning something) and leaves the map.
-        for (const sc of this.scenarios.filter((s) => !s.retired)) {
-            (screnLines[sc.line] = screnLines[sc.line] || []).push(sc);
+    /** The search index, rebuilt when the language or the field rows change. */
+    _searchIndex() {
+        const key = `${this.state.lang}|${(this._fieldRows || []).length}`;
+        if (this._indexKey !== key) {
+            this._indexKey = key;
+            this._index = buildIndex(this.bundle, this._fieldRows || []);
         }
-        const screnMatch = (sc) =>
-            !q || tx(sc.name).toLowerCase().includes(q)
-            || tx(sc.tagline).toLowerCase().includes(q);
+        return this._index;
+    }
 
-        const order = this.lineOrder;
-        const keys = Object.keys(lines).concat(
-            Object.keys(screnLines).filter((k) => !lines[k]));
-        const ordered = order.filter((k) => keys.includes(k))
-            .concat(keys.filter((k) => !order.includes(k)));
-        const lineSection = (lineKey) => {
-            const items = (lines[lineKey] || []).filter(match);
-            const screns = (screnLines[lineKey] || []).filter(screnMatch);
-            if (!items.length && !screns.length) {
-                return "";
+    /** The field cards of every screen, in the page's language (S5). */
+    _loadFieldRows() {
+        const lang = this.state.lang;
+        loadFieldIndex(this.orm, lang).then((rows) => {
+            if (this.state.lang !== lang) {
+                return;
             }
-            return `<section class="lrn-line">
-                <h3 class="lrn-linehead">${ic(LINE_ICON[lineKey] || "map-pin")}
-                    ${esc(T("lines." + lineKey))}
-                    ${this._lineRingHTML(lines[lineKey] || [])}</h3>
-                ${lineKey === "lifecycle" && !q ? this._lifeTrailHTML() : ""}
-                <div class="lrn-cards">${items.map((s) => this._cardHTML(s)).join("")}</div>
-                ${this._scenarioRowHTML(screns)}
-            </section>`;
-        };
-        // LEARN v3 — the lines, grouped into three chapters. Each chapter says
-        // how much of YOUR path in it is done; a search that empties a whole
-        // chapter drops its header too.
-        const chaptered = new Set(CHAPTERS.flatMap((c) => c.lines));
-        const lineHTML = CHAPTERS.map((ch, i) => {
-            const own = ordered.filter((k) => ch.lines.includes(k)
-                || (i === CHAPTERS.length - 1 && !chaptered.has(k)));
-            const inner = own.map(lineSection).join("");
-            if (!inner) {
-                return "";
-            }
-            const onPath = this.stations.filter(
-                (s) => own.includes(s.line) && this.onPath(s));
-            const done = onPath.filter((s) => this.stateOf(s.key) === "done").length;
-            const pct = onPath.length ? Math.round(done / onPath.length * 100) : 100;
-            // LEARN REFRESH step 5 — THE HERO. A chapter with nothing on this
-            // learner's path steps back (quiet, still open); one with path
-            // lessons lights and says how many minutes of it are left. The
-            // class flips on a role pick, and the CSS animates the change.
-            const lit = !!onPath.length;
-            const left = onPath.filter((s) => this.stateOf(s.key) !== "done")
-                .reduce((n, s) => n + (s.duration_min || 0), 0);
-            const meta = lit
-                ? `<span class="lrn-chcount">${done}${SP}/ ${onPath.length}${left ? `${DOT}${left}${SP}${esc(T("chMins"))}` : ""}</span>`
-                : `<span class="lrn-chcount">${esc(T("chOff"))}</span>`;
-            return `<section class="lrn-chapter ${lit ? "lit" : "off"}" data-chapter="${ch.key}" style="--i:${i}">
-                <header class="lrn-chhead">
-                    <span class="lrn-chno">${i + 1}</span>
-                    <span class="lrn-chmain">
-                        <b>${esc(T(ch.key + "Title"))}</b>
-                        <span class="lrn-note">${esc(T(ch.key + "Lead"))}</span>
-                    </span>
-                    <span class="lrn-chprog" title="${done}${SP}/ ${onPath.length}">
-                        ${lit ? `<span class="lrn-chbar"><i style="width:${pct}%"></i></span>` : ""}
-                        ${meta}
-                    </span>
-                </header>
-                ${inner}
-            </section>`;
-        }).join("");
-
-        const total = this.stations.length;
-        const pctDone = total ? Math.round(this.doneCount / total * 100) : 0;
-
-        return `
-        <header class="lrn-hero">
-            <div>
-                <h1>${esc(T("hubTitle"))}</h1>
-                <p class="lrn-lead">${esc(T("hubLead"))}</p>
-            </div>
-            <div class="lrn-progress" role="group" aria-label="${esc(T("overall"))}">
-                <div class="lrn-ring" style="--p:${pctDone}"><span>${pctDone}%</span></div>
-                <div class="lrn-pmeta">
-                    <b>${esc(T("overall"))}</b>
-                    <span>${this.doneCount}${SP}/ ${total}</span>
-                    ${this.badgeEarned
-                        ? `<span class="lrn-chip ok">${ic("award")}${esc(T("badgeGot"))}</span>`
-                        : `<span class="lrn-chip">${ic("award")}${esc(T("badge"))}</span>`}
-                    ${this._streakHTML()}
-                </div>
-            </div>
-        </header>
-        ${this._continueHTML()}
-        ${this._roleBarHTML()}
-        ${this._monthEndHTML()}
-        <div class="lrn-toolbar">
-            <button class="lrn-btn pri" data-act="to-missions"
-                >${ic("flask")}${esc(T("missions"))}</button>
-            <label class="lrn-search">${ic("search")}
-                <input type="search" data-act="search" value="${esc(this.state.search)}"
-                       placeholder="${esc(T("search"))}" aria-label="${esc(T("search"))}"/>
-            </label>
-        </div>
-        ${this._practiceCardHTML()}
-        <div class="lrn-chapters" data-path="${esc(this.state.role)}">
-        ${lineHTML || `<p class="lrn-note">${esc(T("noAnswer"))}</p>`}
-        </div>`;
-    }
-
-    /* ------------------------------------------------- LEARNOS Phase 6 views
-
-       CONTINUE. One suggestion, chosen by the server from this learner's own
-       rows, with the reason it was chosen printed beside it. The reason is
-       not decoration: a strip that says "do this next" and nothing else is a
-       nag, and one that says why is an explanation somebody can disagree with.
-
-       Drawn only when the server sent one — the flag being off, or every
-       lesson being finished with the capstone out of reach, both produce an
-       empty payload and no strip. */
-    /** LEARN v3 — "I am the …". The pick decides which stations are required
-     *  for this learner; everything stays open. */
-    _roleBarHTML() {
-        if (!this.pathKeys) {
-            return "";
-        }
-        const keys = this.pathKeys;
-        const onPath = this.stations.filter((s) => keys.has(s.key));
-        const left = onPath.filter((s) => this.stateOf(s.key) !== "done");
-        const mins = left.reduce((n, s) => n + (s.duration_min || 0), 0);
-        const buttons = ROLE_ORDER.map((r) => `
-            <button class="lrn-role" data-act="role" data-role="${r}"
-                    aria-pressed="${r === this.state.role ? "true" : "false"}"
-                >${ic(ROLE_ICON[r])}${esc(T(ROLE_LABEL[r]))}</button>`).join("");
-        return `<div class="lrn-roles" role="group" aria-label="${esc(T("roleLabel"))}">
-            <span class="lrn-clabel">${esc(T("roleLabel"))}</span>
-            ${buttons}
-            <span class="lrn-rolemeta">${esc(T("roleNeeds"))}${SP}${onPath.length}${SP}${
-                esc(T("lessonsWord"))}${left.length ? `,${SP}${esc(T("aboutWord"))}${SP}${mins}${SP}${esc(T("min"))}` : ""}
-                ${this.state.roleChosen ? "" : `<em>${esc(T("roleGuess"))}</em>`}</span>
-        </div>`;
-    }
-
-    /** LEARN v3 — the pay calendar's next "changes close" date, with a short
-     *  refresher. Drawn only when the pay calendar has one within a week. */
-    _monthEndHTML() {
-        const me = (this.bundle.path && this.bundle.path.month_end) || {};
-        if (!me.cutoff || this.state.monthEndSkipped) {
-            return "";
-        }
-        const days = me.days || 0;
-        const when = days <= 0 ? esc(T("monthEndToday"))
-            : `${esc(T("monthEndIn"))}${SP}${days}${SP}${esc(T(days === 1 ? "dayWord" : "daysWord"))}`;
-        const refresher = this.scenarios.some((sc) => sc.key === "sc_payslips"
-            && (sc.modes || []).includes("watch"));
-        return `<div class="lrn-monthend">
-            <span class="lrn-mecal"><b>${days <= 0 ? "!" : days}</b></span>
-            <span class="lrn-cardmain">
-                <span class="lrn-clabel">${esc(T("monthEndTitle"))}</span>
-                <span class="lrn-cardtitle">${when}</span>
-                <span class="lrn-carddesc">${esc(T("monthEndBody"))}</span>
-            </span>
-            ${refresher ? `<button class="lrn-btn pri" data-scenario="sc_payslips" data-mode="watch"
-                >${ic("play")}${esc(T("scWatch"))}</button>` : ""}
-            <button class="lrn-btn ghost" data-act="month-skip">${esc(T("monthEndSkip"))}</button>
-        </div>`;
-    }
-
-    _continueHTML() {
-        const nb = this.nextBest;
-        if (!nb.reason_key) {
-            return "";                       // the flag is off: draw nothing
-        }
-        const reason = tx(nb.reason || {});
-        // FINISHED IS AN ANSWER AND IT GETS DRAWN. `next_best` returns
-        // `nbAllDone` with no key, and the first draft rendered nothing for
-        // it — so the one learner who had completed everything was the one
-        // the feature went silent on. No button, because there is nowhere to
-        // send them; the sandbox card below is the standing offer.
-        if (!nb.key || nb.kind === "none") {
-            return `
-            <div class="lrn-continue done">
-                <span class="lrn-cardico">${ic("check-circle", "ok")}</span>
-                <span class="lrn-cardmain">
-                    <span class="lrn-clabel">${esc(T("nbTitle"))}</span>
-                    <span class="lrn-carddesc">${esc(reason)}</span>
-                </span>
-            </div>`;
-        }
-        const isMission = nb.kind === "mission";
-        const target = isMission
-            ? (this.missions.find((m) => m.key === nb.key) || null)
-            : this.station(nb.key);
-        if (!target) {
-            // A stale bundle naming content this build does not ship. Say
-            // nothing rather than drawing a button that opens nothing.
-            return "";
-        }
-        return `
-        <div class="lrn-continue">
-            <span class="lrn-cardico">${ic(isMission ? "flask" : (target.icon || "map-pin"))}</span>
-            <span class="lrn-cardmain">
-                <span class="lrn-clabel">${esc(T("nbTitle"))}</span>
-                <span class="lrn-cardtitle">${esc(tx(target.name))}</span>
-                <span class="lrn-carddesc">${target.duration_min ? `${esc(String(target.duration_min))}${SP}${esc(T("min"))}${DOT}` : ""}${esc(reason)}</span>
-            </span>
-            <button class="lrn-btn pri" data-act="nb-go"
-                    data-key="${esc(nb.key)}" data-kind="${esc(nb.kind)}"
-                >${ic("play")}${esc(T(isMission ? "nbGoMission" : "nbGo"))}</button>
-        </div>`;
-    }
-
-    /** Days in a row, and an honest tooltip. No notification, no reminder, no
-     *  "you are about to lose it" — the number is there when the learner
-     *  looks, and gone quietly when they miss a day. */
-    _streakHTML() {
-        const streak = this.streak;
-        if (!this.skillTree || !streak.days) {
-            return "";
-        }
-        return `<span class="lrn-chip streak" title="${esc(T("streakHint"))}"
-            >${ic("flame")}${esc(streak.display || String(streak.days))}${SP}${
-            esc(T(streak.days === 1 ? "streakTitleOne" : "streakTitle"))}</span>`;
-    }
-
-    /* ---------------------------------------------- LEARN REFRESH step 4
-       THE HERO: ONE PERSON'S ROAD. The Lifecycle line is drawn as the road
-       Hoàng Văn Nam — the practice company's newest hire — travels: the job
-       asked for, his first weeks, his trial, and (years later) his last day.
-       Each stop lights when its lesson is done, and Nam walks to the
-       furthest lit stop. He starts where he stood last time (per browser) and
-       walks on in `_afterPaint`, so finishing a lesson is SEEN on the map. */
-    _lifeTrail() {
-        return LIFE_TRAIL.map((key) => this.station(key)).filter(Boolean);
-    }
-
-    _lifeTrailHTML() {
-        const stops = this._lifeTrail();
-        if (stops.length < 2) {
-            return "";
-        }
-        let reached = -1;
-        stops.forEach((st, i) => {
-            if (this.stateOf(st.key) === "done") {
-                reached = i;
+            this._fieldRows = rows;
+            if (this._q.trim()) {
+                this._renderHits();
             }
         });
-        const at = (i) => (i < 0 ? 0 : Math.round(i / (stops.length - 1) * 1000) / 10);
-        let from = at(reached);
-        try {
-            const kept = Number(window.localStorage.getItem(LIFE_TRAIL_KEY));
-            if (Number.isFinite(kept) && kept >= 0 && kept <= 100) {
-                from = kept;
-            }
-        } catch {
-            // No memory of the last visit: Nam simply stands where he is.
-        }
-        const later = stops.length - 1;
-        const dots = stops.map((st, i) => {
-            const lit = this.stateOf(st.key) === "done";
-            return `<button class="lrn-ytstop ${lit ? "lit" : ""}${SP}${i === later ? "last" : ""}"
-                style="left:${at(i)}%" data-station="${esc(st.key)}"
-                aria-label="${esc(tx(st.name))}">
-                <span class="lrn-ytdot">${lit ? ic("check") : ic(st.icon)}</span>
-                <span class="lrn-ytname">${esc(tx(st.name))}</span>
-            </button>`;
-        }).join("");
-        return `<div class="lrn-ytrail" role="group" aria-label="${esc(T("lifeTrailTitle"))}">
-            <div class="lrn-ythead"><b>${ic("user-check")}${esc(T("lifeTrailTitle"))}</b>
-                <span class="lrn-note">${esc(T("lifeTrailLead"))}</span></div>
-            <div class="lrn-ytroad">
-                <i class="lrn-ytline"></i>
-                <i class="lrn-ytlit" style="width:${at(reached)}%"></i>
-                <span class="lrn-ytgap" style="left:${(at(later - 1) + at(later)) / 2}%">${esc(T("lifeTrailLater"))}</span>
-                ${dots}
-                <span class="lrn-yttoken" data-life-token="${at(reached)}" style="left:${from}%"
-                    title="${esc(T("lifeTrailHere"))}">${esc("N")}</span>
-            </div>
-        </div>`;
     }
 
-    /** Nam walks from where he stood to where the learner has taken him. */
-    _walkLifeTrail() {
-        const tok = document.querySelector("[data-life-token]");
-        if (!tok) {
+    /** Draw the hits for the words in the box, in place. */
+    _renderHits() {
+        const root = this.rootRef.el;
+        const lib = root && root.querySelector(".lrn-lib");
+        const box = lib && lib.querySelector("[data-lib-results]");
+        if (!box) {
             return;
         }
-        const to = tok.getAttribute("data-life-token");
-        const go = () => {
-            tok.style.left = `${to}%`;
-        };
-        if (reduced()) {
-            go();
+        const q = this._q;
+        this._hits = q.trim() ? search(this._searchIndex(), q) : [];
+        box.innerHTML = resultsHTML(this._hits, q, { openTerm: this._openTerm });
+        lib.classList.toggle("searching", !!q.trim());
+    }
+
+    /** A row's Guide chip (and Enter on a row): the real screen with the
+     *  Guide docked and This screen open. A screen this person cannot open
+     *  opens its outline instead, with one grey note saying so. */
+    async libGuide(key, opts = {}) {
+        const st = this.station(key);
+        if (!st) {
+            return;
+        }
+        const sc = this.screenOf(st);
+        const blocked = !sc || st.visible === false || st.gated || st.missing
+            || reachable(sc) === false || !canOpen(sc);
+        if (blocked) {
+            this._openOutlineNoted(st.key);
+            return;
+        }
+        this._log("library_guide", opts.field ? `${st.key}:${opts.field}` : st.key);
+        const r = await guideAt(sc.key, { section: opts.field ? "fields" : "screen",
+                                          field: opts.field || "" });
+        if (r === "unreachable" || r === "missing") {
+            this._openOutlineNoted(st.key);
+        } else if (r === "nodrawer") {
+            // No drawer on this page (it always is, but never a dead click).
+            this.openRealScreen(st.key);
+        }
+    }
+
+    _openOutlineNoted(key) {
+        this.openStation(key);
+        this.state.outlineNote = true;
+    }
+
+    /** A search hit, by its index in the list drawn. */
+    _openHit(i) {
+        const h = (this._hits || [])[i];
+        if (!h) {
+            return;
+        }
+        this._log("library_search_open", `${h.kind}:${h.key}`.slice(0, 64));
+        if (h.kind === "screen") {
+            this.openStation(h.key);
+        } else if (h.kind === "field") {
+            const st = this.station(h.screen);
+            if (st) {
+                this.libGuide(st.key, { field: h.field });
+            } else {
+                guideAt(h.screen, { section: "fields", field: h.field });
+            }
+        } else if (h.kind === "term") {
+            this._openTerm = this._openTerm === h.key ? "" : h.key;
+            this._renderHits();
+        } else if (h.kind === "task") {
+            this.openScenario(h.key, h.mode);
+        } else if (h.kind === "lesson") {
+            this.openStation(h.station);
+            if (this.lesson) {
+                this.startLesson();
+                this.state.step = Math.min(h.step, this.steps.length - 1);
+            }
+        }
+    }
+
+    /** The Continue card's button: the lesson itself, resumed where it
+     *  stopped (startLesson's own rule). */
+    libContinue(key) {
+        const st = this.station(key);
+        if (!st) {
+            return;
+        }
+        this.openStation(st.key);
+        if (this.lesson) {
+            this.startLesson();
+        }
+    }
+
+    /* The Practice row (S7): ONE entry into the free-roam sandbox (and the
+       guided practice beside it), at the end of Browse, never inside a menu
+       group — it is every screen at once, with nothing to complete. */
+    _practiceCardHTML(model) {
+        return practiceRowHTML(model || this.libraryModel);
+    }
+
+    toggleGroup(key) {
+        const list = this.state.openGroups.slice();
+        const at = list.indexOf(key);
+        if (at >= 0) {
+            list.splice(at, 1);
         } else {
-            requestAnimationFrame(() => requestAnimationFrame(go));
+            list.push(key);
         }
-        try {
-            window.localStorage.setItem(LIFE_TRAIL_KEY, to);
-        } catch {
-            // The walk is decoration; losing its memory costs nothing.
-        }
-    }
-
-    /** A ring per section heading. Same conic-gradient idiom as the hero
-     *  ring above it and as pb_dashboard's — one dial shape in the product,
-     *  flat two-stop, no gradient. */
-    _lineRingHTML(list) {
-        if (!this.skillTree || !list.length) {
-            return "";
-        }
-        const p = this.lineProgress(list);
-        return `<span class="lrn-lineprog"
-                title="${esc(p.done + " / " + p.total + " " + T("lineProgress"))}">
-            <span class="lrn-ring sm" style="--p:${p.pct}"></span>
-            <span class="lrn-linecount">${p.done}${SP}/ ${p.total}</span>
-        </span>`;
-    }
-
-    /* --------------------------------------------------- practice mode card
-       ABOVE the lines and never inside one. The sandbox is not a station and
-       does not belong to a section: it is every screen at once, with nothing
-       to complete and nothing to get right. Drawing it as one more card in the
-       Overview row would promise a lesson it does not have. */
-    _practiceCardHTML() {
-        return `
-        <div class="lrn-practicecard">
-            <span class="lrn-cardico">${ic("flask")}</span>
-            <span class="lrn-cardmain">
-                <span class="lrn-cardtitle">${esc(T("practiceMode"))}</span>
-                <span class="lrn-carddesc">${esc(T("practiceModeLead"))}</span>
-            </span>
-            <button class="lrn-btn pri" data-act="to-practice"
-                >${ic("compass")}${esc(T("practiceOpen"))}</button>
-        </div>`;
+        this.state.openGroups = list;
     }
 
     /* ------------------------------------------------- practice mode: the view
@@ -998,106 +771,6 @@ export class LearnJourney extends Component {
             <button class="lrn-btn sm ghost" data-act="p-exit"
                 >${ic("x")}${esc(T("exit"))}</button>
         </div>`;
-    }
-
-    _cardHTML(s) {
-        const st = this.stateOf(s.key);
-        const badge = s.kind === "lesson"
-            ? `<span class="lrn-chip b">${ic("play")}${esc(T("fullLesson"))}</span>`
-            : `<span class="lrn-chip">${ic("list-checks")}${esc(T("outline"))}</span>`;
-        // LEARN v3 — "required" means required on THIS learner's path.
-        const onPath = this.onPath(s);
-        const need = onPath
-            ? `<span class="lrn-chip a">${esc(T("required"))}</span>`
-            : `<span class="lrn-chip">${esc(this.pathKeys ? T("offPath") : T("optional"))}</span>`;
-        // Three states, not two. A screen that moved into a hub is REACHABLE —
-        // saying "not in your menu" about it was the wrong word in the
-        // direction that makes a reader stop looking, so it gets a plain chip
-        // naming the door instead of a padlock.
-        const gate = s.gated
-            ? `<span class="lrn-chip warn" title="${esc(T("gatedBody"))}">${ic("lock")}${esc(T("gatedChip"))}</span>`
-            : (s.missing || !s.visible)
-            ? `<span class="lrn-chip warn">${ic("lock")}${esc(T("notVisible"))}</span>`
-            : (this.placeOf(s)
-                ? `<span class="lrn-chip">${ic("compass")}${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}</span>`
-                : (s.reach
-                    ? `<span class="lrn-chip">${ic("compass")}${esc(T("reachVia"))}${SP}${esc(s.reach)}</span>`
-                    : ""));
-        // "Start here" is a PULSE, never an auto-play. The demo greeting opens
-        // the map and points; the learner presses the card. A spotlight that
-        // starts by itself is the thing the retired first-run tour did, and the
-        // reason people learned to dismiss it before reading it.
-        const start = this.state.suggest && this.state.suggest !== ""
-            && (s.lessons || []).some((l) => l.key === this.state.suggest);
-        const startChip = start
-            ? `<span class="lrn-chip a">${ic("sparkles")}${esc(T("startHere"))}</span>`
-            : "";
-        // The tier is DERIVED from the progress row the lesson already wrote
-        // and is drawn as one quiet chip beside the tick — the celebration
-        // stays the check that is already there, once, and nothing new
-        // animates. See `tierOf`.
-        const tier = this.tierOf(s);
-        const tierChip = tier
-            ? `<span class="lrn-chip tier ${tier}" title="${esc(T("tierHint"))}"
-                >${ic("award")}${esc(T(
-                    tier === "gold" ? "tierGold"
-                        : tier === "silver" ? "tierSilver" : "tierBronze"))}</span>`
-            : "";
-        return `
-        <button class="lrn-card ${s.star ? "star" : ""}${SP}${onPath ? "" : "offpath"}${SP}${st === "done" ? "done" : ""}${
-                SP}${tier ? "t-" + tier : ""}${SP}${start ? "pulse" : ""}"
-                data-station="${esc(s.key)}">
-            <span class="lrn-cardico">${ic(s.icon)}</span>
-            <span class="lrn-cardmain">
-                <span class="lrn-cardtitle">${esc(tx(s.name))}
-                    ${st === "done" ? ic("check-circle", "ok") : ""}</span>
-                <span class="lrn-carddesc">${esc(tx(s.summary))}</span>
-                <span class="lrn-cardmeta">${startChip}${tierChip}${badge}${need}${gate}
-                    <span class="lrn-chip">${ic("clock")}${esc(T("est"))}${SP}${s.duration_min}${SP}${esc(T("min"))}</span>
-                </span>
-            </span>
-        </button>`;
-    }
-
-    /* ------------------------------------------------------- scenario cards
-       One row per line, under the stations. A scenario is not a station and
-       does not look like one: the MODE is the affordance, so each way of taking
-       it is its own button with its own promise about who presses. */
-    _scenarioRowHTML(list) {
-        if (!list.length) {
-            return "";
-        }
-        const label = { watch: "scWatch", try: "scTry", do: "scDo" };
-        const hint = { watch: "scWatchHint", try: "scTryHint", do: "scDoHint" };
-        const icon = { watch: "play", try: "flask", do: "target" };
-        const cards = list.map((sc) => {
-            const done = (this.progress[`scenario:${sc.key}`] || {}).state === "done";
-            const modes = (sc.modes || []).map((m) => `
-                <button class="lrn-btn sm ${m === "watch" ? "pri" : ""}"
-                        data-scenario="${esc(sc.key)}" data-mode="${esc(m)}"
-                        title="${esc(T(hint[m] || "scWatchHint"))}"
-                    >${ic(icon[m] || "play")}${esc(T(label[m] || "scWatch"))}</button>`).join("");
-            return `
-            <div class="lrn-scren ${done ? "done" : ""}">
-                <span class="lrn-screnico">${ic(sc.icon)}</span>
-                <span class="lrn-screnmain">
-                    <span class="lrn-screntitle">${esc(tx(sc.name))}
-                        ${done ? ic("check-circle", "ok") : ""}</span>
-                    <p class="lrn-screndesc">${esc(tx(sc.tagline))}</p>
-                    <span class="lrn-screnmodes">${modes}</span>
-                </span>
-            </div>`;
-        }).join("");
-        /* The row's LEAD-IN. `scenariosLead` was authored in Phase 1b and
-           rendered nowhere — the string existed, the map did not show it, and
-           a learner met three unexplained buttons. It says what the three
-           modes are for, which is the one thing the buttons cannot. */
-        return `<div class="lrn-screnhead">
-                <span class="lrn-screnheadtitle">${esc(T("scenarios"))}</span>
-                <p class="lrn-screnlead">${esc(T("scenariosLead"))}</p>
-            </div>
-            <div class="lrn-screnrow" role="group"
-                aria-label="${esc(T("scenarios"))}">${cards}</div>`;
     }
 
     /* ------------------------------------------------------ scenario: TRY
@@ -1204,8 +877,11 @@ export class LearnJourney extends Component {
         </header>
         ${s.kind !== "lesson"
             ? `<p class="lrn-callout">${ic("info")}${esc(T("outlineNote"))}</p>` : ""}
+        ${this.state.outlineNote
+            ? `<p class="lrn-callout mute">${ic("lock")}${esc(T("libNotInMenuNote"))}</p>`
+            : ""}
         ${!s.visible
-            ? `<p class="lrn-callout warn">${ic("lock")}${esc(T(s.gated ? "gatedBody" : "notVisibleBody"))}</p>`
+            ? (this.state.outlineNote ? "" : `<p class="lrn-callout warn">${ic("lock")}${esc(T(s.gated ? "gatedBody" : "notVisibleBody"))}</p>`)
             : (this.screenOf(s) && canOpen(this.screenOf(s))
                 ? `<div class="lrn-callout lrn-openscreen">${ic("compass")}<span>${this.placeOf(s)
                     ? `<b>${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}.</b>` : ""}</span>
@@ -1607,18 +1283,25 @@ export class LearnJourney extends Component {
 
     // ---------------------------------------------------------- post-render fx
     _afterPaint() {
-        // LEARN REFRESH step 5 — the hero: replay the chapters' redraw ONCE
-        // per role pick. The class lives only on this render's DOM, so a later
-        // re-render (a search keystroke) does not replay it.
+        // LEARNREV P3 — a role pick redraws the Continue card and the path
+        // strip; they settle in once (CSS, reduced motion respected). The
+        // class lives only on this render's DOM, so a later redraw does not
+        // replay it.
         if ((this.state.pathTick || 0) !== (this._animatedTick || 0)) {
             this._animatedTick = this.state.pathTick || 0;
-            const box = document.querySelector(".lrn-chapters");
+            const box = this.rootRef.el && this.rootRef.el.querySelector(".lrn-lib-home");
             if (box && !reduced()) {
                 box.classList.add("anim");
             }
         }
         if (this.state.view === "map") {
-            this._walkLifeTrail();
+            // A redraw that re-inserted the Library (a role pick, a language
+            // flip) dropped the results drawn into it: draw them again.
+            if (this._q.trim()) {
+                this._renderHits();
+            }
+            Spot.hide();
+            return;
         }
         if (this.state.view === "practice") {
             // No spotlight in the sandbox: nothing is being pointed at, and a
@@ -1954,7 +1637,14 @@ export class LearnJourney extends Component {
                 }
             },
             "role": () => this.setRole(act.dataset.role),
-            "month-skip": () => this.skipMonthEnd(),
+            // LEARNREV P3 — the Library's own doors.
+            "lib-guide": () => this.libGuide(act.dataset.key),
+            "lib-continue": () => this.libContinue(act.dataset.key),
+            "lib-roles": () => { this.state.rolesOpen = !this.state.rolesOpen; },
+            "lib-group": () => this.toggleGroup(act.dataset.group),
+            "lib-hit": () => this._openHit(Number(act.dataset.i)),
+            "lib-ask": () => askHelper(this._q.trim()),
+            "lib-team": () => openHub(this.action, { xmlid: LEARN_HUB_XMLID, lens: "team" }),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -1965,9 +1655,13 @@ export class LearnJourney extends Component {
     }
 
     onInput(ev) {
-        const el = ev.target.closest('[data-act="search"]');
+        // LEARNREV P3 — the one search. Not reactive state: the results list
+        // is redrawn in place and the box keeps its caret.
+        const el = ev.target.closest && ev.target.closest("[data-lib-q]");
         if (el) {
-            this.state.search = el.value;
+            this._q = el.value || "";
+            this._openTerm = "";
+            this._renderHits();
         }
     }
 
@@ -1985,6 +1679,14 @@ export class LearnJourney extends Component {
         if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
             this._blurAdvanced = false;
         }
+        // LEARNREV P3 — the Library's keyboard. A row is focusable and Enter
+        // opens its Guide; in the search box Enter opens the first hit,
+        // ArrowDown moves into the results, Escape empties the box.
+        if (this.state.view === "map" && ev.target.closest) {
+            if (this._libraryKey(ev)) {
+                return;
+            }
+        }
         if (ev.key !== "Enter") {
             return;
         }
@@ -1994,6 +1696,55 @@ export class LearnJourney extends Component {
         }
         ev.preventDefault();
         this._scenarioInputCheck(el);
+    }
+
+    /** The Library's keys. True when the key was the Library's. */
+    _libraryKey(ev) {
+        const box = ev.target.closest("[data-lib-q]");
+        if (box) {
+            if (ev.key === "Enter") {
+                ev.preventDefault();
+                if ((this._hits || []).length) {
+                    this._openHit(0);
+                }
+                return true;
+            }
+            if (ev.key === "ArrowDown") {
+                const first = this.rootRef.el && this.rootRef.el.querySelector(".lrn-lib-hit button");
+                if (first) {
+                    ev.preventDefault();
+                    first.focus();
+                }
+                return true;
+            }
+            if (ev.key === "Escape" && box.value) {
+                ev.preventDefault();
+                box.value = "";
+                this._q = "";
+                this._renderHits();
+                return true;
+            }
+            return false;
+        }
+        const hit = ev.target.closest(".lrn-lib-hit button");
+        if (hit && (ev.key === "ArrowDown" || ev.key === "ArrowUp")) {
+            const all = Array.from(this.rootRef.el.querySelectorAll(".lrn-lib-hit button"));
+            const at = all.indexOf(hit);
+            const next = ev.key === "ArrowDown" ? all[at + 1]
+                : (at > 0 ? all[at - 1] : this.rootRef.el.querySelector("[data-lib-q]"));
+            if (next) {
+                ev.preventDefault();
+                next.focus();
+            }
+            return true;
+        }
+        const row = ev.target.matches && ev.target.matches(".lrn-lib-row") ? ev.target : null;
+        if (row && ev.key === "Enter") {
+            ev.preventDefault();
+            this.libGuide(row.dataset.libRow);
+            return true;
+        }
+        return false;
     }
 
     /** Leaving the field. Checked too, because somebody who types the value
@@ -2180,6 +1931,7 @@ export class LearnJourney extends Component {
     }
 
     openStation(key) {
+        this.state.outlineNote = false;
         this.state.stationKey = key;
         this.state.step = 0;
         this.state.quiz = false;
@@ -2517,21 +2269,17 @@ export class LearnJourney extends Component {
         this.state.lang = this.state.lang === "en" ? "vi" : "en";
         RT.lang = this.state.lang;
         this._savePrefs();
+        // LEARNREV P3 — the search finds the field cards in the new language.
+        this._loadFieldRows();
     }
 
-    toggleMotion() {
-        this.state.motion = this.state.motion === "reduced" ? "auto" : "reduced";
-        RT.motion = this.state.motion;
-        this._savePrefs();
-    }
+    /* LEARNREV P3 — "Reduce motion" left this page's header (G13): the
+       system setting decides, and the switch lives in Learn › Settings
+       (learn_settings.js writes the same `pbLearnPrefs.motion`). */
 
     // ------------------------------------------------------- template helpers
     get langLabel() {
         return this.state.lang === "en" ? "Tiếng Việt" : "English";
-    }
-
-    get motionLabel() {
-        return this.state.motion === "reduced" ? T("motionOn") : T("reduceMotion");
     }
 
     get brandLabel() {

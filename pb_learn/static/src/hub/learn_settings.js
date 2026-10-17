@@ -18,6 +18,23 @@ import { useService } from "@web/core/utils/hooks";
 import { RT, T } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
 
+/* LEARNREV P3 — the one preference this page keeps per device (the Learning
+   page's header lost its "Reduce motion" button, G13). Same key the Journey
+   and the helper read; the system's own reduced-motion setting is honoured
+   whatever this says (runtime.js `reduced()`). */
+const LOCAL_PREFS = "pbLearnPrefs";
+/* Switches the Learning page no longer draws anything for (owner decision
+   2026-10-17: no streaks, no badge levels). Still served, never offered. */
+const HIDDEN_SWITCHES = new Set(["skill_tree"]);
+
+function readMotion() {
+    try {
+        return (JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}") || {}).motion === "reduced";
+    } catch {
+        return false;
+    }
+}
+
 /* The words for each switch. Keys into the content plane's chrome, so the
    card follows the same English / Vietnamese preference as the helper. */
 const COPY = {
@@ -45,6 +62,7 @@ export class LearnSettings extends Component {
             busy: "",          // key of the switch being saved
             saved: "",         // key of the switch just saved
             failed: "",        // key of the switch that failed to save
+            motion: readMotion(),
         });
         onWillStart(async () => {
             try {
@@ -68,8 +86,23 @@ export class LearnSettings extends Component {
         return T(key);
     }
 
+    /** "Reduce motion" on this device: lessons, walkthroughs and the helper
+     *  move less. Written straight to the browser, nothing to the server. */
+    toggleMotion() {
+        const on = !this.state.motion;
+        this.state.motion = on;
+        RT.motion = on ? "reduced" : "auto";
+        try {
+            const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}") || {};
+            p.motion = RT.motion;
+            window.localStorage.setItem(LOCAL_PREFS, JSON.stringify(p));
+        } catch {
+            // A locked-down profile keeps the choice for this page only.
+        }
+    }
+
     rows() {
-        return this.state.switches.map((s) => {
+        return this.state.switches.filter((s) => !HIDDEN_SWITCHES.has(s.key)).map((s) => {
             const c = COPY[s.key] || {};
             return {
                 ...s,

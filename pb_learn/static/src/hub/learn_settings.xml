@@ -67,6 +67,32 @@
             </t>
           </ul>
         </section>
+        <!-- LEARNREV P3: one preference for this device (moved here from the
+             Learning page's header). The system setting always wins. -->
+        <section class="lrn-set-card lrn-set-device">
+          <ul class="lrn-set-list">
+            <li class="lrn-set-row" t-att-class="{ on: state.motion }">
+              <span class="lrn-set-ic">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-sparkles"/></svg>
+              </span>
+              <div class="lrn-set-text">
+                <b t-esc="t('swMotionTitle')"/>
+                <p t-esc="t('swMotionBody')"/>
+                <span class="lrn-set-where in">
+                  <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-lock"/></svg>
+                  <t t-esc="t('swMotionWhere')"/>
+                </span>
+              </div>
+              <div class="lrn-set-ctl">
+                <button type="button" role="switch" class="lrn-set-tog" id="lrn-set-motion"
+                        t-att-aria-checked="state.motion ? 'true' : 'false'"
+                        t-att-aria-label="t('swMotionTitle')"
+                        t-on-click="() => this.toggleMotion()"/>
+                <span class="lrn-set-state" t-esc="state.motion ? t('swOn') : t('swOff')"/>
+              </div>
+            </li>
+          </ul>
+        </section>
       </t>
     </div>
   </t>

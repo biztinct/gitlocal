@@ -16,7 +16,7 @@ import { registry } from "@web/core/registry";
 import { _t, translationIsReady } from "@web/core/l10n/translation";
 import { user } from "@web/core/user";
 
-import { RT, tx, SP } from "../engine/runtime";
+import { RT, T, tx, SP } from "../engine/runtime";
 import { loadContent } from "../content/content_loader";
 import { LEARN_HUB_XMLID, LESSONS_LENS } from "../engine/places";
 
@@ -90,6 +90,46 @@ export function registerLessonRows(content) {
             action: { xmlid: LEARN_HUB_XMLID, lens: LESSONS_LENS, focus: `scenario:${sc.key}:${mode}` },
             requires: "learn_hub",
         }, { sequence: BASE + (++i) * 10 });
+    }
+}
+
+/** LEARNREV P3 (S5) — every field card in the ⌘K search: "Pay role" with
+ *  "Field on Component treatment" under it. `rows` is `learn.guide.rpc_index`
+ *  (content/field_index.js) in the drawer's language; `open(screen, field)`
+ *  opens that screen with the Guide's Fields row expanded (the drawer's own
+ *  door). Idempotent, like the lesson rows.
+ *
+ *  `door: false` — these rows are the palette's and the Library's only. They
+ *  are NOT handed to PayAI as screens it may open (the PayAI door list is
+ *  "the screens", and a field is not one), so PayAI's answers do not move. */
+export function registerFieldRows(rows, open) {
+    const group = _t("Learn");
+    let i = 0;
+    for (const r of rows || []) {
+        if (!r || !r.screen || !r.key) {
+            continue;
+        }
+        const id = `learn.field.${r.screen}.${r.key}`;
+        if (palette.contains(id)) {
+            continue;
+        }
+        const other = (r.columns || []).filter((c) => c && c !== r.column);
+        palette.add(id, {
+            id,
+            label: r.column,
+            // The other language's spelling rides at the end, so a column is
+            // found by either name; the line says what the field is.
+            sublabel: [T("libFieldOn").replace("{screen}", r.screen_name || r.screen),
+                       r.line, ...other].filter(Boolean).join(`${SP}·${SP}`),
+            icon: "info",
+            group,
+            door: false,
+            onRun: () => {
+                if (typeof open === "function") {
+                    open(r.screen, r.key);
+                }
+            },
+        }, { sequence: BASE + 4000 + (++i) * 10 });
     }
 }
 

@@ -83,8 +83,11 @@ class TestRefreshPaths(TransactionCase):
         self.assertEqual(listed, lessons)
 
     def test_06_every_line_is_in_a_chapter(self):
+        # LEARNREV P3: the chapters are gone; the Library groups screens like
+        # the left menu, and a station with no hub tab falls back to its line's
+        # group (`LINE_GROUP` in journey/library.js). Every line needs one.
         src = open(os.path.join(get_module_path('pb_learn'), 'static', 'src', 'journey',
-                                'journey.js'), encoding='utf-8').read()
-        block = re.search(r'const CHAPTERS = \[(.*?)\];', src, re.S).group(1)
-        lines = set(re.findall(r'"([a-z]+)"', re.sub(r'key: "ch\d"', '', block)))
+                                'library.js'), encoding='utf-8').read()
+        block = re.search(r'export const LINE_GROUP = \{(.*?)\};', src, re.S).group(1)
+        lines = set(re.findall(r'(\w+): "[a-z]+"', block))
         self.assertEqual(lines, set(self.content['line_order']))

@@ -49,14 +49,19 @@ import { loadContent, composeScreens } from "../content/content_loader";
 import { flashRing } from "../engine/spotlight";
 import { calcHTML, calcKpiHTML } from "../engine/visuals";
 import { markLauncherStack, maybeWelcome } from "./first_login";
-import { registerLessonRows } from "../hub/learn_palette";
+import { registerFieldRows, registerLessonRows } from "../hub/learn_palette";
+/* LEARNREV P3 — the Library and the ⌘K field rows open a screen with its
+   Guide through this door (they cannot import this file), and the field
+   index the ⌘K rows are made of. */
+import { helperDoor } from "./guide_door";
+import { loadFieldIndex } from "../content/field_index";
 /* LEARN REFRESH step 1 — where the learner is, published by the hubs, and the
    one module that turns a screen into a place (engine/places.js). The rail's
    own icon set draws the tab list, so each tab looks as it does on the rail. */
 import { hubPlace, placeSub, switchLens } from "@pb_hub/js/hub_place";
 import { ic as railIc } from "@pb_import_kit/js/import_icons";
-import { hubScreenOf, openLearn, resolveLensReach, screenAtPlace, setReach, tabName }
-    from "../engine/places";
+import { canOpen, hubScreenOf, openLearn, openScreen, reachable, resolveLensReach, screenAtPlace,
+         setReach, tabName, waitForPlace } from "../engine/places";
 /* LEARNREV P2 — the Guide panel (six sections above the one chat) and the
    (i) field cards. Both are behind the `guide` switch (bootstrap); with it
    off nothing below is called and the drawer is what shipped before. */
@@ -138,6 +143,9 @@ export const COACH_ACTIONS = new Set([
     // the hub's own arrival protocol (openHub).
     "c-gsec", "c-gpath", "c-gscreen", "c-gact", "c-gfield", "c-gretry", "c-gmap",
     "c-gdock", "c-guide", "c-fvguide",
+    // LEARNREV P3 — "Show the Guide": the sections fold to their titles while
+    // a conversation is under way, and this opens them again. A read.
+    "c-gshow",
 ]);
 
 /* ONECHAT OC2 — ONE CHAT, NO TABS.
@@ -188,13 +196,18 @@ const MILESTONE_EVERY_MS = 60000;
    content plane; the P1 generator takes it over as a chrome string. */
 const NO_LESSON_NOTE = {
     key: "noLessonHere",
-    en: "No lesson for this screen yet. Opening the lesson map.",
-    vi: "Chưa có bài học cho màn hình này. Đang mở bản đồ bài học.",
+    en: "No lesson for this screen yet. Opening Learn, which lists every screen.",
+    vi: "Chưa có bài học cho màn hình này. Đang mở trang Học tập, nơi liệt kê mọi màn hình.",
 };
 /* LEARNREV P2 — docked (a right-hand column, ≥ 1280 px) or floating, and
    which Guide sections this person left open, per screen. */
 const DOCK_KEY = "pbLearnDock";
 const SECTIONS_KEY = "pbLearnGuideSec";
+/* LEARNREV P3 — screens where this person pressed "Show the Guide" after it
+   folded for a conversation: there it stays open on the next message. */
+const GUIDE_SHOW_KEY = "pbLearnGuideShow";
+/* Docking exists from this width (guide.scss). */
+const DOCK_MIN_PX = 1280;
 const MILESTONE_COPY = {
     m_employee: ["msEmployeeT", "msEmployeeB"],
     m_run: ["msRunT", "msRunB"],
@@ -266,7 +279,15 @@ export class CoachHost extends Component {
             // carries chips built from it, and redraws on its `place` prop.
             gTick: 0,
             dock: lsGet(DOCK_KEY, "dock") === "float" ? "float" : "dock",
+            // LEARNREV P3 — the sections folded to their titles because a
+            // message was sent (the conversation gets the height).
+            gFolded: false,
         });
+        // LEARNREV P3 — a message has been sent in this drawer session (the
+        // fold happens once per session), and a Guide asked for by the
+        // Library / ⌘K that waits for its screen to be grounded.
+        this._sentThisOpen = false;
+        this._pendingGuide = null;
         // One Guide per screen + arguments + language, for the drawer's life;
         // "Right now" is read again on every open (`_loadGuide({refresh})`).
         this._guideCache = new Map();
@@ -372,6 +393,17 @@ export class CoachHost extends Component {
                 } catch (e) {
                     console.warn("pb_learn: lesson rows not added to the search", e);
                 }
+                // LEARNREV P3 — and every field card ("Pay role · Field on
+                // Component treatment"). After the drawer is ready, never in
+                // its way: a failed index is simply no field rows.
+                loadFieldIndex(this.orm, RT.lang).then((rows) => {
+                    try {
+                        registerFieldRows(rows, (screen, field) =>
+                            this._guideAt(screen, { section: "fields", field }));
+                    } catch (e) {
+                        console.warn("pb_learn: field rows not added to the search", e);
+                    }
+                });
                 // Same fetch, no second round trip: the scenario service reads
                 // the memoised content plane the drawer has just resolved.
                 await this.sc.load();
@@ -427,6 +459,10 @@ export class CoachHost extends Component {
             // bottom slot. A body class rather than a runtime measurement:
             // coach.scss places the launcher off it.
             document.body.classList.add("lrn-one-helper");
+            // LEARNREV P3 — the Library's Guide chip, its search's "Ask PayAI"
+            // and the ⌘K field rows come in through here (coach/guide_door.js).
+            helperDoor.guideAt = (screen, opts) => this._guideAt(screen, opts);
+            helperDoor.ask = (text) => this.openHelper({ text, send: false });
             // Two pieces of CHROME the Coach happens to be the right host for,
             // because it is the one component mounted on every screen. Both
             // live in first_login.js; neither can throw, and neither is allowed
@@ -446,6 +482,8 @@ export class CoachHost extends Component {
                 window.visualViewport.removeEventListener("resize", this._onViewport);
             }
             document.body.classList.remove("lrn-one-helper");
+            helperDoor.guideAt = null;
+            helperDoor.ask = null;
             // The card is on document.body, not in this component's tree.
             closeGlossary();
             // LEARNREV P2 — the field card, the (i) and the dock likewise.
@@ -514,8 +552,14 @@ export class CoachHost extends Component {
                 this.state.gField = "";
                 this._gQuery = "";
                 this.state.gSec = this._sectionMemory(key);
+                this.state.gFolded = false;
                 this._loadGuide();
             }
+        }
+        // LEARNREV P3 — the Library asked for this screen's Guide before the
+        // screen was grounded: apply it now, over the remembered sections.
+        if (this._pendingGuide && this._pendingGuide.screen === key) {
+            this._applyGuide(this._pendingGuide);
         }
     }
 
@@ -576,6 +620,8 @@ export class CoachHost extends Component {
         this.state.moment = null;
         this.menu.close();
         if (this.state.open) {
+            this._sentThisOpen = false;
+            this.state.gFolded = false;
             this._log("coach_open");
             // LEARNREV P2 — "Right now" is read afresh on every open.
             this._loadGuide({ refresh: true });
@@ -772,9 +818,25 @@ export class CoachHost extends Component {
      *  that there is nothing to draw it in (ledger OC4). Without a chat the
      *  guide-only stream takes it at once. */
     openHelper(opts = {}) {
+        // LEARNREV P3 — `guide: {section: "this" | "screen" | "fields",
+        // field}`: the drawer opens docked (where docking exists) with that
+        // section expanded and, for a field, its Fields row open and in view.
+        // With the Guide switched off there is no panel: Explain this screen
+        // is the floor, as everywhere else.
+        if (opts.guide) {
+            if (this.guideOn) {
+                this._applyGuide(Object.assign({ screen: this.state.screen }, opts.guide));
+            } else {
+                opts = Object.assign({}, opts, { explain: true });
+            }
+        }
         if (!this.state.open) {
             this.state.open = true;
             this.state.moment = null;
+            this._sentThisOpen = false;
+            if (!opts.guide) {
+                this.state.gFolded = false;
+            }
             this._log("coach_open");
             this._loadGuide({ refresh: true });
         }
@@ -902,7 +964,13 @@ export class CoachHost extends Component {
             startPractice: (key, mode) => this.startScenario(key, mode, ""),
             // LEARNREV P2 — the Guide's arguments (the Mapping scheme), sent
             // with a routed sentence so whatnext reads the same Right now.
-            guideArgs: () => (this.guideOn ? this._guideArgs() : {}),
+            // LEARNREV P3 — the chat asks for these exactly once per routed
+            // sentence (`_route`), so it is also how the drawer learns that a
+            // message was sent: the Guide folds to its titles (S8b).
+            guideArgs: () => {
+                this._chatSent();
+                return this.guideOn ? this._guideArgs() : {};
+            },
             openPracticeMode: () => this.openPractice(),
             attach: (api) => this._attach(api),
             detach: (api) => this._detach(api),
@@ -1338,6 +1406,7 @@ export class CoachHost extends Component {
         }
         this.state.busy = true;
         this.state.question = "";
+        this._chatSent();
         this._markScreen();
         this.state.turns.push({ id: this._turnId(), kind: "person", text: q, screen: this.state.screen });
         this._scrollFallback();
@@ -1811,6 +1880,14 @@ export class CoachHost extends Component {
     }
 
     _toggleSection(sec) {
+        if (this.state.gFolded) {
+            // Folded for a conversation: a title pressed opens that section
+            // (and only that one is newly open), the rest as they were.
+            this.state.gFolded = false;
+            this.state.gSec = Object.assign({}, this.state.gSec, { [sec]: true });
+            this._rememberSections();
+            return;
+        }
         this.state.gSec = Object.assign({}, this.state.gSec, { [sec]: !this.state.gSec[sec] });
         this._rememberSections();
     }
@@ -1831,8 +1908,11 @@ export class CoachHost extends Component {
     get guideHTML() {
         void this.state.lang;
         const s = this.screenInfo;
-        return this._stable("guide", sectionsHTML(this.state.guide, {
-            open: this.state.gSec,
+        // LEARNREV P3 (S8b) — folded while a conversation is under way: the
+        // five titles only, and one link to open them again.
+        const folded = !!(this.state.gFolded && this.state.guide);
+        const inner = sectionsHTML(this.state.guide, {
+            open: folded ? {} : this.state.gSec,
             loading: this.state.gLoading,
             error: this.state.gError,
             fallbackNext: s && s.next_step ? tx(s.next_step) : "",
@@ -1842,7 +1922,12 @@ export class CoachHost extends Component {
             stations: (this.bundle && this.bundle.stations) || [],
             text: (pair) => tx(pair),
             watchFor: (card) => !!this._watchStep(card),
-        }));
+        });
+        if (!folded) {
+            return this._stable("guide", inner);
+        }
+        return this._stable("guide", `<div class="lrn-gfolded">${inner}
+            <button type="button" class="lrn-gshow" data-act="c-gshow">${ic("chevron-down")}${esc(T("gShowGuide"))}</button></div>`);
     }
 
     /** The Fields search box: rows hide in place, nothing re-renders. */
@@ -2032,6 +2117,142 @@ export class CoachHost extends Component {
                 el.scrollTop = 0;
             }
         }, 60);
+    }
+
+    // ============================================ LEARNREV P3 — the doors in
+    /** Open the Guide the way a Library row / a field result asked for:
+     *  docked where docking exists, unfolded, that section open and — for a
+     *  field — its Fields row expanded and scrolled into view once the
+     *  screen's Guide has arrived. Waits (`_pendingGuide`) when the screen it
+     *  names is not grounded yet; `_ground` applies it then. */
+    _applyGuide(want) {
+        const sec = want.section === "this" ? "screen" : (want.section || "screen");
+        if (want.screen && want.screen !== this.state.screen) {
+            this._pendingGuide = want;
+            return;
+        }
+        this._pendingGuide = null;
+        if (window.innerWidth >= DOCK_MIN_PX && this.state.dock !== "dock") {
+            // Not remembered: the person's own choice (the header button) is.
+            this.state.dock = "dock";
+        }
+        this.state.gFolded = false;
+        const open = Object.assign({}, this.state.gSec, { [sec]: true });
+        if (want.field) {
+            open.fields = true;
+            this.state.gField = want.field;
+        }
+        this.state.gSec = open;
+        const field = want.field || "";
+        let tries = 0;
+        const reveal = () => {
+            tries += 1;
+            const root = document.querySelector(".lrn-drawer .lrn-guide");
+            const target = field
+                ? root && root.querySelector(`.lrn-gfield[data-field="${field}"]`)
+                : root && root.querySelector(`.lrn-gsec[data-sec="${sec}"]`);
+            if (target) {
+                // "start": a field's card is taller than the panel, and its
+                // name is the part that says you landed in the right place.
+                target.scrollIntoView({ block: "start", behavior: reduced() ? "auto" : "smooth" });
+                return;
+            }
+            // The Guide for a screen just opened is still on its way.
+            if (tries < 30) {
+                setTimeout(reveal, 150);
+            }
+        };
+        setTimeout(reveal, 90);
+    }
+
+    /** The Library's Guide chip and the ⌘K field rows: open `screenKey`
+     *  where it lives, wait for its hub to say it arrived (the walkthrough's
+     *  own seam), then open the drawer on its Guide. A screen this person
+     *  cannot open is not opened at all ("unreachable": the Library shows its
+     *  outline with a grey note instead). */
+    async _guideAt(screenKey, opts = {}) {
+        const screens = (this.bundle && this.bundle.screens) || [];
+        const screen = screens.find((s) => s.key === screenKey);
+        if (!screen) {
+            return "missing";
+        }
+        if (reachable(screen) === false || !canOpen(screen)) {
+            return "unreachable";
+        }
+        const want = { screen: screenKey, section: opts.section || "screen", field: opts.field || "" };
+        let where = "here";
+        try {
+            const res = await openScreen(this.action, screens, screen);
+            if (res && res.place) {
+                where = await waitForPlace(res.place, res.seq);
+            } else {
+                await new Promise((r) => setTimeout(r, 300));
+            }
+        } catch {
+            return "missing";
+        }
+        if (where === "elsewhere") {
+            // The shell moved this person off a tab they cannot open.
+            return "elsewhere";
+        }
+        this._resolveScreen();
+        this.openHelper({ guide: want });
+        return "here";
+    }
+
+    /** A message was sent: the first one of this drawer session folds the
+     *  Guide to its section titles, so the conversation gets the height —
+     *  unless this person asked for the Guide to stay open on this screen. */
+    _chatSent() {
+        if (this._sentThisOpen) {
+            return;
+        }
+        this._sentThisOpen = true;
+        if (!this.guideShown || this._guideKeptOpen(this.state.screen)) {
+            return;
+        }
+        this.state.gFolded = true;
+    }
+
+    _guideKeptOpen(screen) {
+        try {
+            return !!(JSON.parse(lsGet(GUIDE_SHOW_KEY, "{}")) || {})[screen];
+        } catch {
+            return false;
+        }
+    }
+
+    /** "Show the Guide": open the sections again, and keep them open on this
+     *  screen from now on. */
+    _showGuide() {
+        this.state.gFolded = false;
+        let all = {};
+        try {
+            all = JSON.parse(lsGet(GUIDE_SHOW_KEY, "{}")) || {};
+        } catch {
+            all = {};
+        }
+        if (this.state.screen) {
+            all[this.state.screen] = 1;
+            lsSet(GUIDE_SHOW_KEY, JSON.stringify(all));
+        }
+    }
+
+    /** The header's title: "Guide · <screen>" while the Guide shows, the
+     *  helper's own name otherwise. */
+    get headTitle() {
+        void this.state.lang;
+        const s = this.screenInfo;
+        if (this.guideShown && s) {
+            return fmt(T("gHead"), { screen: tx(s.name) });
+        }
+        return T("coachName");
+    }
+
+    /** The full "Pay Run › Runs" place, as the title's tooltip while the
+     *  short "Guide · Runs" is what the header shows. */
+    get headHint() {
+        return this.guideShown ? this.screenLabel : "";
     }
 
     // -------------------------------------------------------------- rendering
@@ -2689,6 +2910,8 @@ export class CoachHost extends Component {
             this._toggleDock();
         } else if (act === "c-guide") {
             this._openGuideHere(false);
+        } else if (act === "c-gshow") {
+            this._showGuide();
         }
     }
 
