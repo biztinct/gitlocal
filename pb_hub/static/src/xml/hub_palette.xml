@@ -19,8 +19,8 @@
         <div class="pbhub-pal-search">
           <span class="pbhub-pal-search__ic" t-out="ic('search', 16)"/>
           <input class="pbhub-pal-input" type="text" t-ref="input"
-                 placeholder="Search surfaces and actions…"
-                 aria-label="Search surfaces and actions"
+                 placeholder="Search screens and actions…"
+                 aria-label="Search screens and actions"
                  t-att-value="state.q"
                  t-on-input="onInput" t-on-keydown="onKeydown"/>
           <span class="pbhub-pal-esc">ESC</span>

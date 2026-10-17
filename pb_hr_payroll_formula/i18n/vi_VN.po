@@ -5597,7 +5597,7 @@ msgstr "Gấp Json"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__net_role_detail
 msgid "Included in another total"
-msgstr "Đã tính trong tổng khác"
+msgstr "Đã tính trong một tổng khác"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_follower_ids
@@ -15483,7 +15483,7 @@ msgstr "Vai trò do ai quyết định"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__net_role_source
 msgid "'Set by a person' means re-classifying the scheme leaves this component's pay role and the Included in another total tick alone."
-msgstr "'Do một người đặt' nghĩa là khi phân loại lại chương trình lương, vai trò trong lương và dấu chọn \"Đã tính trong tổng khác\" của thành phần này được giữ nguyên."
+msgstr "'Do một người đặt' nghĩa là khi phân loại lại chương trình lương, vai trò trong lương và dấu chọn \"Đã tính trong một tổng khác\" của thành phần này được giữ nguyên."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__net_role_source__auto

@@ -16,7 +16,7 @@
       <span class="experience-muted"><t t-esc="ordered.length"/> of <t t-esc="props.components.length"/> shown</span>
       <button t-if="hiddenCount" class="pbfs-btn soft sm" t-on-click="showEveryColumn">Show all columns</button>
       <button t-if="ui.showAll or ui.hidden.length" class="pbfs-btn ghost sm" t-on-click="resetColumnView">Reset view</button>
-      <details class="experience-grid-help"><summary>Keyboard help</summary><p>Formula cells: F2 to edit, Enter to save, Esc to cancel, Ctrl+Z to undo. Arrow keys move between cells.</p></details>
+      <details class="experience-grid-help" data-coach="grid-hint"><summary>Keyboard help</summary><p>Formula cells: F2 to edit, Enter to save, Esc to cancel, Ctrl+Z to undo. Arrow keys move between cells.</p></details>
     </div>
     <div t-if="ui.columnsOpen" class="experience-column-manager">
       <p>Choose columns for this view. Show all also reveals columns hidden in scheme settings.</p>

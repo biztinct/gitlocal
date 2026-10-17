@@ -308,6 +308,10 @@ export class CoachHost extends Component {
             // LEARNREV P3 — the sections folded to their titles because a
             // message was sent (the conversation gets the height).
             gFolded: false,
+            // LEARNREV P5a (S6) — a conversation is live in this drawer
+            // session: the Guide is capped so the chat keeps at least half of
+            // the panel even when the sections are shown again.
+            convo: false,
             // LEARNREV P4 — the lesson playing in the panel, or null:
             // {station, lesson, index, quiz, answered, done, note}.
             lp: null,
@@ -437,7 +441,7 @@ export class CoachHost extends Component {
                 loadFieldIndex(this.orm, RT.lang).then((rows) => {
                     try {
                         registerFieldRows(rows, (screen, field) =>
-                            this._guideAt(screen, { section: "fields", field }));
+                            this._guideAt(screen, { section: "fields", field }), content);
                     } catch (e) {
                         console.warn("pb_learn: field rows not added to the search", e);
                     }
@@ -684,6 +688,7 @@ export class CoachHost extends Component {
         this.menu.close();
         if (this.state.open) {
             this._sentThisOpen = false;
+            this.state.convo = false;
             this.state.gFolded = false;
             this._log("coach_open");
             // LEARNREV P2 — "Right now" is read afresh on every open.
@@ -897,6 +902,7 @@ export class CoachHost extends Component {
             this.state.open = true;
             this.state.moment = null;
             this._sentThisOpen = false;
+            this.state.convo = false;
             if (!opts.guide) {
                 this.state.gFolded = false;
             }
@@ -2637,6 +2643,7 @@ export class CoachHost extends Component {
             return;
         }
         this._sentThisOpen = true;
+        this.state.convo = true;
         if (!this.guideShown || this._guideKeptOpen(this.state.screen)) {
             return;
         }

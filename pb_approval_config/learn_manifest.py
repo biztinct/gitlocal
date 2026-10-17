@@ -12,6 +12,10 @@ _INBOX = 'pb_approval_config/static/src/xml/inbox.xml'
 _INBOX_JS = 'pb_approval_config/static/src/js/inbox.js'
 _DRAWER_JS = 'pb_approval_config/static/src/js/request_drawer.js'
 _FACADE = 'pb_approval_config/models/inbox_facade.py'
+_MATRIX = 'pb_approval_config/static/src/xml/matrix_room.xml'
+_MATRIX_JS = 'pb_approval_config/static/src/js/matrix_room.js'
+_SENTENCE_JS = 'pb_approval_config/static/src/js/sentence.js'
+_MATRIX_PY = 'pb_approval_config/models/matrix_facade.py'
 
 MANIFESTS = {
     'approvals': {
@@ -240,5 +244,163 @@ MANIFESTS = {
         'tasks': [],
         'terms': ['inbox', 'approvalRoute', 'routeStep', 'sentBack', 'turnedDown',
                   'approvalCover'],
+    },
+
+    # ------------------------------------------------------------------
+    # LEARNREV P5a - Settings > Approval Matrix. Nothing on the grid is an
+    # editable field: every cell is worked out per row by the matrix's own
+    # read (`pb.approval.matrix`), so each entry is `derived` from it.
+    'matrix': {
+        'model': None,
+        'templates': [_MATRIX, _MATRIX_JS, _SENTENCE_JS],
+        'purpose': {
+            'en': "See every process that needs a sign-off, the route it follows "
+                  "and whether it is in use, and fix the ones that stop requests.",
+            'vi': "Xem mọi quy trình cần phê duyệt, lộ trình nó đi theo và nó có "
+                  "đang được dùng hay không, rồi sửa những quy trình làm dừng "
+                  "yêu cầu.",
+        },
+        'path': {'xmlid': 'pb_approval_config.action_pb_approval_matrix'},
+        'before': [],
+        'after': [
+            {'screen': 'approvals',
+             'why': {'en': "New requests travel the route you publish, and arrive "
+                           "in the inbox of whoever is named.",
+                     'vi': "Yêu cầu mới đi theo lộ trình bạn ban hành và đến hộp "
+                           "thư của người được ghi tên."}},
+        ],
+        'fields': [
+            {
+                'key': 'route', 'derived': True,
+                'column': {'en': "Process and the route it follows",
+                           'vi': "Quy trình và lộ trình nó đi theo"},
+                'from': _MATRIX_PY + ':_matrix_row',
+                'how': {
+                    'en': "One row per process, grouped by area, with the steps of "
+                          "its published route in order, or its draft if none is "
+                          "published.",
+                    'vi': "Mỗi quy trình một dòng, nhóm theo mảng, kèm các bước của "
+                          "lộ trình đã ban hành theo thứ tự, hoặc bản nháp nếu chưa "
+                          "ban hành.",
+                },
+                'if_changed': {
+                    'en': "Open a row to change its route. A published change "
+                          "applies to new requests only.",
+                    'vi': "Mở một dòng để đổi lộ trình. Thay đổi đã ban hành chỉ áp "
+                          "cho yêu cầu mới.",
+                },
+                'anchor': 'am-table',
+            },
+            {
+                'key': 'applies', 'derived': True,
+                'column': {'en': "Applies to", 'vi': "Áp dụng cho"},
+                'from': _MATRIX_PY + ':_matrix_row',
+                'how': {
+                    'en': "Everywhere in your company, or one part of the business "
+                          "that has its own route. Exceptions are counted under it.",
+                    'vi': "Toàn công ty của bạn, hoặc một phần doanh nghiệp có lộ "
+                          "trình riêng. Các ngoại lệ được đếm bên dưới.",
+                },
+                'if_changed': {
+                    'en': "Use the small \"Where this applies\" button on the row to "
+                          "give one part of the business its own route.",
+                    'vi': "Dùng nút nhỏ \"Nơi áp dụng\" trên dòng để cho một phần "
+                          "doanh nghiệp có lộ trình riêng.",
+                },
+                'anchor': 'am-table',
+            },
+            {
+                'key': 'status', 'derived': True,
+                'column': {'en': "Status", 'vi': "Trạng thái"},
+                'from': _MATRIX_PY + ':_matrix_row',
+                'values': {
+                    'live': {'en': "In use", 'vi': "Đang dùng"},
+                    'draft': {'en': "Draft", 'vi': "Nháp"},
+                    'needs': {'en': "Needs people", 'vi': "Cần bổ sung người"},
+                    'soon': {'en': "Not connected yet", 'vi': "Chưa được nối"},
+                    'covered': {'en': "Decided with another",
+                                'vi': "Quyết định cùng mục khác"},
+                },
+                'how': {
+                    'en': "In use once a route is published and every step has a "
+                          "person. Needs people when a step reaches somewhere nobody "
+                          "is named.",
+                    'vi': "Đang dùng khi lộ trình đã ban hành và mỗi bước đều có "
+                          "người. Cần bổ sung người khi một bước đến nơi chưa ai "
+                          "được ghi tên.",
+                },
+                'if_changed': {
+                    'en': "Read-only. Name the missing people, or publish a route, "
+                          "and it changes.",
+                    'vi': "Chỉ xem. Ghi tên người còn thiếu, hoặc ban hành một lộ "
+                          "trình, thì trạng thái sẽ đổi.",
+                },
+                'anchor': 'am-table',
+            },
+            {
+                'key': 'needs_people', 'derived': True,
+                'column': {'en': "Needs people", 'vi': "Cần bổ sung người"},
+                'from': _MATRIX_PY + ':_gap_count',
+                'how': {
+                    'en': "Counts the places a published route cannot find a person "
+                          "for. Requests that reach one of them stop and wait.",
+                    'vi': "Đếm những nơi mà lộ trình đã ban hành không tìm được "
+                          "người. Yêu cầu đến một nơi như vậy sẽ dừng lại chờ.",
+                },
+                'if_changed': {
+                    'en': "Open People & backups and name somebody for each gap. "
+                          "Requests already stopped then move on.",
+                    'vi': "Mở Con người & người thay thế, rồi ghi tên một người cho "
+                          "mỗi chỗ thiếu. Các yêu cầu đã dừng sẽ đi tiếp.",
+                },
+                'anchor': 'am-table',
+            },
+            {
+                'key': 'version', 'derived': True,
+                'column': {'en': "Version", 'vi': "Phiên bản"},
+                'from': _MATRIX_PY + ':_matrix_row',
+                'how': {
+                    'en': "The number of the published route, or Draft while it has "
+                          "not been published.",
+                    'vi': "Số của lộ trình đã ban hành, hoặc Nháp khi chưa ban "
+                          "hành.",
+                },
+                'if_changed': {
+                    'en': "Read-only. Each publish adds one; the older version stays "
+                          "in History.",
+                    'vi': "Chỉ xem. Mỗi lần ban hành thêm một số; bản cũ vẫn nằm "
+                          "trong Lịch sử.",
+                },
+                'anchor': 'am-table',
+            },
+        ],
+        'actions': [
+            {'label': {'en': "Create a workflow", 'vi': "Tạo một luồng phê duyệt"},
+             'method': 'pb.approval.matrix.create_workflow',
+             'effect': {'en': "Starts a draft route from a ready-made pattern. "
+                              "Nothing is published until you say so.",
+                        'vi': "Bắt đầu một lộ trình nháp từ mẫu có sẵn. Không có gì "
+                              "được ban hành cho tới khi bạn đồng ý."},
+             'writes': True},
+            {'label': {'en': "Bring in from a spreadsheet", 'vi': "Nạp từ bảng tính"},
+             'method': 'pb.approval.matrix.import.run',
+             'effect': {'en': "Reads the approvals your business already wrote "
+                              "down and turns them into draft routes.",
+                        'vi': "Đọc các quy định phê duyệt doanh nghiệp bạn đã ghi sẵn "
+                              "và biến chúng thành lộ trình nháp."},
+             'writes': True},
+            {'label': {'en': "No approval needed for all",
+                       'vi': "Không cần phê duyệt cho tất cả"},
+             'method': 'pb.approval.matrix.set_no_approval_bulk',
+             'effect': {'en': "After you review the list, switches the check off "
+                              "for the processes shown. History keeps each use.",
+                        'vi': "Sau khi bạn xem lại danh sách, tắt bước kiểm tra cho "
+                              "các quy trình đang hiện. Lịch sử vẫn ghi mỗi lần dùng."},
+             'writes': True},
+        ],
+        'right_now': 'pb.approval.matrix.learn_right_now',
+        'station': 'matrix',
+        'tasks': ['sc_matrix'],
+        'terms': ['approvalRoute', 'routeStep'],
     },
 }

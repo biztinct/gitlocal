@@ -26,7 +26,10 @@ from . import guide_truth as gt
 
 #: The screens P1 promises a manifest for. The gate fails if one disappears.
 EXPECTED = {'treatment', 'mapping', 'runpayroll', 'payruns', 'payslips',
-            'approvals', 'dashboard', 'formula'}
+            'approvals', 'dashboard', 'formula',
+            # LEARNREV P5a (S3): the next eight.
+            'statutory', 'employees', 'import', 'matrix', 'records',
+            'payreview', 'govreports', 'wftime'}
 
 FIELD_ATTRS = ['string', 'help', 'selection', 'type']
 

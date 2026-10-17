@@ -216,7 +216,7 @@ class TestMission(TransactionCase):
         # LEARN v3: learn.path (the learner's own role pick) is part of the
         # learning spine too.
         allowed = {'learn.runtime', 'learn.progress', 'learn.event', 'learn.confidence',
-                   'learn.path'}
+                   'learn.path', 'learn.feedback'}
         self.assertFalse(calls - allowed,
                          "The Journey calls models outside the learning spine: %s"
                          % (calls - allowed))

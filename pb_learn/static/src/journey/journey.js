@@ -229,6 +229,7 @@ export class LearnJourney extends Component {
             // one open would strand it over the next screen.
             closeGlossary();
             Spot.hide();
+            clearTimeout(this._missTimer);
             document.removeEventListener("keydown", this._onKey, true);
             document.body.classList.remove("lrn-open");
             document.body.classList.remove("lrn-on-library");
@@ -672,6 +673,33 @@ export class LearnJourney extends Component {
         this._hits = q.trim() ? search(this._searchIndex(), q) : [];
         box.innerHTML = resultsHTML(this._hits, q, { openTerm: this._openTerm });
         lib.classList.toggle("searching", !!q.trim());
+        this._missSoon(q);
+    }
+
+    /** LEARNREV P5a (S4) — a search that finds nothing is the content gap the
+     *  authors want to see. After the person stops typing for a moment, the
+     *  server hears it ONCE per phrase per visit. The server hashes it and
+     *  stores the words only if the owner's switch and the person's own yes
+     *  allow it (learn.feedback.rpc_search_miss); this side keeps nothing. */
+    _missSoon(q) {
+        clearTimeout(this._missTimer);
+        const phrase = String(q || "").trim();
+        if (phrase.length < 3 || (this._hits || []).length) {
+            return;
+        }
+        this._missTimer = setTimeout(async () => {
+            const seen = this._missSeen || (this._missSeen = new Set());
+            const key = phrase.toLowerCase().replace(/\s+/g, " ");
+            if (seen.has(key) || this._q.trim() !== phrase || (this._hits || []).length) {
+                return;
+            }
+            seen.add(key);
+            try {
+                await this.orm.call("learn.feedback", "rpc_search_miss", [phrase, this.state.lang]);
+            } catch {
+                // Measurement must never be able to break the search.
+            }
+        }, 900);
     }
 
     /** A row's Guide chip (and Enter on a row): the real screen with the

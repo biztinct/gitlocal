@@ -14,6 +14,13 @@
     --lrn-guide-max: 58%;
 }
 
+// LEARNREV P5a (S6): once a message has been sent the Guide may take at most
+// 45 % of the panel, so the conversation always keeps more than half of it.
+// (A playing lesson sets its own larger share further down and wins.)
+.lrn-drawer.lrn-has-guide.lrn-convo:not(.lrn-lp-on) {
+    --lrn-guide-max: 40%;
+}
+
 .lrn-guide {
     // Its own height, up to 58 % of the panel; the chat takes the rest and
     // scrolls (a shrinkable Guide lost every pixel to the chat's long
