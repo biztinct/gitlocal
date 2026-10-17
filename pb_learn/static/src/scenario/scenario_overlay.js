@@ -496,6 +496,17 @@ export class ScenarioOverlay extends Component {
 
     // ------------------------------------------------------------ geometry
     _measure() {
+        // LEARNREV P4 (walk B3) — a screen that redraws its control (the
+        // treatment board reloads its table after Save) leaves the old node
+        // detached: find the control again by its anchor instead of saying
+        // it is not on the screen and re-centring the card over the board.
+        const step = this.step;
+        if (this._targetEl && !this._targetEl.isConnected && step && step.anchor) {
+            const again = document.querySelector(`[data-coach="${step.anchor}"]`);
+            if (again) {
+                this._targetEl = again;
+            }
+        }
         const el = this._targetEl;
         if (!el || !el.isConnected) {
             this.ui.hasTarget = false;
@@ -505,6 +516,10 @@ export class ScenarioOverlay extends Component {
         if (r.width === 0 && r.height === 0) {
             this.ui.hasTarget = false;
             return;
+        }
+        if (!this.ui.hasTarget) {
+            // Back on screen after a redraw (see above).
+            this.ui.hasTarget = true;
         }
         const pad = 8;
         // LEARNREV P2 — the docked Guide takes 420 px on the right (≥ 1280).
