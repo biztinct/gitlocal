@@ -644,6 +644,69 @@ def explain_blocks(tree, screen_key, next_step):
     return blocks
 
 
+#: LEARNREV P2 — at most this many field cards in a Guide-built explanation.
+GUIDE_EXPLAIN_COLUMNS = 3
+
+
+def _chrome_fmt(tree, key, **values):
+    """A chrome sentence from the content tree with `{name}` filled, as a
+    bilingual leaf. Pure (the tree is the only input)."""
+    leaf = (tree.get('chrome') or {}).get(key) or {}
+    out = {}
+    for tag in ('en', 'vi'):
+        text_ = (leaf.get(tag) or leaf.get('en') or key) if isinstance(leaf, dict) else str(leaf)
+        for name, value in values.items():
+            if isinstance(value, dict):
+                v = value.get(tag) or value.get('en') or ''
+            else:
+                v = str(value)
+            text_ = text_.replace('{%s}' % name, v)
+        out[tag] = text_
+    return _pair(out['en'], out['vi'])
+
+
+def guide_explain_blocks(tree, screen, material, next_step=None):
+    """LEARNREV P2 — "Explain this screen" from the Guide (handover §7), as a
+    pure function over the content tree and `learn.guide.explain_material`:
+
+      p      the screen's purpose (the manifest's, not the blurb);
+      steps  "You are here: Mapping › Component treatment",
+             "Next: Pay Run › Run";
+      p ×3   the first field cards as "<b>Column</b> — help";
+      ok     the static next sentence — ONLY when the screen has no live
+             right-now list (the panel shows that list; one sentence on three
+             surfaces ends here, LR-R1);
+      source the screen's name.
+    """
+    blocks = []
+    purpose = material.get('purpose') or {}
+    if purpose.get('en'):
+        blocks.append({'capability': 'any', 'kind': 'p',
+                       'body': _pair(purpose['en'], purpose.get('vi')), 'steps': []})
+    steps = []
+    path = material.get('path') or {}
+    if path.get('en'):
+        steps.append({'text': _chrome_fmt(tree, 'gHereLine', path=path), 'anchor': ''})
+    nxt = material.get('next') or {}
+    if nxt.get('en'):
+        steps.append({'text': _chrome_fmt(tree, 'gNextLine', path=nxt), 'anchor': ''})
+    if steps:
+        blocks.append({'capability': 'any', 'kind': 'steps', 'body': '', 'steps': steps})
+    for col in (material.get('columns') or [])[:GUIDE_EXPLAIN_COLUMNS]:
+        en = col.get('en') or ('', '')
+        vi = col.get('vi') or en
+        if en[0] and en[1]:
+            blocks.append({'capability': 'any', 'kind': 'p',
+                           'body': _label_body(_pair(en[0], vi[0]), _pair(en[1], vi[1])),
+                           'steps': []})
+    if next_step and not material.get('provider'):
+        blocks.append({'capability': 'any', 'kind': 'ok', 'body': next_step, 'steps': []})
+    if blocks:
+        blocks.append({'capability': 'any', 'kind': 'source',
+                       'body': screen.get('name') or '', 'steps': []})
+    return blocks
+
+
 def explain_scenario_offer(tree, screen_key):
     """(watch key, try key) for the walkthroughs offered on this screen.
 
@@ -1190,10 +1253,55 @@ class LearnIntent(models.AbstractModel):
             out.insert(0, {'capability': 'any', 'kind': 'p',
                            'body': screen.get('blurb') or '', 'steps': []})
         elif dynamic == 'next_step' and screen:
-            out.insert(0, {'capability': 'any', 'kind': 'p',
-                           'body': self.env['learn.runtime'].next_step_live(screen),
-                           'steps': []})
+            live = self._guide_next_blocks(screen)
+            if live:
+                # LEARNREV P2 (LR-R1, G1, LR5) — the screen's own Right now,
+                # read from its state; the static sentence is the fallback.
+                out[0:0] = live
+            else:
+                out.insert(0, {'capability': 'any', 'kind': 'p',
+                               'body': self.env['learn.runtime'].next_step_live(screen),
+                               'steps': []})
         return out
+
+    #: Right-now reasons as the whatnext answer says them (chrome keys).
+    _RN_COPY = {'right_now: no scheme selected': 'gNoScheme',
+                'right_now: no access': 'gNoAccess',
+                'right_now: could not be read': 'gReadFailed',
+                'right_now: not available on this database': 'gUnavailable'}
+
+    @api.model
+    def _guide_on(self):
+        """The Guide switch, asked safely (the offline router harness has no
+        `learn.guide`; an absent model is the switch off)."""
+        return 'learn.guide' in self.env and bool(self.env['learn.guide'].enabled())
+
+    @api.model
+    def _guide_next_blocks(self, screen):
+        """"What should I do next here?" from the Guide's live list, or None
+        (switch off, no manifest, or no provider: the static sentence then).
+        The arguments the panel uses (the Mapping scheme) ride in the context
+        as `pb_guide_args` — the router's signature never changes (OC-R1)."""
+        if not self._guide_on():
+            return None
+        Guide = self.env['learn.guide']
+        args = self.env.context.get('pb_guide_args') or {}
+        live = Guide.right_now_pairs(screen['key'], args if isinstance(args, dict) else {})
+        if live is None:
+            return None
+        items = [i for i in live.get('items') or () if i.get('severity') != 'ok']
+        if items:
+            return [{'capability': 'any', 'kind': 'steps', 'body': '',
+                     'steps': [{'text': i['text'], 'anchor': ''} for i in items]}]
+        ok = next((i for i in live.get('items') or () if i.get('severity') == 'ok'), None)
+        if ok:
+            return [{'capability': 'any', 'kind': 'ok', 'body': ok['text'], 'steps': []}]
+        reason = next((m for m in live.get('missing') or () if m in self._RN_COPY), None)
+        Content = self.env['learn.content']
+        key = self._RN_COPY.get(reason, 'gNothingHere')
+        return [{'capability': 'any', 'kind': 'p', 'steps': [],
+                 'body': _pair(Content.chrome_text(key, 'en_US'),
+                               Content.chrome_text(key, 'vi_VN'))}]
 
     @api.model
     def _answer(self, intent_key, screen_key):
@@ -1222,6 +1330,11 @@ class LearnIntent(models.AbstractModel):
             'watch': intent.get('watch') or '',
             'try': intent.get('try') or '',
             'practice_key': intent.get('practice_key') or '',
+            # LEARNREV P2 — whatnext on a screen with a Guide offers it ("Open
+            # the Guide": the buttons are in the panel, the answer is text).
+            'guide_door': bool(intent.get('dynamic') == 'next_step' and screen_key
+                               and self._guide_on()
+                               and self.env['learn.guide'].manifest(screen_key)),
         }
 
     @api.model
@@ -1507,14 +1620,26 @@ class LearnIntent(models.AbstractModel):
         if not screen:
             return None
         tree = Content.tree()
-        blocks = explain_blocks(
-            tree, screen_key, self.env['learn.runtime'].next_step_live(screen))
+        next_step = self.env['learn.runtime'].next_step_live(screen)
+        # LEARNREV P2 — with the Guide switched on and a manifest for the
+        # screen, the explanation is the Guide's: purpose, where it sits,
+        # three field cards; the next sentence only where no live list
+        # exists. Switched off (or no manifest): exactly what shipped before.
+        guide_door = False
+        material = (self.env['learn.guide'].explain_material(screen_key)
+                    if self._guide_on() else None)
+        if material:
+            blocks = guide_explain_blocks(tree, screen, material, next_step)
+            guide_door = bool(blocks)
+        else:
+            blocks = explain_blocks(tree, screen_key, next_step)
         if not blocks:
             return None
         watch, try_ = explain_scenario_offer(tree, screen_key)
+        extra = {'guide_door': True} if guide_door else {}
         # ONECHAT OC1: the offers pass the Access boundary like every other
         # answer the helper draws (`_access_filter`).
-        return self._access_filter({
+        return self._access_filter(dict(extra, **{
             'key': 'screen:%s' % screen_key,
             'label': _chrome_pair(Content, 'explainScreen'),
             'simpler': '',
@@ -1526,7 +1651,7 @@ class LearnIntent(models.AbstractModel):
             'try': try_,
             'practice_key': '',
             'source_kind': 'screen',
-        }, screen_key)
+        }), screen_key)
 
     @api.model
     def _explain_wire_text(self, screen_key, lang):

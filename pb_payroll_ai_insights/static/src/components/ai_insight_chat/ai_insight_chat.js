@@ -2383,12 +2383,22 @@ export class AiInsightChatEmbedded extends AiInsightChat {
             lang: this.props.lang || "en",
             session_id: this.state.sessionId || null,
         };
+        // LEARNREV P2 — what the helper's Guide reads on this screen (the
+        // Mapping scheme), so "What should I do next here?" answers from the
+        // same Right now. In the context: the router's arguments never change.
+        const h = this.props.helper;
+        const guideArgs = h && typeof h.guideArgs === "function" ? h.guideArgs() : null;
+        if (guideArgs && Object.keys(guideArgs).length) {
+            kwargs.context = { pb_guide_args: guideArgs };
+        }
         if (orm) {
             return orm.call("learn.helper", "route", [text], kwargs);
         }
+        const rc = this._rpcContext();
+        const context = { ...((rc && rc.context) || {}), ...(kwargs.context || {}) };
         return rpc("/web/dataset/call_kw", {
             model: "learn.helper", method: "route", args: [text],
-            kwargs: { ...kwargs, ...this._rpcContext() },
+            kwargs: { ...kwargs, ...rc, ...(Object.keys(context).length ? { context } : {}) },
         }, { silent: true });
     }
 

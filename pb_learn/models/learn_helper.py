@@ -66,6 +66,8 @@ WHYS = (
 MOST_USED_TRY = ('sc_payrun', 'sc_payslips', 'sc_import', 'sc_people')
 #: The tour.
 TOUR_SCENARIO = 'sc_welcome'
+#: LEARNREV P2 (LR5) — the one intent answered from the screen's state.
+WHATNEXT = 'whatnext'
 #: A practice-chip turn holds this many chips at most.
 MAX_CHIPS = 4
 
@@ -797,6 +799,19 @@ class LearnHelper(models.AbstractModel):
 
     # ------------------------------------------------------------ shapes
     @api.model
+    def _is_whatnext(self, text):
+        """The whatnext intent's label (EN / VI) or one of its own phrases,
+        as the WHOLE sentence (LR5). Read from the content plane."""
+        def flat(s):
+            return ' '.join(_norm(s).split())
+        intent = self.env['learn.content'].intent(WHATNEXT) or {}
+        label = intent.get('label') or {}
+        wants = {flat(v) for v in (label.get('en'), label.get('vi')) if v}
+        wants |= {flat(p) for p in intent.get('phrases') or () if p}
+        said = flat(text)
+        return bool(said) and said in {w for w in wants if w}
+
+    @api.model
     def _shape(self, text):
         """(Q, H) — H is the how-to kind ('proc' / 'def') or None."""
         h = howto_kind(text)
@@ -1050,6 +1065,17 @@ class LearnHelper(models.AbstractModel):
                              suggest=self._suggest(screen_key))
 
         q, h = self._shape(t)
+
+        # 5b — LEARNREV P2 (LR5): "What should I do next here?" — the chip's
+        # own words, in either language — is answered from the SCREEN (its
+        # Right now), before the command check and before any PayAI or model
+        # step: on a can-act database it used to reach the model and come
+        # back as generic run-payroll advice that ignored the screen.
+        if self._is_whatnext(t):
+            routed = self._guide('guide_strong', {'key': WHATNEXT, 'source': 'intent',
+                                                  'kind': 'exact'}, screen_key)
+            if routed:
+                return routed
 
         # 6 — practise / tour, anchored, never for a question.
         if not q:
