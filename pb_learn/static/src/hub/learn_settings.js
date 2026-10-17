@@ -79,7 +79,7 @@ const FB = {
         vi: "Từ khóa tìm kiếm không được lưu, nên chỉ hiện số lượt. Hãy bật việc lưu câu hỏi ở trên để đọc các từ khóa.",
     },
     searchHiddenOne: { en: "Words not kept", vi: "Từ khóa không được lưu" },
-    times: { en: "times", vi: "lần" },
+    times: { en: "×", vi: "×" },
     fieldsShow: { en: "Show the fields", vi: "Xem các trường" },
     fieldsHide: { en: "Hide the fields", vi: "Ẩn các trường" },
     showMore: { en: "Show all screens", vi: "Xem mọi màn hình" },

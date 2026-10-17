@@ -306,18 +306,18 @@
    LEARNREV P5a (S4) — What people asked and rated. Counts only. Grey until a
    number is worth reading; the one warm accent is "not helpful".
    ========================================================================== */
-.lrn-fb {
+.lrn-fbk {
     margin-top: 16px;
     padding-bottom: 20px;
 
     .lrn-set-head { align-items: center; flex-wrap: wrap; }
 }
 
-.lrn-fb-headtx { flex: 1 1 280px; min-width: 0; }
+.lrn-fbk-headtx { flex: 1 1 280px; min-width: 0; }
 
-.lrn-fb-tools { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
+.lrn-fbk-tools { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
 
-.lrn-fb-sr {
+.lrn-fbk-sr {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -326,8 +326,8 @@
     white-space: nowrap;
 }
 
-.lrn-fb-period select,
-.lrn-fb-btn {
+.lrn-fbk-period select,
+.lrn-fbk-btn {
     height: 34px;
     padding: 0 12px;
     border: 1px solid var(--vuf-line, #E2E8F0);
@@ -339,7 +339,7 @@
     font-weight: 700;
 }
 
-.lrn-fb-btn {
+.lrn-fbk-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -352,16 +352,16 @@
     &:disabled { opacity: .55; cursor: default; }
 }
 
-.lrn-fb-period select:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
+.lrn-fbk-period select:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 2px; }
 
-.lrn-fb-loading,
-.lrn-fb-empty {
+.lrn-fbk-loading,
+.lrn-fbk-empty {
     margin: 14px 0 6px;
     color: var(--vuf-muted, #6B7280);
     font-size: 13px;
 }
 
-.lrn-fb-note {
+.lrn-fbk-note {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -376,7 +376,7 @@
     &.bad { background: #FBE3EA; color: #A3153F; }
 }
 
-.lrn-fb-tiles {
+.lrn-fbk-tiles {
     list-style: none;
     margin: 16px 0 6px;
     padding: 0;
@@ -404,7 +404,7 @@
     li.down.hot .lrn-ic, li.down.hot b { color: #DC2668; }
 }
 
-.lrn-fb-h {
+.lrn-fbk-h {
     margin: 22px 0 8px;
     font-size: 13px;
     font-weight: 800;
@@ -412,14 +412,14 @@
     color: var(--vuf-ink, #1E1B2E);
 }
 
-.lrn-fb-list { list-style: none; margin: 0; padding: 0; }
+.lrn-fbk-list { list-style: none; margin: 0; padding: 0; }
 
-.lrn-fb-row {
+.lrn-fbk-row {
     border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
     &:first-child { border-top: 0; }
 }
 
-.lrn-fb-line {
+.lrn-fbk-line {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -427,9 +427,9 @@
     min-height: 40px;
 }
 
-.lrn-fb-name { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+.lrn-fbk-name { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
 
-.lrn-fb-bar {
+.lrn-fbk-bar {
     flex: 0 0 90px;
     height: 6px;
     border-radius: 999px;
@@ -439,7 +439,7 @@
     i { display: block; height: 100%; background: #DC2668; border-radius: inherit; transition: width .3s ease; }
 }
 
-.lrn-fb-n {
+.lrn-fbk-n {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -455,7 +455,7 @@
     &.down .lrn-ic { color: #DC2668; }
 }
 
-.lrn-fb-more {
+.lrn-fbk-more {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -475,19 +475,19 @@
     &:focus-visible { outline: 2px solid var(--vuf-primary, #5A4BB0); outline-offset: 1px; }
 }
 
-.lrn-fb-sub {
+.lrn-fbk-sub {
     list-style: none;
     margin: 0 0 8px 12px;
     padding: 0 0 0 14px;
     border-left: 2px solid var(--vuf-primary-soft, #EDEAF8);
 
     li { display: flex; align-items: center; gap: 12px; padding: 5px 0; }
-    .lrn-fb-name { font-weight: 600; font-size: 12.5px; }
+    .lrn-fbk-name { font-weight: 600; font-size: 12.5px; }
 }
 
-.lrn-fb-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.lrn-fbk-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 
-.lrn-fb-chip {
+.lrn-fbk-chip {
     padding: 2px 9px;
     border-radius: 999px;
     background: #F1F2F7;
@@ -496,10 +496,10 @@
     font-weight: 600;
 }
 
-.lrn-fb-foot { padding: 6px 0 0; }
+.lrn-fbk-foot { padding: 6px 0 0; }
 
-.lrn-fb-search { counter-reset: fbs; }
-.lrn-fb-search .lrn-fb-name::before {
+.lrn-fbk-search { counter-reset: fbs; }
+.lrn-fbk-search .lrn-fbk-name::before {
     counter-increment: fbs;
     content: counter(fbs) ".";
     display: inline-block;
@@ -509,11 +509,11 @@
 }
 
 @media (max-width: 760px) {
-    .lrn-fb-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .lrn-fb-bar { display: none; }
-    .lrn-fb-line { flex-wrap: wrap; }
+    .lrn-fbk-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lrn-fbk-bar { display: none; }
+    .lrn-fbk-line { flex-wrap: wrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .lrn-fb-bar i, .lrn-fb-more .lrn-ic, .lrn-fb-btn { transition: none; }
+    .lrn-fbk-bar i, .lrn-fbk-more .lrn-ic, .lrn-fbk-btn { transition: none; }
 }
