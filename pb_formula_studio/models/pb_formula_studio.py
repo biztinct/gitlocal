@@ -9372,6 +9372,7 @@ class PbFormulaStudio(models.AbstractModel):
                              'group': lane, 'meta': {'orphan': True}})
             self._dedupe_card_labels(left)
         hidden_columns, hidden_ids = set(), set()
+        source_checks, checked_columns = [], set()
         for card in left:
             if not str(card['id']).startswith('c:'):
                 continue
@@ -9380,10 +9381,24 @@ class PbFormulaStudio(models.AbstractModel):
                 hidden_ids.add(card['id'])
                 hidden_columns.add((info['sheet'], info['letter']))
             elif info.get('kind') == 'mixed':
+                hint = _('%s entered values and %s formula cells. Kept as an input column.') % (
+                    info['value_cells'], info['formula_cells'])
+                check = _('%s blank cells; %s Excel error cells across %s populated data rows.') % (
+                    info['blank_cells'], info['error_cells'], info['data_rows'])
                 card['meta'].update({
                     'badge': _('Mixed'), 'badgeTone': 'warn',
-                    'badgeHint': _('This Excel column contains both entered values and formula cells.'),
+                    'badgeHint': hint + ' ' + check,
                 })
+                identity = (info['sheet'], info['letter'])
+                if identity not in checked_columns:
+                    checked_columns.add(identity)
+                    source_checks.append({
+                        'key': card['id'], 'label': card['label'], 'summary': check,
+                        'error_addresses': ', '.join(info['sheet'] + '!' + address
+                                                     for address in info['error_addresses']),
+                        'blank_cells': info['blank_cells'], 'error_cells': info['error_cells'],
+                        'data_rows': info['data_rows'],
+                    })
         hidden_mapping_count = sum(w['leftId'] in hidden_ids for w in wires)
         left = [card for card in left if card['id'] not in hidden_ids]
         wires = [wire for wire in wires if wire['leftId'] not in hidden_ids]
@@ -9456,6 +9471,7 @@ class PbFormulaStudio(models.AbstractModel):
             'add_label': _("Use “%s” as a spreadsheet column"),
             'formula_columns_hidden': len(hidden_columns),
             'hidden_formula_mappings': hidden_mapping_count,
+            'source_column_checks': source_checks,
             'blocked_column_keys': [key for key, info in column_types.items()
                                     if info['kind'] == 'formula'],
             'contexts': contexts,

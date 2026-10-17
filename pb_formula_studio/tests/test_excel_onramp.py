@@ -543,6 +543,7 @@ class TestExcelOnRamp(TransactionCase):
         self.assertIn('c:Mixed salary', ids)
         mixed = next(c for c in result['left'] if c['id'] == 'c:Mixed salary')
         self.assertEqual(mixed['meta']['badge'], 'Mixed')
+        self.assertEqual(result['source_column_checks'][0]['blank_cells'], 1)
         self.assertEqual(result['formula_columns_hidden'], 1)
         self.assertIn('Age', result['blocked_column_keys'])
         self.assertIn('C', result['blocked_column_keys'])
@@ -574,3 +575,32 @@ class TestExcelOnRamp(TransactionCase):
         self.assertNotIn('c:Age', {c['id'] for c in loaded['left']})
         refused = self.Studio.import_mapping_create(cfg.id, batch.id, 'c:Age', basic.id)
         self.assertFalse(refused['ok'], refused)
+
+    def test_generated_serial_is_hidden_but_mixed_inputs_remain_mappable(self):
+        cfg = self._config('Generated serial and mixed inputs')
+        payload = self._workbook({'People': [
+            ['Sl No', 'Employee ID', 'Reporting Manager', 'Monthly fixed/basic salary'],
+            [1, 'E001', '=B2', 100],
+            ['=A2+1', '=#N/A', 'Entered manager', '=50*2'],
+            ['=A3+1', None, '=B4', None],
+        ]})
+        data = self.Studio.import_mapping_read_headers(
+            cfg.id, base64.b64encode(payload).decode(), 'mixed-inputs.xlsx')
+        self.assertTrue(data['ok'], data)
+        self.assertNotIn('c:Sl No', {c['id'] for c in data['left']})
+        self.assertEqual(data['formula_columns_hidden'], 1)
+        checks = {c['label']: c for c in data['source_column_checks']}
+        self.assertEqual(len(checks), 3)
+        self.assertEqual(checks['Employee ID']['error_cells'], 1)
+        self.assertEqual(checks['Employee ID']['blank_cells'], 1)
+        self.assertIn('People!B3', checks['Employee ID']['error_addresses'])
+        basic = cfg.rule_ids.filtered(lambda r: r.code == 'BASIC')
+        before = basic.source_ids.ids
+        for alias in ('Sl No', 'A', 'People|Sl No', 'People|A'):
+            self.assertIn(alias, data['blocked_column_keys'])
+            refused = self.Studio.import_mapping_create(cfg.id, 'sample', 'c:' + alias, basic.id)
+            self.assertFalse(refused['ok'], refused)
+        self.assertEqual(basic.source_ids.ids, before)
+        for column in checks:
+            accepted = self.Studio.import_mapping_create(cfg.id, 'sample', 'c:' + column, basic.id)
+            self.assertTrue(accepted['ok'], (column, accepted))

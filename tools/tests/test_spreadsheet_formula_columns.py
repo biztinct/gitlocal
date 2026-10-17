@@ -52,6 +52,55 @@ class FormulaColumnTypes(unittest.TestCase):
         self.assertEqual(types['Second|B']['kind'], 'input')
         self.assertEqual(types['First|ID']['kind'], 'input')
 
+    def test_generated_sequence_and_mixed_input_quality(self):
+        book = openpyxl.Workbook()
+        ws = book.active
+        ws.title = 'People'
+        headers = ['Sl No', 'Employee ID', 'Reporting Manager', 'Salary', 'Not a sequence']
+        ws.append(headers)
+        ws.append([1, 'TEST1', '=F2', 100, 1])
+        ws.append(['=A2+1', '=#N/A', 'Entered manager', '=2500*2', '=E2+2'])
+        ws.append(['=A3+1', None, '=F4', None, '=E3+1'])
+        # Formatting/blank rows and a headingless global constant do not add
+        # records to blank-cell counts.
+        ws['J10'] = 26318.8
+        ws['A20'].number_format = '0'
+        out = io.BytesIO()
+        book.save(out)
+        cols = tuple((f'People|{header}', 'People', header,
+                      openpyxl.utils.get_column_letter(i + 1), True)
+                     for i, header in enumerate(headers))
+        types = module.classify_xlsx_columns(out.getvalue(), cols)
+        serial = types['Sl No']
+        self.assertEqual(serial['kind'], 'formula')
+        self.assertTrue(serial['generated_sequence'])
+        self.assertEqual(types['People|A'], serial)
+        self.assertEqual(types['Not a sequence']['kind'], 'mixed')
+        for header in ['Employee ID', 'Reporting Manager', 'Salary']:
+            self.assertEqual(types[header]['kind'], 'mixed')
+            self.assertEqual(types[header]['data_rows'], 3)
+        self.assertEqual(types['Employee ID']['error_cells'], 1)
+        self.assertEqual(types['Employee ID']['error_addresses'], ['B3'])
+        self.assertEqual(types['Employee ID']['blank_cells'], 1)
+        self.assertEqual(types['Salary']['blank_cells'], 1)
+        self.assertEqual(types['Reporting Manager']['blank_cells'], 0)
+
+    def test_sequence_requires_a_single_seed_and_exact_previous_row_references(self):
+        book = openpyxl.Workbook()
+        ws = book.active
+        ws.append(['Entered numbers', 'Wrong reference', 'Wrong seed', 'Gap'])
+        ws.append([1, 1, 100, 1])
+        ws.append([2, '=B1+1', '=C2+1', None])
+        ws.append(['=A3+1', '=B3+1', '=C3+1', '=D2+1'])
+        out = io.BytesIO()
+        book.save(out)
+        cols = tuple((header, '', header, openpyxl.utils.get_column_letter(i + 1), True)
+                     for i, header in enumerate(['Entered numbers', 'Wrong reference', 'Wrong seed', 'Gap']))
+        types = module.classify_xlsx_columns(out.getvalue(), cols)
+        for header in ['Entered numbers', 'Wrong reference', 'Wrong seed', 'Gap']:
+            self.assertEqual(types[header]['kind'], 'mixed')
+            self.assertFalse(types[header]['generated_sequence'])
+
 
 if __name__ == '__main__':
     unittest.main()

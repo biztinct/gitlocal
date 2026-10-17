@@ -419,11 +419,22 @@
         <!-- ==== the board ==== -->
         <p t-if="state.mode === 'import' and state.data and state.data.formula_columns_hidden"
            class="pbms-formula-columns">
-          <t t-esc="state.data.formula_columns_hidden"/> calculated Excel columns hidden from mapping.
+          <t t-esc="state.data.formula_columns_hidden"/> calculated or generated Excel columns hidden from mapping.
           <t t-if="state.data.hidden_formula_mappings">
             <t t-esc="state.data.hidden_formula_mappings"/> saved mappings use those columns; their definitions are preserved.
           </t>
         </p>
+        <details t-if="state.mode === 'import' and state.data and state.data.source_column_checks and state.data.source_column_checks.length"
+                 class="pbms-source-checks">
+          <summary>Input data checks (<t t-esc="state.data.source_column_checks.length"/> columns)</summary>
+          <p>These columns remain available as inputs. Counts cover all populated data rows in the selected file, including inactive employees. Blank cells may be optional; review before importing.</p>
+          <ul>
+            <li t-foreach="state.data.source_column_checks" t-as="check" t-key="check.key">
+              <strong t-esc="check.label"/>: <t t-esc="check.summary"/>
+              <span t-if="check.error_addresses"> Error cells (up to 10): <t t-esc="check.error_addresses"/>.</span>
+            </li>
+          </ul>
+        </details>
         <div class="pbms-board">
           <div t-if="state.busy and !state.data" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
