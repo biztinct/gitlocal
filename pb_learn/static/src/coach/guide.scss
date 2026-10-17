@@ -15,7 +15,10 @@
 }
 
 .lrn-guide {
-    flex: 0 1 auto;
+    // Its own height, up to 58 % of the panel; the chat takes the rest and
+    // scrolls (a shrinkable Guide lost every pixel to the chat's long
+    // opening card — seen in the B1 walk).
+    flex: 0 0 auto;
     max-height: var(--lrn-guide-max, 58%);
     min-height: 0;
     overflow-y: auto;
@@ -24,6 +27,9 @@
     background: #FAF9FE;
     border-bottom: 1px solid #ECEAF6;
 }
+
+.lrn-drawer.lrn-has-guide .payai-embed { flex: 1 1 0; min-height: 0; }
+.lrn-drawer.lrn-has-guide .lrn-dbody { flex: 1 1 0; min-height: 0; }
 
 .lrn-gsecs.busy .lrn-gsec[data-sec="now"] .lrn-gsecic { opacity: .55; }
 
@@ -557,18 +563,19 @@
 .lrn-fieldcard p, .lrn-gfcard p { margin: 0; }
 .lrn-fc-choices {
     display: grid;
-    gap: 6px;
+    gap: 4px;
     margin: 0;
     padding: 0;
     list-style: none;
 
     li {
-        padding: 6px 9px;
-        border-radius: 9px;
+        padding: 5px 8px;
+        border-radius: 8px;
         background: #F8F7FD;
+        line-height: 1.4;
     }
-    b { display: block; font-size: 12.5px; color: #241F52; }
-    span { display: block; font-size: 11.5px; color: #5E5A78; }
+    b { display: block; font-size: 12px; color: #241F52; }
+    span { display: block; font-size: 11px; color: #5E5A78; }
 }
 .lrn-fc-chips {
     display: flex;

@@ -2175,6 +2175,12 @@ export class CoachHost extends Component {
         if (!this.state.ready) {
             return `<div class="lrn-cground off">${ic("info")}<span>${esc(LOAD_FAILED[RT.lang] || LOAD_FAILED.en)}</span></div>`;
         }
+        // LEARNREV P2 — with the Guide above, the opening card is only the
+        // questions to ask: the screen's story is This screen, the
+        // walkthroughs are Tasks, the tabs are the "You are here" chips.
+        if (this.guideShown) {
+            return `<div class="lrn-ctx">${this._notSureHTML(opts || {})}</div>`;
+        }
         const parts = [this._groundedHTML()];
         if (this.state.gotoFailed) {
             parts.push(`<div class="lrn-cblock warn">${ic("info")}<span>${esc(T("hubTabGone"))}</span></div>`);

@@ -241,14 +241,32 @@ function place(el, btn) {
     const w = Math.min(CARD_W, right - 8);
     el.style.width = `${Math.round(w)}px`;
     const h = el.offsetHeight || 320;
-    let left = r.left + r.width / 2 - w / 2;
-    left = Math.max(8, Math.min(left, right - w));
-    const below = window.innerHeight - r.bottom > h + 16 || r.top < h + 16;
-    let top = below ? r.bottom + 8 : r.top - h - 8;
-    top = Math.max(8, Math.min(top, window.innerHeight - Math.min(h, window.innerHeight - 16) - 8));
+    const vh = window.innerHeight;
+    // Below, else above, else beside (right, then left) — never on top of
+    // the (i) itself, which a plain clamp did for a tall card (B3 walk).
+    let left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, right - w));
+    let top;
+    let side = "below";
+    if (vh - r.bottom > h + 16) {
+        top = r.bottom + 8;
+    } else if (r.top > h + 16) {
+        top = r.top - h - 8;
+        side = "above";
+    } else if (r.right + 12 + w < right) {
+        left = r.right + 12;
+        top = r.top + r.height / 2 - h / 2;
+        side = "beside";
+    } else if (r.left - 12 - w > 8) {
+        left = r.left - 12 - w;
+        top = r.top + r.height / 2 - h / 2;
+        side = "beside";
+    } else {
+        top = r.bottom + 8;
+    }
+    top = Math.max(8, Math.min(top, vh - Math.min(h, vh - 16) - 8));
     el.style.left = `${Math.round(left)}px`;
     el.style.top = `${Math.round(top)}px`;
-    el.classList.toggle("above", !below);
+    el.classList.toggle("above", side === "above");
 }
 
 /**
