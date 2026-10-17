@@ -3280,7 +3280,14 @@ export class CoachHost extends Component {
             // Practise (Try) draws its practice turn first; Watch and Do it
             // live start at once, as they always have.
             if (el.dataset.mode === "try") {
-                this._practiseFrom(el.dataset.key, "try");
+                // LEARNREV P4 — on the demo company a checked Try runs on the
+                // REAL screens (the overlay says "Try · demo company"), so the
+                // chat's "on the practice company, nothing real changes" turn
+                // would be untrue: start it directly instead.
+                const key = el.dataset.key;
+                this.sc.loadChecks().then((checks) => (((checks || {})[key] || []).length
+                    ? this.startScenario(key, "try", "")
+                    : this._practiseFrom(key, "try")));
             } else {
                 this.startScenario(el.dataset.key, el.dataset.mode, 0);
             }
