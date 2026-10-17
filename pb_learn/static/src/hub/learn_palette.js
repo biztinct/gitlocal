@@ -35,6 +35,32 @@ function restoreLang() {
     }
 }
 
+/** LEARNREV P5a (LR51) — one field can sit on two screens (Pay role: the
+ *  Component treatment board AND Mapping's inspector). The palette breaks a
+ *  tie by row order, so the screen whose OWN authored search words name the
+ *  column — the field's home — goes first, exactly as the Library's search
+ *  ranks it. A stable partition: everything else keeps its order. */
+export function homeFirst(rows, content) {
+    const fold = (s) => String(s || "").toLowerCase().normalize("NFD")
+        .replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/\s+/g, " ").trim();
+    const words = new Map();
+    for (const s of (content && content.stations) || []) {
+        const sw = s.search;
+        const list = [].concat(sw && sw.en ? sw.en : [], sw && sw.vi ? sw.vi : [],
+            Array.isArray(sw) ? sw : []);
+        words.set(s.key, fold(list.join(" ")));
+    }
+    const isHome = (r) => {
+        const hay = words.get(r && r.screen) || "";
+        return !!hay && [r.column, ...(r.columns || [])].some((c) => {
+            const f = fold(c);
+            return f && hay.includes(f);
+        });
+    };
+    const list = (rows || []).filter(Boolean);
+    return [...list.filter(isHome), ...list.filter((r) => !isHome(r))];
+}
+
 /** Add the rows. Idempotent; called at load and again by the helper once it
  *  has the content, so the rows exist whichever gets there first. */
 export function registerLessonRows(content) {
@@ -102,10 +128,10 @@ export function registerLessonRows(content) {
  *  `door: false` — these rows are the palette's and the Library's only. They
  *  are NOT handed to PayAI as screens it may open (the PayAI door list is
  *  "the screens", and a field is not one), so PayAI's answers do not move. */
-export function registerFieldRows(rows, open) {
+export function registerFieldRows(rows, open, content) {
     const group = _t("Learn");
     let i = 0;
-    for (const r of rows || []) {
+    for (const r of homeFirst(rows, content)) {
         if (!r || !r.screen || !r.key) {
             continue;
         }

@@ -437,7 +437,7 @@ export class CoachHost extends Component {
                 loadFieldIndex(this.orm, RT.lang).then((rows) => {
                     try {
                         registerFieldRows(rows, (screen, field) =>
-                            this._guideAt(screen, { section: "fields", field }));
+                            this._guideAt(screen, { section: "fields", field }), content);
                     } catch (e) {
                         console.warn("pb_learn: field rows not added to the search", e);
                     }

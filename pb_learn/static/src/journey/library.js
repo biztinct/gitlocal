@@ -182,6 +182,10 @@ export function buildLibrary(src) {
     return {
         role,
         roleChosen: !!path.role_chosen,
+        // LEARNREV P5a: the seat a guessed role was read from, when the path
+        // rule carries one ({en, vi}); empty otherwise, and the role stays
+        // the reason.
+        seat: path.why && (path.why.en || path.why.vi) ? path.why : null,
         hasPath: !!roleKeys,
         required,
         path: path_,
@@ -290,9 +294,15 @@ export function continueHTML(model, ui = {}) {
         if (c.nb === "nbResume") {
             parts.push(T("libStarted"));
         }
-        parts.push(onPath ? fmt(T("libReqFor"), { role: roleName(model.role) }) : T("libExtra"));
-        if (onPath && !model.roleChosen) {
-            parts.push(T("libRoleGuessed"));
+        if (onPath && !model.roleChosen && model.seat) {
+            // The reason names the seat ("…because you hold the payroll
+            // approval seat."), not only the role it came from.
+            parts.push(tx(model.seat));
+        } else {
+            parts.push(onPath ? fmt(T("libReqFor"), { role: roleName(model.role) }) : T("libExtra"));
+            if (onPath && !model.roleChosen) {
+                parts.push(T("libRoleGuessed"));
+            }
         }
         const n = stepsOf(item);
         if (n) {

@@ -82,6 +82,34 @@ ROLE_GUESS = (
     ('owner', ('base.group_system',)),
 )
 
+# LEARNREV P5a (S6 / P3 open item 6) — the optional `why` a path rule carries:
+# the seat the person holds, in screen words. The Continue card prints it as
+# the reason ("Required because you hold ...") when the role was GUESSED from
+# access; a role the person picked keeps the role-name reason, and a role with
+# no entry here keeps it too (the fallback).
+ROLE_WHY = {
+    'officer': {
+        'en': "Required because you hold a payroll officer seat.",
+        'vi': "Bắt buộc vì bạn giữ vị trí cán bộ tính lương.",
+    },
+    'approver': {
+        'en': "Required because you hold the payroll approval seat.",
+        'vi': "Bắt buộc vì bạn giữ vị trí phê duyệt lương.",
+    },
+    'hr': {
+        'en': "Required because you hold an HR seat.",
+        'vi': "Bắt buộc vì bạn giữ vị trí nhân sự.",
+    },
+    'manager': {
+        'en': "Required because you manage a team's attendance.",
+        'vi': "Bắt buộc vì bạn quản lý chấm công của một nhóm.",
+    },
+    'owner': {
+        'en': "Required because you administer this company.",
+        'vi': "Bắt buộc vì bạn quản trị công ty này.",
+    },
+}
+
 # Who may read the Team lens: payroll managers and administrators.
 TEAM_GROUPS = ('pb_hr_payroll_base.group_payroll_base_manager',
                'pb_hr_payroll_base.group_payroll_super_admin',
@@ -194,6 +222,8 @@ class LearnPath(models.AbstractModel):
         return {
             'role': role,
             'role_chosen': chosen,
+            # The seat, only for a guessed role whose rule carries one.
+            'why': {} if chosen else dict(ROLE_WHY.get(role) or {}),
             'roles': {k: list(v) for k, v in ROLE_PATHS.items()},
             'month_end': self.month_end(),
         }

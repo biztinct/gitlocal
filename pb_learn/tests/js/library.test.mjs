@@ -187,6 +187,17 @@ function librarySuite() {
     const guessed = lib.buildLibrary(Object.assign({}, SRC, { path: Object.assign({}, SRC.path, { role_chosen: false }) }));
     check(lib.continueHTML(guessed, {}).includes(runtime.esc(T("libRoleGuessed"))),
           "a guessed role says it was picked from your access (G12)");
+    // LEARNREV P5a: a guessed role whose path rule carries a seat names the seat.
+    const SEAT = { en: "Required because you hold the payroll approval seat.", vi: "Bắt buộc vì bạn giữ vị trí phê duyệt lương." };
+    const seated = lib.buildLibrary(Object.assign({}, SRC, { path: Object.assign({}, SRC.path, { role_chosen: false, why: SEAT }) }));
+    const seatedHtml = lib.continueHTML(seated, {});
+    check(seatedHtml.includes(runtime.esc(SEAT.en)) && !seatedHtml.includes(runtime.esc(T("libRoleGuessed"))),
+          "P5a: a guessed role with a seat says the seat (not only the role)");
+    const picked = lib.buildLibrary(Object.assign({}, SRC, { path: Object.assign({}, SRC.path, { role_chosen: true, why: SEAT }) }));
+    check(!lib.continueHTML(picked, {}).includes(runtime.esc(SEAT.en)),
+          "P5a: a role the person picked keeps the role-name reason");
+    check(lib.continueHTML(guessed, {}).includes(runtime.esc(lib.fmt(T("libReqFor"), { role: T("roleApprover") }))),
+          "P5a: no seat on the rule → the role stays the reason (fallback)");
     const nb = lib.buildLibrary(Object.assign({}, SRC, { nextBest: { key: "payslips", kind: "station", reason_key: "nbResume" } }));
     check(lib.continueHTML(nb, {}).includes('data-key="payslips"') && lib.continueHTML(nb, {}).includes(runtime.esc(T("libStarted"))),
           "the server's next step wins when the page has it (resume says so)");
@@ -424,6 +435,14 @@ async function paletteSuite() {
     row.onRun("");
     check(opened.length === 1 && opened[0][0] === "treatment" && opened[0][1] === "pay_role",
           "… opening the treatment board with the Pay role row");
+    // LEARNREV P5a (LR51): the screen whose own search words name the column
+    // goes first, whatever order the rows arrive in.
+    const payRoleOn = (screen) => ({ screen, key: "pay_role", column: "Pay role", columns: ["Pay role", "Vai trò lương"] });
+    const ordered = pal.homeFirst([payRoleOn("mapping"), payRoleOn("treatment")], SRC);
+    check(ordered.map((r) => r.screen).join() === "treatment,mapping",
+          "⌘K: Pay role on Component treatment ranks before Mapping's");
+    check(pal.homeFirst([payRoleOn("mapping"), payRoleOn("formula")], SRC).map((r) => r.screen).join() === "mapping,formula",
+          "… and with no home screen the order is kept");
     pal.registerFieldRows(FIELD_ROWS, noop);
     check(Object.keys(reg.content).filter((k) => k.startsWith("learn.field.")).length === FIELD_ROWS.length,
           "registering twice adds nothing");
