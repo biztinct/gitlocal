@@ -54,7 +54,9 @@ MANIFESTS = {
                     'vi': "Chỉ xem. Cờ là một câu hỏi, không phải một lỗi: hãy đọc phiếu "
                           "lương đó, rồi lấy mẫu thêm vài phiếu bình thường.",
                 },
-                'anchor': 'ps-why',
+                # LEARNREV P2: the "Need review" count in the glance strip is
+                # always drawn; ps-why appears only for a flagged payslip.
+                'anchor': 'ps-kpis',
             },
             {
                 'key': 'status', 'derived': True,

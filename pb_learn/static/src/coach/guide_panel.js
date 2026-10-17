@@ -461,6 +461,17 @@ export function fieldCardHTML(card, opts = {}) {
 }
 
 // ------------------------------------------------------------ the Ask chips
+/** The name a question uses for a field: its column, unless the column is a
+ *  state phrase that shares no word with the field's own label ("Waiting for
+ *  a decision" is the Status field) — then the label. */
+function askName(card) {
+    const words = (s) => new Set(String(s || "").toLowerCase().split(/\s+/).filter(Boolean));
+    const col = words(card.column);
+    const label = words(card.label);
+    const shared = [...col].some((w) => label.has(w));
+    return card.label && !shared ? card.label : card.column;
+}
+
 /** Two questions built from the Guide for the chat's opening chips:
  *  "What reads the pay role?" (the field most things read) and "Why does
  *  <first row that needs an answer> need my answer?". Each {text}. */
@@ -473,7 +484,8 @@ export function askChips(g) {
     const top = fields.slice().sort((a, b) => (b.used_by.length - a.used_by.length))[0];
     if (top && top.column) {
         const vi = String(g.lang || "").startsWith("vi");
-        out.push({ text: fmt(T("gAskReads"), { field: vi ? top.column : top.column.toLowerCase() }) });
+        const name = askName(top);
+        out.push({ text: fmt(T("gAskReads"), { field: vi ? name : name.toLowerCase() }) });
     }
     const need = ((g.right_now || {}).items || []).find((i) => i.key === "needs_answer" && (i.names || []).length);
     if (need) {

@@ -23,7 +23,7 @@ import { closeGlossary } from "../engine/glossary";
 import { fieldCardHTML } from "./guide_panel";
 
 /** Where a column's words can sit, in the cockpits the manifests cover. */
-export const HEADER_SEL = "th, label, .pbd-fig-l, .pbim-gl-l, .pbr-lbl, h2, h3, h4, span";
+export const HEADER_SEL = "th, label, .pbd-fig-l, .pbim-gl-l, .pbr-lbl, .pbd-close-lab, .psr-bk-h, h2, h3, h4, span";
 const CARD_W = 360;
 const DEBOUNCE_MS = 120;
 
@@ -109,8 +109,24 @@ export function injectInfo(doc, fields, onOpen) {
             out.present += 1;
             continue;
         }
-        const btn = doc.createElement("button");
-        btn.type = "button";
+        // A label inside a clickable tile (a KPI button) cannot hold a second
+        // <button>: there the (i) is a span with the button role, reachable
+        // by Tab and pressed with Enter or Space.
+        const nested = !!(header.closest && header.closest("button, a, [role='button']"));
+        const btn = doc.createElement(nested ? "span" : "button");
+        if (nested) {
+            btn.setAttribute("role", "button");
+            btn.setAttribute("tabindex", "0");
+            btn.addEventListener("keydown", (ev) => {
+                if (ev.key === "Enter" || ev.key === " ") {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    onOpen(card.key, btn);
+                }
+            });
+        } else {
+            btn.type = "button";
+        }
         btn.className = "lrn-i";
         btn.setAttribute("data-learn-field", card.key);
         const label = `${T("explainField")}${SP}${card.column}`;

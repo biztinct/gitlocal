@@ -256,6 +256,11 @@ function askSuite() {
     check(chips[0] === "What reads the pay role?", "What reads the pay role?", chips[0]);
     check(chips[1] === "Why does Loan Installment need my answer?", "Why does Loan Installment need my answer?", chips[1]);
     check(panel.askChips(GUIDE).length === 1, "no needs-answer row, no second question");
+    const approvals = { lang: "en_US", right_now: { items: [] },
+                        fields: [{ key: "state", column: "Waiting for a decision", label: "Status",
+                                   used_by: [{ label: "x" }] }] };
+    check(panel.askChips(approvals)[0].text === "What reads the status?",
+          "a state-phrase column asks by the field's own name", panel.askChips(approvals)[0].text);
 }
 
 function viSuite() {
@@ -366,6 +371,13 @@ function injectSuite() {
     check(noAnchor.added === 0 && !noAnchor.missing.length, "a field with no anchor gets no (i)");
     const missing = info.injectInfo(doc, [{ key: "zz", column: "Not drawn", anchor: "tr-table" }], noop);
     check(missing.missing[0] === "zz", "a field whose header is not on screen is reported");
+    const tile = fakeBoard(["Need review"]);
+    tile.ths[0].closest = (sel) => (sel.includes("button") ? { tagName: "BUTTON" } : null);
+    info.injectInfo(tile.doc, [{ key: "need_review", column: "Need review", anchor: "tr-table" }], noop);
+    const inner = tile.ths[0].children[0];
+    check(inner && inner.tagName === "SPAN" && inner.attrs.role === "button" && inner.attrs.tabindex === "0"
+          && typeof inner.listeners.keydown === "function",
+          "inside a clickable tile the (i) is a span role=button, Tab + Enter/Space");
     info.removeInfo(doc, ["pay_role"]);
     check(ths[3].children.length === 1 && ths[1].children.length === 0, "removeInfo keeps only the named ones");
 }

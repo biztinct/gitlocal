@@ -408,9 +408,12 @@
 // -- 6. Ask -------------------------------------------------------------------------
 .lrn-gask {
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     gap: 7px;
-    padding: 9px 14px 0;
+    padding: 8px 14px 7px;
+    border-bottom: 1px solid #F1F0F7;
+    background: var(--vuf-surface, #fff);
     font-size: 10.5px;
     font-weight: 800;
     letter-spacing: .08em;
@@ -421,10 +424,11 @@
 }
 
 // ------------------------------------------------------------- the dock
-.lrn-dockbtn { display: none; }
+// `.lrn-dhead .lrn-hbtn` sets display; match its specificity to hide it.
+.lrn-dhead .lrn-dockbtn { display: none; }
 
 @media (min-width: 1280px) {
-    .lrn-dockbtn { display: inline-flex; }
+    .lrn-dhead .lrn-dockbtn { display: inline-flex; }
 
     body.lrn-docked {
         --lrn-dock-w: 420px;
