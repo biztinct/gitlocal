@@ -121,3 +121,10 @@ workbook values were preserved. The revised files replace attachments 30900 and
 30901. The deployed parser must rejoin exactly 70 unique source IDs without
 creating employees, contracts or payroll transactions. Test PNGs are removed
 after visual verification.
+
+Follow-up commit `ba7cae33c` was deployed to Rize. Verification rejoined all 70
+unique IDs through the deployed spreadsheet parser and verified the updated
+attachment hashes, blank pay inputs and ten remaining review decisions. Business
+record counts and formula definitions remained unchanged. Chrome rechecked the
+Draft's zero live population and disabled pay-run guard. Workbook verification
+preserved panes, tables, validation, conditional formatting and sheet states.
