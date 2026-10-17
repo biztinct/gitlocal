@@ -32,7 +32,7 @@
     # 2.2.3: Vietnamese chart labels "T10", "T1/26", axis "100 tỷ".
     # 2.2.4: pay-run rows say nothing when a run balances, rose "does not
     # balance" only when it doesn't (the row no longer wraps).
-    'version': '19.0.2.2.5',
+    'version': '19.0.2.2.6',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

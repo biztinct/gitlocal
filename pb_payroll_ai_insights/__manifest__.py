@@ -16,7 +16,7 @@
     # 19.0.3.12.0 — PAYAI P1: messages carry a `card` (command answers), the
     # send RPC takes `resolve` (a chip answering a card), providers gain
     # `generate_tools`.
-    'version': '19.0.3.12.3',
+    'version': '19.0.3.12.4',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """
