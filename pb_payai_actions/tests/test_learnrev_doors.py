@@ -114,3 +114,30 @@ class TestLearnrevDoors(TransactionCase):
                     text = fh.read()
                 hits += ['%s: %s' % (os.path.relpath(path, base), s) for s in GONE if s in text]
         self.assertEqual(hits, [])
+
+    def test_07_t5b_never_a_door_into_access(self):
+        """T5b (owner ruling 2026-10-13, FIX-1b): whatever the Learn content
+        lists, the server's list never holds the Access home, the Settings
+        tabs that are its business (access, nav) or the Approval Matrix's
+        people lens — for a person who can see everything."""
+        content = {s['key']: s for s in self.env['learn.content'].screens()}
+        settings = (content.get('hub_settings') or {}).get('hub') or {}
+        # The content DOES list them: the filter is what keeps them out.
+        self.assertTrue({'access', 'nav'} <= set(settings.get('tabs') or {}),
+                        'the Settings hub no longer lists access / nav: re-aim this test')
+        admin = self.env.ref('base.user_admin')
+        rows = catalogue.server_doors(self.env, admin)
+        self.assertTrue(rows)
+        for row in rows:
+            hub = row.get('hub') or {}
+            marks = {hub.get('lens'), *(hub.get('context') or {}).values()} - {None}
+            self.assertNotIn(hub.get('tag'), gate.ACCESS_TAGS, row['id'])
+            self.assertNotIn(hub.get('xmlid'), gate.ACCESS_XMLIDS, row['id'])
+            for screen in (hub.get('tag'), hub.get('xmlid')):
+                for mark in marks:
+                    self.assertNotIn((screen, mark), gate.ACCESS_LENSES, row['id'])
+            self.assertFalse(gate.door_denied(row), row['id'])
+        ids = {r['id'] for r in rows}
+        self.assertNotIn('pbdoor.pb_settings_hub.access', ids)
+        self.assertNotIn('pbdoor.pb_settings_hub.nav', ids)
+
