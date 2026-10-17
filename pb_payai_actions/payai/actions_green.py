@@ -155,8 +155,10 @@ class OpenScreen(Action):
             'done', ctx.task, 'look',
             title=T(_lt('Opening %s.')) % where,
             subtitle=_lt('Looking only, so there is nothing to confirm.'),
+            # LEARNREV P0: a server row (no ⌘K row behind it in the browser)
+            # opens through its own destination, the way ⌘K's rows do.
             actions=[cards.door_action(door['value'], T(_lt('Open %s')) % where,
-                                       'outline', auto=True)],
+                                       'outline', hub=row.get('hub') or None, auto=True)],
             result_ref={'door_id': door['value']},
         )
 

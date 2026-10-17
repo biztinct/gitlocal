@@ -881,12 +881,6 @@ msgstr "Tôi không thấy chương trình lương nào bạn được chạy."
 
 #. module: pb_payai_actions
 #. odoo-python
-#: code:addons/pb_payai_actions/payai/resolve.py:0
-msgid "I cannot see your list of screens yet. Close and reopen this panel, then ask again."
-msgstr "Tôi chưa thấy danh sách màn hình của bạn. Hãy đóng rồi mở lại khung này, sau đó hỏi lại."
-
-#. module: pb_payai_actions
-#. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 msgid "I could not find \"%s\" among the people this scheme pays, and a run can only be narrowed to people or an employment status."
 msgstr "Tôi không tìm thấy \"%s\" trong số người được trả theo chương trình lương này, và đợt lương chỉ thu hẹp được theo người hoặc theo tình trạng làm việc."

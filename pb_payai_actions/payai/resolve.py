@@ -862,6 +862,11 @@ def _pick(text, rows):
 
 
 # -------------------------------------------------------------------- door
+def _bare_door(text):
+    """A screen's name with the glue words (DOOR_STOP) taken out."""
+    return ' '.join(w for w in norm_phrase(text).split() if w not in DOOR_STOP)
+
+
 def door_score(query, row):
     """0..1 — how well the person's words name this ⌘K row."""
     qn = ' '.join(w for w in norm_phrase(query).split()
@@ -873,6 +878,15 @@ def door_score(query, row):
         return 0.0
     if qn == ln or qn in [norm_phrase(a) for a in DOOR_ALIASES.get(row.get('id'), ())]:
         return 1.0
+    # LEARNREV P0 (G24): a server row (`catalogue.server_doors`) carries the
+    # words people use for it — the ⌘K row's aliases and its name in the other
+    # language — and is matched on them with the glue words taken out
+    # ("open the pay runs board" is the alias "pay runs").
+    if row.get('aliases'):
+        bare = _bare_door(query)
+        if bare and (bare == _bare_door(label)
+                     or bare in [_bare_door(a) for a in row['aliases']]):
+            return 1.0
     q = tokens(query, DOOR_STOP)
     if not q:
         return 0.0
@@ -929,12 +943,18 @@ def _door_choice(row):
     return {'value': row['id'], 'label': label, 'sublabel': sub}
 
 
+#: LEARNREV P0 — the closest screens offered when nothing matches well.
+DOOR_MISS_CHIPS = 3
+
+
 def resolve_door(ctx, text):
     rows = ctx.doors or []
     if not rows:
-        return missing(T(_lt(
-            "I cannot see your list of screens yet. Close and reopen this "
-            "panel, then ask again.")))
+        # LEARNREV P0 (G24, ledger LR4): the browser sent no ⌘K rows — the
+        # server's own list of the screens this person can open, never a
+        # request to close and reopen the panel.
+        server = getattr(ctx, 'server_doors', None)
+        rows = server() if callable(server) else []
     learnish = bool(LEARN_WORDS.search(text or ''))
     scored = []
     for row in rows:
@@ -946,9 +966,14 @@ def resolve_door(ctx, text):
         if kind == 'learn' and learnish:
             weight = 0.05
         scored.append((round(base + weight, 4), base, kind, row))
+    weak = sorted(scored, key=lambda x: -x[0])
     scored = [x for x in scored if x[0] >= DOOR_THRESHOLD]
     if not scored:
-        return missing(T(_lt("I could not find a screen called \"%s\".")) % (text or '')[:60])
+        note = T(_lt("I could not find a screen called \"%s\".")) % (text or '')[:60]
+        if weak:
+            # Never a dead end: the closest screens, as chips.
+            return ambiguous([_door_choice(x[3]) for x in weak[:DOOR_MISS_CHIPS]], note=note)
+        return missing(note)
     scored.sort(key=lambda x: -x[0])
     # An exact name (or known alias) on ONE lens or mission wins outright.
     exact = [x for x in scored if x[1] >= 1.0 and x[2] in ('lens', 'mission')]

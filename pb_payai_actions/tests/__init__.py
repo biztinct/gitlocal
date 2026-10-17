@@ -16,3 +16,5 @@ from . import test_onechat_router
 from . import test_onechat_client
 # ONECHAT OC3 — voice on the command path; Q6 (spoken names/amounts need a tap).
 from . import test_onechat_voice
+# LEARNREV P0 T5 — a door answer never dead-ends (server list when no ⌘K rows came).
+from . import test_learnrev_doors

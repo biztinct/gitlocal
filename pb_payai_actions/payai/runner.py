@@ -330,6 +330,7 @@ class Ctx:
         # GAPS (4b): each row's words in English and Vietnamese, so a door
         # button reads in the reader's language, not the screens' language.
         self.doors = door_names(self.env, self.doors)
+        self._server_doors = None
         self.task = None
         #: P2 — slots resolved so far in this request (a later slot may need
         #: an earlier one: the pay value depends on the person's scheme).
@@ -344,10 +345,30 @@ class Ctx:
         engine = env['payroll.ai.engine']
         return cls(engine, {'conversation_id': task.session_id.id if task.session_id else 0})
 
+    def server_doors(self):
+        """LEARNREV P0 (G24) — the screens this person can open, as the
+        server knows them (`catalogue.server_doors`), for when the browser
+        sent no ⌘K rows. Built once per request."""
+        if self._server_doors is None:
+            from . import catalogue
+            try:
+                self._server_doors = catalogue.server_doors(self.env, self.user)
+            except Exception:                           # noqa: BLE001
+                _logger.warning("payai: server door list unavailable", exc_info=True)
+                self._server_doors = []
+        return self._server_doors
+
     def door_row(self, door_id):
         for row in self.doors:
             if row.get('id') == door_id:
                 return row
+        # A server row (chosen from a chip, or resolved when no ⌘K rows
+        # came) is found by its own id, whatever the browser sent since.
+        from .catalogue import PREFIX
+        if str(door_id or '').startswith(PREFIX):
+            for row in self.server_doors():
+                if row.get('id') == door_id:
+                    return row
         return None
 
     def has_door(self, door_id):
