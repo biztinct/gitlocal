@@ -28,6 +28,7 @@ from .test_guide_truth import read_rel
 
 DEMO_COMPANY = 'Payobook Vietnam JSC'
 OFFICER = 'pb_hr_payroll_base.group_payroll_base_officer'
+FORMULA_MANAGER = 'pb_hr_payroll_formula.group_formula_manager'
 
 
 def _src(module, rel):
@@ -49,10 +50,13 @@ class TestLearnrevP4(TransactionCase):
         cls.Scenario = cls.env['learn.scenario']
         cls.demo_company = cls.env['res.company'].search([('name', '=', DEMO_COMPANY)], limit=1)
         cls.demo_group = cls.env.ref('pb_demo.group_payobook_demo', raise_if_not_found=False)
-        officer = cls.env.ref(OFFICER, raise_if_not_found=False)
+        # The board's own gates: payroll officer to read and save a row, and
+        # Formula Manager to write a pay scheme's components.
+        extra = [g for g in (cls.env.ref(OFFICER, raise_if_not_found=False),
+                             cls.env.ref(FORMULA_MANAGER, raise_if_not_found=False)) if g]
         cls.demo_users = []
         if cls.demo_company and cls.demo_group:
-            groups = [cls.env.ref('base.group_user').id, cls.demo_group.id] + ([officer.id] if officer else [])
+            groups = [cls.env.ref('base.group_user').id, cls.demo_group.id] + [g.id for g in extra]
             for n in (1, 2):
                 cls.demo_users.append(cls.env['res.users'].create({
                     'name': 'LRP4 demo %d' % n,
@@ -256,7 +260,9 @@ class TestLearnrevP4(TransactionCase):
 
     def test_d3_the_spotlight_leaves_the_guide_dock_alone(self):
         spot = _code(_src('pb_learn', 'static/src/engine/spotlight.js'))
-        self.assertNotRegex(spot, r'["\']lrn-docked["\']')
+        # It may READ the Guide's dock (to keep that column clear); it must
+        # never add, toggle or remove it — that undocked the Guide on Leave.
+        self.assertNotRegex(spot, r'classList\.(add|remove|toggle)\(\s*["\']lrn-docked["\']')
         self.assertIn('"lrn-spot-docked"', spot)
         scss = _src('pb_learn', 'static/src/journey/journey.scss')
         self.assertIn('body.lrn-spot-docked .lrn-screen', scss)
