@@ -18,7 +18,7 @@
 // 45 % of the panel, so the conversation always keeps more than half of it.
 // (A playing lesson sets its own larger share further down and wins.)
 .lrn-drawer.lrn-has-guide.lrn-convo:not(.lrn-lp-on) {
-    --lrn-guide-max: 45%;
+    --lrn-guide-max: 40%;
 }
 
 .lrn-guide {
