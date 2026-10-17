@@ -40,7 +40,7 @@ import importlib.util
 import logging
 
 from odoo import api, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
 
 from .learn_content import text
 
@@ -148,7 +148,12 @@ class LearnGuide(models.AbstractModel):
 
     @api.model
     def _lang(self):
-        return self.env.lang or self.env.user.lang or 'en_US'
+        # `env.lang` raises for a language that is not installed; a guide
+        # never raises, it answers in English instead.
+        try:
+            return self.env.lang or self.env.user.lang or 'en_US'
+        except UserError:
+            return 'en_US'
 
     # ------------------------------------------------------------ the call
     @api.model
