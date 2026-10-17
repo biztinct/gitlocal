@@ -87,7 +87,9 @@ class TestLearnrevDoors(TransactionCase):
 
     def test_04_a_poor_match_offers_the_closest_screens(self):
         ctx = self._ctx(self.officer)
-        res = resolve.resolve_door(ctx, 'pay okapi')
+        # One known word in three: at most 0.7/3 + 0.3 = 0.53 — under the
+        # threshold by construction ("pay okapi" alone opens People › Pay).
+        res = resolve.resolve_door(ctx, 'okapi payroll zebra')
         self.assertEqual(res['status'], 'ambiguous', res)
         self.assertTrue(1 <= len(res['candidates']) <= resolve.DOOR_MISS_CHIPS)
         self.assertIn('I could not find a screen called', res['note'])
