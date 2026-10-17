@@ -403,6 +403,12 @@ export function sectionsHTML(g, ui = {}) {
         }
         return `<div class="lrn-gsecs">${stateLine("hourglass", T("gLoading"), "mute")}${skeleton()}</div>`;
     }
+    // LEARNREV P4 — while a lesson plays, it is the only thing in the Guide:
+    // one rail, its Back / Next / Leave always in view. Leave brings the
+    // five sections back as they were.
+    if (ui.lessonHTML) {
+        return `<div class="lrn-gsecs lrn-gsecs-lesson">${section("understand", true, ui.lessonHTML)}</div>`;
+    }
     const n = actionable(g).length;
     const fields = (g.fields || []).length;
     const out = [

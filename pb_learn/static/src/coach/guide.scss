@@ -699,7 +699,7 @@
 // The lesson played INSIDE the Guide panel (coach/lesson_panel.js). One step,
 // four lines; the panel is the card, so nothing is drawn over the screen but
 // the dim around the real control (engine/spotlight.js PanelSpot).
-.lrn-drawer.lrn-lp-on { --lrn-guide-max: 76%; }
+.lrn-drawer.lrn-lp-on { --lrn-guide-max: 80%; }
 
 .lrn-lp {
     display: flex;
@@ -780,7 +780,18 @@
 .lrn-lp-tip { background: #F7F7FA; color: #4B4766; }
 .lrn-lp-conseq { background: #FFF7EB; color: #8A4B05; }
 .lrn-lp-p { margin: 0; font-size: 12.5px; color: #4B4766; }
-.lrn-lp-foot { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+// The step's controls stay in view while its lines scroll above them.
+.lrn-lp-foot {
+    position: sticky;
+    bottom: -2px;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0 4px;
+    background: #FAF9FE;
+    border-top: 1px solid #ECEAF6;
+}
 .lrn-lp-quiz .lrn-opts { display: flex; flex-direction: column; gap: 6px; }
 .lrn-lp-done .lrn-lp-kicker { color: #2E7D4F; }
 // The practice copy's card draws the same four lines (journey.js).
