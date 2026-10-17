@@ -169,6 +169,21 @@ class TestValueKindLadder(unittest.TestCase):
             code='NETPAY', name='Net Pay', column_type='formula',
             column_role='payroll', contexts=set()), 'money')
 
+    def test_schema_evidence_and_formats(self):
+        self.assertEqual(self.kind(schema_shape=vkc.sample_shape(['Lan', 'Mai'])), 'text')
+        self.assertEqual(self.kind(column_type='formula', formula='=DATE(2026,1,1)'), 'date')
+        self.assertEqual(self.kind(column_type='formula', formula='=TEXT(A2,"000")'), 'text')
+        self.assertEqual(self.kind(column_type='formula', formula='=IF(A2="YES",100,0)'), 'money')
+        self.assertEqual(self.kind(column_type='formula', formula='=TEXT(A2,"000")+1'), 'money')
+        self.assertEqual(self.kind(column_type='constant', format_kind='rate'), 'rate')
+        self.assertEqual(self.kind(column_type='formula', format_kind='date'), 'date')
+        self.assertEqual(self.kind(sample_values=[0, 0, 0]), 'money')
+        self.assertEqual(self.kind(column_role='contract', sample_values=[10, 20]), 'decimal')
+        self.assertEqual(self.kind(sample_values=[True, False]), 'boolean')
+        self.assertEqual(self.kind(column_type='formula', formula='=IF(A2>0,"YES","NO")'), 'text')
+        self.assertEqual(self.kind(name='Start date', contexts={'arith'}), 'date')
+        self.assertEqual(self.kind(column_type='formula', sample_values=['#VALUE!']), 'money')
+
     def test_10e_quantity_is_split_out_of_money(self):
         self.assertEqual(self.kind(
             code='OT15HOURS', name='OT 1.5 Hours', column_role='payroll',

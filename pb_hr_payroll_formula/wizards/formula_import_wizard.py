@@ -510,11 +510,15 @@ class FormulaImportWizard(models.TransientModel):
                 'column_type': column_type,
                 'forced_column_letter': col_letter,  # Use forced to preserve actual Excel column position
                 'original_column_letter': col_letter,
-                'component_type': comp_type,
+                'imported_component_type': comp_type,
                 'data_source': 'formula' if is_formula else 'excel',
                 'data_source_field': name,
                 'number_format': False,
             }
+            values.update(self.env['hr.formula.rule']._schema_type_evidence(
+                samples, [data_sheet.cell(row, col_index).number_format
+                          for row in range(data_start_row, min(data_start_row + 40, data_sheet.max_row + 1))]
+                if col_index else []))
             values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
@@ -559,13 +563,15 @@ class FormulaImportWizard(models.TransientModel):
                 'column_type': 'constant',
                 'forced_column_letter': pair['new_column_letter'],  # Use forced to override auto-compute
                 'original_column_letter': pair['original_cell'],  # Store original cell reference
-                'component_type': 'Constant',
+                'imported_component_type': 'Constant',
                 'constant_value': constant_value,
                 'data_source': 'manual',
                 'data_source_field': data_source_info,
                 'number_format': False,
             }
 
+            values.update(self.env['hr.formula.rule']._schema_type_evidence(
+                [pair['value']], ['0%' if pair.get('was_percentage') else 'General']))
             try:
                 created = self.env['hr.formula.rule'].create(values)
                 created_rules |= created
@@ -1060,7 +1066,7 @@ class FormulaImportWizard(models.TransientModel):
                 'column_type': column_type,
                 'forced_column_letter': col_letter,
                 'original_column_letter': col_letter,
-                'component_type': comp_type,
+                'imported_component_type': comp_type,
                 'data_source': 'formula' if is_formula else 'excel',
                 'data_source_field': name,
                 'number_format': False,
@@ -1070,6 +1076,9 @@ class FormulaImportWizard(models.TransientModel):
                 'requires_new_contract': requires_new_contract,
                 'is_text_component': is_text_component,
             }
+            values.update(self.env['hr.formula.rule']._schema_type_evidence(
+                samples, [sheet.cell(row, col_idx).number_format
+                          for row in range(first_data_row, min(first_data_row + 40, sheet.max_row + 1))]))
             values.update(self._role_rule_values(role))
             if excel_formula:
                 values['excel_formula'] = excel_formula
@@ -1112,13 +1121,15 @@ class FormulaImportWizard(models.TransientModel):
                 'column_type': 'constant',
                 'forced_column_letter': pair['new_column_letter'],
                 'original_column_letter': pair['original_cell'],
-                'component_type': 'Constant',
+                'imported_component_type': 'Constant',
                 'constant_value': constant_value,
                 'data_source': 'manual',
                 'data_source_field': data_source_info,
                 'number_format': False,
             }
 
+            values.update(self.env['hr.formula.rule']._schema_type_evidence(
+                [pair['value']], ['0%' if pair.get('was_percentage') else 'General']))
             try:
                 created = self.env['hr.formula.rule'].create(values)
                 created_rules |= created

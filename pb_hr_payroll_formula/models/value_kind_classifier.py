@@ -212,16 +212,19 @@ def sample_shape(values):
     NEVER `formula_input_values`, which is downstream of the coercion this whole
     module exists to undo and would only confirm its own damage (C18.118).
     """
-    kept = [v for v in (values or []) if not is_blank_sample(v)]
+    kept = [v for v in (values or []) if not is_blank_sample(v)
+            and str(v).strip() not in {'#N/A', '#VALUE!', '#REF!', '#DIV/0!', '#NAME?', '#NUM!', '#SPILL!'}]
     shape = {
         'n': len(kept), 'texty': 0, 'dates': 0, 'leading_zero': 0,
-        'pure_digits': 0, 'numeric': 0, 'yes_no': 0,
+        'pure_digits': 0, 'numeric': 0, 'yes_no': 0, 'boolean_words': 0,
     }
     for value in kept:
         if looks_like_a_date(value):
             shape['dates'] += 1
         if _is_yes_no(value):
             shape['yes_no'] += 1
+            if isinstance(value, bool) or str(value).strip() not in ('0', '1'):
+                shape['boolean_words'] += 1
         if is_texty_sample(value):
             shape['texty'] += 1
         text = str(value).strip()
@@ -241,10 +244,66 @@ def _all(shape, key):
 # --------------------------------------------------------------------------
 # The ladder
 # --------------------------------------------------------------------------
+def formula_result_kind(formula):
+    """Conservative result types; never infer from a literal inside an IF."""
+    expression = (formula or '').strip().lstrip('=').strip()
+    if re.fullmatch(r'"(?:[^"]|"")*"', expression):
+        return KIND_TEXT
+    match = re.match(r'^([A-Z][A-Z0-9_.]*)\s*\(', expression, re.I)
+    if not match:
+        return None
+    depth, quoted, end = 0, False, None
+    for pos in range(match.end() - 1, len(expression)):
+        char = expression[pos]
+        if char == '"':
+            quoted = not quoted
+        elif not quoted:
+            if char == '(':
+                depth += 1
+            elif char == ')':
+                depth -= 1
+                if depth == 0:
+                    end = pos
+                    break
+    if end != len(expression) - 1:
+        return None
+    function = match.group(1).upper().removeprefix('_XLFN.')
+    if function in {'IF', 'IFERROR', 'IFNA'}:
+        arguments, start, depth, quoted = [], match.end(), 0, False
+        for pos in range(start, end):
+            char = expression[pos]
+            if char == '"':
+                quoted = not quoted
+            elif not quoted:
+                if char == '(':
+                    depth += 1
+                elif char == ')':
+                    depth -= 1
+                elif char in ',;' and depth == 0:
+                    arguments.append(expression[start:pos].strip())
+                    start = pos + 1
+        arguments.append(expression[start:end].strip())
+        branches = arguments[1:] if function == 'IF' else arguments
+        if (function == 'IF' and len(arguments) == 3) or (function != 'IF' and len(arguments) == 2):
+            kinds = {formula_result_kind(branch) for branch in branches}
+            if len(kinds) == 1 and None not in kinds:
+                return kinds.pop()
+    if function in {'DATE', 'DATEVALUE', 'TODAY', 'NOW', 'EDATE', 'EOMONTH'}:
+        return KIND_DATE
+    if function in {'TEXT', 'TEXTJOIN', 'CONCAT', 'CONCATENATE', 'LEFT', 'RIGHT',
+                    'MID', 'TRIM', 'UPPER', 'LOWER', 'PROPER', 'SUBSTITUTE', 'REPLACE'}:
+        return KIND_TEXT
+    if function in {'TRUE', 'FALSE', 'AND', 'OR', 'NOT', 'ISBLANK', 'ISNUMBER',
+                    'ISTEXT', 'ISERROR', 'ISNA', 'EXACT'}:
+        return KIND_BOOLEAN
+    return None
+
+
 def classify_value_kind(code='', name='', column_role='payroll', net_role='',
                         column_type='input', contexts=(), quantity=False,
                         vendor_type='', sample_values=None,
-                        appears_on_payslip=False):
+                        appears_on_payslip=False, schema_shape=None,
+                        format_kind='', formula=''):
     """Return ``(kind, reason)`` for one component. First hit wins.
 
     `contexts` is the union, over EVERY formula in the scheme, of the operator
@@ -257,7 +316,30 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
     """
     contexts = set(contexts or ())
     shape = sample_shape(sample_values)
+    if not shape['n'] and schema_shape:
+        shape.update({key: int(schema_shape.get(key) or 0) for key in shape})
     label = normalize_header('%s %s' % (name or '', code or '')).upper()
+
+    # Excel dates remain dates even though the spreadsheet stores date serials.
+    # A percent format is stronger evidence than an unlabelled numeric default.
+    if format_kind == 'date' or vendor_type in ('date', 'datetime'):
+        return KIND_DATE, 'the source declares a date format'
+    if format_kind == 'rate':
+        return KIND_RATE, 'the Excel column uses a percentage format'
+    if format_kind == 'text' and CTX_ARITH not in contexts:
+        return KIND_TEXT, 'the Excel column is explicitly formatted as text'
+    result_kind = formula_result_kind(formula)
+    if result_kind:
+        return result_kind, 'the formula returns %s' % result_kind
+    if _all(shape, 'dates'):
+        return KIND_DATE, 'every source value is a date'
+    if column_type == 'formula' and _all(shape, 'texty') and not shape['numeric']:
+        return KIND_TEXT, 'every cached Excel formula result is text'
+
+    if column_type == 'input' and re.search(
+            r'\b(?:DATE|BIRTHDAY|COMMENCEMENT)\b|NGAY\s+(?:BAT DAU|KY|KET THUC)', label) \
+            and not re.search(r'\b(?:DAYS|DAY COUNT|DATEDIF)\b', label):
+        return KIND_DATE, 'the column names a calendar date'
 
     # --- 2. DIRECT evidence of arithmetic ----------------------------------
     # A computed or constant column is arithmetic by construction; so is
@@ -279,7 +361,7 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
 
     # --- 3. compared as text, never counted --------------------------------
     if contexts and not contexts - {CTX_STRCMP, CTX_TEXTFN}:
-        if _all(shape, 'yes_no'):
+        if _all(shape, 'yes_no') and shape.get('boolean_words'):
             return KIND_BOOLEAN, 'a formula compares it against a yes/no value'
         if _all(shape, 'dates'):
             return KIND_DATE, 'a formula compares it, and every value is a date'
@@ -290,12 +372,19 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
     # the values are the thing itself. ABM's SHUIPARTICIP carries net_role
     # 'earning' and 152 values reading "YES" — letting the derived signal win
     # would turn the one text component that works today back into 0.0.
-    if _all(shape, 'yes_no'):
+    if _all(shape, 'yes_no') and shape.get('boolean_words'):
         return KIND_BOOLEAN, 'every value seen is yes or no'
     if _all(shape, 'dates'):
         return KIND_DATE, 'every value seen is a date'
     if _all(shape, 'texty') and not shape['leading_zero']:
         return KIND_TEXT, 'every value seen is text'
+
+    # No cached rows are required to recognise an explicitly named date field.
+    if re.search(r'\b(?:DATE|BIRTHDAY|COMMENCEMENT)\b|NGAY\s+(?:BAT DAU|KY|KET THUC)', label) \
+            and not re.search(r'\b(?:DAYS|DAY COUNT|DATEDIF)\b', label):
+        return KIND_DATE, 'the column names a calendar date'
+    if quantity:
+        return KIND_QUANTITY, 'the column measures hours, days or a count'
 
     # --- 4. a declared role in net pay -------------------------------------
     if net_role in _PAY_ROLES:
@@ -329,6 +418,12 @@ def classify_value_kind(code='', name='', column_role='payroll', net_role='',
             and (_IDENTIFIER_LABEL_RE.search(label)
                  or _IDENTIFIER_PHRASE_RE.search(label)):
         return KIND_IDENTIFIER, 'its name says the digits are a reference, not an amount'
+
+    # Numeric contract/profile/reference inputs need not wait for net-role
+    # classification to become numbers. With no monetary evidence use a plain
+    # decimal; naming/leading-zero/quantity evidence has already taken priority.
+    if _all(shape, 'numeric') and column_role and column_role != 'payroll':
+        return KIND_DECIMAL, 'source values are numbers, with no currency evidence'
 
     # --- 7/8. defaults ------------------------------------------------------
     if column_role and column_role != 'payroll':

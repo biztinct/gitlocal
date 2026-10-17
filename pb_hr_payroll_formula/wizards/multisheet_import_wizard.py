@@ -2987,6 +2987,7 @@ class MultiSheetImportWizard(models.TransientModel):
             if not components_to_import:
                 raise UserError(_("No components selected for import."))
 
+            schema_evidence = self._schema_import_evidence(components_to_import)
             created_rules = []
             updated_rules = []
             unparseable_constants = []   # D-E5: constants whose value wasn't numeric
@@ -3026,7 +3027,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'name': comp.generated_name,
                     'code': comp.generated_code,
                     'column_type': comp.column_type,
-                    'component_type': comp.component_type,
+                    'imported_component_type': comp.component_type,
                     'source_sheet_name': comp.source_sheet,
                     'original_column_letter': comp.column_letter,
                     'forced_column_letter': comp.column_letter,  # Preserve actual Excel column position for ALL rules
@@ -3036,6 +3037,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'requires_new_contract': bool(comp.requires_new_contract),
                     'is_text_component': bool(comp.is_text_component),
                 }
+                rule_vals.update(schema_evidence.get(comp.id) or {})
                 # Role defaults belong to a NEWLY created rule only; an existing
                 # rule keeps the visibility somebody already chose for it, and a
                 # role a person set by hand is never overwritten (CR-A1).

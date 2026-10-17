@@ -10,7 +10,7 @@
         <div class="pct-act">
           <button t-if="!props.readonly" class="pct-btn" t-on-click="reclassify"
                   t-att-disabled="state.reclassifying ? 1 : 0"
-                  title="Work out every pay role and subtotal again from this scheme's own formulas. Rows you set yourself are left alone.">
+                  title="Refresh automatic value types, pay roles, subtotal flags and report groups. Choices you saved are kept.">
             <t t-out="ic('refresh', 15)"/>
             <span t-if="state.reclassifying">Re-classifying…</span>
             <span t-else="">Re-classify from the formulas</span>
@@ -94,13 +94,13 @@
         <details class="pct-guide">
           <summary>What do these settings mean? How are they filled?</summary>
           <dl>
-            <div><dt>Report group</dt><dd>A label used to organise the grid and reports, such as Earnings or Deductions. It comes from the component’s saved group, or its salary-rule category if no group was set. You can change it here. It is separate from Identity / Employee profile categories.</dd></div>
+            <div><dt>Report group</dt><dd>A label used to organise the grid and reports, such as Earnings or Deductions. Filled automatically from the pay role when the schema is imported: Earnings, Deductions, Net pay, Employer costs or Information. You can choose a different group; that choice is kept. It is separate from Identity / Employee profile categories.</dd></div>
             <div><dt>Pay role</dt><dd>How reports count this value: added to net pay, deducted, employer cost, final net pay or information only. Suggested from the scheme’s formulas and value types; your saved choice takes priority. The reason appears below each role.</dd></div>
-            <div><dt>Included in another total (Subtotal)</dt><dd>Tick when this amount is already counted inside another component. Reports count that total instead, to avoid counting the same money twice. For example, an allowance already included in gross pay. Suggested with the pay role; you can override it.</dd></div>
+            <div><dt>Included in another total (Subtotal)</dt><dd>Tick when this amount is already counted inside another component. Reports count that total instead, to avoid counting the same money twice. For example, an allowance already included in gross pay. Filled automatically from the formula connections during schema import and re-classification; you can override it.</dd></div>
             <div><dt>Run signal (Tells the run)</dt><dd>A special purpose the run needs to recognise, such as employment status or hours worked. Setup can suggest a signal from names and sample values, and you can choose it here. Leave it blank for an ordinary pay component.</dd></div>
-            <div><dt>Value type</dt><dd>What the value is: money, hours/days, text, date and so on. Suggested from formulas, source types and sample values; you can correct it. Saving settings does not rewrite stored payslip results; recompute the relevant run when needed.</dd></div>
+            <div><dt>Value type</dt><dd>What the value is: money, hours/days, text, date and so on. Filled during schema import from Excel values, date/percentage formats and formulas. New pay-data samples can refine it during re-classification. You can correct it. Saving settings does not rewrite stored payslip results; recompute the relevant run when needed.</dd></div>
           </dl>
-          <p><b>Re-classify from the formulas</b> refreshes automatic pay roles and subtotal flags. It keeps choices you saved yourself. Review changes before using them in payroll.</p>
+          <p><b>Re-classify from the formulas</b> refreshes automatic value types, pay roles, subtotal flags and report groups together. It keeps choices you saved yourself. Review changes before using them in payroll.</p>
         </details>
         <table class="pct-table" data-coach="tr-table">
           <thead>
@@ -132,10 +132,12 @@
                 </span>
               </td>
               <td>
-                <input t-if="!props.readonly" class="pct-input" list="pct-groups"
+                <input t-if="!props.readonly" class="pct-input" list="pct-groups" placeholder="Automatic" title="Clear to use the group suggested by the pay role"
                        t-att-value="valueOf(row, 'group')"
                        t-on-change="(ev) => this.onChange(row, 'group', ev)"/>
                 <span t-else="" t-esc="row.group or '—'"/>
+                <span class="pct-why" t-att-title="row.excel_group ? 'Original Excel section: ' + row.excel_group : ''"
+                      t-esc="row.group_source === 'user' ? 'you set this' : (row.group_source === 'legacy' ? 'saved group (kept)' : 'from pay role')"/>
               </td>
               <td>
                 <select t-if="!props.readonly" class="pct-select"

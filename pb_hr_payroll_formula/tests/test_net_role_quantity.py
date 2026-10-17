@@ -120,14 +120,18 @@ class TestNetRoleQuantity(TransactionCase):
             self.assertNotIn(self.rules[code].id, quantities, code)
 
     # ------------------------------------------------------------------ Q3
-    def test_q3_the_walk_is_untouched_only_the_shelf_moves(self):
-        """Phase 1 owns the math. An hours count still reaches net pay
-        positively, is still a detail, and is still reported that way."""
+    def test_q3_scaling_inputs_are_information_not_pay_addends(self):
+        """Counts scale a monetary result; only additive paths count as pay.
+
+        This matches the classifier's existing basis rule (also covered by
+        TestNetRoleClassifier.test_03b); reaching net through multiplication
+        does not turn hours into an earning or a subtotal.
+        """
         self.config.classify_net_roles()
         for code in ('STANWORKHOUR', 'ACTUWORKHOUR', 'OTNIGHTWK'):
             rule = self.rules[code]
-            self.assertEqual(rule.net_role, 'earning', code)
-            self.assertTrue(rule.net_role_detail, code)
+            self.assertEqual(rule.net_role, 'info', code)
+            self.assertFalse(rule.net_role_detail, code)
 
     # ------------------------------------------------------------------ Q4
     def test_q4_a_count_is_suggested_as_information(self):
@@ -146,7 +150,9 @@ class TestNetRoleQuantity(TransactionCase):
         self.assertEqual(row['suggested_category_code'], 'ALW')
         self.assertFalse(row['quantity'])
         base = self._suggested('BASESALARY')
-        self.assertEqual(base['suggested_category_code'], 'BASIC')
+        self.assertEqual(base['suggested_category_code'], 'OTH',
+                         'the contract salary is a scaling basis; ACTUBASIC is the amount paid')
+        self.assertEqual(self._suggested('ACTUBASIC')['suggested_category_code'], 'BASIC')
         self.assertFalse(base['quantity'])
 
     # ------------------------------------------------------------------ Q6
@@ -156,7 +162,8 @@ class TestNetRoleQuantity(TransactionCase):
         for code in ('STANWORKHOUR', 'ACTUWORKHOUR', 'OTNIGHTWK'):
             self.assertEqual(self.rules[code].category_id.code, 'OTH', code)
         self.assertEqual(self.rules['OTHOURSAMT'].category_id.code, 'ALW')
-        self.assertEqual(self.rules['BASESALARY'].category_id.code, 'BASIC')
+        self.assertEqual(self.rules['BASESALARY'].category_id.code, 'OTH')
+        self.assertEqual(self.rules['ACTUBASIC'].category_id.code, 'BASIC')
         self.assertEqual(self.rules['NETPAY'].category_id.code, 'NET')
 
     # ------------------------------------------------------------------ Q7
@@ -190,3 +197,14 @@ class TestNetRoleQuantity(TransactionCase):
             before, {r.id: r.category_id.id for r in self.config.rule_ids})
         self.assertEqual(
             categories, self.env['hr.salary.rule.category'].search_count([]))
+
+    def test_q9_treatment_infers_units_from_the_formulas(self):
+        self.rules['OTNIGHTWK'].write({'imported_component_type': 'Allowances',
+                                       'component_type': False,
+                                       'component_type_source': 'auto'})
+        self.config.reclassify_from_formulas()
+        for code in ('STANWORKHOUR', 'ACTUWORKHOUR', 'OTNIGHTWK'):
+            self.assertEqual(self.rules[code].value_kind, 'quantity', code)
+            self.assertEqual(self.rules[code].component_type, 'Information', code)
+        self.assertEqual(self.rules['ACTUBASIC'].value_kind, 'money')
+        self.assertEqual(self.rules['ACTUBASIC'].component_type, 'Earnings')

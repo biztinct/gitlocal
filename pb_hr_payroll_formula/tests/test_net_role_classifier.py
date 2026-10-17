@@ -482,13 +482,21 @@ class TestNetRoleClassifier(TransactionCase):
         step from working.
         """
         from odoo.exceptions import UserError
-        self.config.state = 'draft'
-        employee = self.env['hr.employee'].create({'name': 'Stranded Person'})
+        # A populated tenant may have another active scheme. Isolate this
+        # company so fallback cannot legitimately adopt one of those schemes.
+        company = self.env['res.company'].create({
+            'name': 'Draft scheme isolation',
+            'currency_id': self.env.company.currency_id.id})
+        self.env.user.company_ids = [(4, company.id)]
+        self.config.write({'state': 'draft', 'company_id': company.id})
+        employee = self.env['hr.employee'].create({'name': 'Stranded Person', 'company_id': company.id})
         contract = self.env['hr.contract'].create({
             'name': 'Stranded contract', 'employee_id': employee.id,
+            'company_id': company.id,
             'wage': 10000.0, 'state': 'open', 'date_start': '2020-01-01'})
         slip = self.env['hr.payslip'].create({
             'employee_id': employee.id, 'name': 'Stranded slip',
+            'company_id': company.id,
             'contract_id': contract.id, 'date_from': '2026-06-01',
             'date_to': '2026-06-30'})
         slip.struct_id = False

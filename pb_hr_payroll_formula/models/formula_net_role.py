@@ -715,6 +715,7 @@ class HrFormulaConfigNetRole(models.Model):
                     confidence = 'certain'
                 rule.write({
                     'net_role': role,
+                    'net_role_source': 'auto',
                     'net_role_detail': classification.details.get(rule.id, False),
                     'net_role_reason': reason,
                     'net_role_confidence': confidence,
@@ -780,7 +781,7 @@ class HrFormulaConfigNetRole(models.Model):
                         "Counted in hours or days, not money — so it belongs "
                         "with the information on a payslip rather than with "
                         "pay. %(reason)s", reason=reason)
-                band = rule.component_type or ''
+                band = rule.imported_component_type or rule.component_type or ''
                 kind = band_kind(band)
                 conflict = config._net_role_band_conflict(kind, role, quantity)
                 suggestions.append({

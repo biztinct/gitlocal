@@ -168,3 +168,4 @@ from . import test_runsrc_pd_transformations
 # that currency ships switched off.
 from . import test_schemectx_currency
 from . import test_schemectx_p2_scope
+from . import test_treatment_classification

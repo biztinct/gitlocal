@@ -1820,7 +1820,7 @@ class HrFormulaConfig(models.Model):
         """
         self.ensure_one()
         try:
-            summary = (self.classify_net_roles() or {}).get(self.id) or {}
+            summary = self._classify_component_treatment()
         except Exception:
             _logger.exception(
                 "NETROLE: could not classify configuration %s after import; "
@@ -2155,6 +2155,7 @@ class HrFormulaConfig(models.Model):
         from .formula_net_role import looks_like_a_quantity
 
         scheme = self._scheme_operand_contexts()
+        quantity_ids = self._net_role_quantity_ids(self._net_role_rules())
         samples = self._value_kind_samples()
         vendor = {}
         if 'hr.integration.field.mapping' in self.env:
@@ -2174,8 +2175,8 @@ class HrFormulaConfig(models.Model):
                 signal = value_kind_classifier.suggest_payroll_signal(
                     code=rule.code or '', name=rule.name or '',
                     sample_values=samples.get(rule.code) or [],
-                    quantity=bool(looks_like_a_quantity(rule.name or '',
-                                                        rule.code or '')))
+                    quantity=rule.id in quantity_ids or bool(looks_like_a_quantity(
+                        rule.name or '', rule.code or '')))
                 if signal:
                     rule.with_context(skip_formula_version=True).write(
                         {'payroll_signal': signal})
@@ -2190,11 +2191,19 @@ class HrFormulaConfig(models.Model):
                 net_role=rule.net_role or '',
                 column_type=rule.column_type or 'input',
                 contexts=self._rule_operand_contexts(rule, scheme),
-                quantity=bool(looks_like_a_quantity(rule.name or '', rule.code or '')),
+                quantity=rule.id in quantity_ids or bool(looks_like_a_quantity(
+                    rule.name or '', rule.code or '')),
                 vendor_type=vendor.get(rule.id, ''),
                 sample_values=samples.get(rule.code) or [],
                 appears_on_payslip=bool(rule.appears_on_payslip),
+                schema_shape=rule.schema_value_shape,
+                format_kind=rule.schema_format_kind or '',
+                formula=rule.excel_formula or '',
             )
+            # An explicitly mapped statutory edition is authoritative evidence.
+            if rule.tax_table_id:
+                kind = 'rate' if rule.tax_field == 'rate' or rule.number_format == 'percentage' else 'decimal'
+                reason = 'Statutory workbook field and cell format'
             vals = {}
             if rule.value_kind != kind or rule.value_kind_reason != reason:
                 vals.update(value_kind=kind, value_kind_source='auto',
@@ -2415,6 +2424,8 @@ class HrFormulaConfig(models.Model):
                 'group': (rule.component_type or '')
                          or (rule.category_id.name or '') or '',
                 'group_set': bool(rule.component_type),
+                'group_source': rule.component_type_source,
+                'excel_group': rule.imported_component_type or '',
                 'pay_role': rule.net_role or '',
                 'pay_role_source': rule.net_role_source or '',
                 'pay_role_confidence': rule.net_role_confidence or '',
@@ -2443,7 +2454,9 @@ class HrFormulaConfig(models.Model):
             })
         role_field = self.env['hr.formula.rule']._fields['net_role']
         signal_field = self.env['hr.formula.rule']._fields['payroll_signal']
-        groups = sorted({r['group'] for r in rows if r['group']})
+        from .treatment_classification import REPORT_GROUPS
+        groups = sorted({r['group'] for r in rows if r['group']}
+                        | set(REPORT_GROUPS.values()) | {'Needs review'})
         return {
             'config_id': self.id,
             'name': self.name or '',
@@ -2468,36 +2481,10 @@ class HrFormulaConfig(models.Model):
         return dict(self._fields['state'].selection).get(self.state, self.state)
 
     def reclassify_from_formulas(self):
-        """Re-derive every pay role and Subtotal flag from the scheme's formulas.
-
-        The board's own door to `classify_net_roles`. It had one — the Category
-        review, reached from a server action bound to `hr.formula.config` — but
-        that menu is not reachable in the current navigation (`menu-451` falls
-        through to Discuss), so in practice the only way to re-derive a scheme
-        was to run an import. This is the action the two banners on this board
-        actually need: the value-type gate and the roll-up chain are both
-        decided here, and neither moves until something re-classifies.
-
-        Rows a person has set are left alone — see `net_role_source`.
-        """
+        """Refresh automatic treatment together; preserve manually chosen axes."""
         self.ensure_one()
         self._value_kind_gate()
-        before = {r.id: (r.net_role, r.net_role_detail) for r in self.rule_ids}
-        summary = (self.classify_net_roles() or {}).get(self.id) or {}
-        if summary.get('error'):
-            raise UserError(_(
-                "This scheme could not be re-classified: %(why)s",
-                why=summary['error']))
-        changed = [r.code for r in self.rule_ids
-                   if before.get(r.id) != (r.net_role, r.net_role_detail)]
-        _logger.info("VALUEKIND P5: %s re-classified scheme %s — %s change(s): %s",
-                     self.env.user.login, self.id, len(changed),
-                     ', '.join(sorted(changed)) or 'none')
-        return {
-            'changed': len(changed),
-            'kept': len(summary.get('kept') or []),
-            'gated': len(summary.get('gated') or []),
-        }
+        return self._classify_component_treatment(strict=True)
 
     def fix_role_conflicts(self, codes=None):
         """Set every gated component to 'Information only'. Returns the codes.
@@ -2662,11 +2649,13 @@ class HrFormulaConfig(models.Model):
                 group = (patch['group'] or '').strip()
                 if group != (rule.component_type or ''):
                     vals['component_type'] = group or False
+                    vals['component_type_source'] = 'user' if group else 'auto'
 
             if vals:
                 rule.write(vals)
                 changed.append(rule.code)
 
+        self._classify_report_groups()
         if changed:
             _logger.info("VALUEKIND P4: %s set up %s component(s) on scheme %s: %s",
                          self.env.user.login, len(changed), self.id,

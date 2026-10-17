@@ -37,6 +37,22 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
+/** Keep off-screen attachments at the edge of their scroll pane. Every cubic
+ * control point remains inside the board, so tracing cannot paint over headers. */
+export function boundedSchemeCurve(frame, source, target, sourcePane, targetPane) {
+    const clamp = (value, low, high) => Math.max(low, Math.min(value, high));
+    const y = (card, pane) => {
+        const low = Math.max(0, pane.top - frame.top) + 6;
+        const high = Math.max(low, Math.min(frame.height, pane.bottom - frame.top) - 6);
+        return clamp(card.top + card.height / 2 - frame.top, low, high);
+    };
+    const x1 = clamp(source.right - frame.left, 0, frame.width);
+    const x2 = clamp(target.left - frame.left, 0, frame.width);
+    const y1 = y(source, sourcePane), y2 = y(target, targetPane);
+    const mid = (x2 - x1) / 2;
+    return `M ${x1} ${y1} C ${x1 + mid} ${y1}, ${x2 - mid} ${y2}, ${x2} ${y2}`;
+}
+
 const MODEL = "pb.scheme.board";
 
 /** The order the right column groups schemes in, most common run first. */
@@ -268,14 +284,11 @@ export class SchemeMapBoard extends Component {
             if (!from || !to) { continue; }
             const a = from.getBoundingClientRect();
             const b = to.getBoundingClientRect();
-            const x1 = a.right - frame.left;
-            const y1 = a.top + a.height / 2 - frame.top;
-            const x2 = b.left - frame.left;
-            const y2 = b.top + b.height / 2 - frame.top;
-            const mid = (x2 - x1) / 2;
+            const sourcePane = from.closest(".smp-col").getBoundingClientRect();
+            const targetPane = to.closest(".smp-col").getBoundingClientRect();
             paths.push({
                 id: wire.id,
-                d: `M ${x1} ${y1} C ${x1 + mid} ${y1}, ${x2 - mid} ${y2}, ${x2} ${y2}`,
+                d: boundedSchemeCurve(frame, a, b, sourcePane, targetPane),
                 // GROUP P7 — a traced wire lights the same way a hovered end
                 // does, so following a line and hovering a row are one idea.
                 lit: this.state.hover === wire.segment
@@ -285,7 +298,11 @@ export class SchemeMapBoard extends Component {
                 drafted: wire.source !== "manual",
             });
         }
-        this.state.paths = paths;
+        // onPatched measures again; unchanged geometry must not schedule an
+        // endless sequence of identical paints.
+        if (JSON.stringify(paths) !== JSON.stringify(this.state.paths)) {
+            this.state.paths = paths;
+        }
     }
 
     setHover(key) { this.state.hover = key; }

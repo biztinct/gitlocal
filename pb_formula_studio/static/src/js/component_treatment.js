@@ -242,7 +242,7 @@ export class ComponentTreatmentBoard extends Component {
     }
 
     /**
-     * Re-derive every role and Subtotal flag from the scheme's own formulas.
+     * Refresh value types, report groups, pay roles and Subtotal flags from the scheme's own formulas.
      *
      * The two banners on this board both describe things only a re-classify
      * can move, and until now the only door to one was running an import.
@@ -257,7 +257,7 @@ export class ComponentTreatmentBoard extends Component {
                 "hr.formula.config", "reclassify_from_formulas",
                 [[this.state.board.config_id]]
             );
-            const bits = [_t("%s component(s) changed.", res.changed)];
+            const bits = [_t("Types, pay roles, subtotal flags and report groups checked. %s component(s) changed.", res.changed)];
             if (res.kept) {
                 bits.push(_t("%s left as you set them.", res.kept));
             }
