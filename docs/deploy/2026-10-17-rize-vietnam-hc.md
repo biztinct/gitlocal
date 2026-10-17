@@ -103,3 +103,21 @@ another database.
 
 Protected server evidence and pre-install Rize dump:
 `Payobook19v2:/odoo/backups/rize-vn-hc-20261017/`.
+
+## Owner roster reply
+
+The owner subsequently confirmed inclusion of all **68 Active plus 2 Notice
+Period employees for review**. The existing delivery workbooks were updated
+narrowly: both monthly tabs now contain the same 70 unique employee IDs and
+names, the roster decision is Approved and ten other review areas remain pending.
+All monthly pay cells remain blank. The 57 Inactive source rows remain visible
+in Roster review and are marked outside this review population.
+
+This decision concerns the review roster. Configuration 4639 stays Draft with
+zero live assignments. Salary exceptions, seven unmatched IDs, tax/insurance
+settings, record application and actual payroll cutover still require validation.
+The original source, formulas, component treatment, sheet structure and unrelated
+workbook values were preserved. The revised files replace attachments 30900 and
+30901. The deployed parser must rejoin exactly 70 unique source IDs without
+creating employees, contracts or payroll transactions. Test PNGs are removed
+after visual verification.
