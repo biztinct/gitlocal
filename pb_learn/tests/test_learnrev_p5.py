@@ -242,6 +242,12 @@ class TestLearnrevP5(TransactionCase):
         self.assertIn('_missSeen', journey)        # once per phrase per visit
         coach = _read('pb_learn', 'static/src/coach/coach.js')
         self.assertRegex(coach, r'registerFieldRows\(rows,[\s\S]{0,200}content\)')
+        # S6: while a conversation is live the Guide is capped under half.
+        self.assertIn('this.state.convo = true', coach)
+        self.assertIn("'lrn-convo': state.convo", _read('pb_learn', 'static/src/coach/coach.xml'))
+        scss = _read('pb_learn', 'static/src/coach/guide.scss')
+        m = re.search(r'\.lrn-convo:not\(\.lrn-lp-on\)\s*\{\s*--lrn-guide-max:\s*(\d+)%', scss)
+        self.assertTrue(m and int(m.group(1)) <= 50, "the Guide must leave the chat >= 50 %")
         palette = _read('pb_learn', 'static/src/hub/learn_palette.js')
         self.assertIn('export function homeFirst', palette)
         # The report is administrator-only on the server.

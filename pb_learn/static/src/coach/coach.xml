@@ -44,7 +44,7 @@
         <div class="lrn-momenthost" t-if="state.moment and !state.open" t-out="momentHTML"/>
 
         <aside class="lrn-drawer" t-if="state.open" role="dialog"
-               t-att-class="{ 'lrn-still': isStill, 'lrn-has-chat': !!chat, 'lrn-has-guide': guideShown, 'lrn-dockable': guideOn and state.dock === 'dock', 'lrn-lp-on': !!state.lp }"
+               t-att-class="{ 'lrn-still': isStill, 'lrn-has-chat': !!chat, 'lrn-has-guide': guideShown, 'lrn-convo': state.convo, 'lrn-dockable': guideOn and state.dock === 'dock', 'lrn-lp-on': !!state.lp }"
                t-att-aria-label="coachName">
             <header class="lrn-dhead">
                 <span class="lrn-dtitle">
