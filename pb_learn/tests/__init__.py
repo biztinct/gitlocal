@@ -43,3 +43,6 @@ from . import test_learnrev_lesson_door
 # LEARNREV P1 — the content engine: the truth gate and the Guide.
 from . import test_guide_truth
 from . import test_guide
+# LEARNREV P2 — the Guide panel (node) and its server halves.
+from . import test_guide_client
+from . import test_learnrev_p2

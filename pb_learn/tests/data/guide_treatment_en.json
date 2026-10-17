@@ -1,0 +1,501 @@
+{
+ "screen": {
+  "key": "treatment",
+  "name": "Component treatment",
+  "purpose": "Tell the pay scheme what each component is, so every pay run, payslip and report counts it the right way.",
+  "path": [
+   {
+    "label": "Mapping",
+    "open": {
+     "xmlid": "pb_formula_studio.action_pb_mapping_studio"
+    }
+   },
+   {
+    "label": "Component treatment",
+    "open": {
+     "xmlid": "pb_formula_studio.action_pb_mapping_studio",
+     "lens": "treatment",
+     "lens_key": "pb_mode"
+    }
+   }
+  ],
+  "before": [
+   {
+    "screen": "formula",
+    "name": "Formula Engine",
+    "why": "Most answers on this board are worked out from the scheme's formulas."
+   }
+  ],
+  "after": [
+   {
+    "screen": "runpayroll",
+    "name": "Run",
+    "why": "Recompute the pay run so its figures use what you saved."
+   },
+   {
+    "screen": "payruns",
+    "name": "Runs",
+    "why": "Each run's card says whether its figures add up."
+   }
+  ]
+ },
+ "right_now": {
+  "ok": true,
+  "items": [
+   {
+    "key": "recompute",
+    "count": 1,
+    "severity": "warn",
+    "text": "Information Technology Jun 2026 — Mid-Cycle Advance was computed before your last change to this scheme. Recompute it so its figures use the change.",
+    "action": {
+     "kind": "open",
+     "xmlid": "pb_payhub.action_pb_pay_hub",
+     "lens": "runs",
+     "lens_key": "pb_lens",
+     "ids": [
+      319
+     ]
+    },
+    "names": [
+     "Information Technology Jun 2026 — Mid-Cycle Advance"
+    ]
+   }
+  ]
+ },
+ "fields": [
+  {
+   "key": "lane",
+   "column": "Comes from",
+   "anchor": "tr-table",
+   "if_changed": "Read-only here. Change where a value comes from in Mapping › Connections.",
+   "derived": true,
+   "values": [
+    {
+     "value": "calculated",
+     "label": "Calculated by a formula"
+    },
+    {
+     "value": "feed",
+     "label": "Connected system"
+    },
+    {
+     "value": "excel",
+     "label": "Spreadsheet"
+    },
+    {
+     "value": "contract_component",
+     "label": "Contract"
+    },
+    {
+     "value": "constant",
+     "label": "Fixed value"
+    }
+   ],
+   "filled_by": "Read from where the value arrives: a formula on this scheme, a connected system, the month's spreadsheet, the contract or a fixed value. The small grey chips beside it are values that actually arrived.",
+   "used_by": []
+  },
+  {
+   "key": "report_group",
+   "column": "Report group",
+   "anchor": "tr-table",
+   "if_changed": "Only how components are grouped on screens and reports changes; no amount changes. Payslips already computed keep the old group until you recompute the run.",
+   "derived": false,
+   "field": "component_type",
+   "type": "char",
+   "label": "Component Type",
+   "help": "The report group: organises the grid and reports, such as Earnings or Deductions. Filled from the pay role; a group a person types is kept. The spreadsheet's own section heading is kept separately.",
+   "choices": [],
+   "filled_by": "Filled from the pay role: Earnings, Deductions, Net pay, Employer costs or Information. Type a group of your own and it is kept; clear the box to go back to the automatic one.",
+   "source_values": [
+    {
+     "value": "auto",
+     "label": "Automatic"
+    },
+    {
+     "value": "user",
+     "label": "Set by you"
+    },
+    {
+     "value": "legacy",
+     "label": "Saved group (kept)"
+    }
+   ],
+   "used_by": [
+    {
+     "label": "The group shown on each payslip line",
+     "via": "hr.payslip.line.component_type"
+    },
+    {
+     "label": "Sections of the Formula Studio grid",
+     "via": ""
+    },
+    {
+     "label": "Groups on Mapping › Journey",
+     "via": ""
+    }
+   ],
+   "source_label": "Component Type Source"
+  },
+  {
+   "key": "pay_role",
+   "column": "Pay role",
+   "anchor": "tr-table",
+   "if_changed": "Reports use the new role from now on. Payslips already computed keep the old role until you recompute the run.",
+   "derived": false,
+   "field": "net_role",
+   "type": "selection",
+   "label": "Net Pay Role",
+   "help": "What the net pay formula does with this component. Derived from the scheme's own formulas, not from the component's name.",
+   "choices": [
+    {
+     "value": "earning",
+     "label": "Added to net pay",
+     "when": "Pay the person receives: salary, allowances, overtime pay."
+    },
+    {
+     "value": "deduction",
+     "label": "Taken off net pay",
+     "when": "Money taken from the person's pay: their insurance share, tax, a loan repayment."
+    },
+    {
+     "value": "net",
+     "label": "Net pay itself",
+     "when": "The final take-home figure. One component per scheme."
+    },
+    {
+     "value": "employer_cost",
+     "label": "Employer cost",
+     "when": "Paid by the company on top of pay, such as the employer's insurance share. It never reaches the person."
+    },
+    {
+     "value": "info",
+     "label": "Information only",
+     "when": "Shown, never counted: hours, days, rates, codes and dates."
+    },
+    {
+     "value": "mixed",
+     "label": "Both added and taken off",
+     "when": "The formulas both add it and take it off. It usually needs splitting into two components."
+    }
+   ],
+   "filled_by": "Worked out from the scheme's own formulas when you press Re-classify from the formulas. A role you choose is marked Set by a person and is kept on every re-classify. Only an amount can be added to or taken off net pay.",
+   "source_values": [
+    {
+     "value": "auto",
+     "label": "Worked out from the formulas"
+    },
+    {
+     "value": "user",
+     "label": "Set by a person"
+    }
+   ],
+   "used_by": [
+    {
+     "label": "Every payslip line, when payslips are computed",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "Payslips made from imported pay data",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "Pay run totals: Gross, Deductions, Net",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "The \"Figures don't add up\" check on Runs",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "The figures on Home",
+     "via": "hr.payslip.run.pb_total_net"
+    },
+    {
+     "label": "Gross, Deductions and Net on every payslip",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "The payslip statement people receive",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "The bank file (the net pay line)",
+     "via": "hr.payslip.line.pb_net_line"
+    },
+    {
+     "label": "Need review on Payslips",
+     "via": "hr.payslip.line.pay_role"
+    },
+    {
+     "label": "Analytics Explorer",
+     "via": ""
+    },
+    {
+     "label": "Final settlement",
+     "via": ""
+    },
+    {
+     "label": "Decision Room costings",
+     "via": ""
+    },
+    {
+     "label": "Pay for part of a month (work segments)",
+     "via": ""
+    },
+    {
+     "label": "Groups on Mapping › Journey",
+     "via": ""
+    }
+   ],
+   "source_label": "Role Decided By"
+  },
+  {
+   "key": "rollup",
+   "column": "Included in another total",
+   "anchor": "tr-table",
+   "if_changed": "Totals start or stop counting this line, so the same money is never counted twice. The line still shows on the payslip. Recompute the run to update payslips already computed.",
+   "derived": false,
+   "field": "net_role_detail",
+   "type": "boolean",
+   "label": "Folded Into a Total",
+   "help": "This component is already included in another component of the same kind, so a pay run counts the total and not this line. The line still shows on the payslip.",
+   "choices": [],
+   "filled_by": "Ticked from the formulas when this amount is already counted inside another component, such as an allowance inside gross pay. Re-classify keeps a tick you changed yourself.",
+   "source_values": [
+    {
+     "value": "auto",
+     "label": "Worked out from the formulas"
+    },
+    {
+     "value": "user",
+     "label": "Set by a person"
+    }
+   ],
+   "used_by": [
+    {
+     "label": "Every payslip line, when payslips are computed",
+     "via": "hr.payslip.line.component_detail"
+    },
+    {
+     "label": "Pay run totals: Gross, Deductions, Net",
+     "via": "hr.payslip.line.component_detail"
+    },
+    {
+     "label": "Gross, Deductions and Net on every payslip",
+     "via": "hr.payslip.line.component_detail"
+    },
+    {
+     "label": "The payslip statement people receive",
+     "via": "hr.payslip.line.component_detail"
+    },
+    {
+     "label": "Decision Room costings",
+     "via": ""
+    },
+    {
+     "label": "Pay for part of a month (work segments)",
+     "via": "hr.payslip.line.component_detail"
+    }
+   ],
+   "source_label": "Role Decided By"
+  },
+  {
+   "key": "run_signal",
+   "column": "Run signal",
+   "anchor": "tr-table",
+   "if_changed": "The next pay run reads the new signal, and it can change who gets a payslip. Check the number of people in the run after you change it.",
+   "derived": false,
+   "field": "payroll_signal",
+   "type": "selection",
+   "label": "Run signal",
+   "help": "Some components say something about the PERSON rather than about their pay, and the run has to act on them — whether to produce a payslip at all, for instance.",
+   "choices": [
+    {
+     "value": "employment_status",
+     "label": "Whether the person is still employed",
+     "when": "The pay run reads it to decide whether a person still gets a payslip."
+    },
+    {
+     "value": "worked_hours",
+     "label": "Hours actually worked",
+     "when": "The pay run reads it as the hours each person actually worked."
+    }
+   ],
+   "filled_by": "Suggested during setup from the component's name and sample values; you choose it here. Leave it blank for an ordinary pay component.",
+   "source_values": [],
+   "used_by": [
+    {
+     "label": "Run › who gets a payslip this month",
+     "via": "hr.formula.config.employee_signal_map"
+    },
+    {
+     "label": "Finding the status and hours components",
+     "via": ""
+    },
+    {
+     "label": "Pay for part of a month (work segments)",
+     "via": ""
+    }
+   ]
+  },
+  {
+   "key": "value_kind",
+   "column": "Value type",
+   "anchor": "tr-table",
+   "if_changed": "New values are read the new way. Values already stored on payslips stay as they were until you recompute the run. Choosing a type that is not an amount sets its pay role to Information only.",
+   "derived": false,
+   "field": "value_kind",
+   "type": "selection",
+   "label": "Value type",
+   "help": "What this component's value IS. Decides whether it is stored as a number or kept exactly as it arrived, whether it can become a payslip line, and how it is displayed. The first five are numbers; the last four are not and are never converted.",
+   "choices": [
+    {
+     "value": "money",
+     "label": "Amount (currency)",
+     "when": "An amount of money. The only type that can be added to or taken off net pay."
+    },
+    {
+     "value": "decimal",
+     "label": "Decimal number",
+     "when": ""
+    },
+    {
+     "value": "integer",
+     "label": "Whole number",
+     "when": ""
+    },
+    {
+     "value": "quantity",
+     "label": "Quantity (hours, days)",
+     "when": "Hours or days. Its pay role can only be Information only; the pay comes from the formula that multiplies it."
+    },
+    {
+     "value": "rate",
+     "label": "Percentage / rate",
+     "when": ""
+    },
+    {
+     "value": "identifier",
+     "label": "Reference code",
+     "when": ""
+    },
+    {
+     "value": "text",
+     "label": "Text",
+     "when": "Words kept exactly as they arrive, such as a location a formula compares against."
+    },
+    {
+     "value": "date",
+     "label": "Date",
+     "when": ""
+    },
+    {
+     "value": "boolean",
+     "label": "Yes / No",
+     "when": ""
+    }
+   ],
+   "filled_by": "Worked out when the scheme is imported, from the spreadsheet's values, its date and percentage formats and the formulas. New pay data can refine it when you re-classify. A type you choose is never overwritten.",
+   "source_values": [
+    {
+     "value": "auto",
+     "label": "Auto-classified"
+    },
+    {
+     "value": "user",
+     "label": "Set by a person"
+    }
+   ],
+   "used_by": [
+    {
+     "label": "Which components become payslip lines",
+     "via": ""
+    },
+    {
+     "label": "Reading the month's spreadsheet",
+     "via": ""
+    },
+    {
+     "label": "Payslips made from imported pay data",
+     "via": ""
+    },
+    {
+     "label": "Values from a connected system",
+     "via": ""
+    },
+    {
+     "label": "Components in the contract drawer",
+     "via": ""
+    },
+    {
+     "label": "Decision Room costings",
+     "via": ""
+    },
+    {
+     "label": "Mapping › Journey",
+     "via": ""
+    }
+   ],
+   "source_label": "Value Kind Source"
+  }
+ ],
+ "actions": [
+  {
+   "label": "Re-classify from the formulas",
+   "method": "hr.formula.config.reclassify_from_formulas",
+   "effect": "Works out value types, pay roles, totals and report groups again. Choices you saved are kept.",
+   "writes": true
+  },
+  {
+   "label": "Set all of them to Information only",
+   "method": "hr.formula.config.fix_role_conflicts",
+   "effect": "Every row whose value type says otherwise becomes Information only, marked as set by you.",
+   "writes": true
+  },
+  {
+   "label": "Save",
+   "method": "hr.formula.config.set_component_setup",
+   "effect": "Saves the rows you changed. Payslips keep their values until you recompute the run.",
+   "writes": true
+  }
+ ],
+ "doors": {
+  "station": "treatment",
+  "station_name": "Component treatment",
+  "lesson": "L9",
+  "tasks": [
+   {
+    "key": "sc_treatment",
+    "name": "Fix figures that do not add up",
+    "modes": [
+     "watch",
+     "try"
+    ]
+   }
+  ],
+  "terms": [
+   {
+    "key": "componentTreatment",
+    "term": "Component treatment",
+    "definition": "What a scheme does with each component: its pay role, whether it is already included in another total, and its value type. It belongs to the scheme, so it affects every run."
+   },
+   {
+    "key": "payRole",
+    "term": "Pay role",
+    "definition": "What net pay does with a component: adds it, takes it off, is it, counts it as employer cost, or ignores it. Every gross, deductions and net figure is counted from it."
+   },
+   {
+    "key": "subtotal",
+    "term": "Included in another total",
+    "definition": "A line whose parts are already counted elsewhere, like gross income. Ticking it stops the totals counting the same money twice."
+   },
+   {
+    "key": "valueType",
+    "term": "Value type",
+    "definition": "What a value is: an amount, a quantity such as hours or days, a percentage, text, a date or yes/no. Only an amount can be added to or taken off net pay."
+   }
+  ]
+ },
+ "lang": "en_US",
+ "missing": []
+}
