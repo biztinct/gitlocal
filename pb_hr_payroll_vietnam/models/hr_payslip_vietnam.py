@@ -522,7 +522,8 @@ class HrPayslipVietnam(models.Model):
         """
         self.ensure_one()
         config = self.formula_config_id
-        if config and self._pb_layout_has_content(config.payslip_layout_html):
+        if config and (getattr(config, 'payslip_document', False)
+                       or self._pb_layout_has_content(config.payslip_layout_html)):
             return config
         return None
 

@@ -266,7 +266,7 @@ patch(PbFormulaStudio.prototype, {
         return net && net.value !== undefined ? net.value : null;
     },
     get payslipLayoutReady() {
-        return !!this.state.psData?.layout_html || !!this.state.psData?.sections?.some(s=>(s.components||[]).length || (s.embedded_components||[]).length);
+        return !!this.state.psData?.document || !!this.state.psData?.layout_html || !!this.state.psData?.sections?.some(s=>(s.components||[]).length || (s.embedded_components||[]).length);
     },
     focusDependency(ev) {
         const col = ev.target.value, node = this.state.depNodes.find(n=>n.col===col);

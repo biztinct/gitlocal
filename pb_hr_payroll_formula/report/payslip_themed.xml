@@ -61,7 +61,7 @@
                              templates have no layout_html and keep the established
                              section renderer byte-for-byte through the t-else path. -->
                         <t t-if="ps['layout_html']">
-                            <div t-if="ps['show_logo'] and ps['logo']" style="margin-bottom:7px;">
+                            <div t-if="not ps.get('document_pages') and ps['show_logo'] and ps['logo']" style="margin-bottom:7px;">
                                 <img t-att-src="image_data_uri(ps['logo'])" style="max-height:58px; max-width:180px;" alt="Logo"/>
                             </div>
                             <div class="pb-ps-rich pb-ps-imported" t-out="ps['layout_html']"/>

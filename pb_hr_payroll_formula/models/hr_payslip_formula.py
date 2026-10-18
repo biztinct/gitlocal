@@ -1526,7 +1526,10 @@ class HrPayslipFormula(models.Model):
             meta['month_name'] = format_date(
                 self.env, anchor, date_format='LLLL').upper()
         meta['company_name'] = (self.company_id.name or '') if self.company_id else ''
+        document_pages = config._payslip_document_render(
+            values_by_rule, currency, meta) if config else []
         return {
+            'document_pages': document_pages,
             'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
             'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
             'show_logo': show_logo and bool(logo),
@@ -1535,7 +1538,7 @@ class HrPayslipFormula(models.Model):
                 config.payslip_header_html or '', values_by_rule, currency) if config else Markup(''),
             'footer_html': config._render_payslip_content(
                 config.payslip_footer_html or '', values_by_rule, currency) if config else Markup(''),
-            'layout_html': config._render_payslip_content(
+            'layout_html': config._payslip_document_html(document_pages) if document_pages else config._render_payslip_content(
                 config.payslip_layout_html or '', values_by_rule, currency, meta) if config else Markup(''),
             'sections': out_sections,
             'net': net,

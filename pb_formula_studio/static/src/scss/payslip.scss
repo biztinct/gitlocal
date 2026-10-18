@@ -1,3 +1,15 @@
+@font-face { font-family: "PB Payslip Serif"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Serif"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Serif"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: block; }
+@font-face { font-family: "PB Payslip Serif"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSerif-BoldItalic.ttf") format("truetype"); font-weight: 700; font-style: italic; font-display: block; }
+@font-face { font-family: "PB Payslip Sans"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSans.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Sans"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSans-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Sans"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSans-Oblique.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: block; }
+@font-face { font-family: "PB Payslip Sans"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSans-BoldOblique.ttf") format("truetype"); font-weight: 700; font-style: italic; font-display: block; }
+@font-face { font-family: "PB Payslip Mono"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSansMono.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Mono"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSansMono-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: block; }
+@font-face { font-family: "PB Payslip Mono"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSansMono-Oblique.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: block; }
+@font-face { font-family: "PB Payslip Mono"; src: url("/pb_hr_payroll_formula/static/fonts/dejavu/DejaVuSansMono-BoldOblique.ttf") format("truetype"); font-weight: 700; font-style: italic; font-display: block; }
 /* F9 — Payslip Studio (inherits --i* palette from the .pbfs ancestor) */
 
 .pbfs-ps-scrim { position: fixed; inset: 0; z-index: 1200; background: rgba(20, 16, 50, .38); display: flex; align-items: center; justify-content: center; padding: 2.5vh 2.5vw; }
@@ -348,3 +360,58 @@
 .pbfs-ps .sc-rose { --sc: #E11D48; }
 .pbfs-ps .sc-sky { --sc: #0284C7; }
 .pbfs-ps .sc-violet { --sc: #7C3AED; }
+
+/* Visual documents use the imported artwork's own coordinate space. */
+.pbfs-ps .ps-body.visual-document .ps-canvas { flex: 0 0 285px; }
+.pbfs-ps .ps-visual-active { flex-direction: column; align-items: stretch; gap: 10px; }
+.pbfs-ps .ps-document-review-summary { color: #475569; font-size: 12px; line-height: 1.5; }
+.pbfs-ps .ps-document-review-summary ul { margin: 10px 0; padding-left: 18px; }
+.pbfs-ps .ps-body.visual-document .ps-preview { flex: 1; width: auto; }
+.pbfs-ps .ps-slip.visual-pages { max-width: 650px; padding: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.pbfs-ps .ps-document-preview { container-type: inline-size; background: #fff; box-shadow: 0 3px 18px #17255418; margin-bottom: 18px; }
+.pbfs-ps .ps-document-editor { width: 98%; height: 97%; background: #fff; border-radius: 14px; box-shadow: 0 20px 70px #14103240; display: flex; flex-direction: column; overflow: hidden; color: #1e293b; }
+.pbfs-ps .ps-document-editor header { display: flex; gap: 10px; align-items: center; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; }
+.pbfs-ps .ps-document-editor header > div { flex: 1; }
+.pbfs-ps .ps-document-editor header b { display: block; font-size: 16px; }
+.pbfs-ps .ps-document-editor header small { color: #64748b; font-size: 11px; }
+.pbfs-ps .ps-document-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
+.pbfs-ps .ps-document-editor button, .pbfs-ps .ps-document-editor select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; background: #fff; color: #334155; cursor: pointer; font-size: 11px; }
+.pbfs-ps .ps-document-editor button:disabled { opacity: .45; cursor: default; }
+.pbfs-ps .ps-document-editor button.ps-primary { background: #5a4bb0; color: #fff; border-color: #5a4bb0; }
+.pbfs-ps .ps-document-editor button.danger { color: #b91c1c; }
+.pbfs-ps .ps-document-unsaved { color: #92400e; margin-left: auto; }
+.pbfs-ps .ps-document-workspace { flex: 1; display: flex; min-height: 0; }
+.pbfs-ps .ps-document-field-list { width: 205px; flex: none; overflow: auto; padding: 12px; background: #f8fafc; border-right: 1px solid #e2e8f0; }
+.pbfs-ps .ps-document-field-list > b { font-size: 12px; display: block; margin-bottom: 8px; }
+.pbfs-ps .ps-document-field-list > button { display: block; width: 100%; text-align: left; margin: 0 0 6px; padding: 8px; }
+.pbfs-ps .ps-document-field-list > button.selected { border-color: #7c6dba; background: #f0edfb; }
+.pbfs-ps .ps-document-field-list > button span { display: block; font-size: 10px; line-height: 1.4; }
+.pbfs-ps .ps-document-field-list > button small { display: block; color: #64748b; margin-top: 3px; overflow-wrap: anywhere; }
+.pbfs-ps .ps-document-issues { font-size: 10px; color: #92400e; margin: 14px 0; }
+.pbfs-ps .ps-document-hint { font-size: 10px; color: #64748b; line-height: 1.5; margin-top: 16px; }
+.pbfs-ps .ps-document-stage { flex: 1; min-width: 0; overflow: auto; background: #e8ecf3; padding: 20px; }
+.pbfs-ps .ps-document-sheet { position: relative; background: white; box-shadow: 0 4px 20px #0f172a26; margin: 0 auto; flex: none; outline: none; }
+.pbfs-ps .ps-document-sheet > img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none; }
+.pbfs-ps .ps-document-field { position: absolute; box-sizing: border-box; padding: 1px 2px; white-space: pre-wrap; line-height: 1.15; cursor: move; outline: 1px dashed #6366f1; touch-action: none; user-select: none; }
+.pbfs-ps .ps-document-field > span { display: block; width: 100%; height: 100%; overflow: hidden; }
+.pbfs-ps .ps-document-field.unbound { outline-color: #d97706; }
+.pbfs-ps .ps-document-field.selected { outline: 2px solid #4f46e5; z-index: 2; }
+.pbfs-ps .ps-document-resize { position: absolute; bottom: -4px; right: -4px; width: 9px; height: 9px; background: #4f46e5; border: 1px solid #fff; cursor: nwse-resize; }
+.pbfs-ps .ps-document-sheet.preview .ps-document-field { outline: none; cursor: default; }
+.pbfs-ps .ps-document-properties { width: 245px; flex: none; overflow: auto; padding: 14px; border-left: 1px solid #e2e8f0; font-size: 11px; }
+.pbfs-ps .ps-document-properties > b { display: block; margin-bottom: 8px; font-size: 12px; }
+.pbfs-ps .ps-document-properties label { display: block; color: #475569; font-size: 10px; margin-bottom: 10px; }
+.pbfs-ps .ps-document-properties input:not([type=checkbox]), .pbfs-ps .ps-document-properties select, .pbfs-ps .ps-document-properties textarea { width: 100%; min-width: 0; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; padding: 5px 6px; color: #1e293b; margin-top: 3px; font-size: 11px; }
+.pbfs-ps .ps-document-properties textarea { min-height: 85px; }
+.pbfs-ps .ps-document-properties small { display: block; font-size: 9px; line-height: 1.4; margin-top: 4px; }
+.pbfs-ps .ps-document-properties details { padding: 8px 0; margin-bottom: 10px; border-block: 1px solid #e2e8f0; }
+.pbfs-ps .ps-document-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 1050px) {
+  .pbfs-ps .ps-document-field-list { width: 155px; }
+  .pbfs-ps .ps-document-properties { width: 210px; }
+  .pbfs-ps .ps-body.visual-document .ps-canvas { flex-basis: 230px; }
+}
+.pbfs-ps .ps-document-download { display:block; padding:7px 10px; text-align:center; border:1px solid #7c6dba; color:#4c3f94; border-radius:7px; background:white; font-size:11px; font-weight:700; text-decoration:none; }
+.pbfs-ps .ps-import-source-preview { padding: 12px; background:#eef2f8; border-radius:8px; margin:12px 0; }
+.pbfs-ps .ps-import-source-preview b { display:block; font-size:11px; margin-bottom:10px; }
+.pbfs-ps .ps-import-source-preview img { display:block; max-width:100%; max-height:650px; margin:auto; box-shadow:0 2px 12px #0f172a12; }

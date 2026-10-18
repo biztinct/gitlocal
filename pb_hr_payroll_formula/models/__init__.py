@@ -25,6 +25,7 @@ from . import component_code
 from . import input_provenance
 from . import pay_period
 from . import formula_config
+from . import payslip_document_models
 from . import formula_config_tests
 from . import formula_rule
 # JOURNEY J9 — the binding, plural. Imported AFTER `formula_rule` so the o2m's

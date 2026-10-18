@@ -12,6 +12,8 @@ import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
+import { detectDocumentCells } from './payslip_document_tools';
+import { PayslipDocumentDesigner } from './payslip_document_designer';
 import {
     applyPayslipTableBorder,
     deletePayslipTable,
@@ -121,7 +123,7 @@ const SHORTCUT_GRID = [
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop };
+    static components = { GridStudio, FindReplace, CommandPalette, HoverCard, HubBackChip, DocDrop, PayslipDocumentDesigner };
     static props = ["*"];
 
     setup() {
@@ -248,6 +250,7 @@ export class PbFormulaStudio extends Component {
             psDeleteKind: null,      // imported | section
             psDeleteBusy: false,
             psRichOpen: false,       // header / section / footer rich-content editor
+            psDocumentOpen: false,
             psRichTarget: null,
             psRichTitle: "",
             psRichDraft: "",
@@ -5063,6 +5066,7 @@ export class PbFormulaStudio extends Component {
         this.state.psEditSec = null;
         this.state.psImportOpen = false;
         this.state.psRichOpen = false;
+        this.state.psDocumentOpen = false;
         this.state.psDeleteOpen = false;
         this.state.psDeleteKind = null;
         this.state.psDeleteBusy = false;
@@ -5187,7 +5191,7 @@ export class PbFormulaStudio extends Component {
     }
     psAskDeleteTemplate(kind) {
         if (!this.state.psData || !this.state.psData.can_edit) return;
-        const activeKind = this.state.psData.layout_html ? "imported"
+        const activeKind = (this.state.psData.document || this.state.psData.layout_html) ? "imported"
             : (this.state.psData.section_template_active ? "section" : null);
         if (kind !== activeKind) return;
         this.state.psDeleteKind = kind;
@@ -5245,14 +5249,17 @@ export class PbFormulaStudio extends Component {
         try {
             if (file.mime === "application/pdf") {
                 const extracted = await this._psExtractPdf(file.data);
-                file = { ...file, extracted_text: extracted.text, pdf_layout: extracted.layout };
+                if (extracted.error) throw new Error(extracted.error);
+                file = { ...file, extracted_text: extracted.text, pdf_layout: extracted.layout, document: extracted.document };
+            } else if (file.mime === 'image/png' || file.mime === 'image/jpeg') {
+                file = { ...file, document: await this._psExtractImage(file) };
             }
             const r = await this.orm.call("pb.formula.studio", "analyse_payslip_template",
                 [this.state.config.id, file]);
             if (r && r.ok) this.state.psImportDraft = r;
             else this.state.psImportError = (r && (r.msg || r.warning)) || _t("The payslip could not be analysed.");
         } catch (e) {
-            this.state.psImportError = _t("The payslip could not be analysed. Check the Document OCR configuration and try again.");
+            this.state.psImportError = e.message || _t("The payslip could not be analysed. Try an unencrypted PDF or an image.");
         } finally {
             this.state.psImportBusy = false;
         }
@@ -5265,8 +5272,10 @@ export class PbFormulaStudio extends Component {
             const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
             const task = window.pdfjsLib.getDocument({ data: bytes });
             const pdf = await task.promise;
+            if (pdf.numPages > 8) { await pdf.destroy(); return { error: _t('Use a payslip with at most 8 pages. Split longer documents before importing.') }; }
             const pageTexts = [];
             const layoutPages = [];
+            const documentPages = [];
             let palette = [];
             for (let pageNo = 1; pageNo <= Math.min(pdf.numPages || 0, 8); pageNo++) {
                 const page = await pdf.getPage(pageNo);
@@ -5297,6 +5306,7 @@ export class PbFormulaStudio extends Component {
                 const content = await page.getTextContent();
                 let text = "";
                 const items = [];
+                const documentItems = [];
                 for (const item of content.items || []) {
                     text += (item.str || "") + (item.hasEOL ? "\n" : " ");
                     if (!item.str || !item.str.trim()) continue;
@@ -5313,7 +5323,19 @@ export class PbFormulaStudio extends Component {
                         bold: /bold|black|heavy|semibold/.test(fontHint),
                         italic: /italic|oblique/.test(fontHint),
                     });
+                    documentItems.push({ text: item.str.trim(), x: tx[4], y: tx[5],
+                        width: item.width || 0, font_size: fontHeight });
                 }
+                const renderViewport = page.getViewport({ scale: Math.min(2, 2400 / Math.max(viewport.width, viewport.height)) });
+                const pageCanvas = document.createElement('canvas');
+                pageCanvas.width = Math.round(renderViewport.width); pageCanvas.height = Math.round(renderViewport.height);
+                const pageContext = pageCanvas.getContext('2d', { willReadFrequently: true });
+                await page.render({ canvasContext: pageContext, viewport: renderViewport }).promise;
+                const geometry = detectDocumentCells(pageContext.getImageData(0, 0, pageCanvas.width, pageCanvas.height).data,
+                    pageCanvas.width, pageCanvas.height, viewport.width, viewport.height, documentItems, pageNo);
+                documentPages.push({ width: viewport.width, height: viewport.height,
+                    image: pageCanvas.toDataURL('image/jpeg', .96), fields: geometry.fields });
+                pageCanvas.width = 0; pageCanvas.height = 0;
                 pageTexts.push(text.trim());
                 layoutPages.push({ width: viewport.width, height: viewport.height, items });
             }
@@ -5321,12 +5343,28 @@ export class PbFormulaStudio extends Component {
             return {
                 text: pageTexts.filter(Boolean).join("\n").slice(0, 80000),
                 layout: { version: 1, pages: layoutPages.slice(0, 4), palette },
+                document: { version: 1, name: 'Imported payslip', pages: documentPages },
             };
         } catch (e) {
             // Scanned/password-protected PDFs continue to the configured OCR
             // provider; failure here must never block that stronger path.
-            return { text: "", layout: { version: 1, pages: [] } };
+            return { error: _t('The PDF could not be opened. Use an unencrypted PDF or import a JPG/PNG image.') };
         }
+    }
+    async _psExtractImage(file) {
+        const img = new Image();
+        img.src = `data:${file.mime};base64,${file.data}`;
+        await img.decode();
+        if (img.naturalWidth * img.naturalHeight > 20000000) throw new Error(_t('Use an image smaller than 20 megapixels.'));
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+        canvas.width = Math.round(img.naturalWidth * scale); canvas.height = Math.round(img.naturalHeight * scale);
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const width = 612, height = 612 * canvas.height / canvas.width;
+        const geometry = detectDocumentCells(ctx.getImageData(0, 0, canvas.width, canvas.height).data,
+            canvas.width, canvas.height, width, height);
+        return { version: 1, name: file.name, pages: [{ width, height, image: canvas.toDataURL('image/jpeg', .96), fields: geometry.fields }] };
     }
     psImportToggle(sectionIndex, matchIndex, ev) {
         const match = this.state.psImportDraft.sections[sectionIndex].matches[matchIndex];
@@ -5334,8 +5372,14 @@ export class PbFormulaStudio extends Component {
     }
     psImportSetMatch(sectionIndex, matchIndex, ev) {
         const match = this.state.psImportDraft.sections[sectionIndex].matches[matchIndex];
+        if (ev.target.value.startsWith('meta:')) {
+            match.meta_key = ev.target.value.slice(5);
+            match.rule_id = false; match.rule_name = ''; match.rule_code = '';
+            match.selected = true; match.manual = true;
+            return;
+        }
         const ruleId = parseInt(ev.target.value, 10) || false;
-        if (ruleId) {
+        if (ruleId && !this.state.psImportDraft.document) {
             for (const section of this.state.psImportDraft.sections) {
                 for (const other of section.matches) {
                     if (other !== match && other.rule_id === ruleId) other.selected = false;
@@ -5344,9 +5388,11 @@ export class PbFormulaStudio extends Component {
         }
         const option = this.state.psImportDraft.options.find(o => o.id === ruleId);
         match.rule_id = ruleId;
+        match.meta_key = '';
         match.rule_name = option ? option.name : "";
         match.rule_code = option ? option.code : "";
         match.selected = Boolean(ruleId);
+        match.manual = true;
     }
     psImportToggleTheme(ev) { this.state.psImportApplyTheme = ev.target.checked; }
     psImportToggleContent(ev) { this.state.psImportApplyContent = ev.target.checked; }
@@ -5354,10 +5400,10 @@ export class PbFormulaStudio extends Component {
     get psImportSelectedCount() {
         const draft = this.state.psImportDraft;
         if (!draft) return 0;
-        return draft.sections.reduce((n, s) => n + s.matches.filter(m => m.selected && m.rule_id).length, 0);
+        return draft.sections.reduce((n, s) => n + s.matches.filter(m => m.selected && (m.rule_id || m.meta_key)).length, 0);
     }
     async psApplyTemplate() {
-        if (!this.state.psImportDraft || this.state.psImportBusy || !this.psImportSelectedCount) return;
+        if (!this.state.psImportDraft || this.state.psImportBusy || (!this.psImportSelectedCount && !this.state.psImportDraft.document)) return;
         this.state.psImportBusy = true;
         try {
             const payload = {
@@ -5372,6 +5418,7 @@ export class PbFormulaStudio extends Component {
                 this.notif.add(_t("Template applied: %s fields placed, %s sections created.", r.placed, r.created_sections), { type: "success" });
                 this.state.psImportOpen = false;
                 await this._loadPayslip(this.state.psData.sample_id);
+                if (this.state.psData.document) this.state.psDocumentOpen = true;
             } else {
                 this.state.psImportError = (r && r.msg) || _t("The template could not be applied.");
             }
@@ -5381,6 +5428,22 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- compact rich-content editor (stored HTML is sanitized server-side) ----
+    get psDocumentComponents() {
+        return (this.state.psData?.rich_components || []).map(c => ({ ...c, formatted_value: this.psVal(c) }));
+    }
+    async psSaveDocument(document) {
+        const result = await this.orm.call('pb.formula.studio', 'save_payslip_document',
+            [this.state.config.id, document, this.state.psData.document_revision]);
+        if (result.ok) await this._loadPayslip(this.state.psData.sample_id);
+        return result;
+    }
+    psDocumentPreviewStyle(page) {
+        return `position:relative;width:100%;aspect-ratio:${page.width}/${page.height};`;
+    }
+    psDocumentPreviewFieldStyle(field, page) {
+        const font = { serif: "'PB Payslip Serif','Times New Roman',serif", sans: "'PB Payslip Sans',Arial,sans-serif", mono: "'PB Payslip Mono',monospace" }[field.font];
+        return `position:absolute;left:${field.x/page.width*100}%;top:${field.y/page.height*100}%;width:${field.w/page.width*100}%;height:${field.h/page.height*100}%;font-size:${field.font_size/page.width*100}cqw;font-family:${font};font-weight:${field.bold?700:400};font-style:${field.italic?'italic':'normal'};text-align:${field.align};color:${field.color};background:${field.cover?field.background:'transparent'};overflow:hidden;white-space:pre-wrap;line-height:1.15;box-sizing:border-box;padding:.16cqw .32cqw;`;
+    }
     psOpenRich(target, title, htmlValue) {
         if (!this.state.psData || !this.state.psData.can_edit) return;
         this.state.psRichTarget = target;

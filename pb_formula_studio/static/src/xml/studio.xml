@@ -2079,7 +2079,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
               <div>
                 <b>Payslip Studio</b>
-                <small t-if="state.psData and state.psData.layout_html">Edit the imported document — the preview is what prints</small>
+                <small t-if="state.psData and (state.psData.document or state.psData.layout_html)">Edit the imported document — the preview is what prints</small>
                 <small t-else="">Drag components into sections — the preview is what prints</small>
               </div>
             </div>
@@ -2092,9 +2092,9 @@
               </div>
               <button t-if="state.psData and state.psData.can_edit" class="ps-import-btn" t-on-click="openPsImport" t-att-title="state.psData.layout_html ? 'Replace the imported document with another payslip' : 'Upload a payslip and turn it into an editable layout'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
-                <t t-if="state.psData.layout_html">Replace payslip</t><t t-else="">Import payslip</t>
+                <t t-if="state.psData.document or state.psData.layout_html">Replace payslip</t><t t-else="">Import payslip</t>
               </button>
-              <button t-if="state.psData and state.psData.can_edit" t-attf-class="ps-theme-btn {{ state.psThemeOpen ? 'on' : '' }}" t-on-click="togglePsTheme" title="Payslip theme — accent, font, logo">
+              <button t-if="state.psData and state.psData.can_edit and !state.psData.document" t-attf-class="ps-theme-btn {{ state.psThemeOpen ? 'on' : '' }}" t-on-click="togglePsTheme" title="Payslip theme — accent, font, logo">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996C19.518 15.994 22 13.512 22 10.437 22 5.775 17.51 2 12 2z"/></svg>
                 Theme
               </button>
@@ -2102,10 +2102,16 @@
             </div>
           </div>
 
-          <div class="ps-body" t-if="state.psData and state.psData.ok">
+          <div t-attf-class="ps-body {{ state.psData.document ? 'visual-document' : '' }}" t-if="state.psData and state.psData.ok">
             <!-- LEFT: layout canvas -->
             <div class="ps-canvas">
-              <div t-if="state.psData.layout_html" class="ps-layout-active">
+              <div t-if="state.psData.document" class="ps-layout-active ps-visual-active">
+                <div><b>Visual document template is active</b><span>Original artwork, page sizes, bilingual labels and table borders are preserved. Live values use the selected sample.</span></div>
+                <button t-on-click="() => state.psDocumentOpen = true">Edit visual document</button>
+                <a class="ps-document-download" t-att-href="'/pb_formula_studio/payslip_document/preview/' + state.config.id + '?sample_id=' + (state.psData.sample_id || '')">Download preview PDF</a>
+                <button class="danger" t-on-click="() => this.psAskDeleteTemplate('imported')">Delete template</button>
+              </div>
+              <div t-elif="state.psData.layout_html" class="ps-layout-active">
                 <div><b>Imported document layout is active</b><span>The preview and print use the reconstructed page. Edit it to add components, rows, columns, merges, borders, colours, and fonts.</span></div>
                 <button t-on-click="() => this.psOpenRich('layout', 'Imported payslip document', state.psData.layout_html)">Edit document</button>
                 <button class="danger" t-on-click="() => this.psAskDeleteTemplate('imported')" title="Delete the imported document template">Delete template</button>
@@ -2115,7 +2121,8 @@
                 <button class="danger" t-on-click="() => this.psAskDeleteTemplate('section')" title="Delete the section template">Delete template</button>
               </div>
               <div t-else="" class="ps-template-empty"><b>No section template yet</b><span>Drag components after adding your first section, or import an existing payslip.</span></div>
-              <t t-if="!state.psData.layout_html">
+              <div t-if="state.psData.document" class="ps-document-review-summary"><b>Review field sources</b><p>Fields without a source print a dash. Contract amounts and actual payments may differ; review each suggestion before use.</p><ul><li t-foreach="state.psData.document_warnings" t-as="warning" t-key="warning_index" t-esc="warning"/></ul><p t-if="!state.psData.document_warnings.length">Every field has a source. Preview another sample to check how values change.</p></div>
+              <t t-if="!state.psData.layout_html and !state.psData.document">
               <!-- tray of unplaced components -->
               <div t-attf-class="ps-tray {{ state.psOverZone === 'tray' ? 'over' : '' }}"
                    t-on-dragover="(ev) => this.psDragOverZone('tray', ev)" t-on-drop="(ev) => this.psDrop(false, ev)">
@@ -2225,8 +2232,14 @@
                 </div>
               </div>
 
-              <div t-attf-class="ps-slip {{ state.psData.layout_html ? 'imported' : '' }}" t-att-style="psSlipStyle">
-                <t t-if="state.psData.layout_html">
+              <div t-attf-class="ps-slip {{ state.psData.document ? 'visual-pages' : state.psData.layout_html ? 'imported' : '' }}" t-att-style="psSlipStyle">
+                <t t-if="state.psData.document">
+                  <div t-foreach="state.psData.document_pages" t-as="page" t-key="page_index" class="ps-document-preview" t-att-style="psDocumentPreviewStyle(page)">
+                    <img t-att-src="page.image" alt="Payslip template artwork" style="position:absolute;width:100%;height:100%;inset:0"/>
+                    <div t-foreach="page.fields" t-as="field" t-key="field.id" t-att-style="psDocumentPreviewFieldStyle(field, page)" t-esc="field.value"/>
+                  </div>
+                </t>
+                <t t-elif="state.psData.layout_html">
                   <img t-if="psLogoUrl" class="ps-slip-logo imported" t-att-src="psLogoUrl" alt="Logo"/>
                   <div class="ps-slip-rich imported-document" t-out="psHtml(state.psData.layout_rendered_html)"/>
                 </t>
@@ -2277,6 +2290,9 @@
           </div>
 
           <!-- Import assistant: upload → analyse → review → explicit apply. -->
+          <div t-if="state.psDocumentOpen and state.psData and state.psData.document" class="ps-sub-scrim">
+            <PayslipDocumentDesigner document="state.psData.document" components="psDocumentComponents" meta="state.psData.document_meta" onSave.bind="psSaveDocument" onClose="() => state.psDocumentOpen = false"/>
+          </div>
           <div t-if="state.psImportOpen" class="ps-sub-scrim" t-on-click="closePsImport">
             <div class="ps-import" t-on-click="(ev) => ev.stopPropagation()">
               <div class="ps-sub-head">
@@ -2286,7 +2302,7 @@
               <div class="ps-import-body">
                 <div t-if="!state.psImportDraft and !state.psImportBusy" class="ps-import-upload">
                   <DocDrop onFile.bind="psAnalyseTemplate" label="'Drop a payslip here, or choose a file'" maxMb="10"/>
-                  <div class="ps-privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Text PDFs are read in your browser. Scans and images use your configured Document OCR; the temporary attachment is then removed.</span></div>
+                  <div class="ps-privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>PDFs and images are read locally in your browser. Page artwork is saved with the template. Use a blank or redacted sample; cover any source values that must change.</span></div>
                   <div t-if="state.psImportError" class="ps-import-alert danger" t-esc="state.psImportError"/>
                 </div>
                 <div t-if="state.psImportBusy" class="ps-import-loading"><span class="ps-spinner"/><b>Reading structure and matching payroll fields…</b><small>This can take a moment for scanned payslips.</small></div>
@@ -2296,23 +2312,25 @@
                     <span class="ps-provider">Analysed by <t t-esc="state.psImportDraft.provider"/></span>
                   </div>
                   <div t-if="state.psImportDraft.warning" class="ps-import-alert" t-esc="state.psImportDraft.warning"/>
-                  <div class="ps-review-note"><b>Review the draft</b><span>Unticked or unmatched rows are left exactly where they are today. Existing sections are never deleted.</span></div>
+                  <div class="ps-review-note"><b>Review the draft</b><span t-if="state.psImportDraft.document">The original page is preserved. Unmapped fields remain editable and print a dash. Review uncertain matches in the visual editor after import.</span><span t-else="">Unticked or unmatched rows are left exactly where they are today. Existing sections are never deleted.</span></div>
                   <div class="ps-import-sections">
                     <div t-foreach="state.psImportDraft.sections" t-as="sec" t-key="sec.key" class="ps-import-section">
                       <div class="ps-import-sec-head"><span t-attf-class="ps-import-dot sc-{{ sec.color_key }}"/><input t-att-value="sec.label" t-on-input="(ev) => sec.label = ev.target.value"/><span><t t-esc="sec.matches.length"/> suggestions</span></div>
                       <div t-foreach="sec.matches" t-as="m" t-key="m_index" class="ps-import-match">
-                        <input type="checkbox" t-att-checked="m.selected" t-att-disabled="!m.rule_id" t-on-change="(ev) => this.psImportToggle(sec_index, m_index, ev)"/>
+                        <input type="checkbox" t-att-checked="m.selected" t-att-disabled="!m.rule_id and !m.meta_key" t-on-change="(ev) => this.psImportToggle(sec_index, m_index, ev)"/>
                         <div class="ps-source"><small>Found on payslip</small><span t-esc="m.source_label"/></div>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                         <select t-on-change="(ev) => this.psImportSetMatch(sec_index, m_index, ev)">
                           <option value="">Do not map</option>
+                          <option t-foreach="state.psImportDraft.meta_options || []" t-as="meta" t-key="meta.key" t-att-value="'meta:' + meta.key" t-att-selected="m.meta_key === meta.key">Employee detail: <t t-esc="meta.name"/></option>
                           <option t-foreach="state.psImportDraft.options" t-as="opt" t-key="opt.id" t-att-value="opt.id" t-att-selected="opt.id === m.rule_id"><t t-esc="opt.col"/> · <t t-esc="opt.name"/> <t t-if="opt.code">(<t t-esc="opt.code"/>)</t></option>
                         </select>
-                        <span t-attf-class="ps-confidence {{ m.confidence &gt;= 0.82 ? 'high' : 'review' }}"><t t-esc="Math.round(m.confidence * 100)"/>%</span>
+                        <span t-attf-class="ps-confidence {{ m.selected ? 'high' : 'review' }}" t-att-title="m.reason || ''"><t t-if="m.manual">Manual</t><t t-else=""><t t-esc="Math.round(m.confidence * 100)"/>%</t></span>
                       </div>
                     </div>
                   </div>
                   <details t-if="state.psImportDraft.unmatched.length" class="ps-unmatched"><summary><t t-esc="state.psImportDraft.unmatched.length"/> labels need your help</summary><div><span t-foreach="state.psImportDraft.unmatched" t-as="label" t-key="label" t-esc="label"/></div></details>
+                  <div t-if="state.psImportDraft.document" class="ps-import-source-preview"><b>Original page artwork · <t t-esc="state.psImportDraft.document.pages.length"/> page(s)</b><img t-att-src="state.psImportDraft.document.pages[0].image" alt="Imported payslip source preview"/></div>
                   <div t-if="state.psImportDraft.header_html or state.psImportDraft.footer_html" class="ps-import-content-preview">
                     <div t-if="state.psImportDraft.header_html"><b>Detected header</b><div t-out="psHtml(state.psImportDraft.header_html)"/></div>
                     <div t-if="state.psImportDraft.footer_html"><b>Detected footer</b><div t-out="psHtml(state.psImportDraft.footer_html)"/></div>
@@ -2325,15 +2343,16 @@
                     <div class="ps-import-layout-page" t-out="psHtml(state.psImportDraft.layout_preview_html)"/>
                   </div>
                   <div class="ps-import-options">
-                    <label t-if="state.psImportDraft.layout_html"><input type="checkbox" t-att-checked="state.psImportApplyLayout" t-on-change="psImportToggleLayout"/>Replicate the full page layout</label>
-                    <label><input type="checkbox" t-att-checked="state.psImportApplyTheme" t-on-change="psImportToggleTheme"/>Use detected colours and font</label>
-                    <label><input type="checkbox" t-att-checked="state.psImportApplyContent" t-on-change="psImportToggleContent"/>Use detected header and footer text</label>
+                    <span t-if="state.psImportDraft.document">Page artwork, colours, logo and borders will be preserved. You can add fields manually even when none are detected.</span>
+                    <label t-elif="state.psImportDraft.layout_html"><input type="checkbox" t-att-checked="state.psImportApplyLayout" t-on-change="psImportToggleLayout"/>Replicate the full page layout</label>
+                    <label t-if="!state.psImportDraft.document"><input type="checkbox" t-att-checked="state.psImportApplyTheme" t-on-change="psImportToggleTheme"/>Use detected colours and font</label>
+                    <label t-if="!state.psImportDraft.document"><input type="checkbox" t-att-checked="state.psImportApplyContent" t-on-change="psImportToggleContent"/>Use detected header and footer text</label>
                   </div>
                 </div>
               </div>
               <div class="ps-sub-foot">
                 <button class="ps-secondary" t-on-click="closePsImport" aria-label="Close dialog">Cancel</button>
-                <button t-if="state.psImportDraft" class="ps-primary" t-att-disabled="state.psImportBusy or !psImportSelectedCount" t-on-click="psApplyTemplate">Apply <t t-esc="psImportSelectedCount"/> matched fields</button>
+                <button t-if="state.psImportDraft" class="ps-primary" t-att-disabled="state.psImportBusy or (!psImportSelectedCount and !state.psImportDraft.document)" t-on-click="psApplyTemplate"><t t-if="state.psImportDraft.document">Import design · <t t-esc="psImportSelectedCount"/> live fields</t><t t-else="">Apply <t t-esc="psImportSelectedCount"/> matched fields</t></button>
               </div>
             </div>
           </div>
