@@ -34,4 +34,18 @@ rollback-only check using the real ten-sheet Vietnam calculation master returned
 52 hidden columns before and after a newly saved replacement, with identical
 visible fields. Python syntax and `git diff --check` passed.
 
-Deployment and Chrome results will be recorded after verification.
+Implementation commit `c83ac7828` synchronized the latest combined 149 modules /
+4,901 application files. Formula Studio is upgraded on all five databases and
+the deployment-status check reports nothing pending. Protected database/addon
+backups and manifests are retained at
+`/odoo/backups/vn-formula-upload-code-20261018-230715/`. Nine business/configuration
+table hashes matched in all databases before restart.
+
+Deployed validation passes 166 tests per database, 830 total, with no failures or
+errors. The real-master replacement probe also passes against deployed code and
+rolls back. Chrome verifies first upload, changed-byte Replace file, All/Mapped/
+Unmapped, formula-name search and reloading the saved replacement. Both calculated
+fixture columns remain hidden, including the pasted-zero output; the three input
+columns remain available. Browser warning/error logs are empty. The isolated Rize
+test configuration was removed. Screenshots were inspected in memory and no test
+PNG files were written.
