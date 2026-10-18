@@ -56,4 +56,56 @@ lane grows **75 → 97** fields (plus pinned Employee Name); the review download
 still contains **63 existing Employee records out of 70 approved source people**.
 All existing rule/source/native-mapping snapshots and business-row hashes match.
 
-Deployment and Chrome results are recorded below after live verification.
+## Deployed result
+
+Implementation commit **6546960d5** was pushed on branch `19.1`. The latest
+combined **149 custom modules / 4,878 source files**, including the concurrent
+configuration-card styling fix, were synchronized and verified byte-for-byte on
+Payobook19v2. Shared targets are **payobook, payobook_template, abm, p0clone and
+rize**. Application source already matched the latest combined tree; no new
+application schema, model field or asset code was needed for this configuration.
+
+The deployment audit also found 17 previously pending module versions on
+**p0clone**. Those generic upgrades were completed under the deployment lock,
+active cron IDs were restored, and all installed custom module versions now
+match the repository on all five targets. Business counts and aggregate wages
+match the pre-deployment baselines on every database. The service is active.
+An asset notification retry used Odoo 19's signalling-table insert after the
+first attempt used sequence syntax; final validation passed.
+
+Only **rize** received the 22 new component definitions, source bindings and
+layout entries. SQL verification confirms **zero** of these component codes in
+the other four databases. The configuration remains Draft. A second rollback
+verification created **zero** components and passed all invariants and all
+30 payroll scenarios again. The original 116 rules, letters, formulas, sources,
+native mappings and Employee/Contract/advantage/payslip/run row hashes are
+unchanged. There are no new stored values or advantage lines for these fields.
+
+Deployed tests: **74 passed per database, 370 total, zero failures/errors** for
+the template workspace and native dependent-count regressions. Local syntax,
+definition, diff and four database-isolation guard checks also passed.
+
+Chrome verification on Rize confirmed **138 components / 115 inputs**, the
+Blood Type spreadsheet wire, Contract Text storage, Information only pay role,
+and saved-record placement restrictions. The mapping board shows **114 Excel
+connections**; Dependent/Children continues to use the saved dependent-count
+transformation. All **18 calculated/generated Excel columns** remain hidden.
+
+Both actual Chrome downloads contain all 22 headings exactly once across the
+63-person review roster. The monthly workbook has three visible sheets and a
+fully protected Employee records sheet; new fields are absent from the editable
+Time/Monthly adjustments tabs. The separate records workbook exposes the new
+text cells for reviewed updates. Re-uploading that unmodified workbook returned
+**0 changes, 5,733 blanks ignored, 441 unchanged values and 0 issues**; the review
+was cancelled. The browser saw one expected connection warning during the
+shared service restart; the completed checks passed after reload.
+
+Updated private deliverables are in `outputs/rize-vn-context-20261018/` and are
+excluded from Git. New text values are initially blank; their population is a
+separate reviewed records import. The roster remains 63 existing profiles out
+of the 70 approved source people. No test PNGs were written to disk; all
+test-generated PNG files are absent.
+
+Protected backups, before-database dumps, migration definition/script and
+receipts, combined-tree manifest and final test logs:
+`Payobook19v2:/odoo/backups/vn-hr-context-20261018-133224/`.
