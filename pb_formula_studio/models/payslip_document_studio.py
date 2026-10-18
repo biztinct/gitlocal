@@ -193,6 +193,8 @@ class PayslipDocumentStudio(models.AbstractModel):
             for field in page['fields']:
                 if field['binding'] == 'blank':
                     warnings.append(_('%s: no live source selected', field['label']))
+                elif field['binding'] == 'component' and values is not None and field['rule_id'] not in values:
+                    warnings.append(_('%s: the selected component no longer exists', field['label']))
                 if field['rate_rule_id'] and documents.finite((values or {}).get(field['rate_rule_id'])) <= 0:
                     warnings.append(_('%s: exchange rate is missing or not positive', field['label']))
         return warnings

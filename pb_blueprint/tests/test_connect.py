@@ -20,6 +20,11 @@ opened has no runtime handle to grab.
 """
 import os
 import re
+import base64
+import io
+
+from PIL import Image
+from odoo.addons.pb_hr_payroll_formula.models import payslip_document
 
 from odoo.modules.module import get_module_path
 from odoo.tests import TransactionCase, tagged
@@ -63,6 +68,31 @@ class TestConnect(TransactionCase):
             'connector_type': 'demo',
             'company_id': self.env.company.id,
         })
+
+    def test_visual_document_bindings_count_as_placed_without_sections(self):
+        config = self._draft('visual-document-placement')
+        rule = self._inputs(config)[0]
+        config.rule_ids.write({'payslip_identifier': False, 'appears_on_payslip': False})
+        image = io.BytesIO()
+        Image.new('RGB', (306, 396), 'white').save(image, 'JPEG')
+        document = {'version': 1, 'pages': [{'width': 612, 'height': 792,
+            'image': 'data:image/jpeg;base64,' + base64.b64encode(image.getvalue()).decode(),
+            'fields': [{'id': 'live-1', 'label': 'Live source', 'x': 20, 'y': 20, 'w': 100, 'h': 24,
+                        'binding': 'component', 'rule_id': rule.id}]}]}
+        config.payslip_document = payslip_document.validate_document(
+            document, set(config.rule_ids.ids), config.PAYSLIP_META_KEYS)
+        state = self.Studio.bp_readiness(config.id)
+        self.assertEqual(state['payslip']['placed'], 1)
+        self.assertIn(rule.code, self.Studio._payslip_state(config)['placed_codes'])
+        self.assertFalse(rule.appears_on_payslip, 'document placement does not mutate line eligibility')
+        marked = self.Studio.bp_task_set(config.id, 'payslip', 'configured')
+        self.assertTrue(marked['ok'], marked)
+        document['pages'][0]['fields'][0].update(binding='blank', rule_id=False)
+        config.payslip_document = payslip_document.validate_document(
+            document, set(config.rule_ids.ids), config.PAYSLIP_META_KEYS)
+        after = self.Studio.bp_readiness(config.id)
+        self.assertEqual(after['payslip']['placed'], 0)
+        self.assertEqual(after['status']['payslip'], 'needs_review')
 
     # ==================================================================
     # 1 — the coverage counts

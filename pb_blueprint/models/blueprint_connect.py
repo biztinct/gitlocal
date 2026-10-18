@@ -296,6 +296,13 @@ class PbBlueprintConnect(models.AbstractModel):
         rules = config.rule_ids
         on_slip = rules.filtered(lambda r: r.appears_on_payslip)
         placed = on_slip.filtered(lambda r: r.payslip_identifier)
+        document = getattr(config, 'payslip_document', None) or {}
+        document_ids = {field.get('rule_id') for page in document.get('pages', [])
+                        for field in page.get('fields', [])
+                        if field.get('binding') == 'component'}
+        document_rules = rules.filtered(lambda rule: rule.id in document_ids)
+        placed |= document_rules
+        on_slip |= document_rules
         tray = on_slip - placed
         Section = self.env.get('hr.payslip.config')
         sections = 0

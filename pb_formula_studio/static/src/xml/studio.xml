@@ -2087,7 +2087,7 @@
               <select t-if="state.psData and state.psData.samples.length" class="ps-sample" t-on-change="psSetSample">
                 <option t-foreach="state.psData.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="s.id === state.psData.sample_id" t-esc="s.name"/>
               </select>
-              <div class="ps-lang" t-on-click="psToggleLang" t-att-title="'Preview labels: ' + (state.psLang === 'vi' ? 'Vietnamese' : 'English')">
+              <div t-if="!state.psData or !state.psData.document" class="ps-lang" t-on-click="psToggleLang" t-att-title="'Preview labels: ' + (state.psLang === 'vi' ? 'Vietnamese' : 'English')">
                 <span t-att-class="state.psLang === 'en' ? 'on' : ''">EN</span><span t-att-class="state.psLang === 'vi' ? 'on' : ''">VI</span>
               </div>
               <button t-if="state.psData and state.psData.can_edit" class="ps-import-btn" t-on-click="openPsImport" t-att-title="state.psData.layout_html ? 'Replace the imported document with another payslip' : 'Upload a payslip and turn it into an editable layout'">

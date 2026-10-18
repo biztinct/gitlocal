@@ -132,6 +132,7 @@ export class PayslipDocumentDesigner extends Component {
     pointerDown(field, ev, resize = false) {
         if (this.state.preview || ev.button !== 0) return;
         ev.preventDefault(); ev.stopPropagation();
+        ev.currentTarget.closest('.ps-document-sheet')?.focus();
         this.state.selected = field.id;
         this.drag = { id: field.id, x: ev.clientX, y: ev.clientY, start: { ...field }, resize };
     }

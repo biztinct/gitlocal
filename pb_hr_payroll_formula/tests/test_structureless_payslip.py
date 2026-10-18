@@ -25,7 +25,15 @@ class TestStructurelessPayslip(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.company = self.env.company
+        # A tenant may already have several active schemes. The fallback
+        # resolver must see only this probe company's scheme, rather than
+        # whichever real customer's scheme happens to sort first.
+        self.company = self.env['res.company'].create({
+            'name': 'Structureless payslip test company',
+            'currency_id': self.env.company.currency_id.id,
+        })
+        self.env = self.env(context=dict(self.env.context,
+                                        allowed_company_ids=[self.company.id]))
         self.employee = self.env['hr.employee'].create({
             'name': 'Structureless Person', 'company_id': self.company.id})
         # A payslip line refuses to exist without a contract (om_hr_payroll).
