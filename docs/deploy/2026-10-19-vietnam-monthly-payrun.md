@@ -34,4 +34,31 @@ of approved October actuals. The owner has been asked how to handle these test
 inputs and seven incomplete records. No salary, attendance or eligibility is to
 be invented.
 
-Deployment and end-to-end validation receipts are added after execution.
+The owner confirmed using historical inputs and testing 63 complete employees,
+with the seven incomplete people retained as blank reference rows.
+
+## Monthly upload correction
+
+A downloaded Draft-review workbook can include employees who are outside the
+current run's eligible population. The monthly importer now accepts those rows
+as reference only when the server-owned download receipt identifies them, their
+identity remains unchanged, and every editable monthly input is blank. It warns
+which identities were excluded. An entered zero or amount, a changed identity,
+an unknown row or a cross-company person still blocks the upload. Three
+regressions cover blank references and these refusals.
+
+The first shared deployment (`a0439170c`) upgraded Payroll Templates to
+`19.0.1.2.11` on all five databases. All 131 selected template/mapping regressions
+passed on each database (655 total). The Rize-only definition update then
+committed 181 components: 135 inputs, 41 formulas, five constants, with 96/96
+calculation scenarios passing and all employee/contract/bank/dependent/payroll
+records unchanged.
+
+An attempted department-wide population correctly failed its scope check:
+seven historical leavers still have open contracts in those departments. The
+configuration therefore uses the existing advanced employee-domain assignment
+model to scope the owner's 70 approved RIZ identities. Normal contract
+eligibility admits 63; the seven unsalaried Draft contracts remain pending.
+No old contract is closed and no unrelated department map is replaced.
+
+Final deployment and end-to-end validation receipts are added after execution.

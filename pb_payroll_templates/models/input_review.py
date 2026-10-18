@@ -230,6 +230,7 @@ class PayrollInputReview(models.AbstractModel):
         previous_period, previous = self._previous_inputs(cfg, period, people, catalog)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
         uploads, structural, warnings, seen_tabs = {}, [], [], {}
+        reference_only = set()
         if layout_changed:
             warnings.append(_('Template settings changed since download. Your workbook values have been matched to the current input fields. Review all fields below before continuing.'))
         for sheet_name, cols in snapshot['columns'].items():
@@ -261,6 +262,22 @@ class PayrollInputReview(models.AbstractModel):
                 if all(v is None or v == '' for v in vals):
                     continue
                 entry = by_row.get(vals[headers.index('_row')])
+                if entry and entry[0] not in resolved and entry[0] not in seen:
+                    # A reusable workbook may have been downloaded while a
+                    # person was on a review roster. Keep their blank row as
+                    # reference when they are no longer eligible. Only the
+                    # server-owned export receipt grants this exception;
+                    # entered zero/amounts, changed IDs and unknown rows still
+                    # require the normal population refusal below.
+                    eid, old = entry
+                    employee = self.env['hr.employee'].browse(eid).exists()
+                    blank = all(c.get('readonly') or vals[ids[c['id']]] in (None, '') for c in cols)
+                    if (employee and employee.company_id == self.env.company and blank
+                            and self._workbook_code_unchanged(employee, old, identity_columns[0],
+                                vals[headers.index(code_header)])):
+                        seen.add(eid)
+                        reference_only.add(old.get('identity_values', {}).get('code', old['code']))
+                        continue
                 if not entry or entry[0] not in resolved:
                     structural.append(_('%s row %s: employee is unknown or outside this payroll population.') % (sheet_name, rn))
                     continue
@@ -285,6 +302,8 @@ class PayrollInputReview(models.AbstractModel):
                         warnings.append(_('%s · %s: this month’s saved input changed since download. Your uploaded value is shown for review; confirming replaces only this month’s input.') % (people.browse(eid).name, c['label']))
                     uploads[(eid, c['id'])] = plain(value)
             seen_tabs[sheet_name] = seen
+        if reference_only:
+            warnings.append(_('Blank rows for %s are reference only because these employees are outside the current payroll population. No payroll inputs were taken from those rows.') % ', '.join(sorted(reference_only)))
         if not seen_tabs.get('Monthly adjustments', set()).issubset(seen_tabs.get('Time', set())):
             structural.append(_('Every adjustment employee must also appear on the Time tab.'))
         rows = []

@@ -72,6 +72,44 @@ class TestPayrollTemplates(TransactionCase):
             self.assertEqual(wb[sheet].max_row,1)
             self.assertFalse(wb[sheet].protection.sheet)
 
+    def reference_roster_workbook(self):
+        pending = self.env['hr.employee'].search([('barcode', '=', '000099'),
+            ('company_id', '=', self.env.company.id)], limit=1)
+        if not pending:
+            pending = self.env['hr.employee'].create({'name': 'Pending workbook employee',
+                'barcode': '000099', 'company_id': self.env.company.id})
+        with patch.object(type(self.api), '_roster', return_value=self.emp | pending):
+            wb = self.export('template')
+        self.set_value(wb, 'Time', 'Paid days', 20)
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 50)
+        return wb
+
+    def test_known_blank_rows_outside_current_population_are_reference_only(self):
+        wb = self.reference_roster_workbook()
+        result = self.review(wb)
+        self.assertFalse(result['issues'])
+        self.assertEqual([r['emp_id'] for r in result['grid']['rows']], self.emp.ids)
+        self.assertTrue(any('000099' in warning and 'reference only' in warning for warning in result['warnings']))
+        self.apply(result)
+        rows = self.env['pb.payroll.month.inputs'].search([('config_id', '=', self.cfg.id)])
+        self.assertEqual(rows.employee_id, self.emp)
+
+    def test_outside_population_payment_even_zero_is_not_ignored(self):
+        for value in (0, 100):
+            wb = self.reference_roster_workbook()
+            sheet = wb['Monthly adjustments']
+            col = [c.value for c in sheet[1]].index('Monthly bonus') + 1
+            sheet.cell(3, col, value)
+            self.assertTrue(self.review(wb)['issues'])
+
+    def test_blank_outside_population_rows_still_require_original_identity(self):
+        for altered in ('Employee ID', '_row'):
+            wb = self.reference_roster_workbook()
+            sheet = wb['Time']
+            col = [c.value for c in sheet[1]].index(altered) + 1
+            sheet.cell(3, col, 'not-the-original-value')
+            self.assertTrue(self.review(wb)['issues'])
+
     def test_unprotected_monthly_identity_still_validated(self):
         for sheet in ('Time','Monthly adjustments'):
             wb=self.export()
