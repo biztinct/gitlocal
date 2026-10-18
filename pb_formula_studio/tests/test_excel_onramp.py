@@ -250,6 +250,23 @@ class TestExcelOnRamp(TransactionCase):
         self.assertEqual(types['Salary|Others']['kind'],'formula',
                          'The loader stores the last physical occurrence under the heading alias.')
 
+    def test_spreadsheet_fallback_wire_survives_a_primary_transformation(self):
+        cfg = self._config('J2 primary transformation')
+        cfg.source_priority = 'api,excel,records'
+        read = self.Studio.import_mapping_read_headers(
+            cfg.id, base64.b64encode(self._flat_file()).decode(), 'inputs.xlsx')
+        self.assertEqual(read['read']['columns'], 4, 'Aliases are not extra Excel columns.')
+        basic = cfg.rule_ids.filtered(lambda r: r.code == 'BASIC')
+        basic.set_source_binding('excel', 'Basic Salary', origin='user')
+        basic.set_source_binding('rule', 'SAVED_BASIC', origin='user')
+        self.assertEqual(basic.source_binding, 'rule')
+        board = self.Studio.import_mapping_data(cfg.id, 'sample')
+        self.assertEqual(board['sample']['columns'], 4)
+        self.assertTrue(any(w['leftId'].endswith('Basic Salary') and w['rightId'] == basic.id
+                            for w in board['wires']))
+        self.assertEqual(board['wired'], 1)
+        self.assertEqual(set(basic.source_ids.mapped('kind')), {'excel', 'rule'})
+
     # =====================================================================
     # 1 — the empty state
     # =====================================================================

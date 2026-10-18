@@ -9074,7 +9074,7 @@ class PbFormulaStudio(models.AbstractModel):
         return {
             'filename': name,
             'read_on': when,
-            'columns': len(cols),
+            'columns': sum(bool(c.get('preferred')) for c in cols),
             'shown': len([c for c in cols if c.get('preferred')]),
             'has_file': bool(config.import_sample_file),
             'line': (_("%(file)s · read %(when)s", file=name, when=when) if when
@@ -9155,7 +9155,7 @@ class PbFormulaStudio(models.AbstractModel):
         # run's columns one gesture after somebody handed the board a workbook.
         data = self.import_mapping_data(config.id, 'sample')
         data['read'] = {
-            'columns': len(cols),
+            'columns': sum(bool(c.get('preferred')) for c in cols),
             'shown': len([c for c in cols if c.get('preferred')]),
             'truncated': truncated,
         }
@@ -9420,8 +9420,10 @@ class PbFormulaStudio(models.AbstractModel):
             # The BINDING is the wire. `data_source_field` still draws one for a
             # scheme that predates bindings, so no existing configuration loses its
             # picture — but it is the fallback, not the record.
-            key = ((r.source_binding_key or '').strip()
-                   if r.source_binding == 'excel' else '') or r.data_source_field
+            # A higher-priority transformation does not remove the configured
+            # spreadsheet fallback. Draw its own declared Excel source.
+            key = next((s['key'] for s in r.declared_sources()
+                        if s['kind'] == 'excel'), '') or r.data_source_field
             if key:
                 wires.append({'id': 'im%s' % r.id, 'kind': 'mapping', 'ref': r.id,
                               'leftId': 'c:' + key, 'rightId': r.id, 'state': 'accepted'})
