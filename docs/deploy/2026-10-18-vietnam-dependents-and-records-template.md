@@ -58,3 +58,26 @@ p0clone. The former lrp4clone database is no longer present. Back up each databa
 and the shared addon tree, upgrade the three changed installed modules, preserve
 business aggregates and existing cron activation, refresh assets, then test the
 deployed application and Chrome flows. Source/receipts remain private.
+
+## Rize-only client-data boundary
+
+The owner clarified that updated application code must be deployed everywhere,
+but Rize employee and payroll data must exist only on rize.payobook.com. The
+new 43-dependent import, five archived profiles, native count transformation,
+Draft configuration and review-roster scope were applied only to rize.
+
+The cross-database audit found two older Draft import-review copies on payobook:
+602 (Rize Indonesia) and 613 (Rize Singapore), created 14 October. Neither has
+employee assignments, payslips, pay runs or import batches. The scoped cleanup
+script `tools/remove_rize_review_copies.py` backs up and removes those definitions,
+their source/sample children and attached workbooks. It also removes an older
+masked Rize payslip attachment copied to a demo recruitment test, retaining the
+demo applicant itself. Employee, contract, payslip and run counts must remain
+unchanged. Two common Vietnamese-name matches were created in June and belong
+to generic Corporate/IT demo payrolls, without matching Rize IDs or email; they
+are not identified as Rize copies and are preserved.
+
+The other application databases have no Rize-labelled payroll configuration,
+Rize company, imported dependent rows or VNDEPCOUNT transformation. The isolated
+codex_vn_records_20261018 database is temporary test data and must be dropped
+before completion. Restricted recovery backups are retained outside live databases.
