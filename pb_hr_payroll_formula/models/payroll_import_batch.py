@@ -1108,6 +1108,7 @@ class HrPayrollImportBatch(models.Model):
                 'headers': headers,
                 'headers_meta': sheet_data.get('headers', []),
                 'data_rows': sheet_data.get('data_rows', []),
+                'column_rows': sheet_data.get('column_rows', []),
                 'primary_key': primary_key,
                 'match_count': match_count,
                 'row_count': sheet_data.get('total_rows', 0),
@@ -1142,7 +1143,9 @@ class HrPayrollImportBatch(models.Model):
             main_rows = [{h: (_SHAPE_PROBE if h == main_pk else None)
                           for h in main_sheet['headers']}]
             shape_only = True
-        for row in main_rows:
+        for row_index, row in enumerate(main_rows):
+            physical_rows = main_sheet['column_rows']
+            physical = physical_rows[row_index] if row_index < len(physical_rows) else {}
             pk_value = row.get(main_pk)
             pk_key = self._normalize_code(pk_value)
             if not pk_key:
@@ -1155,7 +1158,7 @@ class HrPayrollImportBatch(models.Model):
                 header_value = header_info.get('value')
                 if not col_letter or not header_value:
                     continue
-                value = row.get(header_value)
+                value = physical.get(col_letter, row.get(header_value))
                 base_row[f"{main_sheet['sheet_name']}|{col_letter}"] = value
                 base_row[col_letter] = value
             merged_rows[pk_key] = base_row
@@ -1169,16 +1172,19 @@ class HrPayrollImportBatch(models.Model):
                 continue
 
             aux_map = {}
-            for row in sheet['data_rows']:
+            for row_index, row in enumerate(sheet['data_rows']):
                 pk_value = row.get(pk_header)
                 pk_key = self._normalize_code(pk_value)
                 if not pk_key:
                     continue
-                aux_map[pk_key] = row
+                physical_rows = sheet['column_rows']
+                physical = physical_rows[row_index] if row_index < len(physical_rows) else {}
+                aux_map[pk_key] = (row, physical)
 
             for pk_key, base_row in merged_rows.items():
-                aux_row = aux_map.get(pk_key)
-                if aux_row:
+                matched = aux_map.get(pk_key)
+                if matched:
+                    aux_row, physical = matched
                     for header in sheet['headers']:
                         if header == pk_header:
                             continue
@@ -1191,7 +1197,7 @@ class HrPayrollImportBatch(models.Model):
                         header_value = header_info.get('value')
                         if not col_letter or not header_value or header_value == pk_header:
                             continue
-                        value = aux_row.get(header_value)
+                        value = physical.get(col_letter, aux_row.get(header_value))
                         base_row[f"{sheet['sheet_name']}|{col_letter}"] = value
                 else:
                     for header in sheet['headers']:

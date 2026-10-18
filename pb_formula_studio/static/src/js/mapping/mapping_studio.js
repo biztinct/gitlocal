@@ -1340,7 +1340,7 @@ export class MappingStudio extends Component {
     async draw(leftId, rightId) {
         const p = this.prefix;
         const fixed = p === "import" && this.rightItems.find(
-            (it) => String(it.id) === String(rightId) && it.meta?.collapsedGroup);
+            (it) => String(it.id) === String(rightId) && it.meta?.type === 'constant');
         if (fixed) {
             const source = this.leftItems.find((it) => String(it.id) === String(leftId));
             this.dialog.add(ConfirmationDialog, {

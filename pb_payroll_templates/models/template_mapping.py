@@ -63,4 +63,7 @@ class TemplateMapping(models.AbstractModel):
                 canonical = aliases[source[2:]][0]
                 wire['leftId'] = 'c:' + canonical
                 wire['source'] = canonical
+        visible = {c['id'] for c in left}
+        data['wires'] = [w for w in data['wires'] if w['leftId'] in visible]
+        data['wired'] = len({w['rightId'] for w in data['wires'] if w['kind'] == 'mapping'})
         return data

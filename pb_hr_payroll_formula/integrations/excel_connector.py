@@ -953,10 +953,20 @@ class ExcelConnector(BaseHRConnector):
 
         _logger.info(f"  -> Filtered headers with values: {len(headers)}")
 
-        # Extract data rows
-        data_rows = []
+        # A numbered column guide below multi-row headings is not a person.
+        guide = [c.value for c in sheet[data_start_row] if c.value is not None]
+        if (len(guide) >= 5 and guide[:2] == [1, 2]
+                and all(isinstance(v, (int, float)) and not isinstance(v, bool)
+                        and v == int(v) and 1 <= v <= sheet.max_column for v in guide)
+                and max(guide) >= len(guide) * .7):
+            data_start_row += 1
+
+        # Preserve physical values beside heading-keyed rows: repeated headings
+        # otherwise overwrite each other before the merge can create U/AF keys.
+        data_rows, column_rows = [], []
         for row in sheet.iter_rows(min_row=data_start_row):
             row_data = {}
+            column_data = {}
             for cell in row:
                 col_letter = get_column_letter(cell.column)
                 header = next(
@@ -965,10 +975,12 @@ class ExcelConnector(BaseHRConnector):
                 )
                 if header:
                     row_data[header['value']] = cell.value
+                    column_data[col_letter] = cell.value
 
             # Skip empty rows
             if any(v is not None for v in row_data.values()):
                 data_rows.append(row_data)
+                column_rows.append(column_data)
 
         return {
             'sheet_name': sheet_name,
@@ -978,6 +990,7 @@ class ExcelConnector(BaseHRConnector):
             'headers': headers,
             'component_types': component_types,
             'data_rows': data_rows,
+            'column_rows': column_rows,
             'total_rows': len(data_rows),
             'total_columns': len(headers),
         }

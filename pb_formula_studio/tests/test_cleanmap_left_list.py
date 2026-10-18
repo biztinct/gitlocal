@@ -241,7 +241,7 @@ class TestCleanmapLeftList(TransactionCase):
     # =====================================================================
     # 7 — a column the file has lost says so, once
     # =====================================================================
-    def test_07_a_lost_column_gets_one_honest_card(self):
+    def test_07_another_files_binding_stays_saved_but_off_the_board(self):
         keys = self._merged_keys([('Salary', [lbl for lbl, _c in self._SPECS])])
         cfg = self._config('CLEANMAP Ghost')
         batch = self._batch(cfg, {k: None for k in keys})
@@ -250,12 +250,14 @@ class TestCleanmapLeftList(TransactionCase):
         rules[1].set_source_binding('excel', 'Ghost Column', origin='board')
         data = self._board(cfg, batch.id)
         lost = self._lane(data, 'Mapped, but not in this file')
-        self.assertEqual([c['id'] for c in lost], ['c:Ghost Column'])
-        self.assertEqual(lost[0]['sublabel'], 'this file has no such column')
-        self.assertTrue(lost[0]['meta'].get('orphan'))
+        self.assertEqual(lost, [])
         wire = [w for w in data['wires']
                 if w['kind'] == 'mapping' and w['ref'] == rules[1].id]
-        self.assertEqual([w['leftId'] for w in wire], ['c:Ghost Column'])
+        self.assertEqual(wire, [])
+        self.assertEqual(rules[1].source_binding_key, 'Ghost Column')
+        item = next(c for c in data['right'] if c['id'] == rules[1].id)
+        self.assertEqual(item['meta']['collapsedGroup'], 'Other scheme inputs')
+        self.assertEqual(data['wired'], 1)
 
     # =====================================================================
     # 8 — a binding written with another spelling is the same column

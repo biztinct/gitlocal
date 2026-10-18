@@ -12,6 +12,26 @@ spec.loader.exec_module(module)
 
 
 class FormulaColumnTypes(unittest.TestCase):
+    def test_physical_columns_keep_repeated_headers_and_ignore_numbering_and_footer(self):
+        book = openpyxl.Workbook()
+        ws = book.active
+        ws.title = 'Salary'
+        ws.append(['Group', None, 'Other group'])
+        ws.append(['Code', 'Others', 'Others'])
+        ws.append([1, 2, 3])
+        ws.append(['E1', 100, '=B4*2'])
+        ws.append(['E2', 200, '=B5*2'])
+        ws.append(['Totals', '=SUM(B4:B5)', 'an unrelated note'])
+        out = io.BytesIO()
+        book.save(out)
+        cols = tuple((f'Salary|{letter}', 'Salary', label, letter, True, letter, 4, 5)
+                     for letter,label in [('A','Code'),('B','Others'),('C','Others')])
+        types = module.classify_xlsx_columns(out.getvalue(), cols)
+        self.assertEqual(types['Salary|B']['kind'], 'input')
+        self.assertEqual(types['Salary|C']['kind'], 'formula')
+        self.assertEqual(types['Salary|C']['letter'], 'C')
+        self.assertEqual(types['Salary|C']['data_rows'], 2)
+
     def test_sections_blanks_mixed_values_and_later_formulas(self):
         book = openpyxl.Workbook()
         ws = book.active

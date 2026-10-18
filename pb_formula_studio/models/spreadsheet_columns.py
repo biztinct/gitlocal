@@ -31,17 +31,20 @@ def classify_xlsx_columns(content, columns, sheet_name='', data_start_row=0):
     try:
         default_sheet = sheet_name if sheet_name in book.sheetnames else book.sheetnames[0]
         groups = defaultdict(list)
-        for key, sheet, header, letter, preferred in columns:
-            groups[sheet or default_sheet].append((key, header, letter, preferred))
+        for spec in columns:
+            key, sheet, header, letter, preferred = spec[:5]
+            physical, start, end = spec[5:] if len(spec) > 5 else ('', 0, 0)
+            groups[(sheet or default_sheet, start, end)].append(
+                (key, header, letter, preferred, physical))
         result = {}
-        for title, specs in groups.items():
+        for (title, declared_start, declared_end), specs in groups.items():
             if title not in book.sheetnames:
                 continue
             ws = book[title]
             wanted = {header or key.split('|', 1)[-1]
-                      for key, header, _, preferred in specs if preferred}
+                      for key, header, _, preferred, _ in specs if preferred}
             if not wanted:
-                wanted = {header for _, header, _, _ in specs if header}
+                wanted = {header for _, header, _, _, _ in specs if header}
             if not wanted:
                 continue
             # Headers are already known from the loader. Locate their row rather
@@ -58,24 +61,36 @@ def classify_xlsx_columns(content, columns, sheet_name='', data_start_row=0):
             scored = [(len({_text(c.value) for c in row} & wanted), -i, row)
                       for i, row in enumerate(prefix)]
             score, negative_index, heading = max(scored, key=lambda x: x[:2])
-            if not score:
+            explicit = any(physical for _, _, _, _, physical in specs)
+            if not score and not explicit:
                 continue
-            header_index = -negative_index
+            header_index = declared_start - 2 if declared_start else -negative_index
             positions = defaultdict(list)
             for i, cell in enumerate(heading):
                 label = _text(cell.value)
                 if label:
                     positions[label].append(i)
+            # Curated multi-row headings can repeat or span currency columns.
+            # Their physical position, rather than a duplicate heading's first
+            # occurrence, determines whether that column contains formulas.
+            if explicit:
+                positions = defaultdict(list)
+                for key, header, _, preferred, physical in specs:
+                    if preferred and physical:
+                        positions[header or key.split('|')[-1]].append(
+                            openpyxl.utils.column_index_from_string(physical) - 1)
             counts = defaultdict(lambda: [0, 0])
             errors = defaultdict(list)
             sequences = {}
             populated_rows = 0
             headed_indexes = {i for indexes in positions.values() for i in indexes}
-            start = max(header_index + 2, data_start_row or 0)
+            start = max(header_index + 2, data_start_row or 0, declared_start)
             from itertools import chain
             for number, row in enumerate(chain(prefix[header_index + 1:], rows), header_index + 2):
                 if number < start:
                     continue
+                if declared_end and number > declared_end:
+                    break
                 if any(i < len(row) and row[i].value not in (None, '') for i in headed_indexes):
                     populated_rows += 1
                 for i, cell in enumerate(row):
@@ -99,7 +114,8 @@ def classify_xlsx_columns(content, columns, sheet_name='', data_start_row=0):
                         sequences[i] = [bool(valid and match and previous == number - 1 and
                                              int(match[1]) == previous), number]
             by_heading, by_letter = {}, {}
-            for label, indexes in positions.items():
+            entries = [(label, [i]) for label, indexes in positions.items() for i in indexes]
+            for label, indexes in entries:
                 formulas = sum(counts[i][0] for i in indexes)
                 literals = sum(counts[i][1] for i in indexes)
                 letter = openpyxl.utils.get_column_letter(indexes[0] + 1)
@@ -115,19 +131,20 @@ def classify_xlsx_columns(content, columns, sheet_name='', data_start_row=0):
                         'error_cells': error_cells,
                         'error_addresses': [openpyxl.utils.get_column_letter(i + 1) + str(r)
                                             for i in indexes for r in errors[i]][:10]}
-                by_heading[label] = info
+                by_heading.setdefault(label, info)
                 for i in indexes:
                     by_letter[openpyxl.utils.get_column_letter(i + 1)] = info
-            for key, header, letter, _preferred in specs:
+            for key, header, letter, _preferred, physical in specs:
                 tail = key.split('|', 1)[-1]
-                info = by_heading.get(header) or by_heading.get(tail)
+                info = by_letter.get(physical) if physical else None
+                info = info or by_heading.get(header) or by_heading.get(tail)
                 if info is None:
                     info = by_letter.get(letter or tail)
                 if info is None:
                     continue
                 result[key] = info
                 for alias in (title + '|' + info['header'], title + '|' + info['letter']):
-                    result[alias] = info
+                    result.setdefault(alias, info)
                 # Bare spellings follow the loader's first-sheet precedence.
                 result.setdefault(info['header'], info)
                 result.setdefault(info['letter'], info)

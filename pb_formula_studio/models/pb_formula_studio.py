@@ -7491,8 +7491,8 @@ class PbFormulaStudio(models.AbstractModel):
         version of CM3, and the whole reason the file card shows 41 rows
         instead of 41 rows plus a scatter of ghosts.
 
-        A key this file does not contain gets no entry, and its row is marked
-        `gone` by the caller.
+        A key this file does not contain gets no entry. Its saved definition is
+        retained, while the selected-file Journey folds that component away.
         """
         cols = self._import_sample_columns(config)
         if not cols:
@@ -7504,7 +7504,7 @@ class PbFormulaStudio(models.AbstractModel):
         letters = self._sample_column_letters(config)
 
         def meta_of(col):
-            return {'label': (col.get('header') or '').strip() or col.get('key'),
+            return {'label': (col.get('label') or col.get('header') or '').strip() or col.get('key'),
                     'tag': (letters.get(col.get('key'))
                             or (col.get('letter') or '').strip()),
                     'sheet': (col.get('sheet') or '').strip()}
@@ -7674,6 +7674,24 @@ class PbFormulaStudio(models.AbstractModel):
 
         file_cols, canon = self._journey_file_index(config)
         sample = self._import_sample_meta(config)
+        # A selected workbook is a view of that workbook's flow. Saved bindings
+        # for other templates are still valid definitions, not deleted columns
+        # of this file. Keep those components in the optional folded list.
+        other_inputs = self.env['hr.formula.rule']
+        if sample:
+            types = self._import_column_types(config)
+            def in_file(rule):
+                declared, legacy = declared_by_rule[rule.id]
+                if any(d['kind'] in ('feed', 'rule', 'period') for d in declared):
+                    return True
+                keys = [d.get('key') or '' for d in declared if d['kind'] == 'excel']
+                if legacy:
+                    keys.append(legacy)
+                return any(canon.get(key, key) in file_cols
+                           and self._import_column_type(types, key).get('kind') != 'formula'
+                           for key in keys)
+            other_inputs = inputs.filtered(lambda r: not in_file(r))
+            inputs -= other_inputs
         sheets_with_rows = set()
 
         # ==================================================================
@@ -7799,9 +7817,11 @@ class PbFormulaStudio(models.AbstractModel):
             if not key:
                 return None
             ckey = canon.get(key, key)
+            meta = file_cols.get(ckey)
+            if sample and not meta:
+                return None
             file_card()
             rid = 'f:%s' % ckey
-            meta = file_cols.get(ckey)
             if meta:
                 if meta['sheet']:
                     sheets_with_rows.add(meta['sheet'])
@@ -7976,11 +7996,12 @@ class PbFormulaStudio(models.AbstractModel):
              'label': r.name or r.code or '', 'tag': '', 'sub': '',
              'state': 'plain', 'group': ''}
             for r in rules.sorted(key=lambda r: (r.sequence, r.id))
-            if r.column_type in ('formula', 'constant')
+            if r.column_type in ('formula', 'constant') or r in other_inputs
         ]
         scheme['folded'] = {
             'n': len(folded_rows),
-            'label': _("%s calculated or fixed") % len(folded_rows),
+            'label': (_("%s other inputs, calculated or fixed") if other_inputs
+                      else _("%s calculated or fixed")) % len(folded_rows),
             'rows': folded_rows,
         }
         scheme['sub'] = (_("%s needs a source") if len(inputs) == 1
@@ -8878,13 +8899,22 @@ class PbFormulaStudio(models.AbstractModel):
             filename = config.import_sample_filename or ''
             encoded = config.with_context(bin_size=False).import_sample_file
             columns = [(c.get('key') or '', c.get('sheet') or '', c.get('header') or '',
-                        c.get('letter') or '', bool(c.get('preferred')))
+                        c.get('letter') or '', bool(c.get('preferred')),
+                        c.get('physical_letter') or '', c.get('data_start_row') or 0,
+                        c.get('data_end_row') or 0)
                        for c in self._import_sample_columns(config)]
             sheet_name, start = '', 0
         if not encoded or not filename.lower().endswith(('.xlsx', '.xlsm')):
             return {}
         try:
-            return classify_xlsx_columns(base64.b64decode(encoded), tuple(columns), sheet_name, start)
+            result = classify_xlsx_columns(base64.b64decode(encoded), tuple(columns), sheet_name, start)
+            if not batch:
+                outputs = {(c.get('sheet') or '', c.get('physical_letter'))
+                           for c in self._import_sample_columns(config) if c.get('calculated')}
+                result = {key: (dict(info, kind='formula')
+                                if (info['sheet'], info['letter']) in outputs else info)
+                          for key, info in result.items()}
+            return result
         except Exception:
             _logger.warning('Could not inspect formula cell types in %s', filename, exc_info=True)
             return {}
@@ -9031,8 +9061,17 @@ class PbFormulaStudio(models.AbstractModel):
         if not content:
             return {'ok': False, 'msg': _("That file is empty.")}
         try:
-            cols = self.env['hr.payroll.import.batch'].peek_source_columns(
-                config, content, name)
+            previous = self._import_sample_columns(config)
+            retained = config.with_context(bin_size=False).import_sample_file
+            if (retained and any(c.get('physical_letter') and c.get('data_start_row')
+                                 for c in previous)
+                    and base64.b64decode(retained) == content):
+                # Re-reading identical bytes must preserve reviewed multi-row
+                # headings, duplicate-column positions and row boundaries.
+                cols = previous
+            else:
+                cols = self.env['hr.payroll.import.batch'].peek_source_columns(
+                    config, content, name)
         except Exception as e:
             _logger.warning("J2 header read failed for %s: %s", name, e, exc_info=True)
             # A refusal the reader can act on beats a guess about their file.
@@ -9205,12 +9244,11 @@ class PbFormulaStudio(models.AbstractModel):
           * FROM nothing at all — a scheme with no file anywhere — → what this
             scheme already reads, which is the only lane that database has.
 
-        Underneath either file source sit the six things the run already knows,
-        and, only when there is something to say, the columns this scheme is
-        bound to that THIS FILE DOES NOT HAVE. Every wire still starts from a
-        card (CM3): a binding written with another spelling of the same column
-        is re-pointed at that column's card on the way to the screen. Nothing
-        stored moves.
+        Underneath either file source sit the six things the run already knows.
+        Other files' bindings do not create columns or wires in this view. Their
+        target components stay available in a collapsed section. A binding
+        written with another spelling of a present column is re-pointed at that
+        column's card on the way to the screen. Nothing stored moves.
 
         And when the column you want is in none of them, the left column's search
         box offers to take it as typed (`can_add`) — a header or a column letter.
@@ -9348,12 +9386,9 @@ class PbFormulaStudio(models.AbstractModel):
                               'state': 'accepted'})
                 mapped_rules.add(r.id)
         # ---------------------------------------------------------------- CM3
-        # EVERY WIRE KEEPS A CARD. A binding written as `Ngày công chuẩn` on a
-        # workbook whose card reads `Salary|Ngày công chuẩn` is a binding to
-        # THAT COLUMN — so the wire is re-pointed at that column's card. A wire
-        # whose column this file genuinely does not have gets its own card, in
-        # its own small lane, saying exactly that: a wire drawn to nothing is
-        # the MAPFIX-D canvas crash, and a wire quietly dropped is worse.
+        # A bare heading can be another spelling of this file's sheet-qualified
+        # column. Re-point that wire; omit wires belonging to other workbooks
+        # from this selected-file view without deleting their definitions.
         #
         # Display only. `ref` is untouched, so cutting the wire still cuts the
         # right binding, and the STORED key keeps whatever spelling it had.
@@ -9375,7 +9410,7 @@ class PbFormulaStudio(models.AbstractModel):
                 w['leftId'] = 'c:' + target
             elif left_id[2:] not in orphans:
                 orphans.append(left_id[2:])
-        if orphans:
+        if orphans and source == 'none':
             lane = _("Mapped, but not in this file")
             for key in orphans:
                 label = key.split('|', 1)[1].strip() if '|' in key else key
@@ -9383,6 +9418,10 @@ class PbFormulaStudio(models.AbstractModel):
                              'sublabel': _("this file has no such column"),
                              'group': lane, 'meta': {'orphan': True}})
             self._dedupe_card_labels(left)
+        if source != 'none':
+            # A wire from another workbook must not manufacture a source card
+            # underneath the current filename. Definitions remain untouched.
+            wires = [w for w in wires if w['leftId'] in left_ids]
         hidden_columns, hidden_ids = set(), set()
         source_checks, checked_columns = [], set()
         for card in left:
@@ -9414,6 +9453,11 @@ class PbFormulaStudio(models.AbstractModel):
         hidden_mapping_count = sum(w['leftId'] in hidden_ids for w in wires)
         left = [card for card in left if card['id'] not in hidden_ids]
         wires = [wire for wire in wires if wire['leftId'] not in hidden_ids]
+        mapped_rules = {w['rightId'] for w in wires if w['kind'] == 'mapping'}
+        if source != 'none':
+            for item in right:
+                if item['id'] not in mapped_rules and not item['meta'].get('collapsedGroup'):
+                    item['meta']['collapsedGroup'] = _('Other scheme inputs')
         # RUNSRC A1 — the cards, and therefore the columns a suggestion may be
         # drawn FROM, are the real columns. A suggestion whose `leftId` has no
         # card on the board is the exact shape of the MAPFIX-D canvas crash.
@@ -9518,7 +9562,7 @@ class PbFormulaStudio(models.AbstractModel):
             ("Already used by this scheme" + the legacy Char). J2's promise to
             a never-uploaded database, and the only place those two lanes
             survive: with a file on screen, a binding that file does not carry
-            goes to the honest lane in `import_mapping_data` instead.
+            stays off the selected-file board instead.
 
         Either file lane shows ONE card per real column, labelled with the key
         that will be bound and carrying a sample value from the first row —

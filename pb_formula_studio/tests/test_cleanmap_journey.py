@@ -274,7 +274,7 @@ class TestCleanmapJourney(TransactionCase):
     # =====================================================================
     # 7 — a letter alias lands on the heading's row; a missing key is `gone`
     # =====================================================================
-    def test_07_an_alias_lands_on_the_column_and_a_stranger_is_gone(self):
+    def test_07_an_alias_lands_on_the_column_and_other_templates_are_folded(self):
         cfg = self._config('P2 Alias')
         by_letter = self._input(cfg, 'BYLETTER', seq=1)
         by_bare = self._input(cfg, 'BYBARE', seq=2)
@@ -291,11 +291,12 @@ class TestCleanmapJourney(TransactionCase):
                       "a bare heading is that column's other spelling")
         self.assertEqual(rows['f:Salary|Basic Salary']['label'], 'Basic Salary')
         self.assertEqual(rows['f:Salary|Basic Salary']['tag'], 'A')
-        self.assertIn('f:Ghost Column', rows)
-        self.assertEqual(rows['f:Ghost Column']['state'], 'gone',
-                         "a key this file does not have says so on the row — "
-                         "a wire drawn to nothing crashed a canvas once")
-        self.assertEqual(len(rows), 3)
+        self.assertNotIn('f:Ghost Column', rows)
+        self.assertEqual(len(rows), 2)
+        self.assertNotIn('s:%s' % stranger.id, {r['id'] for r in self._rows(d, 'scheme')})
+        self.assertIn('s:%s' % stranger.id, {r['id'] for r in self._card(d, 'scheme')['folded']['rows']})
+        self.assertEqual(stranger.source_binding_key, 'Ghost Column')
+        self.assertFalse(any(c['id'] == 'dangling' for c in self._card(d, 'scheme')['chips']))
 
     # =====================================================================
     # 8 — the direction of every record link
@@ -322,8 +323,9 @@ class TestCleanmapJourney(TransactionCase):
         self.assertEqual(record['p:bank:acc_number']['dir'], 'fwd',
                          "J3 S1 — a bank row is the import half only; the "
                          "resolver never reads a bank part back")
-        self.assertEqual(by['component'][0]['dir'], 'back')
-        self.assertEqual(by['component'][0]['b'], 's:%s' % comp.id)
+        self.assertEqual(by['component'][0]['dir'], 'both',
+                         'Contract components are saved on import and read back as fallback.')
+        self.assertEqual(by['component'][0]['a'], 's:%s' % comp.id)
         self.assertEqual(by['period'][0]['dir'], 'back')
         self.assertEqual(by['period'][0]['b'], 's:%s' % period.id)
 

@@ -333,18 +333,20 @@
                 </t>
                 <t t-else="">Nothing to show on this side.</t>
               </div>
-              <button t-if="rightGroupLabel" type="button" class="mc-collapsed-group"
-                      t-att-aria-expanded="ui.rightGroupOpen ? 'true' : 'false'"
-                      t-on-click="toggleRightGroup">
-                <t t-out="ic(ui.rightGroupOpen ? 'chevronDown' : 'chevron', 13)"/>
-                <span t-esc="rightGroupLabel"/> (<t t-esc="rightGroupedView.length"/>)
-              </button>
-              <t t-if="rightGroupLabel and ui.rightGroupOpen">
-                <p class="mc-collapsed-note">Mapping a constant changes it to an input. Its current value is kept as the default.</p>
-                <t t-foreach="rightGroupedView" t-as="it" t-key="it.id">
-                  <t t-call="pb_formula_studio.McRightItem"/>
+              <t t-foreach="rightGroups" t-as="rg" t-key="rg.label">
+                <button type="button" class="mc-collapsed-group"
+                        t-att-aria-expanded="isRightGroupOpen(rg.label) ? 'true' : 'false'"
+                        t-on-click="() => this.toggleRightGroup(rg.label)">
+                  <t t-out="ic(isRightGroupOpen(rg.label) ? 'chevronDown' : 'chevron', 13)"/>
+                  <span t-esc="rg.label"/> (<t t-esc="rg.items.length"/>)
+                </button>
+                <t t-if="isRightGroupOpen(rg.label)">
+                  <p t-if="rg.constant" class="mc-collapsed-note">Mapping a constant changes it to an input. Its current value is kept as the default.</p>
+                  <t t-foreach="rg.items" t-as="it" t-key="it.id">
+                    <t t-call="pb_formula_studio.McRightItem"/>
+                  </t>
+                  <p t-if="!rg.items.length" class="mc-collapsed-note">No fields match this filter.</p>
                 </t>
-                <p t-if="!rightGroupedView.length" class="mc-collapsed-note">No constants match this filter.</p>
               </t>
             </div>
           </div>

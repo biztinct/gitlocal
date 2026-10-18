@@ -110,7 +110,7 @@ export class MappingCanvas extends Component {
             armedLeft: null,      // a left item id awaiting a right click (draw mode)
             hoverWire: null,
             expanded: {},
-            rightGroupOpen: false,
+            rightGroupOpen: {},
             tip: null,
             hoverItem: null,      // {side, id} — the card the pointer is on
             selWire: null,        // the wire whose hub stays open
@@ -221,7 +221,7 @@ export class MappingCanvas extends Component {
                 this.resetQuery("left");
                 this.resetQuery("right");
                 this.ui.expanded = {};
-                this.ui.rightGroupOpen = false;
+                this.ui.rightGroupOpen = {};
                 this.leaveItem();
                 this.ui.selWire = null;
                 this.ui.reveal = null;
@@ -418,9 +418,9 @@ export class MappingCanvas extends Component {
      * different thing with a different counter, decided before this is asked.
      */
     isFilteredOut(side, id) {
-        if (side === "right" && !this.ui.rightGroupOpen
-                && this.props.rightItems.find((it) => String(it.id) === String(id))?.meta?.collapsedGroup) {
-            return true;
+        if (side === "right") {
+            const group = this.props.rightItems.find((it) => String(it.id) === String(id))?.meta?.collapsedGroup;
+            if (group && !this.isRightGroupOpen(group)) { return true; }
         }
         if (!this.hasFilter(side)) { return false; }
         const { L, R } = this._indexes();
@@ -888,11 +888,24 @@ export class MappingCanvas extends Component {
     get rightGroupLabel() {
         return this.props.rightItems.find((it) => it.meta?.collapsedGroup)?.meta.collapsedGroup || "";
     }
-    get rightView() {
-        return [...this.rightMainView, ...(this.ui.rightGroupOpen ? this.rightGroupedView : [])];
+    get rightGroups() {
+        const groups = new Map();
+        for (const item of this.props.rightItems) {
+            const label = item.meta?.collapsedGroup;
+            if (!label) { continue; }
+            if (!groups.has(label)) { groups.set(label, {label, items: [], constant: item.meta.type === "constant"}); }
+            if (!this.hasFilter("right") || this._passes("right", item)) { groups.get(label).items.push(item); }
+        }
+        return [...groups.values()];
     }
-    toggleRightGroup() {
-        this.ui.rightGroupOpen = !this.ui.rightGroupOpen;
+    isRightGroupOpen(label) {
+        return !!this.ui.rightGroupOpen?.[label] || !!this.ui.qa.right;
+    }
+    get rightView() {
+        return [...this.rightMainView, ...this.rightGroups.flatMap(g => this.isRightGroupOpen(g.label) ? g.items : [])];
+    }
+    toggleRightGroup(label = this.rightGroupLabel) {
+        this.ui.rightGroupOpen = {...(this.ui.rightGroupOpen || {}), [label]: !this.isRightGroupOpen(label)};
         this._relocateFocus("right");
         this._schedule();
     }

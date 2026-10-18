@@ -132,6 +132,41 @@ class TestExcelOnRamp(TransactionCase):
         return (self.Batch.search_count([]),
                 self.env['hr.payroll.import.line'].search_count([]))
 
+    def test_repeated_headings_keep_physical_values_in_main_and_auxiliary_sheets(self):
+        cfg = self._config('J2 Physical duplicates', sheet='Salary')
+        content = self._workbook({
+            'Salary': [['Employee Code','Employee Name','Others','Others','USD','VND','VND'],
+                       [1,2,3,4,5,6,7], ['E001','Test Person',12,34,56,78,90]],
+            'Extra': [['Employee Code','Others','Others'], ['E001',111,222]],
+        })
+        probe = self.Batch.new({'formula_config_id':cfg.id,'source_type':'excel'})
+        data = probe._parse_source_file(content, 'duplicates.xlsx')
+        self.assertEqual(len(data['rows']), 1, 'Numbered column guides are not employees.')
+        row = data['rows'][0]
+        for key,value in [('Salary|C',12),('Salary|D',34),('Salary|E',56),
+                          ('Salary|F',78),('Salary|G',90),('Extra|B',111),('Extra|C',222)]:
+            self.assertEqual(row[key], value, key)
+
+    def test_identical_file_keeps_reviewed_metadata_and_replacement_changes_scope(self):
+        cfg = self._config('J2 Reviewed headings')
+        content = self._flat_file()
+        cols = [{'key':name,'sheet':'Sheet1','header':name,'label':name,
+                 'letter':letter,'physical_letter':letter,'preferred':True,
+                 'data_start_row':2,'data_end_row':3}
+                for name,letter in [('Employee Code','A'),('Basic Salary','B'),
+                                    ('Overtime Hours','C'),('Meal Allowance','D')]]
+        cfg.write({'import_sample_file':base64.b64encode(content),
+                   'import_sample_filename':'reviewed.xlsx',
+                   'import_sample_columns_json':json.dumps(cols)})
+        cfg.rule_ids.filtered(lambda r:r.code=='BASIC').set_source_binding('excel','Basic Salary')
+        self.Studio.import_mapping_read_headers(cfg.id,base64.b64encode(content).decode(),'same.xlsx')
+        self.assertEqual(json.loads(cfg.import_sample_columns_json), cols)
+        replacement=self._workbook({'Sheet1':[['Employee Code','New input'],['E001',5]]})
+        board=self.Studio.import_mapping_read_headers(cfg.id,base64.b64encode(replacement).decode(),'new.xlsx')
+        self.assertNotIn('c:Basic Salary', {c['id'] for c in board['left']})
+        self.assertIn('c:New input', {c['id'] for c in board['left']})
+        self.assertEqual(cfg.rule_ids.filtered(lambda r:r.code=='BASIC').source_binding_key,'Basic Salary')
+
     # =====================================================================
     # 1 — the empty state
     # =====================================================================

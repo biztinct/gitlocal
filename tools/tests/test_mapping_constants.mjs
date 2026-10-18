@@ -10,21 +10,26 @@ const canvas = Object.create(MappingCanvas.prototype);
 canvas.props = {leftItems: [], rightItems: [
     {id: 1, label: 'Salary', meta: {type: 'input'}},
     {id: 2, label: 'Factor', meta: {type: 'constant', collapsedGroup: 'Constants', constantValue: 12}},
+    {id: 3, label: 'Saved detail', meta: {type: 'input', collapsedGroup: 'Other scheme inputs'}},
 ], wires: []};
 canvas.ui = {rightGroupOpen: false, q: {right: ''}, qa: {right: ''}, f: {right: 'all'}, focusSide: 'left'};
 canvas._schedule = () => {};
 assert.deepEqual(canvas.rightView.map(i=>i.id), [1]);
-assert.equal(canvas.rightGroupedView.length, 1);
+assert.equal(canvas.rightGroupedView.length, 2);
 assert.equal(canvas.isFilteredOut('right', 2), true);
 canvas.toggleRightGroup();
 assert.deepEqual(canvas.rightView.map(i=>i.id), [1,2]);
 canvas.toggleRightGroup();
 assert.deepEqual(canvas.rightView.map(i=>i.id), [1]);
+canvas.toggleRightGroup('Other scheme inputs');
+assert.deepEqual(canvas.rightView.map(i=>i.id), [1,3]);
+assert.equal(canvas.isFilteredOut('right',2),true,'Constants remain collapsed independently');
+canvas.toggleRightGroup('Other scheme inputs');
 
 const stubs = `const registry={category:()=>({add:()=>{}})};\nclass HubBackChip {}\nclass ConfirmationDialog {}\nclass MappingCanvas {}\nclass TransformFlowBoard {}\nclass ConnectionDesk {}\nclass JourneyBoard {}\nclass ComponentTreatmentBoard {}\nclass RuleComposer {}\n`;
 const {MappingStudio} = await import('data:text/javascript;base64,' + Buffer.from(common + stubs + read('mapping_studio')).toString('base64'));
 const studio = Object.create(MappingStudio.prototype);
-const fixed = {id: 2, label: 'Factor', meta: {collapsedGroup: 'Constants', constantValue: 0, constantDisplay: '0'}};
+const fixed = {id: 2, label: 'Factor', meta: {type: 'constant', collapsedGroup: 'Constants', constantValue: 0, constantDisplay: '0'}};
 studio.state = {extraCols: [], mode: 'import', configId: 1, batchId: false, data: {left:[{id:'c:Factor',label:'Factor column'}],right:[fixed]}};
 const calls = [];
 let dialog;
@@ -43,6 +48,14 @@ await dialog.confirm();
 assert.equal(calls[0][1],'import_mapping_use_constant');
 assert.deepEqual(calls[0][2],[1,false,'c:Factor',2,0]);
 assert.equal(calls[1][0],'reload');
+const saved = {id: 3, label: 'Saved detail', meta: {type: 'input', collapsedGroup: 'Other scheme inputs'}};
+studio.state.data.right.push(saved);
+let committed;
+studio._commitDraw = async (...args) => {committed=args};
+dialog=null;
+await studio.draw('c:Factor',3);
+assert.equal(dialog,null,'An optional input must never ask to convert a constant');
+assert.deepEqual(committed,['c:Factor',3,null]);
 console.log('Constant group, no-write confirmation/cancel, and explicit conversion checks passed');
 
 canvas.props.blockedLeftKeys = ['Age', 'People|Age', 'C'];
