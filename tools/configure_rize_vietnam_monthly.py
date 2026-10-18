@@ -4,6 +4,7 @@ Run in the rize Odoo shell with VN_MONTHLY_PLAN pointing at the metadata-only
 definition. VN_MONTHLY_APPLY=1 commits after calculation and storage checks.
 This step does not activate payroll, assign employees, import data or run pay.
 """
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,19 @@ e = env(context=dict(env.context, allowed_company_ids=cfg.company_id.ids))
 cfg = cfg.with_env(e)
 api = e['pb.payroll.templates']
 api._lock(cfg)
+
+
+def business_hashes():
+    result = {}
+    for table in ('hr_employee', 'hr_contract', 'hr_contract_advantage',
+                  'vietnam_employee_dependent', 'res_partner_bank',
+                  'hr_payslip', 'hr_payslip_run', 'pb_payroll_month_inputs'):
+        e.cr.execute('SELECT row_to_json(t)::text FROM ' + table + ' t ORDER BY id')
+        result[table] = hashlib.sha256('\n'.join(row[0] for row in e.cr.fetchall()).encode()).hexdigest()
+    return result
+
+
+baseline = business_hashes()
 by = {r.code: r for r in cfg.rule_ids}
 old_codes = set(plan['remove_codes'])
 assert old_codes <= by.keys(), 'Already migrated or concurrently changed; inspect first.'
@@ -80,6 +94,7 @@ tests = cfg.run_sample_tests()
 assert tests['total'] == tests['passed'] == 96, tests
 assert len(api._layout(cfg, api._catalog(cfg))['time']) == 5
 assert len(api._layout(cfg, api._catalog(cfg))['adjustments']) == 23
+assert business_hashes() == baseline, 'This definition step must not change business records.'
 report = dict(database='rize', config_id=cfg.id, rules=len(by),
               inputs=sum(r.column_type == 'input' for r in cfg.rule_ids),
               formulas=sum(r.column_type == 'formula' for r in cfg.rule_ids),
