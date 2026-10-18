@@ -1001,6 +1001,10 @@ export class MappingStudio extends Component {
         // the render and lose the filter about half the time — the flakiest
         // possible shape for a feature whose whole promise is "one click".
         this._applyFocus();
+        if (door.connection) {
+            this.state.cmd = { token: this.state.cmd.token + 1,
+                kind: "focusConnection", ...door.connection };
+        }
         await this.load();
     }
 

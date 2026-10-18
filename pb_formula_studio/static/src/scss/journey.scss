@@ -123,6 +123,18 @@
    forty of them at full strength is a texture nobody can read. */
 .jny .jny-wire__p { fill: none; stroke: var(--i-line, #B9AEE6); stroke-width: 1.25; opacity: .45; }
 .jny .jny-wire__h { fill: var(--i-line, #B9AEE6); opacity: .45; }
+.jny .jny-wire__hit { fill: none; stroke: transparent; stroke-width: 14px; pointer-events: stroke; cursor: pointer; }
+.jny .jny-wire.navigable .jny-wire__h { pointer-events: all; cursor: pointer; }
+.jny .jny-wire.navigable:focus { outline: none; }
+.jny .jny-wire.navigable:focus .jny-wire__p,
+.jny .jny-wire.navigable:hover .jny-wire__p { opacity: 1; stroke-width: 2.5px !important; }
+.jny .jny-trace-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 6px 14px; background: var(--i-soft, #EDEAF8); color: var(--i, #5A4BB0); font-size: 12px;
+    > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    > button { flex-shrink: 0; }
+}
+.jny .jny-sub.selected { color: var(--i, #5A4BB0); }
 
 .jny .jny-wire.record .jny-wire__p,
 .jny .jny-wire.component .jny-wire__p,
@@ -161,8 +173,10 @@
 /* ---- the lanes ------------------------------------------------------ */
 .jny .jny-lanes {
     position: relative; z-index: 2; flex: 1;
+    pointer-events: none;
     display: grid; grid-template-columns: repeat(var(--jny-cols), minmax(0, 1fr));
 }
+.jny .jny-card, .jny .jny-lane__h { pointer-events: auto; }
 /* Every lane is as tall as the tallest, deliberately. With `align-items:
    start` a short lane ends where its last card does — and its STICKY HEADER
    goes with it, so scrolling down a long Scheme card left the Payobook Source

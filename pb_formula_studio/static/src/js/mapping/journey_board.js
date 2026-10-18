@@ -20,9 +20,8 @@
  *     counted line, an open card beside a closed one gathers its rows onto the
  *     closed card's edge, two open cards draw row to row. There is no
  *     "Details" button and no expand-all — the owner withdrew both;
- *   * it is NAVIGATION, through the small corner icon and nothing else. The
- *     card body toggles and never navigates, which is the whole of the owner's
- *     ruling 5 and 6;
+ *   * card headers expand, corner icons open a board, and a connection opens
+ *     that board with both connected fields in view;
  *   * it is READ-ONLY. There is no gesture on this board that writes. Not one.
  *     Opening a card is client state, remembered in this browser.
  *
@@ -49,7 +48,7 @@ import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { wireGeometry, clampY, spreadHubs } from "./mapping_geometry";
 import { srcLabel } from "../source_vocab";
-import { componentJourneyScope } from "./component_focus";
+import { componentJourneyScope, journeyLinkDoor } from "./component_focus";
 
 /** Pixels of a lane's band reserved so a clamped wire is not flush to the edge. */
 const BAND = 10;
@@ -91,6 +90,7 @@ export class JourneyBoard extends Component {
             geom: [],           // the drawn edges
         });
         this.rootRef = useRef("stage");
+        this.boardRef = useRef("board");
         this.qRef = useRef("q");
         this.laneRefs = {};
         for (const lane of LANES) { this.laneRefs[lane.id] = useRef(lane.id); }
@@ -130,7 +130,13 @@ export class JourneyBoard extends Component {
                 this.ui.componentId = next.componentId || 0;
             }
         });
-        onPatched(() => this._schedule());
+        onPatched(() => {
+            if (this._pendingScroll != null && this.boardRef.el) {
+                this.boardRef.el.scrollTop = this._pendingScroll;
+                this._pendingScroll = null;
+            }
+            this._schedule();
+        });
         useExternalListener(window, "resize", () => this._schedule());
     }
 
@@ -150,7 +156,11 @@ export class JourneyBoard extends Component {
     cardsFor(laneId) {
         const cards = (this.d.lanes || {})[laneId] || [];
         const scope = this.componentScope;
-        return scope ? cards.filter(c => scope.cardIds.has(c.id)) : cards;
+        const visible = scope ? cards.filter(c => scope.cardIds.has(c.id)) : cards;
+        // A selected path is brought together without altering the payload order.
+        return this.ui.pin ? [...visible].sort((a, b) =>
+            Number(!(a.rows || []).some(r => this.trace?.has(r.id)))
+            - Number(!(b.rows || []).some(r => this.trace?.has(r.id)))) : visible;
     }
 
     get componentScope() {
@@ -298,12 +308,16 @@ export class JourneyBoard extends Component {
 
     isOpen(card) {
         if (!card) { return false; }
+        if (this.ui.pin && this.selectedRows(card).length) { return true; }
         if (this.matches) { return this.rowsOf(card).length + this.foldedRowsOf(card).length > 0; }
         if (!(card.rows || []).length) { return false; }
         return !!this.ui.open[card.id];
     }
 
-    onSearch(ev) { this.ui.q = ev.target.value || ""; this._animate(); }
+    onSearch(ev) {
+        if (this.ui.pin) this.clearTrace();
+        this.ui.q = ev.target.value || ""; this._animate();
+    }
     clearSearch() {
         this.ui.q = "";
         if (this.qRef.el) { this.qRef.el.value = ""; }
@@ -427,14 +441,24 @@ export class JourneyBoard extends Component {
     groupsOf(card) { return card.groups || []; }
 
     rowsInGroup(card, groupId) {
-        return this.rowsOf(card).filter((r) => (r.group || "") === groupId);
+        return this.remainingRows(card).filter((r) => (r.group || "") === groupId);
     }
 
     hasUngrouped(card) {
-        return this.rowsOf(card).some((r) => !r.group);
+        return this.remainingRows(card).some((r) => !r.group);
     }
 
-    ungrouped(card) { return this.rowsOf(card).filter((r) => !r.group); }
+    ungrouped(card) { return this.remainingRows(card).filter((r) => !r.group); }
+
+    selectedRows(card) {
+        return this.ui.pin ? this.rowsOf(card).filter(r => this.trace?.has(r.id)) : [];
+    }
+
+    remainingRows(card) {
+        return this.ui.pin ? this.rowsOf(card).filter(r => !this.trace?.has(r.id)) : this.rowsOf(card);
+    }
+
+    get selectedLabel() { return this.index.rows.get(this.ui.pin)?.label || ""; }
 
     // =================================================================== trace
     /**
@@ -473,8 +497,23 @@ export class JourneyBoard extends Component {
 
     pinRow(row, ev) {
         if (ev) { ev.stopPropagation(); }
-        this.ui.pin = this.ui.pin === row.id ? "" : row.id;
+        if (this.ui.pin === row.id) { this.clearTrace(); return; }
+        if (!this.ui.pin) this._beforeTraceScroll = this.boardRef.el?.scrollTop || 0;
+        this.ui.pin = row.id;
         this.ui.hover = row.id;
+        this._pendingScroll = 0;
+        this._animate();
+    }
+
+    clearTrace() {
+        this.ui.pin = "";
+        this.ui.hover = "";
+        this._pendingScroll = this._beforeTraceScroll || 0;
+        this._animate();
+    }
+
+    onBoardClick(ev) {
+        if (this.ui.pin && !ev.target.closest(".jny-card, .jny-wire")) this.clearTrace();
     }
 
     rowClass(r) {
@@ -622,11 +661,12 @@ export class JourneyBoard extends Component {
             let g = by.get(key);
             if (!g) {
                 g = { id: key, a, b, dir: l.dir || "fwd", dimmed: !!l.dimmed,
-                      kind: l.kind || "", n: 0, rows: new Set(),
+                      kind: l.kind || "", n: 0, rows: new Set(), links: [],
                       ends: !rendered.has(l.a) && !rendered.has(l.b) };
                 by.set(key, g);
             }
             g.n++;
+            g.links.push(l);
             g.rows.add(l.a);
             g.rows.add(l.b);
             if (g.kind !== l.kind) { g.kind = "mixed"; }
@@ -687,7 +727,8 @@ export class JourneyBoard extends Component {
                     if (trace.has(rid)) { lit = 1; break; }
                 }
             }
-            geom.push({ ...g, id: e.id, kind: e.kind, count: e.n,
+            geom.push({ ...g, id: e.id, kind: e.kind, count: e.n, links: e.links || [],
+                        door: this.wireDoor(e),
                         bidi: e.dir === "both", dimmed: e.dimmed, span,
                         badge: e.ends && e.n > 1,
                         // The RESTING width is the floor, not 1: the inline
@@ -714,7 +755,26 @@ export class JourneyBoard extends Component {
             return _t("This scheme does not read this connection on a system run.");
         }
         if (!g.count) { return ""; }
-        return g.count === 1 ? _t("1 field") : _t("%s fields", g.count);
+        const names = g.links?.length === 1 ? [g.links[0].a, g.links[0].b]
+            .map(id => this.index.rows.get(id)?.label).filter(Boolean).join(" → ") : "";
+        return g.door ? _t("Open mapping: %s", names || _t("%s fields", g.count))
+            : (g.count === 1 ? _t("1 field") : _t("%s fields", g.count));
+    }
+
+    wireDoor(edge) {
+        const links = edge.links || [];
+        const link = links.find(l => l.a === this.ui.pin || l.b === this.ui.pin)
+            || (links.length === 1 ? links[0] : null);
+        if (link) return journeyLinkDoor(this.index, link);
+        const source = links[0] && [links[0].a, links[0].b].find(id => !id.startsWith("s:"));
+        const card = source && this.index.byCard.get(this.index.cardOf.get(source));
+        return card?.door ? { ...card.door,
+            mode: card.kind === "transform" ? "api" : card.door.mode } : null;
+    }
+
+    openWire(edge, ev) {
+        ev?.stopPropagation();
+        if (edge.door) this.props.onOpenDoor(edge.door);
     }
 
     // ============================================================= interaction
@@ -724,6 +784,11 @@ export class JourneyBoard extends Component {
      */
     onKeydown(ev) {
         const tag = (ev.target && ev.target.tagName) || "";
+        if ((ev.key === "Enter" || ev.key === " ") && ev.target?.classList.contains("jny-row")) {
+            const row = this.index.rows.get(ev.target.dataset.id);
+            if (row) { ev.preventDefault(); this.pinRow(row, ev); }
+            return;
+        }
         if ((ev.key === "Enter" || ev.key === " ")
             && (tag === "BUTTON" || tag === "A")) { return; }
         if (ev.key === "/" && tag !== "INPUT") {
@@ -735,7 +800,7 @@ export class JourneyBoard extends Component {
             // The ladder, most-nested first. Each rung consumes the key, so one
             // Escape never dismisses two things at once.
             if (this.ui.q) { this.clearSearch(); return; }
-            if (this.ui.pin) { this.ui.pin = ""; return; }
+            if (this.ui.pin) { this.clearTrace(); return; }
             if (this.ui.hover) { this.ui.hover = ""; }
         }
     }

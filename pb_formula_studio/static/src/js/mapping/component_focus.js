@@ -27,3 +27,34 @@ export function componentJourneyScope(index, componentId, contains = []) {
     }
     return { target, rowIds, cardIds };
 }
+
+/** A Journey row id and a mapping-canvas item id have different namespaces. */
+export function journeyLinkDoor(index, link) {
+    const ids = [link.a, link.b];
+    const scheme = ids.find(id => id.startsWith("s:"));
+    const other = scheme ? ids.find(id => id !== scheme)
+        : (ids.find(id => id.startsWith("r:")) || ids[0]);
+    const card = index.byCard.get(index.cardOf.get(other));
+    if (!card?.door) return null;
+    if (!scheme) return { ...card.door, focus: index.rows.get(other)?.label || "" };
+    const componentId = Number(scheme.slice(2));
+    const connection = { componentId, side: "right" };
+    let mode = card.door.mode;
+    if (other.startsWith("f:")) {
+        connection.leftId = "c:" + other.slice(2);
+    } else if (other.startsWith("p:")) {
+        mode = "employee";
+        connection.side = "left";
+        const [, group, ...parts] = other.split(":");
+        const key = parts.join(":");
+        if (group === "emp" || group === "con") {
+            connection.rightId = `f:hr.${group === "emp" ? "employee" : "contract"}:${key}`;
+        } else if (group === "bank") connection.rightId = "b:" + key;
+    } else {
+        // A transformation's output is available on the System fields board.
+        mode = "api";
+        const row = index.rows.get(other);
+        connection.leftId = "f:" + (other.startsWith("r:") ? row?.tag : other.split(":").slice(2).join(":"));
+    }
+    return { ...card.door, mode, componentId, connection };
+}

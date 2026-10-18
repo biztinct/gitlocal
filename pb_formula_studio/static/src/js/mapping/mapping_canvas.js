@@ -194,6 +194,7 @@ export class MappingCanvas extends Component {
         this._clipDirty = true;   // J7 D2 — a name-overflow pass is owed
         onMounted(() => {
             this._recompute();
+            if (first?.kind === "focusConnection") this.focusConnection(first);
             this._ro = new ResizeObserver(() => { this._clipDirty = true; this._schedule(); });
             // The ROOT alone never reports a column growing a scrollbar or a
             // filtered list changing height — observe both scrollers too.
@@ -636,7 +637,9 @@ export class MappingCanvas extends Component {
     _runCommand(cmd) {
         if (!cmd || !cmd.token || cmd.token === this._cmdToken) { return; }
         this._cmdToken = cmd.token;
-        if (cmd.kind === "pulse") {
+        if (cmd.kind === "focusConnection") {
+            this.focusConnection(cmd);
+        } else if (cmd.kind === "pulse") {
             this.ui.pulse = true;
             if (this._pulseTimer) { clearTimeout(this._pulseTimer); }
             this._pulseTimer = setTimeout(() => { this.ui.pulse = false; }, 1050);
@@ -694,6 +697,30 @@ export class MappingCanvas extends Component {
                 if (el) { el.focus(); el.select(); }
             });
         }
+    }
+
+    /** A Journey arrow identifies a connection, rather than a fuzzy name search. */
+    focusConnection(command) {
+        for (const side of ["left", "right"]) this.resetQuery(side);
+        requestAnimationFrame(() => {
+            if (!this.rootRef.el) return;
+            const side = command.side;
+            const candidates = this.props.wires.filter(w =>
+                String(side === "left" ? w.leftId : w.rightId) === String(command.componentId));
+            const wire = candidates.find(w =>
+                (command.leftId == null || String(w.leftId) === String(command.leftId)) &&
+                (command.rightId == null || String(w.rightId) === String(command.rightId)));
+            this.leaveItem();
+            this.ui.focusSide = side;
+            this.ui.focusId = command.componentId;
+            if (wire) this.centreBoth(wire);
+            else {
+                this.ui.hoverItem = { side, id: command.componentId };
+                this._centre({ leftId: side === "left" ? command.componentId : null,
+                    rightId: side === "right" ? command.componentId : null },
+                    { left: side === "left", right: side === "right" });
+            }
+        });
     }
 
     // ---- search + filter (WP-4) ----------------------------------------
