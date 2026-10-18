@@ -58,6 +58,26 @@ class TestCleanmapLeftList(TransactionCase):
                               'column_type': 'input', 'sequence': seq})
         return cfg
 
+    def test_curated_duplicate_headings_keep_labels_positions_and_bindings(self):
+        cfg = self._config('Curated duplicate inputs', [('Others non-taxable','DUPNON'),('Others taxable','DUPTAX')])
+        rules = cfg.rule_ids.sorted('sequence')
+        columns = []
+        for rule, letter, label in zip(rules, ('S','AB'), ('Others — non-taxable','Others — taxable')):
+            rule.set_source_binding('excel', 'Salary|' + letter)
+            columns.append({'key':'Salary|' + letter,'sheet':'Salary','header':'Others',
+                            'label':label,'letter':letter,'physical_letter':letter,'preferred':True})
+        cfg.write({'import_sample_filename':'curated.xlsx',
+                   'import_sample_columns_json':json.dumps(columns)})
+        before = rules.source_ids.read(['rule_id','kind','key'])
+        board = self._board(cfg, 'sample')
+        cards = {c['id']:c for c in board['left']}
+        for rule, letter, label in zip(rules, ('S','AB'), ('Others — non-taxable','Others — taxable')):
+            source = 'c:Salary|' + letter
+            self.assertEqual(cards[source]['label'], label)
+            self.assertEqual(cards[source]['meta']['letter'], letter)
+            self.assertTrue(any(w['rightId']==rule.id and w['leftId']==source for w in board['wires']))
+        self.assertEqual(rules.source_ids.read(['rule_id','kind','key']), before)
+
     @staticmethod
     def _merged_keys(sheets):
         """The key order `_load_multisheet_data` really writes.

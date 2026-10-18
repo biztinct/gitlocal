@@ -63,6 +63,8 @@ old_config = source_cfg.read(['name','code','state','source_priority'])[0]
 old_mappings = frozen(e['hr.payslip.import.mapping'].search([('salary_structure_id','=',source_cfg.id)]))
 cfg = Config.with_context(active_test=False).search([('code','=',definition['code'])])
 verify = os.getenv('VN_MASTER_VERIFY') == '1'
+labels_apply = os.getenv('VN_MASTER_LABELS_APPLY') == '1'
+assert not labels_apply or verify
 assert len(cfg) <= 1
 assert bool(cfg) == verify, 'Use VERIFY for an existing installation; do not overwrite owner review changes.'
 created_people=[]
@@ -142,13 +144,20 @@ if not cfg:
         key='Salary|'+(cell.column_letter if duplicate else header)
         if duplicate:
             header+=' — '+('non-taxable (S)' if cell.column_letter=='S' else 'taxable (AB)')
-        columns.append(dict(key=key,sheet='Salary',header=header,
-                            letter=cell.column_letter,sample='',preferred=True))
+        columns.append(dict(key=key,sheet='Salary',header=header,label=header,
+                            letter=cell.column_letter,physical_letter=cell.column_letter,
+                            sample='',preferred=True))
     cfg.write(dict(import_sample_file=base64.b64encode((root/source['file']).read_bytes()),
                    import_sample_filename=source['file'],import_sample_date=fields.Datetime.now(),
                    import_sample_columns_json=json.dumps(columns)))
 else:
     by={r.code:r for r in cfg.rule_ids}
+    if labels_apply:
+        columns=json.loads(cfg.import_sample_columns_json)
+        assert len(columns)==43 and all(c.get('sheet')=='Salary' for c in columns)
+        for col in columns:
+            col.update(label=col['header'],physical_letter=col['letter'])
+        cfg.import_sample_columns_json=json.dumps(columns)
 assert cfg.state=='draft' and set(by)==set(specs)
 for code,rule in by.items():
     spec=specs[code]
@@ -157,6 +166,16 @@ for code,rule in by.items():
         assert rule.excel_formula=='='+spec['formula'].format(**{k:r.column_letter+'2' for k,r in by.items()}),code
         assert not rule.source_ids and not rule.is_contract_component,code
     assert rule.is_required==spec.get('required',False),code
+
+mapping_board=studio.import_mapping_data(cfg.id,'sample')
+right_ids={r['id'] for r in mapping_board['right']}
+assert not right_ids & {r.id for r in cfg.rule_ids if r.column_type=='formula'}
+assert len([r for r in mapping_board['right'] if r.get('meta',{}).get('collapsedGroup')])==5
+source_cards={r['id']:r for r in mapping_board['left']}
+for code,letter,word in [('VNFREOTH','S','non-taxable'),('VNOTHTAX','AB','taxable')]:
+    card=source_cards['c:Salary|'+letter]
+    assert word in card['label'] and card['meta']['letter']==letter
+    assert any(w['leftId']==card['id'] and w['rightId']==by[code].id for w in mapping_board['wires'])
 
 # Compare all 70 August employees to independently saved Excel controls.
 checks=0
@@ -375,9 +394,9 @@ receipt=dict(database=e.cr.dbname,configuration=cfg.id,name=cfg.name,state=cfg.s
              health=health['counts'],payroll_and_dependents_unchanged=baseline,
              warnings=[p for p in health.get('problems',[]) if p['severity']=='warning'],
              existing_configuration_unchanged=True,record_resolution=resolved_records,issues=issues)
-filename='verified.json' if verify else 'applied.json' if os.getenv('VN_MASTER_APPLY')=='1' else 'dry-run.json'
+filename='source-labels-applied.json' if labels_apply else 'verified.json' if verify else 'applied.json' if os.getenv('VN_MASTER_APPLY')=='1' else 'dry-run.json'
 (root/filename).write_text(json.dumps(receipt,indent=2,default=str))
-if os.getenv('VN_MASTER_APPLY')=='1' and not verify:
+if labels_apply or os.getenv('VN_MASTER_APPLY')=='1' and not verify:
     e.cr.commit()
 else:
     e.cr.rollback()

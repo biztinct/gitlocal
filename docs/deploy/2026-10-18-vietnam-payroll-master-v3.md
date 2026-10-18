@@ -99,5 +99,19 @@ October monthly inputs. Both actual workbook generators and an unchanged
 records round trip are checked. Definition errors are zero; informational output
 visibility/unused-output warnings are reviewed separately.
 
-Deployment and final Chrome verification receipts will be recorded here after
-the Rize-only application and combined repository audit.
+Implementation commit `adc566feb` was applied to Rize as configuration **4760**.
+The approved Records Desk route applied **3,317 values across 70 people** under
+**RD00141**, with no refused changes. Seven profiles and seven draft contracts
+were created; employee data was not copied to another database. The original
+configuration, all dependent rows and the zero payroll-run/payslip baseline are
+preserved. The deployed 74 template/dependent-count regressions pass.
+
+Chrome then identified that positional Others bindings displayed only S and AB.
+A small shared Formula Studio fix honors explicit source display labels and
+physical Excel positions without changing stored keys. Its regression covers
+two identical headings, their different labels/positions and unchanged wires.
+Curated metadata on configuration 4760 supplies those labels; generic imports
+retain their existing behavior. `VN_MASTER_VERIFY=1 VN_MASTER_LABELS_APPLY=1`
+performs this Rize-only metadata update after the shared code deployment and
+rechecks the calculation/record invariants. Other databases receive shared code
+only. Final combined deployment and Chrome receipts follow below.

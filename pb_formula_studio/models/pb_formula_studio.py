@@ -8953,6 +8953,13 @@ class PbFormulaStudio(models.AbstractModel):
             sheet = (col.get('sheet') or '').strip()
             pos = seen.get(sheet, 0)
             seen[sheet] = pos + 1
+            # A curated source catalogue can omit known output columns. Its
+            # explicit physical position must survive those gaps; ordinary
+            # loader metadata keeps the existing merged-sheet reconstruction.
+            physical = col.get('physical_letter') or ''
+            if isinstance(physical, str) and re.fullmatch(r'[A-Z]{1,3}', physical):
+                out[key] = physical
+                continue
             try:
                 out[key] = _index_to_letter(pos)
             except Exception:       # noqa: BLE001 — never blank the gutter
@@ -9523,7 +9530,7 @@ class PbFormulaStudio(models.AbstractModel):
         """
         out, seen = [], set()
 
-        def add(key, group, sublabel='', meta=None):
+        def add(key, group, sublabel='', meta=None, display_label=''):
             key = (key or '').strip()
             if not key or key in seen:
                 return
@@ -9537,7 +9544,8 @@ class PbFormulaStudio(models.AbstractModel):
             # one lane would then read the same — the same heading on two
             # sheets — the sheet goes back on BOTH, because there the prefix is
             # the only thing telling them apart (see `_dedupe_card_labels`).
-            label = key.split('|', 1)[1].strip() if '|' in key else key
+            label = display_label.strip() if isinstance(display_label, str) else ''
+            label = label or (key.split('|', 1)[1].strip() if '|' in key else key)
             out.append({'id': 'c:' + key, 'label': label or key,
                         'sublabel': sublabel,
                         'group': group, 'meta': meta or {}})
@@ -9553,7 +9561,7 @@ class PbFormulaStudio(models.AbstractModel):
                 if not col.get('preferred'):
                     continue
                 sample = col.get('sample') or ''
-                add(col.get('key'), lane,
+                add(col.get('key'), lane, display_label=col.get('label') or '',
                     sublabel=(_("e.g. %s", sample) if sample else _("no value in the first row")),
                     meta={'sheet': col.get('sheet') or '',
                           'letter': (letters.get(col.get('key'))
