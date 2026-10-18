@@ -34,6 +34,7 @@ import io
 import json
 import os
 import re
+import zipfile
 
 from odoo.modules.module import get_module_path
 from odoo.tests import TransactionCase, tagged
@@ -166,6 +167,88 @@ class TestExcelOnRamp(TransactionCase):
         self.assertNotIn('c:Basic Salary', {c['id'] for c in board['left']})
         self.assertIn('c:New input', {c['id'] for c in board['left']})
         self.assertEqual(cfg.rule_ids.filtered(lambda r:r.code=='BASIC').source_binding_key,'Basic Salary')
+
+    def test_calculations_stay_hidden_on_first_upload_replacement_and_loaded_batch(self):
+        cfg = self._config('J2 replacement calculations', sheet='Salary')
+        cfg.rule_ids.filtered(lambda r:r.code=='NETPAY').name = 'Net Pay — VND'
+        self.Rule.create({'config_id':cfg.id, 'name':'Net Pay — USD', 'code':'USDNET',
+                          'column_type':'formula', 'excel_formula':'=0', 'sequence':91})
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = 'Salary'
+        ws.append(['Employee Code','Basic Salary','Net Pay',None,'Overtime Hours'])
+        ws.merge_cells('A1:A2')
+        ws.merge_cells('B1:B2')
+        ws.merge_cells('C1:D1')
+        ws.merge_cells('E1:E2')
+        ws['C2'], ws['D2'] = 'VND', 'USD'
+        ws.append([1,2,3,4,5])
+        ws.append(['E001',1000,'=B4*0.9',0,2])
+        ws.append(['E002','=100*2','=B5*0.9',0,'=1'])
+        ws.append([None,None,999,0,None])  # unkeyed totals cannot make a calculation mixed
+        stream=io.BytesIO()
+        wb.save(stream)
+        first=stream.getvalue()
+        basic=cfg.rule_ids.filtered(lambda r:r.code=='BASIC')
+        before=self._counts()
+        for content, filename in [(first,'initial.xlsx'), (first,'same.xlsx')]:
+            board=self.Studio.import_mapping_read_headers(
+                cfg.id,base64.b64encode(content).decode(),filename)
+            self.assertTrue(board['ok'],board)
+            self.assertEqual(board['formula_columns_hidden'],2)
+            self.assertEqual({c['label'] for c in board['left'] if c['id'].startswith('c:')},
+                             {'Employee Code','Basic Salary','Overtime Hours'})
+            self.assertNotIn('Net Pay — VND',{r['label'] for r in board['right']})
+            self.assertNotIn('Net Pay — USD',{r['label'] for r in board['right']})
+        self.assertTrue(self.Studio.import_mapping_create(
+            cfg.id,False,'Salary|Basic Salary',basic.id)['ok'])
+        replacement=io.BytesIO(first)
+        with zipfile.ZipFile(replacement,'a') as archive:
+            archive.comment=b'newly saved workbook'
+        board=self.Studio.import_mapping_read_headers(
+            cfg.id,base64.b64encode(replacement.getvalue()).decode(),'replacement.xlsx')
+        self.assertEqual(board['formula_columns_hidden'],2)
+        self.assertEqual(basic.source_binding_key,'Salary|Basic Salary')
+        types=self.Studio._import_column_types(cfg)
+        for alias in ('Salary|C','C','Salary|D','D','Salary|USD','USD'):
+            self.assertEqual(types[alias]['kind'],'formula',alias)
+            refusal=self.Studio.import_mapping_create(cfg.id,False,alias,basic.id)
+            self.assertFalse(refusal['ok'],alias)
+        self.assertEqual(basic.source_binding_key,'Salary|Basic Salary')
+        self.assertEqual(types['Salary|B']['kind'],'mixed')
+        self.assertEqual(types['Salary|B']['data_rows'],3)
+        self.assertEqual(self._counts(),before,'Mapping headers must never import records.')
+        batch=self.Batch.create({'formula_config_id':cfg.id,'source_type':'excel',
+            'import_filename':'replacement.xlsx','import_file':base64.b64encode(replacement.getvalue())})
+        parsed=batch._parse_source_file(replacement.getvalue(),'replacement.xlsx')
+        raw=parsed['rows'][0]
+        batch_types=self.Studio._import_column_types(cfg,batch,raw_row=raw)
+        for alias in ('Salary|C','Salary|D'):
+            self.assertEqual(batch_types[alias]['kind'],'formula',alias)
+        self.env['hr.payroll.import.line'].create({
+            'batch_id': batch.id, 'raw_data_json': json.dumps(raw, default=str)})
+        loaded = self.Studio.import_mapping_data(cfg.id, batch.id)
+        self.assertEqual(loaded['formula_columns_hidden'], 2)
+        self.assertEqual({c['label'] for c in loaded['left'] if c['id'].startswith('c:')},
+                         {'Employee Code', 'Basic Salary', 'Overtime Hours'})
+        for alias in ('Salary|C', 'Salary|D'):
+            self.assertFalse(self.Studio.import_mapping_create(
+                cfg.id, batch.id, alias, basic.id)['ok'])
+
+    def test_duplicate_heading_input_is_not_hidden_with_calculated_neighbor(self):
+        cfg=self._config('J2 duplicate physical formula',sheet='Salary')
+        content=self._workbook({'Salary':[
+            ['Employee Code','Others','Others'],['E001',10,'=B2*2'],['E002',20,'=B3*2']]})
+        board=self.Studio.import_mapping_read_headers(cfg.id,base64.b64encode(content).decode(),'duplicates.xlsx')
+        ids={c['id'] for c in board['left']}
+        self.assertIn('c:Salary|B',ids)
+        self.assertNotIn('c:Salary|C',ids)
+        self.assertEqual(board['formula_columns_hidden'],1)
+        types=self.Studio._import_column_types(cfg)
+        self.assertEqual(types['Salary|B']['kind'],'input')
+        self.assertEqual(types['Salary|C']['kind'],'formula')
+        self.assertEqual(types['Salary|Others']['kind'],'formula',
+                         'The loader stores the last physical occurrence under the heading alias.')
 
     # =====================================================================
     # 1 — the empty state

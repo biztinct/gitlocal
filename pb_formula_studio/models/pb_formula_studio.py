@@ -9,7 +9,7 @@ import re
 import unicodedata
 from collections import defaultdict
 from difflib import SequenceMatcher
-from .spreadsheet_columns import classify_xlsx_columns
+from .spreadsheet_columns import classify_xlsx_columns, mapping_xlsx_columns
 
 try:
     import requests
@@ -8876,7 +8876,7 @@ class PbFormulaStudio(models.AbstractModel):
         return cols if isinstance(cols, list) else []
 
     @api.model
-    def _import_column_types(self, config, batch=None, raw_row=None):
+    def _import_column_types(self, config, batch=None, raw_row=None, catalogue=None):
         """Inspect the selected file, including files saved before this feature.
 
         Cached values and headings cannot reveal whether a cell was calculated.
@@ -8898,26 +8898,73 @@ class PbFormulaStudio(models.AbstractModel):
         else:
             filename = config.import_sample_filename or ''
             encoded = config.with_context(bin_size=False).import_sample_file
-            columns = [(c.get('key') or '', c.get('sheet') or '', c.get('header') or '',
-                        c.get('letter') or '', bool(c.get('preferred')),
-                        c.get('physical_letter') or '', c.get('data_start_row') or 0,
-                        c.get('data_end_row') or 0)
-                       for c in self._import_sample_columns(config)]
+            columns = []
             sheet_name, start = '', 0
         if not encoded or not filename.lower().endswith(('.xlsx', '.xlsm')):
             return {}
         try:
-            result = classify_xlsx_columns(base64.b64decode(encoded), tuple(columns), sheet_name, start)
+            if catalogue is None:
+                catalogue = (self._import_batch_catalogue(batch, raw_row) if batch
+                             else self._import_mapping_catalogue(config))
+            if catalogue:
+                columns = [(c.get('key') or '', c.get('sheet') or '', c.get('header') or '',
+                            c.get('letter') or '', bool(c.get('preferred')),
+                            c.get('physical_letter') or '', c.get('data_start_row') or 0,
+                            c.get('data_end_row') or 0) for c in catalogue]
+            Batch = self.env['hr.payroll.import.batch']
+            identity_headers = tuple({(c[1], c[2]) for c in columns
+                                      if c[2] and Batch._find_primary_key_header([c[2]])})
+            result = classify_xlsx_columns(base64.b64decode(encoded), tuple(columns),
+                                            sheet_name, start, identity_headers)
+            # A pasted/cached zero does not turn a known calculation into an
+            # input. Exact, unambiguous schema names/codes supply the meaning;
+            # physical metadata keeps repeated USD/VND/Others headings apart.
+            input_names = {self._norm(value) for r in config.rule_ids
+                           if r.column_type == 'input' for value in (r.name, r.code) if value}
+            calculated_names = {self._norm(value) for r in config.rule_ids
+                                if r.column_type == 'formula' for value in (r.name, r.code)
+                                if value} - input_names
+            sealed = {(c.get('sheet') or '', c.get('physical_letter') or c.get('letter'))
+                      for c in (catalogue or []) if c.get('preferred') and
+                      self._norm(c.get('label') or c.get('header')) in calculated_names}
             if not batch:
-                outputs = {(c.get('sheet') or '', c.get('physical_letter'))
-                           for c in self._import_sample_columns(config) if c.get('calculated')}
-                result = {key: (dict(info, kind='formula')
-                                if (info['sheet'], info['letter']) in outputs else info)
-                          for key, info in result.items()}
+                sealed.update((c.get('sheet') or '', c.get('physical_letter'))
+                              for c in self._import_sample_columns(config) if c.get('calculated'))
+            result = {key: (dict(info, kind='formula')
+                            if (info['sheet'], info['letter']) in sealed else info)
+                      for key, info in result.items()}
             return result
         except Exception:
             _logger.warning('Could not inspect formula cell types in %s', filename, exc_info=True)
-            return {}
+            raise UserError(_('The calculated columns in this workbook could not be verified. '
+                              'Replace it with a valid XLSX file before mapping.'))
+
+    @api.model
+    def _import_mapping_catalogue(self, config):
+        cols = self._import_sample_columns(config)
+        if (cols and (config.import_sample_filename or '').lower().endswith('.xlsx')
+                and config.import_sample_file
+                and not all(c.get('physical_letter') for c in cols if c.get('preferred'))):
+            return mapping_xlsx_columns(base64.b64decode(
+                config.with_context(bin_size=False).import_sample_file), cols)
+        return cols
+
+    @api.model
+    def _import_batch_catalogue(self, batch, raw_row=None):
+        if not batch or not (batch.import_filename or '').lower().endswith('.xlsx'):
+            return None
+        encoded = batch.with_context(bin_size=False).import_file
+        if not encoded:
+            return None
+        keys = list((raw_row if raw_row is not None else self._import_batch_row(batch)).keys())
+        preferred = {c['key'] for c in self._column_alias_fold(keys)}
+        cols = []
+        for key in keys:
+            sheet, header = key.split('|', 1) if '|' in key else ('', key)
+            letter = header if re.fullmatch(r'[A-Z]{1,3}', header) else ''
+            cols.append(dict(key=key, sheet=sheet, header='' if letter else header,
+                             letter=letter, preferred=key in preferred))
+        return mapping_xlsx_columns(base64.b64decode(encoded), cols)
 
     @staticmethod
     def _import_column_type(types, key):
@@ -8925,7 +8972,7 @@ class PbFormulaStudio(models.AbstractModel):
                                       if alias.casefold() == key.casefold()), {})
 
     @api.model
-    def _sample_alias_map(self, config):
+    def _sample_alias_map(self, config, catalogue=None):
         """`{any spelling of a stored-file column: the key its card carries}`.
 
         The template file's own version of `_column_alias_map`. `peek_source_columns`
@@ -8933,7 +8980,9 @@ class PbFormulaStudio(models.AbstractModel):
         every other spelling of the same column — its bare twin, its column
         letter — at it, so a wire drawn last month still lands on a card.
         """
-        cols = self._import_sample_columns(config)
+        cols = catalogue if catalogue is not None else self._import_sample_columns(config)
+        by_physical = {(c.get('sheet') or '', c.get('physical_letter')): c['key']
+                       for c in cols if c.get('preferred') and c.get('physical_letter')}
         by_header, by_letter = {}, {}
         for col in cols:
             if not col.get('preferred') or not col.get('key'):
@@ -8952,8 +9001,9 @@ class PbFormulaStudio(models.AbstractModel):
                 # identical headings must not fold that card onto its neighbor.
                 out[key] = key
                 continue
-            target = (by_header.get(col.get('header')) if col.get('header')
-                      else by_letter.get(col.get('letter')))
+            target = (by_physical.get((col.get('sheet') or '', col.get('physical_letter')))
+                      or (by_header.get(col.get('header')) if col.get('header')
+                          else by_letter.get(col.get('letter'))))
             if target:
                 out[key] = target
         return out
@@ -9072,6 +9122,8 @@ class PbFormulaStudio(models.AbstractModel):
             else:
                 cols = self.env['hr.payroll.import.batch'].peek_source_columns(
                     config, content, name)
+                if name.lower().endswith('.xlsx'):
+                    cols = mapping_xlsx_columns(content, cols)
         except Exception as e:
             _logger.warning("J2 header read failed for %s: %s", name, e, exc_info=True)
             # A refusal the reader can act on beats a guess about their file.
@@ -9333,10 +9385,13 @@ class PbFormulaStudio(models.AbstractModel):
         # button for — the file they just dropped — out of the matching
         # entirely: 43 columns on screen, nothing to suggest, and every wire
         # drawn by hand.
+        catalogue = (self._import_mapping_catalogue(config) if source == 'sample'
+                     else self._import_batch_catalogue(batch, raw_row) if source == 'batch'
+                     else None)
         left = self._import_left_columns(batch, cols, input_rules, config=config,
-                                         raw_row=raw_row, source=source)
+                                         raw_row=raw_row, source=source, catalogue=catalogue)
         column_types = self._import_column_types(
-            config, batch if source == 'batch' else None, raw_row=raw_row)
+            config, batch if source == 'batch' else None, raw_row=raw_row, catalogue=catalogue)
         _acts, _run = self._source_actuals(config)
         _emp = self._source_record_dests(config)
         _wires = self._source_wire_dests(config)
@@ -9393,8 +9448,8 @@ class PbFormulaStudio(models.AbstractModel):
         # Display only. `ref` is untouched, so cutting the wire still cuts the
         # right binding, and the STORED key keeps whatever spelling it had.
         canon = {}
-        if source == 'sample':
-            canon = self._sample_alias_map(config)
+        if catalogue:
+            canon = self._sample_alias_map(config, catalogue)
         elif source == 'batch' and self._keys_are_multisheet_shape(cols):
             canon = self._column_alias_map(cols)
         left_ids = {c['id'] for c in left}
@@ -9547,7 +9602,7 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def _import_left_columns(self, batch, cols, input_rules, config=None,
-                             raw_row=None, source='batch'):
+                             raw_row=None, source='batch', catalogue=None):
         """The Excel board's left column — ONE file source, the one FROM names.
 
         CLEANMAP P1. This used to emit four lanes at once and let FROM choose
@@ -9606,14 +9661,14 @@ class PbFormulaStudio(models.AbstractModel):
             # which the stored `letter` is not on a merged workbook (CM22). The
             # two FROM choices of one board described one file two ways.
             letters = self._sample_column_letters(config) if config else {}
-            for col in self._import_sample_columns(config):
+            for col in catalogue if catalogue is not None else self._import_sample_columns(config):
                 if not col.get('preferred'):
                     continue
                 sample = col.get('sample') or ''
                 add(col.get('key'), lane, display_label=col.get('label') or '',
                     sublabel=(_("e.g. %s", sample) if sample else _("no value in the first row")),
                     meta={'sheet': col.get('sheet') or '',
-                          'letter': (letters.get(col.get('key'))
+                          'letter': (col.get('physical_letter') or letters.get(col.get('key'))
                                      or col.get('letter') or '')})
         elif source == 'batch':
             # RUNSRC A1 — the loaded batch's lane, folded. A file's columns are
@@ -9626,16 +9681,19 @@ class PbFormulaStudio(models.AbstractModel):
             sample_of = raw_row if isinstance(raw_row, dict) else {}
             Batch = self.env['hr.payroll.import.batch']
 
-            def file_card(key, letter=''):
+            def file_card(key, letter='', label=''):
                 text = Batch._sample_text(sample_of.get(key)) if sample_of else ''
                 sheet = key.split('|', 1)[0].strip() if '|' in key else ''
-                add(key, file_lane,
+                add(key, file_lane, display_label=label,
                     sublabel=(_("e.g. %s", text) if text
                               else (_("no value in the first row") if sample_of else '')),
                     meta={'sheet': sheet, 'letter': letter or ''})
 
-            for col in self._column_alias_fold(cols):
-                file_card(col['key'], col.get('letter') or '')
+            for col in catalogue if catalogue is not None else self._column_alias_fold(cols):
+                if catalogue is not None and not col.get('preferred'):
+                    continue
+                file_card(col['key'], col.get('physical_letter') or col.get('letter') or '',
+                          col.get('label') or '')
             # CM3 — a component bound to a spelling this file really carries
             # keeps a card of its own. On the interleaved shape that is the
             # bare column letter, which RUNSRC A1 folded away and the old
