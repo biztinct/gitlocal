@@ -10,6 +10,7 @@ import io
 import json
 import math
 import re
+import textwrap
 import uuid
 import zipfile
 from datetime import date, datetime, timedelta
@@ -442,7 +443,12 @@ class PayrollTemplates(models.AbstractModel):
                 cell.font = Font(name='Calibri', bold=True, color='FFFFFF')
                 cell.alignment = Alignment(vertical='center', wrap_text=True)
                 ws.column_dimensions[get_column_letter(ci)].width = 26
-            ws.row_dimensions[1].height = 32
+            # Bilingual component names often need more than two lines. Size
+            # the header to the exported width so the monthly workbook keeps
+            # the complete field name readable without manual row resizing.
+            lines = max((sum(max(1, len(textwrap.wrap(part, width=24)))
+                             for part in str(label).split('\n')) for label in headers), default=1)
+            ws.row_dimensions[1].height = max(32, lines * 15 + 8)
             for ci, c in enumerate(cols, len(identity) + 1):
                 ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'Read-only context.' if c.get('readonly') else ''), 'Payobook')
                 if master_snapshot:
