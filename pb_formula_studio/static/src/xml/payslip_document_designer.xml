@@ -11,7 +11,7 @@
         <span><t t-esc="Math.round(page.width)"/> × <t t-esc="Math.round(page.height)"/> pt</span>
         <button t-on-click="() =&gt; this.add('blank')">＋ Live field</button><button t-on-click="() =&gt; this.add('text')">＋ Text</button><button t-on-click="() =&gt; this.add('cover')">＋ Cover area</button>
         <button t-att-disabled="!state.historyIndex" t-on-click="() =&gt; this.undo(-1)">Undo</button><button t-att-disabled="state.historyIndex === state.historyCount - 1" t-on-click="() =&gt; this.undo(1)">Redo</button>
-        <select aria-label="Document zoom" t-on-change="(ev) =&gt; state.zoom = Number(ev.target.value)"><option value="0.7">70%</option><option value="1" selected="selected">100%</option><option value="1.3">130%</option><option value="1.6">160%</option></select>
+        <select aria-label="Document zoom" t-on-change="setZoom"><option value="0.7">70%</option><option value="1" selected="selected">100%</option><option value="1.3">130%</option><option value="1.6">160%</option></select>
         <label><input type="checkbox" t-att-checked="state.preview" t-on-change="(ev) =&gt; state.preview = ev.target.checked"/> Preview values</label>
         <span t-if="state.dirty" class="ps-document-unsaved">Unsaved changes</span>
       </div>

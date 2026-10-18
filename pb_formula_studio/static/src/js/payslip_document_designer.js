@@ -42,6 +42,7 @@ export class PayslipDocumentDesigner extends Component {
         this.state.dirty = true;
     }
     setPage(ev) { this.state.page = Number(ev.target.value); this.state.selected = null; }
+    setZoom(ev) { this.state.zoom = Number(ev.target.value); }
     fieldStyle(field) {
         const font = { serif: "'PB Payslip Serif','Times New Roman',serif", sans: "'PB Payslip Sans',Arial,sans-serif", mono: "'PB Payslip Mono',monospace" }[field.font];
         const size = this.fit(field).size;
