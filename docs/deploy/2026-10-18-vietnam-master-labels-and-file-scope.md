@@ -63,5 +63,36 @@ downloads contain zero employees. The earlier 70-person roster is still saved
 as a Draft preview and is not activated or assigned by this labeling change.
 This follows the owner's current state, rather than silently changing it.
 
-Deployment, final Chrome checks and protected backup receipts are recorded below
-after completion.
+## Deployed verification
+
+Implementation commit **4f72d1ab1**, followed by compatibility commit
+**8575e24c5**, is deployed to **rize, payobook, payobook_template, abm and
+p0clone**. The full combined application tree was synchronized and verified:
+149 modules / 4,901 files. Installed versions are Formula Studio
+19.0.1.202.5, Formula Engine 19.0.1.149.2 and Payroll Templates 19.0.1.2.10.
+The service is active and the deployment-status check reports nothing pending.
+
+Protected backups are `/odoo/backups/vn-label-code-20261018-201731/` and
+`/odoo/backups/vn-label-code-20261018-202417/`. Full-row hashes of nine business,
+configuration, component, binding and layout tables are unchanged by both shared
+rollouts in all five databases. The subsequent label/binding patch was applied
+only to Rize. Its receipt confirms all nine employee/contract/dependent/payroll/
+native-mapping/layout tables are unchanged, as are every calculation expression,
+column letter, value type and payroll role.
+
+Final deployed tests pass **132 on each database, 660 total, zero failures or
+errors**, plus all **96 saved payroll scenarios** on Rize and the six isolated
+XLSX / JS checks. The duplicate-column loader check compares separate U/AF
+Others, currency pairs and AP/AU insurance values against the original workbook.
+The column-number guide does not become an employee. No payroll is created.
+
+Chrome verifies identical workbook/schema wording, 33 current-file mappings,
+40 calculated/generated columns hidden, independent Other scheme inputs (105)
+and Constants (5) sections, and no formula destinations. Journey has 33 actual
+file fields, 34 fed components including dependent count, 151 folded other
+inputs/calculations/constants, and no missing-source warnings or HC ghost rows.
+An actual Chrome Replace file upload of the original master preserves the
+reviewed positions, 33 mappings and clean source scope. Browser warning/error
+logs are empty. Screenshots were inspected in memory; no test PNG files were
+written. Private staging is removed after evidence is retained in the protected
+backups. The final documentation commit adds no application-code changes.
