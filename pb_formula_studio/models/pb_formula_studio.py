@@ -7940,7 +7940,7 @@ class PbFormulaStudio(models.AbstractModel):
                 elif kind == 'contract_component':
                     prid = 'p:comp:%s' % rule.id
                     source_row(prid, rule.name or rule.code or prid, 'comp')
-                    join(prid, srid, 'component', 'back')
+                    join(srid, prid, 'component', 'both')
                     fed = True
                 elif kind == 'period':
                     prid = 'p:run:%s' % (key or 'PERIOD')
@@ -10952,27 +10952,15 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def _ec_component_direction(self, rule):
-        """Which way a CONTRACT COMPONENT runs — and the two kinds differ.
-
-        JOURNEY J8. An AMOUNT component is genuinely two-way, and it is the one
-        rung of the resolver ladder that reads the contract rather than the file:
-        `_transform_data_to_formula_inputs` builds `contract_component_amounts`
-        from the contract's advantage lines and uses it when neither the file nor
-        the feed carried anything (`resolved_source = 'contract_component'`), with
-        a flagged rule that has no line falling back to `0.0`.
-
-        A TEXT component is NOT read back, and the code says so out loud: the same
-        loop SKIPS `value_type == 'text'` outright, because letting a text
-        component in would feed a permanent 0.0 into any formula naming it. So the
-        text card gets the import half and nothing else — the same refusal J3 made
-        for a bank row rather than print a confident falsehood.
-        """
+        """Both typed component kinds write on import and read back on a run."""
         code = (rule.code or '').strip()
         if rule.is_text_component:
             return {
-                'direction': 'to_record',
+                'direction': 'two_way',
                 'directionNote': _(
-                    "On import: kept on the contract as text under %(code)s.",
+                    "On import: kept on the contract as text under %(code)s. On "
+                    "pay run: read back from the contract when the file or feed "
+                    "leaves this empty.",
                     code=code or (rule.name or '')),
             }
         return {

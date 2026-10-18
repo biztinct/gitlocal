@@ -193,13 +193,8 @@ class TestJourneyJ8Components(TransactionCase):
                   'mapping_studio.js')
         self.assertIn('wire.kind === "component"', js)
 
-    def test_04_direction_is_two_way_for_an_amount_and_one_way_for_text(self):
-        """The finding that made the two cards worth having. The resolver builds
-        `contract_component_amounts` from the contract's advantage lines and
-        SKIPS `value_type == 'text'` outright — letting a text component in would
-        feed a permanent 0.0 into any formula naming it. So an amount is read
-        back and text is not, and the board must not claim otherwise (J3's rule
-        for a bank row, one destination over)."""
+    def test_04_both_typed_components_show_writeback_and_readback(self):
+        """Both screens describe the same typed contract fallback."""
         cfg = self._config('J8 direction')
         amount = self._rule(cfg, 'J8DAMT', 10)
         text = self._rule(cfg, 'J8DTXT', 20)
@@ -208,12 +203,16 @@ class TestJourneyJ8Components(TransactionCase):
         left = {i['id']: i for i in
                 self.Studio.employee_mapping_data(cfg.id, include_payroll=True)['left']}
         self.assertEqual(left[amount.id]['meta']['direction'], 'two_way')
-        self.assertEqual(left[text.id]['meta']['direction'], 'to_record')
+        self.assertEqual(left[text.id]['meta']['direction'], 'two_way')
         self.assertIn('J8DAMT', left[amount.id]['meta']['directionNote'])
         self.assertIn('J8DTXT', left[text.id]['meta']['directionNote'])
-        # and the source of that asymmetry is where the test says it is
-        resolver = _src('pb_hr_payroll_formula', 'models', 'payroll_import_batch.py')
-        self.assertIn("template.value_type == 'text'", resolver)
+        self.assertIn('On pay run:', left[text.id]['meta']['directionNote'])
+        links = self.Studio.journey_data(cfg.id)['links']
+        for rule in (amount, text):
+            link = next(l for l in links if l['kind'] == 'component'
+                        and l['a'] == 's:%s' % rule.id)
+            self.assertEqual(link['b'], 'p:comp:%s' % rule.id)
+            self.assertEqual(link['dir'], 'both')
 
     # ================================================ D1 — wiring is the reuse
     def test_05_drawing_to_the_amount_card_routes_to_the_promotion(self):

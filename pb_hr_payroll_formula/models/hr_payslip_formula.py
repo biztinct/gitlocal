@@ -641,7 +641,7 @@ class HrPayslipFormula(models.Model):
         # of 36 payslips reported ₫0.00 of deductions.
         #
         # The rungs are the SAME functions the batch resolver's tail calls —
-        # `_mapped_record_value` and `_contract_component_amounts` — not a
+        # `_mapped_record_value` and `_contract_component_values` — not a
         # second reading of a record. Nothing here decides an ORDER; it fills in
         # rungs the order already named.
         #
@@ -674,7 +674,8 @@ class HrPayslipFormula(models.Model):
                 ])
                 mapping_by_rule = {m.component_id.id: m
                                    for m in mappings if m.component_id}
-            component_amounts = Batch._contract_component_amounts(self.contract_id)
+            component_amounts = Batch._contract_component_values(
+                self.contract_id, config=config)
         except Exception:       # noqa: BLE001
             # Same rail as `_j3_feed_hits_by_rule`: a payslip must compute even
             # when the mapping layer is misconfigured or mid-migration.
@@ -690,7 +691,7 @@ class HrPayslipFormula(models.Model):
         unresolved = set()
 
         for rule in input_rules:
-            value = rule.default_value
+            value = '' if rule.is_text_component else rule.default_value
             src, key, via = 'none', None, 'default'
 
             # Try to get from contract
@@ -794,7 +795,7 @@ class HrPayslipFormula(models.Model):
             elif records_lane_ok and rule.is_contract_component:
                 code = Batch._normalize_header_key(rule.code) \
                     if rule.code else ''
-                value = component_amounts.get(code, 0.0)
+                value = component_amounts.get(code, '' if rule.is_text_component else 0.0)
                 src, key, via = ('contract_component', rule.code,
                                  'contract_default')
 

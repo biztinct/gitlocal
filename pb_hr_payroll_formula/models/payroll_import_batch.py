@@ -2167,6 +2167,31 @@ class HrPayrollImportBatch(models.Model):
                 amounts[normalized_code] = advantage.amount
         return amounts
 
+    def _contract_component_values(self, contract, config=None):
+        """Stored amounts and the current scheme's typed text components.
+
+        Text is read from ``text_value``, never the unused amount column. Keep
+        the amount-only helper for numeric consumers and exclude text lines
+        whose code belongs to an amount component in this scheme.
+        """
+        values = self._contract_component_amounts(contract)
+        config = config or self.formula_config_id
+        if not contract or not config:
+            return values
+        text_codes = {self._normalize_header_key(r.code)
+                      for r in config.rule_ids if r.is_text_component and r.code}
+        for advantage in contract.advantages_ids:
+            template = advantage.advantage_template_id
+            if not template or template.value_type != 'text':
+                continue
+            code = self._normalize_header_key(
+                advantage.advantage_template_code or template.code or '')
+            value = advantage.text_value
+            if code in text_codes and value is not False \
+                    and not self._blob_is_empty(value):
+                values[code] = value
+        return values
+
     def _get_mappings_by_field(self, model_name, mappings=None):
         mappings = mappings or self._get_model_mappings(model_name)
         return {mapping.target_field_id.name: mapping for mapping in mappings}
@@ -3056,7 +3081,9 @@ class HrPayrollImportBatch(models.Model):
                 if 'component' not in tiers:
                     return None
                 code = self._normalize_header_key(rule.code) if rule.code else ''
-                value = (component_amounts or {}).get(code)
+                stored = (component_amounts if component_amounts is not None
+                          else self._contract_component_values(contract))
+                value = stored.get(code)
             else:
                 return None
             if self._blob_is_empty(value):
@@ -4128,7 +4155,7 @@ class HrPayrollImportBatch(models.Model):
         employee_code_markers = EMPLOYEE_CODE_MARKERS
         # JOURNEY J10 — rank 5, and now with ONE implementation: the writeback's
         # "is this already on the contract" test asks the same function.
-        contract_component_amounts = self._contract_component_amounts(contract)
+        contract_component_amounts = self._contract_component_values(contract)
 
         def lookup_raw_value(candidates):
             for key in candidates:
@@ -4241,6 +4268,8 @@ class HrPayrollImportBatch(models.Model):
                 return None
 
         def normalize_input_value(rule, value):
+            if rule.is_text_component:
+                return self._normalize_component_text(value)
             # VALUEKIND — the second of the two coercion sites (C18.117). This
             # one floats any string that merely LOOKS numeric, which is why
             # `EMPBANKACCOA` lost its leading zeros even though its connector
@@ -4542,7 +4571,8 @@ class HrPayrollImportBatch(models.Model):
                     skip_column_fallback = (
                         rule.is_contract_component
                         and component_amount is not None
-                        and not self._float_equal(component_amount, 0.0)
+                        and (rule.is_text_component
+                             or not self._float_equal(component_amount, 0.0))
                     )
                     if not skip_column_fallback:
                         value, column_key = lookup_raw_value_with_key(column_candidates)
@@ -4687,10 +4717,10 @@ class HrPayrollImportBatch(models.Model):
                             input_values[rule.code] = contract_component_amounts[rule_code]
                         elif records_lane_ok and rule.is_contract_component:
                             resolved_source = 'contract_component_default'
-                            input_values[rule.code] = contract_component_amounts.get(rule_code, 0.0)
+                            input_values[rule.code] = '' if rule.is_text_component else 0.0
                         else:
                             resolved_source = 'default'
-                            input_values[rule.code] = rule.default_value
+                            input_values[rule.code] = '' if rule.is_text_component else rule.default_value
                             # Nothing anywhere answered this one. The pay
                             # period gets its turn after the loop.
                             period_unresolved.add(rule.code)
@@ -5241,7 +5271,7 @@ class HrPayrollImportBatch(models.Model):
         # no-op here, which is exactly what `found=False` already means to the
         # code below (keep whatever the contract says).
         mapping_index = self._get_component_mapping_index()
-        component_amounts = self._contract_component_amounts(contract)
+        component_amounts = self._contract_component_values(contract)
 
         for rule in rules:
             template = self._get_or_create_advantage_template(rule, template_cache)

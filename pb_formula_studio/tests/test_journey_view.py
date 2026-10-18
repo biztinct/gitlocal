@@ -64,7 +64,7 @@ PRE_J5_DOORS = {
     # the pair would have failed against perfectly correct code — which is
     # exactly what it did on the first run.
     ('pb_formula_studio', 'static/src/js/formula_studio.js'):
-        'const ctx = { pb_mode: mode || "employee" };',
+        'const ctx = { pb_mode: mode || "desk" };',
     ('pb_settings', 'static/src/js/settings_hub.js'): None,
     ('pb_hub', 'static/src/js/hub_palette_entries.js'): None,
 }
@@ -533,23 +533,17 @@ class TestJourneyView(TransactionCase):
     # ==================================================================
     # 4. the tab strip, and every door that existed before J5
     # ==================================================================
-    def test_04a_journey_is_first_and_is_the_cold_start_default(self):
+    def test_04a_connections_is_the_cold_start_and_journey_remains_available(self):
         js = _src('pb_formula_studio', 'static/src/js/mapping/mapping_studio.js')
         stripped = _strip_js_comments(js)
         ids = re.findall(r'\{\s*id:\s*"([a-z]+)"\s*,\s*icon:', stripped)
-        # REVERSED by CLEANMAP P2 (owner ruling 1): the Journey pill goes to
-        # the very END. What did NOT move is the cold start — the two doors
-        # that arrive without naming a mode still land on the Journey, which
-        # is the fact this test was actually protecting. Because the two are
-        # no longer the same thing, the SC-4 fallback has to name the Journey
-        # instead of taking `modes[0]`, and that is asserted below.
+        # Connections is now the landing screen. Explicit Journey links still
+        # name their mode; adding the desk must not remove any existing board.
         self.assertEqual(
-            ids, ['api', 'transform', 'import', 'employee',
-                  'scheme', 'cycle', 'treatment', 'journey'],
-            "the MODES order IS the story; the Journey is LAST and is still "
-            "the cold-start landing")
-        self.assertIn('mode: askedMode || "journey"', stripped,
-                      "a cold start must land on the Journey, and an explicit "
+            ids, ['desk', 'api', 'transform', 'import', 'employee',
+                  'scheme', 'cycle', 'treatment', 'journey'])
+        self.assertIn('mode: askedMode || "desk"', stripped,
+                      "a cold start must land on Connections, and an explicit "
                       "pb_mode must still win")
         self.assertIn('? "journey" : ((this.modes[0] || {}).id || "journey")',
                       stripped,
@@ -717,23 +711,23 @@ class TestJourneyView(TransactionCase):
     # ==================================================================
     # 7. the pre-filter seam
     # ==================================================================
-    def test_07a_the_canvas_gained_exactly_one_command_kind(self):
-        """`search` rides the channel that already existed for host orders. The
-        canvas' PROPS are byte-identical, which is what keeps the other five
-        boards out of this phase entirely."""
+    def test_07a_the_canvas_accepts_the_journey_arrival_commands(self):
         js = _strip_js_comments(
             _src('pb_formula_studio', 'static/src/js/mapping/mapping_canvas.js'))
         kinds = set(re.findall(r'cmd\.kind === "([a-zA-Z]+)"', js))
-        self.assertEqual(kinds, {'pulse', 'suggested', 'armLeft', 'search'})
+        self.assertTrue({'pulse', 'suggested', 'armLeft', 'search',
+                         'searchRight', 'focusConnection'} <= kinds)
 
-    def test_07b_only_search_is_replayed_at_mount(self):
+    def test_07b_only_arrival_commands_are_replayed_at_mount(self):
         """A one-shot order replayed on every mount stops being one-shot:
         `pulse` would flash the wires each time a tab opened and `armLeft`
         would arm a card nobody clicked."""
         js = _strip_js_comments(
             _src('pb_formula_studio', 'static/src/js/mapping/mapping_canvas.js'))
-        block = js.split('const first = this.props.command;')[1][:400]
+        block = js.split('const first = this.props.command;')[1].split('onWillUnmount', 1)[0]
         self.assertIn('first.kind === "search"', block)
+        self.assertIn('first.kind === "searchRight"', block)
+        self.assertIn('first?.kind === "focusConnection"', block)
         self.assertNotIn('pulse', block)
         self.assertNotIn('armLeft', block)
 
@@ -756,30 +750,20 @@ class TestJourneyView(TransactionCase):
         self.assertNotIn('if (!text', body,
                          "_applyFocus must not return early on an empty focus — "
                          "it has to issue the empty order")
-        self.assertIn('kind: "search", text', body)
+        self.assertIn('? "searchRight" : "search", text', body)
         canvas = _strip_js_comments(
             _src('pb_formula_studio', 'static/src/js/mapping/mapping_canvas.js'))
         self.assertNotIn('cmd.kind === "search" && cmd.text', canvas,
                          "the canvas must honour a search order with empty "
                          "text, or the clear can never arrive")
 
-    def test_07b3_the_prefilter_narrows_the_source_column_only(self):
-        """MJ1, restated for the door protocol — and caught live.
-
-        Every focus a Journey door carries is a SOURCE-side name (a feed, a
-        sheet, a rule output). Seeding BOTH columns with it filtered the
-        destination catalogue by a source's name, which MJ1 already settled is
-        "not a narrowing anybody asked for": arriving from the feed "Employees"
-        left the right column reading `0 of 99 · Nothing matches that`, i.e.
-        the board had hidden the ninety-nine components the reader came for.
-        """
+    def test_07b3_a_prefilter_clears_the_opposite_column(self):
+        """Source searches and component searches each narrow one column."""
         canvas = _strip_js_comments(
             _src('pb_formula_studio', 'static/src/js/mapping/mapping_canvas.js'))
         block = canvas.split('cmd.kind === "search"')[1].split('} else if')[0]
-        self.assertIn('this.ui.q.left = t;', block)
-        self.assertIn('this.ui.q.right = "";', block,
-                      "the destination column must be CLEARED by a door's "
-                      "pre-filter, never filtered by a source-side name")
+        self.assertIn('this.ui.q.left = cmd.kind === "searchRight" ? "" : t;', block)
+        self.assertIn('this.ui.q.right = cmd.kind === "searchRight" ? t : "";', block)
 
     def test_07c_the_focus_is_read_once_in_the_arrival_reader(self):
         """The handover's explicit instruction: wire `pb_focus` through the

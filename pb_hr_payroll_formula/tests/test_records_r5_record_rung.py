@@ -388,7 +388,7 @@ class TestRecordsRecordRung(TransactionCase):
         # RD46 — rank 5 joined it once the owner ruled on it, and it must read
         # the contract through the batch resolver's function for the same
         # reason rank 4 does.
-        self.assertIn('_contract_component_amounts', body)
+        self.assertIn('_contract_component_values', body)
         self.assertNotIn('getattr(record,', body,
                          "a second implementation of 'read the record' is the "
                          "failure this rung exists inside of")
