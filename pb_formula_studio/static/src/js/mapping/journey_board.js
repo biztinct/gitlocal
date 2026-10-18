@@ -777,6 +777,13 @@ export class JourneyBoard extends Component {
         if (edge.door) this.props.onOpenDoor(edge.door);
     }
 
+    onWireKey(edge, ev) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.openWire(edge, ev);
+        }
+    }
+
     // ============================================================= interaction
     /**
      * MF33, third board running. Enter on a focused button fires the button's

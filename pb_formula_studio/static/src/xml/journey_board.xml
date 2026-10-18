@@ -70,7 +70,7 @@
                t-attf-class="jny-wire {{ g.kind }} {{ g.dimmed ? 'dim' : '' }} {{ g.span > 1 ? 'span' : '' }} {{ g.lit === 1 ? 'lit' : (g.lit === -1 ? 'off' : '') }} {{ g.door ? 'navigable' : '' }}"
                t-att-role="g.door ? 'button' : null" t-att-tabindex="g.door ? '0' : null"
                t-att-aria-label="edgeTitle(g)" t-on-click="(ev) => this.openWire(g, ev)"
-               t-on-keydown="(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); this.openWire(g, ev); } }">
+               t-on-keydown="(ev) => this.onWireKey(g, ev)">
               <path t-if="g.door" class="jny-wire__hit" t-att-d="g.d"/>
               <path class="jny-wire__p" t-att-d="g.d"
                     t-attf-style="stroke-width:{{ g.width }}px"/>
