@@ -2102,7 +2102,7 @@
             </div>
           </div>
 
-          <div t-attf-class="ps-body {{ state.psData.document ? 'visual-document' : '' }}" t-if="state.psData and state.psData.ok">
+          <div class="ps-body" t-att-class="state.psData.document ? 'visual-document' : ''" t-if="state.psData and state.psData.ok">
             <!-- LEFT: layout canvas -->
             <div class="ps-canvas">
               <div t-if="state.psData.document" class="ps-layout-active ps-visual-active">
