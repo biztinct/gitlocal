@@ -52,5 +52,24 @@ both application-generated workbook types before committing.
 Staged validation: 167 Odoo regression tests pass. The rollback configuration
 check passes all mapping, treatment and workbook invariants. A fresh-month test
 with representative full paid days and zero adjustments yields 63 Ready employees
-and seven salary review cases; no test values are saved. Deployment, final data
-audit and Chrome verification will be recorded after application.
+and seven salary review cases; no test values are saved. Implementation commit `805418178` is applied. The latest combined 149 modules /
+4,901 application files are synchronized, with Formula Studio upgraded to
+`19.0.1.202.8` on Rize, Payobook, Payobook Template, ABM and p0clone. The client
+configuration is applied only to Rize. Protected backups and deployment evidence
+are at `/odoo/backups/vn-consolidated-code-20261018-233617/`.
+
+All five deployed databases pass 167 regression tests each, 835 total, with zero
+failures or errors. The committed installer passes its live invariants before
+committing: 118 mappings, 106 storage connections, no unresolved components, all
+96 calculation scenarios, 129 source rows, the 70-person roster and both workbook
+types. A post-commit read confirms the persisted configuration and source hash.
+
+Chrome verifies 118 mapped fields / 122 physical columns, the corrected Work
+Contact Number → Work Phone connection, no BHXH (SI) 8% formula card under All,
+and the 70-person three-tab template layout with 31 monthly inputs. The template
+download RPC returns HTTP 200; the browser download-event capture timed out, so
+workbook contents are verified from the application export payloads instead.
+Both decoded workbook types pass row, sheet protection and round-trip checks.
+Browser warning/error logs are empty. Screenshots were inspected in memory;
+no test PNG files were written. The detailed private review report lists all
+138 input treatments, the 20 additional sources and the seven salary cases.
