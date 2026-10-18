@@ -10767,7 +10767,7 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def _ec_left_items(self, config, include_payroll=False):
-        """The config's columns as LEFT cards, in role lanes.
+        """The config's input columns as LEFT cards, in role lanes.
 
         Payroll components are EXCLUDED by default. That is the whole point of the
         board: a VPTQ structure has seventy pay columns and six people columns, and
@@ -10784,7 +10784,10 @@ class PbFormulaStudio(models.AbstractModel):
         as history; nothing is destroyed (MF-B3).
         """
         order = {role: n for n, role in enumerate(self._EC_ROLE_ORDER)}
-        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        # Only imported inputs can write employee/contract/bank records.
+        # All/category filters must never restore calculated or fixed columns.
+        rules = config.rule_ids.filtered(
+            lambda r: r.column_type == 'input').sorted(key=lambda r: r.sequence)
         items = []
         for rule in rules:
             role = rule.column_role or 'payroll'
@@ -10896,7 +10899,7 @@ class PbFormulaStudio(models.AbstractModel):
         by_left = {i['id']: i for i in left}
         wires = []
         for m in Mapping.search([('salary_structure_id', '=', config.id)]):
-            if not m.component_id:
+            if not m.component_id or m.component_id.column_type != 'input':
                 continue
             rid = self._ec_wire_right_id(m)
             if not rid:
@@ -10935,7 +10938,7 @@ class PbFormulaStudio(models.AbstractModel):
         # same reason: even a careless caller gets an empty recordset.
         # ------------------------------------------------------------------
         for rule in config.rule_ids:
-            if not (rule.is_contract_component or rule.is_text_component):
+            if rule.column_type != 'input' or not (rule.is_contract_component or rule.is_text_component):
                 continue
             kind = 'text' if rule.is_text_component else 'amount'
             wires.append({'id': 'cc%s' % rule.id, 'kind': 'component',
@@ -11032,7 +11035,7 @@ class PbFormulaStudio(models.AbstractModel):
     def _ec_role_counts(self, config, wires):
         """Per-role {total, unmapped} for the header chips.
 
-        Counted over ALL of the config's columns, not over the cards currently on the
+        Counted over ALL of the config's input columns, not over the cards currently on the
         board: the payroll tally has to be truthful while payroll is hidden, or the
         chip that reveals it cannot say how much it is about to reveal.
 
@@ -11042,7 +11045,7 @@ class PbFormulaStudio(models.AbstractModel):
         """
         wired = {w['leftId'] for w in wires}
         counts = {}
-        for rule in config.rule_ids:
+        for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
             role = rule.column_role or 'payroll'
             bucket = counts.setdefault(role, {'total': 0, 'unmapped': 0,
                                               'label': self._role_lane_label(role)})
@@ -11128,6 +11131,9 @@ class PbFormulaStudio(models.AbstractModel):
         comp = self.env['hr.formula.rule'].browse(self._as_id(component_id))
         if not comp.exists():
             return {'ok': False}
+        sealed = self._mc_refuse_sealed(comp)
+        if sealed:
+            return sealed
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
 
         if spec.startswith('b:'):

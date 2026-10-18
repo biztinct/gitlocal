@@ -48,6 +48,25 @@ class TestMappingCreateGuard(TransactionCase):
             'country_code': 'VN', 'state': state,
         })
 
+    def test_employee_record_mapping_refuses_formula_and_fixed_sources_without_writes(self):
+        cfg = self._config('Record input guards')
+        original = self._rule(cfg, 'ORIGINAL', column_role='profile')
+        made = self.Studio.employee_mapping_create(
+            cfg.id, False, original.id, 'f:hr.employee:private_phone')
+        self.assertTrue(made['ok'], made)
+        before = self._rows(cfg).read(['component_id','destination_type','target_field_id','bank_role'])
+        calculated = self._rule(cfg, 'SIRESULT', column_type='formula', excel_formula='=8')
+        fixed = self._rule(cfg, 'FIXEDRESULT', column_type='constant', constant_value=8)
+        for rule in (calculated, fixed):
+            for target in ('f:hr.employee:private_phone', 'b:acc_number', 'c:amount', 'c:text'):
+                with self.subTest(kind=rule.column_type, target=target):
+                    result = self.Studio.employee_mapping_create(cfg.id, False, rule.id, target)
+                    self.assertFalse(result.get('ok'), result)
+                    self.assertTrue(result.get('msg'))
+                    self.assertEqual(self._rows(cfg).read(
+                        ['component_id','destination_type','target_field_id','bank_role']), before)
+                    self.assertFalse(rule.is_contract_component or rule.is_text_component)
+
     def _rule(self, cfg, code, seq=10, **kw):
         vals = {'config_id': cfg.id, 'name': kw.pop('name', code.title()),
                 'code': code, 'column_type': kw.pop('column_type', 'input'),

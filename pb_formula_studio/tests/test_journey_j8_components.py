@@ -473,6 +473,36 @@ class TestJourneyJ8Components(TransactionCase):
                          len(cfg.rule_ids), "a column was counted twice")
         self.assertEqual(stray.column_role, 'profile')
 
+    def test_10b_only_inputs_appear_and_count_even_when_all_payroll_roles_are_requested(self):
+        cfg = self._config('J8 inputs only')
+        pay = self._rule(cfg, 'J8PAYINPUT', 10, column_role='payroll')
+        profile = self._rule(cfg, 'J8PROFILEINPUT', 20, column_role='profile')
+        calculated = self._rule(cfg, 'J8SIRESULT', 30, column_type='formula',
+                                excel_formula='=1', column_role='payroll')
+        profile_formula = self._rule(cfg, 'J8PROFILECALC', 40, column_type='formula',
+                                    excel_formula='=2', column_role='profile')
+        fixed = self._rule(cfg, 'J8FIXED', 50, column_type='constant', constant_value=8)
+        # A legacy mapping must not restore its calculated source to the board
+        # or draw a wire from an absent card. Keep the persisted row intact.
+        model = self.env['ir.model']._get('hr.employee')
+        field = self.env['ir.model.fields']._get('hr.employee', 'private_phone')
+        legacy = self.Mapping.create({'salary_structure_id':cfg.id,
+            'component_id':calculated.id, 'destination_type':'field',
+            'target_model_id':model.id, 'target_field_id':field.id})
+        before = cfg.rule_ids.read(['column_type','excel_formula','constant_value'])
+        excluded = {calculated.id, profile_formula.id, fixed.id}
+        for include in (False, True):
+            with self.subTest(include_payroll=include):
+                data = self.Studio.employee_mapping_data(cfg.id, include_payroll=include)
+                ids = set(self._ids(data['left']))
+                self.assertFalse(ids & excluded)
+                self.assertIn(profile.id, ids)
+                self.assertEqual(pay.id in ids, include)
+                self.assertEqual(sum(c['total'] for c in data['counts'].values()), 2)
+                self.assertFalse({w['leftId'] for w in data['wires']} & excluded)
+        self.assertTrue(legacy.exists())
+        self.assertEqual(cfg.rule_ids.read(['column_type','excel_formula','constant_value']), before)
+
     # ==================================================== D2 — the arrowhead
     def test_11_the_column_gutter_is_wide_enough_for_an_arrowhead(self):
         """The inequality that IS the defect. Two constants had to agree — one in
