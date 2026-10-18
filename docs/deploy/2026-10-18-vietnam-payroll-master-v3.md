@@ -115,3 +115,57 @@ retain their existing behavior. `VN_MASTER_VERIFY=1 VN_MASTER_LABELS_APPLY=1`
 performs this Rize-only metadata update after the shared code deployment and
 rechecks the calculation/record invariants. Other databases receive shared code
 only. Final combined deployment and Chrome receipts follow below.
+
+
+## Final deployment and checks
+
+The latest combined application tree at **ff795602a** was synchronized to
+Payobook19v2: **149 modules / 4,901 files**, verified byte-for-byte. Formula
+Studio **19.0.1.202.3** was upgraded on **rize, payobook, payobook_template, abm
+and p0clone**; the service is active and every installed custom-module version
+matches the repository. The shared rollout preserved each database's business
+counts, aggregate wages and active cron IDs. Its protected backup is
+`/odoo/backups/vn-master-code-20261018-191226/`.
+
+The Vietnam installation and display-metadata update were applied **only to
+rize**. A full-row hash audit of Employee, Contract, contract advantage,
+configuration, component and dependent tables proves the other four databases
+are unchanged; the new master code occurs in none of them. The original Rize
+pre-import dump and evidence are protected at
+`/odoo/backups/vn-master-20261018-190232/`. Rize now has **119 employees and
+109 contracts**; seven new contracts are Draft. Its zero payslip/run baseline is
+unchanged. Configuration 4760 remains Draft and payroll assignments are unchanged.
+
+Final post-install regression results: **89 tests on each of five databases,
+445 total, zero failures/errors**. These include source-column rendering and
+wire preservation, template/records import safety and the native dependent
+count. The post-deployment Rize verification again passes **96 scenarios /
+2,800 Salary and SHUI controls**, resolves all 70 saved records and creates no
+additional people or contracts. An actual DATA-file parser check also proves
+non-taxable S=12,345 and taxable AB=67,890 resolve separately without committing
+any business change.
+
+Chrome confirms the new Master v3 selector, **70/70 review roster**, 31 editable
+monthly inputs, 106 records fields including the pinned name, protected-record
+placement, Blood Type as Contract Text / Information only, the distinct Others
+labels and wires, collapsed five constants, and absence of formula targets.
+Both actual Chrome workbook downloads were inspected for all 70 rows, 22 retained
+HR headings, blank monthly inputs and fully locked master cells. Uploading the
+unchanged records download returns **0 changes, 3,801 blanks ignored,
+3,619 unchanged values and 0 issues**; the review was cancelled. Browser warning
+and error logs are empty after the final checks.
+
+Private deliverables are in `outputs/rize-vn-master-v3-20261018/`: the monthly
+workbook, separate records workbook and review HTML. The review identifies seven
+missing salaries/settings, nine August probation classifications, **three** HC
+salary differences (including the expatriate's 26,065 versus 26,071 exchange-rate
+baseline), separate registered/detail dependent counts, and 22 skipped source
+placeholder/nonnumeric cells. HC VND salary wins where supplied; no tax type or
+missing salary is invented. Nine configuration warnings concern intentionally
+terminal information outputs or totals hidden from payslips; there are zero
+calculation errors.
+
+No test PNG files were generated on disk. Test/deployment staging is removed
+after protected receipts are retained. Unrelated and concurrent workspace files
+are preserved. The final documentation-only commit is copied to the protected
+deployment evidence; application hashes remain unchanged.
