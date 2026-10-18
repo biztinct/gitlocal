@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const source = fs.readFileSync(new URL('../../pb_formula_studio/static/src/js/payslip_document_tools.js', import.meta.url), 'utf8');
-const { detectDocumentCells, documentIssues, documentField } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+const { detectDocumentCells, documentIssues, documentField, documentText } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
 const width = 600, height = 400;
 const pixels = new Uint8Array(width * height * 4).fill(255);
 function black(x, y) { const i = (y * width + x) * 4; pixels[i] = pixels[i + 1] = pixels[i + 2] = 0; }
@@ -31,4 +31,19 @@ assert.ok(dated.fields.find(field => field.id.endsWith('-title')).text.includes(
 const field = documentField('manual-1', 'Manual field', 580, 390, 100, 30);
 field.binding = 'text';
 assert.equal(documentIssues({ pages: [{ width, height, fields: [field] }] }).length, 1, 'out-of-page placements are reported');
-console.log('8 geometry/placement checks passed');
+const faintPixels = Uint8Array.from(pixels, value => value === 0 ? 150 : value);
+assert.equal(detectDocumentCells(faintPixels, width, height, width, height, items).fields.length, 4,
+    'antialiased grey rules retain all four browser-rendered cells');
+const fragments = [
+    ['PHI', 10, 15], ['Ế', 25, 6], ['U LƯƠNG THÁNG', 31, 85], ['0', 120, 5], ['7', 125, 5],
+    ['NĂM', 134, 20], ['202', 158, 15], ['6', 173, 5], ['/', 182, 4],
+    ['PAY', 190, 18], ['SLIP IN', 208, 35], ['JU', 247, 12], ['LY', 259, 12], ['2026', 275, 20],
+].map(([text, x, w]) => ({text, x, width: w, y: 20, font_size: 10}));
+assert.equal(documentText(fragments), 'PHIẾU LƯƠNG THÁNG 07 NĂM 2026 / PAYSLIP IN JULY 2026',
+    'font and accent fragments are reconstructed using their real spacing');
+const fragmentedTitle = detectDocumentCells(faintPixels, width, height, width, height, [...items, ...fragments])
+    .fields.find(field => field.id.endsWith('-title'));
+assert.equal(fragmentedTitle.text,
+    'PHIẾU LƯƠNG THÁNG {{pb_meta:month}} NĂM {{pb_meta:year}} / PAYSLIP IN {{pb_meta:month_name_en}} {{pb_meta:year}}',
+    'both languages use live period tokens even when the month and year span multiple glyph runs');
+console.log('11 geometry/placement checks passed');

@@ -18,12 +18,29 @@ function groups(values, gap = 2) {
     return result.map(group => group.reduce((a, b) => a + b, 0) / group.length);
 }
 
+// PDF.js can split a word at every font/glyph change (including Vietnamese
+// accents). Use the actual space between fragments, not an invented space at
+// every item boundary. Separate baselines still need a word separator.
+export function documentText(items) {
+    const sorted = [...items].sort((a, b) => Math.abs(a.y - b.y) < 3 ? a.x - b.x : a.y - b.y);
+    let text = '', previous;
+    for (const item of sorted) {
+        const gap = previous && item.x - previous.x - previous.width;
+        const sameWord = previous && Number.isFinite(gap) && Math.abs(item.y - previous.y) < 3
+            && gap < Math.min(item.font_size || 10, previous.font_size || 10) * .12;
+        text += (text && !sameWord ? ' ' : '') + item.text.trim();
+        previous = item;
+    }
+    return text.trim();
+}
+
 export function detectDocumentCells(pixels, width, height, pageWidth, pageHeight, items = [], pageNo = 1) {
     // Long dark rules locate table bands. Vertical rules are measured INSIDE
     // each band, so merged headings and unequal column widths are preserved.
     const dark = (x, y) => {
         const p = (Math.round(y) * width + Math.round(x)) * 4;
-        return pixels[p] < 110 && pixels[p + 1] < 110 && pixels[p + 2] < 110;
+        // Thin PDF rules are antialiased to mid-grey by the browser renderer.
+        return pixels[p] < 180 && pixels[p + 1] < 180 && pixels[p + 2] < 180;
     };
     const horizontal = [];
     for (let y = 0; y < height; y++) {
@@ -59,7 +76,7 @@ export function detectDocumentCells(pixels, width, height, pageWidth, pageHeight
             const textItems = items.filter(item => item.x >= left * sx - 1 && item.x < right * sx - 1
                 && item.y > top * sy + 1 && item.y < bottom * sy + 1);
             textItems.sort((a, b) => Math.abs(a.y - b.y) < 3 ? a.x - b.x : a.y - b.y);
-            const text = textItems.map(item => item.text).join(' ').trim();
+            const text = documentText(textItems);
             row.push({ x: left * sx, y: top * sy, w: (right - left) * sx,
                 h: (bottom - top) * sy, text, items: textItems });
         }
@@ -92,19 +109,19 @@ export function detectDocumentCells(pixels, width, height, pageWidth, pageHeight
         }
     }
     // Replace a dated title as one editable text field with period tokens.
-    const titleItems = items.filter(item => /payslip|pay slip|phiếu lương/i.test(item.text)
-        && item.y < (cells[0]?.y || pageHeight * .30));
-    if (titleItems.length) {
-        const anchor = titleItems[0];
-        const line = items.filter(item => Math.abs(item.y - anchor.y) < 4).sort((a, b) => a.x - b.x);
-        let title = line.map(item => item.text).join(' ').trim();
+    const headerItems = items.filter(item => item.y < (cells[0]?.y || pageHeight * .30));
+    const titleY = groups(headerItems.map(item => item.y).sort((a, b) => a - b), 3)
+        .find(y => /payslip|pay slip|phiếu lương/i.test(documentText(headerItems.filter(item => Math.abs(item.y - y) < 3))));
+    if (titleY !== undefined) {
+        const line = headerItems.filter(item => Math.abs(item.y - titleY) < 3);
+        let title = documentText(line);
         if (/20\d{2}/.test(title)) {
             title = title.replace(/(THÁNG\s*)\d{1,2}/i, '$1{{pb_meta:month}}')
                 .replace(/\b20\d{2}\b/g, '{{pb_meta:year}}')
                 .replace(/\b(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\b/gi, '{{pb_meta:month_name_en}}');
             const size = Math.max(...line.map(item => item.font_size || 14));
             const field = documentField(`p${pageNo}-title`, 'Payslip period title', 30,
-                anchor.y - size - 1, pageWidth - 60, size * 1.7);
+                titleY - size - 1, pageWidth - 60, size * 1.7);
             Object.assign(field, { binding: 'text', text: title, font_size: size,
                 bold: true, italic: false, align: 'center' });
             fields.push(field);
