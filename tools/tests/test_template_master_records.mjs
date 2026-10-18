@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../../pb_payroll_templates/static/src/templates.js',import.meta.url),'utf8').replace(/^import .*?from .*?;\n/gm,'');
+const stubs=`class Component {} class Dialog {} class PbFormulaStudio {} class PayrunWizard {} const registry={category:()=>({add(){}})}; const patch=()=>{};`;
+const {PayrollTemplates,moveField}=await import('data:text/javascript;base64,'+Buffer.from(stubs+source).toString('base64'));
+const ui=Object.create(PayrollTemplates.prototype);
+ui.state={data:{can_layout:true,fields:[{id:'salary',record_eligible:true},{id:'days',record_eligible:false}]},layout:{time:['days'],adjustments:[],records:['salary'],available:[]}};
+const warnings=[];ui.notif={add:message=>warnings.push(message)};
+ui.move('days','records');assert.deepEqual(ui.state.layout.records,['salary']);assert.equal(warnings.length,1);
+ui.move('salary','time');assert.deepEqual(ui.state.layout.time,['days']);assert.equal(warnings.length,2);
+ui.move('salary','available');assert.deepEqual(ui.state.layout.available,['salary']);
+ui.move('salary','records');assert.deepEqual(ui.state.layout.records,['salary']);
+assert.deepEqual(moveField(ui.state.layout,'days','adjustments').adjustments,['days']);
+console.log('Master-record lane restrictions, valid moves and monthly-input placement passed');

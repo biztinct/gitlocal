@@ -101,4 +101,14 @@
         </field>
     </record>
 
+    <record id="view_native_dependent_count_transformation" model="ir.ui.view">
+        <field name="name">hr.api.transformation.rule.employee.records</field>
+        <field name="model">hr.api.transformation.rule</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_api_transformation_rule_form"/>
+        <field name="arch" type="xml">
+            <field name="source_data_type" position="after">
+                <field name="employee_record_source"/>
+            </field>
+        </field>
+    </record>
 </odoo>

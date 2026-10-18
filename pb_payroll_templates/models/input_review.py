@@ -28,9 +28,11 @@ class PayrollInputReview(models.AbstractModel):
         by_id = {c['id']: c for c in catalog}
         result = []
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
-        for lane in ('time', 'adjustments', 'available'):
+        for lane in ('time', 'adjustments', 'records', 'available'):
             for fid in layout[lane]:
-                c = dict(by_id[fid], tab={'time': 'Time', 'adjustments': 'Monthly adjustments', 'available': 'Other inputs'}[lane])
+                if not fid.startswith('rule:'):
+                    continue
+                c = dict(by_id[fid], tab={'time': 'Time', 'adjustments': 'Monthly adjustments', 'records': 'Employee records', 'available': 'Other inputs'}[lane])
                 card = cards.get(c.get('record_id'), {})
                 # Legacy schemas may call job titles, dates and selections money.
                 ttype = card.get('ttype')
@@ -216,7 +218,8 @@ class PayrollInputReview(models.AbstractModel):
             # metadata, order and worksheet placement need no data re-entry.
             # Never drop an old column or silently change its record source.
             current_fields = {c['id']: c for c in base_catalog}
-            incompatible = [c['label'] for cols in snapshot['columns'].values() for c in cols
+            incompatible = [c['label'] for sheet, cols in snapshot['columns'].items()
+                if sheet not in snapshot.get('readonly_sheets', []) for c in cols
                 if c['id'] not in current_fields or any(c.get(k) != current_fields[c['id']].get(k)
                     for k in ('readonly', 'record_id'))]
             if incompatible:
@@ -230,6 +233,11 @@ class PayrollInputReview(models.AbstractModel):
         if layout_changed:
             warnings.append(_('Template settings changed since download. Your workbook values have been matched to the current input fields. Review all fields below before continuing.'))
         for sheet_name, cols in snapshot['columns'].items():
+            # A master snapshot is informational. Ignore the entire sheet,
+            # including edited cells, formulas, missing rows or a removed tab.
+            # Read current records from the database for payroll instead.
+            if sheet_name in snapshot.get('readonly_sheets', []):
+                continue
             if sheet_name not in wb:
                 structural.append(_('Missing worksheet: %s') % sheet_name)
                 continue

@@ -56,9 +56,9 @@ class TestPayrollTemplates(TransactionCase):
     def apply(self, review):
         return self.api.confirm(self.cfg.id,review['token'],[c['key'] for c in review['changes']])
 
-    def test_monthly_two_tabs_and_identity(self):
+    def test_monthly_three_tabs_and_identity(self):
         wb=self.export()
-        self.assertEqual([s.title for s in wb if s.sheet_state=='visible'],['Time','Monthly adjustments'])
+        self.assertEqual([s.title for s in wb if s.sheet_state=='visible'],['Time','Monthly adjustments','Employee records'])
         for s in ('Time','Monthly adjustments'):
             self.assertEqual(wb[s]['A2'].value,'000001')
             self.assertFalse(wb[s].protection.sheet)
@@ -164,15 +164,15 @@ class TestPayrollTemplates(TransactionCase):
         fresh=self.export();self.assertIn('Monthly bonus',[c.value for c in fresh['Time'][1]])
 
     def test_readonly_salary_context(self):
-        d=self.api.workspace(self.cfg.id,'2026-10');layout=d['layout'];fid='rule:%s'%self.salary.id
-        layout['available'].remove(fid);layout['time'].append(fid);self.api.save_layout(self.cfg.id,layout)
-        wb=self.export();self.assertEqual(wb['Time'].cell(2,[c.value for c in wb['Time'][1]].index('Salary')+1).value,1000)
-        self.set_value(wb,'Time','Salary',1500)
+        wb=self.export()
+        self.assertEqual(wb['Employee records'].cell(2,[c.value for c in wb['Employee records'][1]].index('Salary')+1).value,1000)
+        self.assertTrue(wb['Employee records'].protection.sheet)
+        self.set_value(wb,'Employee records','Salary',1500)
         review=self.review(wb)
         self.assertFalse(review['issues'])
-        self.assertTrue(review['warnings'])
+        fid='rule:%s'%self.salary.id
         self.assertEqual(review['grid']['rows'][0]['cells'][fid]['value'],1000)
-        self.assertEqual(review['grid']['rows'][0]['cells'][fid]['source'],'system')
+        self.assertEqual(self.contract.wage,1000)
 
     def test_engine_aliases_and_recurring_records(self):
         wb=self.export();self.set_value(wb,'Time','Paid days',20);self.set_value(wb,'Monthly adjustments','Monthly bonus',0)
@@ -302,17 +302,17 @@ class TestPayrollTemplates(TransactionCase):
         self.emp.job_title='Payroll specialist'
         d=self.api.workspace(self.cfg.id,'2026-10')
         fid='rule:%s'%role.id
-        d['layout']['available'].remove(fid);d['layout']['adjustments'].append(fid)
+        self.assertIn(fid,d['layout']['records'])
         self.api.save_layout(self.cfg.id,d['layout'])
         for mode in ('monthly','template'):
             wb=self.export(mode)
             review=self.review(wb)
             self.assertFalse(review['issues'])
             self.assertFalse(review['changes'])
-            self.set_value(wb,'Monthly adjustments','Position','Changed context')
+            self.set_value(wb,'Employee records','Position','Changed context')
             changed=self.review(wb)
             self.assertFalse(changed['issues'])
-            self.assertTrue(changed['warnings'])
+            self.assertFalse(changed['changes'])
             self.assertEqual(changed['grid']['rows'][0]['cells'][fid]['value'],'Payroll specialist')
 
     def test_monthly_zero_cannot_fall_back_to_old_record(self):
@@ -531,14 +531,37 @@ class TestPayrollTemplates(TransactionCase):
         self.assertFalse(self.env['pb.payroll.month.inputs'].search([('config_id','=',self.cfg.id)]))
 
     def test_changed_record_source_requires_new_workbook(self):
-        layout=self.api.workspace(self.cfg.id,'2026-10')['layout']
-        fid='rule:%s'%self.salary.id
-        layout['available'].remove(fid);layout['adjustments'].append(fid)
-        self.api.save_layout(self.cfg.id,layout)
         wb=self.export()
-        self.salary.value_kind='quantity'
+        self.set_value(wb,'Monthly adjustments','Monthly bonus',100)
+        self.map_field(self.bonus,'hr.contract','meal_allowance')
         with self.assertRaisesRegex(UserError,'saved-record source changed'):
             self.review(wb)
+
+    def test_record_lane_rejects_monthly_inputs_and_matches_records_download(self):
+        d=self.api.workspace(self.cfg.id,'2026-10');layout=d['layout']
+        paid='rule:%s'%self.paid.id
+        layout['time'].remove(paid);layout['records'].append(paid)
+        with self.assertRaisesRegex(UserError,'Employee records accepts only'):
+            self.api.save_layout(self.cfg.id,layout)
+        layout=self.api.workspace(self.cfg.id,'2026-10')['layout']
+        salary='rule:%s'%self.salary.id
+        layout['records'].remove(salary);layout['available'].append(salary)
+        self.api.save_layout(self.cfg.id,layout)
+        for mode in ('monthly','records'):
+            self.assertNotIn('Salary',[c.value for c in self.export(mode)['Employee records'][1]])
+
+    def test_master_snapshot_cannot_write_records_or_monthly_values(self):
+        wb=self.export()
+        self.set_value(wb,'Employee records','Salary','=999999*2')
+        self.set_value(wb,'Monthly adjustments','Monthly bonus',25)
+        r=self.review(wb)
+        self.assertFalse(r['issues'])
+        self.assertEqual(self.cell(r,self.salary)['value'],1000)
+        self.apply(r)
+        self.assertEqual(self.contract.wage,1000)
+        self.assertEqual(self.api._current(self.cfg,'2026-10',self.emp)[self.emp.id]['rule:%s'%self.bonus.id],25)
+        wb=self.export();del wb['Employee records']
+        self.assertFalse(self.review(wb)['issues'])
 
     def schema_identity(self):
         code = self.rule('Mã nhân viên\n(Code)', 'WBEMPCODE', 'identifier')
@@ -699,3 +722,16 @@ class TestPayrollTemplates(TransactionCase):
         labels = [c['label'] for c in data['left']]
         self.assertIn('employee_code', labels)
         self.assertIn('email', labels)
+
+    def test_all_aliases_of_one_saved_field_stay_in_records(self):
+        alias = self.rule('Other salary label', 'WBALIAS', 'money')
+        self.map_field(alias, 'hr.contract', 'wage')
+        catalog = self.api._catalog(self.cfg)
+        for rule in (self.salary, alias):
+            item = next(c for c in catalog if c['id'] == 'rule:%s' % rule.id)
+            self.assertTrue(item['record_eligible'])
+            self.assertEqual(item['default'], 'records')
+        workbook = self.export('records')
+        headers = [c.value for c in workbook['Employee records'][1]]
+        self.assertIn(self.salary.name, headers)
+        self.assertIn(alias.name, headers)

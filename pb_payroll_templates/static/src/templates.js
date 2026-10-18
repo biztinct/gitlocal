@@ -64,7 +64,7 @@ export class PayrollTemplates extends Component {
         const ctx=this.props.action?.context||{};
         this.fromPayRun=!!ctx.templates_from_payrun;
         this.payRunForm=ctx.templates_payrun_form||{};
-        this.state=useState({busy:false,error:'',data:null,screen:'downloads',period:ctx.templates_period||month(),configId:ctx.templates_config_id||0,layout:{time:[],adjustments:[],available:[]},dirty:false,menu:'',query:'',showCalculated:false,preview:'time'});
+        this.state=useState({busy:false,error:'',data:null,screen:'downloads',period:ctx.templates_period||month(),configId:ctx.templates_config_id||0,layout:{time:[],adjustments:[],records:[],available:[]},dirty:false,menu:'',query:'',showCalculated:false,preview:'time'});
         this.dragged='';
         this.fileRef=useRef('file');
         useSetupAction({beforeLeave:()=>!this.state.dirty||new Promise(resolve=>this.dialog.add(ConfirmationDialog,{
@@ -116,7 +116,12 @@ export class PayrollTemplates extends Component {
         try{await this.orm.call('pb.payroll.templates','save_layout',[this.state.configId,this.state.layout]);this.state.dirty=false;this.notif.add('Monthly layout saved for this configuration.',{type:'success'});return true;}
         catch(e){this.state.error=message(e);return false;}finally{this.state.busy=false;}
     }
-    move(id,lane,before=''){if(!this.state.data.can_layout)return;this.state.layout=moveField(this.state.layout,id,lane,before);this.state.dirty=true;this.state.menu='';}
+    canPlace(id,lane){const f=this.fields[id];return !!f && (lane==='available'||(lane==='records')===!!f.record_eligible);}
+    move(id,lane,before=''){
+        if(!this.state.data.can_layout)return;
+        if(!this.canPlace(id,lane)){this.notif.add('Saved employee, contract and bank fields belong in Employee records. Monthly inputs belong in Time or Monthly adjustments.',{type:'warning'});return;}
+        this.state.layout=moveField(this.state.layout,id,lane,before);this.state.dirty=true;this.state.menu='';
+    }
     earlier(id,lane){const a=this.state.layout[lane],i=a.indexOf(id);if(i>0)this.move(id,lane,a[i-1]);}
     later(id,lane){const a=this.state.layout[lane],i=a.indexOf(id);if(i<a.length-1)this.move(id,lane,a[i+2]||'');}
     startDrag(ev,id){this.dragged=id;ev.dataTransfer.setData('text/plain',id);ev.dataTransfer.effectAllowed='move';}

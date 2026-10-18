@@ -89,6 +89,10 @@
                         <div class="col-12">
                             <div class="d-flex justify-content-between mb-2">
                                 <div>
+                                    <strong>All Dependent Records:</strong>
+                                    <field name="vn_dependent_record_count" class="oe_inline"/>
+                                </div>
+                                <div>
                                     <strong>Eligible Dependents:</strong> 
                                     <field name="vn_eligible_dependent_count" class="oe_inline"/>
                                 </div>

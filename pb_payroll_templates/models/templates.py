@@ -20,6 +20,8 @@ from odoo.addons.pb_hr_payroll_formula.models.pay_period import default_standard
 
 LIMIT = 10000
 TABS = {'time': 'Time', 'adjustments': 'Monthly adjustments'}
+RECORD_TAB = 'Employee records'
+LAYOUT_LANES = ('time', 'adjustments', 'records', 'available')
 IDENTITY = {'barcode', 'employee_id', 'pb_source_ref', 'identification_id',
             'work_email', 'private_email'}
 TIME = re.compile(r'days?|hours?|\bhrs?\b|attendance|timesheet|ngày|giờ|công', re.I)
@@ -112,6 +114,10 @@ class PayrollTemplates(models.AbstractModel):
         start, end = self._period(period)
         ids = self.env['pb.payrun.wizard']._eligible_employees(
             formula_config_id=cfg.id, date_start=start, date_end=end)
+        if not ids and cfg.state == 'draft':
+            preview = self.env['pb.payroll.template.layout'].sudo().search([
+                ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
+            ids = (preview.payload or {}).get('preview_employee_ids', []) if preview else []
         people = self.env['hr.employee'].sudo().search([
             ('id', 'in', ids), ('company_id', '=', self.env.company.id)], order='name, id')
         if len(people) > LIMIT:
@@ -122,11 +128,9 @@ class PayrollTemplates(models.AbstractModel):
         return str(employee.barcode or employee.employee_id or '').strip()
 
     def _cards(self, cfg):
-        variable_ids = set(cfg.rule_ids.filtered(lambda r: r.value_kind == 'quantity' or VARIABLE.search(r.name or '')).ids)
         return {k: dict(v, label=(v.get('component') or {}).get('name') or v['label'])
                 for k, v in self.env['pb.records.desk']._cards(cfg.id).items()
-                if v.get('field') not in IDENTITY and not (
-                    v.get('group') == 'component' and (v.get('component') or {}).get('id') in variable_ids)}
+                if v.get('field') not in IDENTITY}
 
     def _identity_rules(self, cfg):
         found = {}
@@ -201,6 +205,14 @@ class PayrollTemplates(models.AbstractModel):
         for fid, card in cards.items():
             if card.get('component'):
                 by_rule.setdefault(card['component']['id'], fid)
+        # Several payroll inputs may read the same saved field. The Records
+        # Desk presents one destination card; retain each input's own label and
+        # classify every mapped alias as record context, never monthly input.
+        for mapping in self.env['pb.records.desk']._mappings(cfg.id):
+            fid = ('b:' + mapping.bank_role) if mapping.destination_type == 'bank_account' else (
+                'f:%s:%s' % (mapping.target_model_id.model, mapping.target_field_id.name))
+            if fid in cards and mapping.component_id:
+                by_rule[mapping.component_id.id] = fid
         result = []
         identity_rules = self._identity_rules(cfg)
         for rule in cfg.rule_ids.filtered(lambda r: r.column_type == 'input'):
@@ -212,15 +224,28 @@ class PayrollTemplates(models.AbstractModel):
             if card_id and cards[card_id].get('field') in IDENTITY:
                 continue
             quantity = rule.value_kind == 'quantity' or bool(TIME.search(text) and rule.value_kind in ('integer', 'decimal', 'money'))
-            recurring = bool(card_id and not quantity and not VARIABLE.search(text))
+            recurring = bool(card_id)
             # Mapped dates, names, status and recurring salary are read from records.
-            default = 'available' if recurring or rule.value_kind in ('date', 'text', 'boolean') else ('time' if quantity else 'adjustments')
+            default = 'records' if recurring else 'available' if rule.value_kind in ('date', 'text', 'boolean') else ('time' if quantity else 'adjustments')
             result.append({'id': 'rule:%s' % rule.id, 'label': rule.name or rule.code,
                            'code': rule.code, 'kind': rule.value_kind,
                            'source_keys': [s.key for s in sources if s.key] or self.env['hr.payroll.import.batch']._rule_header_candidates(rule, allow_column_letter=False),
                            'record_id': card_id, 'readonly': recurring,
+                           'record_eligible': recurring,
+                           'record_group': cards[card_id]['group'] if card_id else '',
                            'default': default,
                            'reason': _('Saved employee / contract context') if recurring else (_('Time quantity') if quantity else _('Monthly input — review the suggested placement'))})
+        represented = {c['record_id'] for c in result if c.get('record_id')}
+        kinds = {'date': 'date', 'datetime': 'date', 'integer': 'integer',
+                 'float': 'decimal', 'monetary': 'money', 'amount': 'money', 'boolean': 'boolean'}
+        for fid, card in cards.items():
+            if fid in represented or fid == 'f:hr.employee:name':
+                continue
+            result.append({'id': 'record:' + fid, 'label': card['label'], 'code': '',
+                           'kind': kinds.get(card.get('ttype'), 'text'), 'source_keys': [],
+                           'record_id': fid, 'readonly': True, 'record_eligible': True,
+                           'record_group': card['group'], 'default': 'records',
+                           'reason': _('Saved employee / contract context')})
         return result
 
     def _layout(self, cfg, catalog):
@@ -228,7 +253,20 @@ class PayrollTemplates(models.AbstractModel):
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
         saved = row.payload or {} if row else {}
         known = {c['id']: c for c in catalog}
-        result = {k: [i for i in saved.get(k, []) if i in known] for k in ('time', 'adjustments', 'available')}
+        result = {k: [] for k in LAYOUT_LANES}
+        # Migrate old context placements without changing any rule or source.
+        # Old layouts had no records lane; their unused master fields start in
+        # the new snapshot. Once a records lane is saved, Available stays opt-out.
+        for lane in LAYOUT_LANES:
+            for fid in saved.get(lane, []):
+                if fid not in known or any(fid in ids for ids in result.values()):
+                    continue
+                record = known[fid]['record_eligible']
+                target = ('records' if record and (lane != 'available' or 'records' not in saved)
+                          else 'available' if not record and lane == 'records' else lane)
+                if record and target in TABS:
+                    target = 'records'
+                result[target].append(fid)
         used = {i for a in result.values() for i in a}
         for c in catalog:
             if c['id'] not in used:
@@ -250,11 +288,15 @@ class PayrollTemplates(models.AbstractModel):
         people = self._roster(cfg, period)
         catalog = self._catalog(cfg)
         cards = self._cards(cfg)
+        preview = self.env['pb.payroll.template.layout'].sudo().search([
+            ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
+        expected = (preview.payload or {}).get('preview_expected_count') if preview and cfg.state == 'draft' else 0
         return {'configs': [{'id': c.id, 'name': c.name, 'country': c.country_code, 'state': c.state} for c in configs],
                 'config_id': cfg.id, 'name': cfg.name, 'country': cfg.country_code,
                 'state': cfg.state,
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
-                'record_columns': len(cards), 'fields': catalog,
+                'roster_note': (_('Draft review roster: %s existing Employee records out of %s source people. Payroll assignments are unchanged.') % (len(people), expected)) if expected else '',
+                'record_columns': len(self._layout(cfg, catalog)['records']) + int('f:hr.employee:name' in cards), 'fields': catalog,
                 'identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg)},
                 'record_identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg, 'records')},
                 'calculated_fields': [{'id': r.id, 'label': r.name or r.code,
@@ -273,12 +315,17 @@ class PayrollTemplates(models.AbstractModel):
             raise AccessError(_('A Payroll Manager can change workbook layouts.'))
         self._lock(cfg)
         catalog = self._catalog(cfg)
-        ids = [i for k in ('time', 'adjustments', 'available') for i in layout.get(k, [])]
+        ids = [i for k in LAYOUT_LANES for i in layout.get(k, [])]
         if len(ids) != len(set(ids)) or set(ids) != {c['id'] for c in catalog}:
             raise UserError(_('The field list changed. Reload the layout and try again.'))
+        by_id = {c['id']: c for c in catalog}
+        for lane in ('time', 'adjustments', 'records'):
+            for fid in layout.get(lane, []):
+                if bool(by_id[fid]['record_eligible']) != (lane == 'records'):
+                    raise UserError(_('Employee records accepts only saved employee, contract, contract component and bank fields. Monthly inputs belong on Time or Monthly adjustments.'))
         row = self.env['pb.payroll.template.layout'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
-        vals = {'payload': {k: layout[k] for k in ('time', 'adjustments', 'available')}}
+        vals = {'payload': dict(row.payload or {} if row else {}, **{k: layout[k] for k in LAYOUT_LANES})}
         if row:
             row.write(vals)
         else:
@@ -350,17 +397,27 @@ class PayrollTemplates(models.AbstractModel):
         layout = self._layout(cfg, catalog)
         monthly = {e.id: {} for e in people} if reusable else self._current(cfg, period, people)
         by_id = {c['id']: c for c in catalog}
-        ordered_cards = sorted(cards.items(), key=lambda pair: pair[0] != 'f:hr.employee:name')
-        columns = {'Employee records': [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable')} for fid, c in ordered_cards]} if mode == 'records' else {TABS[k]: [by_id[i] for i in layout[k]] for k in TABS}
+        selected_cards = [(by_id[fid]['record_id'], dict(cards[by_id[fid]['record_id']], label=by_id[fid]['label'])) for fid in layout['records']]
+        if 'f:hr.employee:name' in cards:
+            selected_cards.insert(0, ('f:hr.employee:name', cards['f:hr.employee:name']))
+        columns = {RECORD_TAB: [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable'),
+                                'record_group': c['group']} for fid, c in selected_cards]} if mode == 'records' else {
+            **{TABS[k]: [by_id[i] for i in layout[k]] for k in TABS},
+            RECORD_TAB: [by_id[i] for i in layout['records']],
+        }
         snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
+        snapshot['readonly_sheets'] = [] if mode == 'records' else [RECORD_TAB]
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
         from openpyxl.utils import get_column_letter
         wb = openpyxl.Workbook()
         wb.remove(wb.active)
+        record_colors = {'employee': ('325F96', 'EAF2FF'), 'contract': ('2F7257', 'EAF7EF'),
+                         'component': ('70538A', 'F3ECFA'), 'bank': ('916326', 'FFF3DD')}
         for sheet_name, cols in columns.items():
             ws = wb.create_sheet(sheet_name)
+            master_snapshot = mode != 'records' and sheet_name == RECORD_TAB
             identity = [c['label'] for c in identity_columns]
             headers = identity + [c['label'] for c in cols] + ['_row']
             # Record columns are keyed by their saved field IDs in comments.
@@ -378,6 +435,9 @@ class PayrollTemplates(models.AbstractModel):
             ws.row_dimensions[1].height = 32
             for ci, c in enumerate(cols, len(identity) + 1):
                 ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'Read-only context.' if c.get('readonly') else ''), 'Payobook')
+                if master_snapshot:
+                    color = record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[0]
+                    ws.cell(1, ci).fill = PatternFill('solid', fgColor=color)
             for e in people:
                 key = str(e.id)
                 if key not in snapshot['employees']:
@@ -399,9 +459,14 @@ class PayrollTemplates(models.AbstractModel):
                         cell.data_type = 's'  # Excel must never execute imported text.
                     if ci == 1:
                         cell.number_format = '@'
-                    editable = len(identity) < ci <= len(identity) + len(cols) and not cols[ci - len(identity) - 1].get('readonly')
+                    editable = not master_snapshot and len(identity) < ci <= len(identity) + len(cols) and not cols[ci - len(identity) - 1].get('readonly')
                     cell.protection = Protection(locked=not editable)
                     cell.font = Font(name='Calibri', color='241F52' if editable else '63718A')
+                    if master_snapshot and len(identity) < ci <= len(identity) + len(cols):
+                        c = cols[ci - len(identity) - 1]
+                        cell.fill = PatternFill('solid', fgColor=record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[1])
+                    elif editable:
+                        cell.fill = PatternFill('solid', fgColor='FFF7DD')
             ws.column_dimensions[get_column_letter(len(headers))].hidden = True
             ws.freeze_panes = 'C2'
             ws.auto_filter.ref = 'A1:%s%s' % (get_column_letter(len(headers) - 1), max(1, ws.max_row))
@@ -410,7 +475,14 @@ class PayrollTemplates(models.AbstractModel):
             # Identity, read-only context and roster membership are enforced
             # by review() against the server-owned download snapshot.
             # Employee-record workbooks retain their protected ID/email cells.
-            ws.protection.sheet = mode == 'records'
+            ws.protection.sheet = mode == 'records' or master_snapshot
+            if master_snapshot:
+                ws.sheet_properties.tabColor = '2F7257'
+                ws.protection.set_password(uuid.uuid4().hex)
+                ws['A1'].comment = Comment(
+                    'Read-only master records. This entire worksheet is ignored during monthly upload. '
+                    'Colours: blue = Employee; green = Contract; purple = Contract component; gold = Bank. '
+                    'Use Download records for a separate reviewed master-data update.', 'Payobook')
             ws.protection.autoFilter = False
             ws.protection.sort = False
         exchange = self._exchange(cfg, 'export', snapshot)
@@ -657,7 +729,7 @@ class PayrollTemplates(models.AbstractModel):
         cards = self._cards(cfg)
         records = self._record_values(cfg, people, cards)
         current = self._current(cfg, period, people)
-        catalog = self._catalog(cfg)
+        catalog = [c for c in self._catalog(cfg) if c['id'].startswith('rule:')]
         resolved = self._resolved_month(cfg, period, people, catalog)
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
         mandatory = [c for c in catalog if not c.get('readonly')
@@ -839,7 +911,7 @@ class TemplateBatch(models.Model):
         if employee.company_id != self.company_id or cfg.company_id != self.company_id:
             raise UserError(_('The monthly payroll records belong to a different company.'))
         facade = self.env['pb.payroll.templates'].with_company(self.company_id)
-        catalog = facade._catalog(cfg)
+        catalog = [c for c in facade._catalog(cfg) if c['id'].startswith('rule:')]
         cards = facade._cards(cfg)
         saved = facade._record_values(cfg, employee, cards)[employee.id]
         raw_data = dict(raw_data or {})

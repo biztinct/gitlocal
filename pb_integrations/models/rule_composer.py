@@ -343,6 +343,13 @@ class PbIntegrationsRuleComposer(models.AbstractModel):
         first sync and its docstring is load-bearing: it is never presentable
         as data that was received.
         """
+        Rule = self.env['hr.api.transformation.rule']
+        if 'employee_record_source' in Rule._fields:
+            native = Rule.search([('connector_id', '=', connector.id),
+                                  ('source_data_type', '=', data_type),
+                                  ('employee_record_source', '!=', False)], limit=1)
+            if native:
+                return native._employee_record_sample(), False
         Store = self.env['hr.api.data.store']
         rows = Store.search([('connector_id', '=', connector.id),
                              ('data_type', '=', data_type)],
