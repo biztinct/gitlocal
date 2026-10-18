@@ -130,7 +130,8 @@ class RunInputReview(models.AbstractModel):
 
     def _review_payload(self, snapshot, check_inputs=True):
         data = copy.deepcopy(snapshot.payload or {})
-        data.update(id=snapshot.id, config_id=snapshot.batch_id.formula_config_id.id, filename=snapshot.batch_id.import_filename or '', revision=data.get('revision', 0))
+        monthly = bool(snapshot.batch_id._template_period())
+        data.update(id=snapshot.id, config_id=snapshot.batch_id.formula_config_id.id, filename=snapshot.batch_id.import_filename or '', revision=data.get('revision', 0), monthly_template=monthly)
         proposals = {c.get('apply_id') for r in data.get('rows', []) for c in r['cells'].values() if c.get('apply_id')}
         applies = {p.id: p for p in self.env['pb.records.apply'].sudo().browse(list(proposals)).exists()}
         lines = self.env['hr.payroll.import.line'].sudo().browse([r['line_id'] for r in data.get('rows', [])]).exists() if check_inputs else self.env['hr.payroll.import.line']
@@ -141,6 +142,17 @@ class RunInputReview(models.AbstractModel):
             line = by_line.get(row['line_id'])
             actual = json.loads(line.payslip_id.formula_input_values or '{}') if line and line.payslip_id else None
             for cid, cell in row['cells'].items():
+                if monthly and col_by_id[cid]['mapped'] and cell['decision'] in ('pending', 'same', 'once'):
+                    # This generated file joins saved records on the server;
+                    # its protected record worksheet is never a writeback.
+                    # A display name can resolve to another many2one ID when
+                    # names repeat. That is unchanged context, not a proposal
+                    # to move the employee to the other record.
+                    if cell.get('old_label') == cell.get('new_label'):
+                        cell['changed'] = False
+                    cell.update(monthly_record_context=True,
+                                decision='once' if cell['changed'] else 'same',
+                                reason=_('Saved records are read-only in monthly payroll workbooks. Use Employee & contract records for lasting changes.'))
                 cell['not_computed'] = bool(check_inputs and (not line or not line.payslip_id))
                 cell['payroll_changed'] = actual is not None and not cell.get('context_only') and actual.get(col_by_id[cid]['code']) != cell['value']
                 proposal = applies.get(cell.get('apply_id'))
@@ -162,7 +174,8 @@ class RunInputReview(models.AbstractModel):
         for batch in batches:
             self._capture_run_inputs(batch, historical=True)
         data = [self._review_payload(s) for s in self._review_snapshots(run)]
-        can_decide = run.state != 'cancel' and self.env['pb.payrun.wizard']._may_run_payroll()
+        monthly_only = bool(data) and all(s['monthly_template'] for s in data)
+        can_decide = not monthly_only and run.state != 'cancel' and self.env['pb.payrun.wizard']._may_run_payroll()
         return {'run_id': run.id, 'name': run.name, 'cancelled': run.state == 'cancel',
                 'can_decide': can_decide, 'sheets': data}
 
@@ -177,6 +190,8 @@ class RunInputReview(models.AbstractModel):
         snapshot = self._review_snapshots(run).filtered(lambda s: s.id == int(snapshot_id))
         if not snapshot:
             raise AccessError(_('This input review does not belong to this payroll.'))
+        if decision == 'future' and snapshot.batch_id._template_period():
+            raise UserError(_('Monthly payroll workbooks keep employee, contract and bank records read-only. Use Employee & contract records for lasting changes.'))
         self.env.cr.execute('SELECT id FROM pb_payroll_run_input_review WHERE id=%s FOR UPDATE', (snapshot.id,))
         snapshot.invalidate_recordset()
         data = self._review_payload(snapshot)

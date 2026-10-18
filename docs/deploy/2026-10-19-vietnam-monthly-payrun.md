@@ -84,3 +84,26 @@ isolated staged module before deployment; live business changes were rolled
 back by the test transactions.
 
 Deployment and end-to-end validation receipts are added after execution.
+
+
+## Monthly records are context, not future-record proposals
+
+The completed run exposed 54 false Department proposals in the durable input
+review. The server-generated workbook carries the saved department's display
+name. Where duplicate department names exist, the generic record-update coercer
+can resolve that name to another ID despite identical before/after labels.
+
+Monthly-template snapshots now present mapped record fields as read-only
+context, without mutating the captured audit payload. Equal labels on saved
+record context do not become changes. Explicit month-only overrides remain
+labelled as this-month-only, and a direct API request to save a monthly snapshot
+for future payrolls is refused. The separate Employee & contract records process
+remains the way to make lasting changes. Ordinary uploaded payroll files retain
+their existing reviewed future-record decisions.
+
+Two regressions cover duplicate department labels and refusal to promote a
+month-only record override. The UI explains the monthly context and omits
+permanent-record decision controls for a monthly-only run.
+
+All 138 selected regressions, including both new monthly-record cases and the
+ordinary-upload decision tests, passed against the staged module before rollout.

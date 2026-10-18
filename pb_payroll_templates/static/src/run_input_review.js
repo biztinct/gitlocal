@@ -32,7 +32,10 @@ export class RunInputReview extends Component {
     }
     get sheet() { return this.state.data?.sheets[this.state.sheet]; }
     key(row, col) { return `${row.line_id}:${col.id}`; }
-    status(cell) { return STATUS[cell.decision] || ''; }
+    status(cell) {
+        if (cell.monthly_record_context) return cell.changed ? _t('This month only · record unchanged') : _t('Saved record · read-only');
+        return STATUS[cell.decision] || '';
+    }
     value(v) { return v === null || v === undefined || v === '' ? '—' : typeof v === 'number' ? v.toLocaleString(undefined, {maximumFractionDigits: 6}) : String(v); }
     letter(i) { return columnLetter(i + 2); }
     get stats() {

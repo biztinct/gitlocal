@@ -5,8 +5,9 @@
             <div class="pir" t-att-aria-busy="state.busy ? 'true' : 'false'">
                 <div class="pir-hero">
                     <span class="pir-eyebrow">PAYROLL INPUT REVIEW</span>
-                    <h2>This month’s changes. Next month’s starting point.</h2>
-                    <p t-if="state.data"><b t-esc="state.data.name"/> · Review the values used and choose which mapped changes to keep for future payrolls.</p>
+                    <h2 t-if="sheet?.monthly_template">This month’s inputs. Saved records stay unchanged.</h2>
+                    <h2 t-else="">This month’s changes. Next month’s starting point.</h2>
+                    <p t-if="state.data"><b t-esc="state.data.name"/><t t-if="!sheet?.monthly_template"> · Review the values used and choose which mapped changes to keep for future payrolls.</t></p>
                 </div>
                 <div class="pir-error" role="alert" t-if="state.error"><span t-esc="state.error"/><button type="button" class="btn btn-link" t-on-click="load" t-att-disabled="state.busy">Refresh review</button></div>
                 <p class="pir-empty" t-if="!state.data and state.busy" role="status">Loading your saved input review…</p>
@@ -17,9 +18,10 @@
                         <button type="button" t-on-click="() => this.setFilter('saved')"><strong t-esc="stats.saved"/><span>Saved for future payrolls</span></button>
                         <button type="button" t-on-click="() => this.setFilter('approval')"><strong t-esc="stats.approval"/><span>Record updates in approval</span></button>
                     </div>
-                    <div class="pir-notice" t-if="stats.excel"><b>Some fields live only in Excel.</b> They are retained with this payroll for review, but are not stored as reusable employee or contract fields. Enter them again for the next payroll, or ask your administrator to map them to a system field.</div>
+                    <div class="pir-notice" t-if="sheet?.monthly_template">Time and monthly adjustments apply to this payroll only. Employee, contract and bank values are read-only context. Use Employee &amp; contract records to make lasting changes.</div>
+                    <div class="pir-notice" t-elif="stats.excel"><b>Some fields live only in Excel.</b> They are retained with this payroll for review, but are not stored as reusable employee or contract fields. Enter them again for the next payroll, or ask your administrator to map them to a system field.</div>
                     <div class="pir-notice" t-if="state.data.cancelled">This payroll was rejected. You can inspect its changes and decisions here; record updates are disabled.</div>
-                    <div class="pir-notice" t-elif="!state.data.can_decide">You can review these changes. A payroll operator with record-edit permission can decide which values to save.</div>
+                    <div class="pir-notice" t-elif="!state.data.can_decide and !sheet?.monthly_template">You can review these changes. A payroll operator with record-edit permission can decide which values to save.</div>
                     <t t-if="sheet">
                         <div class="pir-tools">
                             <select t-if="state.data.sheets.length > 1" aria-label="Workbook" t-on-change="changeSheet"><option t-foreach="state.data.sheets" t-as="s" t-key="s.id" t-att-value="s_index" t-att-selected="s_index === state.sheet" t-esc="s.filename"/></select>

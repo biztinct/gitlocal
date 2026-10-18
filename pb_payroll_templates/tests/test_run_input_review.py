@@ -27,14 +27,14 @@ class TestRunInputReview(TransactionCase):
         cls.emp = cls.env['hr.employee'].create({'name': 'Input Review Test', 'barcode': 'INPUTREV01', 'company_id': cls.env.company.id})
         cls.contract = cls.env['hr.contract'].create({'name': 'Review test contract', 'employee_id': cls.emp.id, 'wage': 1000, 'state': 'open', 'date_start': '2026-01-01'})
 
-    def make_review(self, salary=1200, bonus=75):
+    def make_review(self, salary=1200, bonus=75, extra=None):
         self.run = self.env['hr.payslip.run'].create({'name': 'Input review payroll', 'date_start': '2087-10-01', 'date_end': '2087-10-31', 'pb_formula_config_id': self.cfg.id})
         self.batch = self.env['hr.payroll.import.batch'].create({'name': 'Review file', 'formula_config_id': self.cfg.id,
             'company_id': self.env.company.id, 'source_type': 'excel', 'payslip_run_id': self.run.id,
             'payroll_period': 'custom', 'date_from': '2087-10-01', 'date_to': '2087-10-31', 'one_time': True,
             'import_filename': 'review-test.xlsx'})
         self.line = self.env['hr.payroll.import.line'].create({'batch_id': self.batch.id, 'employee_id': self.emp.id,
-            'raw_data_json': json.dumps({'Payroll|Salary': salary, 'Payroll|Monthly bonus': bonus}), 'state': 'validated'})
+            'raw_data_json': json.dumps({'Payroll|Salary': salary, 'Payroll|Monthly bonus': bonus, **(extra or {})}), 'state': 'validated'})
         self.api._capture_run_inputs(self.batch)
         used = self.batch._transform_data_to_formula_inputs(self.line.get_raw_data(), contract=self.contract, employee=self.emp)
         self.slip = self.env['hr.payslip'].create({'name': 'Input decision payslip', 'employee_id': self.emp.id,
@@ -110,6 +110,52 @@ class TestRunInputReview(TransactionCase):
         self.assertNotIn(str(self.bonus.id), sheet['rows'][0]['cells'])
         self.decide(sheet)
         self.assertEqual(self.contract.wage, 0)
+
+    def test_monthly_record_override_cannot_be_saved_for_future(self):
+        sheet = self.make_review(salary=1200)
+        self.assertEqual(sheet['rows'][0]['cells'][str(self.salary.id)]['decision'], 'pending')
+        self.batch.import_filename = 'Payobook-month-2087-10.xlsx'
+        original = self.api._review_snapshots(self.run).payload
+        data = self.api.run_input_changes(self.run.id)
+        cell = data['sheets'][0]['rows'][0]['cells'][str(self.salary.id)]
+        self.assertTrue(data['sheets'][0]['monthly_template'])
+        self.assertFalse(data['can_decide'])
+        self.assertTrue(cell['changed'])
+        self.assertEqual(cell['decision'], 'once')
+        with self.assertRaisesRegex(UserError, 'read-only'):
+            self.decide(sheet, 'future')
+        self.assertEqual(self.contract.wage, 1000)
+        self.assertEqual(json.loads(self.slip.formula_input_values)[self.salary.code], 1200)
+        self.assertEqual(self.api._review_snapshots(self.run).payload, original)
+
+    def test_monthly_duplicate_department_label_is_unchanged_context(self):
+        Departments = self.env['hr.department']
+        first = Departments.create({'name': 'Repeated input review team', 'company_id': self.env.company.id})
+        current = Departments.create({'name': first.name, 'company_id': self.env.company.id})
+        self.emp.department_id = current
+        rule = self.env['hr.formula.rule'].create({'config_id': self.cfg.id,
+            'name': 'Department', 'code': 'IDDEPARTMENT', 'column_type': 'input',
+            'value_kind': 'text', 'column_role': 'profile'})
+        rule.set_source_binding('excel', 'Payroll|Department')
+        self.env['hr.payslip.import.mapping'].create({'salary_structure_id': self.cfg.id,
+            'component_id': rule.id, 'destination_type': 'field',
+            'target_model_id': self.env['ir.model']._get('hr.employee').id,
+            'target_field_id': self.env['ir.model.fields'].search([
+                ('model', '=', 'hr.employee'), ('name', '=', 'department_id')], limit=1).id})
+        sheet = self.make_review(salary=1000, extra={'Payroll|Department': current.name})
+        before = sheet['rows'][0]['cells'][str(rule.id)]
+        self.assertEqual(before['old'], current.id)
+        self.assertEqual(before['old_label'], before['new_label'])
+        self.assertTrue(before['changed'])
+        self.batch.import_filename = 'Payobook-month-2087-10.xlsx'
+        data = self.api.run_input_changes(self.run.id)
+        cell = data['sheets'][0]['rows'][0]['cells'][str(rule.id)]
+        self.assertFalse(cell['changed'])
+        self.assertEqual(cell['decision'], 'same')
+        self.assertTrue(cell['monthly_record_context'])
+        self.assertFalse(data['can_decide'])
+        self.assertEqual(self.emp.department_id, current)
+        self.assertEqual(self.contract.wage, 1000)
 
     def test_unchanged_mapped_value_has_no_decision(self):
         sheet = self.make_review(salary=1000)
