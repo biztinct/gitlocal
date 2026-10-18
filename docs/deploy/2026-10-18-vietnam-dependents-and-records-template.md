@@ -78,8 +78,7 @@ are not identified as Rize copies and are preserved.
 
 The other application databases have no Rize-labelled payroll configuration,
 Rize company, imported dependent rows or VNDEPCOUNT transformation. The isolated
-codex_vn_records_20261018 database is temporary test data and must be dropped
-before completion. Restricted recovery backups are retained outside live databases.
+codex_vn_records_20261018 test database and its generated filestore were removed. Restricted recovery backups are retained outside live databases.
 
 ## Final records-workbook alias correction
 
@@ -98,3 +97,60 @@ The owner's last count-policy change removes the shared VNDEPCOUNT source and
 native count-field mapping from VNREGISTER only, restores its contract-amount
 flag, and preserves all existing contract values and eleven Excel placeholders.
 The import tool is now guarded to run only on rize.
+
+
+## Deployed close-out — 18 October 2026
+
+Implementation commits: 8feb164df (feature), fbf58c5b9 (client-copy cleanup),
+a1787a280 (alias review correction and final separate tax-count policy).
+The latest combined 149-addon / 4,878-file tree was synchronized under the
+shared deployment lock and verified byte for byte. Final versions are
+pb_payroll_templates 19.0.1.2.9, pb_hr_payroll_vietnam 19.0.1.2.1 and
+pb_integrations 19.0.1.14.7. The service is active. The initial schema/view
+upgrade preserved all business aggregates; the final Python-only correction
+needed no schema or module-data reload and preserved aggregates again.
+
+| Database | Final deployed tests | Rize-labelled configs | Imported dependent rows |
+|---|---|---|---|
+| payobook | 74 passed, zero failures/errors | 0 | 0 |
+| payobook_template | 74 passed, zero failures/errors | 0 | 0 |
+| abm | 74 passed, zero failures/errors | 0 | 0 |
+| p0clone | 74 passed, zero failures/errors | 0 | 0 |
+| rize | 74 passed, zero failures/errors | 8 client definitions | 43 |
+
+Total: 370 final deployed regression tests passed. All 30 stored Vietnam payroll
+scenarios passed again after the final policy change. The native source check
+confirmed the imported count only feeds VNHCQ; VNREGISTER is an independent
+contract amount, with no VNDEPCOUNT source or native all-dependent-count mapping.
+All eleven recurring Excel placeholders and seventeen monthly bindings remain.
+The idempotent import recheck found 43 existing dependent rows, zero new rows and
+zero additional profiles. Rize has 112 Employee records (five new archived),
+102 contracts, 183 payslips, four runs and 4,234 advantage rows. Wages and payroll
+assignments are unchanged. Configuration 4639 remains Draft.
+
+Chrome checked card order/wording, three destination lanes, green master/yellow
+monthly colouring, restricted move menus, a saved move-out/move-back layout,
+both populated downloads and standalone-record import review. Final review:
+zero changes, 4,347 blanks ignored, 441 unchanged values and zero issues; it was
+cancelled. Browser warnings/errors were empty. Backend round trips also confirmed
+an entirely altered master snapshot is ignored during monthly upload, and the
+separate records download matches the selected master-field order. Downloads
+contain 63 existing Employee profiles from the approved 70-person source roster.
+Seven source profiles, ten HC/detail-count discrepancies, two conflicting old
+Employee IDs and one missing relationship are listed in a private review checklist.
+Current saved master fields and verified recurring settings still need business
+validation before activation; unsaved master values remain blank.
+
+The two old demo review definitions, their attached workbooks and one copied
+masked Rize payslip were removed with restricted recovery copies. No employee,
+contract, payslip or run was removed on the demo. The four other application
+DBs have no Rize connector, VNDEPCOUNT transformation or imported dependent row.
+The temporary Rize test database is absent. Three workbook PNG previews were
+rendered, inspected and deleted; browser screenshots stayed in memory. No
+pre-existing assets, client source files or unrelated session work was deleted.
+
+Protected recovery/deployment evidence on Payobook19v2:
+- /odoo/backups/vn-records-rollout-20261018-115614/ (five DB dumps, prior code,
+  initial upgrade receipts and scoped client-copy-removal backups).
+- /odoo/backups/vn-records-rollout-20261018-121500/ (final code/metadata backup
+  and combined-source deployment receipt).
