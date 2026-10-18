@@ -73,3 +73,18 @@ Both decoded workbook types pass row, sheet protection and round-trip checks.
 Browser warning/error logs are empty. Screenshots were inspected in memory;
 no test PNG files were written. The detailed private review report lists all
 138 input treatments, the 20 additional sources and the seven salary cases.
+
+The final field-by-field audit compares 14 tables per target directly with the
+pre-deployment database dumps. Only the intended configuration 4760 changes are
+excluded from the unchanged comparison. All other configuration and business
+values match. Read-time `write_date` refreshes on Payobook employees, Rize
+employees and the older Rize configuration's component rows are recorded
+separately and retained. No employee, contract, bank, dependent, payslip, payroll
+run or saved monthly input values changed.
+
+An evidence-copy filename collision replaced the small `before.json` deployment
+summary with a configuration snapshot. The five original database archives and
+addon archive remained intact. The configuration snapshot is retained under its
+own filename, the summary is reconstructed from the archives with its hash
+format explicitly identified, and the final audit compares the dump fields
+directly. The recovery and final receipts are retained with the protected backup.
