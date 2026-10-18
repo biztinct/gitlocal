@@ -24,7 +24,11 @@ files. Formula Studio is upgraded on all five databases, the service is active,
 and the deployment-status check reports nothing pending. Protected database and
 addon backups, manifests and receipts are retained at
 `/odoo/backups/vn-record-filter-code-20261018-215009/`. Full-row hashes of nine
-business/configuration tables are unchanged in every target database.
+business/configuration tables matched in every database before service restart.
+The final comparison against those backups found only `write_date` timestamp
+refreshes on Payobook employees and Rize component definitions. All other fields
+and row identities are unchanged; the audit timestamps are preserved and recorded
+separately in the final receipt.
 
 Deployed validation passes **94 tests on each database, 470 total**, with zero
 failures or errors. Live Rize checks verify all 138 inputs are available when
