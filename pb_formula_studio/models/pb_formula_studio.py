@@ -8917,6 +8917,11 @@ class PbFormulaStudio(models.AbstractModel):
             key = col.get('key')
             if not key:
                 continue
+            if col.get('preferred'):
+                # A canonical physical column already has its own card. Two
+                # identical headings must not fold that card onto its neighbor.
+                out[key] = key
+                continue
             target = (by_header.get(col.get('header')) if col.get('header')
                       else by_letter.get(col.get('letter')))
             if target:
