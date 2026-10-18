@@ -846,7 +846,10 @@ class TemplatePayrun(models.AbstractModel):
             self._require_runner()
             facade = self.env['pb.payroll.templates']
             cfg = facade._config(vals.get('formula_config_id'), write=True)
-            catalog = [c for c in facade._catalog(cfg) if not c.get('readonly')]
+            all_fields = facade._catalog(cfg)
+            layout = facade._layout(cfg, all_fields)
+            selected = set(layout['time'] + layout['adjustments'])
+            catalog = [c for c in all_fields if c['id'] in selected and not c.get('readonly')]
             return {'wanted': bool(catalog), 'config_id': cfg.id, 'config_name': cfg.name,
                     'components': [{'code': c['code'], 'name': c['label'], 'key': c['source_keys'][0]} for c in catalog if c['source_keys']],
                     'choices': [], 'lanes': self._payrun_lanes(vals)}
@@ -1004,6 +1007,24 @@ class TemplateBatch(models.Model):
             return {'headers': headers, 'rows': [list(r) for r in rows], 'multisheet': False}
         return super()._parse_source_file(file_content, filename, connector=connector,
                                           single_sheet_fallback=single_sheet_fallback)
+
+
+class TemplateImportLine(models.Model):
+    _inherit = 'hr.payroll.import.line'
+
+    def _get_value_for_rule(self, raw_data, rule):
+        # Generated files use each component's declared source key, which may
+        # be qualified by a different original worksheet. Validate the same
+        # keys the monthly resolver reads, including after the upload context
+        # is gone. The source row itself remains unchanged for auditing.
+        batch = self.batch_id
+        if batch._template_period() or self.env.context.get('pb_template_engine'):
+            keys = [s.key for s in rule.source_ids if s.kind == 'excel' and s.key]
+            keys += batch._rule_header_candidates(rule, allow_column_letter=False)
+            value, matched = batch._lookup_in_blob(raw_data, keys)
+            if matched:
+                return value
+        return super()._get_value_for_rule(raw_data, rule)
 
 
 class TemplateRecordFields(models.AbstractModel):

@@ -61,4 +61,26 @@ model to scope the owner's 70 approved RIZ identities. Normal contract
 eligibility admits 63; the seven unsalaried Draft contracts remain pending.
 No old contract is closed and no unrelated department map is replaced.
 
-Final deployment and end-to-end validation receipts are added after execution.
+## Generated monthly file validation
+
+The first Chrome run exposed a mismatch after monthly review: the generated
+workbook restores stable declared source keys such as `Consolidated|...`, but
+required-field validation only searched component codes, names and letters. All
+63 rows were rejected even though their reviewed inputs were present. The
+monthly import-line adapter now uses the same declared-key lookup as the
+resolver, including when the persisted batch no longer has its upload context.
+It leaves the stored raw row unchanged and preserves missing-required errors.
+
+The pay-run input gate also counts only fields selected in Time and Monthly
+adjustments. Generic review warnings are labelled “review notes” rather than
+incorrectly claiming saved records were refreshed.
+
+A new integration regression exercises download → fill → review → confirm →
+generated file → match → validate without upload context → Draft payslip, with
+required identity, salary and paid-days bindings from another worksheet. It
+checks that removing the required paid-days input still fails. The selected
+layout gate has its own regression. All 136 selected tests passed against an
+isolated staged module before deployment; live business changes were rolled
+back by the test transactions.
+
+Deployment and end-to-end validation receipts are added after execution.

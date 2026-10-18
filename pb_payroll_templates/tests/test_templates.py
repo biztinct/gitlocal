@@ -94,6 +94,20 @@ class TestPayrollTemplates(TransactionCase):
         rows = self.env['pb.payroll.month.inputs'].search([('config_id', '=', self.cfg.id)])
         self.assertEqual(rows.employee_id, self.emp)
 
+    def test_spreadsheet_gate_only_counts_selected_monthly_fields(self):
+        unused = self.rule('Unused reference quantity', 'WBGATEREF', 'quantity')
+        workspace = self.api.workspace(self.cfg.id, '2026-10')
+        layout = workspace['layout']
+        fid = 'rule:%s' % unused.id
+        for lane in layout:
+            layout[lane] = [i for i in layout[lane] if i != fid]
+        layout['available'].append(fid)
+        self.api.save_layout(self.cfg.id, layout)
+        gate = self.env['pb.payrun.wizard'].spreadsheet_gate({
+            'templates_monthly': True, 'formula_config_id': self.cfg.id})
+        self.assertTrue(gate['wanted'])
+        self.assertEqual({c['code'] for c in gate['components']}, {self.paid.code, self.bonus.code})
+
     def test_outside_population_payment_even_zero_is_not_ignored(self):
         for value in (0, 100):
             wb = self.reference_roster_workbook()
@@ -225,6 +239,45 @@ class TestPayrollTemplates(TransactionCase):
         self.assertEqual(aliases['Payroll|Monthly bonus'],0)
         self.assertEqual(aliases['Payroll|Salary'],1000)
         self.assertEqual(self.contract.wage,1000)
+
+    def test_generated_monthly_required_fields_survive_qualified_source_handoff(self):
+        code, name = self.schema_identity()
+        for rule in (code, name, self.salary, self.paid):
+            rule.is_required = True
+            rule.set_source_binding('excel', 'Original master|' + rule.name)
+        wb = self.export('template')
+        self.set_value(wb, 'Time', 'Paid days', 20)
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 75)
+        self.apply(self.review(wb))
+        raw, _ids = self.api._engine_file(self.cfg, '2026-10')
+        batch = self.env['hr.payroll.import.batch'].with_context(pb_template_engine=True).create({
+            'name': 'Qualified required source handoff', 'formula_config_id': self.cfg.id,
+            'company_id': self.env.company.id, 'source_type': 'excel', 'one_time': True,
+            'payroll_period': 'custom', 'date_from': '2026-10-01', 'date_to': '2026-10-31',
+            'import_file': base64.b64encode(raw), 'import_filename': 'Payobook-month-2026-10.xlsx'})
+        batch.action_load_file()
+        batch.action_match_employees()
+        persisted = batch.with_context(pb_template_engine=False)
+        original = persisted.import_line_ids.raw_data_json
+        persisted.action_validate()
+        self.assertFalse(persisted.import_line_ids.filtered(lambda line: line.state == 'error'))
+        self.assertEqual(persisted.import_line_ids.raw_data_json, original)
+        self.env['biz.approval.seed'].sudo().set_no_approval_needed(self.env.company, 'runonly')
+        persisted.action_process()
+        self.assertEqual(len(persisted.created_payslip_ids), 1)
+        slip = persisted.created_payslip_ids
+        inputs = json.loads(slip.formula_input_values)
+        self.assertEqual(inputs[self.paid.code], 20)
+        self.assertEqual(inputs[self.salary.code], 1000)
+        self.assertEqual(inputs[self.bonus.code], 75)
+        self.assertEqual(slip.state, 'draft')
+        self.assertEqual(self.contract.wage, 1000)
+        self.assertFalse(persisted.created_employee_ids)
+        self.assertFalse(persisted.created_contract_ids)
+        missing = json.loads(original)
+        missing.pop('Original master|' + self.paid.name)
+        persisted.import_line_ids.raw_data_json = json.dumps(missing)
+        self.assertTrue(persisted.import_line_ids.validate_line())
 
     def test_current_recurring_salary_wins_over_saved_monthly_zero(self):
         self.env['pb.payroll.month.inputs'].create({'config_id':self.cfg.id,
