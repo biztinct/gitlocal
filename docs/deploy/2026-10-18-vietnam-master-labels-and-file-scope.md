@@ -51,7 +51,7 @@ uses literal zeroes for inapplicable employees.
 
 ## Validation before deployment
 
-Five isolated XLSX classification tests and the JS mapping/constant checks pass.
+Six isolated XLSX classification tests and the JS mapping/constant checks pass.
 The staged Odoo suite passes 132 tests: selected-file Connections and Journey,
 real Excel parsing, protected template/records behavior and native dependent
 count. The dry-run patch passes all 96 saved payroll scenarios, loader controls

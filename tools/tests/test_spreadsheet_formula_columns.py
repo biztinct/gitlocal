@@ -12,6 +12,20 @@ spec.loader.exec_module(module)
 
 
 class FormulaColumnTypes(unittest.TestCase):
+    def test_legacy_duplicate_headings_keep_their_combined_mixed_classification(self):
+        book = openpyxl.Workbook()
+        ws = book.active
+        ws.append(['Code','Others','Others'])
+        ws.append(['E1',100,'=B2*2'])
+        out = io.BytesIO()
+        book.save(out)
+        cols = (('Code','','Code','A',True),('Others','','Others','B',True),
+                ('C','','','C',False))
+        types = module.classify_xlsx_columns(out.getvalue(), cols)
+        self.assertEqual(types['Others']['kind'], 'mixed')
+        self.assertEqual(types['B']['kind'], 'mixed')
+        self.assertEqual(types['C']['kind'], 'mixed')
+
     def test_physical_columns_keep_repeated_headers_and_ignore_numbering_and_footer(self):
         book = openpyxl.Workbook()
         ws = book.active

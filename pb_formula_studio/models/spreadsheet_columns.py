@@ -114,7 +114,8 @@ def classify_xlsx_columns(content, columns, sheet_name='', data_start_row=0):
                         sequences[i] = [bool(valid and match and previous == number - 1 and
                                              int(match[1]) == previous), number]
             by_heading, by_letter = {}, {}
-            entries = [(label, [i]) for label, indexes in positions.items() for i in indexes]
+            entries = ([(label, [i]) for label, indexes in positions.items() for i in indexes]
+                       if explicit else positions.items())
             for label, indexes in entries:
                 formulas = sum(counts[i][0] for i in indexes)
                 literals = sum(counts[i][1] for i in indexes)
