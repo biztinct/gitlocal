@@ -119,7 +119,10 @@ reference = {'A':'Row number is not an identity.', 'L':'Age is date-dependent; r
  'CX':'Leave balance formula contains individual hardcoded usage. Review in leave module.',
  'CZ':'Sick leave balance is not paid days or a cash deduction.',
 }
-excluded = set('N O AS AT AU AV AX AY AZ BA BB BC CI CJ CK CL CM CN CO CT CU CV'.split())
+# Owner-approved HR context, including the blank Indonesia-labelled headings.
+# These remain text on contract component lines, with no payroll calculation role.
+contract_text_context = set('N O AS AT AU AV AX AY AZ BA BB BC CI CJ CK CL CM CN CO CT CU CV'.split())
+specs.update({col: ('text', 'c:text') for col in contract_text_context})
 for c in range(1,105):
     col = openpyxl.utils.get_column_letter(c)
     pop = sum(sf[f'{col}{r}'].value is not None for r in rows)
@@ -132,6 +135,9 @@ for c in range(1,105):
             name = name.split('(', 1)[0].strip()
         group = 'Compensation reference' if col in {'BH','BI','BK','BL','BQ','BS'} else 'Bank details' if col in {'CP','CQ','CR','CS'} else 'Employment context' if 24 <= c <= 39 or 77 <= c <= 85 else 'Employee details'
         note = 'Proposed mapping. Blank values keep existing records.'
+        if col in contract_text_context:
+            group = 'Employee information'
+            note = 'Information only. Retained as Contract Text; no earnings, deductions, tax or employer-cost calculation. Blank values keep existing records.'
         if col=='D': note='Not a match key: duplicate and missing IDs exist.'
         if col=='E': note='Unique across all 127 source people; proposed match key.'
         if col=='Q': note='HC count does not establish registered tax-dependent eligibility.'
