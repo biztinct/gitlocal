@@ -2,11 +2,10 @@
 
 The owner approved importing the Dependent worksheet by normalized employee name,
 creating five missing inactive Employee profiles as archived records, and using
-all imported dependent records for both Dependent/Children (VNHCQ) and Registered
-tax dependents (VNREGISTER). Eligibility dates and registration evidence are not
+the imported detail count for Dependent/Children (VNHCQ). Registered tax dependents
+(VNREGISTER) remains a separate verified contract setting under the owner's final choice. Eligibility dates and registration evidence are not
 in the source; imported detail records remain Pending, without invented dates or
-allowances. The payroll count policy is the owner's explicit instruction, separate
-from the native eligible-dependent status.
+allowances. Pending imported details do not populate the registered-tax count.
 
 `tools/import_rize_vietnam_dependents.py` is an idempotent Odoo-shell migration.
 Its private JSON source/receipts are outside Git. Dry-run is the default; apply
@@ -18,8 +17,9 @@ are already used by different existing people, so those IDs are left blank rathe
 than reassigned. No contracts or payroll assignments are created.
 
 A visible Guided Count transformation, Dependents count / VNDEPCOUNT, reads the
-current Employee dependent relationship at calculation time. Both payroll inputs
-are mapped to that output and the read-only native dependent count. All eleven
+current Employee dependent relationship at calculation time. Only Dependent/Children
+is mapped to that output and the read-only native dependent count. Registered tax
+dependents retains its separate contract amount component and existing values. All eleven
 Recurring settings Excel placeholder bindings, including VNREGISTER's Excel
 binding, remain present. All seventeen monthly bindings remain. Sheet4 is unused.
 
@@ -48,8 +48,7 @@ Predeployment checks: 72 isolated workbook/native-transformation tests passed;
 an additional saved-field-alias regression passed after the final alias change.
 The real configuration on an isolated Rize copy passed three-sheet export,
 protection and four-category colour checks, 63-row roster export, standalone
-selection/order parity, all 43 dependent records, both payroll counts for every
-matched employee, and an entirely tampered master sheet ignored on monthly review.
+selection/order parity and all 43 dependent records, and an entirely tampered master sheet ignored on monthly review.
 Local placement/restriction checks, Python/XML syntax and diff checks passed.
 
 Deployment scope: latest combined custom addons on Payobook19v2 and all five
@@ -81,3 +80,21 @@ The other application databases have no Rize-labelled payroll configuration,
 Rize company, imported dependent rows or VNDEPCOUNT transformation. The isolated
 codex_vn_records_20261018 database is temporary test data and must be dropped
 before completion. Restricted recovery backups are retained outside live databases.
+
+## Final records-workbook alias correction
+
+Chrome round-trip testing exposed two selected payroll labels referring to one
+saved destination. Exports now give each alias a distinct workbook column ID,
+while retaining its native write destination in the server-owned snapshot.
+Read-only alias cells are checked separately. Matching edits to an editable
+destination become one reviewed change; conflicting supplied values are refused.
+Existing ordinary column IDs and older valid export receipts remain compatible.
+Two staged regressions passed for separate alias columns and conflict handling.
+The final Python-only correction is pb_payroll_templates 19.0.1.2.9. It needs no
+schema, XML or application-data changes; deploy the combined addon tree, update
+installed-version metadata on all five databases and restart the shared service.
+
+The owner's last count-policy change removes the shared VNDEPCOUNT source and
+native count-field mapping from VNREGISTER only, restores its contract-amount
+flag, and preserves all existing contract values and eleven Excel placeholders.
+The import tool is now guarded to run only on rize.

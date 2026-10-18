@@ -4,7 +4,7 @@ Private extracted source JSON is supplied through VN_DEPENDENTS_SOURCE_JSON.
 Dry-run is the default. VN_DEPENDENTS_APPLY=1 commits; creating the five absent
 inactive Employee profiles additionally requires VN_DEPENDENTS_ARCHIVE=1.
 No contract, payroll assignment or eligibility dates are inferred. The owner
-explicitly approved using the imported count for both dependent payroll inputs.
+keeps Dependent/Children separate from the verified Registered tax dependents setting.
 """
 import collections
 import hashlib
@@ -27,7 +27,7 @@ def folded(value):
 apply = os.getenv('VN_DEPENDENTS_APPLY') == '1'
 archive = os.getenv('VN_DEPENDENTS_ARCHIVE') == '1'
 source = json.loads(Path(os.environ['VN_DEPENDENTS_SOURCE_JSON']).read_text())
-assert env.cr.dbname == 'rize' or env.cr.dbname.startswith('codex_vn_records_')
+assert env.cr.dbname == 'rize', 'Client data belongs only in the Rize database'
 cfg = env['hr.formula.config'].browse(4639)
 assert cfg.code == 'RIZE_VIETNAM_HC_202610' and cfg.state == 'draft'
 company = cfg.company_id
@@ -115,17 +115,17 @@ if not transform:
     transform = Rule.create({'connector_id': connector.id, 'name': 'Dependents count',
         'output_key': 'VNDEPCOUNT', 'source_data_type': 'dependent', 'rule_type': 'count',
         'builder_mode': 'guided', 'record_source': 'records', 'employee_record_source': 'vn_dependent_ids',
-        'description': 'Count all dependent details saved on Employee. Owner-approved input for both Dependent/Children and Registered tax dependents; record eligibility dates remain unverified.'})
+        'description': 'Count all dependent details saved on Employee for Dependent/Children only. Includes pending records; Registered tax dependents remains a separate verified contract setting.'})
 assert transform.employee_record_source == 'vn_dependent_ids'
-targets = cfg.rule_ids.filtered(lambda r: r.code in ('VNHCQ', 'VNREGISTER'))
-assert len(targets) == 2
+transform.description = 'Count all dependent details saved on Employee for Dependent/Children only. Includes pending records; Registered tax dependents remains a separate verified contract setting.'
+targets = cfg.rule_ids.filtered(lambda r: r.code == 'VNHCQ')
+assert len(targets) == 1
 Mapping = env['hr.payslip.import.mapping']
 field = env['ir.model.fields'].search([('model','=','hr.employee'),('name','=','vn_dependent_record_count')], limit=1)
 assert field
 for target in targets:
     if target.code == 'VNHCQ':
         target.clear_source_binding('excel')
-    # Retain VNREGISTER's recurring-settings Excel placeholder as requested.
     target.set_source_binding('rule', transform.output_key, origin='board')
     target.write({'column_role': 'payroll', 'column_role_source': 'user',
                   'is_contract_component': False, 'is_text_component': False})
@@ -136,7 +136,20 @@ for target in targets:
         mapped.write(vals)
     else:
         Mapping.create(vals)
+# The owner's final choice keeps tax eligibility independent of the HC count.
+# Remove only the temporary shared binding/mapping created by this migration;
+# retain the recurring Excel placeholder and every existing contract value.
+tax = cfg.rule_ids.filtered(lambda r: r.code == 'VNREGISTER')
+assert len(tax) == 1
+shared_rule = tax.source_ids.filtered(lambda s: s.kind == 'rule' and s.key == transform.output_key)
+shared_rule.unlink()
+Mapping.search([('salary_structure_id','=',cfg.id),('component_id','=',tax.id),
+                ('target_field_id','=',field.id)]).unlink()
+tax.write({'is_contract_component': True, 'is_text_component': False,
+           'column_role': 'payroll', 'column_role_source': 'user'})
+assert not tax.source_ids.filtered(lambda s: s.kind == 'rule' and s.key == transform.output_key)
 # Keep the owner's reviewed roster separate from live payroll assignment.
+
 preview_ids, missing_roster = [], []
 for p in source['hc']:
     if p['status'] not in ('Active','Notice Period'):
@@ -164,7 +177,7 @@ for emp_id in {d['employee_id'] for d in decisions}:
 result = {'database':env.cr.dbname,'applied':apply,'created_dependents':len(created),
           'existing_dependents':len(existing),'archived_profiles_created':len(new_people),
           'pending_rows':pending,'matched_decisions':decisions,'transformation_id':transform.id,
-          'target_codes':targets.mapped('code'),'recurring_settings_preserved':len(settings),
+          'target_codes':targets.mapped('code'),'registered_tax_dependents':'separate verified contract setting','recurring_settings_preserved':len(settings),
           'review_roster':len(set(preview_ids)),'missing_review_roster':missing_roster}
 receipt = Path(os.environ.get('VN_DEPENDENTS_RECEIPT','/tmp/vn-dependent-records-20261018/import-receipt.json'))
 receipt.write_text(json.dumps(result,ensure_ascii=False,indent=2));receipt.chmod(0o600)

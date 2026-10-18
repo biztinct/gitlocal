@@ -400,11 +400,21 @@ class PayrollTemplates(models.AbstractModel):
         selected_cards = [(by_id[fid]['record_id'], dict(cards[by_id[fid]['record_id']], label=by_id[fid]['label'])) for fid in layout['records']]
         if 'f:hr.employee:name' in cards:
             selected_cards.insert(0, ('f:hr.employee:name', cards['f:hr.employee:name']))
-        columns = {RECORD_TAB: [{'id': fid, 'label': c['label'], 'readonly': not c.get('editable'),
-                                'record_group': c['group']} for fid, c in selected_cards]} if mode == 'records' else {
-            **{TABS[k]: [by_id[i] for i in layout[k]] for k in TABS},
-            RECORD_TAB: [by_id[i] for i in layout['records']],
-        }
+        if mode == 'records':
+            record_columns, seen_destinations = [], set()
+            for index, (fid, card) in enumerate(selected_cards):
+                # Preserve stable native-field IDs for ordinary columns. An
+                # alias gets its own workbook ID and the same write destination.
+                # This keeps two payroll labels for one saved field reviewable.
+                column_id = fid if fid not in seen_destinations else 'alias:%s:%s' % (index, fid)
+                seen_destinations.add(fid)
+                record_columns.append({'id': column_id, 'record_id': fid,
+                    'label': card['label'], 'readonly': not card.get('editable'),
+                    'record_group': card['group']})
+            columns = {RECORD_TAB: record_columns}
+        else:
+            columns = {**{TABS[k]: [by_id[i] for i in layout[k]] for k in TABS},
+                       RECORD_TAB: [by_id[i] for i in layout['records']]}
         snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
         snapshot['readonly_sheets'] = [] if mode == 'records' else [RECORD_TAB]
         import openpyxl
@@ -448,7 +458,7 @@ class PayrollTemplates(models.AbstractModel):
                 values = records[e.id] if mode == 'records' else monthly[e.id]
                 vals = []
                 for c in cols:
-                    value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode != 'records' else values.get(c['id'])
+                    value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode != 'records' else values.get(c.get('record_id') or c['id'])
                     if mode == 'monthly' and value is None and not c.get('readonly') and re.search(r'standard.*days|standard working days', c['label'], re.I):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
@@ -551,6 +561,7 @@ class PayrollTemplates(models.AbstractModel):
         records = self._record_values(cfg, people, cards)
         monthly = self._current(cfg, period, people)
         changes, issues, blanks, unchanged = [], [], 0, 0
+        change_keys = set()
         seen_tabs = {}
         for sheet_name, cols in snapshot['columns'].items():
             if sheet_name not in wb:
@@ -593,7 +604,9 @@ class PayrollTemplates(models.AbstractModel):
                 if mode == 'records' and ((vals[header.index(identity_labels['email'])] or '') != old_email
                         or self._identity_value(emp, identity_columns[1]) != old_email):
                     issues.append(_('%s row %s: email cannot be changed.') % (sheet_name, rn))
+                provided_records = {}
                 for c in cols:
+                    destination = c.get('record_id') or c['id']
                     cell = row[ids[c['id']]]
                     value = cell.value
                     if value is None or value == '':
@@ -602,8 +615,8 @@ class PayrollTemplates(models.AbstractModel):
                     if cell.data_type == 'f':
                         issues.append(_('%s row %s: enter a value, not an Excel formula.') % (sheet_name, rn))
                         continue
-                    current = records[eid].get(c['id']) if mode == 'records' else monthly[eid].get(c['id'])
-                    previous = old['records'].get(c['id']) if mode == 'records' else old['monthly'].get(c['id'])
+                    current = records[eid].get(destination) if mode == 'records' else monthly[eid].get(c['id'])
+                    previous = old['records'].get(destination) if mode == 'records' else old['monthly'].get(c['id'])
                     if mode == 'monthly' and snapshot.get('reusable'):
                         # A reusable blank template has no period snapshot.
                         # Review against the chosen period; confirm() still
@@ -626,15 +639,23 @@ class PayrollTemplates(models.AbstractModel):
                     except (ValueError, TypeError):
                         issues.append(_('%s row %s: %s needs a valid number.') % (sheet_name, rn, c['label']))
                         continue
+                    if mode == 'records':
+                        if destination in provided_records and provided_records[destination] != plain(value):
+                            issues.append(_('%s row %s: columns for the same saved field contain conflicting values. Use the same value, or leave one blank.') % (sheet_name, rn))
+                            continue
+                        provided_records[destination] = plain(value)
                     if plain(value) == current:
                         unchanged += 1
                         continue
                     if current != previous:
                         issues.append(_('%s · %s changed since download. Download again to review the latest value.') % (emp.name, c['label']))
                         continue
-                    changes.append({'key': '%s:%s' % (eid, c['id']), 'emp_id': eid, 'emp_name': emp.name,
-                                    'field_id': c['id'], 'field_label': c['label'], 'tab': sheet_name,
-                                    'old': current, 'value': plain(value)})
+                    key = '%s:%s' % (eid, destination)
+                    if key not in change_keys:
+                        change_keys.add(key)
+                        changes.append({'key': key, 'emp_id': eid, 'emp_name': emp.name,
+                                        'field_id': destination, 'field_label': c['label'], 'tab': sheet_name,
+                                        'old': current, 'value': plain(value)})
             seen_tabs[sheet_name] = seen
         if mode == 'monthly' and not seen_tabs.get('Monthly adjustments', set()).issubset(seen_tabs.get('Time', set())):
             issues.append(_('Every adjustment employee must also appear on the Time tab.'))

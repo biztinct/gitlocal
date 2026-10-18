@@ -735,3 +735,26 @@ class TestPayrollTemplates(TransactionCase):
         headers = [c.value for c in workbook['Employee records'][1]]
         self.assertIn(self.salary.name, headers)
         self.assertIn(alias.name, headers)
+
+        self.assertFalse(self.review(workbook, 'records')['issues'])
+        self.set_value(workbook, 'Employee records', self.salary.name, 1250)
+        conflicting = self.review(workbook, 'records')
+        self.assertTrue(any('conflicting values' in i for i in conflicting['issues']))
+        self.set_value(workbook, 'Employee records', alias.name, 1250)
+        reviewed = self.review(workbook, 'records')
+        self.assertFalse(reviewed['issues'])
+        self.assertEqual(len(reviewed['changes']), 1)
+        self.apply(reviewed)
+        self.assertEqual(self.contract.wage, 1250)
+
+    def test_readonly_alias_columns_are_distinct_and_checked_separately(self):
+        for label, code in [('Saved display name', 'WBDISPLAY1'), ('Other display name', 'WBDISPLAY2')]:
+            self.map_field(self.rule(label, code, 'text'), 'hr.employee', 'display_name')
+        workbook = self.export('records')
+        self.assertFalse(self.review(workbook, 'records')['issues'])
+        comments = [c.comment.text.splitlines()[0] for c in workbook['Employee records'][1] if c.comment]
+        self.assertEqual(len(comments), len(set(comments)))
+        self.set_value(workbook, 'Employee records', 'Saved display name', 'Altered name')
+        reviewed = self.review(workbook, 'records')
+        self.assertTrue(any('read-only context' in i for i in reviewed['issues']))
+        self.assertEqual(self.emp.name, 'Workbook One')
