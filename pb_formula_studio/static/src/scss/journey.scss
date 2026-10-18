@@ -54,6 +54,8 @@
        narrower than ~200px is a worse trade than a shorter curve. */
     --jny-gut: 40px;
     --jny-cols: 3;
+    --jny-transform-width: .55fr;
+    --jny-record-space: 64px;
 }
 
 /* ==== the bar over the lanes ======================================== */
@@ -174,7 +176,8 @@
 .jny .jny-lanes {
     position: relative; z-index: 2; flex: 1;
     pointer-events: none;
-    display: grid; grid-template-columns: repeat(var(--jny-cols), minmax(0, 1fr));
+    display: grid;
+    grid-template-columns: var(--jny-columns, repeat(var(--jny-cols), minmax(0, 1fr)));
 }
 .jny .jny-card, .jny .jny-lane__h { pointer-events: auto; }
 /* Every lane is as tall as the tallest, deliberately. With `align-items:
@@ -206,6 +209,16 @@
 .jny .jny-lane__b {
     padding: 2px var(--jny-gut) 18px;
     display: flex; flex-direction: column; gap: 8px;
+}
+
+/* Transformations have fewer, shorter rows. Give their spare width to the
+   other cards, then reserve a longer run for the two-way record arrows.
+   Padding stays on the source lane so sticky headings and the master scroll
+   keep their existing geometry, including boards without transformations. */
+.jny .jny-lane--scheme + .jny-lane--source {
+    > .jny-lane__h, > .jny-lane__b {
+        padding-left: calc(var(--jny-gut) + var(--jny-record-space));
+    }
 }
 
 /* ---- a card --------------------------------------------------------- */
@@ -416,14 +429,17 @@
    gutter narrows. Nothing scrolls sideways, because that would move the cards
    out from under the SVG the wires are drawn on. */
 @media (max-width: 1400px) {
-    .jny .jny-lanes { --jny-gut: 30px; }
+    .jny .jny-lanes { --jny-gut: 30px; --jny-record-space: 48px; }
     .jny .jny-lanes.n4 { --jny-gut: 24px; }
     .jny .jny-lanes.n5 { --jny-gut: 18px; }
 }
 @media (max-width: 1180px) {
     .jny .jny-lanes,
     .jny .jny-lanes.n4,
-    .jny .jny-lanes.n5 { --jny-gut: 16px; }
+    .jny .jny-lanes.n5 {
+        --jny-gut: 16px; --jny-record-space: 32px;
+        --jny-transform-width: .7fr;
+    }
     .jny .jny-card__l { font-size: 11.5px; }
     .jny .jny-card__s { font-size: 10.5px; }
     .jny .jny-q { width: 180px; }
@@ -434,7 +450,7 @@
    force a horizontal scroll. The lines go and each row NAMES its partner
    instead: the fact survives, the drawing does not. */
 @media (max-width: 680px) {
-    .jny .jny-lanes { grid-template-columns: 1fr; }
+    .jny .jny-lanes { grid-template-columns: 1fr; --jny-record-space: 0px; }
     .jny .jny-lane + .jny-lane { border-left: 0; border-top: 1px dashed var(--line, #E8E9F3); }
     .jny .jny-wires { display: none; }
     .jny .jny-row__p {

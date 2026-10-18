@@ -153,6 +153,11 @@ export class JourneyBoard extends Component {
         return LANES.filter(l => this.cardsFor(l.id).length);
     }
 
+    get laneColumns() {
+        return this.lanes.map(l => l.id === "transforms"
+            ? "minmax(0, var(--jny-transform-width))" : "minmax(0, 1fr)").join(" ");
+    }
+
     cardsFor(laneId) {
         const cards = (this.d.lanes || {})[laneId] || [];
         const scope = this.componentScope;
