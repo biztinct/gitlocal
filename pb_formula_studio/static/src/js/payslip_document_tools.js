@@ -101,7 +101,7 @@ export function detectDocumentCells(pixels, width, height, pageWidth, pageHeight
         if (/20\d{2}/.test(title)) {
             title = title.replace(/(THÁNG\s*)\d{1,2}/i, '$1{{pb_meta:month}}')
                 .replace(/\b20\d{2}\b/g, '{{pb_meta:year}}')
-                .replace(/\b(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\b/gi, '{{pb_meta:month_name}}');
+                .replace(/\b(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\b/gi, '{{pb_meta:month_name_en}}');
             const size = Math.max(...line.map(item => item.font_size || 14));
             const field = documentField(`p${pageNo}-title`, 'Payslip period title', 30,
                 anchor.y - size - 1, pageWidth - 60, size * 1.7);

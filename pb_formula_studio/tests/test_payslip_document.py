@@ -180,7 +180,7 @@ class TestPayslipDocument(TransactionCase):
         document = documents.validate_document(self.document(), set(self.config.rule_ids.ids), self.config.PAYSLIP_META_KEYS)
         document['pages'][0]['fields'][0].update(binding='meta', meta_key='employee_name')
         document['pages'][0]['fields'][1].update(binding='component', rule_id=self.rules['NET'].id, format='integer')
-        document['pages'][0]['fields'][2].update(binding='text', text='{{pb_meta:month}} / {{pb_meta:year}}')
+        document['pages'][0]['fields'][2].update(binding='text', text='{{pb_meta:month}} / {{pb_meta:year}} / {{pb_meta:month_name_en}}')
         self.config.payslip_document = document
         employee = self.env['hr.employee'].create({'name': 'Nguyễn Test Employee'})
         slip = self.env['hr.payslip'].create({
@@ -189,7 +189,9 @@ class TestPayslipDocument(TransactionCase):
             'date_to': '2026-08-31', 'formula_computed_values': '{"NET":26592500}'})
         payload = slip._themed_payslip_render()
         self.assertEqual(payload['document_pages'][0]['fields'][1]['value'], '26,592,500')
-        self.assertEqual(payload['document_pages'][0]['fields'][2]['value'], '08 / 2026')
+        self.assertEqual(payload['document_pages'][0]['fields'][2]['value'], '08 / 2026 / AUGUST')
+        vietnamese = slip.with_context(lang='vi_VN')._themed_payslip_render()
+        self.assertEqual(vietnamese['document_pages'][0]['fields'][2]['value'], '08 / 2026 / AUGUST')
         if hasattr(slip, '_get_report_name'):
             self.assertEqual(slip._get_report_name(), 'pb_hr_payroll_formula.payslip_themed')
         pdf, kind = self.env['ir.actions.report']._render_qweb_pdf(

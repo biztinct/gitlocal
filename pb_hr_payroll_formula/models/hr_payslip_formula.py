@@ -1525,6 +1525,9 @@ class HrPayslipFormula(models.Model):
             meta['year'] = str(anchor.year)
             meta['month_name'] = format_date(
                 self.env, anchor, date_format='LLLL').upper()
+            meta['month_name_en'] = (
+                'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER')[anchor.month - 1]
         meta['company_name'] = (self.company_id.name or '') if self.company_id else ''
         document_pages = config._payslip_document_render(
             values_by_rule, currency, meta) if config else []

@@ -182,6 +182,9 @@ class PayslipDocumentStudio(models.AbstractModel):
         preview_date = fields.Date.context_today(self)
         meta.update(month='%02d' % preview_date.month,
                     month_name=preview_date.strftime('%B').upper(), year=str(preview_date.year))
+        meta['month_name_en'] = ('JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                                 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER',
+                                 'DECEMBER')[preview_date.month - 1]
         data['document_meta'] = meta
         data['document_pages'] = config._payslip_document_render(by_rule, data['config']['currency'], meta)
         data['document_warnings'] = self._document_warnings(doc, by_rule)

@@ -709,7 +709,7 @@ class HrFormulaConfig(models.Model):
         'position', 'contract_type', 'date_joined', 'date_left',
         # The period as a person writes it — "07", "2026", "JULY" — so a
         # payslip can title itself without anybody typing the month in.
-        'month', 'month_name', 'year',
+        'month', 'month_name', 'month_name_en', 'year',
         # The employer, for a payslip that prints its own letterhead.
         'company_name',
     )

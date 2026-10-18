@@ -65,6 +65,8 @@ class PayslipDocumentReport(models.Model):
             return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
         slips = self.env['hr.payslip'].browse(ids)
         slips.check_access('read')
+        if not any(slip.formula_config_id.payslip_document for slip in slips):
+            return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
         rendered = [slip._themed_payslip_render() for slip in slips]
         if not any(item.get('document_pages') for item in rendered):
             return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)

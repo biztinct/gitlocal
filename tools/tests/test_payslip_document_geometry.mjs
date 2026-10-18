@@ -24,7 +24,11 @@ assert.ok(found.fields[0].x > 190 && found.fields[1].x > 450);
 assert.equal(documentIssues({ pages: [{ width, height, fields: found.fields }] }).length, 4);
 const empty = detectDocumentCells(new Uint8Array(width * height * 4).fill(255), width, height, width, height, []);
 assert.equal(empty.fields.length, 0, 'borderless/scanned input remains eligible for manual placement');
+const dated = detectDocumentCells(pixels, width, height, width, height,
+    [...items, { text: 'PAYSLIP IN JULY 2026', x: 120, y: 20, width: 230, font_size: 10 }]);
+assert.ok(dated.fields.find(field => field.id.endsWith('-title')).text.includes('{{pb_meta:month_name_en}}'),
+    'an English title remains English when printed from a Vietnamese session');
 const field = documentField('manual-1', 'Manual field', 580, 390, 100, 30);
 field.binding = 'text';
 assert.equal(documentIssues({ pages: [{ width, height, fields: [field] }] }).length, 1, 'out-of-page placements are reported');
-console.log('7 geometry/placement checks passed');
+console.log('8 geometry/placement checks passed');

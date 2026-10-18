@@ -75,6 +75,7 @@ const PS_META_FIELDS = [
     { key: "date_to", name: "Period end", badge: "TO", source: "Payslip period" },
     { key: "month", name: "Month number", badge: "MM", source: "Payslip period" },
     { key: "month_name", name: "Month name", badge: "MONTH", source: "Payslip period" },
+    { key: "month_name_en", name: "Month name (English)", badge: "MONTH", source: "Payslip period" },
     { key: "year", name: "Year", badge: "YYYY", source: "Payslip period" },
     { key: "company_name", name: "Company name", badge: "CO", source: "Company record" },
 ];
