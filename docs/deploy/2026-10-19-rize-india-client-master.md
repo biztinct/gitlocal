@@ -42,7 +42,8 @@ Generic workflow fixes
 * Both employee-count previews refresh when dates or the selected scheme
   change, including entry from Templates. Scheme coverage carries the same
   dates as eligibility. Automatic month labels follow date changes while
-  custom batch names remain intact. Six browser-unit cases cover these paths.
+  custom batch names remain intact. Outdated asynchronous replies cannot
+  overwrite a newer scope selection. Eight browser-unit cases cover these paths.
 
 Validation before deployment: 182 deployed-database regression cases passed
 against staged code; 27 client scenarios and 378 exact calculation comparisons

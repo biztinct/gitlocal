@@ -69,3 +69,28 @@ test("status-filtered scope and scheme coverage refresh together", async () => {
         date_start: "2026-08-01", date_end: "2026-08-31" });
     expect(wizard.state.who.preview.total).toBe(27); expect(refreshed).toBe(1);
 });
+
+test("an older employee request cannot replace the newly selected period", async () => {
+    const wizard = subject(); const replies = []; let refreshed = 0;
+    wizard.hasStatusFilter = true; wizard.chosenStatuses = ["Active"];
+    wizard.orm = { call: () => new Promise(resolve => replies.push(resolve)) };
+    wizard.refreshScheme = () => refreshed++;
+    const older = methods.refreshWho.call(wizard);
+    wizard.state.form.date_start = "2026-09-01";
+    const newer = methods.refreshWho.call(wizard);
+    replies[1]({ total: 26 }); await newer;
+    replies[0]({ total: 101 }); await older;
+    expect(wizard.state.who.preview.total).toBe(26);
+    expect(refreshed).toBe(1);
+});
+
+test("an older scheme request cannot replace the newly selected period", async () => {
+    const wizard = subject(); const replies = [];
+    wizard.orm = { silent: { call: () => new Promise(resolve => replies.push(resolve)) } };
+    const older = methods.refreshScheme.call(wizard);
+    wizard.state.form.date_start = "2026-09-01";
+    const newer = methods.refreshScheme.call(wizard);
+    replies[1]({ covered: 26 }); await newer;
+    replies[0]({ covered: 27 }); await older;
+    expect(wizard.state.scheme.preview.covered).toBe(26);
+});

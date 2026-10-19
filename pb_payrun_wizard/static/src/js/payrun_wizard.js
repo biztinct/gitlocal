@@ -643,9 +643,10 @@ export class PayrunWizard extends Component {
     /** How many people this scheme covers, and who it leaves out. */
     async refreshScheme() {
         if (!this.state.form.formula_config_id) { return; }
+        const request = this._schemePreviewRequest = (this._schemePreviewRequest || 0) + 1;
         this.state.scheme.loading = true;
         try {
-            this.state.scheme.preview = await this.orm.silent.call(
+            const preview = await this.orm.silent.call(
                 "pb.payrun.wizard", "scheme_preview",
                 [{
                     formula_config_id: this.state.form.formula_config_id,
@@ -653,11 +654,12 @@ export class PayrunWizard extends Component {
                     date_start: this.state.form.date_start,
                     date_end: this.state.form.date_end,
                 }]);
+            if (request === this._schemePreviewRequest) { this.state.scheme.preview = preview; }
         } catch (e) {
             console.warn("pb_payrun_wizard: could not preview the scheme", e);
-            this.state.scheme.preview = null;
+            if (request === this._schemePreviewRequest) { this.state.scheme.preview = null; }
         } finally {
-            this.state.scheme.loading = false;
+            if (request === this._schemePreviewRequest) { this.state.scheme.loading = false; }
         }
     }
 
@@ -728,21 +730,24 @@ export class PayrunWizard extends Component {
 
     /** Live count, so nobody presses Run Payroll and then discovers the scope. */
     async refreshWho() {
+        const request = this._whoPreviewRequest = (this._whoPreviewRequest || 0) + 1;
         if (!this.hasStatusFilter) {
             if (this.state.form.formula_config_id) { await this.refreshScheme(); }
             return;
         }
         this.state.who.loading = true;
         try {
-            this.state.who.preview = await this.orm.call(
+            const preview = await this.orm.call(
                 "pb.payrun.wizard", "eligible_preview",
                 [{ statuses: this.chosenStatuses, search: this.state.who.search,
                    formula_config_id: this.state.form.formula_config_id,
                    date_start: this.state.form.date_start, date_end: this.state.form.date_end }]
             );
+            if (request === this._whoPreviewRequest) { this.state.who.preview = preview; }
         } catch (error) {
-            this.state.who.preview = null;
+            if (request === this._whoPreviewRequest) { this.state.who.preview = null; }
         }
+        if (request !== this._whoPreviewRequest) { return; }
         this.state.who.loading = false;
         // The scheme count is a function of the status ticks too, so the two
         // numbers on this step can never disagree about one run.
