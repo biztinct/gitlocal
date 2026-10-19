@@ -3,7 +3,7 @@
 import fs from 'node:fs/promises';
 import {Workbook, SpreadsheetFile, FileBlob} from '@oai/artifact-tool';
 
-const [mode, work, output]=process.argv.slice(2);
+const [mode, work, output, countryFilter]=process.argv.slice(2);
 await fs.mkdir(output,{recursive:true});
 const col=n=>{let s='';for(;n;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s;};
 const palette={ink:'#243247',purple:'#51439A',paper:'#F4F2FA',input:'#FFF4D4',source:'#EAF2F8',error:'#FDE8E8',muted:'#65748B'};
@@ -34,6 +34,7 @@ async function render(wb,key,names){
 }
 const checks=[];
 for(const key of ['sg','id']){
+  if(countryFilter&&key!==countryFilter.toLowerCase())continue;
   const def=JSON.parse(await fs.readFile(`${work}/${key}-definition.json`,'utf8'));
   const records=JSON.parse(await fs.readFile(`${work}/${key}-record-plan.json`,'utf8')).records;
   const fixtures=JSON.parse(await fs.readFile(`${work}/${key}-fixtures.json`,'utf8'));
@@ -193,5 +194,5 @@ for(const key of ['sg','id']){
     checks.push({country,monthlyAuthoredCells:fill.cells.length});
   }else throw Error('Choose consolidated or monthly');
 }
-await fs.writeFile(`${work}/${mode}-workbook-verification.json`,JSON.stringify(checks,null,2));
+await fs.writeFile(`${work}/${mode}${countryFilter?'-'+countryFilter.toLowerCase():''}-workbook-verification.json`,JSON.stringify(checks,null,2));
 console.log(JSON.stringify(checks));
