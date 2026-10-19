@@ -344,6 +344,39 @@ class TestPayrollTemplates(TransactionCase):
     def test_missing_time_blocks_computation(self):
         with self.assertRaises(UserError):self.api._engine_file(self.cfg,'2026-10')
 
+    def test_required_monthly_amount_stays_missing_in_review(self):
+        self.bonus.is_required = True
+        wb = self.export('template')
+        self.set_value(wb, 'Time', 'Paid days', 20)
+        review = self.review(wb)
+        cell = review['grid']['rows'][0]['cells']['rule:%s' % self.bonus.id]
+        self.assertIsNone(cell['value'])
+        self.assertTrue(cell['missing'])
+        self.assertEqual(review['stats']['missing'], 1)
+
+    def test_required_monthly_amount_blocks_engine_without_review(self):
+        self.bonus.is_required = True
+        self.env['pb.payroll.month.inputs'].create({'config_id': self.cfg.id,
+            'company_id': self.env.company.id, 'employee_id': self.emp.id,
+            'period': '2026-10', 'payload': {'rule:%s' % self.paid.id: 20}})
+        with self.assertRaisesRegex(UserError, 'required monthly inputs'):
+            self.api._engine_file(self.cfg, '2026-10')
+
+    def test_required_monthly_amount_accepts_explicit_zero(self):
+        self.bonus.is_required = True
+        wb = self.export('template')
+        self.set_value(wb, 'Time', 'Paid days', 20)
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 0)
+        review = self.review(wb)
+        self.assertEqual(review['stats']['missing'], 0)
+        self.api.confirm_monthly_review(self.cfg.id, review['token'])
+        raw, people = self.api._engine_file(self.cfg, '2026-10')
+        self.assertTrue(raw)
+        self.assertEqual(people, self.emp.ids)
+        # A fresh month still requires its own approved value, including zero.
+        next_review = self.review(self.export('template'), period='2026-11')
+        self.assertTrue(next_review['grid']['rows'][0]['cells']['rule:%s' % self.bonus.id]['missing'])
+
     def test_manual_time_inputs_are_available(self):
         self.paid.clear_source_binding('excel');self.paid.data_source='manual'
         d=self.api.workspace(self.cfg.id,'2026-10')

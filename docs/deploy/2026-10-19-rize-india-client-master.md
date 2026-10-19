@@ -44,6 +44,10 @@ Generic workflow fixes
   dates as eligibility. Automatic month labels follow date changes while
   custom batch names remain intact. Outdated asynchronous replies cannot
   overwrite a newer scope selection. Eight browser-unit cases cover these paths.
+* Required monthly components retain missing values instead of silently
+  defaulting to zero. Review highlights them and the server refuses payroll
+  computation until supplied. An explicit zero is valid; it does not carry
+  forward into the next month. Three transaction cases cover the distinction.
 
 Validation before deployment: 182 deployed-database regression cases passed
 against staged code; 27 client scenarios and 378 exact calculation comparisons

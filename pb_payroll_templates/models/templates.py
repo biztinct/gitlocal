@@ -230,6 +230,7 @@ class PayrollTemplates(models.AbstractModel):
             default = 'records' if recurring else 'available' if rule.value_kind in ('date', 'text', 'boolean') else ('time' if quantity else 'adjustments')
             result.append({'id': 'rule:%s' % rule.id, 'label': rule.name or rule.code,
                            'code': rule.code, 'kind': rule.value_kind,
+                           'required': bool(rule.is_required),
                            'source_keys': [s.key for s in sources if s.key] or self.env['hr.payroll.import.batch']._rule_header_candidates(rule, allow_column_letter=False),
                            'record_id': card_id, 'readonly': recurring,
                            'record_eligible': recurring,
@@ -778,6 +779,12 @@ class PayrollTemplates(models.AbstractModel):
                     missing.append('%s · %s' % (employee.name, c['label']))
         if missing:
             raise UserError(_('Complete the required Time inputs before computing payroll:\n%s') % '\n'.join(missing[:20]))
+        missing_required = ['%s · %s' % (employee.name, c['label'])
+            for employee in people for c in catalog
+            if c.get('required') and not c.get('readonly')
+            and resolved[employee.id][c['id']]['value'] in (None, '')]
+        if missing_required:
+            raise UserError(_('Complete the required monthly inputs before computing payroll:\n%s') % '\n'.join(missing_required[:20]))
         missing_salary = []
         for employee in people:
             for c in catalog:

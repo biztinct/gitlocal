@@ -38,7 +38,7 @@ class PayrollInputReview(models.AbstractModel):
                 ttype = card.get('ttype')
                 if c.get('readonly') and ttype in ('char', 'text', 'selection', 'many2one', 'date', 'datetime', 'boolean'):
                     c['kind'] = 'date' if ttype in ('date', 'datetime') else 'boolean' if ttype == 'boolean' else 'text'
-                c['required'] = c['id'] in salary_keys or bool(not c.get('readonly') and REQUIRED_TIME.search(c['label']))
+                c['required'] = bool(c.get('required') or c['id'] in salary_keys or (not c.get('readonly') and REQUIRED_TIME.search(c['label'])))
                 c['positive'] = bool(not c.get('readonly') and REQUIRED_TIME.search(c['label']) and re.search(r'standard|period|working', c['label'], re.I))
                 result.append(c)
         return result
@@ -73,7 +73,7 @@ class PayrollInputReview(models.AbstractModel):
                     value = current[emp.id].get(fid)
                     if value is None and re.search(r'standard.*days|standard working days', c['label'], re.I):
                         value, source, detail = default_standard_work_days(start, end), 'default', _('Working days for the selected period')
-                    elif value is None and c['kind'] in NUMBERS and not REQUIRED_TIME.search(c['label']):
+                    elif value is None and c['kind'] in NUMBERS and not c.get('required') and not REQUIRED_TIME.search(c['label']):
                         value, source, detail = 0, 'default', _('No monthly amount supplied · zero for this month')
                     if fid in origins and value is not None:
                         detail = _('Saved %s input for this month') % origins[fid]
