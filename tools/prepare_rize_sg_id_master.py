@@ -103,6 +103,7 @@ def prepare(root, repo):
             monthly={'I','K','L','Y','Z','AG'}
             bycol['H']['note']='Saved full-month contracted salary in SGD; no FX conversion. August payroll supplies the two active salary baselines.'
             for c in {'I','K','L'}:bycol[c]['note']='Approved contribution input. Reassess CPF residency/age/PR status and self-help eligibility for the selected month. No automatic rate is inferred.'
+            for c in {'AB','AC','AD','AE'}:bycol[c]['note']='Employee-master banking where provided; otherwise the matched August payroll supplies this bank field. No payment is released by importing it.'
             # Native month totals and remittance rounding are separate. The
             # company SDL remittance is FLOOR(sum(employee SDL),1), not the sum
             # of rounded employee amounts.
@@ -263,7 +264,10 @@ def prepare(root, repo):
                 core={'A':canonical,'B':'SG','C':name,'D':getm('U'),'E':date(getm('K')),'F':date(getm('X')),
                     'G':'SGD','H':float(pv[7]) if p else money(getm('BF')),'J':'SINDA' if pr==8 else 'None',
                     'AF':getm('AP') or getm('AN') or 'Review',
-                    'AB':getm('CK'),'AC':text(getm('CL')),'AD':getm('CM'),'AE':getm('CN')}
+                    'AB':getm('CK') or (clean(pv[26]) if p else None),
+                    'AC':text(getm('CL')) or (text(pv[27]) if p else None),
+                    'AD':getm('CM') or (clean(pv[28]) if p else None),
+                    'AE':getm('CN') or (clean(pv[29]) if p else None)}
                 if p:core.update(controls[pr]['inputs'],AG='August source comparison. Master identity and join date retained.')
                 for col,val in core.items():values[bycol[col]['code']]=val
                 expected={bycol[c]['code']:v for c,v in controls[pr]['expected'].items()} if p else {}
@@ -293,6 +297,7 @@ def prepare(root, repo):
                 payroll_eligible=active_pay,profile_active=active_pay if key=='sg' else True,
                 contract_start=join,contract_end=end,wage=wage,source_status=status,
                 canonical_match=link['method'])
+            if key=='sg':record['bank_fill_from_payroll']=bool(p and not getm('CL'))
             records.append(record)
             if p:
                 expected[prefix+'READY']='Ready'

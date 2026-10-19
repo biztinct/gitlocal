@@ -1,7 +1,7 @@
 """Install/review Rize SG/ID client definitions using the published ORM APIs.
 
 RIZE_MASTER_DIR holds private definitions, fixtures and record plans. Select
-RIZE_MASTER_COUNTRY=SG/ID and RIZE_MASTER_PHASE=definition/refine/records/activate/
+RIZE_MASTER_COUNTRY=SG/ID and RIZE_MASTER_PHASE=definition/refine/records/bankfill/activate/
 attach/verify. Default is rollback; RIZE_MASTER_APPLY=1 persists after assertions.
 No approval, payment, bank submission or accounting posting is performed.
 """
@@ -224,6 +224,26 @@ elif phase=='records':
     report.update(config_id=cfg.id,created_people=len(people),created_contracts=len(contracts),
         active_payroll=len(fixtures),master_only=len(records)-len(fixtures),records_reference=applied['reference'],values_written=applied['written'])
     assert {t:existing_rows(t,ids) for t,ids in old_ids.items()}==untouched,'Pre-existing employee, contract and bank records must remain unchanged.'
+elif phase=='bankfill':
+    assert len(cfg)==1 and country=='SG' and cfg.state=='active'
+    assert not e['hr.payslip'].search_count([('formula_config_id','=',cfg.id)])
+    api._lock(cfg)
+    cards=desk._cards(cfg.id)
+    card_by_code={c['component']['code']:fid for fid,c in cards.items() if c.get('component')}
+    bank_specs=[s for s in definition['rules'] if s['destination'].startswith('b:')]
+    changes=[];people=[]
+    for record in records:
+        if not record.get('bank_fill_from_payroll'):continue
+        person=e['hr.employee'].search([('barcode','=',record['code']),('company_id','=',company.id)])
+        assert len(person)==1 and not person.bank_account_ids,'Do not displace a bank account chosen by another session.'
+        people.append(person.id)
+        for s in bank_specs:
+            value=record['values'].get(s['code'])
+            if value:changes.append(dict(emp_id=person.id,field_id=card_by_code[s['code']],value=value))
+    result=desk.apply_changes(cfg.id,changes,note='Complete the active Singapore profile whose HR master has no banking. Use the matched August payroll bank fields; no payment is authorized.',source='import')
+    assert result.get('ok') and not result.get('pending') and not result.get('refused'),result
+    assert all(e['hr.employee'].browse(i).bank_account_ids for i in people)
+    report.update(config_id=cfg.id,people=len(people),values_written=result['written'],records_reference=result['reference'])
 elif phase=='activate':
     assert len(cfg)==1 and cfg.state=='draft'
     assert not e['hr.formula.scheme.assignment'].search_count([('config_id','=',cfg.id)])

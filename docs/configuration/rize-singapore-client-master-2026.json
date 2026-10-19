@@ -448,7 +448,7 @@
       "destination": "b:bank_name",
       "tab": "",
       "required": false,
-      "note": "",
+      "note": "Employee-master banking where provided; otherwise the matched August payroll supplies this bank field. No payment is released by importing it.",
       "original_code": "BANKNAME",
       "source_key": "Consolidated|Bank name"
     },
@@ -466,7 +466,7 @@
       "destination": "b:acc_number",
       "tab": "",
       "required": false,
-      "note": "",
+      "note": "Employee-master banking where provided; otherwise the matched August payroll supplies this bank field. No payment is released by importing it.",
       "original_code": "BANKACCOUNNO",
       "source_key": "Consolidated|Bank account number"
     },
@@ -484,7 +484,7 @@
       "destination": "b:acc_holder_name",
       "tab": "",
       "required": false,
-      "note": "",
+      "note": "Employee-master banking where provided; otherwise the matched August payroll supplies this bank field. No payment is released by importing it.",
       "original_code": "ACCOHOLDNAMA",
       "source_key": "Consolidated|Account holder name"
     },
@@ -502,7 +502,7 @@
       "destination": "b:bank_bic",
       "tab": "",
       "required": false,
-      "note": "",
+      "note": "Employee-master banking where provided; otherwise the matched August payroll supplies this bank field. No payment is released by importing it.",
       "original_code": "SWIFTCODE",
       "source_key": "Consolidated|SWIFT code"
     },
