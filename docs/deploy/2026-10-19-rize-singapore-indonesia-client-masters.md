@@ -17,7 +17,9 @@ Sources
 * Indonesia: `HC - Indonesia.xlsx`, ID worksheet, and
   `0826 Rize Farm Indonesia Payroll Report R1.xlsx`, 0826 Payroll Report, with
   Calculation, Premi Insurance, BPJS and TER schedules supplying calculation
-  drivers and independent controls. Bank and accounting reports are outputs.
+  drivers and independent controls. Financial amounts in bank and accounting
+  reports are outputs. Matched Bank Transfer beneficiary fields supply missing
+  employee banking records; domestic routing codes remain separate from BIC.
 
 `prepare_rize_sg_id_master.py` builds metadata-only definitions and private
 record plans. The reusable Artifact Tool builder creates the consolidated
@@ -49,6 +51,12 @@ reference fields. Of 122 payroll employees, 111 match by normalized name and
 seven by unique national ID; four are payroll-only. Four master-only profiles
 remain Draft for payroll pending review. Actual source contract ends and the
 payroll leaver date are retained; later payroll requires a real renewal.
+The HC banking columns are empty, so the August Bank Transfer worksheet
+supplies all 122 bank names, accounts and holders. Its net-pay controls match
+the payroll report exactly. Missing registration references can come from the
+matched payroll NIK and August BPJS TK schedule. Ten HC/payroll national-ID
+disagreements retain both values, with HC authoritative and a visible review
+flag before statutory filing; national IDs are never payroll-matching aliases.
 
 Indonesia has three Time fields and 23 monthly adjustments. Salary, annual
 insurance premium, PTKP, coverage and tax mode are saved settings. A visible

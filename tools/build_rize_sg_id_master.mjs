@@ -177,7 +177,7 @@ for(const key of ['sg','id']){
     salaryCell.values=[[before]];wb.recalculate();
     if(netCell.values[0][0]!==netBefore)throw Error('Salary scenario was not restored');
     console.log((await wb.inspect({kind:'table',range:'August check!A1:H4',include:'values,formulas',tableMaxRows:4,tableMaxCols:8,maxChars:2000})).ndjson);
-    await render(wb,key,[['Overview','B2:D23'],['Consolidated','A1:H6'],['Calculations',key==='sg'?'F1:M4':'L1:S5'],['Statutory','A1:E8'],['August check','A1:H6'],['Field guide','A1:F7']]);
+    await render(wb,key,[['Overview',`B2:D${18+def.notes.length}`],['Consolidated','A1:H6'],['Calculations',key==='sg'?'F1:M4':'L1:S5'],['Statutory','A1:E8'],['August check','A1:H6'],['Field guide','A1:F7']]);
     const path=`${output}/Rize_${country}_Consolidated_Payroll_and_Master.xlsx`;
     await (await SpreadsheetFile.exportXlsx(wb)).save(path);
     checks.push({country,path,sourceRows:records.length,payrollRows:fixtures.length,exactComparisons:comparisons,inputMutationRecalculated:true,restored:true});

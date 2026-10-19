@@ -149,6 +149,13 @@ elif phase=='refine':
         rule.source_sheet_name='Consolidated'
         assert studio.employee_mapping_create(cfg.id,'',rule.id,spec['destination']).get('ok')
     cfg.write({'description':''.join('<p>'+s+'</p>' for s in definition['notes'])})
+    if missing:
+        catalog=api._catalog(cfg);ids={c['code']:c['id'] for c in catalog if c['code']}
+        requested=definition['time_order']+definition['adjustments_order']
+        layout=dict(time=[ids[c] for c in definition['time_order']],adjustments=[ids[c] for c in definition['adjustments_order']],
+            records=[c['id'] for c in catalog if c['record_eligible']],
+            available=[c['id'] for c in catalog if not c['record_eligible'] and c['id'] not in [ids[k] for k in requested]])
+        assert api.save_layout(cfg.id,layout)['ok']
     changed=[]
     for rule in cfg.rule_ids.filtered(lambda r:r.column_type=='formula'):
         spec=specs[rule.code]
