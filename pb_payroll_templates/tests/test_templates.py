@@ -584,6 +584,30 @@ class TestPayrollTemplates(TransactionCase):
         self.assertFalse(self.cell(review,self.salary)['has_prior'])
         self.assertEqual(review['previous_period'],'2026-09')
 
+    def test_required_saved_numeric_zero_survives_monthly_workbook_and_review(self):
+        flag = self.rule('Employer reimburses employee contributions', 'WBREFUND', 'integer')
+        flag.write({'is_required': True, 'is_contract_component': True})
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': flag.name, 'code': flag.code, 'value_type': 'amount'})
+        line = self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'amount': 0})
+        for amount in (0, 1):
+            line.amount = amount
+            wb = self.export('template')
+            ws = wb['Employee records']
+            col = [c.value for c in ws[1]].index(flag.name) + 1
+            self.assertEqual(ws.cell(2, col).value, amount)
+            self.set_value(wb, 'Time', 'Paid days', 20)
+            review = self.review(wb)
+            self.assertFalse(review['issues'])
+            self.assertEqual(review['stats']['missing'], 0)
+            self.assertEqual(self.cell(review, flag)['value'], amount)
+            self.assertFalse(self.cell(review, flag)['missing'])
+        cards = self.api._cards(self.cfg)
+        fid = 'c:' + flag.code
+        with patch.object(type(self.env['pb.records.desk']), '_io_contracts', return_value={}):
+            self.assertIsNone(self.api._record_values(self.cfg, self.emp, cards)[self.emp.id][fid])
+
     def test_rerun_compares_previous_calendar_month_not_same_month(self):
         fid='rule:%s'%self.bonus.id
         for period,value in [('2026-09',10),('2026-10',20),('2026-08',99)]:

@@ -384,8 +384,22 @@ class PayrollTemplates(models.AbstractModel):
         desk = self.env['pb.records.desk']
         contracts = desk._io_contracts(people)
         probe = desk._probe(cfg.id)
-        return {e.id: {fid: plain(desk._io_export_value(probe, c, e, contracts.get(e.id) or self.env['hr.contract'])[0])
-                       for fid, c in cards.items()} for e in people}
+        result = {}
+        for employee in people:
+            contract = contracts.get(employee.id) or self.env['hr.contract']
+            values = {}
+            for fid, card in cards.items():
+                if fid.startswith('c:') and card.get('ttype') == 'amount':
+                    # Records exports leave zero component amounts visually
+                    # blank. Payroll must retain the numeric zero: coverage and
+                    # reimbursement flags can require an explicit 0. The same
+                    # reader returns None when there is no contract.
+                    value = desk._read_cell(probe, card, employee, contract)['v']
+                else:
+                    value = desk._io_export_value(probe, card, employee, contract)[0]
+                values[fid] = plain(value)
+            result[employee.id] = values
+        return result
 
     @api.model
     def download(self, config_id, period='', mode='monthly'):
