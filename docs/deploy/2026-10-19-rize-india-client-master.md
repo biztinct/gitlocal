@@ -43,7 +43,8 @@ Generic workflow fixes
   change, including entry from Templates. Scheme coverage carries the same
   dates as eligibility. Automatic month labels follow date changes while
   custom batch names remain intact. Outdated asynchronous replies cannot
-  overwrite a newer scope selection. Eight browser-unit cases cover these paths.
+  overwrite a newer scope selection. The selected card shows dated coverage
+  rather than its all-period count. Nine browser-unit cases cover these paths.
 * Required monthly components retain missing values instead of silently
   defaulting to zero. Review highlights them and the server refuses payroll
   computation until supplied. An explicit zero is valid; it does not carry
@@ -56,7 +57,7 @@ inactive profiles, and 27 historical-payroll employees. No business record
 changes were committed by these dry runs.
 
 Versions: `om_hr_payroll` 19.0.1.8.3, `pb_hr_payroll_base` 19.0.1.4.1,
-`pb_payrun_wizard` 19.0.1.32.6. Shared code targets are payobook,
+`pb_payrun_wizard` 19.0.1.32.7. Shared code targets are payobook,
 payobook_template, abm, p0clone and rize. Client data and new configuration are
 restricted to rize. Final deployment, Chrome workflow and reconciliation
 receipts will be recorded after verification.

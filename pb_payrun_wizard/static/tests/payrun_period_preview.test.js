@@ -94,3 +94,14 @@ test("an older scheme request cannot replace the newly selected period", async (
     replies[0]({ covered: 27 }); await older;
     expect(wizard.state.scheme.preview.covered).toBe(26);
 });
+
+test("the selected scheme count uses this period, including an empty population", () => {
+    const wizard = subject();
+    wizard.state.who.picked = [];
+    wizard.chosenScheme = { ...card, covered: 27 };
+    const count = Object.getOwnPropertyDescriptor(PayrunWizard.prototype, "eligibleCount").get;
+    wizard.state.scheme.preview = { covered: 26 };
+    expect(count.call(wizard)).toBe(26);
+    wizard.state.scheme.preview = { covered: 0 };
+    expect(count.call(wizard)).toBe(0);
+});

@@ -74,7 +74,7 @@
                                             <span class="pw-schemefield__meta">
                                                 <span t-esc="chosenScheme.cycle_label"/>
                                                 <span class="pw-schemefield__sep">·</span>
-                                                <span t-esc="num(chosenScheme.covered)"/>
+                                                <span t-esc="num(eligibleCount)"/>
                                                 <span>people covered</span>
                                                 <span t-if="chosenScheme.mine" class="pw-mine">Your division</span>
                                             </span>
