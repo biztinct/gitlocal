@@ -140,6 +140,27 @@ class HrPayslipRun(models.Model):
     #: The row in the approval catalogue this model is approved under.
     _approval_process_key = 'payrun'
 
+    def action_pb_print_payslips(self):
+        """Print computed slips for review without advancing the approval."""
+        self.ensure_one()
+        payslips = self.slip_ids.filtered(
+            lambda slip: slip.state != 'cancel' and slip.line_ids)
+        if not payslips:
+            raise UserError(_(
+                "There are no computed payslips to print. Generate payslips "
+                "and compute their amounts first."))
+        # The formula report reads each slip's own scheme and saved line
+        # values, including an imported document when one is configured.
+        # Legacy country reports look up fixed rule codes, which may have no
+        # relationship to the components of a workbook-based scheme.
+        report = self.env.ref(
+            'pb_hr_payroll_formula.action_report_payslip_themed',
+            raise_if_not_found=False) or self.env.ref(
+                'om_hr_payroll.action_report_payslip')
+        # Both reports supply their own layout. Printing must not open the
+        # company document-layout setup wizard on a newly configured tenant.
+        return report.with_context(discard_logo_check=True).report_action(payslips)
+
     # The whole selection is REPLACED rather than added to: the two states the
     # base module ships ('level1', 'HR Manager pending' / 'level2', 'General
     # Manager pending') are the old ladder, and leaving them in the list would

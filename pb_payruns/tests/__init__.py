@@ -26,3 +26,4 @@ from . import test_board_currency
 # PAYRUN BOARD redesign: the month block the hero speaks about, and the
 # delivery / health / story every card now carries.
 from . import test_board_redesign
+from . import test_batch_print

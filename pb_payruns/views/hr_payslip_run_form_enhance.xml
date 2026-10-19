@@ -47,6 +47,11 @@
                  the run is what used to leave 152 drafts loose for the next
                  run to adopt, so the safe way needs to be the visible one. -->
             <xpath expr="//form/header" position="inside">
+                <button name="action_pb_print_payslips"
+                        type="object"
+                        string="Print Payslips"
+                        invisible="state == 'cancel' or not slip_ids"
+                        help="Download a PDF of computed payslips, including drafts for review."/>
                 <button name="action_split_review_groups"
                         type="object"
                         string="Split Into Review Groups"
