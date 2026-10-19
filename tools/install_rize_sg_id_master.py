@@ -1,7 +1,7 @@
 """Install/review Rize SG/ID client definitions using the published ORM APIs.
 
 RIZE_MASTER_DIR holds private definitions, fixtures and record plans. Select
-RIZE_MASTER_COUNTRY=SG/ID and RIZE_MASTER_PHASE=definition/records/activate/
+RIZE_MASTER_COUNTRY=SG/ID and RIZE_MASTER_PHASE=definition/refine/records/activate/
 attach/verify. Default is rollback; RIZE_MASTER_APPLY=1 persists after assertions.
 No approval, payment, bank submission or accounting posting is performed.
 """
@@ -133,6 +133,20 @@ if phase=='definition':
     report.update(config_id=cfg.id,components=len(made),tests=tests,exact_comparisons=exact,
         inputs=sum(r.column_type=='input' for r in made),formulas=sum(r.column_type=='formula' for r in made),
         statutory_bindings=len(made.filtered('tax_table_id')),time=len(layout['time']),adjustments=len(layout['adjustments']))
+elif phase=='refine':
+    assert len(cfg)==1 and cfg.state=='draft' and country=='ID'
+    assert not e['hr.payslip'].search_count([('formula_config_id','=',cfg.id)])
+    api._lock(cfg)
+    changed=[]
+    for rule in cfg.rule_ids.filtered(lambda r:r.column_type=='formula'):
+        spec=specs[rule.code]
+        if rule.excel_formula!=spec['formula']:
+            assert rule.column_letter=='BS','Only the final-period gross-up residual refinement is authorized here.'
+            rule.write(dict(excel_formula=spec['formula'],net_role_reason=spec['note']))
+            changed.append(rule.code)
+    cfg.action_validate_formulas()
+    assert not cfg.has_errors and not cfg.has_circular_refs
+    report.update(config_id=cfg.id,changed=changed)
 elif phase=='records':
     assert len(cfg)==1 and cfg.state=='draft'
     assert not e['hr.payslip'].search_count([('formula_config_id','=',cfg.id)])

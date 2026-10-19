@@ -134,6 +134,8 @@ def prepare(root, repo):
                 group='Severance',note='1 only for an approved qualifying severance payment. Normal PKWT compensation is not automatically qualifying severance. Enter 0 when no severance is paid.')
             fc=final['column']+'2';rc=rounder['column']+'2';yc=reviewed['column']+'2';sc=eligibility['column']+'2'
             bycol['M']['formula']=f'=IF(BB2=1,IF(BA2=0,0,{fc}),IF(BA2=0,0,MAX(0,BQ2)))+{rc}'
+            bycol['BS']['formula']='=IF(BB2=1,IF(BA2=2,M2-AN2,0),'+bycol['BS']['formula'].lstrip('=')+')'
+            bycol['BS']['note']='Ordinary months check the TER gross-up. Final full net contracts compare the approved allowance with the annual current-period PPh21, so a valid annual reconciliation does not display a spurious monthly residual.'
             # Retain every existing TER, annual-tax and severance band. The
             # source's unsupported final-period text is replaced by a visible
             # reviewed input, so annual net-contract reconciliation is usable.
