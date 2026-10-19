@@ -27,7 +27,7 @@ assert not e['hr.payslip'].search_count([('formula_config_id','=',cfg.id)])
 by={r.code:r for r in cfg.rule_ids}
 specs={r['code']:r for r in definition['rules']}
 assert set(by)==set(specs)
-for code in ('INHCK','INHCZ','INPFMODE'):
+for code in ('INHCK','INHCZ','INPFMODE','INCONV'):
     spec=specs[code]
     by[code].write(dict(value_kind=spec['kind'],value_kind_source='user',is_required=spec['required']))
     if code=='INHCZ':

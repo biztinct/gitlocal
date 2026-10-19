@@ -101,6 +101,7 @@ def prepare(private_dir):
     ]
     for code, name, col in monthly:
         add(code, name, group='Earnings', tab='Monthly adjustments', role='earning', detail=True,
+            required=code=='INCONV',
             source_column=col, source_sheet='Payroll_August 2026',
             note='Approved current-month payment from the client payroll. Not a recurring contract amount.')
     add('INLEAVEDAYS', 'Leave balance for encashment', 'quantity', 'Time', tab='Time',
@@ -189,7 +190,7 @@ def prepare(private_dir):
         add(code, name, kind, 'Source parameters', value=val,
             note='Explicit parameter from the August 2026 client workbook. Historical comparison value, not a declaration of the current statutory rule. Review applicable later-period PF rules before live payroll.')
     calc('INREADY', 'Payroll input validation',
-         'IF(OR({INANNFIX}<=0,{INWDAYS}<=0,{INPDAYS}<0,{INPDAYS}>{INWDAYS},{INLEAVEDAYS}<0),"Review salary or days",'
+         'IF(OR({INMONTHCTC}<=0,{INANNCTC}<{INANNFIX},ABS({INCTCTOTAL}-{INANNFIX})>1,{INWDAYS}<=0,{INPDAYS}<0,{INPDAYS}>{INWDAYS},{INLEAVEDAYS}<0),"Review salary or days",'
          'IF(AND({INPFMODE}<>"Capped",{INPFMODE}<>"Full basic"),"Review PF contribution basis",'
          'IF(AND({INADAYS}<>0,{INARREARS}=0),"Review arrears payment","Ready")))', kind='text')
 

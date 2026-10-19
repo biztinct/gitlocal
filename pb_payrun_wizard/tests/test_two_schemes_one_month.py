@@ -21,9 +21,10 @@ class TestTwoSchemesOneMonth(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        self.company = self.env['res.company'].create({'name': 'Two schemes test company'})
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.company.ids))
         self.Wizard = self.env['pb.payrun.wizard']
         self.Run = self.env['hr.payslip.run']
-        self.company = self.env.company
         if 'pb_formula_config_id' not in self.Run._fields:
             self.skipTest('This build has no scheme on the run.')
         Config = self.env.get('hr.formula.config')

@@ -54,7 +54,7 @@ for i,spec in enumerate(definition['rules']):
         value_kind_reason='Reviewed against the client payroll and India employee master.',
         net_role=spec['role'],net_role_detail=spec['detail'],net_role_source='user',
         net_role_confidence='certain',net_role_reason=spec['note'],
-        column_role='payroll' if spec['tab'] or spec['type']!='input' else 'profile',
+        column_role='reference' if spec['group']=='Contract calculation' else 'payroll' if spec['tab'] or spec['type']!='input' else 'profile',
         column_role_source='user',is_required=spec['required'],
         appears_on_payslip=spec['role']!='info',
         visibility_rule='when_nonzero' if spec['role']!='info' else 'never',

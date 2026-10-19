@@ -20,10 +20,27 @@ api=e['pb.payroll.templates'];api._lock(cfg)
 old=e['hr.formula.config'].search([('country_code','=','IN'),('state','=','active'),('id','!=',cfg.id)])
 old_rules=old.rule_ids.read(['name','code','excel_formula','column_type','is_contract_component','is_text_component'])
 assert all(not e['hr.payslip'].search_count([('formula_config_id','=',c.id)]) for c in old)
+# Publish the reviewed final formulas before activating the new Draft. This
+# also keeps installation and activation reproducible from the same metadata.
+by={r.code:r for r in cfg.rule_ids}
+assert set(by)=={r['code'] for r in definition['rules']}
+for spec in definition['rules']:
+    if spec['formula']:
+        by[spec['code']].write(dict(excel_formula='='+spec['formula'].format(**{c:r.column_letter+'2' for c,r in by.items()}),
+                                    column_role='reference' if spec['group']=='Contract calculation' else 'payroll',
+                                    column_role_source='user'))
 cfg.action_validate_formulas()
 assert not cfg.has_errors and not cfg.has_circular_refs
 tests=cfg.run_sample_tests()
-assert tests['total']==tests['passed']==27 and not tests['failed']
+assert tests['total']==tests['passed']==27 and not tests['failed'],tests
+sample=cfg.sample_data_ids[:1]
+baseline=json.loads(sample.input_values_json)
+invalid_inputs=[dict(INPDAYS=32),dict(INWDAYS=0),dict(INANNVAR=-1),
+                dict(INPFMODE='Unreviewed'),dict(INADAYS=1,INARREARS=0)]
+for mutation in invalid_inputs:
+    errors={}
+    computed=sample._evaluate_rules_with_dependencies(dict(baseline,**mutation),readonly=True,errors=errors)
+    assert computed.get('INREADY')!='Ready',(mutation,computed.get('INREADY'))
 old.action_archive()
 cfg.action_activate()
 assignment=e['hr.formula.scheme.assignment'].create(dict(config_id=cfg.id,cycle_type='regular',
@@ -42,6 +59,7 @@ for person in august:
     assert native,(person.barcode,'The actual payslip resolver must accept the same historical population')
 report=dict(database='rize',config_id=cfg.id,state=cfg.state,assignment_id=assignment.id,
     archived_configs=old.ids,august=27,september=26,scenarios=tests,
+    invalid_input_flags=len(invalid_inputs),
     pending_stipend=True,committed=os.getenv('IN_SETUP_APPLY')=='1')
 if report['committed']:e.cr.commit()
 else:e.cr.rollback()
