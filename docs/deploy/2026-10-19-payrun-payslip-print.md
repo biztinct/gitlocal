@@ -24,3 +24,13 @@ Deployment scope: latest combined custom addon state on Payobook19v2, including
 concurrent payroll preview changes, with database upgrades and deployed tests
 on payobook, payobook_template, abm, p0clone and rize. Full content hashes,
 installed module versions, cron activation and business rows are checked.
+
+The deployed Chrome check exposed a second failure: the server's distribution
+wkhtmltopdf build uses unpatched Qt and refuses multiple HTML input documents.
+The first rollout's single-slip and HTML tests did not exercise that engine
+limitation. Pay Runs `19.0.3.0.6` joins the batch report bodies into one HTML
+input, retaining the report's head/assets and an explicit page break before
+each following slip. This is scoped to this button's payslip reports; the
+original record IDs remain available to the existing PDF processing. A sixth
+regression renders an actual two-slip PDF with the installed engine, instead
+of relying only on HTML or report-action assertions. All six staged tests pass.

@@ -1,6 +1,9 @@
 """The full pay run prints computed drafts without changing their approval."""
+import io
+
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
+from odoo.tools.pdf import PdfFileReader
 
 
 @tagged('post_install', '-at_install')
@@ -51,6 +54,7 @@ class TestBatchPrint(TransactionCase):
         self.assertEqual(action['type'], 'ir.actions.report')
         self.assertEqual(action['report_type'], 'qweb-pdf')
         self.assertEqual(action['context']['active_ids'], slips.ids)
+        self.assertTrue(action['context']['pb_payrun_print'])
         self.assertEqual(self.run.state, 'draft')
         self.assertEqual(slips.mapped('state'), ['draft', 'draft'])
 
@@ -97,3 +101,17 @@ class TestBatchPrint(TransactionCase):
         config.payslip_layout_html = False
         html, _ = report._render_qweb_html(action['report_name'], slip.ids)
         self.assertIn(b'12,345', html)
+
+    def test_real_batch_pdf_renders_every_computed_slip(self):
+        report = self.env['ir.actions.report']
+        if report.get_wkhtmltopdf_state() == 'install':
+            self.skipTest('wkhtmltopdf is not installed')
+        slips = self._slip() + self._slip()
+        action = self.run.action_pb_print_payslips()
+        pdf, kind = report.with_context(
+            **action['context'], force_report_rendering=True)._render_qweb_pdf(
+                action['report_name'], res_ids=slips.ids)
+        self.assertEqual(kind, 'pdf')
+        self.assertTrue(pdf.startswith(b'%PDF'))
+        self.assertGreaterEqual(PdfFileReader(io.BytesIO(pdf)).numPages, 2)
+        self.assertEqual(self.run.state, 'draft')

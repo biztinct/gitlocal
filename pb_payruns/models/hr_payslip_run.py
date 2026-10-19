@@ -159,7 +159,8 @@ class HrPayslipRun(models.Model):
                 'om_hr_payroll.action_report_payslip')
         # Both reports supply their own layout. Printing must not open the
         # company document-layout setup wizard on a newly configured tenant.
-        return report.with_context(discard_logo_check=True).report_action(payslips)
+        return report.with_context(
+            discard_logo_check=True, pb_payrun_print=True).report_action(payslips)
 
     # The whole selection is REPLACED rather than added to: the two states the
     # base module ships ('level1', 'HR Manager pending' / 'level2', 'General
