@@ -206,6 +206,10 @@ def prepare(root, repo):
                 if s['kind']=='date':v=date(v)
                 elif s['kind'] in {'money','quantity'}:v=money(v)
                 else:v=text(v)
+                if s['destination']=='f:hr.employee:country_id' and v:
+                    # Native country dropdowns need country names, not a newly
+                    # created country record named after a demonym.
+                    v={'Canadian':'Canada','Indian':'India','Singaporean':'Singapore','Indonesian':'Indonesia'}.get(v,v)
                 values[s['code']]=v
             source_master=text(getm('D'))
             canonical=link['canonical_id']

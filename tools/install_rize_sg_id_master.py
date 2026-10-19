@@ -164,7 +164,10 @@ elif phase=='records':
     assert not preview['counts']['refused'],[x for x in preview['items'] if x['status']=='refused']
     applied=desk.apply_changes(cfg.id,changes,note='Owner-authorized '+country+' payroll configuration from the supplied employee master and August payroll. Unique country identity, saved salary/settings and actual source dates. No payment or approval is authorized.',source='import')
     assert applied.get('ok') and not applied.get('refused'),applied
-    assert not applied.get('pending'),{'reference':applied.get('reference'),'with_whom':applied.get('with_whom'),'reason':'Follow the published Records Desk approval route.'}
+    if applied.get('pending'):
+        request=e['biz.approval.request'].browse(applied.get('request_id')).exists()
+        print('RECORD_REQUEST_DIAGNOSIS '+json.dumps(request.read([f for f in ('state','block_reason','apply_error','current_step_key') if f in request._fields]),default=str),flush=True)
+    assert not applied.get('pending'),{k:applied.get(k) for k in ('reference','state','with_whom','route','block_note')}
     for record in records:
         person=people[record['code']];contract=contracts[record['code']]
         assert person.barcode==person.employee_id==record['code'] and person.name==record['name']
