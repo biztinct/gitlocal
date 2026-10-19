@@ -151,8 +151,10 @@ elif phase=='records':
         assert not Employee.search_count(['|',('barcode','=',code),('employee_id','=',code)]),(code,'Identity was created concurrently')
         person=Employee.create(dict(name=record['name'],barcode=code,employee_id=code,company_id=company.id,
             payroll_country=country,active=True))
+        end=record['contract_end']
+        contract_state=('close' if end and date.fromisoformat(end)<date.today() else 'open') if record['payroll_eligible'] else 'draft'
         contract=Contract.create(dict(name=country+' client master — '+code,employee_id=person.id,company_id=company.id,
-            date_start=record['contract_start'],wage=0,state='draft',payroll_country=country))
+            date_start=record['contract_start'],date_end=end or False,wage=0,state=contract_state,payroll_country=country))
         people[code]=person;contracts[code]=contract
         for s in definition['rules']:
             fid=card_by_code.get(s['code']);value=record['values'].get(s['code'])
