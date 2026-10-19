@@ -307,6 +307,9 @@ def prepare(root, repo):
                 if p:
                     for col in 'A B D E F G H I J K AR'.split():core[col]=clean(pv[column_index_from_string(col)-1])
                     core.update(controls[pr]['inputs'])
+                    assert not pv[14],'A nonzero leave payout needs its approved source days; never invent them.'
+                    assert not pv[24] and not pv[40],'Qualifying severance needs its actual payment history.'
+                    core.update(BU=0,BW=0)  # Explicit August no-leave/no-severance controls.
                     core.update(D=canonical,E=name,A=getm('AH') or core['A'],F=getm('U') or core['F'],
                         G=date(getm('X')) or date(core['G']),H=date(core['H']) or date(getm('AC')))
                     core['AW']=controls[pr]['inputs']['AW']
