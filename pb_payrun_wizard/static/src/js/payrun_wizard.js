@@ -519,7 +519,19 @@ export class PayrunWizard extends Component {
     gotoKey(k) { const i = this.stepKeys.indexOf(k); if (i >= 0) { this.state.step = i + 1; } }
     back() { if (this.state.step > 1) { this.state.step -= 1; } }
 
-    onField(f, ev) { this.state.form[f] = ev.target.value; }
+    onField(f, ev) {
+        const automaticName = this.chosenScheme
+            ? `${this.chosenScheme.name} · ${this._periodLabel()}` : null;
+        this.state.form[f] = ev.target.value;
+        if (f === "date_start" || f === "date_end") {
+            // A changed period can add a new hire or remove a leaver. Refresh
+            // both scope previews before the user proceeds with that period.
+            if (automaticName && this.state.form.name === automaticName) {
+                this.state.form.name = `${this.chosenScheme.name} · ${this._periodLabel()}`;
+            }
+            this.refreshWho();
+        }
+    }
     onDivision(ev) {
         this.state.form.division = ev.target.value;
         const di = this.divInfo;
@@ -602,7 +614,7 @@ export class PayrunWizard extends Component {
             this.state.form.name = `${card.name} · ${this._periodLabel()}`;
         }
         this.state.scheme.open = false;
-        this.refreshScheme();
+        this.refreshWho();
         // The pay-data step is ABOUT the chosen scheme: its components, its
         // filename hint, its source lanes. Asking the gate again keeps the two
         // in step, and drops a file that was picked for the scheme before —
@@ -638,6 +650,8 @@ export class PayrunWizard extends Component {
                 [{
                     formula_config_id: this.state.form.formula_config_id,
                     statuses: this.hasStatusFilter ? this.chosenStatuses : null,
+                    date_start: this.state.form.date_start,
+                    date_end: this.state.form.date_end,
                 }]);
         } catch (e) {
             console.warn("pb_payrun_wizard: could not preview the scheme", e);
@@ -714,7 +728,10 @@ export class PayrunWizard extends Component {
 
     /** Live count, so nobody presses Run Payroll and then discovers the scope. */
     async refreshWho() {
-        if (!this.hasStatusFilter) { return; }
+        if (!this.hasStatusFilter) {
+            if (this.state.form.formula_config_id) { await this.refreshScheme(); }
+            return;
+        }
         this.state.who.loading = true;
         try {
             this.state.who.preview = await this.orm.call(

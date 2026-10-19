@@ -36,9 +36,13 @@ Generic workflow fixes
   denomination and money precision, never converts or rewrites amounts, and
   does not activate currencies. India wages retain INR cents inside a company
   whose base currency is VND.
-* Two older wizard test fixtures now use isolated companies, so tests of the
+* Three older wizard test fixtures now use isolated companies, so tests of the
   native/single-scheme path do not depend on the client database containing no
   other active payroll schemes.
+* Both employee-count previews refresh when dates or the selected scheme
+  change, including entry from Templates. Scheme coverage carries the same
+  dates as eligibility. Automatic month labels follow date changes while
+  custom batch names remain intact. Six browser-unit cases cover these paths.
 
 Validation before deployment: 182 deployed-database regression cases passed
 against staged code; 27 client scenarios and 378 exact calculation comparisons
@@ -47,7 +51,7 @@ inactive profiles, and 27 historical-payroll employees. No business record
 changes were committed by these dry runs.
 
 Versions: `om_hr_payroll` 19.0.1.8.3, `pb_hr_payroll_base` 19.0.1.4.1,
-`pb_payrun_wizard` 19.0.1.32.5. Shared code targets are payobook,
+`pb_payrun_wizard` 19.0.1.32.6. Shared code targets are payobook,
 payobook_template, abm, p0clone and rize. Client data and new configuration are
 restricted to rize. Final deployment, Chrome workflow and reconciliation
 receipts will be recorded after verification.
