@@ -900,12 +900,12 @@ class HrPayslipLine(models.Model):
     costcenter = fields.Char(related='slip_id.contract_id.costcenter', string='Cost center', store=True)
     @staticmethod
     def _smart_round(value):
-        """Round large values (>=1000) to integer, keep 2 decimals for small values.
-        Large = salary amounts in VND (no sub-units).
-        Small = hours, quantities, rates.
+        """Keep the two-decimal precision declared by amount and total.
+
+        Currency and payroll formulas determine whole-unit rounding. The size
+        of an amount cannot identify its currency: SGD employer cost above
+        1,000 still has cents, and discarding them breaks the computed total.
         """
-        if abs(value) >= 1000:
-            return round(value)
         return round(value, 2)
 
     @api.depends('quantity', 'amount', 'rate')
@@ -923,7 +923,7 @@ class HrPayslipLine(models.Model):
                 values['contract_id'] = values.get('contract_id') or payslip.contract_id and payslip.contract_id.id
                 if not values['contract_id']:
                     raise UserError(_('You must set a contract to create a payslip line.'))
-            # Smart round amount for storage: >=1000 → integer, <1000 → 2 decimals
+            # Preserve the field's precision for large and small amounts alike.
             if 'amount' in values and isinstance(values['amount'], (int, float)):
                 values['amount'] = self._smart_round(values['amount'])
         return super(HrPayslipLine, self).create(vals_list)

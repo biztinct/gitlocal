@@ -29,3 +29,5 @@
 # those tests describe this decade's payslip flow.
 #
 # from . import test_payslip_flow
+
+from . import test_line_precision
