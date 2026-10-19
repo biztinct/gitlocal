@@ -7857,7 +7857,7 @@
   "source_scope": "Rize-only client configuration and employee records. No shared application code changes.",
   "notes": [
     "Retains the six published Indonesia statutory editions and all 292 linked constants. Use statutory edition refresh when rates, wage floors or caps change; do not overwrite historical editions.",
-    "Canonical employee codes are ID-<local payroll number>. Repeated original HR IDs are preserved as references and never matched as government identifiers.",
+    "Canonical employee codes use ID followed by the local payroll number, for example ID170. This satisfies the native alphanumeric badge rule. Repeated original HR IDs are preserved as references and never matched as government identifiers.",
     "118 payroll employees match the master (111 names, seven national IDs); four are payroll-only. Four master-only profiles remain Draft for payroll pending review.",
     "Known source contract end dates are retained. Ended contracts remain available for valid historical months; future months require a real renewal record.",
     "A visible -1 IDR regular allowance adjustment reproduces source row 105. August gross, deductions, tax and net controls then match exactly; future-month adjustment starts blank.",

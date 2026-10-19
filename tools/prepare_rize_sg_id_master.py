@@ -198,7 +198,7 @@ def prepare(root, repo):
             for m in (5,6):links.append(dict(payroll_row=None,master_row=m,canonical_id=masters[m]['values'][3],method='master_only'))
         else:
             links=list(cross['links'])
-            for extra in cross['outside']:links.append(dict(payroll_row=None,master_row=extra['row'],canonical_id='ID-HC-'+extra['id'],method='master_only'))
+            for extra in cross['outside']:links.append(dict(payroll_row=None,master_row=extra['row'],canonical_id='IDHC'+extra['id'],method='master_only'))
         controls={r['source_row']:r for r in json.loads((root/(key+'-controls.json')).read_text())['controls']}
         for link in links:
             pr=link['payroll_row'];mr=link['master_row'];p=pays.get(pr);m=masters.get(mr)
@@ -218,6 +218,8 @@ def prepare(root, repo):
                 values[s['code']]=v
             source_master=text(getm('D'))
             canonical=link['canonical_id']
+            if key=='id':canonical=re.sub(r'[^A-Za-z0-9]','',canonical)
+            assert canonical.isascii() and canonical.isalnum() and len(canonical)<=18,'Native Odoo badge IDs must be alphanumeric and at most 18 characters.'
             name=clean(getm('F')) or (pv[1] if key=='sg' else pv[4])
             name=str(name).strip()
             assert not any(canonical in (x['barcode'],x['employee_id']) for x in existing_people),(canonical,'Canonical employee code already exists')
@@ -287,7 +289,7 @@ def prepare(root, repo):
                 'Future months require a new period-specific download, reviewed time/contribution inputs and current records. Inactive master profiles are not on the payroll roster.',
             ] if key=='sg' else [
                 'Retains the six published Indonesia statutory editions and all 292 linked constants. Use statutory edition refresh when rates, wage floors or caps change; do not overwrite historical editions.',
-                'Canonical employee codes are ID-<local payroll number>. Repeated original HR IDs are preserved as references and never matched as government identifiers.',
+                'Canonical employee codes use ID followed by the local payroll number, for example ID170. This satisfies the native alphanumeric badge rule. Repeated original HR IDs are preserved as references and never matched as government identifiers.',
                 '118 payroll employees match the master (111 names, seven national IDs); four are payroll-only. Four master-only profiles remain Draft for payroll pending review.',
                 'Known source contract end dates are retained. Ended contracts remain available for valid historical months; future months require a real renewal record.',
                 'A visible -1 IDR regular allowance adjustment reproduces source row 105. August gross, deductions, tax and net controls then match exactly; future-month adjustment starts blank.',

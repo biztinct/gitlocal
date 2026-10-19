@@ -43,7 +43,8 @@ and cap. Sum employee SDL before rounding the employer remittance down.
 Indonesia retains all 292 bindings to the existing six published statutory
 editions. New editions and effective-date refresh preserve historical rates.
 The master repeats 11 IDs and collides with two existing foreign-country IDs;
-unique `ID-<local payroll number>` codes are canonical. Original HR IDs remain
+unique `ID<local payroll number>` codes are canonical, satisfying Odoo's native
+alphanumeric badge rule. Original HR IDs remain
 reference fields. Of 122 payroll employees, 111 match by normalized name and
 seven by unique national ID; four are payroll-only. Four master-only profiles
 remain Draft for payroll pending review. Actual source contract ends and the
