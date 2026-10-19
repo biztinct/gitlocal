@@ -23,7 +23,20 @@ def digest(table,ids=None):
     return hashlib.sha256('\n'.join(r[0] for r in e.cr.fetchall()).encode()).hexdigest()
 
 
-if phase=='baseline':
+if phase=='label':
+    labelled=[]
+    for key,country in [('sg','Singapore'),('id','Indonesia')]:
+        definition=json.loads((root/(key+'-definition.json')).read_text())
+        cfg=e['hr.formula.config'].search([('code','=',definition['code'])])
+        runs=e['hr.payslip.run'].search([('pb_formula_config_id','=',cfg.id),('date_start','=','2026-08-01'),('date_end','=','2026-08-31')])
+        assert len(runs)<=1
+        if runs:
+            assert runs.state=='draft'
+            runs.write({'name':'Rize '+country+' · August 2026 TEST · Client comparison'})
+            labelled.append(dict(id=runs.id,name=runs.name))
+    e.cr.commit()
+    print('RIZE_TEST_DRAFT_LABELS '+json.dumps(labelled))
+elif phase=='baseline':
     before=dict(hashes={t:digest(t) for t in tables},payroll={})
     for table in ('hr_payslip','hr_payslip_run'):
         e.cr.execute('SELECT id FROM '+table+' ORDER BY id');ids=[r[0] for r in e.cr.fetchall()]
