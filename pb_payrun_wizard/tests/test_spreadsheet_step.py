@@ -366,6 +366,8 @@ class TestSyncPlan(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        self.company = self.env['res.company'].create({'name': 'Sync plan test company'})
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.company.ids))
         self.Wizard = self.env['pb.payrun.wizard']
         if 'hr.integration.field.mapping' not in self.env:
             self.skipTest("the integration layer is not installed here")

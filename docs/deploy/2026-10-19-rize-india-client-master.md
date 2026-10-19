@@ -36,7 +36,7 @@ Generic workflow fixes
   denomination and money precision, never converts or rewrites amounts, and
   does not activate currencies. India wages retain INR cents inside a company
   whose base currency is VND.
-* Three older wizard test fixtures now use isolated companies, so tests of the
+* Four older wizard test fixtures now use isolated companies, so tests of the
   native/single-scheme path do not depend on the client database containing no
   other active payroll schemes.
 * Both employee-count previews refresh when dates or the selected scheme
