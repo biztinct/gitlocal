@@ -181,7 +181,7 @@ elif phase=='records':
         else:
             assert contract.state=='draft','Unreviewed master-only profiles cannot silently join payroll.'
         if not record['profile_active']:person.active=False
-    saved=e['pb.payroll.template.layout'].search([('config_id','=',cfg.id),('company_id','=',company.id)])
+    saved=e['pb.payroll.template.layout'].sudo().search([('config_id','=',cfg.id),('company_id','=',company.id)])
     assert len(saved)==1
     saved.payload=dict(saved.payload or {},preview_employee_ids=[people[r['code']].id for r in records if r['payroll_eligible']],preview_expected_count=len(fixtures))
     report.update(config_id=cfg.id,created_people=len(people),created_contracts=len(contracts),
