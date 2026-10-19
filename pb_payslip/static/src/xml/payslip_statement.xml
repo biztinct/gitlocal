@@ -45,14 +45,14 @@
           <div class="pbps-card-h"><span class="pbps-dotc ded"/>Deductions<span class="pbps-tag"><t t-esc="data.deductions ? data.deductions.length : 0"/></span></div>
           <div t-foreach="data.deductions or []" t-as="d" t-key="d_index" class="pbps-row">
             <span class="pbps-row-nm" t-esc="d.name"/>
-            <span class="pbps-row-amt ded">−<t t-esc="money(d.amount)"/></span>
+            <span t-attf-class="pbps-row-amt {{ d.amount &lt; 0 ? 'refund' : 'ded' }}" t-esc="change(-d.amount)"/>
           </div>
           <div t-if="!data.deductions or !data.deductions.length" class="pbps-empty">No deductions</div>
-          <div class="pbps-sub ded"><span>Total deductions</span><span>−<t t-esc="money(data.deductions_total)"/></span></div>
-          <t t-if="data.advance">
+          <div t-attf-class="pbps-sub {{ data.deductions_total &lt; 0 ? 'net' : 'ded' }}"><span>Total deductions</span><span t-esc="change(-data.deductions_total)"/></div>
+          <t t-if="data.adjustment">
             <div class="pbps-row pbps-advrow">
-              <span class="pbps-row-nm" t-esc="data.advance_label"/>
-              <span class="pbps-row-amt adv">−<t t-esc="money(data.advance)"/></span>
+              <span class="pbps-row-nm" t-esc="data.adjustment_label"/>
+              <span class="pbps-row-amt adv" t-esc="change(-data.adjustment)"/>
             </div>
             <div class="pbps-sub net"><span>Net pay</span><span t-esc="money(data.net)"/></div>
           </t>
@@ -70,12 +70,35 @@
         <div class="pbps-empnote">Paid by the employer — not deducted from your pay.</div>
       </div>
 
-      <!-- waterfall -->
-      <div class="pbps-water">
-        <div class="pbps-seg gross"><span class="k">Gross</span><span class="v" t-esc="moneyShort(data.gross)"/></div>
-        <div class="pbps-seg ded" t-attf-style="flex-basis:{{ segDed }}%"><span class="k">− Deductions</span><span class="v" t-esc="moneyShort(data.deductions_total)"/></div>
-        <div t-if="data.advance" class="pbps-seg adv"><span class="k">− Advance</span><span class="v" t-esc="moneyShort(data.advance)"/></div>
-        <div class="pbps-seg net"><span class="k">Net pay</span><span class="v" t-esc="moneyShort(data.net)"/></div>
+      <!-- Gross is the whole; only deductions and take-home occupy the bar. -->
+      <div class="pbps-card pbps-summary">
+        <div class="pbps-summary-gross">
+          <span>Gross pay</span>
+          <div><strong t-esc="money(data.gross)"/><span t-if="summary.canSplit" class="pbps-summary-whole">100%</span></div>
+        </div>
+        <t t-if="summary.canSplit">
+          <div class="pbps-split" role="img" t-att-aria-label="splitLabel">
+            <div class="pbps-split-ded" t-attf-style="width:{{ summary.deductionPercent }}%" aria-hidden="true"/>
+            <div class="pbps-split-net" t-attf-style="width:{{ summary.netPercent }}%" aria-hidden="true"/>
+          </div>
+          <div class="pbps-summary-values">
+            <div class="pbps-summary-value">
+              <span class="pbps-summary-key"><span class="pbps-summary-dot ded" aria-hidden="true"/>Deductions</span>
+              <strong t-esc="change(-data.deductions_total)"/>
+              <span class="pbps-summary-share"><t t-esc="percent(summary.deductionPercent)"/> of gross</span>
+            </div>
+            <div class="pbps-summary-value pbps-summary-net">
+              <span class="pbps-summary-key"><span class="pbps-summary-dot net" aria-hidden="true"/>Net pay</span>
+              <strong t-esc="money(data.net)"/>
+              <span class="pbps-summary-share"><t t-esc="percent(summary.netPercent)"/> of gross</span>
+            </div>
+          </div>
+        </t>
+        <div t-else="" class="pbps-summary-calculation">
+          <div class="pbps-summary-calc-row"><span>Deductions</span><strong t-esc="change(-data.deductions_total)"/></div>
+          <div t-if="data.adjustment" class="pbps-summary-calc-row"><span t-esc="data.adjustment_label"/><strong t-esc="change(-data.adjustment)"/></div>
+          <div class="pbps-summary-calc-row pbps-summary-result"><span>Net pay</span><strong t-esc="money(data.net)"/></div>
+        </div>
       </div>
 
       <!-- worked days -->

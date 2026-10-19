@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Payslip Statement',
     'summary': 'Pay-statement hero (earnings / deductions / net) on the payslip form',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -15,6 +15,7 @@
     'assets': {
         'web.assets_backend': [
             'pb_payslip/static/src/scss/payslip_statement.scss',
+            'pb_payslip/static/src/js/pay_summary.js',
             'pb_payslip/static/src/js/payslip_statement.js',
             'pb_payslip/static/src/xml/payslip_statement.xml',
         ],

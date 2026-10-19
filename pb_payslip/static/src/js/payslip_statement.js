@@ -4,6 +4,7 @@ import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { _t } from "@web/core/l10n/translation";
+import { paySummary, statementMoney, statementChange } from "./pay_summary";
 
 const PIPE = [
     { key: "draft", label: _t("Draft") },
@@ -26,17 +27,13 @@ export class PbPayslipStatement extends Component {
     }
 
     money(n) {
-        const cur = this.data.currency || "₫";
-        if (n === null || n === undefined || isNaN(n)) return cur + "0";
-        return cur + Math.round(n).toLocaleString("en-US");
+        return statementMoney(n, this.data);
     }
-    moneyShort(n) {
-        const cur = this.data.currency || "₫";
-        const a = Math.abs(n || 0);
-        if (a >= 1e9) return cur + (n / 1e9).toFixed(2) + "B";
-        if (a >= 1e6) return cur + (n / 1e6).toFixed(1) + "M";
-        if (a >= 1e3) return cur + (n / 1e3).toFixed(0) + "K";
-        return cur + Math.round(n || 0);
+    change(n) {
+        return statementChange(n, this.data);
+    }
+    percent(n) {
+        return n.toLocaleString("en-US", { maximumFractionDigits: 1 }) + "%";
     }
 
     get rejected() { return this.data.state === "cancel"; }
@@ -49,10 +46,14 @@ export class PbPayslipStatement extends Component {
         }));
     }
 
-    // width % for the waterfall segments (gross is the 100% baseline)
-    get segDed() {
-        const g = this.data.gross || 0;
-        return g ? Math.max(8, Math.min(60, Math.round((this.data.deductions_total / g) * 100))) : 0;
+    get summary() {
+        return paySummary(this.data);
+    }
+    get splitLabel() {
+        return _t("Gross pay: %s; deductions: %s (%s); net pay: %s (%s).",
+            this.money(this.data.gross), this.money(this.data.deductions_total),
+            this.percent(this.summary.deductionPercent), this.money(this.data.net),
+            this.percent(this.summary.netPercent));
     }
 }
 

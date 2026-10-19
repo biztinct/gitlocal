@@ -52,15 +52,35 @@
     .pbps-sub.earn { color: var(--green); } .pbps-sub.ded { color: var(--rose); }
     .pbps-empty { color: var(--muted); font-size: 12.5px; padding: 8px 2px; }
 
-    /* waterfall */
-    .pbps-water { display: flex; align-items: stretch; height: 58px; border-radius: 12px; overflow: hidden; margin-top: 14px; }
-    .pbps-seg { display: flex; flex-direction: column; justify-content: center; padding: 0 16px; color: #fff; }
-    .pbps-seg .k { font-size: 10px; font-weight: 700; opacity: .9; text-transform: uppercase; letter-spacing: .04em; }
-    .pbps-seg .v { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
-    .pbps-seg.gross { background: var(--i600); flex: 1; }
-    .pbps-seg.ded { background: var(--rose); flex: 0 0 auto; }
-    .pbps-seg.net { background: var(--green); flex: 0 0 38%; align-items: flex-end; text-align: right; }
-    .pbps-seg.adv { background: var(--amber); flex: 0 0 auto; }
+    /* A full-width gross, split at the actual deduction/net proportions. */
+    .pbps-summary { margin-top: 14px; container-type: inline-size; }
+    .pbps-summary-gross { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; }
+    .pbps-summary-gross strong { font-size: 18px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .pbps-summary-whole { color: var(--muted); font-size: 12px; margin-left: 10px; }
+    .pbps-split { display: flex; height: 18px; border-radius: 6px; overflow: hidden; margin-top: 17px; }
+    .pbps-split-ded { background: var(--rose); flex: none; }
+    .pbps-split-net { background: var(--green); flex: none; }
+    .pbps-summary-values { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 12px; }
+    .pbps-summary-value { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .pbps-summary-key { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; }
+    .pbps-summary-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .pbps-summary-dot.ded { background: var(--rose); }
+    .pbps-summary-dot.net { background: var(--green); }
+    .pbps-summary-value strong { font-size: 17px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .pbps-summary-share { font-size: 12px; color: var(--muted); }
+    .pbps-summary-net { align-items: flex-end; text-align: right; }
+    .pbps-summary-net strong, .pbps-row-amt.refund { color: var(--green); }
+    .pbps-summary-calculation { margin-top: 12px; }
+    .pbps-summary-calc-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 7px 0; }
+    .pbps-summary-calc-row strong { font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+    .pbps-summary-result { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 13px; color: var(--green); font-size: 17px; }
+
+    @container (max-width: 480px) {
+        .pbps-summary-values { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+        .pbps-summary-value { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; text-align: left; }
+        .pbps-summary-value strong { font-size: 14px; text-align: right; }
+        .pbps-summary-share { grid-column: 2; text-align: right; }
+    }
 
     /* mid-cycle advance reduction + net reconciliation inside the deductions card */
     .pbps-row-amt.adv { color: var(--amber); }

@@ -35,7 +35,8 @@ class HrPayslip(models.Model):
                  'line_ids.pay_role', 'line_ids.component_detail',
                  'worked_days_line_ids', 'worked_days_line_ids.number_of_hours',
                  'employee_id', 'date_from', 'date_to', 'struct_id', 'state',
-                 'number', 'name')
+                 'number', 'name', 'formula_config_id.currency_id',
+                 'company_id.currency_id')
     def _compute_pb_statement_json(self):
         for slip in self:
             try:
@@ -87,6 +88,18 @@ class HrPayslip(models.Model):
             cur = config.currency_id
         cur = cur or company.currency_id
 
+        # Read the same refund convention as pay runs/reports. Older schemes
+        # write charges with mixed signs; only a whole-slip reconciliation can
+        # establish that a negative classified deduction is really a refund.
+        deduction_lines = self.line_ids.filtered(
+            lambda line: line.pb_pay_band() == 'DED'
+            and (line.code or '').upper() != 'ADVPAY')
+        counted_deductions = deduction_lines.filtered(lambda line: line.pb_counts_in_totals())
+        deduction_magnitude = sum(abs(line.total) for line in counted_deductions)
+        reported_deductions = deduction_lines.pb_pay_totals()['deductions']
+        signed_deductions = (not cur.is_zero(reported_deductions - deduction_magnitude)
+                            and cur.is_zero(reported_deductions - sum(counted_deductions.mapped('total'))))
+
         # Line-level statement. Lines are bucketed by their salary-rule category
         # (type/code), NOT just by sign, so:
         #   * employee deductions (insurance / tax / loan) reduce take-home,
@@ -95,7 +108,7 @@ class HrPayslip(models.Model):
         #   * the mid-cycle advance is shown as a reduction so the figures
         #     reconcile: Gross − Deductions − Advance = Net (on every cycle).
         earnings, deductions, employer = [], [], []
-        gross = net = 0.0
+        gross = net = None
         has_end_adv = has_mid_adv = False
         # A scheme built from a workbook carries its own subtotals as ordinary
         # components: "Total monthly income" sits on the payslip next to the
@@ -140,7 +153,8 @@ class HrPayslip(models.Model):
                 else:
                     has_end_adv = True
                 continue
-            if not amt:
+            is_net = role == 'net' or (not role and (ctype == 'net' or ccode in NET_CODES))
+            if not amt and not is_net:
                 continue
             # Multilingual: resolve the component label from the translatable salary
             # rule in the reader's language, falling back to the frozen line snapshot.
@@ -166,8 +180,8 @@ class HrPayslip(models.Model):
             # mis-typed subtotal turned ₫8,190,000 of take-home into −₫149.5m.
             # Only a non-detail one — a scheme can carry an intermediate net
             # (`Net Income VND`) that is folded into the real one.
-            if role == 'net' or (not role and (ctype == 'net' or ccode in NET_CODES)):
-                if not row['detail'] and not net:
+            if is_net:
+                if not row['detail'] and net is None:
                     net = amt
                 continue
             # `amt < 0` stays unconditional. A line the scheme calls an earning
@@ -177,6 +191,8 @@ class HrPayslip(models.Model):
             if role == 'deduction' or amt < 0 or (
                     not role and (ctype in DED_CAT_TYPES
                                   or ccode in DED_CAT_CODES)):
+                if signed_deductions and line.pb_pay_band() == 'DED':
+                    row['amount'] = amt
                 deductions.append(row)
             else:
                 earnings.append(row)
@@ -186,15 +202,15 @@ class HrPayslip(models.Model):
         earnings, earn_total = self._pb_fold_subtotals(earnings)
         deductions, ded_total = self._pb_fold_subtotals(deductions)
         employer, emp_total = self._pb_fold_subtotals(employer)
-        if not gross:
+        if gross is None:
             gross = earn_total
-        if not net:
+        if net is None:
             net = gross - ded_total
         # Bridge = whatever separates (gross − deductions) from net: the advance
         # already paid (END) or the part held back for end-of-month (MID). Showing
         # it as an explicit reduction makes the hero reconcile on every cycle.
-        bridge = round(gross - ded_total - net)
-        advance = abs(bridge) if abs(bridge) > 1 else 0.0
+        bridge = cur.round(gross - ded_total - net)
+        advance = abs(bridge) if not cur.is_zero(bridge) else 0.0
         if not advance:
             advance_label = ''
         elif has_end_adv:
@@ -202,7 +218,8 @@ class HrPayslip(models.Model):
         elif has_mid_adv:
             advance_label = 'Held back for end of month'
         else:
-            advance_label = 'Advance / adjustment'
+            advance_label = 'Other net-pay adjustment'
+        adjustment_label = advance_label if bridge > 0 else 'Other net-pay adjustment'
 
         worked = []
         for wd in self.worked_days_line_ids:
@@ -219,6 +236,8 @@ class HrPayslip(models.Model):
 
         return {
             'currency': cur.symbol or '',
+            'currency_precision': cur.decimal_places,
+            'currency_rounding': cur.rounding,
             'employee': emp.name or '—',
             'initials': _initials(emp.name),
             'job': (emp.job_title or (emp.job_id.name if emp.job_id else '') or ''),
@@ -233,6 +252,8 @@ class HrPayslip(models.Model):
             'deductions_total': ded_total,
             'advance': advance,
             'advance_label': advance_label,
+            'adjustment': bridge if advance else 0.0,
+            'adjustment_label': adjustment_label,
             'earnings': earnings,
             'deductions': deductions,
             'employer': employer,
