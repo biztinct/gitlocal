@@ -144,6 +144,10 @@ elif phase=='refine':
             assert rule.column_letter=='BS','Only the final-period gross-up residual refinement is authorized here.'
             rule.write(dict(excel_formula=spec['formula'],net_role_reason=spec['note']))
             changed.append(rule.code)
+    end_rule=cfg.rule_ids.filtered(lambda r:r.column_letter=='H')
+    assert len(end_rule)==1 and specs[end_rule.code]['name']=='Contract end date'
+    end_rule.write({'name':specs[end_rule.code]['name']})
+    end_rule.set_source_binding('excel',specs[end_rule.code]['source_key'],origin='user')
     cfg.action_validate_formulas()
     assert not cfg.has_errors and not cfg.has_circular_refs
     report.update(config_id=cfg.id,changed=changed)

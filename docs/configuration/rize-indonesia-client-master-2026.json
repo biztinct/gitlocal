@@ -120,7 +120,7 @@
     },
     {
       "code": "IDRESIGNDATE",
-      "name": "Resign Date",
+      "name": "Contract end date",
       "column": "H",
       "type": "input",
       "formula": "",
@@ -134,7 +134,7 @@
       "required": false,
       "note": "",
       "original_code": "RESIGNDATE",
-      "source_key": "Consolidated|Resign Date"
+      "source_key": "Consolidated|Contract end date"
     },
     {
       "code": "IDEMPSTATUS",

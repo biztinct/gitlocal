@@ -184,6 +184,8 @@ for(const key of ['sg','id']){
   }else if(mode==='monthly'){
     const fill=JSON.parse(await fs.readFile(`${work}/${key}-fill-plan.json`,'utf8'));
     const wb=await SpreadsheetFile.importXlsx(await FileBlob.load(`${work}/${key}-issued-template.xlsx`));
+    const current=await SpreadsheetFile.importXlsx(await FileBlob.load(`${work}/${key}-current-template.xlsx`));
+    await render(current,key+'-October',[['Time','A1:H6'],['Monthly adjustments','A1:H6'],['Employee records','A1:H6']]);
     await render(wb,key,[['Time','A1:H6'],['Monthly adjustments','A1:H6'],['Employee records','A1:H6']]);
     for(const item of fill.cells)wb.worksheets.getItem(item.sheet).getRange(item.cell).values=[[item.value]];
     wb.recalculate();

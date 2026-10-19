@@ -81,6 +81,9 @@ def prepare(root, repo):
         primary=bycol['A' if key=='sg' else 'D']
         primary['name']='Employee Code'
         primary['source_key']='Consolidated|Employee Code'
+        if key=='id':
+            bycol['H']['name']='Contract end date'
+            bycol['H']['source_key']='Consolidated|Contract end date'
         bycode={s['code']:s for s in specs}
         top=max(column_index_from_string(s['column']) for s in specs if re.match(r'^[A-Z]+$',s['column']))
         def add(code,name,kind='text',destination='',tab='',required=False,formula='',role='info',note='',group='Employee master'):
