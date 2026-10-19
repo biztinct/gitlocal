@@ -22,6 +22,7 @@ either duplicated a person or — worse — merged two:
 no mapping can point at and no update can overwrite.
 """
 from datetime import date
+import hashlib
 import json
 
 from odoo.tests import TransactionCase, tagged
@@ -32,7 +33,9 @@ class TestImportIdentity(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        self.company = self.env.company
+        self.company = self.env['res.company'].create({'name': 'Identity probe company'})
+        self.env = self.env(context=dict(
+            self.env.context, allowed_company_ids=self.company.ids))
         self.connector = self.env['hr.integration.connector'].create({
             'name': 'Identity probe', 'connector_type': 'zoho',
         })
@@ -47,6 +50,11 @@ class TestImportIdentity(TransactionCase):
             'date_from': '2026-06-01', 'date_to': '2026-06-30',
             'company_id': self.company.id,
         })
+
+    def _barcode(self, value):
+        # Barcodes are globally unique, even across isolated test companies.
+        return 'IP%X%s' % (
+            self.company.id, hashlib.sha256(value.encode()).hexdigest()[:8].upper())
 
     def _line(self, code, name, email=False):
         return self.env['hr.payroll.import.line'].create({
@@ -125,7 +133,7 @@ class TestImportIdentity(TransactionCase):
         says they are different people, and the source wins.
         """
         first = self.batch._create_employee(self._line('0442', 'HAI NGUYEN'))
-        first.barcode = '075186015978'
+        first.barcode = self._barcode('075186015978')
         second_line = self._line('0729', 'CHUC NGUYEN')
         self.assertFalse(
             self.batch._match_ok(first, self.batch._source_ref('0729')),
@@ -135,7 +143,7 @@ class TestImportIdentity(TransactionCase):
     def test_a_record_with_no_source_key_is_still_matchable(self):
         """Employees created before this existed must not become unreachable."""
         legacy = self.env['hr.employee'].create({
-            'name': 'No Key', 'barcode': 'LEGACY1',
+            'name': 'No Key', 'barcode': self._barcode('LEGACY1'),
             'company_id': self.company.id})
         self.assertTrue(self.batch._match_ok(legacy, self.batch._source_ref('0001')))
 
@@ -165,12 +173,13 @@ class TestImportIdentity(TransactionCase):
 
     def test_mapped_government_id_precedes_another_persons_barcode(self):
         self._mapped_identity('identification_id')
+        key = self._barcode('GOVERNMENTKEY')
         self.env['hr.employee'].create({'name': 'A different person',
-            'barcode': 'GOVERNMENTKEY', 'company_id': self.company.id})
+            'barcode': key, 'company_id': self.company.id})
         correct = self.env['hr.employee'].create({'name': 'Z correct person',
-            'identification_id': 'GOVERNMENTKEY', 'company_id': self.company.id})
-        line = self._line('GOVERNMENTKEY', 'Z correct person')
-        line.raw_data_json = json.dumps({'Master|Canonical ID': 'GOVERNMENTKEY'})
+            'identification_id': key, 'company_id': self.company.id})
+        line = self._line(key, 'Z correct person')
+        line.raw_data_json = json.dumps({'Master|Canonical ID': key})
         self.assertEqual(self.batch._find_employee(line), correct)
 
     # -------------------------------------------------- the unique-barcode trap
@@ -180,16 +189,17 @@ class TestImportIdentity(TransactionCase):
         One duplicated card number used to fail every line after it with
         "current transaction is aborted" — a total loss from one bad cell.
         """
+        barcode = self._barcode('066196005153')
         self.env['hr.employee'].create({
-            'name': 'Holder', 'barcode': '066196005153',
+            'name': 'Holder', 'barcode': barcode,
             'company_id': self.company.id})
-        vals = {'name': 'Someone else', 'barcode': '066196005153'}
+        vals = {'name': 'Someone else', 'barcode': barcode}
         self.batch._drop_taken_barcode(vals)
         self.assertNotIn('barcode', vals)
         # A free barcode is left exactly where it is.
-        free = {'name': 'Third', 'barcode': 'NOBODY-HAS-THIS'}
+        free = {'name': 'Third', 'barcode': self._barcode('NOBODY-HAS-THIS')}
         self.batch._drop_taken_barcode(free)
-        self.assertEqual(free['barcode'], 'NOBODY-HAS-THIS')
+        self.assertEqual(free['barcode'], self._barcode('NOBODY-HAS-THIS'))
 
     # ------------------------------------------------------- contracts, once
     def test_a_contract_starts_when_the_person_did(self):
