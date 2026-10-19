@@ -719,7 +719,9 @@ export class PayrunWizard extends Component {
         try {
             this.state.who.preview = await this.orm.call(
                 "pb.payrun.wizard", "eligible_preview",
-                [{ statuses: this.chosenStatuses, search: this.state.who.search }]
+                [{ statuses: this.chosenStatuses, search: this.state.who.search,
+                   formula_config_id: this.state.form.formula_config_id,
+                   date_start: this.state.form.date_start, date_end: this.state.form.date_end }]
             );
         } catch (error) {
             this.state.who.preview = null;

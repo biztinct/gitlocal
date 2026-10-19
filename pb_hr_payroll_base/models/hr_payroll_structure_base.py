@@ -283,6 +283,24 @@ class HrContract(models.Model):
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
     ], string='Payroll Country')
+
+    # A company can host several country payrolls. The inherited currency was
+    # related only to company_id.currency_id, which also made Monetary round an
+    # INR wage to whole dong before it was stored. This remains a non-stored
+    # denomination field: no amounts are converted or rewritten on upgrade.
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency', related=False,
+        compute='_compute_contract_payroll_currency', compute_sudo=True,
+        readonly=True, store=False)
+
+    @api.depends('payroll_country', 'company_id.currency_id')
+    def _compute_contract_payroll_currency(self):
+        names={'VN':'VND','ID':'IDR','IN':'INR','SG':'SGD','MY':'MYR'}
+        wanted={names[c.payroll_country] for c in self if c.payroll_country in names}
+        currencies={c.name:c for c in self.env['res.currency'].with_context(active_test=False).search([('name','in',list(wanted))])}
+        for contract in self:
+            contract.currency_id=currencies.get(names.get(contract.payroll_country)) \
+                or contract.company_id.currency_id or self.env.company.currency_id
     
     # Enhanced salary breakdown
     basic_salary = fields.Monetary('Basic Salary', currency_field='currency_id')

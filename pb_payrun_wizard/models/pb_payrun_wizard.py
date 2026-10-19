@@ -551,7 +551,8 @@ class PbPayrunWizard(models.AbstractModel):
         config_id = int(vals.get('formula_config_id') or 0)
         base = self._eligible_employees(
             statuses=vals.get('statuses'),
-            employee_ids=vals.get('employee_ids'))
+            employee_ids=vals.get('employee_ids'),
+            date_start=vals.get('date_start'), date_end=vals.get('date_end'))
         covered, missed = self._scheme_population(config_id, base)
         # GROUP P5 — the host employments this run would gain, counted before
         # anything is created, exactly like the rest of this preview.
@@ -644,15 +645,23 @@ class PbPayrunWizard(models.AbstractModel):
         on the record would be a filter that does nothing.
         """
         company_id = self.env.company.id
-        try:
-            contracts = self.env['hr.contract'].search(
-                [('state', '=', 'open'), ('company_id', '=', company_id)])
-            emps = contracts.mapped('employee_id')
-            base = emps.ids if emps else self.env['hr.employee'].search(
-                [('company_id', '=', company_id)]).ids
-        except Exception:       # noqa: BLE001 — never let this break the wizard
-            base = self.env['hr.employee'].search(
-                [('company_id', '=', company_id)]).ids
+        if date_start and date_end:
+            # A contract can have ended since the historical month being run,
+            # or may start in a later month. The same period intersection used by payslip
+            # contract selection must govern the workbook and live preview.
+            # In particular, no overlap means nobody; falling back to every
+            # employee would silently bring leavers and future hires back in.
+            self._check_period(date_start, date_end)
+            contracts = self.env['hr.contract'].search([
+                ('company_id', '=', company_id),
+                '|', ('state', '=', 'open'),
+                     '&', ('state', '=', 'close'), ('date_end', '!=', False),
+                ('date_start', '<=', date_end),
+                '|', ('date_end', '=', False), ('date_end', '>=', date_start),
+            ])
+            base = contracts.mapped('employee_id').ids
+        else:
+            base = self._undated_contract_population(company_id)
 
         if statuses is not None:
             wanted = {str(s or '').strip() for s in statuses}
@@ -673,18 +682,27 @@ class PbPayrunWizard(models.AbstractModel):
         if formula_config_id:
             base, _missed = self._scheme_population(formula_config_id, base)
 
-        # GROUP P5 — and then the days. An employment this company hosts for
-        # part of the month belongs in this company's run whatever the map
-        # says about the person's standing arrangement, because the map
-        # answers about where somebody normally works and a segment answers
-        # about where they actually were. Added LAST and de-duplicated, so it
-        # can only ever ADD somebody the run would otherwise have missed.
+        # GROUP P5 — host employments retain their separately validated periods.
         if date_start and date_end:
             hosts = self._segment_hosts(formula_config_id, date_start,
                                         date_end)
             if hosts:
                 known = set(base)
                 base = list(base) + [e for e in hosts if e not in known]
+        return base
+
+    def _undated_contract_population(self, company_id):
+        """Retain the legacy, period-free population for older callers."""
+        try:
+            contracts = self.env['hr.contract'].search(
+                [('state', '=', 'open'), ('company_id', '=', company_id)])
+            emps = contracts.mapped('employee_id')
+            base = emps.ids if emps else self.env['hr.employee'].search(
+                [('company_id', '=', company_id)]).ids
+        except Exception:       # noqa: BLE001 — never let this break the wizard
+            base = self.env['hr.employee'].search(
+                [('company_id', '=', company_id)]).ids
+
         return base
 
     def _employee_signals(self):
@@ -746,7 +764,8 @@ class PbPayrunWizard(models.AbstractModel):
         search = (vals.get('search') or '').strip()
         emp_ids = self._eligible_employees(
             statuses=statuses, employee_ids=vals.get('employee_ids'),
-            formula_config_id=vals.get('formula_config_id'))
+            formula_config_id=vals.get('formula_config_id'),
+            date_start=vals.get('date_start'), date_end=vals.get('date_end'))
         signals = self._employee_signals()
 
         domain = [('id', 'in', emp_ids)]
@@ -1026,7 +1045,10 @@ class PbPayrunWizard(models.AbstractModel):
         run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
-        emp_ids = [e for e in self._eligible_employees()
+        emp_ids = [e for e in self._eligible_employees(
+                       statuses=vals.get('statuses'), employee_ids=vals.get('employee_ids'),
+                       formula_config_id=config.id if config else None,
+                       date_start=ds, date_end=de)
                    if e not in set(adopted.mapped('employee_id').ids)]
         exceptions = []
         created = Slip

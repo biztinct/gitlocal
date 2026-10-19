@@ -26,8 +26,11 @@ class TestRunAdoptsThePeriod(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        # These cases exercise the native, scheme-free path. Isolate them from
+        # installed client schemes instead of depending on an empty database.
+        self.company = self.env['res.company'].create({'name':'Adoption test company'})
+        self.env = self.env(context=dict(self.env.context,allowed_company_ids=self.company.ids))
         self.Wizard = self.env['pb.payrun.wizard']
-        self.company = self.env.company
         self.employee = self.env['hr.employee'].create({
             'name': 'Adopted Person', 'company_id': self.company.id})
         # A payslip line refuses to exist without a contract (om_hr_payroll),

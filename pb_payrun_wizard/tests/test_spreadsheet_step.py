@@ -31,10 +31,13 @@ class TestSpreadsheetStep(TransactionCase):
 
     def setUp(self):
         super().setUp()
+        # A live database can have several active schemes. The probe owns its
+        # own company so implicit-selection cases do not read client settings.
+        self.company = self.env['res.company'].create({'name':'Spreadsheet step test company'})
+        self.env = self.env(context=dict(self.env.context,allowed_company_ids=self.company.ids))
         self.Wizard = self.env['pb.payrun.wizard']
         self.Batch = self.env['hr.payroll.import.batch']
         self.Source = self.env['hr.formula.rule.source']
-        self.company = self.env.company
 
         # `hr.formula.config` refuses a scheme with no country.
         self.config = self.env['hr.formula.config'].create({

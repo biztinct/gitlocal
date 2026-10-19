@@ -300,14 +300,15 @@ class HrPayslip(models.Model):
         @param date_to: date field
         @return: returns the ids of all the contracts for the given employee that need to be considered for the given dates
         """
-        # a contract is valid if it ends between the given dates
-        clause_1 = ['&', ('date_end', '<=', date_to), ('date_end', '>=', date_from)]
-        # OR if it starts between the given dates
-        clause_2 = ['&', ('date_start', '<=', date_to), ('date_start', '>=', date_from)]
-        # OR if it starts before the date_from and finish after the date_end (or never finish)
-        clause_3 = ['&', ('date_start', '<=', date_from), '|', ('date_end', '=', False), ('date_end', '>=', date_to)]
-        clause_final = [('employee_id', '=', employee.id), ('state', '=', 'open'), '|', '|'] + clause_1 + clause_2 + clause_3
-        return self.env['hr.contract'].search(clause_final).ids
+        # Closing an employment today must not erase its valid historical pay
+        # period. Closed contracts need a known end date; draft and cancelled
+        # contracts never become payable merely because their dates overlap.
+        return self.env['hr.contract'].search([
+            ('employee_id', '=', employee.id), ('date_start', '<=', date_to),
+            '|', ('date_end', '=', False), ('date_end', '>=', date_from),
+            '|', ('state', '=', 'open'),
+                 '&', ('state', '=', 'close'), ('date_end', '!=', False),
+        ]).ids
 
     #Biztinct - metod to get zoho employee data into payslip lineids
     def update_payslip_lines_from_zoho_data(self,payslip):
