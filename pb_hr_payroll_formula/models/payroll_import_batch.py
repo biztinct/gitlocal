@@ -1399,6 +1399,19 @@ class HrPayrollImportBatch(models.Model):
             if employee:
                 return employee
 
+        # A declared identity mapping names the destination as well as the
+        # value. Match that field first. An unrelated person's government ID
+        # can equal this employee's code (including stale IDs after a master
+        # correction); an OR across every identity field must not override an
+        # exact match on the configured employee-ID destination.
+        if self.match_by_code:
+            for field_name, value in self._mapped_employee_identifier_values(raw_data):
+                employee = self._pick(Employee.search(
+                    [(field_name, '=', self._normalize_code(value))] + base_domain,
+                    limit=5), source_ref)
+                if employee:
+                    return employee
+
         # Try matching by employee code first
         if self.match_by_code and codes:
             code_domain = [
@@ -1927,11 +1940,16 @@ class HrPayrollImportBatch(models.Model):
         return value if has_value else None
 
     def _get_employee_identifier_value(self, raw_data):
+        values = self._mapped_employee_identifier_values(raw_data)
+        return values[0][1] if values else None
+
+    def _mapped_employee_identifier_values(self, raw_data):
+        values = []
         for field_name in ('employee_id', 'identification_id', 'barcode'):
             value = self._get_mapped_value_for_field(raw_data, 'hr.employee', field_name)
             if value not in (None, ''):
-                return value
-        return None
+                values.append((field_name, value))
+        return values
 
     def _m2o_required_defaults(self, target, vals):
         """The required links a record made from ONE column still needs.

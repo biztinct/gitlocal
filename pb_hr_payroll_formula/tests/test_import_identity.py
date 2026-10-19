@@ -22,6 +22,7 @@ either duplicated a person or — worse — merged two:
 no mapping can point at and no update can overwrite.
 """
 from datetime import date
+import json
 
 from odoo.tests import TransactionCase, tagged
 
@@ -137,6 +138,40 @@ class TestImportIdentity(TransactionCase):
             'name': 'No Key', 'barcode': 'LEGACY1',
             'company_id': self.company.id})
         self.assertTrue(self.batch._match_ok(legacy, self.batch._source_ref('0001')))
+
+    def _mapped_identity(self, field_name):
+        self.batch.connector_id = False
+        rule = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'code': 'IDENTITYKEY', 'name': 'Canonical ID', 'column_type': 'input',
+            'value_kind': 'identifier', 'source_sheet_name': 'Master'})
+        rule.set_source_binding('excel', 'Master|Canonical ID')
+        self.env['hr.payslip.import.mapping'].create({
+            'salary_structure_id': self.config.id, 'component_id': rule.id,
+            'destination_type': 'field',
+            'target_model_id': self.env['ir.model']._get('hr.employee').id,
+            'target_field_id': self.env['ir.model.fields'].search([
+                ('model', '=', 'hr.employee'), ('name', '=', field_name)], limit=1).id})
+
+    def test_mapped_employee_id_precedes_another_persons_government_id(self):
+        self._mapped_identity('employee_id')
+        self.env['hr.employee'].create({'name': 'A different person',
+            'employee_id': 'OTHER', 'identification_id': 'CANONICAL',
+            'company_id': self.company.id})
+        correct = self.env['hr.employee'].create({'name': 'Z correct person',
+            'employee_id': 'CANONICAL', 'company_id': self.company.id})
+        line = self._line('CANONICAL', 'Z correct person')
+        line.raw_data_json = json.dumps({'Master|Canonical ID': 'CANONICAL'})
+        self.assertEqual(self.batch._find_employee(line), correct)
+
+    def test_mapped_government_id_precedes_another_persons_barcode(self):
+        self._mapped_identity('identification_id')
+        self.env['hr.employee'].create({'name': 'A different person',
+            'barcode': 'GOVERNMENTKEY', 'company_id': self.company.id})
+        correct = self.env['hr.employee'].create({'name': 'Z correct person',
+            'identification_id': 'GOVERNMENTKEY', 'company_id': self.company.id})
+        line = self._line('GOVERNMENTKEY', 'Z correct person')
+        line.raw_data_json = json.dumps({'Master|Canonical ID': 'GOVERNMENTKEY'})
+        self.assertEqual(self.batch._find_employee(line), correct)
 
     # -------------------------------------------------- the unique-barcode trap
     def test_a_contested_barcode_is_dropped_not_raised(self):

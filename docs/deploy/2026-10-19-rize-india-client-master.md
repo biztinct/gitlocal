@@ -49,6 +49,15 @@ Generic workflow fixes
   defaulting to zero. Review highlights them and the server refuses payroll
   computation until supplied. An explicit zero is valid; it does not carry
   forward into the next month. Three transaction cases cover the distinction.
+* Import identity matching first honours the explicitly mapped destination
+  field after the connector's immutable source reference. A government-ID
+  value on another employee cannot override a unique mapped employee ID.
+  Two collision regressions preserve both destination priority and the
+  existing connector/source identity checks.
+  The previous setup's Government ID values that exactly equal their own
+  original payroll code are cleared through Records Desk where the reviewed
+  master provides no Government ID. Real government identifiers are preserved;
+  payroll aliases remain in the dedicated information component.
 
 Validation before deployment: 182 deployed-database regression cases passed
 against staged code; 27 client scenarios and 378 exact calculation comparisons
@@ -57,7 +66,8 @@ inactive profiles, and 27 historical-payroll employees. No business record
 changes were committed by these dry runs.
 
 Versions: `om_hr_payroll` 19.0.1.8.3, `pb_hr_payroll_base` 19.0.1.4.1,
-`pb_payrun_wizard` 19.0.1.32.7. Shared code targets are payobook,
+`pb_payrun_wizard` 19.0.1.32.7, `pb_payroll_templates` 19.0.1.2.16,
+`pb_hr_payroll_formula` 19.0.1.149.3. Shared code targets are payobook,
 payobook_template, abm, p0clone and rize. Client data and new configuration are
 restricted to rize. Final deployment, Chrome workflow and reconciliation
 receipts will be recorded after verification.
