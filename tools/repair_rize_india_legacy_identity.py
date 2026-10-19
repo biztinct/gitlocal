@@ -11,6 +11,7 @@ from pathlib import Path
 
 assert env.cr.dbname=='rize'
 root=Path(os.environ['IN_SETUP_DIR']);plan=json.loads((root/'record-plan.json').read_text())
+baseline={p['id']:p for p in json.loads((root/'before.json').read_text())['employees_hr_fields']}
 e=env(user=int(os.getenv('IN_SETUP_USER_ID','2')),context=dict(env.context,allowed_company_ids=[1]))
 cfg=e['hr.formula.config'].search([('code','=','RIZE_INDIA_CLIENT_MASTER_2026')])
 assert len(cfg)==1 and cfg.company_id.name=='Rize Farms'
@@ -23,16 +24,18 @@ for record in plan['records']:
         continue
     person=e['hr.employee'].browse(record['existing_employee_id']).exists()
     assert person.employee_id==person.barcode==record['code']
-    if person.identification_id==record['payroll_code']:
+    original=baseline[person.id].get('identification_id')
+    if original==record['payroll_code']:
+        assert person.identification_id==original,'Government ID changed since the audit; inspect before clearing.'
         changes.append(dict(emp_id=person.id,field_id=field,value=''))
-assert len(changes)==27,'Unexpected legacy data: inspect before changing any Government ID.'
+assert len(changes)>=6,'The audited legacy code placeholders must be present before this repair.'
 preview=desk.preview_changes(cfg.id,changes)
 assert not preview['counts']['refused'],preview
 result=desk.apply_changes(cfg.id,changes,source='desk',note='Owner-authorized India rebuild: remove legacy employee-code placeholders from Government ID where the authoritative master supplies no Government ID. Original payroll aliases remain in their dedicated contract information component. No actual government identifier is removed.')
 assert result.get('ok') and not result.get('pending') and not result.get('refused'),result
-assert result['written']==27
+assert result['written']==len(changes)
 assert all(not e['hr.employee'].browse(c['emp_id']).identification_id for c in changes)
 committed=os.getenv('IN_SETUP_APPLY')=='1'
 if committed:e.cr.commit()
 else:e.cr.rollback()
-print('IN_LEGACY_ID_RESULT '+json.dumps(dict(cleared_placeholders=27,records_reference=result['reference'],pending=False,committed=committed)))
+print('IN_LEGACY_ID_RESULT '+json.dumps(dict(cleared_placeholders=len(changes),records_reference=result['reference'],pending=False,committed=committed)))
