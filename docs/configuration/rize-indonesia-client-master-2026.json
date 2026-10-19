@@ -600,7 +600,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "THR already paid separately this month, deducted once from current take-home pay to prevent a second payment. Enter zero when none.",
       "original_code": "THRALREAPAID",
       "source_key": "Consolidated|THR already paid"
     },
@@ -618,7 +618,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Incentive already paid separately this month, deducted once from current take-home pay. The earning remains in gross; the earlier bank payment is not paid again.",
       "original_code": "INCEALREPAID",
       "source_key": "Consolidated|Incentive already paid"
     },
@@ -776,7 +776,7 @@
       "destination": "",
       "tab": "Time",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Approved payable calendar days for this month. A full month normally equals Period days; August joiners use 29 or 22 and the leaver uses four. Must be between zero and Period days.",
       "original_code": "PAIDDAYS",
       "source_key": "Consolidated|Paid days"
     },
@@ -794,7 +794,7 @@
       "destination": "",
       "tab": "Time",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Calendar-day salary divisor for the selected month, normally 28, 29, 30 or 31. August uses 31. This is not Singapore standard working days.",
       "original_code": "PERIODDAYS",
       "source_key": "Consolidated|Period days"
     },
@@ -812,7 +812,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Approved signed salary/backpay adjustment in IDR, added after the basic-salary day calculation. Enter an explicit zero when none.",
       "original_code": "SALARYADJUST",
       "source_key": "Consolidated|Salary adjustment"
     },
@@ -830,7 +830,7 @@
       "destination": "c:amount",
       "tab": "",
       "required": false,
-      "note": "",
+      "note": "Saved annual private-insurance premium in IDR. The formula divides it by 12 and rounds to whole rupiah. Review the saved amount when insured people or premiums change; zero means no premium.",
       "original_code": "ANNUAINSPREM",
       "source_key": "Consolidated|Annual insurance premium"
     },
@@ -848,7 +848,7 @@
       "destination": "c:amount",
       "tab": "",
       "required": true,
-      "note": "Saved employee/contract setting inferred from the August contribution treatment. Review when coverage, tax contract or statutory policy changes.",
+      "note": "Saved BPJS manpower coverage: 1 covered, 0 not covered. Determines JKM, JKK, JHT and pension calculations. A registration number alone does not select coverage.",
       "original_code": "BPJSTKCOVERE",
       "source_key": "Consolidated|BPJS TK covered"
     },
@@ -866,7 +866,7 @@
       "destination": "c:amount",
       "tab": "",
       "required": true,
-      "note": "Saved employee/contract setting inferred from the August contribution treatment. Review when coverage, tax contract or statutory policy changes.",
+      "note": "Saved BPJS healthcare coverage: 1 covered, 0 not covered. Contributions use the linked wage floor, cap and rates.",
       "original_code": "BPJSHEALCOVE",
       "source_key": "Consolidated|BPJS health covered"
     },
@@ -884,7 +884,7 @@
       "destination": "c:amount",
       "tab": "",
       "required": true,
-      "note": "Saved employee/contract setting inferred from the August contribution treatment. Review when coverage, tax contract or statutory policy changes.",
+      "note": "Saved reimbursement setting: 1 the employer reimburses employee JHT, pension and healthcare contributions through BPJS allowance; 0 those contributions remain employee deductions.",
       "original_code": "ERREIMBUBPJS",
       "source_key": "Consolidated|Employer reimburses employee BPJS"
     },
@@ -902,7 +902,7 @@
       "destination": "c:amount",
       "tab": "",
       "required": true,
-      "note": "Saved employee/contract setting inferred from the August contribution treatment. Review when coverage, tax contract or statutory policy changes.",
+      "note": "Saved tax allowance mode: 0 none, 1 gross-up of regular insurance-premium tax, 2 full monthly net-contract gross-up. A final period uses the separately approved annual allowance instead.",
       "original_code": "TAXALLOWMODE",
       "source_key": "Consolidated|Tax allowance mode"
     },
@@ -920,7 +920,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Final tax period: 1 for December or the final employment-period reconciliation, otherwise 0. Final periods use annual tax less prior withholding, including a signed refund where applicable.",
       "original_code": "FINALTAXPERI",
       "source_key": "Consolidated|Final tax period"
     },
@@ -938,7 +938,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Taxable gross from January through the month before this one. Include the applicable taxable benefits/allowances; exclude the current month and separately qualifying severance. Supply reviewed YTD values for a final period.",
       "original_code": "PRIORYTDTAXA",
       "source_key": "Consolidated|Prior YTD taxable gross"
     },
@@ -956,7 +956,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Deductible employee JHT plus pension from January through the prior month. Exclude employer contributions, employee healthcare and this month. Used in final annual reconciliation.",
       "original_code": "PRIOYTDJHTJP",
       "source_key": "Consolidated|Prior YTD deductible JHT and JP"
     },
@@ -974,7 +974,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Job-expense eligible months including the current month, normally 1 to 12 for the actual employment period. Review this for joiners/leavers and final annual reconciliation; do not carry August eight into December.",
       "original_code": "JOBEXPENELIG",
       "source_key": "Consolidated|Job expense eligible months"
     },
@@ -992,7 +992,7 @@
       "destination": "",
       "tab": "Monthly adjustments",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "PPh21 already withheld from January through the prior month. Exclude the current month. Final-period payable tax is annual liability less this reviewed amount.",
       "original_code": "PRIOYTDPPH21",
       "source_key": "Consolidated|Prior YTD PPh21 withheld"
     },
@@ -1248,7 +1248,7 @@
       "destination": "",
       "tab": "Time",
       "required": true,
-      "note": "Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.",
+      "note": "Approved leave days being paid out this month, not the total HR leave balance. The formula uses saved basic salary divided by Period days. Enter zero when none.",
       "original_code": "LEAVBALADAYS",
       "source_key": "Consolidated|Leave balance days"
     },
@@ -4600,7 +4600,7 @@
       "destination": "c:text",
       "tab": "",
       "required": true,
-      "note": "",
+      "note": "Client PTKP codes: S/0, S/1, S/2, S/3, M/0, M/1, M/2 or M/3. S means single, M married; the number is approved tax dependants. Review changes in Records Desk; do not infer the tax code from a name.",
       "original_code": "SM",
       "source_key": "Consolidated|S/M"
     },

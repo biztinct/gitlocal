@@ -171,6 +171,35 @@ def prepare(root, repo):
             bycol[col]['tab']='Time' if col in time else 'Monthly adjustments'
             bycol[col]['required']=col not in {'AG','AR'}
             if not bycol[col]['note']:bycol[col]['note']='Selected-month input. Supply a reviewed value, including an explicit zero when none. Never saved as a recurring salary amount.'
+        definitions=({
+            'T':'Agreed standard working days for the selected Singapore month, after public holidays. Must be greater than zero; August uses 20. This is not the Indonesia calendar-day divisor.',
+            'U':'Unpaid or inactive working days, including an approved joiner/leaver proration. Enter zero when none; cannot exceed standard working days.',
+            'V':'Approved arrear days at the current salary rate. Use Other income for separately priced backpay. Enter zero when none.',
+            'I':'Reviewed full-month employee CPF basis used by the supplied net-before-proration method. Confirm residency, age, PR year and wage ceilings separately. Enter a reviewed zero for an exemption; do not carry an old month forward.',
+            'K':'Reviewed full-month self-help contribution basis used by the supplied net-before-proration method. Confirm the fund and any valid opt-out separately; zero must be explicit.',
+            'L':'Actual employer CPF payable for this month, reviewed separately. Added to employer cost without a second proration. Enter zero only when confirmed.',
+            'Y':'Approved cash medical allowance for the selected month. Added after salary proration. A reimbursement needs its correct separate treatment.',
+            'Z':'Approved other cash income for the selected month, added after proration. Explain nonzero bonuses or backpay in Remarks.',
+        } if key=='sg' else {
+            'J':'Client PTKP codes: S/0, S/1, S/2, S/3, M/0, M/1, M/2 or M/3. S means single, M married; the number is approved tax dependants. Review changes in Records Desk; do not infer the tax code from a name.',
+            'AT':'Approved payable calendar days for this month. A full month normally equals Period days; August joiners use 29 or 22 and the leaver uses four. Must be between zero and Period days.',
+            'AU':'Calendar-day salary divisor for the selected month, normally 28, 29, 30 or 31. August uses 31. This is not Singapore standard working days.',
+            'AV':'Approved signed salary/backpay adjustment in IDR, added after the basic-salary day calculation. Enter an explicit zero when none.',
+            'AW':'Saved annual private-insurance premium in IDR. The formula divides it by 12 and rounds to whole rupiah. Review the saved amount when insured people or premiums change; zero means no premium.',
+            'AX':'Saved BPJS manpower coverage: 1 covered, 0 not covered. Determines JKM, JKK, JHT and pension calculations. A registration number alone does not select coverage.',
+            'AY':'Saved BPJS healthcare coverage: 1 covered, 0 not covered. Contributions use the linked wage floor, cap and rates.',
+            'AZ':'Saved reimbursement setting: 1 the employer reimburses employee JHT, pension and healthcare contributions through BPJS allowance; 0 those contributions remain employee deductions.',
+            'BA':'Saved tax allowance mode: 0 none, 1 gross-up of regular insurance-premium tax, 2 full monthly net-contract gross-up. A final period uses the separately approved annual allowance instead.',
+            'BB':'Final tax period: 1 for December or the final employment-period reconciliation, otherwise 0. Final periods use annual tax less prior withholding, including a signed refund where applicable.',
+            'BC':'Taxable gross from January through the month before this one. Include the applicable taxable benefits/allowances; exclude the current month and separately qualifying severance. Supply reviewed YTD values for a final period.',
+            'BD':'Deductible employee JHT plus pension from January through the prior month. Exclude employer contributions, employee healthcare and this month. Used in final annual reconciliation.',
+            'BE':'Job-expense eligible months including the current month, normally 1 to 12 for the actual employment period. Review this for joiners/leavers and final annual reconciliation; do not carry August eight into December.',
+            'BF':'PPh21 already withheld from January through the prior month. Exclude the current month. Final-period payable tax is annual liability less this reviewed amount.',
+            'BU':'Approved leave days being paid out this month, not the total HR leave balance. The formula uses saved basic salary divided by Period days. Enter zero when none.',
+            'AJ':'THR already paid separately this month, deducted once from current take-home pay to prevent a second payment. Enter zero when none.',
+            'AK':'Incentive already paid separately this month, deducted once from current take-home pay. The earning remains in gross; the earlier bank payment is not paid again.',
+        })
+        for col,note in definitions.items():bycol[col]['note']=note
         master_specs={}
         for col,label in headers.items():
             if col in aliases or col in excluded:continue
