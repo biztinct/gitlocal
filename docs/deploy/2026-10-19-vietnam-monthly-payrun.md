@@ -107,3 +107,56 @@ permanent-record decision controls for a monthly-only run.
 
 All 138 selected regressions, including both new monthly-record cases and the
 ordinary-upload decision tests, passed against the staged module before rollout.
+
+
+## Final deployed verification
+
+Implementation commit `c815037be` (including `0eef74b6a`'s qualified-source
+validation) is deployed to **payobook, payobook_template, abm, p0clone and rize**
+on Payobook19v2. Payroll Templates is `19.0.1.2.14` on every target. The latest
+combined application snapshot contains 149 custom modules / 4,901 files. Full
+backups and the rollout receipt are protected under
+`/odoo/backups/vn-october-payrun-code-20261019-105048/`.
+
+All **138 selected regressions passed on each database — 690 total**, with no
+failures or errors. Chrome completed the normal monthly upload, review,
+confirmation and calculation. Run **1247**, **Vietnam October 2026 TEST —
+historical inputs**, has 63 computed Draft payslips. Batch 1783 matched all 63
+rows with zero errors, used the file once and created no employees or contracts.
+The earlier empty Draft test was replaced through the normal Clean and Run flow.
+No payroll was submitted, approved or paid.
+
+The independent August replay passed 2,205 controls for 70 source employees.
+October passed 2,583 independent formula controls, 756 posted-line amount/total
+controls and exact preservation of all 1,764 uploaded input cells. All 96 stored
+calculation scenarios pass. The only PIT differences from the source month
+belong to the three October salary changes selected by the owner. Existing
+whole-dong payslip line rounding reconciles separately from raw formula values;
+the run totals balance. No formula or rounding policy was changed to hide a
+comparison difference.
+
+Chrome on the final deployed code shows zero mapped record changes to decide,
+zero record updates in approval, read-only Department context and no permanent
+record decision controls for the monthly workbook. The November reusable export
+has 28 blank monthly fields, a protected Employee records sheet, and no saved
+November monthly-input rows.
+
+Business-field audits confirm the run changed no employee, contract, contract
+component, dependent or bank values. The initial computation only populated
+salary-rule back-references on formula definitions; formula contents and
+component treatment were unchanged. The final rollout preserved all protected
+rows. Post-test comparison found only advanced write timestamps on 21 existing
+Payobook employee rows; every business field and record ID remained identical.
+Those timestamps were preserved. All 63 Draft payslip inputs/results are
+byte-for-byte unchanged after the final records-review deployment.
+
+The filled workbook and private owner review report are in
+`outputs/rize-vietnam-october-test-20261019/` and are excluded from commits.
+They identify the seven pending employees, nine historical Probation tax
+classifications, three salary changes and missing bank account requiring owner
+review. Historical quantities/payments are explicitly TEST inputs. No Sheet4
+values were introduced, the eleven recurring settings remain, and dependent
+record counts remain separate from registered tax dependents.
+
+Session-generated spreadsheet test PNGs were removed. Chrome proof is JPEG;
+pre-existing product assets and unrelated session files were left untouched.
