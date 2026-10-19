@@ -452,6 +452,79 @@ class TestPayrollTemplates(TransactionCase):
         exported = self.api.with_user(officer).download(self.cfg.id, '', 'template')
         self.assertTrue(exported['file_b64'])
 
+    def payroll_colleague(self, suffix, payroll=True):
+        groups = ['base.group_user', 'pb_hr_payroll_base.group_payroll_base_officer'] if payroll else [
+            'base.group_user', 'pb_records.group_records_viewer', 'pb_records.group_records_exporter']
+        return self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Workbook colleague ' + suffix, 'login': 'workbook.' + suffix + '@test.invalid',
+            'company_id': self.env.company.id, 'company_ids': [(6, 0, self.env.company.ids)],
+            'group_ids': [(6, 0, [self.env.ref(g).id for g in groups])],
+        })
+
+    def test_payroll_export_reads_standard_fields_with_cold_metadata_cache(self):
+        officer = self.payroll_colleague('cold')
+        self.assertFalse(self.env['ir.model.fields'].with_user(officer).has_access('read'))
+        self.emp.work_phone = '12345678'
+        facade = self.api.with_user(officer)
+        cards = facade._cards(self.cfg)
+        metadata = self.env['ir.model.fields']._get('hr.employee', 'work_phone')
+        metadata.invalidate_recordset(['name', 'ttype'])
+        values = facade._record_values(self.cfg, self.emp, cards)
+        self.assertEqual(values[self.emp.id]['f:hr.employee:work_phone'], '12345678')
+        self.assertTrue(facade.download(self.cfg.id, '2026-10', 'monthly')['file_b64'])
+        self.assertFalse(self.env['ir.model.fields'].with_user(officer).has_access('read'))
+
+    def test_colleague_can_review_shared_monthly_export_with_own_confirmation(self):
+        officer = self.payroll_colleague('monthly')
+        wb = self.export()
+        self.set_value(wb, 'Time', 'Paid days', 20)
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 75)
+        with patch.object(type(self.api), '_roster', return_value=self.emp):
+            data = io.BytesIO()
+            wb.save(data)
+            facade = self.api.with_user(officer)
+            review = facade.review(self.cfg.id, '2026-10', 'monthly',
+                base64.b64encode(data.getvalue()).decode(), 'colleague.xlsx')
+        self.assertFalse(review['issues'])
+        receipt = self.env['pb.payroll.workbook.exchange'].search([('token', '=', review['token'])])
+        self.assertEqual(receipt.owner_id, officer)
+        with self.assertRaises(UserError):
+            self.api.confirm(self.cfg.id, review['token'], [])
+        facade.confirm(self.cfg.id, review['token'], [c['key'] for c in review['changes']])
+        saved = self.env['pb.payroll.month.inputs'].search([('config_id', '=', self.cfg.id)])
+        self.assertEqual(saved.payload['rule:%s' % self.bonus.id], 75)
+        self.assertEqual(self.contract.wage, 1000)
+        self.assertFalse(officer.has_group('base.group_erp_manager'))
+
+    def test_shared_export_still_requires_payroll_and_matching_scope(self):
+        wb = self.export()
+        token = wb['_Payobook']['B1'].value
+        viewer = self.payroll_colleague('reader', payroll=False)
+        with self.assertRaises(AccessError):
+            self.api.with_user(viewer)._get_exchange(self.cfg, token, 'export', shared_export=True)
+        officer = self.payroll_colleague('scoped')
+        other_config = self.cfg.copy({'name': 'Other workbook scheme', 'code': 'OTHERWORKBOOK'})
+        with self.assertRaises(UserError):
+            self.api.with_user(officer)._get_exchange(other_config, token, 'export', shared_export=True)
+        company = self.env['res.company'].create({'name': 'Shared workbook other company'})
+        officer.company_ids = [(4, company.id)]
+        with self.assertRaises(AccessError):
+            self.api.with_user(officer).with_company(company)._get_exchange(
+                self.cfg, token, 'export', shared_export=True)
+
+    def test_shared_export_does_not_share_records_or_review_receipts(self):
+        officer = self.payroll_colleague('private')
+        wb = self.export('records')
+        data = io.BytesIO()
+        wb.save(data)
+        with self.assertRaises(UserError):
+            self.api.with_user(officer).review(self.cfg.id, '2026-10', 'records',
+                base64.b64encode(data.getvalue()).decode(), 'records.xlsx')
+        for kind in ('review', 'applied'):
+            receipt = self.api._exchange(self.cfg, kind, {})
+            with self.assertRaises(UserError):
+                self.api.with_user(officer)._get_exchange(self.cfg, receipt.token, kind, shared_export=True)
+
     def test_template_gate_checks_integration_on_selected_scheme(self):
         wizard = self.env['pb.payrun.wizard']
         vals = {'formula_config_id': self.cfg.id, 'templates_monthly': True}

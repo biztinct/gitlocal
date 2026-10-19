@@ -205,7 +205,7 @@ class PayrollInputReview(models.AbstractModel):
         wb = self._read(file_b64)
         if '_Payobook' not in wb:
             raise UserError(_('Use a workbook downloaded from Configure Templates.'))
-        snapshot = self._get_exchange(cfg, wb['_Payobook']['B1'].value, 'export').payload
+        snapshot = self._get_exchange(cfg, wb['_Payobook']['B1'].value, 'export', shared_export=True).payload
         identity_columns = self._workbook_identity(snapshot)
         code_header = identity_columns[0]['label']
         if snapshot['mode'] != 'monthly' or (not snapshot.get('reusable') and snapshot['period'] != period):

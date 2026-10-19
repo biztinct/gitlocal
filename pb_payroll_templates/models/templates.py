@@ -338,11 +338,20 @@ class PayrollTemplates(models.AbstractModel):
             'config_id': cfg.id, 'company_id': self.env.company.id,
             'owner_id': self.env.uid, 'kind': kind, 'payload': plain(payload)})
 
-    def _get_exchange(self, cfg, token, kind):
-        row = self.env['pb.payroll.workbook.exchange'].sudo().search([
+    def _get_exchange(self, cfg, token, kind, shared_export=False):
+        domain = [
             ('token', '=', str(token)), ('config_id', '=', cfg.id),
-            ('company_id', '=', self.env.company.id), ('owner_id', '=', self.env.uid),
-            ('kind', '=', kind)], limit=1)
+            ('company_id', '=', self.env.company.id), ('kind', '=', kind)]
+        if shared_export and kind == 'export':
+            # Colleagues may fill the same monthly workbook. The download is
+            # only a reference: review rechecks the current roster and values,
+            # then creates a fresh receipt owned by the uploading payroll user.
+            self._config(cfg.id, write=True)
+            if not self.env['pb.records.desk']._may_export():
+                raise AccessError(_('You need the Records export ability to use shared payroll workbooks.'))
+        else:
+            domain.append(('owner_id', '=', self.env.uid))
+        row = self.env['pb.payroll.workbook.exchange'].sudo().search(domain, limit=1)
         if not row:
             raise UserError(_('This workbook reference is unavailable. Download a fresh copy using your account.'))
         return row
@@ -1048,7 +1057,10 @@ class TemplateRecordFields(models.AbstractModel):
                 if fid in cards or not field or field.readonly:
                     continue
                 metadata = self.env['ir.model.fields'].sudo().search([('model', '=', model), ('name', '=', name)], limit=1)
-                mapping = self.env['hr.payslip.import.mapping'].new({
+                # Only the in-memory destination metadata needs elevation.
+                # A normal payroll user cannot read ir.model.fields, and a
+                # warm admin cache previously hid that during transaction tests.
+                mapping = self.env['hr.payslip.import.mapping'].sudo().new({
                     'target_model_id': self.env['ir.model']._get(model).id,
                     'target_field_id': metadata.id, 'destination_type': 'field'})
                 candidates = salary_inputs(configs[:1]) if name == 'wage' else self.env['hr.formula.rule']
