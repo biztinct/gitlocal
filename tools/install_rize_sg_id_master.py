@@ -197,6 +197,11 @@ elif phase=='activate':
     for table in tables.filtered(lambda t:t.state!='published'):
         answer=table.action_publish()
         assert table.state=='published',{'table':table.code,'answer':answer,'reason':'Use the published statutory approval route.'}
+    constants={r.code:r.constant_value for r in cfg.rule_ids.filtered('tax_table_id')}
+    refresh=e['hr.payroll.tax.refresh.wizard'].create(dict(config_id=cfg.id,asof='2026-08-01'))
+    answer=refresh.action_refresh()
+    assert str(cfg.statutory_asof)=='2026-08-01',{'answer':answer,'reason':'Use the published statutory refresh route.'}
+    assert {r.code:r.constant_value for r in cfg.rule_ids.filtered('tax_table_id')}==constants,'The reviewed August constants changed during statutory refresh.'
     cfg.action_validate_formulas()
     assert not cfg.has_errors and not cfg.has_circular_refs
     old.action_archive()
