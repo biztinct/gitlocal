@@ -299,8 +299,9 @@ elif phase=='verify':
     assert {r.barcode for r in august}=={r['code'] for r in records if r['payroll_eligible']}
     for p in august:
         record=next(r for r in records if r['code']==p.barcode)
-        c=e['hr.payslip'].get_contract(p,'2026-08-01','2026-08-31')
-        assert c and abs(c.wage-record['wage'])<.00001
+        contract_ids=e['hr.payslip'].get_contract(p,'2026-08-01','2026-08-31')
+        c=e['hr.contract'].browse(contract_ids)
+        assert len(c)==1 and abs(c.wage-record['wage'])<.00001,(p.barcode,contract_ids)
     report.update(config_id=cfg.id,state=cfg.state,august=len(august),
         september=len(api._roster(cfg,'2026-09')),october=len(api._roster(cfg,'2026-10')))
 else:raise AssertionError('Unknown phase: '+phase)

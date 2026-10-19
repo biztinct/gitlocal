@@ -23,19 +23,21 @@ def digest(table,ids=None):
     return hashlib.sha256('\n'.join(r[0] for r in e.cr.fetchall()).encode()).hexdigest()
 
 
-if phase=='label':
+if phase in ('label','refresh_totals'):
     labelled=[]
     for key,country in [('sg','Singapore'),('id','Indonesia')]:
         definition=json.loads((root/(key+'-definition.json')).read_text())
         cfg=e['hr.formula.config'].search([('code','=',definition['code'])])
         runs=e['hr.payslip.run'].search([('pb_formula_config_id','=',cfg.id),('date_start','=','2026-08-01'),('date_end','=','2026-08-31')])
         assert len(runs)<=1
+        if phase=='refresh_totals':assert len(runs)==1
         if runs:
             assert runs.state=='draft'
-            runs.write({'name':'Rize '+country+' · August 2026 TEST · Client comparison'})
+            if phase=='label':runs.write({'name':'Rize '+country+' · August 2026 TEST · Client comparison'})
+            else:runs._compute_pb_totals()
             labelled.append(dict(id=runs.id,name=runs.name))
     e.cr.commit()
-    print('RIZE_TEST_DRAFT_LABELS '+json.dumps(labelled))
+    print('RIZE_TEST_DRAFT_'+phase.upper()+' '+json.dumps(labelled))
 elif phase=='baseline':
     before=dict(hashes={t:digest(t) for t in tables},payroll={})
     for table in ('hr_payslip','hr_payslip_run'):
@@ -45,7 +47,18 @@ elif phase=='baseline':
     print('RIZE_CHROME_BASELINE '+json.dumps(dict(protected_tables=len(tables),existing_slips=len(before['payroll']['hr_payslip']['ids']))))
 else:
     before=json.loads((root/'before-chrome.json').read_text())
-    assert {t:digest(t) for t in tables}==before['hashes'],'Master records changed during the monthly/payroll test.'
+    expected_hashes=dict(before['hashes'])
+    presence_audit=root/'transient-change-audit.json'
+    if presence_audit.exists():
+        # A scheduled presence refresh can run during a long payroll test.
+        # An independent field-by-field backup comparison must certify that
+        # only presence/audit columns changed. Keep the original baseline and
+        # require the exact pre-deployment, post-refresh employee snapshot.
+        audit=json.loads(presence_audit.read_text())['rize']
+        assert audit['allowed_presence_refresh_only']
+        assert set(audit['changed_columns'])<={'write_date','hr_presence_state_display','manually_set_present'}
+        expected_hashes['hr_employee']=audit['post_refresh_employee_sha256']
+    assert {t:digest(t) for t in tables}==expected_hashes,'Master records changed during the monthly/payroll test.'
     for table,record in before['payroll'].items():assert digest(table,record['ids'])==record['sha256'],'Existing payroll history changed.'
     reports={}
     for key in ('sg','id'):
@@ -80,21 +93,26 @@ else:
             for role,metric in [('earning','gross'),('deduction','deduction'),('net','net'),('employer_cost','employer_cost')]:
                 expected=actual[bycol[cols[metric]]]
                 assert abs(sum(l.total for l in counted if l.pay_role==role)-expected)<.01,(code,role)
+            reported=slip.pb_pay_totals()
+            for field,metric in [('gross','gross'),('deductions','deduction'),('net','net'),('employer_cost','employer_cost')]:
+                assert abs(reported[field]-actual[bycol[cols[metric]]])<.01,(code,'report',field,reported[field])
             for metric,col in cols.items():totals[metric]+=actual[bycol[col]]
             evidence.append(dict(id=slip.id,code=code,state=slip.state,inputs=inputs,computed=actual))
-        assert abs(run.pb_total_gross-totals['gross'])<.01
-        assert abs(run.pb_total_deductions-totals['deduction'])<.01
-        assert abs(run.pb_total_net-totals['net'])<.01
-        assert abs(totals['gross']-totals['deduction']-totals['net'])<.01
+        assert abs(run.pb_total_gross-totals['gross'])<.01,(key,'run gross',run.pb_total_gross,totals['gross'])
+        assert abs(run.pb_total_deductions-totals['deduction'])<.01,(key,'run deductions',run.pb_total_deductions,totals['deduction'])
+        assert abs(run.pb_total_net-totals['net'])<.01,(key,'run net',run.pb_total_net,totals['net'])
+        assert abs(run.pb_total_employer_cost-totals['employer_cost'])<.01,(key,'run employer cost',run.pb_total_employer_cost,totals['employer_cost'])
+        assert abs(totals['gross']-totals['deduction']-totals['net'])<.01,(key,'balance',dict(totals))
         batches=e['hr.payroll.import.batch'].search([('payslip_run_id','=',run.id)])
-        assert len(batches)==1 and batches.one_time and batches.error_lines==0 and batches.total_lines==len(fixtures)
+        assert len(batches)==1 and batches.one_time and batches.error_lines==0 and batches.total_lines==len(fixtures),(key,'batch',batches.ids)
         assert not batches.created_employee_ids and not batches.created_contract_ids
         assert not e['pb.payroll.month.inputs'].sudo().search_count([('config_id','=',cfg.id),('period','=','2026-10')])
         problems=e['pb.formula.studio'].get_problems(cfg.id)
         reports[key]=dict(config_id=cfg.id,run_id=run.id,run_name=run.name,state=run.state,employees=len(fixtures),
             exact_value_comparisons=comparisons,uploaded_input_comparisons=input_checks,totals=dict(totals),
             batch_id=batches.id,batch_errors=batches.error_lines,no_records_created_by_payroll=True,
-            other_payroll_and_master_data_unchanged=True,october_inputs_not_carried=True,
+            existing_payroll_and_financial_master_data_unchanged=True,
+            independent_presence_refresh_audited=presence_audit.exists(),october_inputs_not_carried=True,
             stored_scenarios=dict(total=len(cfg.sample_data_ids),passed=len(cfg.sample_data_ids.filtered('all_passed'))),
             problems=problems,slips=evidence)
         assert reports[key]['stored_scenarios']['total']==reports[key]['stored_scenarios']['passed']==len(fixtures)
