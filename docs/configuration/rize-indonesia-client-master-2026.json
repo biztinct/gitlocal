@@ -6827,7 +6827,7 @@
       "destination": "f:hr.employee:identification_id",
       "tab": "",
       "required": false,
-      "note": "Source employee master, ID!AN. Retained as HR context, not automatically paid. ",
+      "note": "HC government ID, with the matched payroll NIK used only when HC has no value. A conflicting payroll NIK stays in the separate source field and is flagged for HR review.",
       "source_key": "Consolidated|Master Govt ID Proof/ID"
     },
     {
@@ -6946,7 +6946,7 @@
       "destination": "c:text",
       "tab": "",
       "required": false,
-      "note": "Source employee master, ID!AU. Retained as HR context, not automatically paid. ",
+      "note": "HC BPJS manpower number. Missing values are supplied by the matched August BPJS TK report. This reference identifier does not determine coverage or calculate a contribution.",
       "source_key": "Consolidated|Master BPJS Keternagakerjaan Number-Indo"
     },
     {
@@ -7524,7 +7524,7 @@
       "destination": "b:bank_name",
       "tab": "",
       "required": false,
-      "note": "Source employee master, ID!CP. Retained as HR context, not automatically paid. ",
+      "note": "Employee-master bank field where available. Missing values are supplied by the August Bank Transfer sheet, using the unique local payroll number and matching employee name. Bank net amounts are controls, never payroll inputs.",
       "source_key": "Consolidated|Master Bank Name"
     },
     {
@@ -7541,7 +7541,7 @@
       "destination": "b:acc_number",
       "tab": "",
       "required": false,
-      "note": "Source employee master, ID!CQ. Retained as HR context, not automatically paid. ",
+      "note": "Employee-master bank field where available. Missing values are supplied by the August Bank Transfer sheet, using the unique local payroll number and matching employee name. Bank net amounts are controls, never payroll inputs.",
       "source_key": "Consolidated|Master Bank Account Number"
     },
     {
@@ -7558,7 +7558,7 @@
       "destination": "b:acc_holder_name",
       "tab": "",
       "required": false,
-      "note": "Source employee master, ID!CR. Retained as HR context, not automatically paid. ",
+      "note": "Employee-master bank field where available. Missing values are supplied by the August Bank Transfer sheet, using the unique local payroll number and matching employee name. Bank net amounts are controls, never payroll inputs.",
       "source_key": "Consolidated|Master Bank Account Name/Beneficiary Name"
     },
     {
@@ -7815,6 +7815,40 @@
       "required": true,
       "note": "Same unique canonical value as Employee Code/Badge ID.",
       "source_key": "Consolidated|Employee ID"
+    },
+    {
+      "code": "IDBANKCODE",
+      "name": "Bank routing code (source)",
+      "column": "QQ",
+      "type": "input",
+      "formula": "",
+      "value": 0,
+      "kind": "identifier",
+      "role": "info",
+      "detail": false,
+      "group": "Employee master",
+      "destination": "c:text",
+      "tab": "",
+      "required": false,
+      "note": "Bank Transfer column E, matched by the unique local payroll number. Preserve leading zeros. This is a domestic bank routing code, not a SWIFT/BIC.",
+      "source_key": "Consolidated|Bank routing code (source)"
+    },
+    {
+      "code": "IDPAYROLLNIK",
+      "name": "Payroll national ID (source)",
+      "column": "QR",
+      "type": "input",
+      "formula": "",
+      "value": 0,
+      "kind": "identifier",
+      "role": "info",
+      "detail": false,
+      "group": "Employee master",
+      "destination": "c:text",
+      "tab": "",
+      "required": false,
+      "note": "August payroll NIK, retained as a separate audit value. The HC national ID remains authoritative when both sources provide conflicting values; the population-review field flags the disagreement.",
+      "source_key": "Consolidated|Payroll national ID (source)"
     }
   ],
   "time_order": [
@@ -7859,6 +7893,8 @@
     "Retains the six published Indonesia statutory editions and all 292 linked constants. Use statutory edition refresh when rates, wage floors or caps change; do not overwrite historical editions.",
     "Canonical employee codes use ID followed by the local payroll number, for example ID170. This satisfies the native alphanumeric badge rule. Repeated original HR IDs are preserved as references and never matched as government identifiers.",
     "118 payroll employees match the master (111 names, seven national IDs); four are payroll-only. Four master-only profiles remain Draft for payroll pending review.",
+    "HC banking cells are empty. The matched August Bank Transfer report supplies bank name, account and holder for all 122 payroll employees; its net controls reconcile exactly. Domestic routing codes remain separate from SWIFT/BIC.",
+    "Ten HC national IDs differ from the matched payroll NIK. HC values are retained as employee records, payroll NIKs remain separate audit values, and affected profiles are flagged for review before statutory filing. Missing HC identifiers can be supplied by matched payroll or August BPJS TK references.",
     "Known source contract end dates are retained. Ended contracts remain available for valid historical months; future months require a real renewal record.",
     "A visible -1 IDR regular allowance adjustment reproduces source row 105. August gross, deductions, tax and net controls then match exactly; future-month adjustment starts blank.",
     "Ordinary months use TER. December or the final employment period requires annual reconciliation and reviewed prior YTD values. Final net contracts use an explicitly approved annual gross-up allowance rather than a silent monthly approximation.",

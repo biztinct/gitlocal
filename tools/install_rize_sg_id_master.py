@@ -137,6 +137,18 @@ elif phase=='refine':
     assert len(cfg)==1 and cfg.state=='draft' and country=='ID'
     assert not e['hr.payslip'].search_count([('formula_config_id','=',cfg.id)])
     api._lock(cfg)
+    missing=set(specs)-set(cfg.rule_ids.mapped('code'))
+    assert missing<={'IDBANKCODE','IDPAYROLLNIK'},missing
+    for code in sorted(missing,key=lambda k:specs[k]['column']):
+        spec=specs[code]
+        rule=e['hr.formula.rule'].create(dict(config_id=cfg.id,code=code,name=spec['name'],column_letter=spec['column'],
+            sequence=(definition['rules'].index(spec)+1)*10,column_type='input',value_kind='identifier',value_kind_source='user',
+            net_role='info',net_role_source='user',net_role_confidence='certain',net_role_reason=spec['note'],
+            component_type='Employee master',column_role='contract',column_role_source='user',appears_on_payslip=False,visibility_rule='never'))
+        rule.set_source_binding('excel',spec['source_key'],origin='user')
+        rule.source_sheet_name='Consolidated'
+        assert studio.employee_mapping_create(cfg.id,'',rule.id,spec['destination']).get('ok')
+    cfg.write({'description':''.join('<p>'+s+'</p>' for s in definition['notes'])})
     changed=[]
     for rule in cfg.rule_ids.filtered(lambda r:r.column_type=='formula'):
         spec=specs[rule.code]

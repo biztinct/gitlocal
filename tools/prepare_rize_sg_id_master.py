@@ -189,6 +189,18 @@ def prepare(root, repo):
         # Standard native second ID is separately mapped, so government IDs are
         # never populated with a payroll alias.
         nativeid=add(prefix+'NATIVEID','Employee ID','identifier','f:hr.employee:employee_id',required=True,note='Same unique canonical value as Employee Code/Badge ID.')
+        if key=='id':
+            bankcode=add('IDBANKCODE','Bank routing code (source)','identifier','c:text',note='Bank Transfer column E, matched by the unique local payroll number. Preserve leading zeros. This is a domestic bank routing code, not a SWIFT/BIC.')
+            payrollnik=add('IDPAYROLLNIK','Payroll national ID (source)','identifier','c:text',note='August payroll NIK, retained as a separate audit value. The HC national ID remains authoritative when both sources provide conflicting values; the population-review field flags the disagreement.')
+            for c in ('CP','CQ','CR'):
+                master_specs[c]['note']='Employee-master bank field where available. Missing values are supplied by the August Bank Transfer sheet, using the unique local payroll number and matching employee name. Bank net amounts are controls, never payroll inputs.'
+            master_specs['AN']['note']='HC government ID, with the matched payroll NIK used only when HC has no value. A conflicting payroll NIK stays in the separate source field and is flagged for HR review.'
+            master_specs['AU']['note']='HC BPJS manpower number. Missing values are supplied by the matched August BPJS TK report. This reference identifier does not determine coverage or calculate a contribution.'
+            bank_rows={text(r['values'][1]):r for r in data['payroll_id']['sheets']['Bank Transfer']['rows']
+                if isinstance(r['values'][1],(int,float)) and r['values'][2]}
+            tk_rows={text(r['values'][2]):r for r in data['payroll_id']['sheets']['BPJS TK']['rows']
+                if isinstance(r['values'][2],(int,float)) and r['values'][3]}
+            assert len(bank_rows)==122
         rules_bycode={s['code']:s for s in specs}
         records=[];fixtures=[]
         existing_people=live['people']
@@ -229,6 +241,24 @@ def prepare(root, repo):
                 sourcename['code']:str(pv[1] if key=='sg' else pv[4]).strip() if p else None,state['code']:status,nativeid['code']:canonical})
             values[sourcejoin['code']]=date(pv[4] if key=='sg' else pv[6]) if p else None
             values[sourceend['code']]=date(pv[7]) if p and key=='id' else None
+            if key=='id':
+                values[bankcode['code']]=None
+                values[payrollnik['code']]=None
+                if p:
+                    local_id=text(pv[3]);bank=bank_rows[local_id]['values']
+                    assert norm(bank[2])==norm(pv[4]),(local_id,'Bank recipient identity does not match payroll')
+                    assert bank[7]==pv[42],(local_id,'Bank report does not reconcile to payroll net')
+                    for c,i in [('CP',3),('CQ',5),('CR',6)]:
+                        if not values.get(master_specs[c]['code']):values[master_specs[c]['code']]=text(bank[i])
+                    values[bankcode['code']]=text(bank[4])
+                    payroll_nik=text(pv[46]);master_nik=values.get(master_specs['AN']['code'])
+                    values[payrollnik['code']]=payroll_nik
+                    if not master_nik:values[master_specs['AN']['code']]=payroll_nik
+                    elif payroll_nik and norm(master_nik)!=norm(payroll_nik):
+                        status+='; National ID differs: HC retained, review before statutory filing'
+                        values[state['code']]=status
+                    tk=tk_rows.get(local_id)
+                    if tk and not values.get(master_specs['AU']['code']):values[master_specs['AU']['code']]=text(tk['values'][5])
             if key=='sg':
                 core={'A':canonical,'B':'SG','C':name,'D':getm('U'),'E':date(getm('K')),'F':date(getm('X')),
                     'G':'SGD','H':float(pv[7]) if p else money(getm('BF')),'J':'SINDA' if pr==8 else 'None',
@@ -291,6 +321,8 @@ def prepare(root, repo):
                 'Retains the six published Indonesia statutory editions and all 292 linked constants. Use statutory edition refresh when rates, wage floors or caps change; do not overwrite historical editions.',
                 'Canonical employee codes use ID followed by the local payroll number, for example ID170. This satisfies the native alphanumeric badge rule. Repeated original HR IDs are preserved as references and never matched as government identifiers.',
                 '118 payroll employees match the master (111 names, seven national IDs); four are payroll-only. Four master-only profiles remain Draft for payroll pending review.',
+                'HC banking cells are empty. The matched August Bank Transfer report supplies bank name, account and holder for all 122 payroll employees; its net controls reconcile exactly. Domestic routing codes remain separate from SWIFT/BIC.',
+                'Ten HC national IDs differ from the matched payroll NIK. HC values are retained as employee records, payroll NIKs remain separate audit values, and affected profiles are flagged for review before statutory filing. Missing HC identifiers can be supplied by matched payroll or August BPJS TK references.',
                 'Known source contract end dates are retained. Ended contracts remain available for valid historical months; future months require a real renewal record.',
                 'A visible -1 IDR regular allowance adjustment reproduces source row 105. August gross, deductions, tax and net controls then match exactly; future-month adjustment starts blank.',
                 'Ordinary months use TER. December or the final employment period requires annual reconciliation and reviewed prior YTD values. Final net contracts use an explicitly approved annual gross-up allowance rather than a silent monthly approximation.',
