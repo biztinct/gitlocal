@@ -26,6 +26,21 @@ function typed(value,kind){
 function numberFormat(kind,country){
   return kind==='date'?'dd-mmm-yyyy':kind==='rate'?'0.00%':['text','identifier'].includes(kind)?'@':kind==='integer'?'0':kind==='quantity'?'0.00':country==='ID'?'#,##0;[Red](#,##0);0':'#,##0.00;[Red](#,##0.00);0.00';
 }
+function destinationLabel(value){
+  if(!value)return 'This month only';
+  if(value==='c:text')return 'Contract reference';
+  if(value==='c:amount')return 'Contract amount';
+  const labels={barcode:'Employee code',employee_id:'Employee ID',name:'Name',birthday:'Date of birth',
+    payroll_country:'Payroll country',country_id:'Nationality country',job_title:'Job title',date_start:'Start date',
+    date_end:'End date',wage:'Basic salary',trial_date_end:'Probation end',private_email:'Personal email',
+    private_phone:'Personal phone',work_phone:'Work phone',work_email:'Work email',identification_id:'Government ID',
+    permit_no:'Work permit',passport_id:'Passport',department_id:'Department',private_street:'Home address',
+    emergency_phone:'Emergency phone',emergency_contact:'Emergency contact',place_of_birth:'Place of birth',
+    marital:'Marital status',tax_identification_number:'Tax ID',study_school:'School',study_field:'Study field',
+    bank_name:'Bank name',acc_number:'Account number',acc_holder_name:'Account holder',bank_bic:'SWIFT/BIC'};
+  const parts=value.split(':');
+  return `${parts[0]==='b'?'Bank account':parts[1]==='hr.contract'?'Contract':'Employee'}: ${labels[parts.at(-1)]||parts.at(-1).replaceAll('_',' ')}`;
+}
 async function render(wb,key,names){
   for(const [name,range] of names){
     const blob=await wb.render({sheetName:name,range,scale:1.25,format:'png'});
@@ -144,7 +159,7 @@ for(const key of ['sg','id']){
     }
     audit.getRangeByIndexes(1,2,fixtures.length,12).setNumberFormat(numberFormat('money',def.country));
     for(const c of ['E','H','K','N'])audit.getRange(`${c}2:${c}${fixtures.length+1}`).conditionalFormats.add('cellIs',{operator:'notEqual',formula:0,format:{fill:palette.error,font:{color:'#9C2333',bold:true}}});
-    const guideRows=ordered.map(s=>[s.code,s.name,s.kind,s.tab||'Employee records',s.destination||'Monthly only',s.required?'Required':'Optional',s.note]);
+    const guideRows=ordered.map(s=>[s.code,s.name,s.kind,s.tab||'Employee records',destinationLabel(s.destination),s.required?'Required':'Optional',s.note]);
     table(guide,['Component code','Heading','Type','Monthly section or record','Record destination','Requirement','Definition and update rule'],guideRows,[25,44,16,28,35,18,105]);
     guide.getRangeByIndexes(1,6,guideRows.length,1).format.wrapText=true;
     guide.getRangeByIndexes(1,0,guideRows.length,7).format.rowHeight=44;
