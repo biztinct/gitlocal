@@ -228,6 +228,32 @@ class TestRunTotals(TransactionCase):
         self.assertEqual(self.run.pb_total_gross - self.run.pb_total_deductions,
                          self.run.pb_total_net)
 
+    def test_a_classified_tax_refund_reconciles_in_run_and_payslip_reports(self):
+        slip = self._slip_with({'GROSS': 10000.0})
+        self._line(slip, 'ANNUALREFUND', 'DED', -1000, role='deduction')
+        self._line(slip, 'TAKEHOME', 'NET', 11000, role='net')
+        self.assertEqual(self.run.pb_total_deductions, -1000)
+        self.assertEqual(self.run.pb_balance_gap, 0)
+        self.assertTrue(self.run.pb_balance_ok)
+        self.assertEqual(slip.pb_pay_totals()['deductions'], -1000)
+        self.assertEqual(slip.line_ids.pb_lines_in_band('deductions').pb_pay_totals()['deductions'], -1000)
+
+    def test_refunds_and_legacy_mixed_sign_charges_coexist_per_payslip(self):
+        legacy = self._slip_with({'GROSS': 10000.0})
+        self._line(legacy, 'INSURANCE', 'DED', -900, role='deduction')
+        self._line(legacy, 'ADVANCE', 'DED', 600, role='deduction')
+        self._line(legacy, 'TAKEHOME', 'NET', 8500, role='net')
+        refund = self._slip_with({'GROSS': 10000.0})
+        self._line(refund, 'ANNUALREFUND', 'DED', -1000, role='deduction')
+        self._line(refund, 'TAKEHOME', 'NET', 11000, role='net')
+        self.assertEqual(self.run.pb_total_gross, 20000)
+        self.assertEqual(self.run.pb_total_deductions, 500)
+        self.assertEqual(self.run.pb_total_net, 19500)
+        self.assertTrue(self.run.pb_balance_ok)
+        totals = (legacy | refund).pb_pay_totals()
+        self.assertEqual(totals['deductions'], 500)
+        self.assertEqual(totals['net'], 19500)
+
 
 @tagged('post_install', '-at_install')
 class TestRunDeletion(TransactionCase):

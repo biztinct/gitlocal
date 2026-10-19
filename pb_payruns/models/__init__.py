@@ -7,3 +7,4 @@ from . import pb_payrun_reject
 # LEARNREV P1 — "Right now" for the Runs board (read by pb_learn's guide).
 from . import pb_payruns_learn
 from . import payslip_report
+from . import payslip_money

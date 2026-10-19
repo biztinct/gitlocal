@@ -444,8 +444,9 @@ class HrPayslipRun(models.Model):
                          "OR pl.component_detail IS NOT TRUE)"
                          if detail_aware else "")
         bucket = self._pb_bucket_sql(role_aware)
+        explicit_deduction = "COALESCE(pl.pay_role = 'deduction', FALSE)" if role_aware else 'FALSE'
         cr.execute("""
-            SELECT p.payslip_run_id, """ + bucket + """ AS bucket,
+            SELECT p.payslip_run_id, p.id, """ + bucket + """ AS bucket,
                    -- MONEY TAKEN OFF IS TAKEN OFF, however the scheme signs it.
                    -- A run may carry both: the reference demo world writes
                    -- insurance and tax as NEGATIVE amounts and the mid-month
@@ -458,18 +459,35 @@ class HrPayslipRun(models.Model):
                    COALESCE(SUM(CASE
                        WHEN """ + bucket + """ IN ('DED', 'DEDUCTION', 'COMP',
                                                    'ERCOST')
-                       THEN ABS(pl.total) ELSE pl.total END), 0)
+                       THEN ABS(pl.total) ELSE pl.total END), 0),
+                   COALESCE(SUM(pl.total), 0),
+                   BOOL_AND(""" + explicit_deduction + """)
             FROM hr_payslip_line pl
             JOIN hr_payslip p ON p.id = pl.slip_id AND p.state != 'cancel'
             JOIN hr_salary_rule_category c ON c.id = pl.category_id
             WHERE p.payslip_run_id IN %s
               AND """ + bucket + """ IS NOT NULL
               """ + detail_clause + """
-            GROUP BY p.payslip_run_id, 2
+            GROUP BY p.payslip_run_id, p.id, 3
         """, (tuple(run_ids),))
+        from .payslip_money import uses_signed_deductions
+        per_slip = {}
+        for rid, sid, code, magnitude, signed, explicit in cr.fetchall():
+            per_slip.setdefault((rid, sid), {})[code] = (magnitude or 0.0, signed or 0.0, explicit)
         agg = {}
-        for rid, code, total in cr.fetchall():
-            agg.setdefault(rid, {})[code] = total or 0.0
+        for (rid, _sid), bands in per_slip.items():
+            gross = bands.get('GROSS', (0,))[0] or (
+                bands.get('BASIC', (0,))[0] + bands.get('ALW', (0,))[0])
+            net = bands.get('NET', (0,))[0]
+            deductions = [bands[b] for b in ('DED', 'DEDUCTION', 'COMP') if b in bands]
+            apply_signed = uses_signed_deductions(
+                gross, net, sum(b[1] for b in deductions), sum(b[0] for b in deductions),
+                bool(deductions) and all(b[2] for b in deductions),
+                any(b in bands for b in ('GROSS', 'BASIC', 'ALW')), 'NET' in bands)
+            for code, (magnitude, signed, _explicit) in bands.items():
+                total = signed if apply_signed and code in ('DED', 'DEDUCTION', 'COMP') else magnitude
+                target = agg.setdefault(rid, {})
+                target[code] = target.get(code, 0.0) + total
         for run in self:
             d = agg.get(run.id, {})
             run.pb_employee_count = counts.get(run.id, 0)
