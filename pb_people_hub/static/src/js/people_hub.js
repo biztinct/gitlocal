@@ -12,6 +12,12 @@
  * changes in no way at all (see plan_launcher.js — that is an owner ruling,
  * not a shortcut).
  *
+ * NAV P2 (2026-10-21): the four Lifecycle boards — New joiners, Probation,
+ * Exits and Contracts (renewals) — are People tabs now, registered from their
+ * own modules between Assets and Plan (sequences 52-58). Praise, Goals and
+ * Announce left for Talent and Home. The Employees "Contracts" button opens
+ * the CONTRACTS tab when it is there (one door), else the register.
+ *
  * CONTRACTS IS A DOOR INSIDE EMPLOYEES, NOT A LENS BESIDE IT (owner, 2026-09-24:
  * "it is actually connected to an employee"). The Employees lens is handed a
  * `contractsDoor` — the gate and the click — and draws a Contracts button in
@@ -166,6 +172,16 @@ export class PbPeopleHub extends Component {
      * disagree about where "back" goes.
      */
     openContracts() {
+        // NAV P2: ONE door. People › CONTRACTS is the renewals board (from
+        // pb_contract_lifecycle), which itself opens the register ("All
+        // contracts"). Where that board is not installed the register is
+        // still the destination, exactly as before.
+        if (registry.category(PEOPLE_LENSES).contains("contracts")) {
+            openHub(this.actionService, {
+                xmlid: "pb_people_hub.action_pb_people_hub", lens: "contracts",
+            });
+            return;
+        }
         openHub(this.actionService, {
             xmlid: "pb_people_hub.action_pb_people_contracts",
         });

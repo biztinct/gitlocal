@@ -33,18 +33,22 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { LIFECYCLE_LENSES, LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
+import { LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
+import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { PbProbationBoard } from "@pb_probation/js/probation_board";
 
-registry.category(LIFECYCLE_LENSES).add("probation", {
+// NAV P2 (2026-10-21): a People tab now (it was a Lifecycle tab). It keeps
+// the Lifecycle tiers as its gate and the Lifecycle product switch.
+registry.category(PEOPLE_LENSES).add("probation", {
     key: "probation",
     icon: "stamp",
     label: _t("Probation"),
     Component: PbProbationBoard,
     groups: LIFECYCLE_GATE,
-}, { sequence: 40 });
+    feature: "lifecycle",
+}, { sequence: 54 });
 
-const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
+const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 const ADMIN = ["pb_lifecycle.group_lifecycle_admin", "base.group_system"];
 const MANAGER = [
     "pb_lifecycle.group_lifecycle_manager",
@@ -57,13 +61,14 @@ const palette = registry.category("pb_hub_palette");
 palette.add("probation_board", {
     id: "probation_board",
     label: _t("Probation"),
-    sublabel: _t("Lifecycle"),
+    sublabel: _t("People"),
     icon: "stamp",
     groups: LIFECYCLE_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_probation_board",
     action: { xmlid: HUB_XMLID, lens: "probation" },
+    keywords: ["lifecycle", "vòng đời"],
 }, { sequence: 2600 });
 
 palette.add("probation_reviews", {

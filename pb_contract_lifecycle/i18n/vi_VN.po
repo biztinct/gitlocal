@@ -276,3 +276,16 @@ msgstr "Cần quyết định"
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_palette.js:0
 msgid "Extension requests"
 msgstr "Yêu cầu gia hạn hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_palette.js:0
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "All contracts"
+msgstr "Tất cả hợp đồng"

@@ -224,3 +224,15 @@ msgstr "Buổi chào đón"
 #: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
 msgid "HR partner rules"
 msgstr "Quy tắc đối tác nhân sự"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+msgid "Joiners"
+msgstr "Người mới"
+
+#. module: pb_onboarding
+#. odoo-javascript
+#: code:addons/pb_onboarding/static/src/js/onboarding_palette.js:0
+msgid "People"
+msgstr "Con người"

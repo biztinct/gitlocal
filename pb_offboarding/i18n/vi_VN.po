@@ -307,3 +307,9 @@ msgstr "Hạng mục bàn giao công việc"
 #: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
 msgid "Notice policies"
 msgstr "Chính sách báo trước"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "People"
+msgstr "Con người"

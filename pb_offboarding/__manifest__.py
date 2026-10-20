@@ -60,7 +60,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 declared inside this module, so a plain install is the whole deployment.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.1.7',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -73,6 +73,7 @@ declared inside this module, so a plain install is the whole deployment.
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',         # the journey engine, the letters, the hub
+        'pb_people_hub', # NAV P2: this board is a People tab
         'pb_zoho_bridge',       # the arrival/departure hook
         'pb_assets',            # what the leaver is still holding
         # P3 owns the "a step runs itself" mechanism (`automation_key`,

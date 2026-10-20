@@ -32,18 +32,22 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { LIFECYCLE_LENSES, LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
+import { LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
+import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { PbExitsBoard } from "@pb_offboarding/js/exits_board";
 
-registry.category(LIFECYCLE_LENSES).add("exits", {
+// NAV P2 (2026-10-21): a People tab now (it was a Lifecycle tab). It keeps
+// the Lifecycle tiers as its gate and the Lifecycle product switch.
+registry.category(PEOPLE_LENSES).add("exits", {
     key: "exits",
-    icon: "powerOff",
+    icon: "logOut",
     label: _t("Exits"),
     Component: PbExitsBoard,
     groups: LIFECYCLE_GATE,
-}, { sequence: 30 });
+    feature: "lifecycle",
+}, { sequence: 56 });
 
-const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
+const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 const ADMIN = ["pb_lifecycle.group_lifecycle_admin", "base.group_system"];
 const MANAGER = [
     "pb_lifecycle.group_lifecycle_manager",
@@ -56,13 +60,14 @@ const palette = registry.category("pb_hub_palette");
 palette.add("offboarding_exits", {
     id: "offboarding_exits",
     label: _t("Exits"),
-    sublabel: _t("Lifecycle"),
-    icon: "powerOff",
+    sublabel: _t("People"),
+    icon: "logOut",
     groups: LIFECYCLE_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_exits_board",
     action: { xmlid: HUB_XMLID, lens: "exits" },
+    keywords: ["lifecycle", "vòng đời"],
 }, { sequence: 2500 });
 
 palette.add("offboarding_resignations", {

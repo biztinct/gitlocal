@@ -415,3 +415,9 @@ msgstr "Ai đã hoàn thành gì"
 #: code:addons/pb_probation/static/src/js/probation_palette.js:0
 msgid "Probation policies"
 msgstr "Chính sách thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "People"
+msgstr "Con người"

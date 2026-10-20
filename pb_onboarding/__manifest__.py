@@ -61,7 +61,7 @@ additive `_inherit` extensions declared inside this module, and the lens
 arrives through P0's soft registry, which is what lets the dependency run one
 way only.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -74,6 +74,7 @@ way only.
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',         # the journey engine, the hub and its lens registry
+        'pb_people_hub', # NAV P2: this board is a People tab
         'pb_zoho_bridge',       # the arrival hook + send_credentials
         'pb_assets',            # the laptop request a joining step raises
         'pb_me_portal',         # the .pbme portal kit the pages reuse

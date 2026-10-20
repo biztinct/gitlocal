@@ -259,7 +259,7 @@
          breadcrumb lands on a crumb labelled "Unnamed".
 
          Test URL: /odoo/action-pb_exits_board  (the lens on its own)
-                   /odoo/action-pb_lifecycle_hub  (inside the Lifecycle hub) -->
+                   /bizapp/action-pb_people_hub  (People tab since NAV P2; was the Lifecycle hub) -->
     <record id="action_pb_exits_board" model="ir.actions.client">
         <field name="name">Exits</field>
         <field name="tag">pb_exits_board</field>

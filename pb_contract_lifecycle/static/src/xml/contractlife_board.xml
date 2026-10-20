@@ -53,6 +53,11 @@
                       title="Read the board again">
                 <t t-out="ic('refresh',15)"/>
               </button>
+              <!-- NAV P2: the register of every contract, from People › Contracts. -->
+              <button t-if="state.canRegister" class="pbim-btn ghost"
+                      t-on-click="openRegister" title="Every contract, current and past">
+                <t t-out="ic('fileText',15)"/> All contracts
+              </button>
               <button t-if="state.canWrite" class="pbim-btn ghost"
                       t-on-click="openDecisions">
                 <t t-out="ic('list',15)"/> All decisions

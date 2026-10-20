@@ -46,7 +46,7 @@ letter, and puts a button in front of a human. That button reuses P4's own
 `setup_offboarding()` rather than growing a second way to open a leaving
 checklist.
 """,
-    'version': '19.0.1.3.6',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -59,6 +59,7 @@ checklist.
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',         # the journey engine, the hub and its lens registry
+        'pb_people_hub', # NAV P2: this board is a People tab
         'pb_onboarding',        # the joining checklist this hangs off, and /my/journey
         'pb_offboarding',       # the leaving checklist a failed trial can open
         'pb_me_portal',         # the .pbme portal kit the card reuses

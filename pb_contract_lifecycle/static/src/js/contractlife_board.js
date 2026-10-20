@@ -42,6 +42,9 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { user } from "@web/core/user";
+import { openHub } from "@pb_hub/js/hub_nav";
+import { CONTRACT_GATE } from "@pb_people_hub/js/people_hub";
 
 /** The three choices, in the order a person weighs them. */
 const CHOICES = ["convert", "extend", "terminate"];
@@ -106,7 +109,11 @@ export class PbContractLifeBoard extends Component {
             // one dialog at a time, each one plain state
             deciding: null,
             typing: null,
+
+            // NAV P2: may this reader open the contracts register itself?
+            canRegister: false,
         });
+        onWillStart(async () => { this.state.canRegister = await this._canRegister(); });
 
         onWillStart(async () => { await this.load(); });
     }
@@ -646,6 +653,27 @@ export class PbContractLifeBoard extends Component {
 
     openDecisions() {
         this.action.doAction("pb_contract_lifecycle.action_pb_contract_review");
+    }
+
+    /**
+     * NAV P2 — People › CONTRACTS is this board (renewals); the register of
+     * every contract is one press away, with the way back to this tab. The
+     * register's own gate (hr.contract read), failing open per group like
+     * every hub gate; the register enforces its own access regardless.
+     */
+    async _canRegister() {
+        const flags = await Promise.all(CONTRACT_GATE.map(async (g) => {
+            try { return await user.hasGroup(g); } catch { return true; }
+        }));
+        return flags.some(Boolean);
+    }
+
+    openRegister() {
+        openHub(this.action, {
+            xmlid: "pb_people_hub.action_pb_people_contracts",
+            back: { label: _t("People"), xmlid: "pb_people_hub.action_pb_people_hub",
+                    lens: "contracts" },
+        });
     }
 
     openExtensions() {

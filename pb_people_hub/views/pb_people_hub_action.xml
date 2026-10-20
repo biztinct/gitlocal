@@ -23,9 +23,12 @@
          action's own context (the pb_pay / pb_workseg precedent), so the ⌘K
          row and the Employees button both land on a board with a way back to
          Employees. The tag is pb_contracts' own cockpit, unforked. -->
+    <!-- NAV P2: the way back is People › Contracts (the renewals tab, which is
+         now the one door to this register); where that tab is not installed
+         the People hub opens on its first tab instead. -->
     <record id="action_pb_people_contracts" model="ir.actions.client">
         <field name="name">Contracts</field>
         <field name="tag">pb_contracts</field>
-        <field name="context">{'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': 'employees', 'context': {}}}</field>
+        <field name="context">{'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': 'contracts', 'context': {}}}</field>
     </record>
 </odoo>
