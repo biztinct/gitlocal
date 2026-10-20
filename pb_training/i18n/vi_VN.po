@@ -237,3 +237,9 @@ msgstr "Yêu cầu hoàn phí đào tạo"
 #: code:addons/pb_training/static/src/js/training_palette.js:0
 msgid "Training numbers"
 msgstr "Số liệu đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"

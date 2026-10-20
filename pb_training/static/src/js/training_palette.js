@@ -42,7 +42,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { LEARN_LENSES } from "@pb_learn/hub/learn_hub";
+import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
 import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
@@ -53,28 +53,30 @@ const TRAINING_GATE = [
     "pb_training.group_training_admin",
 ];
 
-registry.category(LEARN_LENSES).add("training", {
+// NAV P2 (2026-10-21): a Talent tab now (it was a Learn tab).
+registry.category(TALENT_LENSES).add("training", {
     key: "training",
     icon: "graduationCap",
     label: _t("Training"),
     Component: PbTrainingBoard,
     groups: TRAINING_GATE,
-}, { sequence: 20 });
+}, { sequence: 30 });
 
 /* ---------------------------------------------------------- command bar --- */
 const palette = registry.category("pb_hub_palette");
-const HUB_XMLID = "pb_learn.action_learn_hub";
+const HUB_XMLID = "pb_talent_hub.action_pb_talent_hub";
 
 palette.add("training_board", {
     id: "training_board",
     label: _t("Training"),
-    sublabel: _t("Learn"),
+    sublabel: _t("Talent"),
     icon: "graduationCap",
     groups: TRAINING_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_training_board",
     action: { xmlid: HUB_XMLID, lens: "training" },
+    keywords: ["learn", "đào tạo"],
 }, { sequence: 3900 });
 
 palette.add("training_courses", {

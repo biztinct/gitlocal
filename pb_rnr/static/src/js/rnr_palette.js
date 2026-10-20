@@ -49,7 +49,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
+import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
 import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { PbRnrBoard } from "@pb_rnr/js/rnr_board";
 import { PbRnrWall } from "@pb_rnr/js/rnr_wall";
@@ -60,13 +60,14 @@ export const RNR_GATE = [
     "pb_rnr.group_rnr_manager",
 ];
 
-registry.category(PEOPLE_LENSES).add("praise", {
+// NAV P2 (2026-10-21): a Talent tab now (it was a People tab).
+registry.category(TALENT_LENSES).add("praise", {
     key: "praise",
     icon: "award",
     label: _t("Praise"),
     Component: PbRnrBoard,
     groups: RNR_GATE,
-}, { sequence: 60 });
+}, { sequence: 40 });
 
 registry.category(HOME_LENSES).add("wall", {
     key: "wall",
@@ -91,11 +92,12 @@ palette.add("rnr_wall", {
 palette.add("rnr_board", {
     id: "rnr_board",
     label: _t("Praise"),
-    sublabel: _t("People"),
+    sublabel: _t("Talent"),
     icon: "award",
     groups: RNR_GATE,
     requires: "pb_rnr_board",
-    action: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "praise" },
+    action: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "praise" },
+    keywords: ["people", "recognition", "khen ngợi"],
 }, { sequence: 2910 });
 
 palette.add("rnr_values", {

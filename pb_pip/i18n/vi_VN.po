@@ -240,3 +240,15 @@ msgstr "Tất cả kế hoạch phát triển"
 #: code:addons/pb_pip/static/src/js/pip_palette.js:0
 msgid "Growth plan templates"
 msgstr "Mẫu kế hoạch phát triển"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"
+
+#. module: pb_pip
+#. odoo-javascript
+#: code:addons/pb_pip/static/src/js/pip_palette.js:0
+msgid "Growth"
+msgstr "Phát triển"

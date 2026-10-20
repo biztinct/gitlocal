@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""pb_talent_hub (NAV P2) — the GROW › Talent entry and its four tabs.
+
+The hub ships no lens of its own; the four boards register themselves from
+their modules. So most of what can go wrong is a board still registering
+into the hub it LEFT (People, the Lifecycle hub, Learn), or the entry not
+being where the revised menu puts it — both checked here.
+"""
+import ast
+import os
+import re
+from xml.etree import ElementTree
+
+from odoo.modules.module import get_module_path
+from odoo.tests.common import TransactionCase, tagged
+
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# (module, palette file, lens key, sequence) — the four tabs, in rail order.
+TABS = [
+    ('pb_goals', 'goals_palette.js', 'goals', 10),
+    ('pb_pip', 'pip_palette.js', 'pip', 20),
+    ('pb_training', 'training_palette.js', 'training', 30),
+    ('pb_rnr', 'rnr_palette.js', 'praise', 40),
+]
+_RE_ADJACENT_STRINGS = re.compile(r"""["']\s*\n\s*["']""")
+
+
+def _read(path):
+    with open(path, encoding='utf-8') as fh:
+        return fh.read()
+
+
+@tagged('post_install', '-at_install')
+class TestTalentHub(TransactionCase):
+
+    def test_the_entry_sits_above_learn_in_grow(self):
+        item = self.env.ref('pb_talent_hub.item_talent')
+        self.assertTrue(item.active)
+        self.assertEqual(item.section_id, self.env.ref('pb_learn.sec_learn'))
+        self.assertEqual(item.sequence, 5)
+        self.assertEqual(item.icon, 'graduation-cap')
+        self.assertEqual(item.action_tag, 'pb_talent_hub')
+        learn = self.env.ref('pb_learn.item_learn_journey')
+        self.assertLess(item.sequence, learn.sequence)
+        self.assertIn(self.env.ref('hr.group_hr_user'), item.groups_id)
+
+    def test_the_hub_action_exists(self):
+        act = self.env.ref('pb_talent_hub.action_pb_talent_hub')
+        self.assertEqual(act._name, 'ir.actions.client')
+        self.assertEqual(act.tag, 'pb_talent_hub')
+
+    def test_the_icon_is_in_the_closed_rail_set(self):
+        js = _read(os.path.join(get_module_path('pb_sidebar'), 'static', 'src',
+                                'js', 'pb_sidebar.js'))
+        self.assertIn('"graduation-cap":', js)
+
+    def test_every_tab_registers_into_talent_and_not_its_old_hub(self):
+        installed = set(self.env['ir.module.module'].sudo().search(
+            [('state', '=', 'installed')]).mapped('name'))
+        for module, fname, key, seq in TABS:
+            if module not in installed:
+                continue
+            src = _read(os.path.join(get_module_path(module), 'static', 'src',
+                                     'js', fname))
+            m = re.search(r'registry\.category\((\w+)\)\.add\("%s", \{(.*?)\}, '
+                          r'\{ sequence: (\d+) \}\);' % key, src, re.S)
+            self.assertTrue(m, '%s: no lens registration for %s' % (module, key))
+            self.assertEqual(m.group(1), 'TALENT_LENSES', module)
+            self.assertEqual(int(m.group(3)), seq, module)
+            self.assertIn('pb_talent_hub', ast.literal_eval(_read(os.path.join(
+                get_module_path(module), '__manifest__.py')))['depends'], module)
+
+    def test_the_growth_tab_keeps_its_gate_probe_and_switch(self):
+        src = _read(os.path.join(get_module_path('pb_pip'), 'static', 'src',
+                                 'js', 'pip_palette.js'))
+        block = src.split('registry.category(TALENT_LENSES).add("pip"', 1)[1]
+        block = block.split('});', 1)[0]
+        self.assertIn('label: _t("Growth")', block)
+        self.assertIn('groups: PIP_GATE', block)
+        self.assertIn('probe: { model: "pb.pip", method: "can_open" }', block)
+        self.assertIn('feature: "lifecycle"', block)
+
+    def test_every_asset_on_disk_is_in_the_bundle(self):
+        manifest = ast.literal_eval(_read(os.path.join(HERE, '__manifest__.py')))
+        bundle = set(manifest['assets']['web.assets_backend'])
+        on_disk = set()
+        for sub in ('js', 'xml'):
+            d = os.path.join(HERE, 'static', 'src', sub)
+            for f in os.listdir(d):
+                on_disk.add('pb_talent_hub/static/src/%s/%s' % (sub, f))
+        self.assertEqual(on_disk, bundle)
+
+    def test_templates_parse_and_js_has_no_python_style_concatenation(self):
+        for f in os.listdir(os.path.join(HERE, 'static', 'src', 'xml')):
+            ElementTree.parse(os.path.join(HERE, 'static', 'src', 'xml', f))
+        for f in os.listdir(os.path.join(HERE, 'static', 'src', 'js')):
+            src = _read(os.path.join(HERE, 'static', 'src', 'js', f))
+            self.assertFalse(_RE_ADJACENT_STRINGS.search(src), f)
+
+    def test_no_user_visible_string_says_odoo(self):
+        for sub in ('js', 'xml'):
+            d = os.path.join(HERE, 'static', 'src', sub)
+            for f in os.listdir(d):
+                src = _read(os.path.join(d, f))
+                for s in re.findall(r'_t\("([^"]*)"\)', src):
+                    self.assertNotIn('odoo', s.lower(), f)

@@ -904,10 +904,12 @@ class TestTheDoors(TransactionCase):
             self.assertTrue(3900 <= seq <= 3990,
                             '%s is outside E1\'s 3900 block' % seq)
 
-    def test_the_lens_sits_at_sequence_twenty_on_the_learn_hub(self):
+    def test_the_lens_sits_at_sequence_thirty_on_the_talent_hub(self):
+        """NAV P2: Training moved from the Learn hub to GROW › Talent."""
         src = _src('static', 'src', 'js', 'training_palette.js')
-        self.assertIn('registry.category(LEARN_LENSES).add("training"', src)
-        self.assertIn('{ sequence: 20 }', src)
+        self.assertIn('registry.category(TALENT_LENSES).add("training"', src)
+        self.assertIn('{ sequence: 30 }', src)
+        self.assertNotIn('LEARN_LENSES).add', src)
 
     def test_this_module_ships_no_menu_and_no_rail_item(self):
         """Training is a LENS on a mission that already has a rail entry. A

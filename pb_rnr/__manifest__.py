@@ -53,7 +53,7 @@ pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent. No emoji anywhere — including in the emails.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -66,6 +66,7 @@ one accent. No emoji anywhere — including in the emails.
         'biz_approval_chain',   # the nomination's two-step ladder
         'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hub',               # the global command palette registry
+        'pb_talent_hub',          # NAV P2: this board is a Talent tab
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_home_hub',          # the hub the wall bolts onto
         'pb_people_hub',        # the hub the board bolts onto

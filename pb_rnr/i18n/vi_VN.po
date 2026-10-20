@@ -165,3 +165,9 @@ msgstr "Các quý ghi nhận"
 #: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
 msgid "My praise"
 msgstr "Lời khen của tôi"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"

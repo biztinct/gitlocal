@@ -171,3 +171,9 @@ msgstr "Thay đổi mục tiêu"
 #: code:addons/pb_goals/static/src/js/goals_palette.js:0
 msgid "Goal numbers"
 msgstr "Số liệu mục tiêu"
+
+#. module: pb_goals
+#. odoo-javascript
+#: code:addons/pb_goals/static/src/js/goals_palette.js:0
+msgid "Talent"
+msgstr "Nhân tài"

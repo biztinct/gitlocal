@@ -36,7 +36,7 @@ VERDICT FAIL NEVER AUTO-OPENS AN EXIT, and neither does anything else here. A
 resignation that is approved CLOSES a running plan (P4's extension point), which
 is the opposite direction and the only automatic ending there is.
 """,
-    'version': '19.0.1.2.5',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -47,6 +47,7 @@ is the opposite direction and the only automatic ending there is.
         'mail',
         'portal',               # /my/growth
         'pb_hub',               # the global palette registry
+        'pb_talent_hub',          # NAV P2: this board is a Talent tab
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_lifecycle',         # check-ins, letters, feedback links, the hub
         'pb_probation',         # the verdict-wizard shapes this clones

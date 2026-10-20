@@ -39,7 +39,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
+import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbGoalsBoard } from "@pb_goals/js/goals_board";
 import { PbGoalsNumbers } from "@pb_goals/js/goals_numbers";
@@ -73,7 +73,8 @@ export const GOALS_GATE = [
     "pb_goals.group_goals_admin",
 ];
 
-registry.category(PEOPLE_LENSES).add("goals", {
+// NAV P2 (2026-10-21): a Talent tab now (it was a People tab).
+registry.category(TALENT_LENSES).add("goals", {
     key: "goals",
     icon: "target",
     label: _t("Goals"),
@@ -82,18 +83,19 @@ registry.category(PEOPLE_LENSES).add("goals", {
     // Everybody may ASK; the tab shows only when the board has something
     // for them (a goals group, or a sheet the rules let them read).
     probe: { model: "pb.goals", method: "can_open" },
-}, { sequence: 70 });
+}, { sequence: 10 });
 
 const palette = registry.category("pb_hub_palette");
 
 palette.add("goals_board", {
     id: "goals_board",
     label: _t("Goals"),
-    sublabel: _t("People"),
+    sublabel: _t("Talent"),
     icon: "target",
     groups: GOALS_ANYBODY,
     requires: "pb_goals_board",
-    action: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "goals" },
+    action: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goals" },
+    keywords: ["people", "mục tiêu"],
 }, { sequence: 3600 });
 
 palette.add("goals_my", {

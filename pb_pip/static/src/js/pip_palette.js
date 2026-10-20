@@ -37,7 +37,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { LIFECYCLE_LENSES } from "@pb_lifecycle/js/lifecycle_hub";
+import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
 import { PbPipBoard } from "@pb_pip/js/pip_board";
 
 /** `pb.pip._can_read()`'s tiers, verbatim: the two growth-plan groups and,
@@ -50,31 +50,36 @@ export const PIP_GATE = [
     "base.group_system",
 ];
 
-registry.category(LIFECYCLE_LENSES).add("pip", {
+// NAV P2 (2026-10-21): Talent › GROWTH (it was the Lifecycle hub's Growth
+// plans tab). Keeps its gate, its probe and the Lifecycle product switch.
+registry.category(TALENT_LENSES).add("pip", {
     key: "pip",
-    icon: "sunrise",
-    label: _t("Growth plans"),
+    icon: "trendingUp",
+    label: _t("Growth"),
+    title: _t("Growth plans"),
     Component: PbPipBoard,
     groups: PIP_GATE,
     // The server's own answer (pb.pip.can_open = _can_read), so the tab is
     // offered exactly when the board would open.
     probe: { model: "pb.pip", method: "can_open" },
-}, { sequence: 50 });
+    feature: "lifecycle",
+}, { sequence: 20 });
 
-const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
+const HUB_XMLID = "pb_talent_hub.action_pb_talent_hub";
 
 const palette = registry.category("pb_hub_palette");
 
 palette.add("pip_board", {
     id: "pip_board",
     label: _t("Growth plans"),
-    sublabel: _t("Lifecycle"),
-    icon: "sunrise",
+    sublabel: _t("Talent"),
+    icon: "trendingUp",
     groups: PIP_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_pip_board",
     action: { xmlid: HUB_XMLID, lens: "pip" },
+    keywords: ["lifecycle", "pip", "growth", "phát triển"],
 }, { sequence: 2700 });
 
 // THE MANAGER'S ROW, and the one gate in this module that is not tight.

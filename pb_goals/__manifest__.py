@@ -68,7 +68,7 @@ WHAT THIS MODULE IS
 WHAT IT DELIBERATELY DOES NOT DO. Calibration and bell curves, any link to
 pay, and 360-degree feedback are not here and are not planned in this shape.
 """,
-    'version': '19.0.1.1.2',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -80,6 +80,7 @@ pay, and 360-degree feedback are not here and are not planned in this shape.
         'portal',
         'website',
         'pb_hub',               # the global command-bar registry
+        'pb_talent_hub',          # NAV P2: this board is a Talent tab
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_me_portal',         # the .pbme employee-page kit
         'pb_people_hub',        # the hub this lens joins
