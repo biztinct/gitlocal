@@ -13896,8 +13896,8 @@
               "vi": "Các số liệu trên Trang chủ"
             },
             {
-              "en": "Pay Run › Results",
-              "vi": "Đợt lương › Kết quả"
+              "en": "Payroll › Results",
+              "vi": "Lương › Kết quả"
             },
             {
               "en": "Analytics Explorer",
@@ -24236,11 +24236,11 @@
           },
           "integrations": {
             "line": {
-              "en": "Connected systems, how their fields map, and what they have sent.",
-              "vi": "Các hệ thống đã kết nối, cách ánh xạ trường dữ liệu, và những gì chúng đã gửi về."
+              "en": "Integrations and Mapping: connected systems, how their fields map onto your schemes, and what they have sent.",
+              "vi": "Tích hợp và Ánh xạ: các hệ thống đã kết nối, cách ánh xạ trường dữ liệu vào chương trình lương, và những gì chúng đã gửi về."
             },
             "name": {
-              "en": "Integrations",
+              "en": "Connect",
               "vi": "Kết nối"
             }
           },
@@ -31029,8 +31029,8 @@
                   "vi": "Các số liệu trên Trang chủ"
                 },
                 {
-                  "en": "Pay Run › Results",
-                  "vi": "Đợt lương › Kết quả"
+                  "en": "Payroll › Results",
+                  "vi": "Lương › Kết quả"
                 },
                 {
                   "en": "Analytics Explorer",
@@ -40535,5 +40535,5 @@
       }
     }
   ],
-  "version": "68ba417fd7e1"
+  "version": "236fbdee525a"
 }

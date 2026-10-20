@@ -10117,9 +10117,11 @@ const SCREEN_CTX = {
         workflows: [B("Workflows", "Phê duyệt"),
                     B("Approvals: who signs off what, in which order.",
                       "Phê duyệt: ai phê duyệt việc gì, theo thứ tự nào.")],
-        integrations: [B("Integrations", "Kết nối"),
-                       B("Connected systems, how their fields map, and what they have sent.",
-                         "Các hệ thống đã kết nối, cách ánh xạ trường dữ liệu, và những gì chúng đã gửi về.")],
+        // NAV P2: the rail says CONNECT (INTEGRATIONS is too wide for it);
+        // the tooltip and page header say Integrations.
+        integrations: [B("Connect", "Kết nối"),
+                       B("Integrations and Mapping: connected systems, how their fields map onto your schemes, and what they have sent.",
+                         "Tích hợp và Ánh xạ: các hệ thống đã kết nối, cách ánh xạ trường dữ liệu vào chương trình lương, và những gì chúng đã gửi về.")],
         system: [B("System", "Hệ thống"),
                  B("Guided setup, About Payobook, demo data and what PayAI may do.",
                    "Thiết lập có hướng dẫn, Về Payobook, dữ liệu mẫu và những gì PayAI được làm.")],

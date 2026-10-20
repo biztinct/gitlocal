@@ -2230,7 +2230,7 @@ const MENU = [
       ] },
       /* Integrations has two cards: its connectors and Mapping (whose tabs
          include Component treatment). Both replicas live under it. */
-      { key: "integrations", label: B("Integrations", "Kết nối"), cats: [
+      { key: "integrations", label: B("Connect", "Kết nối"), cats: [
         { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations",
           also: ["mapping", "treatment"] },
       ] },
