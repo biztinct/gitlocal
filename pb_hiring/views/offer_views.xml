@@ -41,7 +41,7 @@
                 <field name="company_id" groups="base.group_multi_company"
                        optional="hide"/>
                 <field name="state" widget="badge"
-                       decoration-success="state in ('signed', 'closed')"
+                       decoration-success="state in ('signed', 'joined')"
                        decoration-info="state in ('sent', 'accepted')"
                        decoration-warning="state in ('submitted', 'manager_ok')"
                        decoration-danger="state in ('declined', 'refused')"/>
@@ -60,13 +60,13 @@
                             invisible="state != 'draft'"/>
                     <button name="action_prepare_letter" type="object"
                             string="Write the letter"
-                            invisible="state in ('closed', 'declined', 'refused')"/>
+                            invisible="state in ('joined', 'declined', 'refused')"/>
                     <button name="action_open_pdf" type="object"
                             string="Read the letter"
                             invisible="not attachment_id"/>
                     <button name="action_request_documents" type="object"
                             string="Ask for their papers"
-                            invisible="state in ('draft', 'closed', 'declined', 'refused')"/>
+                            invisible="state in ('draft', 'joined', 'declined', 'refused')"/>
                     <button name="action_send_to_candidate" type="object"
                             string="Send it to them" class="btn-primary"
                             invisible="state != 'hr_ok'"/>
@@ -170,7 +170,7 @@
                                    colspan="2" readonly="1"/>
                         </page>
                         <page string="Day one" name="joined"
-                              invisible="state != 'closed'">
+                              invisible="state != 'joined'">
                             <group>
                                 <field name="employee_id" readonly="1"/>
                                 <field name="contract_id" readonly="1"/>
@@ -203,7 +203,7 @@
                 <filter name="f_accepted" string="Accepted"
                         domain="[('candidate_decision', '=', 'accepted')]"/>
                 <filter name="f_joined" string="They have joined"
-                        domain="[('state', '=', 'closed')]"/>
+                        domain="[('state', '=', 'joined')]"/>
                 <separator/>
                 <filter name="f_mine" string="Roles I recruit"
                         domain="[('requisition_id.recruiter_id', '=', uid)]"/>
