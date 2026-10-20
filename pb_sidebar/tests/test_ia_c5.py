@@ -32,25 +32,24 @@ TARGET_RAIL = [
     ('overview', 10, False, [
         ('pb_home_hub.item_home', 10, 'home', 'Home'),
     ]),
+    # NAV P2 (2026-10-21): the owner's revised menu. "Pay Run" is called
+    # Payroll (xmlid unchanged); Hiring and Expenses join; Ask HR became a
+    # tab of Home and Lifecycle was split between People, Hiring, Talent and
+    # Settings › HR (both entries retired, see RETIRED_ITEMS).
     ('operate', 20, True, [
-        ('pb_payhub.item_pay_run', 10, 'zap', 'Pay Run'),
+        ('pb_payhub.item_pay_run', 10, 'zap', 'Payroll'),
         ('pb_people_hub.item_people', 20, 'users', 'People'),
-        # TIERS T3a. The HR queue of employees' questions — work you do about
-        # a person, so beside People, at 22 (no neighbour renumbered, W18).
-        # `inbox` because the rail's icon set is closed (see the icon test).
-        ('pb_ask_hr.item_ask_hr', 22, 'inbox', 'Ask HR'),
-        # RIZE P0. A journey is about a PERSON and it is work you do rather
-        # than something you look up, so it sits beside People — and at 25,
-        # which lands it there without renumbering either neighbour (W18: a
-        # sequence is a claim, and moving one is a migration).
-        ('pb_lifecycle.item_lifecycle', 25, 'refresh-cw', 'Lifecycle'),
+        ('pb_hiring.item_hiring', 24, 'user-plus', 'Hiring'),
         ('pb_mission.item_workforce', 30, 'compass', 'Workforce'),
+        ('pb_expenses_hub.item_expenses', 35, 'wallet', 'Expenses'),
     ]),
     ('understand', 30, True, [
         ('pb_insights_hub.item_insights', 10, 'trending-up', 'Insights'),
         ('pb_compliance_hub.item_compliance', 20, 'shield', 'Compliance'),
     ]),
     ('learn', 40, True, [
+        # NAV P2: GROW › Talent sits above Learn.
+        ('pb_talent_hub.item_talent', 5, 'graduation-cap', 'Talent'),
         ('pb_learn.item_learn_journey', 10, 'book-open', 'Learn'),
     ]),
     ('system', 50, False, [
@@ -103,6 +102,9 @@ RETIRED_ITEMS = {
     'pb_young_worker.item_young_workers': 952,
     'pb_audit.item_audit_console': 974,
     'pb_tenants.item_tenants': 975,
+    # ---- NAV P2: off the menu, moved by their own modules' migrations ----
+    'pb_lifecycle.item_lifecycle': 982,
+    'pb_ask_hr.item_ask_hr': 983,
 }
 
 # Sections emptied by the cutover.
@@ -127,12 +129,15 @@ MATCH_TAGS = {
         'pb_fullfinal', 'pb_proration', 'pb_retro'],
     'pb_people_hub.item_people': [
         'pb_people_hub', 'pb_people', 'pb_contracts', 'pb_employee_detail',
-        'pb_contract_detail', 'wfp_dashboard'],
-    'pb_lifecycle.item_lifecycle': ['pb_lifecycle_hub', 'pb_journeys'],
+        'pb_contract_detail', 'pb_decision_room', 'pb_pay'],
+    # NAV P2: Hiring has its own entry; Workforce no longer claims the Trips
+    # board (Expenses does).
+    'pb_hiring.item_hiring': ['pb_hiring_hub', 'pb_hiring_board'],
     'pb_mission.item_workforce': [
         'pb_workforce', 'pb_today', 'pb_schedule', 'pb_time_hub', 'pb_timeoff',
-        'pb_ot_desk', 'pb_trips', 'pb_team', 'pb_attendance_weekgrid',
+        'pb_ot_desk', 'pb_team', 'pb_attendance_weekgrid',
         'pb_attendance_flow', 'pb_driver_map'],
+    'pb_expenses_hub.item_expenses': ['pb_expenses_hub', 'pb_trips'],
     'pb_insights_hub.item_insights': [
         'pb_insights_hub', 'pb_insights', 'pb_explorer_cockpit',
         'pb_workforce_insights', 'payroll_report_dashboard'],
@@ -148,17 +153,27 @@ MATCH_TAGS = {
     # PayAI and a command-bar row all still open `learn_journey` by name, and
     # the entry has to stay lit for both (R126).
     'pb_learn.item_learn_journey': ['learn_hub', 'learn_journey'],
+    'pb_talent_hub.item_talent': [
+        'pb_talent_hub', 'pb_goals_board', 'pb_pip_board', 'pb_training_board',
+        'pb_rnr_board'],
 }
 
 MATCH_MODELS = {
     'pb_payhub.item_pay_run': [
         'hr.payslip.run', 'hr.payslip', 'hr.payroll.import.batch'],
     'pb_people_hub.item_people': ['hr.employee', 'hr.contract'],
-    'pb_ask_hr.item_ask_hr': ['pb.ask.hr.ticket'],
-    'pb_lifecycle.item_lifecycle': [
-        'pb.journey.case', 'pb.journey.task', 'pb.journey.template',
-        'pb.letter.template', 'pb.hr.letter', 'pb.employee.checkin',
-        'pb.feedback.request'],
+    # NAV P2: Ask HR is a Home tab, so Home claims its model; Hiring,
+    # Expenses and Talent claim the models behind their tabs.
+    'pb_home_hub.item_home': ['pb.ask.hr.ticket'],
+    'pb_hiring.item_hiring': [
+        'hr.applicant', 'pb.hiring.requisition', 'pb.hiring.offer',
+        'pb.hiring.interview'],
+    'pb_expenses_hub.item_expenses': [
+        'pb.business.trip', 'pb.expense.claim', 'hr.expense'],
+    'pb_talent_hub.item_talent': [
+        'pb.goal', 'pb.goal.set', 'pb.goal.cycle', 'pb.pip.case',
+        'pb.training', 'pb.training.assignment', 'pb.rnr.nomination',
+        'pb.rnr.cycle'],
     'pb_settings.item_settings': [
         'hr.integration.connector', 'hr.formula.config', 'hr.payroll.structure',
         'hr.salary.rule', 'vietnam.insurance.policy', 'vietnam.tax.table',
@@ -167,14 +182,15 @@ MATCH_MODELS = {
 
 MATCH_XMLIDS = {
     'pb_payhub.item_pay_run': ['pb_payruns.action_pb_payruns_kanban'],
+    # The pre-existing disagreement (this table said the seven workforce
+    # planning actions; the data file has said the six Pay screens since the
+    # Decision Room) is fixed to match the data file (NAV P2 handover A10).
     'pb_people_hub.item_people': [
-        'pb_hr_workforce_planning.action_wfp_scenario',
-        'pb_hr_workforce_planning.action_wfp_forecast',
-        'pb_hr_workforce_planning.action_wfp_grade',
-        'pb_hr_workforce_planning.action_wfp_merit_matrix',
-        'pb_hr_workforce_planning.action_wfp_cycle',
-        'pb_hr_workforce_planning.action_wfp_tagging_wizard'],
-    'pb_ask_hr.item_ask_hr': ['pb_ask_hr.action_pb_ask_hr_ticket'],
+        'pb_pay.action_pb_pay', 'pb_pay.action_pb_pay_fairness',
+        'pb_pay.action_pb_pay_review', 'pb_pay.action_pb_pay_change',
+        'pb_pay.action_pb_pay_awaiting', 'pb_pay.action_pb_pay_place'],
+    'pb_home_hub.item_home': ['pb_ask_hr.action_pb_ask_hr_ticket'],
+    'pb_expenses_hub.item_expenses': ['pb_me_expense.pb_expense_claim_action'],
     'pb_settings.item_settings': [
         'base.action_res_users', 'base.action_res_company_form',
         'pb_sidebar.action_pb_sidebar_item', 'pb_sidebar.action_pb_sidebar_section',
@@ -521,21 +537,20 @@ class TestIaCycle5MatchMatrix(TransactionCase):
 
         # (what a user opened, how the action identifies itself, which item lights)
         cases = [
-            ('the payslips list', dict(model='hr.payslip'), 'Pay Run'),
-            ('a pay run', dict(model='hr.payslip.run'), 'Pay Run'),
-            ('the payslip review cockpit', dict(tag='pb_payslip_review'), 'Pay Run'),
+            ('the payslips list', dict(model='hr.payslip'), 'Payroll'),
+            ('a pay run', dict(model='hr.payslip.run'), 'Payroll'),
+            ('the payslip review cockpit', dict(tag='pb_payslip_review'), 'Payroll'),
             ('the pay runs kanban',
-             dict(xmlid='pb_payruns.action_pb_payruns_kanban'), 'Pay Run'),
-            ('the standalone proration ledger', dict(tag='pb_proration'), 'Pay Run'),
-            ('the import cockpit', dict(tag='pb_import'), 'Pay Run'),
-            ('the import wizard', dict(tag='pb_import_wizard'), 'Pay Run'),
+             dict(xmlid='pb_payruns.action_pb_payruns_kanban'), 'Payroll'),
+            ('the standalone proration ledger', dict(tag='pb_proration'), 'Payroll'),
+            ('the import cockpit', dict(tag='pb_import'), 'Payroll'),
+            ('the import wizard', dict(tag='pb_import_wizard'), 'Payroll'),
             ('an employee', dict(model='hr.employee'), 'People'),
             ('a contract', dict(model='hr.contract'), 'People'),
             ('the employee detail cockpit',
              dict(tag='pb_employee_detail'), 'People'),
-            ('a planning scenario',
-             dict(xmlid='pb_hr_workforce_planning.action_wfp_scenario'), 'People'),
-            ('the planning dashboard', dict(tag='wfp_dashboard'), 'People'),
+            ('the Decision Room', dict(tag='pb_decision_room'), 'People'),
+            ('a pay screen', dict(xmlid='pb_pay.action_pb_pay_review'), 'People'),
             ('the dashboard', dict(tag='pb_dashboard'), 'Home'),
             ('the approvals cockpit', dict(tag='pb_approval'), 'Home'),
             ('Mission Control', dict(tag='pb_workforce'), 'Workforce'),
@@ -552,9 +567,19 @@ class TestIaCycle5MatchMatrix(TransactionCase):
             ('the formula studio', dict(tag='pb_formula_studio'), 'Settings'),
             ('the learn hub', dict(tag='learn_hub'), 'Learn'),
             ('the learn journey', dict(tag='learn_journey'), 'Learn'),
-            ('the Lifecycle hub', dict(tag='pb_lifecycle_hub'), 'Lifecycle'),
-            ('the journeys cockpit', dict(tag='pb_journeys'), 'Lifecycle'),
-            ('a journey', dict(model='pb.journey.case'), 'Lifecycle'),
+            # NAV P2: the regrouped menu.
+            ('the Hiring hub', dict(tag='pb_hiring_hub'), 'Hiring'),
+            ('the hiring board', dict(tag='pb_hiring_board'), 'Hiring'),
+            ('a candidate', dict(model='hr.applicant'), 'Hiring'),
+            ('the Expenses hub', dict(tag='pb_expenses_hub'), 'Expenses'),
+            ('the trips board', dict(tag='pb_trips'), 'Expenses'),
+            ('a business trip', dict(model='pb.business.trip'), 'Expenses'),
+            ('an expense claim', dict(model='pb.expense.claim'), 'Expenses'),
+            ('the Talent hub', dict(tag='pb_talent_hub'), 'Talent'),
+            ('a growth plan', dict(model='pb.pip.case'), 'Talent'),
+            ('an Ask HR question', dict(model='pb.ask.hr.ticket'), 'Home'),
+            ('the Ask HR list',
+             dict(xmlid='pb_ask_hr.action_pb_ask_hr_ticket'), 'Home'),
         ]
         wrong = []
         for what, how, expected in cases:
