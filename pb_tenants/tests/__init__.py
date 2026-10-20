@@ -27,3 +27,4 @@ from . import test_support
 from . import test_brand_rules
 # Approval Matrix P7 — two owners agree before a customer is paused.
 from . import test_p7_platform
+from . import test_backup_retention

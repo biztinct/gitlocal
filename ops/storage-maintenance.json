@@ -1,0 +1,9 @@
+{
+  "backup_root": "/odoo/backups",
+  "temporary_root": "/tmp",
+  "retention_days": 7,
+  "production_databases": ["rize"],
+  "nonproduction_databases": ["payobook", "payobook_template", "p0clone"],
+  "permanent_archives": ["/odoo/archives/abm-20261020"],
+  "control_database": "payobook"
+}

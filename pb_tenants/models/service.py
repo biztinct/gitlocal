@@ -32,6 +32,7 @@ from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .tenant_approval import pending_answer, propose_platform
+from .backup_retention import expired_backup_ids
 from odoo.modules.registry import Registry
 from odoo.service import db as db_service
 
@@ -221,7 +222,6 @@ PROVISION_STEPS = [
     ('verify', 'Verify & go live'),
 ]
 # 'verify' must stay last: _run_step promotes the tenant to 'live' on that key.
-NIGHTLY_KEEP = 14
 
 IPV4_RE = re.compile(r'^\d{1,3}(?:\.\d{1,3}){3}$')
 # Public resolvers consulted when the host's own resolver fails us — see _resolve().
@@ -2678,16 +2678,48 @@ class PbTenants(models.AbstractModel):
                                   'kind': kind, 'state': 'failed', 'note': str(e)[:500]})
 
     def _prune_nightly(self, t):
-        nightly = self.env['pb.tenant.backup'].sudo().search(
-            [('tenant_id', '=', t.id), ('kind', '=', 'nightly'), ('state', '=', 'done')],
-            order='create_date desc')
-        for old in nightly[NIGHTLY_KEEP:]:
+        return self._prune_tenant_backups(t)
+
+    def _prune_tenant_backups(self, t):
+        # No configured policy means no deletion. Production is protected even
+        # if the parameter is accidentally cleared or misconfigured.
+        exempt = {'rize'} | set(self._param(
+            'pb_tenants.backup_retention_exempt_slugs', 'rize').split(','))
+        if t.slug in {slug.strip() for slug in exempt} or t.state == 'decommissioned':
+            return 0
+        try:
+            days = int(self._param('pb_tenants.backup_retention_days', '0'))
+        except (TypeError, ValueError):
+            return 0
+        backups = self.env['pb.tenant.backup'].sudo().search(
+            [('tenant_id', '=', t.id), ('state', '=', 'done')])
+        base = os.path.realpath(self._backup_root())
+        tenant_root = os.path.join(base, t.slug)
+        root = os.path.realpath(tenant_root)
+        if os.path.islink(tenant_root) or root == base or os.path.commonpath([base, root]) != base:
+            return 0
+        # A missing or untrusted newer file must not displace the last usable
+        # copy. Final archives outside this root are never candidates.
+        usable = backups.filtered(lambda b: b.path and os.path.isfile(b.path)
+            and not os.path.islink(b.path)
+            and os.path.commonpath([root, os.path.realpath(b.path)]) == root)
+        expired = expired_backup_ids(
+            [(b.id, b.create_date, b.kind) for b in usable], fields.Datetime.now(), days)
+        removed = 0
+        for old in usable.filtered(lambda b: b.id in expired):
             try:
-                if old.path and os.path.exists(old.path):
-                    os.unlink(old.path)
+                os.unlink(old.path)
             except OSError:
-                pass
+                _logger.exception('Could not remove expired backup %s', old.id)
+                continue
             old.unlink()
+            removed += 1
+        return removed
+
+    @api.model
+    def _cron_prune_backups(self):
+        return sum(self._prune_tenant_backups(t) for t in
+            self.env['pb.tenant'].sudo().search([('state', 'in', SERVING_STATES)]))
 
     @api.model
     def restore_staging(self, tenant_id, backup_id=None):
