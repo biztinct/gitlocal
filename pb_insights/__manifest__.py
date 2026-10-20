@@ -39,7 +39,7 @@ tier. All assets are local — no CDN, no external chart library.
     # in the switcher answered "one currency" for a tenant running two
     # countries out of one company, and the headline then added the two
     # together (rize: INR 6,299,386 counted as dong).
-    'version': '19.0.5.3.0',
+    'version': '19.0.5.3.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

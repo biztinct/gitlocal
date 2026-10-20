@@ -2,7 +2,7 @@
 {
     'name': 'Payobook People Cockpit',
     'summary': 'Employee roster + contracts cockpit (headcount, payroll readiness)',
-    'version': '19.0.1.2.6',
+    'version': '19.0.1.2.7',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

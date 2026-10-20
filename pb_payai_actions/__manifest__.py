@@ -19,7 +19,7 @@
     # phrases_vi.py), Vietnamese months/amounts/dates, confirm words DUYỆT /
     # TRẢ LẠI / TỪ CHỐI beside the English ones; approvals doors open the one
     # request (pb_focus); P4-W1/W2 walk fixes.
-    'version': '19.0.4.2.1',
+    'version': '19.0.4.2.2',
     'category': 'Human Resources/Payroll',
     'summary': 'Ask PayAI to open a screen, show a run, or prepare work you then confirm',
     'author': 'Payobook',
