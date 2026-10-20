@@ -158,3 +158,20 @@ Per-database verification (all four identical):
 `abm` not touched (no such database on the box; `/odoo/archives/abm-20261020` preserved). Branch `19.1` pushed
 (`cac3bf798..4e02d6cdd`). Still open: the payobook.com browser walk (Fable), and Agent B's Learn regeneration for
 the two screen-guide strings (pb_payruns, pb_formula_studio) if not yet done.
+
+## 9. Live walk on payobook.com (Fable, 2026-10-21 08:35 AEDT, owner's browser session)
+
+| Check | Result |
+|---|---|
+| Sidebar | Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learn, Settings (11). Lifecycle and Ask HR gone. |
+| Home rail | PULSE · INBOX (tooltip Approvals inbox) · ASK HR · WALL · ANNOUNCE. Ask HR opens the kanban New / With HR / Answered / Closed in the canvas (sample state shown when Open matches nothing). |
+| Payroll | Brand "Payroll"; rail RUN · RUNS · PAYSLIPS · RESULTS · INPUTS (Payroll inputs) · PAY OUT (Payments and delivery) · ADJUST · SETTLE · CALENDAR · AWARDS. |
+| People | EMPLOYEES · RECORDS · PAY · WHERE THEY WORK · ASSETS · JOINERS · PROBATION · EXITS · CONTRACTS · PLAN. |
+| Hiring | OVERVIEW · INTERVIEWS · TALENT POOL over the existing board (26 open roles, strip intact). |
+| Expenses | TRIPS · CLAIMS; Claims lists the one waiting claim; first-time coach card appears. |
+| Talent | GOALS · GROWTH · TRAINING · PRAISE. |
+| Settings | 72 px rail: COMPANY · ACCESS · PAYROLL · HR · WORKFLOWS · CONNECT · SYSTEM; System group lists Guided setup, About, PayAI can act, Demo data. |
+| Old link | `/bizapp/action-pb_lifecycle_hub` lands on Journeys. |
+| Console | No errors on any hub. |
+
+Verdict: P2 accepted and live.
