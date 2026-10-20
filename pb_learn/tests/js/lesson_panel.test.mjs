@@ -308,6 +308,7 @@ async function drawerSuite() {
     const handed = JSON.parse(store.get("pbLearnLessonReturn") || "null");
     check(host.state.lp === null && handed && handed.station === "treatment" && handed.from === "treatment",
           "a rep-* step → handed to the practice copy, with where to come back", JSON.stringify(handed));
+    check(handed && handed.why === "practice", "… and why (practice), so the card can say so (P5b S6)");
 }
 
 // ============================================================ the thumbs

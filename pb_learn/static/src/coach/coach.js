@@ -2202,7 +2202,7 @@ export class CoachHost extends Component {
                                        current: this.state.screen });
         lp.note = null;
         if (where.where === "replica") {
-            this._lpToReplica(lp.index);
+            this._lpToReplica(lp.index, where.reason);
             return;
         }
         if (where.navigate && screen && canOpen(screen)) {
@@ -2213,7 +2213,7 @@ export class CoachHost extends Component {
             if (res === "elsewhere") {
                 // The hub moved this reader off a tab they cannot open: a
                 // real refusal, so the practice copy plays this step.
-                this._lpToReplica(lp.index);
+                this._lpToReplica(lp.index, "unreachable");
                 return;
             }
             if (res !== "here") {
@@ -2279,14 +2279,18 @@ export class CoachHost extends Component {
 
     /** The step lives only in the practice copy: play it there, at this step,
      *  and remember where to come back to. */
-    _lpToReplica(index) {
+    _lpToReplica(index, why) {
         const lp = this.state.lp;
         if (!lp) {
             return;
         }
         try {
+            // LEARNREV P5b (S6) — `why` (practice | unreachable) rides along so
+            // the practice copy's card says WHY this step plays there, in the
+            // reader's language (lpPracticeNote / lpUnreachableNote).
             window.sessionStorage.setItem(LP_RETURN_KEY, JSON.stringify(
-                { station: lp.station, lesson: lp.lesson, from: this.state.screen || "" }));
+                { station: lp.station, lesson: lp.lesson, from: this.state.screen || "",
+                  why: why === "unreachable" ? "unreachable" : "practice" }));
         } catch {
             // Without it the practice copy simply plays on to the end.
         }
@@ -3394,7 +3398,8 @@ export class CoachHost extends Component {
             this._lpShow();
         } else if (act === "c-lppractice") {
             if (this.state.lp) {
-                this._lpToReplica(this.state.lp.index);
+                this._lpToReplica(this.state.lp.index,
+                    (this.state.lp.note && this.state.lp.note.kind) || "practice");
             }
         } else if (act === "c-lpans") {
             this._lpAnswer(Number(el.dataset.i));

@@ -1015,8 +1015,12 @@ export class LearnJourney extends Component {
             : linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) });
         // Handed over by the Guide: the card itself says why this step is on
         // the practice copy (a line in the shell sat under the card).
-        const handed = this.state.handoff && isPracticeAnchor(st.anchor)
-            ? `<div class="lrn-lp-note practice">${ic("flask")}<span>${esc(T("lpPracticeNote"))}</span></div>` : "";
+        // LEARNREV P5b (S6) — and on a screen this reader cannot open, it says
+        // that instead (every step of such a lesson plays here).
+        const unreach = this.state.handoff && this.state.handoff.why === "unreachable"
+            && !isPracticeAnchor(st.anchor);
+        const handed = this.state.handoff && (isPracticeAnchor(st.anchor) || unreach)
+            ? `<div class="lrn-lp-note ${unreach ? "unreachable" : "practice"}">${ic(unreach ? "lock" : "flask")}<span>${esc(T(unreach ? "lpUnreachableNote" : "lpPracticeNote"))}</span></div>` : "";
         // LEARNREV P5b — the same thumbs as the Guide's lesson card.
         const ref = stepRef("lesson", this.lesson && this.lesson.key, this.steps.indexOf(st));
         return `${handed}
