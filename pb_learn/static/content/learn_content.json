@@ -14943,16 +14943,25 @@
       "steps": [
         {
           "act": "click",
-          "anchor": "rep-newemp-open",
-          "body": {
-            "en": "Everybody who is paid starts here. In Payobook this button opens a form of its own. In the practice company that form is already drawn under the roster — press the button, then read it there.",
-            "vi": "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng. Trong công ty thực hành, biểu mẫu đó đã có sẵn ngay dưới danh sách — hãy bấm nút rồi đọc ở đó."
+          "affects": {
+            "en": "In the practice company the form is drawn under the roster instead, so read it there.",
+            "vi": "Trong công ty thực hành, biểu mẫu được vẽ ngay dưới danh sách, nên hãy đọc ở đó."
           },
+          "anchor": "rep-newemp-open",
+          "body": "",
           "guard": false,
           "key": "open",
           "kicker": {
             "en": "Step 1",
             "vi": "Bước 1"
+          },
+          "look": {
+            "en": "Add employee, at the top of the list. Pressing it opens the form.",
+            "vi": "Thêm nhân viên, ở đầu danh sách. Bấm vào sẽ mở biểu mẫu."
+          },
+          "means": {
+            "en": "Everybody who is paid starts here. In Payobook this opens a form of its own.",
+            "vi": "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng."
           },
           "modes": [
             "try"
@@ -14969,16 +14978,25 @@
         },
         {
           "act": "input",
-          "anchor": "rep-newemp-name",
-          "body": {
-            "en": "The name is what everybody after you will search for, so write it the way their contract writes it. Type it and press Enter.",
-            "vi": "Cái tên là thứ những người sau bạn sẽ dùng để tìm, nên hãy viết đúng như trong hợp đồng của họ. Gõ vào rồi bấm Enter."
+          "affects": {
+            "en": "Write it the way their contract writes it, so payslips and reports match.",
+            "vi": "Hãy viết đúng như trong hợp đồng của họ, để phiếu lương và báo cáo khớp nhau."
           },
+          "anchor": "rep-newemp-name",
+          "body": "",
           "guard": false,
           "key": "name",
           "kicker": {
             "en": "Step 2",
             "vi": "Bước 2"
+          },
+          "look": {
+            "en": "The Full name box. Type the name and press Enter.",
+            "vi": "Ô Họ và tên. Gõ tên vào rồi bấm Enter."
+          },
+          "means": {
+            "en": "The name is what everybody after you will search for.",
+            "vi": "Cái tên là thứ những người sau bạn sẽ dùng để tìm."
           },
           "modes": [
             "try"
@@ -15001,16 +15019,25 @@
         },
         {
           "act": "click",
-          "anchor": "rep-newemp-div",
-          "body": {
-            "en": "This is the decision on this form. A division carries its own formula configuration, so choosing one here is choosing the rules that will price every payslip this person ever gets.",
-            "vi": "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có cấu hình công thức riêng, nên chọn bộ phận ở đây là chọn bộ quy tắc sẽ tính mọi phiếu lương của người này về sau."
+          "affects": {
+            "en": "The division you pick decides the rules that work out every payslip this person gets.",
+            "vi": "Bộ phận bạn chọn quyết định bộ quy tắc tính mọi phiếu lương của người này về sau."
           },
+          "anchor": "rep-newemp-div",
+          "body": "",
           "guard": false,
           "key": "division",
           "kicker": {
             "en": "Step 3",
             "vi": "Bước 3"
+          },
+          "look": {
+            "en": "The Division list, under the name. Open it and pick one.",
+            "vi": "Danh sách Bộ phận, dưới ô tên. Mở ra và chọn một bộ phận."
+          },
+          "means": {
+            "en": "This is the decision on this form. Each division carries its own pay rules.",
+            "vi": "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có bộ quy tắc lương riêng."
           },
           "modes": [
             "try"
@@ -15027,16 +15054,25 @@
         },
         {
           "act": "click",
-          "anchor": "rep-newemp-save",
-          "body": {
-            "en": "On your own Payobook this writes a record other people can see. Here it writes nothing at all — there is no server behind the practice company.",
-            "vi": "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy. Ở đây nó không ghi gì cả — không có máy chủ nào phía sau công ty thực hành."
+          "affects": {
+            "en": "Here it writes nothing at all. There is no server behind the practice company.",
+            "vi": "Ở đây nó không ghi gì cả. Không có máy chủ nào phía sau công ty thực hành."
           },
+          "anchor": "rep-newemp-save",
+          "body": "",
           "guard": true,
           "key": "save",
           "kicker": {
             "en": "Step 4",
             "vi": "Bước 4"
+          },
+          "look": {
+            "en": "Save, under the form. Pressing it is the last step.",
+            "vi": "Lưu, dưới biểu mẫu. Bấm vào là bước cuối cùng."
+          },
+          "means": {
+            "en": "On your own Payobook this writes a record other people can see.",
+            "vi": "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy."
           },
           "modes": [
             "try"
@@ -15053,16 +15089,25 @@
         },
         {
           "act": "observe",
-          "anchor": "pe-roster",
-          "body": {
-            "en": "Read the last row. That person is on the roster and has no bank account on file, so payroll cannot pay them. Adding somebody is the easy half; a running contract and bank details are the half that decides whether they are in the next run.",
-            "vi": "Hãy đọc dòng cuối cùng. Người đó đã có trong danh sách nhưng chưa có tài khoản ngân hàng, nên hệ thống không chi lương cho họ được. Thêm người mới là phần dễ; hợp đồng đang hiệu lực và thông tin ngân hàng mới là phần quyết định họ có mặt trong đợt lương tới hay không."
+          "affects": {
+            "en": "Adding somebody is the easy half. A running contract and bank details decide whether they are in the next run.",
+            "vi": "Thêm người mới là phần dễ. Hợp đồng đang hiệu lực và thông tin ngân hàng mới quyết định họ có trong đợt lương tới hay không."
           },
+          "anchor": "pe-roster",
+          "body": "",
           "guard": false,
           "key": "roster",
           "kicker": {
             "en": "Step 5",
             "vi": "Bước 5"
+          },
+          "look": {
+            "en": "The last row of the roster, and the warning at its end.",
+            "vi": "Dòng cuối cùng của danh sách, và dấu cảnh báo ở cuối dòng."
+          },
+          "means": {
+            "en": "That person is on the roster but has no bank account on file, so payroll cannot pay them.",
+            "vi": "Người đó đã có trong danh sách nhưng chưa có tài khoản ngân hàng, nên hệ thống không chi lương cho họ được."
           },
           "modes": [
             "try"
@@ -15071,8 +15116,8 @@
           "screen": "employees",
           "timeout": 0,
           "tip": {
-            "en": "The payroll-ready column is where this shows up. It counts bank details over headcount, and it is the tile to read before a run rather than after it.",
-            "vi": "Cột \"sẵn sàng tính lương\" là nơi điều này hiện ra. Nó đếm số người đã có thông tin ngân hàng trên tổng sĩ số, và nên đọc trước khi chạy đợt lương chứ đừng đọc sau."
+            "en": "Payroll-ready on the numbers line counts bank details over headcount. Read it before a run, not after.",
+            "vi": "Sẵn sàng trả lương trên dòng con số đếm số người đã có thông tin ngân hàng trên tổng sĩ số. Hãy đọc nó trước khi chạy đợt lương, đừng đọc sau."
           },
           "title": {
             "en": "On the roster is not the same as paid",
@@ -16821,16 +16866,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "pp-tabs",
-          "body": {
-            "en": "Bands and Fairness describe pay as it is. Review and Changes are where it changes.",
-            "vi": "Khoảng lương và Công bằng mô tả lương như hiện tại. Xét lương và Thay đổi là nơi lương thay đổi."
+          "affects": {
+            "en": "Nothing on the Bands tab changes anybody's pay.",
+            "vi": "Không có gì ở tab Khoảng lương thay đổi lương của ai."
           },
+          "anchor": "pp-tabs",
+          "body": "",
           "guard": false,
           "key": "tabs",
           "kicker": {
             "en": "People › Pay",
             "vi": "Con người › Lương"
+          },
+          "look": {
+            "en": "The four tabs: Bands, Fairness, Review and Changes.",
+            "vi": "Bốn tab: Khoảng lương, Công bằng, Xét lương và Thay đổi."
+          },
+          "means": {
+            "en": "Bands and Fairness describe pay as it is. Review and Changes are where it changes.",
+            "vi": "Khoảng lương và Công bằng mô tả lương như hiện tại. Xét lương và Thay đổi là nơi lương thay đổi."
           },
           "modes": [
             "watch"
@@ -16850,14 +16904,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-bands-tools",
-          "body": {
+          "affects": {
             "en": "None of these is a pay rise. Place a new hire suggests a starting salary inside the band.",
             "vi": "Không nút nào là tăng lương. Xếp lương người mới gợi ý mức lương khởi điểm nằm trong khoảng."
           },
+          "anchor": "pp-bands-tools",
+          "body": "",
           "guard": false,
           "key": "tools",
           "kicker": "",
+          "look": {
+            "en": "The four buttons above the bands.",
+            "vi": "Bốn nút phía trên các khoảng lương."
+          },
+          "means": {
+            "en": "Work it out again redraws the bands from today's pay. Export and Import take them through a file.",
+            "vi": "Tính lại vẽ lại các khoảng lương từ mức đang trả. Xuất ra và Nhập vào đưa chúng qua một tệp."
+          },
           "modes": [
             "watch"
           ],
@@ -16873,14 +16936,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-band-picture",
-          "body": {
-            "en": "A dot outside its range is somebody paid below or above their band. Dragging an edge shows the cost before you let go.",
-            "vi": "Chấm nằm ngoài khoảng là người đang được trả dưới hoặc trên khoảng lương. Kéo mép cho thấy chi phí trước khi bạn thả tay."
+          "affects": {
+            "en": "Dragging an edge shows the cost before you let go, and only the band moves.",
+            "vi": "Kéo mép cho thấy chi phí trước khi bạn thả tay, và chỉ khoảng lương thay đổi."
           },
+          "anchor": "pp-band-picture",
+          "body": "",
           "guard": false,
           "key": "picture",
           "kicker": "",
+          "look": {
+            "en": "The band picture: a shaded range per band, and a dot per person.",
+            "vi": "Bức tranh khoảng lương: mỗi khoảng một vùng tô màu, mỗi người một chấm."
+          },
+          "means": {
+            "en": "A dot outside its range is somebody paid below or above their band.",
+            "vi": "Chấm nằm ngoài khoảng là người đang được trả dưới hoặc trên khoảng lương."
+          },
           "modes": [
             "watch"
           ],
@@ -16896,14 +16968,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-health",
-          "body": {
-            "en": "Five checks read for you: below the band, above it, newer people paid more, a manager paid less, and how wide each band has become.",
-            "vi": "Năm phép kiểm tra đã đọc sẵn: dưới khoảng, trên khoảng, người mới được trả cao hơn, quản lý được trả thấp hơn, và mỗi khoảng lương đã rộng ra bao nhiêu."
+          "affects": {
+            "en": "A count above zero is where a pay review should look first.",
+            "vi": "Con số lớn hơn không là chỗ đợt xét lương nên nhìn vào trước."
           },
+          "anchor": "pp-health",
+          "body": "",
           "guard": false,
           "key": "health",
           "kicker": "",
+          "look": {
+            "en": "The Worth knowing cards under the picture.",
+            "vi": "Các thẻ Đáng biết dưới bức tranh."
+          },
+          "means": {
+            "en": "Five checks read for you: below the band, above it, newer people paid more, a manager paid less, and band width.",
+            "vi": "Năm phép kiểm tra đã đọc sẵn: dưới khoảng, trên khoảng, người mới được trả cao hơn, quản lý được trả thấp hơn, và độ rộng khoảng lương."
+          },
           "modes": [
             "watch"
           ],
@@ -16960,16 +17041,25 @@
       "steps": [
         {
           "act": "click",
-          "anchor": "pp-tab-review",
-          "body": {
-            "en": "I open the Review tab. Switching a tab only changes what you are looking at.",
-            "vi": "Tôi mở tab Xét lương. Chuyển tab chỉ đổi thứ bạn đang xem."
+          "affects": {
+            "en": "Switching a tab only changes what you are looking at.",
+            "vi": "Chuyển tab chỉ đổi thứ bạn đang xem."
           },
+          "anchor": "pp-tab-review",
+          "body": "",
           "guard": false,
           "key": "opentab",
           "kicker": {
             "en": "People › Pay",
             "vi": "Con người › Lương"
+          },
+          "look": {
+            "en": "The Review tab, beside Bands and Fairness. I open it.",
+            "vi": "Tab Xét lương, cạnh Khoảng lương và Công bằng. Tôi mở nó."
+          },
+          "means": {
+            "en": "Review is where a whole year's rises are decided.",
+            "vi": "Xét lương là nơi quyết định mức tăng của cả năm."
           },
           "modes": [
             "watch"
@@ -16986,16 +17076,25 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-reviews",
-          "body": {
-            "en": "Every review, and New review to start one. Set up guidance says what each score should earn.",
-            "vi": "Mọi đợt xét lương, và Đợt xét lương mới để bắt đầu. Thiết lập hướng dẫn nói mỗi mức điểm nên được tăng bao nhiêu."
+          "affects": {
+            "en": "Set up guidance says what each score should earn, and every new review starts from it.",
+            "vi": "Thiết lập hướng dẫn nói mỗi mức điểm nên được tăng bao nhiêu, và mọi đợt xét lương mới bắt đầu từ đó."
           },
+          "anchor": "pp-reviews",
+          "body": "",
           "guard": false,
           "key": "list",
           "kicker": {
             "en": "People › Pay › Review",
             "vi": "Con người › Lương › Xét lương"
+          },
+          "look": {
+            "en": "The Pay reviews card, with Set up guidance and New review.",
+            "vi": "Thẻ Đợt xét lương, với Thiết lập hướng dẫn và Đợt xét lương mới."
+          },
+          "means": {
+            "en": "Every review is listed here. New review starts one.",
+            "vi": "Mọi đợt xét lương được liệt kê ở đây. Đợt xét lương mới bắt đầu một đợt."
           },
           "modes": [
             "watch",
@@ -17016,14 +17115,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-stepper",
-          "body": {
-            "en": "Being written, With HR, With finance, With the CEO, Approved, Applied. Any step can send it back with a reason.",
-            "vi": "Đang soạn, Đang ở nhân sự, Đang ở tài chính, Đang ở tổng giám đốc, Đã duyệt, Đã áp dụng. Bước nào cũng có thể trả lại kèm lý do."
+          "affects": {
+            "en": "Any step can send it back with a reason, and it is written again.",
+            "vi": "Bước nào cũng có thể trả lại kèm lý do, và nó được soạn lại."
           },
+          "anchor": "pp-stepper",
+          "body": "",
           "guard": false,
           "key": "stepper",
           "kicker": "",
+          "look": {
+            "en": "The steps: Being written, With HR, With finance, With the CEO, Approved, Applied.",
+            "vi": "Các bước: Đang soạn, Đang ở nhân sự, Đang ở tài chính, Đang ở tổng giám đốc, Đã duyệt, Đã áp dụng."
+          },
+          "means": {
+            "en": "The lit step is where the review stands now.",
+            "vi": "Bước sáng màu là chỗ đợt xét lương đang đứng."
+          },
           "modes": [
             "watch",
             "try"
@@ -17040,14 +17148,23 @@
         },
         {
           "act": "click",
-          "anchor": "pp-review-row",
-          "body": {
-            "en": "I open the review at the top. Opening one only changes what you are looking at. With no review yet, start one with New review.",
-            "vi": "Tôi mở đợt xét lương trên cùng. Mở một đợt chỉ đổi thứ bạn đang xem. Nếu chưa có đợt nào, hãy bắt đầu bằng Đợt xét lương mới."
+          "affects": {
+            "en": "With no review yet, there is nothing to open: start one with New review.",
+            "vi": "Nếu chưa có đợt nào thì không có gì để mở: hãy bắt đầu bằng Đợt xét lương mới."
           },
+          "anchor": "pp-review-row",
+          "body": "",
           "guard": false,
           "key": "openone",
           "kicker": "",
+          "look": {
+            "en": "The review at the top of the list. I open it.",
+            "vi": "Đợt xét lương trên cùng của danh sách. Tôi mở nó."
+          },
+          "means": {
+            "en": "Opening one only changes what you are looking at.",
+            "vi": "Mở một đợt chỉ đổi thứ bạn đang xem."
+          },
           "modes": [
             "watch"
           ],
@@ -17063,14 +17180,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-pr-guide",
-          "body": {
-            "en": "Press Use the guidance. Every rise is filled from the scores; a person below their band gets more.",
-            "vi": "Bấm Dùng hướng dẫn. Mọi mức tăng được điền theo điểm đánh giá; người dưới khoảng lương được tăng nhiều hơn."
+          "affects": {
+            "en": "The Budget meter fills as the rises go in.",
+            "vi": "Thước đo Ngân sách đầy dần khi các mức tăng được thêm vào."
           },
+          "anchor": "rep-pr-guide",
+          "body": "",
           "guard": false,
           "key": "guidance",
           "kicker": "",
+          "look": {
+            "en": "Use the guidance, beside the worksheet. Pressing it fills the rises.",
+            "vi": "Dùng hướng dẫn, cạnh bảng tính. Bấm vào sẽ điền các mức tăng."
+          },
+          "means": {
+            "en": "Every rise is filled from the scores. A person below their band gets more.",
+            "vi": "Mọi mức tăng được điền theo điểm đánh giá. Người dưới khoảng lương được tăng nhiều hơn."
+          },
           "modes": [
             "try"
           ],
@@ -17086,14 +17212,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-worksheet",
-          "body": {
-            "en": "Score, in the band, paid now, guidance, rise, new pay and a year's cost. The filters find who is not scored or paid below the band.",
-            "vi": "Điểm, trong khoảng lương, đang được trả, hướng dẫn, mức tăng, lương mới và chi phí cả năm. Bộ lọc tìm ai chưa chấm điểm hoặc được trả dưới khoảng lương."
+          "affects": {
+            "en": "The filters find who is Not scored or Paid below the band.",
+            "vi": "Bộ lọc tìm ai Chưa chấm điểm hoặc Được trả dưới khoảng lương."
           },
+          "anchor": "pp-worksheet",
+          "body": "",
           "guard": false,
           "key": "worksheet",
           "kicker": "",
+          "look": {
+            "en": "The worksheet: Score, In the band, Paid now, Guidance, Rise and New pay.",
+            "vi": "Bảng tính: Điểm đánh giá, Trong khoảng lương, Đang được trả, Hướng dẫn, Mức tăng và Lương mới."
+          },
+          "means": {
+            "en": "Each row is one person and the rise proposed for them.",
+            "vi": "Mỗi dòng là một người và mức tăng đề xuất cho họ."
+          },
           "modes": [
             "watch",
             "try"
@@ -17110,14 +17245,24 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-meters",
-          "body": {
-            "en": "The budget meter fills as rises go in. Over budget, the review cannot be sent for approval.",
-            "vi": "Thước đo ngân sách đầy dần khi thêm các mức tăng. Vượt ngân sách thì không gửi duyệt được."
+          "affects": {
+            "en": "Read-only. It moves as you change rises on the rows; passing the budget is listed under What stops approval.",
+            "vi": "Chỉ xem. Nó thay đổi khi bạn đổi mức tăng ở các dòng; việc vượt ngân sách được liệt kê trong Điều gì chặn duyệt."
           },
+          "anchor": "pp-meters",
+          "body": "",
+          "field": "payreview.budget",
           "guard": false,
           "key": "meters",
           "kicker": "",
+          "look": {
+            "en": "The Budget meter, beside Fairness and Scores.",
+            "vi": "Thước đo Ngân sách, cạnh Công bằng và Điểm đánh giá."
+          },
+          "means": {
+            "en": "What the proposed rises add up to, against the budget set for the review.",
+            "vi": "Tổng các mức tăng được đề xuất, so với ngân sách đã đặt cho đợt xét lương."
+          },
           "modes": [
             "watch",
             "try"
@@ -17134,14 +17279,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-pr-cal",
-          "body": {
-            "en": "Press Calibration: each rise is marked in line, standing out, or breaking a limit.",
-            "vi": "Bấm Cân chỉnh: mỗi mức tăng được đánh dấu là ngang với người khác, nổi bật, hay vượt giới hạn."
+          "affects": {
+            "en": "A rise that stands out is worth a second look before you send the review.",
+            "vi": "Mức tăng nổi bật là chỗ đáng xem lại trước khi bạn gửi đợt xét lương."
           },
+          "anchor": "rep-pr-cal",
+          "body": "",
           "guard": false,
           "key": "calibrate",
           "kicker": "",
+          "look": {
+            "en": "Calibration, at the end of the tools. Pressing it opens the marks.",
+            "vi": "Cân chỉnh, ở cuối các công cụ. Bấm vào sẽ mở các dấu đánh giá."
+          },
+          "means": {
+            "en": "Each rise is marked in line with the others, stands out, or breaks a limit.",
+            "vi": "Mỗi mức tăng được đánh dấu là ngang với những người khác, nổi bật, hay vượt giới hạn."
+          },
           "modes": [
             "try"
           ],
@@ -17157,14 +17311,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pp-review-actions",
-          "body": {
-            "en": "Approved is the last signature. Apply writes the new pay onto the records, and the next pay run reads it.",
-            "vi": "Đã duyệt là chữ ký cuối. Áp dụng ghi lương mới vào hồ sơ, và đợt lương kế tiếp đọc nó."
+          "affects": {
+            "en": "The next pay run reads the new pay.",
+            "vi": "Đợt lương kế tiếp sẽ đọc lương mới."
           },
+          "anchor": "pp-review-actions",
+          "body": "",
           "guard": false,
           "key": "actions",
           "kicker": "",
+          "look": {
+            "en": "Send for approval, on the review's action bar.",
+            "vi": "Gửi duyệt, trên thanh thao tác của đợt xét lương."
+          },
+          "means": {
+            "en": "Approved is the last signature. Apply then writes the new pay onto each person's contract.",
+            "vi": "Đã duyệt là chữ ký cuối. Sau đó Áp dụng ghi lương mới vào hợp đồng của từng người."
+          },
           "modes": [
             "watch",
             "try"
@@ -17220,16 +17383,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "dr-head",
-          "body": {
-            "en": "Undo, Reset and Save plan at the top. Everything below is a question you can ask of next year.",
-            "vi": "Hoàn tác, Đặt lại và Lưu kế hoạch ở trên. Mọi thứ bên dưới là một câu hỏi bạn đặt cho năm sau."
+          "affects": {
+            "en": "Only Save plan keeps anything, and even a saved plan changes no payroll.",
+            "vi": "Chỉ Lưu kế hoạch mới giữ lại, và ngay cả kế hoạch đã lưu cũng không thay đổi bảng lương."
           },
+          "anchor": "dr-head",
+          "body": "",
           "guard": false,
           "key": "head",
           "kicker": {
             "en": "People › Plan",
             "vi": "Con người › Kế hoạch"
+          },
+          "look": {
+            "en": "The heading, with Undo, Reset and Save plan.",
+            "vi": "Tiêu đề, với Hoàn tác, Đặt lại và Lưu kế hoạch."
+          },
+          "means": {
+            "en": "Everything below is a question you can ask of next year.",
+            "vi": "Mọi thứ bên dưới là một câu hỏi bạn đặt cho năm sau."
           },
           "modes": [
             "watch"
@@ -17249,14 +17421,23 @@
         },
         {
           "act": "observe",
-          "anchor": "dr-levers",
-          "body": {
-            "en": "Start from a preset, then move the levers: people, a rise, overtime, leavers. Every result follows at once.",
-            "vi": "Bắt đầu từ một phương án có sẵn, rồi xoay các cần gạt: con người, tăng lương, tăng ca, người nghỉ. Mọi kết quả thay đổi theo ngay."
+          "affects": {
+            "en": "Every result on the page follows at once.",
+            "vi": "Mọi kết quả trên trang thay đổi theo ngay."
           },
+          "anchor": "dr-levers",
+          "body": "",
           "guard": false,
           "key": "levers",
           "kicker": "",
+          "look": {
+            "en": "What if we…, with its presets and levers.",
+            "vi": "Nếu chúng ta…, với các phương án có sẵn và cần gạt."
+          },
+          "means": {
+            "en": "Start from a preset, then move the levers: people, a rise, overtime, leavers.",
+            "vi": "Bắt đầu từ một phương án có sẵn, rồi xoay các cần gạt: con người, tăng lương, tăng ca, người nghỉ."
+          },
           "modes": [
             "watch"
           ],
@@ -17272,14 +17453,23 @@
         },
         {
           "act": "observe",
-          "anchor": "dr-goals",
-          "body": {
-            "en": "Set goals, and the room scores every plan against them.",
-            "vi": "Đặt mục tiêu, và căn phòng chấm điểm mọi kế hoạch theo đó."
+          "affects": {
+            "en": "The room scores every plan against them.",
+            "vi": "Căn phòng chấm điểm mọi kế hoạch theo các mục tiêu đó."
           },
+          "anchor": "dr-goals",
+          "body": "",
           "guard": false,
           "key": "goals",
           "kicker": "",
+          "look": {
+            "en": "Your definition of a good year.",
+            "vi": "Định nghĩa của bạn về một năm tốt."
+          },
+          "means": {
+            "en": "Your goals for the year: profit, overtime, room to hire.",
+            "vi": "Mục tiêu của bạn cho cả năm: lợi nhuận, tăng ca, dư địa tuyển dụng."
+          },
           "modes": [
             "watch"
           ],
@@ -17295,14 +17485,23 @@
         },
         {
           "act": "observe",
-          "anchor": "dr-results",
-          "body": {
-            "en": "Work & shifts, Why profit changed, People & pay, Room to hire.",
-            "vi": "Công việc & ca làm, Vì sao lợi nhuận thay đổi, Con người & lương, Dư địa tuyển dụng."
+          "affects": {
+            "en": "Why profit changed names each lever's share of the result.",
+            "vi": "Vì sao lợi nhuận thay đổi nêu phần của từng cần gạt trong kết quả."
           },
+          "anchor": "dr-results",
+          "body": "",
           "guard": false,
           "key": "results",
           "kicker": "",
+          "look": {
+            "en": "Work & shifts, Why profit changed, People & pay and Room to hire.",
+            "vi": "Công việc & ca làm, Vì sao lợi nhuận thay đổi, Con người & lương và Dư địa tuyển dụng."
+          },
+          "means": {
+            "en": "Each tab reads the same plan from one side.",
+            "vi": "Mỗi tab đọc cùng một kế hoạch từ một phía."
+          },
           "modes": [
             "watch"
           ],
@@ -17318,14 +17517,23 @@
         },
         {
           "act": "observe",
-          "anchor": "dr-compare",
-          "body": {
-            "en": "Saved plans sit side by side. Exact cost runs one through the real pay scheme and says how far the estimate was off.",
-            "vi": "Các kế hoạch đã lưu nằm cạnh nhau. Chi phí chính xác chạy một kế hoạch qua chương trình lương thật và cho biết ước tính lệch bao nhiêu."
+          "affects": {
+            "en": "It says how far the room's estimate was off. That is the number to budget from.",
+            "vi": "Nó cho biết ước tính của căn phòng lệch bao nhiêu. Đó là con số để lập ngân sách."
           },
+          "anchor": "dr-compare",
+          "body": "",
           "guard": false,
           "key": "compare",
           "kicker": "",
+          "look": {
+            "en": "Compare possibilities, with confidence: the saved plans, side by side.",
+            "vi": "So sánh các khả năng, một cách tự tin: các kế hoạch đã lưu, nằm cạnh nhau."
+          },
+          "means": {
+            "en": "Exact cost runs one saved plan through the real pay scheme.",
+            "vi": "Chi phí chính xác chạy một kế hoạch đã lưu qua chương trình lương thật."
+          },
           "modes": [
             "watch"
           ],
@@ -32163,17 +32371,26 @@
           ],
           "steps": [
             {
-              "anchor": "pe-kpis",
-              "body": {
-                "en": "People › <b>Employees</b>. <b>Headcount</b>, <b>Running contracts</b>, <b>Expiring within 30 days</b>, <b>New this month</b>, <b>Not payroll-ready</b>, <b>Monthly wage</b> and <b>Payroll-ready</b>. The numbers are the filters: press one to narrow the list, press it again for everyone.",
-                "vi": "Con người › <b>Nhân viên</b>. <b>Số lượng nhân sự</b>, <b>Hợp đồng đang hiệu lực</b>, <b>Hết hạn trong 30 ngày</b>, <b>Mới trong tháng này</b>, <b>Chưa sẵn sàng tính lương</b>, <b>Lương hàng tháng</b> và <b>Sẵn sàng trả lương</b>. Các con số chính là bộ lọc: bấm một con số để thu hẹp danh sách, bấm lại để xem mọi người."
+              "affects": {
+                "en": "Pressing a number narrows the list to those people. Pressing it again shows everyone.",
+                "vi": "Bấm một con số sẽ thu hẹp danh sách còn những người đó. Bấm lại để xem mọi người."
               },
+              "anchor": "pe-kpis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers line: Headcount, Running contracts, Expiring within 30 days, New this month, Not payroll-ready, Monthly wage and Payroll-ready.",
+                "vi": "Dòng con số: Số lượng nhân sự, Hợp đồng đang hiệu lực, Hết hạn trong 30 ngày, Mới trong tháng này, Chưa sẵn sàng tính lương, Lương hàng tháng và Sẵn sàng trả lương."
+              },
+              "means": {
+                "en": "Each number counts everyone in your companies, not only the rows listed below.",
+                "vi": "Mỗi con số đếm mọi người trong các công ty của bạn, không chỉ các dòng bên dưới."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32184,47 +32401,80 @@
                 "vi": "Hợp đồng đang hiệu lực đếm hợp đồng, không đếm người. Chưa sẵn sàng tính lương kiểm tra cả hợp đồng và ngân hàng; tỷ lệ Sẵn sàng trả lương chỉ đếm thông tin ngân hàng, nên hai con số có thể khác nhau."
               },
               "title": {
-                "en": "The numbers line",
-                "vi": "Dòng con số"
+                "en": "The numbers line is the filter",
+                "vi": "Dòng con số chính là bộ lọc"
               },
               "visual": "none"
             },
             {
-              "anchor": "pe-kpis",
-              "body": {
-                "en": "Press <b>Not payroll-ready</b> on the numbers line. It lists everyone with no running contract or no bank details — the people this run will compute and not pay, or leave out. Press it again to show everyone.",
-                "vi": "Bấm <b>Chưa sẵn sàng tính lương</b> trên dòng con số. Nó liệt kê mọi người chưa có hợp đồng đang hiệu lực hoặc chưa có thông tin ngân hàng — những người đợt lương này sẽ tính mà không trả, hoặc bỏ ra ngoài. Bấm lại để hiện mọi người."
+              "affects": {
+                "en": "Read-only. It drops when a contract becomes running or bank details are added.",
+                "vi": "Chỉ xem. Con số giảm khi một hợp đồng trở thành đang hiệu lực hoặc khi thêm thông tin ngân hàng."
               },
+              "anchor": "pe-kpis",
+              "body": "",
               "consequence": "",
+              "field": "employees.not_ready",
               "kicker": {
                 "en": "Before a run",
                 "vi": "Trước đợt lương"
               },
               "lines": [],
+              "look": {
+                "en": "Not payroll-ready, on the numbers line.",
+                "vi": "Chưa sẵn sàng tính lương, trên dòng con số."
+              },
+              "means": {
+                "en": "Counts people with no running contract or no bank details.",
+                "vi": "Đếm những người chưa có hợp đồng đang hiệu lực hoặc chưa có thông tin ngân hàng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Not payroll-ready, to list only those people. Press it again for everyone.",
+                "vi": "Chưa sẵn sàng tính lương, để chỉ liệt kê những người đó. Bấm lại để xem mọi người."
+              },
               "screen": "employees",
               "tip": "",
               "title": {
                 "en": "Press Not payroll-ready",
                 "vi": "Bấm Chưa sẵn sàng tính lương"
               },
+              "uses": [
+                {
+                  "en": "Pay run: people with no bank account, on Home",
+                  "vi": "Đợt lương: người chưa có tài khoản ngân hàng, trên Trang chủ"
+                },
+                {
+                  "en": "Who a new pay run includes",
+                  "vi": "Ai được đưa vào một đợt lương mới"
+                }
+              ],
               "visual": "none"
             },
             {
-              "anchor": "pe-roster",
-              "body": {
-                "en": "A row is ready only with a running contract <b>and</b> bank details. Hover the warning and it names what is missing. Đức has no bank details, so he computes and is not paid.",
-                "vi": "Một dòng chỉ sẵn sàng khi có hợp đồng đang hiệu lực <b>và</b> thông tin ngân hàng. Rê chuột lên dấu cảnh báo, nó ghi rõ thiếu gì. Đức chưa có thông tin ngân hàng, nên vẫn được tính lương mà không nhận được tiền."
+              "affects": {
+                "en": "Đức has no bank details, so the pay run computes his payslip and cannot pay him.",
+                "vi": "Đức chưa có thông tin ngân hàng, nên đợt lương vẫn tính phiếu lương của anh nhưng không chi được tiền."
               },
+              "anchor": "pe-roster",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "One row each",
                 "vi": "Mỗi người một dòng"
               },
               "lines": [],
+              "look": {
+                "en": "The tick or the warning at the end of each row. Hover the warning and it names what is missing.",
+                "vi": "Dấu tích hoặc dấu cảnh báo ở cuối mỗi dòng. Rê chuột lên dấu cảnh báo, nó ghi rõ thiếu gì."
+              },
+              "means": {
+                "en": "A row is ready only with a running contract and bank details.",
+                "vi": "Một dòng chỉ sẵn sàng khi có hợp đồng đang hiệu lực và thông tin ngân hàng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32238,23 +32488,40 @@
               "visual": "none"
             },
             {
-              "anchor": "pe-rowcontract",
-              "body": {
-                "en": "<b>Contract</b> opens that person's contract in a drawer, without leaving the list. The <b>Contracts</b> button at the top opens every contract on its own board.",
-                "vi": "<b>Hợp đồng</b> mở hợp đồng của người đó trong một ngăn, không rời danh sách. Nút <b>Hợp đồng</b> ở trên cùng mở mọi hợp đồng trên một bảng riêng."
+              "affects": {
+                "en": "Nothing is saved from the panel until you press Save there.",
+                "vi": "Không có gì được lưu từ khung đó cho đến khi bạn bấm Lưu ở đó."
               },
+              "anchor": "pe-rowcontract",
+              "body": "",
               "consequence": "",
+              "field": "employees.contract_button",
               "kicker": {
                 "en": "The door",
                 "vi": "Lối vào"
               },
               "lines": [],
+              "look": {
+                "en": "The Contract button at the end of a row.",
+                "vi": "Nút Hợp đồng ở cuối một dòng."
+              },
+              "means": {
+                "en": "Shown on a row when the person has a contract and you may open contracts.",
+                "vi": "Hiện trên dòng khi người đó có hợp đồng và bạn được mở hợp đồng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Contract, to open that person's contract without leaving the list.",
+                "vi": "Hợp đồng, để mở hợp đồng của người đó mà không rời danh sách."
+              },
               "screen": "employees",
-              "tip": "",
+              "tip": {
+                "en": "The Contracts button at the top opens every contract on its own board.",
+                "vi": "Nút Hợp đồng ở trên cùng mở mọi hợp đồng trên một bảng riêng."
+              },
               "title": {
                 "en": "Contract, on the row",
                 "vi": "Hợp đồng, ngay trên dòng"
@@ -32262,21 +32529,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cd-tabs",
-              "body": {
-                "en": "The header says when the contract ends and its state. Three tabs hold the rest.",
-                "vi": "Phần đầu cho biết khi nào hợp đồng kết thúc và trạng thái của nó. Ba tab chứa phần còn lại: <b>Điều khoản</b>, <b>Thành phần</b>, <b>Lịch sử</b>."
+              "affects": {
+                "en": "Switching a tab only changes what you read. Nothing is saved.",
+                "vi": "Chuyển tab chỉ đổi thứ bạn đang đọc. Không có gì được lưu."
               },
+              "anchor": "cd-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The drawer",
                 "vi": "Ngăn hợp đồng"
               },
               "lines": [],
+              "look": {
+                "en": "The three tabs under the header: Terms, Components and History.",
+                "vi": "Ba tab dưới phần đầu: Điều khoản, Thành phần và Lịch sử."
+              },
+              "means": {
+                "en": "The header says when the contract ends and its state. The tabs hold the rest.",
+                "vi": "Phần đầu cho biết khi nào hợp đồng kết thúc và trạng thái của nó. Các tab chứa phần còn lại."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Terms, Components or History.",
+                "vi": "Điều khoản, Thành phần hoặc Lịch sử."
+              },
               "screen": "employees",
               "tip": "",
               "title": {
@@ -32286,17 +32566,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-cd-terms",
-              "body": {
-                "en": "A pencil marks what you can change; only an HR manager can. <b>Salary structure</b> left empty means a pay scheme pays this person.",
-                "vi": "Biểu tượng bút chì đánh dấu chỗ sửa được; chỉ quản lý nhân sự mới sửa được. <b>Cấu trúc lương</b> để trống nghĩa là một chương trình lương trả cho người này."
+              "affects": {
+                "en": "The Monthly wage here is what the next pay run reads.",
+                "vi": "Lương hàng tháng ở đây là con số đợt lương kế tiếp sẽ đọc."
               },
+              "anchor": "rep-cd-terms",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Terms",
                 "vi": "Điều khoản"
               },
               "lines": [],
+              "look": {
+                "en": "The Terms tab: Monthly wage, Salary structure and the dates. A pencil marks what you may change.",
+                "vi": "Tab Điều khoản: Lương hàng tháng, Cấu trúc lương và ngày tháng. Biểu tượng bút chì đánh dấu chỗ bạn được sửa."
+              },
+              "means": {
+                "en": "Salary structure left empty means a pay scheme pays this person.",
+                "vi": "Cấu trúc lương để trống nghĩa là một chương trình lương trả cho người này."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32310,17 +32599,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-cd-comps",
-              "body": {
-                "en": "<b>Paid by</b> names the scheme. Each amount is <b>Held on this contract</b>, <b>From a pay data file</b> or worked out by a formula. One fed each month can rightly read 0 here.",
-                "vi": "<b>Trả lương theo</b> ghi chương trình lương. Mỗi khoản là <b>Lưu trên hợp đồng này</b>, <b>Từ tệp dữ liệu lương</b> hoặc do công thức tính ra. Khoản được cấp mỗi tháng có thể hiện 0 ở đây là đúng."
+              "affects": {
+                "en": "An amount fed each month can rightly read 0 here. The pay data file fills it on the run.",
+                "vi": "Một khoản được cấp mỗi tháng có thể hiện 0 ở đây là đúng. Tệp dữ liệu lương sẽ điền nó khi chạy lương."
               },
+              "anchor": "rep-cd-comps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Components",
                 "vi": "Thành phần"
               },
               "lines": [],
+              "look": {
+                "en": "Paid by, above the components, and the chip under each amount.",
+                "vi": "Trả lương theo, phía trên các thành phần, và nhãn dưới mỗi khoản."
+              },
+              "means": {
+                "en": "Paid by names the pay scheme. Each chip says Held on this contract, From a pay data file, or worked out by a formula.",
+                "vi": "Trả lương theo ghi chương trình lương. Mỗi nhãn ghi Lưu trên hợp đồng này, Từ tệp dữ liệu lương, hoặc do công thức tính ra."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32334,17 +32632,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-cd-history",
-              "body": {
-                "en": "Each line says what changed, from what to what, when, and where it came from. Mai's wage went from 11,000,000 ₫ to 12,000,000 ₫ in January.",
-                "vi": "Mỗi dòng cho biết cái gì thay đổi, từ bao nhiêu thành bao nhiêu, khi nào, và đến từ đâu. Lương của Mai từ 11.000.000 ₫ lên 12.000.000 ₫ vào tháng 1."
+              "affects": {
+                "en": "Mai's wage went from 11,000,000 ₫ to 12,000,000 ₫ in January. This is where you prove it.",
+                "vi": "Lương của Mai từ 11.000.000 ₫ lên 12.000.000 ₫ vào tháng 1. Đây là nơi bạn chứng minh điều đó."
               },
+              "anchor": "rep-cd-history",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "History",
                 "vi": "Lịch sử"
               },
               "lines": [],
+              "look": {
+                "en": "The History tab: one line per change.",
+                "vi": "Tab Lịch sử: mỗi thay đổi một dòng."
+              },
+              "means": {
+                "en": "Each line says what changed, from what to what, when, and where it came from.",
+                "vi": "Mỗi dòng cho biết cái gì thay đổi, từ bao nhiêu thành bao nhiêu, khi nào, và đến từ đâu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32358,21 +32665,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cd-save",
-              "body": {
-                "en": "Once you change something, a bar slides up: <b>Discard</b> or <b>Save 1 change</b>. A change that needs approval says Sent for approval instead.",
-                "vi": "Khi bạn thay đổi gì đó, một thanh trượt lên với nút bỏ các thay đổi và nút <b>Lưu 1 thay đổi</b>. Thay đổi nào cần phê duyệt sẽ báo là đã gửi đi duyệt."
+              "affects": {
+                "en": "Saving writes onto the contract the next pay run reads. A change that needs approval says Sent for approval instead.",
+                "vi": "Lưu sẽ ghi vào hợp đồng mà đợt lương kế tiếp đọc. Thay đổi nào cần phê duyệt sẽ báo Đã gửi phê duyệt."
               },
+              "anchor": "cd-save",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Saving",
                 "vi": "Lưu"
               },
               "lines": [],
+              "look": {
+                "en": "The bar that slides up once you change something: Discard and Save 1 change.",
+                "vi": "Thanh trượt lên khi bạn thay đổi gì đó: Bỏ thay đổi và Lưu 1 thay đổi."
+              },
+              "means": {
+                "en": "Your changes wait on screen until you save or discard them.",
+                "vi": "Các thay đổi của bạn chờ trên màn hình cho tới khi bạn lưu hoặc bỏ chúng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Save 1 change, once the value is right.",
+                "vi": "Lưu 1 thay đổi, khi giá trị đã đúng."
+              },
               "screen": "employees",
               "tip": "",
               "title": {
@@ -32503,17 +32823,26 @@
           ],
           "steps": [
             {
-              "anchor": "pp-tabs",
-              "body": {
-                "en": "<b>Bands</b> and <b>Fairness</b> describe pay as it is. <b>Review</b> and <b>Changes</b> change it. This lesson is the first two; the next one is the other two.",
-                "vi": "<b>Khoảng lương</b> và <b>Công bằng</b> mô tả lương như hiện tại. <b>Xét lương</b> và <b>Thay đổi</b> mới thay đổi nó. Bài này học hai tab đầu; bài sau học hai tab còn lại."
+              "affects": {
+                "en": "Nothing on the first two tabs changes anybody's pay. This lesson reads them; the next one covers the other two.",
+                "vi": "Không có gì ở hai tab đầu thay đổi lương của ai. Bài này đọc hai tab đó; bài sau học hai tab còn lại."
               },
+              "anchor": "pp-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The four tabs: Bands, Fairness, Review and Changes.",
+                "vi": "Bốn tab: Khoảng lương, Công bằng, Xét lương và Thay đổi."
+              },
+              "means": {
+                "en": "Bands and Fairness describe pay as it is. Review and Changes are where pay changes.",
+                "vi": "Khoảng lương và Công bằng mô tả lương như hiện tại. Xét lương và Thay đổi là nơi lương thay đổi."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32527,17 +32856,26 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-band-picture",
-              "body": {
-                "en": "The shaded range is the band, the tick is its middle, and every person stands in it as a dot. <b>Trần Văn Hùng</b>'s dot sits left of his band: he is paid below it, and the row says <b>1 below</b>.",
-                "vi": "Phần tô màu là khoảng lương, vạch là điểm giữa, và mỗi người là một chấm trong đó. Chấm của <b>Trần Văn Hùng</b> nằm bên trái khoảng lương: anh được trả dưới khoảng, và dòng đó ghi <b>1 dưới</b>."
+              "affects": {
+                "en": "Nobody's pay moves here. A dot below its band is who a pay review looks at first.",
+                "vi": "Lương của không ai thay đổi ở đây. Chấm dưới khoảng lương là người mà đợt xét lương nhìn vào trước."
               },
+              "anchor": "pp-band-picture",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The picture",
                 "vi": "Bức tranh"
               },
               "lines": [],
+              "look": {
+                "en": "The band picture. The shaded range is the band, the tick is its middle, each dot is a person.",
+                "vi": "Bức tranh khoảng lương. Phần tô màu là khoảng lương, vạch là điểm giữa, mỗi chấm là một người."
+              },
+              "means": {
+                "en": "Trần Văn Hùng's dot sits left of his band, so he is paid below it. His band's row carries a 1 below chip.",
+                "vi": "Chấm của Trần Văn Hùng nằm bên trái khoảng lương, nên anh đang được trả dưới khoảng. Dòng đó có một nhãn đếm số người dưới khoảng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32554,21 +32892,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-bands-tools",
-              "body": {
-                "en": "<b>Work it out again</b> redraws the bands from what you pay today. <b>Export</b> and <b>Import</b> take them through a file. <b>Place a new hire</b> suggests a starting salary inside the band.",
-                "vi": "<b>Tính lại</b> vẽ lại các khoảng lương từ mức bạn đang trả. <b>Xuất ra</b> và <b>Nhập vào</b> đưa chúng qua một tệp. <b>Xếp lương người mới</b> gợi ý mức lương khởi điểm nằm trong khoảng."
+              "affects": {
+                "en": "Place a new hire suggests a starting salary inside the band. No button changes anybody's pay.",
+                "vi": "Xếp lương người mới gợi ý mức lương khởi điểm nằm trong khoảng. Không nút nào thay đổi lương của ai."
               },
+              "anchor": "pp-bands-tools",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The tools",
                 "vi": "Công cụ"
               },
               "lines": [],
+              "look": {
+                "en": "The four buttons above the bands: Work it out again, Export, Import and Place a new hire.",
+                "vi": "Bốn nút phía trên các khoảng lương: Tính lại, Xuất ra, Nhập vào và Xếp lương người mới."
+              },
+              "means": {
+                "en": "Work it out again redraws the bands from what you pay today. Export and Import take them through a file.",
+                "vi": "Tính lại vẽ lại các khoảng lương từ mức bạn đang trả. Xuất ra và Nhập vào đưa chúng qua một tệp."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Place a new hire, to see where a starting salary would sit.",
+                "vi": "Xếp lương người mới, để xem mức lương khởi điểm sẽ nằm ở đâu."
+              },
               "screen": "paybands",
               "tip": {
                 "en": "No bands yet? The tab offers a set drawn from what you already pay. Nothing is saved until you press Use these.",
@@ -32581,11 +32932,12 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-band-picture",
-              "body": {
-                "en": "A pay manager can drag a band's edge. While you hold it, the screen shows what the move would cost; letting go saves it, and <b>Undo</b> takes it back.",
-                "vi": "Quản lý lương có thể kéo mép một khoảng lương. Trong lúc giữ, màn hình cho thấy thay đổi đó tốn bao nhiêu; thả tay là lưu, và <b>Hoàn tác</b> lấy lại."
+              "affects": {
+                "en": "Only the band moves. Undo puts it back the way it was.",
+                "vi": "Chỉ khoảng lương thay đổi. Hoàn tác đưa nó về như cũ."
               },
+              "anchor": "pp-band-picture",
+              "body": "",
               "consequence": {
                 "en": "Affects the band only — nobody's pay moves until a review or a pay change. Reversible: yes, with Undo. Verify first: the cost shown while you hold the edge.",
                 "vi": "Ảnh hưởng: chỉ khoảng lương — lương của không ai thay đổi cho tới khi có đợt xét lương hoặc thay đổi lương. Hoàn tác: có, bằng Hoàn tác. Kiểm tra trước: chi phí hiện ra khi bạn giữ mép."
@@ -32595,10 +32947,22 @@
                 "vi": "Dời một khoảng lương"
               },
               "lines": [],
+              "look": {
+                "en": "A band's edge, while you hold it. The bar reads Let go to save it. Nothing has changed yet.",
+                "vi": "Mép của một khoảng lương, trong lúc bạn giữ nó. Thanh báo Thả tay ra để lưu. Chưa có gì thay đổi."
+              },
+              "means": {
+                "en": "While you hold the edge, the bar says what the move would cost. Letting go saves the band.",
+                "vi": "Trong lúc bạn giữ mép, thanh cho biết thay đổi đó tốn bao nhiêu. Thả tay là lưu khoảng lương."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A band's edge, hold it and read the cost before you let go.",
+                "vi": "Mép của một khoảng lương, giữ và đọc chi phí trước khi thả tay."
+              },
               "screen": "paybands",
               "tip": "",
               "title": {
@@ -32608,21 +32972,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-health",
-              "body": {
-                "en": "Paid below the band, paid above it, newer people paid more, a manager paid less, and how wide each band has become. Here one person is below; that is where a review looks first.",
-                "vi": "Được trả dưới khoảng lương, trên khoảng lương, người mới được trả cao hơn, quản lý được trả thấp hơn, và mỗi khoảng lương đã rộng ra bao nhiêu. Ở đây có một người ở dưới; đó là chỗ đợt xét lương nhìn vào trước."
+              "affects": {
+                "en": "Nothing changes from here. A count above zero is where a pay review looks first.",
+                "vi": "Không có gì thay đổi từ đây. Con số lớn hơn không là chỗ đợt xét lương nhìn vào trước."
               },
+              "anchor": "pp-health",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Worth knowing",
                 "vi": "Đáng biết"
               },
               "lines": [],
+              "look": {
+                "en": "The Worth knowing cards: Paid below the band, Paid above the band, Newer people paid more, A manager paid less, How wide each band has become.",
+                "vi": "Các thẻ Đáng biết: Được trả dưới khoảng lương, Được trả trên khoảng lương, Người mới được trả cao hơn, Quản lý được trả thấp hơn, Mỗi khoảng lương đã rộng ra bao nhiêu."
+              },
+              "means": {
+                "en": "Each card counts the people one question is about. Here one person is paid below the band.",
+                "vi": "Mỗi thẻ đếm những người mà một câu hỏi nói tới. Ở đây có một người được trả dưới khoảng lương."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A card, to see who it is about.",
+                "vi": "Một thẻ, để xem nó nói về ai."
+              },
               "screen": "paybands",
               "tip": "",
               "title": {
@@ -32632,17 +33009,26 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-fairness",
-              "body": {
-                "en": "The <b>Fairness</b> tab shows the pay gap by gender across everybody, then by level, by team and for the same job. Only pay managers and group admins see names.",
-                "vi": "Tab <b>Công bằng</b> cho thấy chênh lệch lương theo giới trên toàn bộ nhân sự, rồi theo cấp bậc, theo phòng ban và cho cùng một công việc. Chỉ quản lý lương và quản trị tập đoàn mới thấy tên."
+              "affects": {
+                "en": "Nothing is stored. The figures are worked out from the pay actually paid, each time you open the tab.",
+                "vi": "Không có gì được lưu. Các con số được tính từ lương đã thực trả, mỗi lần bạn mở tab."
               },
+              "anchor": "pp-fairness",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Fairness",
                 "vi": "Công bằng"
               },
               "lines": [],
+              "look": {
+                "en": "The Fairness card: Pay gap by gender, across everybody.",
+                "vi": "Thẻ Công bằng: Chênh lệch lương theo giới, trên toàn bộ nhân sự."
+              },
+              "means": {
+                "en": "On the Fairness tab the gap is then split By level, By division and Same job, different pay.",
+                "vi": "Ở tab Công bằng, khoảng chênh được chia tiếp Theo bậc, Theo khối và Cùng chức danh, khác lương."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32650,7 +33036,7 @@
               "screen": "paybands",
               "tip": {
                 "en": "A number worked out each time can move tomorrow. Print the statement when you need to keep one.",
-                "vi": "Một con số tính lại mỗi lần có thể đổi vào ngày mai. Hãy in bản tường trình khi cần giữ lại."
+                "vi": "Một con số tính lại mỗi lần có thể đổi vào ngày mai. Hãy bấm In báo cáo khi cần giữ lại."
               },
               "title": {
                 "en": "Worked out on open, never stored",
@@ -32780,21 +33166,34 @@
           ],
           "steps": [
             {
-              "anchor": "pp-reviews",
-              "body": {
-                "en": "People › Pay › <b>Review</b>. A review holds everyone's rise for the year in one worksheet, inside one budget. <b>New review</b> starts one; <b>Set up guidance</b> says what each score should earn.",
-                "vi": "Con người › Lương › <b>Xét lương</b>. Một đợt xét lương giữ mức tăng của mọi người trong năm trên một bảng tính, trong một ngân sách. <b>Đợt xét lương mới</b> bắt đầu một đợt; <b>Thiết lập hướng dẫn</b> nói mỗi mức điểm nên được tăng bao nhiêu."
+              "affects": {
+                "en": "Set up guidance says what each score should earn. Every new review starts its rises from it.",
+                "vi": "Thiết lập hướng dẫn nói mỗi mức điểm nên được tăng bao nhiêu. Mọi đợt xét lương mới bắt đầu các mức tăng từ đó."
               },
+              "anchor": "pp-reviews",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The Pay reviews card, with Set up guidance and New review.",
+                "vi": "Thẻ Đợt xét lương, với Thiết lập hướng dẫn và Đợt xét lương mới."
+              },
+              "means": {
+                "en": "A review holds everyone's rise for the year in one worksheet, inside one budget.",
+                "vi": "Một đợt xét lương giữ mức tăng của mọi người trong năm trên một bảng tính, trong một ngân sách."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "New review, to start one.",
+                "vi": "Đợt xét lương mới, để bắt đầu một đợt."
+              },
               "screen": "payreview",
               "tip": "",
               "title": {
@@ -32804,17 +33203,26 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-stepper",
-              "body": {
-                "en": "The stepper is the review's road. <b>Send for approval</b> hands it to HR, then finance, then the CEO. Each can approve it or <b>Send back</b> with a reason.",
-                "vi": "Thanh các bước là chặng đường của đợt xét lương. <b>Gửi duyệt</b> chuyển nó cho nhân sự, rồi tài chính, rồi tổng giám đốc. Mỗi người có thể duyệt hoặc <b>Trả lại</b> kèm lý do."
+              "affects": {
+                "en": "Each of them can approve it or Send back with a reason. A review sent back is written again.",
+                "vi": "Mỗi người có thể duyệt hoặc Trả lại kèm lý do. Đợt xét lương bị trả lại sẽ được soạn lại."
               },
+              "anchor": "pp-stepper",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Who signs",
                 "vi": "Ai phê duyệt"
               },
               "lines": [],
+              "look": {
+                "en": "The steps across the open review: Being written, With HR, With finance, With the CEO, Approved, Applied.",
+                "vi": "Các bước ngang đợt xét lương đang mở: Đang soạn, Đang ở nhân sự, Đang ở tài chính, Đang ở tổng giám đốc, Đã duyệt, Đã áp dụng."
+              },
+              "means": {
+                "en": "Send for approval hands the review to HR, then finance, then the CEO.",
+                "vi": "Gửi duyệt chuyển đợt xét lương cho nhân sự, rồi tài chính, rồi tổng giám đốc."
+              },
               "moment_chain": "review",
               "moment_from": "",
               "moment_to": "",
@@ -32828,21 +33236,34 @@
               "visual": "pipeline"
             },
             {
-              "anchor": "pp-worksheet",
-              "body": {
-                "en": "Score, where they sit <b>in the band</b>, what they are paid now, the guidance, the rise, the new pay and what it costs a year. Filters find who is not scored, who stops approval and who is <b>Paid below the band</b>.",
-                "vi": "Điểm đánh giá, vị trí <b>trong khoảng lương</b>, mức đang được trả, hướng dẫn, mức tăng, lương mới và chi phí cả năm. Bộ lọc tìm ai chưa chấm điểm, ai chặn duyệt và ai <b>Được trả dưới khoảng lương</b>."
+              "affects": {
+                "en": "The filters above find who is Not scored, who Stops approval and who is Paid below the band.",
+                "vi": "Bộ lọc phía trên tìm ai Chưa chấm điểm, ai Chặn duyệt và ai Được trả dưới khoảng lương."
               },
+              "anchor": "pp-worksheet",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The worksheet",
                 "vi": "Bảng tính"
               },
               "lines": [],
+              "look": {
+                "en": "The worksheet columns: Score, In the band, Paid now, Guidance, Rise and New pay.",
+                "vi": "Các cột của bảng tính: Điểm đánh giá, Trong khoảng lương, Đang được trả, Hướng dẫn, Mức tăng và Lương mới."
+              },
+              "means": {
+                "en": "Each row is one person: their score, where they sit in the band, the guidance and the rise you give.",
+                "vi": "Mỗi dòng là một người: điểm đánh giá, vị trí trong khoảng lương, hướng dẫn và mức tăng bạn đưa ra."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Paid below the band, to see only those people.",
+                "vi": "Được trả dưới khoảng lương, để chỉ xem những người đó."
+              },
               "screen": "payreview",
               "tip": "",
               "title": {
@@ -32852,21 +33273,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-bulk",
-              "body": {
-                "en": "<b>Use the guidance</b> fills every rise from the scores. <b>Add 1%</b> and <b>Take off 1%</b> nudge the people you picked; <b>Share out what is left</b> spreads the rest of the budget.",
-                "vi": "<b>Dùng hướng dẫn</b> điền mọi mức tăng theo điểm đánh giá. <b>Thêm 1%</b> và <b>Bớt 1%</b> chỉnh những người bạn chọn; <b>Chia phần còn lại</b> rải phần ngân sách còn dư."
+              "affects": {
+                "en": "Share out what is left spreads the rest of the budget. The Budget meter moves with every change.",
+                "vi": "Chia phần còn lại rải phần ngân sách còn dư. Thước đo Ngân sách thay đổi theo mỗi lần chỉnh."
               },
+              "anchor": "pp-bulk",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Filling it in",
                 "vi": "Điền vào"
               },
               "lines": [],
+              "look": {
+                "en": "The tools beside the worksheet: Use the guidance, Add 1%, Take off 1% and Share out what is left.",
+                "vi": "Các công cụ cạnh bảng tính: Dùng hướng dẫn, Thêm 1%, Bớt 1% và Chia phần còn lại."
+              },
+              "means": {
+                "en": "Use the guidance fills every rise from the scores. Add 1% and Take off 1% nudge the people you picked.",
+                "vi": "Dùng hướng dẫn điền mọi mức tăng theo điểm đánh giá. Thêm 1% và Bớt 1% chỉnh những người bạn đã chọn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Use the guidance, to fill every rise at once.",
+                "vi": "Dùng hướng dẫn, để điền mọi mức tăng cùng lúc."
+              },
               "screen": "payreview",
               "tip": "",
               "title": {
@@ -32876,17 +33310,27 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-pr-budget",
-              "body": {
-                "en": "Four rises go in: Mai 4%, Hùng 5% because he is below his band, Trang 2%, Đức 3%. The meter fills to <b>96%</b> of the budget. Over 100%, the review cannot be sent for approval.",
-                "vi": "Bốn mức tăng được thêm vào: Mai 4%, Hùng 5% vì anh đang dưới khoảng lương, Trang 2%, Đức 3%. Thước đo đầy tới <b>96%</b> ngân sách. Vượt 100% thì không gửi duyệt được."
+              "affects": {
+                "en": "Read-only. It moves as you change rises on the rows; passing the budget is listed under What stops approval.",
+                "vi": "Chỉ xem. Nó thay đổi khi bạn đổi mức tăng ở các dòng; việc vượt ngân sách được liệt kê trong Điều gì chặn duyệt."
               },
+              "anchor": "rep-pr-budget",
+              "body": "",
               "consequence": "",
+              "field": "payreview.budget",
               "kicker": {
                 "en": "The budget",
                 "vi": "Ngân sách"
               },
               "lines": [],
+              "look": {
+                "en": "The Budget meter, as four rises go in: Mai 4%, Hùng 5% because he is below his band, Trang 2%, Đức 3%. It fills to 96%.",
+                "vi": "Thước đo Ngân sách, khi bốn mức tăng được thêm vào: Mai 4%, Hùng 5% vì anh dưới khoảng lương, Trang 2%, Đức 3%. Nó đầy tới 96%."
+              },
+              "means": {
+                "en": "What the proposed rises add up to, against the budget set for the review.",
+                "vi": "Tổng các mức tăng được đề xuất, so với ngân sách đã đặt cho đợt xét lương."
+              },
               "moment_chain": "",
               "moment_from": "rep-pr-budget",
               "moment_to": "",
@@ -32900,17 +33344,26 @@
               "visual": "meter"
             },
             {
-              "anchor": "pp-calibration",
-              "body": {
-                "en": "<b>Calibration</b> marks each rise as in line with the others, standing out, or breaking a limit. Trang has the top score and the smallest rise: <b>Worth a second look</b>.",
-                "vi": "<b>Cân chỉnh</b> đánh dấu mỗi mức tăng là ngang với những người khác, nổi bật, hay vượt giới hạn. Trang có điểm cao nhất mà mức tăng nhỏ nhất: <b>Đáng xem lại</b>."
+              "affects": {
+                "en": "Trang has the top score and the smallest rise, so she is listed as worth a second look.",
+                "vi": "Trang có điểm cao nhất mà mức tăng nhỏ nhất, nên cô được liệt kê là đáng xem lại."
               },
+              "anchor": "pp-calibration",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Calibration",
                 "vi": "Cân chỉnh"
               },
               "lines": [],
+              "look": {
+                "en": "Calibration, and Worth a second look under it.",
+                "vi": "Cân chỉnh, và Đáng xem lại bên dưới."
+              },
+              "means": {
+                "en": "Each rise is marked in line with the others, stands out, or breaks a limit.",
+                "vi": "Mỗi mức tăng được đánh dấu là ngang với những người khác, nổi bật, hay vượt giới hạn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32927,17 +33380,27 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-stops",
-              "body": {
-                "en": "Over budget, somebody not scored, a limit broken: each is listed here, and each keeps <b>Send for approval</b> from working. Here nothing is listed.",
-                "vi": "Vượt ngân sách, có người chưa chấm điểm, vượt một giới hạn: mỗi điều được liệt kê ở đây, và mỗi điều khiến <b>Gửi duyệt</b> không bấm được. Ở đây không có điều nào."
+              "affects": {
+                "en": "Read-only. Clear every item here before Send for approval.",
+                "vi": "Chỉ xem. Hãy xử lý hết các mục ở đây trước khi Gửi duyệt."
               },
+              "anchor": "pp-stops",
+              "body": "",
               "consequence": "",
+              "field": "payreview.blockers",
               "kicker": {
                 "en": "Before you send it",
                 "vi": "Trước khi gửi"
               },
               "lines": [],
+              "look": {
+                "en": "What stops approval. In this review it lists nothing.",
+                "vi": "Điều gì chặn duyệt. Trong đợt xét lương này, nó không liệt kê gì."
+              },
+              "means": {
+                "en": "Rows that break a limit, and the budget when it is passed.",
+                "vi": "Các dòng vi phạm một giới hạn, và ngân sách khi bị vượt."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -32951,11 +33414,12 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-review-actions",
-              "body": {
-                "en": "When the last step approves, the review is <b>Approved</b>. <b>Apply</b> shows what it would change, then writes the new pay onto everyone's records. The next pay run reads it.",
-                "vi": "Khi bước cuối duyệt, đợt xét lương là <b>Đã duyệt</b>. <b>Áp dụng</b> cho thấy nó sẽ thay đổi gì, rồi ghi lương mới vào hồ sơ của mọi người. Đợt lương kế tiếp sẽ đọc nó."
+              "affects": {
+                "en": "The next pay run reads the new pay. Take it back works for 24 hours after Apply.",
+                "vi": "Đợt lương kế tiếp sẽ đọc lương mới. Lấy lại dùng được trong 24 giờ sau khi Áp dụng."
               },
+              "anchor": "pp-review-actions",
+              "body": "",
               "consequence": {
                 "en": "Affects everyone in the review, from the next pay run. Reversible: Take it back works for 24 hours after Apply. Verify first: the meter, and nothing left under What stops approval.",
                 "vi": "Ảnh hưởng: mọi người trong đợt xét lương, từ đợt lương kế tiếp. Hoàn tác: Lấy lại dùng được trong 24 giờ sau khi Áp dụng. Kiểm tra trước: thước đo, và mục Điều gì chặn duyệt không còn gì."
@@ -32965,10 +33429,22 @@
                 "vi": "Thao tác chính"
               },
               "lines": [],
+              "look": {
+                "en": "Apply, which shows once the last step has approved the review.",
+                "vi": "Áp dụng, nút hiện ra khi bước cuối đã duyệt đợt xét lương."
+              },
+              "means": {
+                "en": "Apply first shows what it would change, then writes the new pay onto each person's contract.",
+                "vi": "Áp dụng cho thấy trước nó sẽ thay đổi gì, rồi ghi lương mới vào hợp đồng của từng người."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Apply, once the meter and What stops approval are clear.",
+                "vi": "Áp dụng, khi thước đo và mục Điều gì chặn duyệt đã ổn."
+              },
               "screen": "payreview",
               "tip": "",
               "title": {
@@ -32978,21 +33454,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pp-tabs",
-              "body": {
-                "en": "A promotion, putting a mistake right, keeping up with the market: <b>Changes</b> › <b>New pay change</b> takes one person, a reason and the new pay. It goes up the same ladder of sign-offs.",
-                "vi": "Thăng chức, sửa một sai sót, theo kịp thị trường: <b>Thay đổi</b> › <b>Thay đổi lương mới</b> nhận một người, một lý do và mức lương mới. Nó đi qua cùng các bước duyệt như trên."
+              "affects": {
+                "en": "It goes up the same ladder of sign-offs as a review.",
+                "vi": "Nó đi qua cùng các bước duyệt như một đợt xét lương."
               },
+              "anchor": "pp-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "One person, one change",
                 "vi": "Một người, một thay đổi"
               },
               "lines": [],
+              "look": {
+                "en": "The Changes tab, beside Review.",
+                "vi": "Tab Thay đổi, bên cạnh Xét lương."
+              },
+              "means": {
+                "en": "A promotion, putting a mistake right, keeping up with the market: New pay change takes one person, a reason and the new pay.",
+                "vi": "Thăng chức, sửa một sai sót, theo kịp thị trường: Thay đổi lương mới nhận một người, một lý do và mức lương mới."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Changes, then New pay change.",
+                "vi": "Thay đổi, rồi Thay đổi lương mới."
+              },
               "screen": "payreview",
               "tip": "",
               "title": {
@@ -33124,17 +33613,26 @@
           ],
           "steps": [
             {
-              "anchor": "dr-head",
-              "body": {
-                "en": "People › <b>Plan</b> opens the Decision Room. <b>Undo</b>, <b>Reset</b> and <b>Save plan</b> sit at the top; everything in between is a question you can ask of next year.",
-                "vi": "Con người › <b>Kế hoạch</b> mở Phòng quyết định. <b>Hoàn tác</b>, <b>Đặt lại</b> và <b>Lưu kế hoạch</b> nằm ở trên; mọi thứ ở giữa là một câu hỏi bạn đặt cho năm sau."
+              "affects": {
+                "en": "Reset puts every lever back where the company is today. Save plan keeps the plan for everyone.",
+                "vi": "Đặt lại đưa mọi cần gạt về đúng tình hình công ty hôm nay. Lưu kế hoạch giữ kế hoạch cho mọi người."
               },
+              "anchor": "dr-head",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The heading See the year before you commit to it, with Undo, Reset and Save plan.",
+                "vi": "Tiêu đề Nhìn thấy cả năm trước khi bạn cam kết, với Hoàn tác, Đặt lại và Lưu kế hoạch."
+              },
+              "means": {
+                "en": "People › Plan opens the Decision Room. Everything below is a question you can ask of next year.",
+                "vi": "Con người › Kế hoạch mở Phòng quyết định. Mọi thứ bên dưới là một câu hỏi bạn đặt cho năm sau."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33148,25 +33646,38 @@
               "visual": "none"
             },
             {
-              "anchor": "dr-presets",
-              "body": {
-                "en": "<b>Grow thoughtfully</b>, <b>Invest in people</b> or <b>Ease overtime</b> set the levers for you. Then change them: add people and the month they start, a rise and when, overtime per person, leavers.",
-                "vi": "<b>Tăng trưởng thận trọng</b>, <b>Đầu tư vào con người</b> hoặc <b>Giảm làm thêm giờ</b> đặt sẵn các cần gạt. Rồi chỉnh chúng: thêm người và tháng bắt đầu, mức tăng lương và thời điểm, tăng ca mỗi người, người nghỉ việc."
+              "affects": {
+                "en": "Every result on the page follows at once. Nothing reaches payroll.",
+                "vi": "Mọi kết quả trên trang thay đổi theo ngay. Không có gì đi tới bảng lương."
               },
+              "anchor": "dr-presets",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What if we…",
                 "vi": "Nếu chúng ta…"
               },
               "lines": [],
+              "look": {
+                "en": "The presets under What if we…: Grow thoughtfully, Invest in people and Ease overtime.",
+                "vi": "Các phương án dưới Nếu chúng ta…: Tăng trưởng thận trọng, Đầu tư vào con người và Giảm làm thêm giờ."
+              },
+              "means": {
+                "en": "A preset sets the levers for you. Then change them: people and when they start, a rise and when, overtime, leavers.",
+                "vi": "Một phương án đặt sẵn các cần gạt. Rồi chỉnh chúng: số người và tháng bắt đầu, mức tăng lương và thời điểm, tăng ca, người nghỉ việc."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Grow thoughtfully, to start from a ready plan.",
+                "vi": "Tăng trưởng thận trọng, để bắt đầu từ một kế hoạch có sẵn."
+              },
               "screen": "decisionroom",
               "tip": {
                 "en": "Explore freely. Nothing here changes payroll.",
-                "vi": "Cứ thoải mái khám phá. Không có gì ở đây thay đổi bảng lương."
+                "vi": "Cứ thoải mái thử. Không có gì ở đây thay đổi bảng lương."
               },
               "title": {
                 "en": "Start from a preset, then move the levers",
@@ -33175,17 +33686,26 @@
               "visual": "none"
             },
             {
-              "anchor": "dr-goals",
-              "body": {
-                "en": "Say what a good year means — profit, overtime, room to hire. Every lever you move is scored against them, so a plan is judged by your goals, not by its size.",
-                "vi": "Hãy nói một năm tốt nghĩa là gì — lợi nhuận, tăng ca, dư địa tuyển dụng. Mỗi cần gạt bạn xoay đều được chấm theo đó, nên kế hoạch được đánh giá theo mục tiêu của bạn chứ không theo quy mô."
+              "affects": {
+                "en": "Every lever you move is scored against your goals, so a plan is judged by them, not by its size.",
+                "vi": "Mỗi cần gạt bạn xoay đều được chấm theo mục tiêu của bạn, nên kế hoạch được đánh giá theo đó chứ không theo quy mô."
               },
+              "anchor": "dr-goals",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Goals",
                 "vi": "Mục tiêu"
               },
               "lines": [],
+              "look": {
+                "en": "Your definition of a good year.",
+                "vi": "Định nghĩa của bạn về một năm tốt."
+              },
+              "means": {
+                "en": "You say what a good year means: profit, overtime, room to hire.",
+                "vi": "Bạn nói một năm tốt nghĩa là gì: lợi nhuận, tăng ca, dư địa tuyển dụng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33194,26 +33714,39 @@
               "tip": "",
               "title": {
                 "en": "Six goals. The room keeps score.",
-                "vi": "Sáu mục tiêu. Căn phòng tự chấm điểm."
+                "vi": "Sáu mục tiêu. Căn phòng này chấm điểm."
               },
               "visual": "none"
             },
             {
-              "anchor": "dr-results",
-              "body": {
-                "en": "<b>Work & shifts</b>, <b>Why profit changed</b>, <b>People & pay</b> and <b>Room to hire</b>. Why profit changed is the one to show a board: it names each lever's share.",
-                "vi": "<b>Công việc & ca làm</b>, <b>Vì sao lợi nhuận thay đổi</b>, <b>Con người & lương</b> và <b>Dư địa tuyển dụng</b>. Vì sao lợi nhuận thay đổi là thứ nên trình ban lãnh đạo: nó nêu phần của từng cần gạt."
+              "affects": {
+                "en": "Why profit changed is the one to show a board: it names each lever's share.",
+                "vi": "Vì sao lợi nhuận thay đổi là tab nên trình ban lãnh đạo: nó nêu phần của từng cần gạt."
               },
+              "anchor": "dr-results",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The results",
                 "vi": "Kết quả"
               },
               "lines": [],
+              "look": {
+                "en": "The four result tabs: Work & shifts, Why profit changed, People & pay and Room to hire.",
+                "vi": "Bốn tab kết quả: Công việc & ca làm, Vì sao lợi nhuận thay đổi, Con người & lương và Dư địa tuyển dụng."
+              },
+              "means": {
+                "en": "Each tab reads the same plan from one side.",
+                "vi": "Mỗi tab đọc cùng một kế hoạch từ một phía."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Why profit changed.",
+                "vi": "Vì sao lợi nhuận thay đổi."
+              },
               "screen": "decisionroom",
               "tip": "",
               "title": {
@@ -33223,17 +33756,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-dr-exact",
-              "body": {
-                "en": "The room's own figure is an estimate. <b>Exact cost</b> runs a saved plan through the real pay scheme and says how far the estimate was off — here under half a percent.",
-                "vi": "Con số của căn phòng là ước tính. <b>Chi phí chính xác</b> chạy một kế hoạch đã lưu qua chương trình lương thật và cho biết ước tính lệch bao nhiêu — ở đây dưới nửa phần trăm."
+              "affects": {
+                "en": "It says how far the estimate was off — here under half a percent. That is the number to budget from.",
+                "vi": "Nó cho biết ước tính lệch bao nhiêu — ở đây dưới nửa phần trăm. Đó là con số để lập ngân sách."
               },
+              "anchor": "rep-dr-exact",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Estimate, then exact",
                 "vi": "Ước tính, rồi chính xác"
               },
               "lines": [],
+              "look": {
+                "en": "The Exact cost line under a saved plan, beside the estimate.",
+                "vi": "Dòng Chi phí chính xác dưới một kế hoạch đã lưu, cạnh con số ước tính."
+              },
+              "means": {
+                "en": "The room's own figure is an estimate. Exact cost runs a saved plan through the real pay scheme.",
+                "vi": "Con số của căn phòng là ước tính. Chi phí chính xác chạy một kế hoạch đã lưu qua chương trình lương thật."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33247,21 +33789,34 @@
               "visual": "none"
             },
             {
-              "anchor": "dr-propose",
-              "body": {
-                "en": "A saved plan is <b>Propose</b>d; a manager approves it or sends it back. An approved plan is kept as it was — <b>Keep editing a copy</b> starts the next idea.",
-                "vi": "Kế hoạch đã lưu được <b>Đề xuất</b>; quản lý duyệt hoặc trả lại. Kế hoạch đã duyệt được giữ nguyên — <b>Chép ra bản mới để sửa tiếp</b> bắt đầu ý tưởng kế tiếp."
+              "affects": {
+                "en": "An approved plan is kept as it was. Keep editing a copy starts the next idea.",
+                "vi": "Kế hoạch đã phê duyệt được giữ nguyên. Chép ra bản mới để sửa tiếp bắt đầu ý tưởng kế tiếp."
               },
+              "anchor": "dr-propose",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Deciding",
                 "vi": "Quyết định"
               },
               "lines": [],
+              "look": {
+                "en": "Propose, on a saved plan's row.",
+                "vi": "Đề xuất, trên dòng của một kế hoạch đã lưu."
+              },
+              "means": {
+                "en": "A proposed plan waits for a manager, who presses Approve or Send back.",
+                "vi": "Kế hoạch đã đề xuất chờ quản lý, người bấm Phê duyệt hoặc Trả về."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Propose, once the plan is saved.",
+                "vi": "Đề xuất, khi kế hoạch đã được lưu."
+              },
               "screen": "decisionroom",
               "tip": {
                 "en": "Export the decision brief turns the plan into a document you can send.",
@@ -33269,7 +33824,7 @@
               },
               "title": {
                 "en": "Propose, then approve or send back",
-                "vi": "Đề xuất, rồi duyệt hoặc trả lại"
+                "vi": "Đề xuất, rồi duyệt hoặc trả về"
               },
               "visual": "none"
             }
@@ -33379,17 +33934,26 @@
           ],
           "steps": [
             {
-              "anchor": "rep-pm-wall",
-              "body": {
-                "en": "<b>Say thank you</b> puts praise on the Wall, tied to one of the company's values. Everyone can read it.",
-                "vi": "<b>Nói lời cảm ơn</b> đưa lời khen lên Bảng vinh danh, gắn với một giá trị của công ty. Ai cũng đọc được."
+              "affects": {
+                "en": "Everyone in the company can read it. It changes nobody's pay.",
+                "vi": "Mọi người trong công ty đều đọc được. Nó không thay đổi lương của ai."
               },
+              "anchor": "rep-pm-wall",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Home › Wall",
                 "vi": "Trang chủ › Bảng vinh danh"
               },
               "lines": [],
+              "look": {
+                "en": "The Wall, with a thank-you from Trang to Mai and the Say thank you button.",
+                "vi": "Bảng vinh danh, với lời cảm ơn của Trang gửi Mai và nút Nói lời cảm ơn."
+              },
+              "means": {
+                "en": "Say thank you puts praise on the Wall, tied to one of the company's values.",
+                "vi": "Nói lời cảm ơn đưa lời khen lên Bảng vinh danh, gắn với một giá trị của công ty."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33403,17 +33967,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-pm-announce",
-              "body": {
-                "en": "Everyone can open it: the messages sent to the whole company, newest first.",
-                "vi": "Ai cũng mở được: các thông báo gửi tới cả công ty, mới nhất ở trên."
+              "affects": {
+                "en": "Everyone can open it, so it is the one place to check what was said.",
+                "vi": "Ai cũng mở được, nên đây là nơi để xem lại công ty đã nói gì."
               },
+              "anchor": "rep-pm-announce",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Home › Announce",
                 "vi": "Trang chủ › Thông báo"
               },
               "lines": [],
+              "look": {
+                "en": "Home › Announce, with the latest message on top.",
+                "vi": "Trang chủ › Thông báo, với thông báo mới nhất ở trên."
+              },
+              "means": {
+                "en": "It holds the messages sent to the whole company, newest first.",
+                "vi": "Nó chứa các thông báo gửi tới cả công ty, mới nhất ở trên."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33427,17 +34000,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-pm-plan",
-              "body": {
-                "en": "The people who send messages plan the month on one calendar here. Most people only ever see Home › Announce.",
-                "vi": "Những người gửi thông báo lên kế hoạch cho cả tháng trên một lịch ở đây. Phần lớn mọi người chỉ thấy Trang chủ › Thông báo."
+              "affects": {
+                "en": "What they plan shows up on Home › Announce. Most people only ever see that side.",
+                "vi": "Những gì họ lên kế hoạch sẽ hiện ở Trang chủ › Thông báo. Phần lớn mọi người chỉ thấy phía đó."
               },
+              "anchor": "rep-pm-plan",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "People › Announce",
                 "vi": "Con người › Thông báo"
               },
               "lines": [],
+              "look": {
+                "en": "People › Announce: the month's messages on one calendar.",
+                "vi": "Con người › Thông báo: các thông báo của tháng trên một lịch."
+              },
+              "means": {
+                "en": "The people who send messages plan the month here.",
+                "vi": "Những người gửi thông báo lên kế hoạch cho cả tháng ở đây."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33451,17 +34033,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-pm-tiles",
-              "body": {
-                "en": "People who work for more than one company; the laptops and cards handed out; this year's goals; messages to your people, on one calendar.",
-                "vi": "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; thông báo tới mọi người, trên một lịch."
+              "affects": {
+                "en": "Each tile is a tab under People. None of them changes a payslip.",
+                "vi": "Mỗi ô là một tab trong Con người. Không ô nào thay đổi phiếu lương."
               },
+              "anchor": "rep-pm-tiles",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "People",
                 "vi": "Con người"
               },
               "lines": [],
+              "look": {
+                "en": "The four tiles: Where they work, Assets, Goals and Announce.",
+                "vi": "Bốn ô: Nơi họ làm việc, Tài sản, Mục tiêu và Thông báo."
+              },
+              "means": {
+                "en": "People who work for more than one company; the laptops and cards handed out; this year's goals; messages on one calendar.",
+                "vi": "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; thông báo trên một lịch."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -33475,17 +34066,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-tabs",
-              "body": {
-                "en": "Goals, Praise and Announce depend on what your company has switched on and on your access. A missing tab is not broken.",
-                "vi": "Mục tiêu, Khen ngợi và Thông báo phụ thuộc vào những gì công ty bạn đã bật và quyền của bạn. Tab không có không phải là bị lỗi."
+              "affects": {
+                "en": "A missing tab is not broken. It is simply not yours to open.",
+                "vi": "Tab không có không phải là bị lỗi. Chỉ là nó không dành cho bạn."
               },
+              "anchor": "rep-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Missing a tab?",
                 "vi": "Thiếu một tab?"
               },
               "lines": [],
+              "look": {
+                "en": "The tabs along the top of the page.",
+                "vi": "Các tab dọc phía trên trang."
+              },
+              "means": {
+                "en": "Goals, Praise and Announce depend on what your company has switched on and on your access.",
+                "vi": "Mục tiêu, Khen ngợi và Thông báo phụ thuộc vào những gì công ty bạn đã bật và quyền của bạn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -38513,5 +39113,5 @@
       }
     }
   ],
-  "version": "5701ff7a4d3a"
+  "version": "6c37d011babe"
 }
