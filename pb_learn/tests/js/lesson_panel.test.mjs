@@ -365,8 +365,20 @@ function contentSuite() {
         });
     }
     check(!legacy.length, "every step of the eight screens' lessons (+ statutory) has all four lines", legacy.join(","));
+    // LEARNREV P5b — and every other lesson too: no legacy body anywhere.
+    const all = CONTENT.stations.filter((s) => (s.lessons || []).length).map((s) => s.key);
+    const old = [];
+    for (const key of all) {
+        lesson(key).steps.forEach((s, i) => {
+            const v = lp.stepView(s, "VN");
+            if (v.legacy || !v.look || !v.means || !v.affects) {
+                old.push(`${key}#${i + 1}`);
+            }
+        });
+    }
+    check(all.length >= 42 && !old.length, `all ${all.length} lessons: every step in the four lines`, old.join(","));
     const presses = [];
-    for (const key of eight) {
+    for (const key of all) {
         lesson(key).steps.forEach((s) => {
             if (s.press && lp.isPracticeAnchor(s.anchor)) {
                 presses.push(s.anchor);
