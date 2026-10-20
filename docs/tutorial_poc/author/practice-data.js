@@ -1736,9 +1736,11 @@ const PRACTICE = {
     numbers: [
       [B("Open roles", "Vị trí đang mở"), 2], [B("Requests to agree", "Đề xuất chờ đồng ý"), 0],
       [B("No agreed request", "Chưa có đề xuất được đồng ý"), 2], [B("Waiting on you", "Đang chờ bạn"), 0],
-      [B("Candidates", "Ứng viên"), 12], [B("Over budget", "Vượt ngân sách"), 0],
+      [B("Over budget", "Vượt ngân sách"), 0],
       [B("Interviews this week", "Phỏng vấn tuần này"), 4], [B("Opinions late", "Ý kiến đang trễ"), 2],
-      [B("Offers out", "Thư mời đã gửi"), 1],
+      /* NAV P3a: the offer figures open Hiring › Offers; Candidates and Offers out left the strip. */
+      [B("Offers waiting on you", "Đề nghị đang chờ bạn"), 0], [B("Joining soon", "Sắp vào làm"), 1],
+      [B("Joined this month", "Đã nhận việc tháng này"), 0],
     ],
     steps: [
       [B("Set up", "Thiết lập"), 1], [B("Prepare & publish", "Chuẩn bị & đăng tin"), 1],
@@ -2122,6 +2124,8 @@ const MENU = [
     key: "hiring", icon: "user-plus", label: B("Hiring", "Tuyển dụng"), section: null,
     lenses: [
       { key: "overview", label: B("Overview", "Tổng quan"), screen: "hiring", also: ["hiringrole"] },
+      { key: "applicants", label: B("Applicants", "Ứng viên") },
+      { key: "offers", label: B("Offers", "Đề nghị") },
       { key: "interviews", label: B("Interviews", "Phỏng vấn") },
       { key: "bank", label: B("Talent pool", "Kho ứng viên") },
     ],

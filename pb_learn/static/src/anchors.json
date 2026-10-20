@@ -1143,7 +1143,7 @@
     "hi-tabs": {
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "desc": "Roles / Interviews.",
+      "desc": "Roles / Applicants / Offers / Interviews / Resume bank.",
       "reserved": true
     },
     "hi-row": {
@@ -1155,6 +1155,37 @@
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
       "desc": "A role card's Next: line (first card)."
+    },
+    "hi-applicants": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_p9.xml",
+      "desc": "Hiring › Applicants (NAV P3a): every application across the roles the reader may see — the hero line (people in play · roles · waiting on you · opinions late) and the filters.",
+      "reserved": true
+    },
+    "hi-applicants-board": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_p9.xml",
+      "desc": "Hiring › Applicants: the pipeline across roles (one column per stage, the role on each card) — or the list view, which carries the same anchor; one renders at a time.",
+      "reserved": true
+    },
+    "hi-offers": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_p9.xml",
+      "desc": "Hiring › Offers (NAV P3a): every offer across roles, with its papers, its background check and its joining date.",
+      "reserved": true
+    },
+    "hi-offers-steps": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_p9.xml",
+      "desc": "Hiring › Offers: the five steps In approval · With the candidate · Accepted and signing · Joined · Did not happen, with 'waiting on you' on the first.",
+      "reserved": true
+    },
+    "hi-offer-row": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_p9.xml",
+      "repeats": true,
+      "desc": "One offer's row on Hiring › Offers. Emitted once per offer, so a point-at lands on the first row; its ⋯ menu offers only what the role's Offer panel would.",
+      "reserved": true
     },
     "hi-wizard": {
       "screen": "hiring_request",

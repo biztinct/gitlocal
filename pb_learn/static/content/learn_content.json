@@ -23325,6 +23325,16 @@
           }
         ],
         "tabs": {
+          "applicants": {
+            "line": {
+              "en": "One pipeline across every role: everyone who applied, and where they are now.",
+              "vi": "Một quy trình cho mọi vị trí: mọi người đã ứng tuyển, và họ đang ở đâu."
+            },
+            "name": {
+              "en": "Applicants",
+              "vi": "Ứng viên"
+            }
+          },
           "bank": {
             "line": {
               "en": "People who applied before, kept for the next role. Only the hiring team sees it.",
@@ -23343,6 +23353,16 @@
             "name": {
               "en": "Interviews",
               "vi": "Phỏng vấn"
+            }
+          },
+          "offers": {
+            "line": {
+              "en": "Every offer, its papers, its check and its joining date.",
+              "vi": "Mọi đề nghị, giấy tờ, kiểm tra lý lịch và ngày vào làm của nó."
+            },
+            "name": {
+              "en": "Offers",
+              "vi": "Đề nghị"
             }
           },
           "overview": {
@@ -26842,8 +26862,8 @@
           "vi": "Quyền tuyển dụng. Tab chỉ hiện với những người mà chính màn hình tuyển dụng cho phép."
         },
         "what": {
-          "en": "Hiring › Overview. Quiet numbers on top, a four-step strip, and a card per role with its request chip and what is next.",
-          "vi": "Tuyển dụng › Tổng quan. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo."
+          "en": "Hiring › Overview. Quiet numbers on top, a four-step strip, and a card per role with its request chip and what is next. Hiring › Applicants puts everyone who applied, for every role, on one board. Hiring › Offers lists every offer with its papers, its check and its joining date.",
+          "vi": "Tuyển dụng › Tổng quan. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo. Tuyển dụng › Ứng viên đặt mọi người đã ứng tuyển, của mọi vị trí, trên một bảng. Tuyển dụng › Đề nghị liệt kê mọi đề nghị kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
         },
         "when": {
           "en": "As soon as a team needs someone new, or someone is leaving and must be replaced.",
@@ -40535,5 +40555,5 @@
       }
     }
   ],
-  "version": "236fbdee525a"
+  "version": "77221ff20fcd"
 }
