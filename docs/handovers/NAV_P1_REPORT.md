@@ -120,3 +120,19 @@ the other.
 5. **Browser walk not done on payobook.com** (see §2); harness verification instead. Tests 3 (partial), 7, 13 and the
    live halves of 1, 2, 4, 8, 11, 12 still need an owner walk with the QA login.
 6. Design doc §12.3 says 20 px icon / 10 px label; I followed the handover and R1 (18 / 9).
+
+## 8. Live walk on payobook.com (Fable, 2026-10-20 23:10 AEDT, owner's existing browser session)
+
+| Check | Result |
+|---|---|
+| People hub | Rail 72 px; 9 buttons 60×52 (Where they work 60×63, two lines, not clipped); selected pill on the remembered lens; last button bottom at 619 px. |
+| Pay Run hub | Rail 72 px; 10 items; clicking Payslips moved the pill and `aria-current`; `localStorage pbhub.pay.lens.v1` = `payslips`; Adjust/Settle render. |
+| Hover | Rail width 72 before and after hover; no widening, no shadow. |
+| Keyboard | Focus on first item, ArrowDown → focus on "Runs" with a solid outline. |
+| Workforce | `.pbms-rail` 72 px; 10 items incl. Holidays and Field; labels visible; no badge. |
+| Compliance | Filings, Bank, Young workers, Audit; nothing feature-locked on this DB (padlock path not exercisable here). |
+| Access › Screens | Lists the 10 left-menu entries with "sees it" toggles, unchanged. Settings nav shows **18** categories (not 14 as the design assumed): Formula Engine, Salary Structures, Statutory, Integrations, Payroll defaults, Companies & Tenants, Navigation, Your company, Vendors, Guided setup, Group, Access & delegation, Approvals, Hiring, About Payobook, Announcements, PayAI can act, Demo data. Carry to P2. |
+| Console | No errors on any hub load or lens switch. |
+| Narrow widths | Not verifiable live: the Chrome window would not resize below 1440 px (reported success, `innerWidth` unchanged). Harness results in §2 stand. |
+
+Verdict: P1 accepted. Open for P2: Vietnamese "Lao động chưa thành niên" clips (needs a shorter label), 18 Settings categories to group into 7.
