@@ -51,49 +51,69 @@
         </div>
         <div t-else="" class="pbst-split">
 
-          <!-- ==================== category nav ==================== -->
-          <nav class="pbst-nav" aria-label="Settings categories">
-            <button t-foreach="categories" t-as="c" t-key="c.key"
+          <!-- ==================== the rail of groups ====================
+               NAV P2: seven groups on the rail standard (ledger R1: 72px, an
+               icon above a short capital word, the selected one a soft pill,
+               no hover widening). The full word is the tooltip. -->
+          <nav class="pbst-nav" aria-label="Settings groups"
+               t-on-keydown="(ev) => this.onRailKeydown(ev)">
+            <button t-foreach="groups" t-as="g" t-key="g.key"
                     class="pbst-nav__b"
-                    t-att-class="{ 'is-on': current and current.key === c.key }"
-                    t-att-aria-current="current and current.key === c.key ? 'page' : false"
-                    t-att-title="c.label"
-                    t-on-click="() => this.setCat(c.key)">
-              <span class="pbst-nav__ic" t-out="ic(c.icon, 15)"/>
-              <span class="pbst-nav__l" t-esc="c.label"/>
-              <!-- A category with one door IS that door: the click opens it
-                   rather than a section page (see setCat), so the entry says
-                   so instead of looking like every other tab. -->
-              <span t-if="soleCard(c)" class="pbst-nav__go" t-out="ic('chevron', 13)"/>
+                    t-att-class="{ 'is-on': currentGroup and currentGroup.key === g.key }"
+                    t-att-aria-current="currentGroup and currentGroup.key === g.key ? 'page' : false"
+                    t-att-title="g.title or g.label"
+                    t-att-data-group="g.key"
+                    t-on-click="() => this.setGroup(g.key)">
+              <span class="pbst-nav__ic" t-out="ic(g.icon, 18)"/>
+              <span class="pbst-nav__l" t-esc="g.label"/>
             </button>
           </nav>
 
-          <!-- ======================= the pane ======================= -->
-          <main class="pbst-main" t-if="current">
-            <h1 class="pbst-h" t-esc="current.label"/>
-            <p class="pbst-blurb" t-esc="current.blurb"/>
-
-            <div class="pbst-cards">
-              <div t-foreach="currentCards" t-as="k" t-key="k.id"
-                   class="pbst-card" t-att-class="{ 'is-locked': !!cardLock(k) }">
-                <span class="pbst-card__ic" t-out="ic(cardLock(k) ? 'lock' : k.icon, 17)"/>
-                <span class="pbst-card__tx">
-                  <span class="pbst-card__l" t-esc="k.label"/>
-                  <!-- FLEET P4. A part of the product this company has not got,
-                       kept on screen because the platform asked for a padlock
-                       rather than for it to vanish. The card says what it is
-                       and how to get it, in the platform's own words. -->
-                  <span class="pbst-card__s"
-                        t-esc="cardLock(k) or k.sub"/>
+          <!-- ======================= the pane =======================
+               The group's categories, each a titled section of its cards.
+               A category with one door says so on its title, and the title
+               opens that door (setCat's sole-card rule). -->
+          <main class="pbst-main" t-if="currentGroup">
+            <h1 class="pbst-h" t-esc="currentGroup.label"/>
+            <section t-foreach="currentGroup.cats" t-as="c" t-key="c.key"
+                     class="pbst-sec" t-att-data-cat="c.key">
+              <h2 class="pbst-sec__h">
+                <button t-if="soleCard(c)" class="pbst-sec__t is-door"
+                        t-att-title="c.label"
+                        t-on-click="() => this.setCat(c.key)">
+                  <span class="pbst-sec__ic" t-out="ic(c.icon, 15)"/>
+                  <span t-esc="c.label"/>
+                  <span class="pbst-sec__go" t-out="ic('chevron', 13)"/>
+                </button>
+                <span t-else="" class="pbst-sec__t">
+                  <span class="pbst-sec__ic" t-out="ic(c.icon, 15)"/>
+                  <span t-esc="c.label"/>
                 </span>
-                <button t-if="!cardLock(k)" class="pbim-btn primary pbst-go"
-                        t-att-title="k.label"
-                        t-on-click="() => this.openCard(k)">Open</button>
-                <button t-else="" class="pbim-btn outline pbst-go"
-                        t-att-title="k.label"
-                        t-on-click="() => this.openCard(k)">Ask Payobook</button>
+              </h2>
+              <p class="pbst-blurb" t-esc="c.blurb"/>
+
+              <div class="pbst-cards">
+                <div t-foreach="cardsOf(c)" t-as="k" t-key="k.id"
+                     class="pbst-card" t-att-class="{ 'is-locked': !!cardLock(k) }">
+                  <span class="pbst-card__ic" t-out="ic(cardLock(k) ? 'lock' : k.icon, 17)"/>
+                  <span class="pbst-card__tx">
+                    <span class="pbst-card__l" t-esc="k.label"/>
+                    <!-- FLEET P4. A part of the product this company has not got,
+                         kept on screen because the platform asked for a padlock
+                         rather than for it to vanish. The card says what it is
+                         and how to get it, in the platform's own words. -->
+                    <span class="pbst-card__s"
+                          t-esc="cardLock(k) or k.sub"/>
+                  </span>
+                  <button t-if="!cardLock(k)" class="pbim-btn primary pbst-go"
+                          t-att-title="k.label"
+                          t-on-click="() => this.openCard(k)">Open</button>
+                  <button t-else="" class="pbim-btn outline pbst-go"
+                          t-att-title="k.label"
+                          t-on-click="() => this.openCard(k)">Ask Payobook</button>
+                </div>
               </div>
-            </div>
+            </section>
           </main>
         </div>
       </div>

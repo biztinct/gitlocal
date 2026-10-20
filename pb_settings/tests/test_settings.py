@@ -633,3 +633,70 @@ class TestRailCGates(TransactionCase):
             self.assertEqual(
                 found, set(values),
                 "settings_hub.js's %s has drifted from the server's" % name)
+
+
+@tagged('post_install', '-at_install')
+class TestSettingsGroupsNavP2(TransactionCase):
+    """NAV P2 — eighteen categories on a text list became seven rail groups."""
+
+    GROUPS = ['company', 'access', 'payroll', 'hr', 'workflows',
+              'integrations', 'system']
+
+    # Every category known today, and the group the owner's menu puts it in.
+    EXPECTED = {
+        'formula': 'payroll', 'structures': 'payroll', 'statutory': 'payroll',
+        'payroll': 'payroll', 'org': 'company', 'company': 'company',
+        'group': 'company', 'nav': 'access', 'access': 'access',
+        'vendors': 'access', 'integrations': 'integrations', 'hiring': 'hr',
+        'announcements': 'hr', 'journeys': 'hr', 'approvals': 'workflows',
+        'guided_setup': 'system', 'about': 'system', 'payai_can_act': 'system',
+        'demo_data': 'system',
+    }
+
+    def test_the_seven_groups_in_their_fixed_order(self):
+        src = _js()
+        block = src.split('export const SETTINGS_GROUPS = [', 1)[1].split('\n];', 1)[0]
+        keys = re.findall(r'\{ key: "(\w+)"', block)
+        self.assertEqual(keys, self.GROUPS)
+        known = _icons()
+        for icon in re.findall(r'icon: "(\w+)"', block):
+            self.assertIn(icon, known)
+        # R4: every rail word fits the 64px label box (INTEGRATIONS did not).
+        for label in re.findall(r'label: _t\("([^"]+)"\)', block):
+            for word in label.split():
+                self.assertLessEqual(len(word), 9, label)
+
+    def test_every_known_category_lands_in_its_group(self):
+        src = _js()
+        block = src.split('export const GROUP_OF_CATEGORY = {', 1)[1].split('\n};', 1)[0]
+        got = dict(re.findall(r'(\w+): "(\w+)"', block))
+        for key, group in self.EXPECTED.items():
+            self.assertEqual(got.get(key), group, key)
+        self.assertTrue(set(got.values()) <= set(self.GROUPS))
+        # Unknown or absent -> SYSTEM, and a descriptor's own `group` wins.
+        fn = _code(src).split('export function groupOf(cat) {', 1)[1].split('\n}', 1)[0]
+        self.assertIn('cat.group || GROUP_OF_CATEGORY[cat.key]', fn)
+        self.assertIn('"system"', fn)
+
+    def test_the_rail_is_the_rail_standard(self):
+        scss = open(get_module_path('pb_settings') + '/static/src/scss/settings_hub.scss',
+                    encoding='utf-8').read()
+        nav = scss.split('.pbst-nav {', 1)[1].split('}', 1)[0]
+        self.assertIn('flex: 0 0 72px', nav)
+        btn = scss.split('.pbst-nav__b {', 1)[1].split('svg', 1)[0]
+        self.assertIn('width: 60px', btn)
+        self.assertIn('font-size: 9px', btn)
+        self.assertIn('text-transform: uppercase', btn)
+        self.assertNotIn('.pbst-nav__l { display: none; }', scss,
+                         'R5: the rail keeps its labels on small laptops')
+        xml = open(get_module_path('pb_settings') + '/static/src/xml/settings_hub.xml',
+                   encoding='utf-8').read()
+        self.assertIn('t-foreach="groups"', xml)
+        self.assertIn('t-foreach="currentGroup.cats"', xml)
+
+    def test_an_old_category_deep_link_lands_on_its_group(self):
+        src = _code(_js())
+        self.assertIn('_arrivalGroup()', src)
+        arrival = src.split('_arrivalGroup() {', 1)[1].split('\n    }', 1)[0]
+        self.assertIn('ctx.pb_lens', arrival)
+        self.assertIn('groupOf(cat)', arrival)

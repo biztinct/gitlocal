@@ -364,3 +364,45 @@ msgstr "Cài đặt thu thập các bề mặt thay đổi cách tính lương"
 #: code:addons/pb_settings/static/src/js/settings_hub.js:0
 msgid "Your company"
 msgstr "Công ty của bạn"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Access"
+msgstr "Truy cập"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Workflows"
+msgstr "Phê duyệt"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "System"
+msgstr "Hệ thống"
+
+#. module: pb_settings
+#. odoo-javascript
+#: code:addons/pb_settings/static/src/js/settings_hub.js:0
+msgid "Connect"
+msgstr "Kết nối"

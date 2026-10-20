@@ -45,7 +45,7 @@ import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
+import { HubBackChip, hubBack, openHub, railKeydown } from "@pb_hub/js/hub_nav";
 // FLEET P4. Which parts of the product this company has. The kit owns the
 // answer (and its fail-open rules) so this hub, the workspace rail and the
 // command palette cannot each decide it differently.
@@ -53,8 +53,11 @@ import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { publishPlace, clearPlace } from "@pb_hub/js/hub_place";
 
-/** localStorage: which category was open last. Namespaced and versioned. */
+/** localStorage: which category was open last. Namespaced and versioned.
+ *  NAV P2: read once, to land a returning reader on that category's GROUP. */
 const STORAGE_KEY = "pbst.cat.v1";
+/** localStorage: which rail group was open last (NAV P2). */
+const GROUP_STORAGE_KEY = "pbst.group.v1";
 
 /**
  * The gates — derived from what each target's OWN `ir.model.access` grants,
@@ -268,6 +271,51 @@ export const CATEGORIES = [
 export const SETTINGS_CATEGORIES = "pb_settings_category";
 
 /**
+ * NAV P2 — THE SEVEN RAIL GROUPS (owner's revised menu, design review §12.4).
+ *
+ * Eighteen categories on a text list became seven icon-rail items (ledger R1:
+ * 72px rail, a short capital word under each icon). Each group's page lists
+ * its categories as titled sections of their cards. The order is fixed; a
+ * group with no category this persona may use is absent (R6).
+ *
+ * A category says which group it belongs to with `group`. Categories that
+ * modules registered before NAV P2 carry none, so `GROUP_OF_CATEGORY` answers
+ * for the known keys; anything else lands in SYSTEM. The descriptor's own
+ * `group` always wins.
+ */
+export const SETTINGS_GROUPS = [
+    { key: "company", icon: "building", label: _t("Company") },
+    { key: "access", icon: "key", label: _t("Access") },
+    { key: "payroll", icon: "calculator", label: _t("Payroll") },
+    { key: "hr", icon: "sliders", label: _t("HR") },
+    { key: "workflows", icon: "workflow", label: _t("Workflows") },
+    // "INTEGRATIONS" measures 73px at 9px/800/.04em — wider than the 72px
+    // rail — so the rail word is CONNECT and the full name is the tooltip.
+    { key: "integrations", icon: "plug", label: _t("Connect"), title: _t("Integrations") },
+    { key: "system", icon: "globe", label: _t("System") },
+];
+
+/** Where each known category sits when its descriptor names no group. */
+export const GROUP_OF_CATEGORY = {
+    formula: "payroll", structures: "payroll", statutory: "payroll",
+    payroll: "payroll",
+    org: "company", company: "company", group: "company",
+    nav: "access", access: "access", vendors: "access",
+    integrations: "integrations",
+    hiring: "hr", announcements: "hr", journeys: "hr",
+    approvals: "workflows",
+    guided_setup: "system", about: "system", payai_can_act: "system",
+    demo_data: "system",
+};
+
+/** The rail group a category belongs to. */
+export function groupOf(cat) {
+    const known = SETTINGS_GROUPS.map((g) => g.key);
+    const asked = cat && (cat.group || GROUP_OF_CATEGORY[cat.key]);
+    return known.includes(asked) ? asked : "system";
+}
+
+/**
  * THE PLATFORM-ONLY SET, RESTATED HERE — AND ONLY AS A FALLBACK.
  *
  * The real answer comes from the server (`pb.settings.resolve_gates`), which
@@ -384,6 +432,10 @@ export class PbSettingsHub extends Component {
             // before Rail C.
             blocked: {},
             cat: this._restoreCat(),
+            // NAV P2: the rail group on screen. Resolved in `_resolve` once
+            // the categories are known (an arrival `pb_lens` may name a group
+            // or a category; a remembered category maps to its group).
+            group: this._restoreGroup(),
         });
 
         // One navigation at a time. Two clicks on a card 40ms apart are one
@@ -407,16 +459,19 @@ export class PbSettingsHub extends Component {
     }
 
     _publishPlace() {
-        const current = this.current;
+        // NAV P2: the "tabs" a learner reads are the seven rail groups now.
+        // `switchTo` takes a group key, or a category key (mapped to its
+        // group), so a lesson written against either still lands.
+        const group = this.currentGroup;
         publishPlace(this, {
             tag: (this.props.action && this.props.action.tag) || "pb_settings_hub",
             hubKey: "settings",
             hubLabel: _t("Settings"),
-            lens: current ? current.key : "",
-            lenses: this.categories.map((c) => ({
-                key: c.key, label: c.label, icon: c.icon })),
+            lens: group ? group.key : "",
+            lenses: this.groups.map((g) => ({
+                key: g.key, label: g.label, icon: g.icon })),
             ready: this.state.resolved,
-            switchTo: (key) => this.setCat(key),
+            switchTo: (key) => this.setGroup(key),
         });
     }
 
@@ -427,6 +482,26 @@ export class PbSettingsHub extends Component {
         try {
             return window.localStorage.getItem(STORAGE_KEY) || "";
         } catch { return ""; }         // private mode
+    }
+
+    /** The remembered group, or "" (NAV P2). */
+    _restoreGroup() {
+        try {
+            return window.localStorage.getItem(GROUP_STORAGE_KEY) || "";
+        } catch { return ""; }         // private mode
+    }
+
+    /**
+     * What the opening action asked for: `pb_lens` may be a group key or a
+     * category key (NAV P2 — old deep links named categories).
+     */
+    _arrivalGroup() {
+        const ctx = (this.props.action && this.props.action.context) || {};
+        const asked = ctx.pb_lens || "";
+        if (!asked) { return ""; }
+        if (SETTINGS_GROUPS.some((g) => g.key === asked)) { return asked; }
+        const cat = this.all.find((c) => c.key === asked);
+        return cat ? groupOf(cat) : "";
     }
 
     /**
@@ -449,6 +524,15 @@ export class PbSettingsHub extends Component {
         if (!this.categories.some((c) => c.key === this.state.cat)) {
             this.state.cat = first ? first.key : "";
         }
+        // NAV P2: the group on screen — the arrival's, else the remembered
+        // one, else the group of the remembered category, else the first
+        // group this persona has. Never a group they cannot use.
+        const usable = this.groups.map((g) => g.key);
+        const remembered = this.all.find((c) => c.key === this.state.cat);
+        const pick = [this._arrivalGroup(), this.state.group,
+                      remembered ? groupOf(remembered) : ""]
+            .find((k) => k && usable.includes(k));
+        this.state.group = pick || usable[0] || "";
     }
 
     /**
@@ -624,6 +708,41 @@ export class PbSettingsHub extends Component {
     }
 
     /**
+     * NAV P2 — the rail: the seven groups in their fixed order, each carrying
+     * the categories (already allowed and with a door behind them) that sit in
+     * it. A group with none is ABSENT, never greyed (R6).
+     */
+    get groups() {
+        const cats = this.categories;
+        return SETTINGS_GROUPS.map((g) => ({
+            ...g, cats: cats.filter((c) => groupOf(c) === g.key),
+        })).filter((g) => g.cats.length);
+    }
+
+    get currentGroup() {
+        const groups = this.groups;
+        return groups.find((g) => g.key === this.state.group) || groups[0] || null;
+    }
+
+    /** A rail CLICK handler. Takes a group key or a category key. */
+    setGroup(key) {
+        let target = key;
+        if (!SETTINGS_GROUPS.some((g) => g.key === key)) {
+            const cat = this.all.find((c) => c.key === key);
+            target = cat ? groupOf(cat) : "";
+        }
+        if (!this.groups.some((g) => g.key === target)) { return; }
+        if (this.state.group === target) { return; }
+        this.state.group = target;
+        this._publishPlace();
+        try { window.localStorage.setItem(GROUP_STORAGE_KEY, target); }
+        catch { /* private mode */ }
+    }
+
+    /** Up / Down / Home / End walk the rail (NAV P1's shared helper). */
+    onRailKeydown(ev) { railKeydown(ev, ".pbst-nav__b"); }
+
+    /**
      * A category with exactly ONE door is not a page, it is that door.
      *
      * Integrations is the case that forced it: a category headline, a blurb, a
@@ -643,7 +762,11 @@ export class PbSettingsHub extends Component {
         return cards.length === 1 ? cards[0] : null;
     }
 
-    /** A CLICK handler. */
+    /**
+     * A CLICK handler — on a category's section title (NAV P2: the rail is
+     * groups now; each group page lists its categories). A category with one
+     * door opens it; otherwise the category becomes the remembered one.
+     */
     setCat(key) {
         const cat = this.categories.find((c) => c.key === key);
         const sole = cat && this.soleCard(cat);
