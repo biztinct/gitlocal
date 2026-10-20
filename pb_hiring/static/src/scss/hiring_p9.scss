@@ -1,0 +1,189 @@
+// =====================================================================
+//  NAV P3a — Hiring › Applicants and Hiring › Offers.
+//
+//  The pipeline reuses the role board's own column and card styles
+//  (hiring_board_p1.scss); this file adds the hero line, the view switch,
+//  the role line on each card, the two tables and the row menu.
+//
+//  `--pbim-*` tokens only, so the dark palette P1 set on `.pbhr` covers
+//  every rule here. No gradients; motion only under
+//  `prefers-reduced-motion: no-preference`; no mixed-unit min()/max();
+//  every @keyframes at the top level with an explicit `to` (R85, R156).
+// =====================================================================
+
+@keyframes pbhr-p9-in { from { transform: translateY(-4px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.pbhr {
+    .pbhr-p9 { display: flex; flex-direction: column; gap: 0; }
+
+    // --------------------------------------------------- the hero line
+    .pbhr-p9-hero {
+        display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+        .pbim-glance { flex: 1 1 auto; min-width: 0; }
+    }
+    .pbhr-p9-views {
+        flex: none; display: inline-flex; padding: 3px; gap: 2px; border-radius: 11px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+    }
+    .pbhr-p9-view {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px;
+        border: 0; border-radius: 8px; background: transparent; cursor: pointer;
+        font: inherit; font-size: 12.5px; font-weight: 700; color: var(--pbim-muted);
+        &:hover { color: var(--pbim-text); background: var(--pbim-line-2); }
+        &.on { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+        &:focus-visible { outline: 3px solid var(--pbim-ring); outline-offset: 1px; }
+    }
+
+    .pbhr-p9-filters { margin-bottom: 12px; }
+    .pbhr-p9-showing {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        min-height: 26px; margin: 0 0 10px; font-size: 13px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); }
+    }
+    .pbhr-p9-busy { color: var(--pbim-primary-strong); font-weight: 700; }
+
+    // chips that carry a tone only when they hold something
+    .pbhr-chip.is-amber .pbhr-chip-n { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbhr-chip.is-rose .pbhr-chip-n { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbhr-chip.is-mine .pbhr-chip-n { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+
+    // ------------------------------------------------------- the board
+    .pbhr-p9-board.is-busy { opacity: .75; }
+    .pbhr-kc-role {
+        display: flex; align-items: center; gap: 4px; margin-top: 3px; min-width: 0;
+        font-size: 11px; font-weight: 700; color: var(--pbim-primary-strong);
+        > svg { flex: none; }
+        > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+
+    // a move menu over people from several roles
+    .pbhr-p9-mixed {
+        display: flex; gap: 8px; align-items: flex-start; margin: 0 0 8px; padding: 9px 11px;
+        border-radius: 10px; background: var(--pbim-soft); color: var(--pbim-text); font-size: 12.5px;
+        > svg { flex: none; margin-top: 1px; color: var(--pbim-primary-strong); }
+    }
+
+    // ------------------------------------------------------- the tables
+    // scrolls sideways when the screen is narrower than the table; the row
+    // menu is fixed-position, so it is never clipped by this box
+    .pbhr-p9-tablewrap { padding: 0; overflow-x: auto; }
+    .pbhr-p9-table {
+        width: 100%; border-collapse: collapse; font-size: 13px; color: var(--pbim-text);
+        th {
+            position: sticky; top: 0; z-index: 1; text-align: left; white-space: nowrap;
+            padding: 9px 12px; background: var(--pbim-surface); border-bottom: 1px solid var(--pbim-line);
+            font-size: 11.5px; font-weight: 800; letter-spacing: .02em; color: var(--pbim-muted);
+        }
+        td { padding: 9px 12px; border-bottom: 1px solid var(--pbim-line-2); vertical-align: middle; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .pbhr-p9-nowrap { white-space: nowrap; }
+        td.is-rose { color: var(--pbim-rose); font-weight: 700; }
+        td.is-amber { color: var(--pbim-amber); font-weight: 700; }
+        &.is-busy tbody { opacity: .7; }
+    }
+    .pbhr-p9-sort {
+        display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent;
+        font: inherit; font-weight: 800; color: inherit; cursor: pointer; text-transform: none;
+        &:hover { color: var(--pbim-primary-strong); }
+        &:focus-visible { outline: 3px solid var(--pbim-ring); outline-offset: 2px; border-radius: 4px; }
+    }
+    .pbhr-p9-tr {
+        cursor: pointer; outline: none;
+        &:hover td { background: var(--pbim-line-2); }
+        &:focus-visible td { box-shadow: inset 0 0 0 2px var(--pbim-ring); }
+        &.is-open td, &.is-sel td { background: var(--pbim-soft); }
+        &.is-out td { opacity: .7; }
+        &.is-mine td:first-child { box-shadow: inset 3px 0 0 var(--pbim-primary); }
+        &:last-child td { border-bottom: 0; }
+    }
+    .pbhr-p9-tick { width: 34px; padding-right: 0 !important;
+        .pbhr-kc-check { position: static; opacity: 1; }
+    }
+    .pbhr-p9-who {
+        display: inline-flex; align-items: center; gap: 9px; min-width: 0;
+        b { color: var(--pbim-ink); font-weight: 700; }
+        .pbhr-cand-av {
+            flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+            font-size: 11px; font-weight: 800;
+        }
+    }
+    .pbhr-p9-offers td:first-child { min-width: 190px; }
+    .pbhr-p9-who b { white-space: nowrap; }
+    .pbhr-p9-who-tx { display: flex; flex-direction: column; min-width: 0;
+        small { font-size: 11px; color: var(--pbim-muted); }
+    }
+    .pbhr-p9-rolechip {
+        display: inline-block; max-width: 220px; padding: 2px 9px; border-radius: 999px;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
+        background: var(--pbim-line-2); color: var(--pbim-text); font-size: 12px; font-weight: 650;
+    }
+    .pbhr-p9-stage {
+        font-weight: 700; color: var(--pbim-ink);
+        &.fam-closed { color: var(--pbim-muted); }
+        &.fam-done { color: var(--pbim-green); }
+    }
+    .pbhr-p9-pill {
+        display: inline-flex; align-items: center; gap: 4px; margin: 2px 4px 2px 0; padding: 2px 9px;
+        border-radius: 999px; white-space: nowrap; font-size: 11.5px; font-weight: 700;
+        background: var(--pbim-line-2); color: var(--pbim-text);
+        &.is-info { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+        &.is-green { background: var(--pbim-green-soft); color: var(--pbim-green); }
+        &.is-rose { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+        &.is-mine { background: var(--pbim-primary); color: var(--pbhr-on-primary, #fff); }
+    }
+    .pbhr-p9-fact {
+        display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; font-weight: 650;
+        > svg { flex: none; color: var(--pbim-muted); }
+        small { font-weight: 600; }
+        &.is-amber { color: var(--pbim-amber); > svg { color: var(--pbim-amber); } }
+        &.is-rose { color: var(--pbim-rose); > svg { color: var(--pbim-rose); } }
+        &.is-green { color: var(--pbim-green); > svg { color: var(--pbim-green); } }
+    }
+    .pbhr-p9-none { color: var(--pbim-muted); }
+    .pbhr-p9-sub { display: block; margin-top: 2px; font-size: 11px; color: var(--pbim-muted); }
+    .pbhr-p9-door {
+        display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px;
+        border: 0; border-radius: 7px; background: var(--pbim-soft); cursor: pointer;
+        font: inherit; font-size: 11.5px; font-weight: 700; color: var(--pbim-primary-strong);
+        &:hover { background: var(--pbim-primary); color: var(--pbhr-on-primary, #fff); }
+    }
+
+    // ------------------------------------------------------- the row menu
+    .pbhr-p9-more { position: relative; width: 44px; text-align: right; }
+    .pbhr-p9-menu-btn {
+        display: inline-flex; padding: 5px; border: 0; border-radius: 8px; background: transparent;
+        color: var(--pbim-muted); cursor: pointer;
+        &:hover, &[aria-expanded="true"] { background: var(--pbim-soft); color: var(--pbim-primary-strong); }
+        &:focus-visible { outline: 3px solid var(--pbim-ring); }
+    }
+    .pbhr-p9-menu {
+        position: fixed; z-index: 1040; min-width: 230px;
+        display: flex; flex-direction: column; padding: 5px; border-radius: 12px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        box-shadow: var(--pbim-sh-lg, 0 12px 32px -12px rgba(30, 27, 46, .35));
+    }
+    .pbhr-p9-menu-i {
+        display: flex; align-items: center; gap: 9px; padding: 8px 10px; border: 0; border-radius: 8px;
+        background: transparent; text-align: left; cursor: pointer;
+        font: inherit; font-size: 13px; color: var(--pbim-text);
+        > svg { flex: none; color: var(--pbim-muted); }
+        &:hover, &:focus-visible { background: var(--pbim-soft); color: var(--pbim-primary-strong); outline: none;
+            > svg { color: var(--pbim-primary-strong); } }
+        &.is-no { color: var(--pbim-rose); > svg { color: var(--pbim-rose); } }
+    }
+
+    // the brand tint on "waiting on you" in the offer steps
+    .pbhr-p9-steps .pbim-st-flag.is-mine { color: var(--pbim-primary-strong); }
+
+    .pbhr-p9-skelrow { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-bottom: 1px solid var(--pbim-line-2); }
+
+    @media (max-width: 767px) {
+        .pbhr-p9-hero { flex-direction: column; }
+        .pbhr-p9-table th, .pbhr-p9-table td { padding: 8px; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbhr .pbhr-p9-menu { animation: pbhr-p9-in .14s ease-out; }
+    .pbhr .pbhr-p9-tr td { transition: background .12s; }
+}

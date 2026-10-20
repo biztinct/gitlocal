@@ -188,6 +188,29 @@ palette.add("hiring_board", {
     keywords: ["lifecycle", "recruitment"],
 }, { sequence: 3500 });
 
+/* NAV P3a: the two registers, in the 3500 deep-link block next to the board. */
+palette.add("hiring_applicants", {
+    id: "hiring_applicants",
+    label: _t("Applicants"),
+    sublabel: _t("Hiring"),
+    icon: "columns",
+    groups: HIRING_BOARD_GATE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "applicants" },
+    keywords: ["applications", "candidates", "pipeline", "ứng viên"],
+}, { sequence: 3501 });
+
+palette.add("hiring_offers", {
+    id: "hiring_offers",
+    label: _t("Offers"),
+    sublabel: _t("Hiring"),
+    icon: "send",
+    groups: HIRING_BOARD_GATE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "offers" },
+    keywords: ["offer letters", "joining", "đề nghị", "nhận việc"],
+}, { sequence: 3502 });
+
 palette.add("hiring_requests", {
     id: "hiring_requests",
     label: _t("Hiring requests"),

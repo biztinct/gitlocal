@@ -4,13 +4,15 @@
  *
  * Until NAV P2 the Hiring board was the first tab of the Lifecycle hub. The
  * owner's revised menu (design review §12.4) gives it its own entry under
- * OPERATE, with three tabs on the rail:
+ * OPERATE, with five tabs on the rail (NAV P3a added the two registers):
  *
- *     overview · interviews · bank
+ *     overview · applicants · offers · interviews · bank
  *
- * All three are the SAME board (`PbHiringBoard`) opened on a different inner
- * tab — the board already owns roles / interviews / the resume bank, so the
- * rail is a quicker way to the tab you want, never a second copy of it.
+ * All five are the SAME board (`PbHiringBoard`) opened on a different inner
+ * tab — the board already owns roles / applicants / offers / interviews / the
+ * resume bank, so the rail is a quicker way to the tab you want, never a
+ * second copy of it. Applicants and Offers are built-ins, not registry
+ * lenses, because registry lenses come after the built-ins on the rail.
  *
  * Gates (W95): the board's own question, exactly as the Lifecycle tab asked it.
  * The group list is advisory and fails open; `pb.hiring.can_open` is the probe
@@ -73,6 +75,15 @@ export class PbHiringHub extends Component {
                   title: _t("Who we are hiring"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { ...role, placeLens: "overview" } },
+                // NAV P3a: every application and every offer, across roles.
+                { key: "applicants", icon: "columns", label: _t("Applicants"),
+                  title: _t("Applications across jobs"),
+                  Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
+                  props: { startTab: "applicants", placeLens: "applicants" } },
+                { key: "offers", icon: "send", label: _t("Offers"),
+                  title: _t("Offers and joining checks"),
+                  Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
+                  props: { startTab: "offers", placeLens: "offers" } },
                 { key: "interviews", icon: "calendarClock", label: _t("Interviews"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "interviews", placeLens: "interviews" } },
@@ -110,6 +121,8 @@ registry.category("actions").add("pb_hiring_hub", PbHiringHub);
 // Access board can say "not for you" before anybody opens the hub.
 registry.category(HUB_LENS_GATES).add("pb_hiring_hub", () => [
     { key: "overview", groups: HIRING_HUB_GATE, probe: PROBE },
+    { key: "applicants", groups: HIRING_HUB_GATE, probe: PROBE },
+    { key: "offers", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "interviews", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "bank", groups: HIRING_BANK_GATE, probe: PROBE },
     ...registry.category(HIRING_LENSES).getAll(),

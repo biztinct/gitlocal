@@ -13,3 +13,4 @@ from . import test_interviews_p5
 from . import test_joining_p6
 from . import test_channels_p7
 from . import test_comms_p8
+from . import test_registers_p9

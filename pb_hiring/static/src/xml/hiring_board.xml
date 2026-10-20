@@ -95,7 +95,9 @@
                QUIET BY DEFAULT: one line, small figures, grey at zero. A
                number takes a colour only when somebody has to act on it.
                Every figure that filters still filters. -->
-          <div class="pbhr-glance" data-coach="hi-numbers" role="group" aria-label="Numbers at a glance">
+          <!-- NAV P3a: the two registers carry their own hero line, so the
+               role figures and the four steps stay on the role tabs. -->
+          <div t-if="!isRegisterTab" class="pbhr-glance" data-coach="hi-numbers" role="group" aria-label="Numbers at a glance">
             <t t-foreach="glance" t-as="gl" t-key="gl.key">
               <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? tr('Show only these') : ''" t-on-click="() =&gt; this.pressGlance(gl)">
                 <span t-if="gl.tone" class="pbhr-gl-dot"/>
@@ -110,7 +112,7 @@
                A role is at exactly ONE step (stageOf), so the counts add up.
                The count is a pill that says "roles" so it is never read as
                the step's number. Pressing a step again shows everything. -->
-          <nav class="pbhr-steps4" data-coach="hi-steps" aria-label="Where every role is">
+          <nav t-if="!isRegisterTab" class="pbhr-steps4" data-coach="hi-steps" aria-label="Where every role is">
             <button t-foreach="stages" t-as="st" t-key="st.key" type="button" class="pbhr-st" t-att-class="{ on: state.journeyFocus === st.key, has: st.count, wait: st.waiting }" t-att-aria-pressed="state.journeyFocus === st.key ? 'true' : 'false'" t-on-click="() =&gt; this.chooseJourney(st.key)">
               <span class="pbhr-st-heat"/>
               <span class="pbhr-st-top">
@@ -124,7 +126,7 @@
               <span class="pbhr-st-arrow" aria-hidden="true"><t t-out="ic('arrowRight',13)"/></span>
             </button>
           </nav>
-          <div class="pbhr-showing">
+          <div t-if="!isRegisterTab" class="pbhr-showing">
             <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
             <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
               <button type="button" class="pbhr-showall" t-on-click="showAll">Show all</button></t>
@@ -180,6 +182,15 @@
               <t t-out="ic('briefcase',15)"/> Roles
               <span class="pbhr-tab-n" t-esc="state.rows.length"/>
             </button>
+            <!-- NAV P3a: every application and every offer, across the roles -->
+            <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'applicants' }" t-att-aria-selected="state.tab === 'applicants' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('applicants')">
+              <t t-out="ic('columns',15)"/> Applicants
+              <span t-if="state.apps.loaded" class="pbhr-tab-n" t-esc="state.apps.cards.length"/>
+            </button>
+            <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'offers' }" t-att-aria-selected="state.tab === 'offers' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('offers')">
+              <t t-out="ic('send',15)"/> Offers
+              <span t-if="state.offers.loaded" class="pbhr-tab-n" t-esc="state.offers.rows.length"/>
+            </button>
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'interviews' }" t-att-aria-selected="state.tab === 'interviews' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('interviews')">
               <t t-out="ic('calendar',15)"/> Interviews
               <span class="pbhr-tab-n" t-esc="state.interviews.length"/>
@@ -191,7 +202,9 @@
             </button>
           </div>
 
-          <t t-if="state.tab === 'bank' and state.canBank"><t t-call="pb_hiring.P4Bank"/></t>
+          <t t-if="state.tab === 'applicants'"><t t-call="pb_hiring.P9Applicants"/></t>
+          <t t-elif="state.tab === 'offers'"><t t-call="pb_hiring.P9Offers"/></t>
+          <t t-elif="state.tab === 'bank' and state.canBank"><t t-call="pb_hiring.P4Bank"/></t>
 
           <t t-elif="state.tab === 'roles'">
 

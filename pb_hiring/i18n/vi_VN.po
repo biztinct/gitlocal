@@ -434,7 +434,9 @@ msgid "Applied %s days ago"
 msgstr "Nộp hồ sơ %s ngày trước"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/board_p1.py:0
 msgid "people in play"
 msgstr "người đang trong quy trình"
@@ -446,7 +448,9 @@ msgid "interviews this week"
 msgstr "buổi phỏng vấn tuần này"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/board_p1.py:0
 msgid "opinions late"
 msgstr "ý kiến bị trễ"
@@ -6076,11 +6080,14 @@ msgstr "Đã phỏng vấn"
 #. module: pb_hiring
 #. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
 #: code:addons/pb_hiring/static/src/xml/hiring_numbers.xml:0
 #: code:addons/pb_hiring/models/analytics_p7.py:0
 #: code:addons/pb_hiring/models/requisition_a3.py:0
 msgid "Offers"
-msgstr "Lời mời"
+msgstr "Đề nghị"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -11563,7 +11570,9 @@ msgid "recruited by %s"
 msgstr "do %s tuyển"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 #: code:addons/pb_hiring/models/analytics_p6.py:0
 msgid "Where it is"
 msgstr "Tình trạng"
@@ -14360,7 +14369,9 @@ msgid "They were expected on %(when)s (%(n)s). Confirm they joined, or record th
 msgstr "Dự kiến vào làm ngày %(when)s (%(n)s). Hãy xác nhận đã vào làm, hoặc ghi nhận là họ không đến."
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/facade_p6.py:0
 msgid "Joining tomorrow"
 msgstr "Vào làm ngày mai"
@@ -14404,7 +14415,9 @@ msgid "the new joiner"
 msgstr "người sắp vào làm"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/facade_p6.py:0
 msgid "Joining today"
 msgstr "Vào làm hôm nay"
@@ -14416,7 +14429,9 @@ msgid "Started on %s"
 msgstr "Bắt đầu làm ngày %s"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/facade_p6.py:0
 msgid "Did not join: %s"
 msgstr "Không đến nhận việc: %s"
@@ -16584,7 +16599,9 @@ msgid "Background"
 msgstr "Lý lịch"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/pb_hiring_a3.py:0
 msgid "Offer"
 msgstr "Lời mời nhận việc"
@@ -18070,7 +18087,9 @@ msgid "Hiring manager agreed"
 msgstr "Quản lý tuyển dụng đã đồng ý"
 
 #. module: pb_hiring
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 #: code:addons/pb_hiring/models/hiring_common.py:0
 msgid "With the candidate"
 msgstr "Đang chờ ứng viên"
@@ -19452,3 +19471,547 @@ msgstr "Kho ứng viên (kho hồ sơ)"
 #: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
 msgid "Roles, candidates and interviews"
 msgstr "Vị trí, ứng viên và phỏng vấn"
+
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%(in)s of %(total)s"
+msgstr "%(in)s trên %(total)s"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%(in)s of %(total)s · %(late)s late"
+msgstr "%(in)s trên %(total)s · %(late)s trễ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%(n)s of %(all)s offers"
+msgstr "%(n)s trên %(all)s đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%(n)s of %(all)s people"
+msgstr "%(n)s trên %(all)s người"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/registers_p9.py:0
+msgid "%(stage)s is not a stage on %(roles)s, so nobody was moved. Move those people on their own."
+msgstr "%(roles)s không dùng giai đoạn %(stage)s, nên chưa ai được chuyển. Hãy chuyển riêng những người đó."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s flags"
+msgstr "%s điểm cần lưu ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s is on a role you do not recruit, so they cannot be moved from here."
+msgstr "%s thuộc một vị trí bạn không phụ trách tuyển, nên không chuyển được từ đây."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s joining in 30 days"
+msgstr "%s người vào làm trong 30 ngày"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s of these people are on roles you do not recruit. Untick them and try again."
+msgstr "%s người trong số này thuộc vị trí bạn không phụ trách tuyển. Hãy bỏ chọn họ rồi thử lại."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s offers"
+msgstr "%s đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s people across your roles"
+msgstr "%s người trên các vị trí của bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s to answer"
+msgstr "còn %s mục chưa trả lời"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s waiting on you"
+msgstr "%s đang chờ bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "1 flag"
+msgstr "1 điểm cần lưu ý"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "1 offer"
+msgstr "1 đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "1 person across your roles"
+msgstr "1 người trên các vị trí của bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "1 to answer"
+msgstr "còn 1 mục chưa trả lời"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "A month"
+msgstr "Mỗi tháng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Accepted and signing"
+msgstr "Đã nhận lời và đang ký"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Actions"
+msgstr "Thao tác"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "All %s in"
+msgstr "Đã đủ %s"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
+msgid "Applicants"
+msgstr "Ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+msgid "Applications across jobs"
+msgstr "Hồ sơ ứng tuyển theo mọi vị trí"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Ask a recruiter to share one with you. The people who applied to it then show up here, every role on one board."
+msgstr "Hãy nhờ chuyên viên tuyển dụng chia sẻ một vị trí với bạn. Khi đó những người đã ứng tuyển sẽ hiện ở đây, mọi vị trí trên một bảng."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Being prepared or signed off"
+msgstr "Đang chuẩn bị hoặc chờ phê duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Board or list"
+msgstr "Bảng hoặc danh sách"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Check"
+msgstr "Lý lịch"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Check flagged"
+msgstr "Lý lịch có vấn đề"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Clear them to see every offer again."
+msgstr "Bỏ bộ lọc để xem lại mọi đề nghị."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Clear them to see everybody across your roles again."
+msgstr "Bỏ bộ lọc để xem lại mọi người trên các vị trí của bạn."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Days in stage"
+msgstr "Số ngày ở giai đoạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Did not happen"
+msgstr "Không thành"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Documents overdue"
+msgstr "Giấy tờ quá hạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Esc clears"
+msgstr "Esc để bỏ chọn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Every role"
+msgstr "Mọi vị trí"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Every stage"
+msgstr "Mọi giai đoạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Expected %s days ago"
+msgstr "Lẽ ra vào làm %s ngày trước"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Expected yesterday"
+msgstr "Lẽ ra vào làm hôm qua"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Go to the overview"
+msgstr "Đến Tổng quan"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Handed to People › Joiners"
+msgstr "Đã chuyển sang Con người › Người mới"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "In %s days"
+msgstr "Sau %s ngày"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "In approval"
+msgstr "Đang phê duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "In play"
+msgstr "Đang trong quy trình"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Interview this week"
+msgstr "Phỏng vấn tuần này"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Joined %s"
+msgstr "Đã vào làm %s"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Joining in 30 days"
+msgstr "Vào làm trong 30 ngày"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Joining soon"
+msgstr "Sắp vào làm"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "List"
+msgstr "Danh sách"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Next interview"
+msgstr "Phỏng vấn tiếp theo"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "No offer matches these filters"
+msgstr "Không có đề nghị nào khớp bộ lọc"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "No offers yet"
+msgstr "Chưa có đề nghị nào"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Nobody has applied to your roles yet"
+msgstr "Chưa có ai ứng tuyển vào các vị trí của bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Nobody matches these filters"
+msgstr "Không có ai khớp bộ lọc"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Not asked yet"
+msgstr "Chưa yêu cầu"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+msgid "Offers and joining checks"
+msgstr "Đề nghị và kiểm tra trước ngày vào"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Offers are made from a role's Offer & joining panel, once the panel has picked somebody. Every offer then shows up here, with its papers, its check and its joining date."
+msgstr "Đề nghị được lập từ mục Lời mời và nhận việc của từng vị trí, khi hội đồng đã chọn được người. Sau đó mọi đề nghị hiện ở đây, kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_board.js:0
+msgid "Offers waiting on you"
+msgstr "Đề nghị đang chờ bạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "One column per stage"
+msgstr "Mỗi giai đoạn một cột"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "One line per person, sorted by any column"
+msgstr "Mỗi người một dòng, sắp xếp theo cột bất kỳ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Open the candidate"
+msgstr "Mở ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Open the joining checklist"
+msgstr "Mở danh sách việc khi vào làm"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Open the offer"
+msgstr "Mở đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Papers and the joining date"
+msgstr "Giấy tờ và ngày vào làm"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Possible duplicate"
+msgstr "Có thể trùng"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Press a line to see who is in it. Open anyone to bring them back."
+msgstr "Bấm vào một dòng để xem ai ở đó. Mở bất kỳ ai để đưa họ trở lại."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Publish a role to its channels, or add a candidate from the role's own board. Everybody who applies to any of your roles lands here."
+msgstr "Hãy đăng vị trí lên các kênh, hoặc thêm ứng viên từ bảng của chính vị trí đó. Mọi người ứng tuyển vào bất kỳ vị trí nào của bạn đều hiện ở đây."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Remind about documents"
+msgstr "Nhắc nộp giấy tờ"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Search a candidate, a role, an offer…"
+msgstr "Tìm ứng viên, vị trí, đề nghị…"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Search a name, an email, a role…"
+msgstr "Tìm tên, email, vị trí…"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Search the applicants"
+msgstr "Tìm ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Search the offers"
+msgstr "Tìm đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Sent, waiting for their answer"
+msgstr "Đã gửi, đang chờ câu trả lời"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Showing the newest %(n)s of %(total)s offers."
+msgstr "Đang hiện %(n)s đề nghị mới nhất trên tổng số %(total)s."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Showing the newest %(n)s of %(total)s. Narrow it with a role or a stage to see an older one."
+msgstr "Đang hiện %(n)s người mới nhất trên tổng số %(total)s. Lọc theo vị trí hoặc giai đoạn để xem người cũ hơn."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board_p1.xml:0
+msgid "Their roles use different stages, so only the stages every one of them uses are listed."
+msgstr "Các vị trí của họ dùng giai đoạn khác nhau, nên chỉ liệt kê những giai đoạn mà vị trí nào cũng dùng."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_board_p1.xml:0
+msgid "These people's roles share no working stage. Move them role by role, or close them as one of the outcomes below."
+msgstr "Các vị trí của những người này không có giai đoạn chung. Hãy chuyển theo từng vị trí, hoặc đóng hồ sơ bằng một kết quả bên dưới."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Tick"
+msgstr "Chọn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "Tick to move several at once"
+msgstr "Chọn để chuyển nhiều người cùng lúc"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "Turned down, did not join or not approved"
+msgstr "Bị từ chối, không đến nhận việc hoặc không được duyệt"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "What you can do with this offer"
+msgstr "Việc bạn có thể làm với đề nghị này"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "You are not on any role yet"
+msgstr "Bạn chưa tham gia vị trí nào"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "all %s offers"
+msgstr "tất cả %s đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "all 1 offer"
+msgstr "tất cả 1 đề nghị"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "person in play"
+msgstr "người đang trong quy trình"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "reading…"
+msgstr "đang đọc…"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
+msgid "· past the date"
+msgstr "· quá hạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "%s people match the filters"
+msgstr "%s người khớp bộ lọc"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "1 person matches the filters"
+msgstr "1 người khớp bộ lọc"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
+msgid "All clear"
+msgstr "Không có vấn đề"

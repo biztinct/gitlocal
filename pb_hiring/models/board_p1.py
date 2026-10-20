@@ -462,7 +462,14 @@ class PbHiringBoardP1(models.AbstractModel):
             return []
         req = req.sudo()
         Applicant = self.env['hr.applicant'].sudo().with_context(active_test=False)
-        apps = Applicant.search([('job_id', '=', req.job_id.id)],
+        domain = [('job_id', '=', req.job_id.id)]
+        # NAV P3a: the Applicants register builds the SAME cards for a chosen
+        # slice of this role's people (its filters and its 600 cap run across
+        # every role), so it names them here instead of copying this method.
+        only = self.env.context.get('pb_hiring_app_ids')
+        if only is not None:
+            domain.append(('id', 'in', list(only)))
+        apps = Applicant.search(domain,
                                 order='date_last_stage_update desc, id desc',
                                 limit=BOARD_CANDIDATES)
         ivs = {}

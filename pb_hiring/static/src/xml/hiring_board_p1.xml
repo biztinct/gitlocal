@@ -218,12 +218,14 @@
        and three quick actions on hover.
        ==================================================================== -->
   <t t-name="pb_hiring.KCard">
-    <div class="pbhr-kc" data-coach="hb-card" t-att-class="{ 'is-movable': canMove and cd.family !== 'done', 'is-sel': isSel(cd.id), 'is-focus': state.focusId === cd.id, 'is-open': state.cand and state.cand.id === cd.id, 'is-landed': state.landed.includes(cd.id), 'is-out': !cd.active }" t-att-data-id="cd.id" tabindex="-1" t-att-title="canMove ? '' : lockedTitle" t-on-click="(ev) =&gt; this.onCardClick(ev, cd)">
+    <div class="pbhr-kc" data-coach="hb-card" t-att-class="{ 'is-movable': kcMove(cd) and cd.family !== 'done', 'is-sel': isSel(cd.id), 'is-focus': state.focusId === cd.id, 'is-open': state.cand and state.cand.id === cd.id, 'is-landed': state.landed.includes(cd.id), 'is-out': !cd.active }" t-att-data-id="cd.id" tabindex="-1" t-att-title="kcMove(cd) ? '' : lockedTitle" t-on-click="(ev) =&gt; this.onCardClick(ev, cd)">
       <span class="pbhr-kc-edge" t-att-class="cd.edge ? 'is-' + cd.edge : ''"/>
-      <button t-if="canMove" type="button" class="pbhr-kc-check" t-att-class="{ on: isSel(cd.id) }" t-att-aria-pressed="isSel(cd.id) ? 'true' : 'false'" title="Tick to move several at once (shift-click for a range)" t-on-click.stop="(ev) =&gt; this.toggleSel(cd, ev)">
+      <button t-if="kcMove(cd)" type="button" class="pbhr-kc-check" t-att-class="{ on: isSel(cd.id) }" t-att-aria-pressed="isSel(cd.id) ? 'true' : 'false'" title="Tick to move several at once (shift-click for a range)" t-on-click.stop="(ev) =&gt; this.toggleSel(cd, ev)">
         <t t-out="ic('check',11)"/>
       </button>
       <div class="pbhr-kc-nm" t-esc="cd.name"/>
+      <!-- NAV P3a: on Applicants the columns mix roles, so each card says its own -->
+      <div t-if="cd.role and onApplicants" class="pbhr-kc-role"><t t-out="ic('briefcase',11)"/> <span t-esc="cd.role"/></div>
       <div class="pbhr-kc-sub">
         <t t-if="cd.next_interview_at"><t t-out="ic('calendar',11)"/> <t t-esc="whenShort(cd.next_interview_at)"/></t>
         <t t-elif="cd.waiting" t-esc="cd.waiting"/>
@@ -241,12 +243,12 @@
         <t t-out="ic(cd.shared_tone === 'info' ? 'share2' : 'lock',10)"/> <t t-esc="cd.shared"/>
       </div>
       <div class="pbhr-kc-quick">
-        <t t-if="canMove and cd.family === 'open'">
+        <t t-if="kcMove(cd) and cd.family === 'open'">
           <button type="button" title="Advance to the next column" t-on-click.stop="() =&gt; this.advance(cd)"><t t-out="ic('arrowRight',13)"/></button>
           <button type="button" title="Not this time" class="is-no" t-on-click.stop="() =&gt; this.notThisTime(cd)"><t t-out="ic('xCircle',13)"/></button>
         </t>
         <button t-if="cd.remind" type="button" t-att-title="tr('Remind %s', cd.remind.who)" t-on-click.stop="() =&gt; this.remindCard(cd)"><t t-out="ic('bell',13)"/></button>
-        <button t-if="!canMove" type="button" title="Leave a note" t-on-click.stop="() =&gt; this.startNoteFor(cd.id, cd.name)"><t t-out="ic('pencil',13)"/></button>
+        <button t-if="!kcMove(cd)" type="button" title="Leave a note" t-on-click.stop="() =&gt; this.startNoteFor(cd.id, cd.name)"><t t-out="ic('pencil',13)"/></button>
         <button type="button" title="Open" t-on-click.stop="() =&gt; this.openCand(cd.id)"><t t-out="ic('eye',13)"/></button>
       </div>
     </div>
@@ -386,14 +388,14 @@
           <!-- the actions -->
           <div class="pbhr-cd-acts" data-coach="hb-cacts">
             <t t-if="cand.can_move and cand.family === 'open'">
-              <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.advance(candCard())"><t t-out="ic('arrowRight',14)"/> Advance</button>
+              <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.advance(this.candCard())"><t t-out="ic('arrowRight',14)"/> Advance</button>
             </t>
             <button t-if="cand.can_move" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openMoveMenu([cand.id])"><t t-out="ic('layers',14)"/> Move to</button>
             <button t-if="cand.can_recruit and cand.share" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.openShare([cand.id])"><t t-out="ic('share2',14)"/> Share with…</button>
             <button t-if="cand.can_recruit" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startMessage({ id: cand.id, name: cand.name })"><t t-out="ic('mail',14)"/> Email</button>
             <button t-if="cand.can_recruit and cand.family === 'open'" type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startSchedule({ id: cand.id, name: cand.name })"><t t-out="ic('calendar',14)"/> Arrange an interview</button>
             <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.startNoteFor(cand.id, cand.name)"><t t-out="ic('pencil',14)"/> Note</button>
-            <button t-if="cand.can_move and cand.family === 'open'" type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.notThisTime(candCard())"><t t-out="ic('xCircle',14)"/> Not this time</button>
+            <button t-if="cand.can_move and cand.family === 'open'" type="button" class="pbim-btn ghost pbhr-no" t-on-click="() =&gt; this.notThisTime(this.candCard())"><t t-out="ic('xCircle',14)"/> Not this time</button>
             <button t-if="cand.can_recruit" type="button" class="pbim-btn ghost pbhr-quiet" t-on-click="() =&gt; this.act('open_applicant', { applicant_id: cand.id }, { reload: false })"><t t-out="ic('external',14)"/> Open the full record</button>
           </div>
           <div class="pbhr-cd-keys"><t t-if="cand.can_recruit">Esc closes · M move · E email · N note · S share</t><t t-else="">Esc closes · N note</t></div>
@@ -459,6 +461,9 @@
           <button class="pbim-btn ghost" t-on-click="() =&gt; { state.moveMenu = null; }"><t t-out="ic('x',16)"/></button>
         </div>
         <div class="pbim-modal__body pbhr-movelist">
+          <!-- NAV P3a: a selection on Applicants can mix roles with different columns -->
+          <p t-if="moveNoShared" class="pbhr-p9-mixed"><t t-out="ic('info',14)"/> These people's roles share no working stage. Move them role by role, or close them as one of the outcomes below.</p>
+          <p t-elif="moveMixed" class="pbhr-p9-mixed"><t t-out="ic('info',14)"/> Their roles use different stages, so only the stages every one of them uses are listed.</p>
           <button t-foreach="moveTargets" t-as="mt" t-key="mt.key" type="button" class="pbhr-moveto" t-att-class="'fam-' + mt.family" t-on-click="() =&gt; this.pickMove(mt)">
             <span class="pbhr-moveto-dot"/>
             <b t-esc="mt.name"/>

@@ -506,18 +506,23 @@ export class PbHiringBoard extends Component {
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
+        // NAV P3a: the three offer figures are doors onto the Offers register,
+        // each opening it with one filter on (`openRegister`, in
+        // hiring_registers_p9.js). Ten figures at most: "Offers out" gave way
+        // to "Offers waiting on you", and the two count-only figures
+        // (Candidates, Referrals this month) left the strip — Applicants is
+        // one press away on the rail and says how many people are in play.
         return [
             { key: "open", n: k.open || 0, label: _t("Open roles"), tone: tone(k.open, "green"), run: () => this.toggleFocus("open") },
             { key: "waiting", n: k.waiting || 0, label: _t("Requests to agree"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
             { key: "norequest", n: k.no_request || 0, label: _t("No agreed request"), tone: "", run: () => this.toggleFocus("norequest") },
             { key: "mine", n: k.waiting_mine || 0, label: _t("Waiting on you"), tone: tone(k.waiting_mine, "amber"), run: () => this.toggleFocus("mine") },
-            { key: "cand", n: k.candidates || 0, label: _t("Candidates"), tone: "", run: null },
             { key: "over", n: k.over_budget || 0, label: _t("Over budget"), tone: tone(k.over_budget, "rose"), run: () => this.toggleFocus("over") },
             { key: "iv", n: k.interviews_week || 0, label: _t("Interviews this week"), tone: "", run: () => { this.setTab("interviews"); this.toggleIvFocus("today"); } },
             { key: "late", n: k.feedback_late || 0, label: _t("Opinions late"), tone: tone(k.feedback_late, "rose"), run: () => { this.setTab("interviews"); this.toggleIvFocus("late"); } },
-            { key: "offers", n: k.offers_out || 0, label: _t("Offers out"), tone: "", run: null },
-            { key: "ref", n: k.referrals || 0, label: _t("Referrals this month"), tone: "", run: null },
-            { key: "joined", n: k.filled_month || 0, label: _t("Joined this month"), tone: tone(k.filled_month, "green"), run: null },
+            { key: "offers_mine", n: k.offers_waiting_mine || 0, label: _t("Offers waiting on you"), tone: tone(k.offers_waiting_mine, "amber"), run: () => this.openRegister("offers", { flag: "waiting_mine" }) },
+            { key: "joining", n: k.joining_soon || 0, label: _t("Joining soon"), tone: "", run: () => this.openRegister("offers", { flag: "joining_soon" }) },
+            { key: "joined", n: (k.joined_month ?? k.filled_month) || 0, label: _t("Joined this month"), tone: tone(k.joined_month ?? k.filled_month, "green"), run: () => this.openRegister("offers", { flag: "joined_month" }) },
         ];
     }
 
@@ -1472,6 +1477,11 @@ export class PbHiringBoard extends Component {
     get board() { return (this.state.drawer && this.state.drawer.board) || {}; }
 
     get canMove() { return !!this.board.can_move; }
+
+    /** May THIS card be ticked, dragged or advanced. On a role page that is
+     *  the role's answer; the Applicants register (P3a) answers per card,
+     *  because its cards come from many roles. */
+    kcMove(cd) { return this.canMove; }
 
     get cards() { return (this.state.drawer && this.state.drawer.candidates_list) || []; }
 

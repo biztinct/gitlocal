@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.9.0',
+    'version': '19.0.2.10.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -276,6 +276,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/scss/hiring_p6.scss',
             'pb_hiring/static/src/scss/hiring_p7.scss',
             'pb_hiring/static/src/scss/hiring_p8.scss',
+            'pb_hiring/static/src/scss/hiring_p9.scss',     # NAV P3a: Applicants + Offers
             'pb_hiring/static/src/js/hiring_board.js',
             'pb_hiring/static/src/js/hiring_setup.js',
             'pb_hiring/static/src/js/hiring_forms.js',
@@ -285,6 +286,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_p6.js',
             'pb_hiring/static/src/js/hiring_p7.js',
             'pb_hiring/static/src/js/hiring_p8.js',
+            'pb_hiring/static/src/js/hiring_registers_p9.js',  # NAV P3a: after every board patch
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_hub.js',
             'pb_hiring/static/src/js/hiring_palette.js',
@@ -299,6 +301,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_p6.xml',
             'pb_hiring/static/src/xml/hiring_p7.xml',
             'pb_hiring/static/src/xml/hiring_p8.xml',
+            'pb_hiring/static/src/xml/hiring_p9.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
             'pb_hiring/static/src/xml/hiring_hub.xml',
         ],

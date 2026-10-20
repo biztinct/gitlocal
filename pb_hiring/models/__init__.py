@@ -52,3 +52,4 @@ from . import comms_p8       # RECRUIT P8 — one door for candidate email, thre
 from . import automation_p8  # RECRUIT P8 — the automations the talent lead owns, the run log, the clocks
 from . import hooks_p8       # RECRUIT P8 — the event hooks, G-44, the share email, check-started to-do
 from . import sidebar_door   # 2026-10-03 — the Lifecycle left-menu door for everybody Hiring admits
+from . import registers_p9   # NAV P3a — Applicants and Offers across every role
