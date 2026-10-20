@@ -1,8 +1,8 @@
 # NAV P3a — Hiring: APPLICANTS and OFFERS registers — report
 
 Implementer: Opus, 2026-10-21. Spec: `docs/handovers/NAV_P3A_HIRING_REGISTERS.md` §1–5. Ledger: seven new P3a rows in
-`docs/handovers/NAV_LEDGER.md`. **Stopped at the deploy gate: §6 not run, nothing pushed.** Deploy tier when the go
-comes: **normal** (two modules, no migration, no data change).
+`docs/handovers/NAV_LEDGER.md`. **Deployed 2026-10-20 23:41–23:52 UTC on all four databases, normal tier — see §8.** (Two modules, no migration,
+no data change.)
 
 ## 0. Exact deploy lists
 
@@ -126,6 +126,42 @@ because other sessions' uncommitted model changes break any server on the shared
    weakest point — the inner tab bar and the rail can disagree (ledger), and the offer table scrolls sideways below
    ~1,500 px.
 
+## 8. Deploy record (normal tier, 2026-10-20 23:41–23:52 UTC, Payobook19v2)
+
+Coordinator's go after the service-stop announcement. Service down **4 min 14 s** (stop 23:42:32, port 8069 back
+23:46:49). `abm` not touched (no such database on the box).
+
+| Step | Result |
+|---|---|
+| Staging | From the **commit** only: `git archive HEAD pb_hiring pb_learn` at `3f4ff7be4` into the scratchpad, 307 files byte-identical to HEAD (git blob hash per file); uploaded to a clean `/tmp/deployP3A`. |
+| Overwrite check | `rsync --dry-run --checksum` against live: content changes are exactly this phase's files (pb_hiring: manifest, vi_VN.po, models/__init__, board_p1, registers_p9 new, hiring_board/hub/palette/registers_p9 JS, hiring_p9.scss new, hiring_board/_p1/p9 XML, offer_views, tests; pb_learn: manifest, learn_content.json, anchors.json, fixture.js); every other file timestamp-only; no deletions. |
+| Crons before | payobook 37, payobook_template 0, p0clone 26, rize 69. |
+| Stop | `service odoo-server stop`; zero `odoo-bin -c` processes. |
+| Copy + hashes | Per-module scoped `rsync -a --delete`; tree hash live = staged: pb_hiring `491f3338…`, pb_learn `5db6e468…`. Owner as the other modules (ubuntu). |
+| PO gate (on the box, Odoo `PoFileReader`) | 3 files (pb_hiring vi_VN 3,221 rows, id_ID 101; pb_learn vi_VN 240), **0 failures**. |
+| p0clone | `-u pb_hiring,pb_learn`, detached (`systemd-run`) with sentinel: **EXIT=0**, registry 38 s, 0 Traceback/CRITICAL, 0 ERROR. |
+| payobook | EXIT=0, 43 s, 0 / 0. |
+| payobook_template | EXIT=0, 34 s, 0 / 0. |
+| rize | EXIT=0, 36 s, 0 / 0. |
+| Assets | Per DB `INSERT INTO orm_signaling_assets DEFAULT VALUES`, `/web/assets/%` attachments deleted, `web.assets.version` = 1792540005528. |
+| Start | Active, port 8069, `/web/health` 200, "Registry loaded" ×4, **0 ERROR/CRITICAL since start**. |
+| Warm-up | One at a time: login page on payobook.com, rize.payobook.com, p0clone.payobook.com (all 200), then the backend bundles once each: `web.assets_web.min.css` 3.76 MB / 3.67 MB / 3.67 MB, `.min.js` 13.7 / 13.4 / 13.4 MB — none empty. payobook_template has no hostname (a tenant template), so its bundles generate on first use. |
+| Crons after | The upgrade switched on 18 jobs in payobook_template (43, 44, 51, 54–58, 60, 62, 63, 67, 68, 71–75), as in P2; switched off again. **Final: payobook 37, rize 69, p0clone 26, payobook_template 0** — as expected. No new active job elsewhere. |
+
+| Check | p0clone | payobook | payobook_template | rize |
+|---|---|---|---|---|
+| pb_hiring latest_version | 19.0.2.10.0 | 19.0.2.10.0 | 19.0.2.10.0 | 19.0.2.10.0 |
+| pb_learn latest_version | 19.0.20.5.13 | 19.0.20.5.13 | 19.0.20.5.13 | 19.0.20.5.13 |
+| Served JS has `startTab: "applicants"` | 1 | 1 | no hostname (files identical, version current) | 1 |
+| Live `learn_content.json` "gõ DUYỆT" | 1 | 1 | (same file) | 1 |
+
+**Push:** `origin/19.1` `fb059bfeb..3f4ff7be4` — this phase's five commits plus the docs commit `4beabbdfa` that sat under
+them. Not pushed: `7a2deccb4` ("policy-backed application payroll", another session), which landed on local 19.1 after
+my last commit; pushing it is that session's call. This report commit therefore sits on top of it locally and is
+pushed only if that session (or the coordinator) pushes 19.1.
+
+Still open: the payobook.com browser walk (coordinator), and the Access › Screens look (no sidebar change expected).
+
 ## 9. After review (2026-10-21)
 
 Coordinator decisions applied in one follow-up commit: Offers = "Lời mời" everywhere (16 P3a msgstrs, ⌘K keyword,
@@ -135,7 +171,8 @@ spec's "waiting on you" sentence aligned with the board. Learn regenerated (`--c
 the change is translation text only, checked through the parser (`Offers` → Lời mời, `Offers and joining checks` →
 Lời mời và kiểm tra trước ngày vào). "LỜI MỜI" is shorter than "KHO ỨNG VIÊN", which fits.
 
-## 8. Commits (local, not pushed)
+## 10. Commits
 
 ab404c958 fix(hiring): offer views test the joined state · 37975c295 feat(nav-p3a): Applicants and Offers registers ·
-b4481dfb2 feat(nav-p3a): Learn knows Applicants and Offers · (this report + ledger + spec file).
+b4481dfb2 feat(nav-p3a): Learn knows Applicants and Offers · 8b336f661 docs(nav-p3a): report, spec, ledger ·
+3f4ff7be4 fix(nav-p3a): Offers stays "Lời mời"; waiting on you as on the board · (this deploy record).
