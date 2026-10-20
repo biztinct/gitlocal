@@ -43,11 +43,9 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
-import { PbHrCommCalendar } from "@pb_hr_comm/js/comm_calendar";
-import { PbHrCommHome } from "@pb_hr_comm/js/comm_home";
+import { PbHrCommAnnounceLens } from "@pb_hr_comm/js/comm_announce_lens";
 
 /**
  * THE CALENDAR IS THE HR TEAM'S SCREEN AND THE GATE SAYS SO.
@@ -79,13 +77,9 @@ export const COMM_ADMIN = [
     "base.group_system",
 ];
 
-registry.category(PEOPLE_LENSES).add("announcements", {
-    key: "announcements",
-    icon: "megaphone",
-    label: _t("Announce"),
-    Component: PbHrCommCalendar,
-    groups: COMM_GATE,
-}, { sequence: 80 });
+// NAV P2 (2026-10-21): the calendar is no longer a People tab. It is the
+// second tab of Home › Announce (comm_announce_lens.js), for the same gate;
+// the standalone `pb_hr_comm_calendar` action stays for every old link.
 
 /**
  * THE HOME CARD IS OPEN TO EVERYBODY WITH A LOGIN, and that is the point. An
@@ -99,13 +93,16 @@ registry.category(HOME_LENSES).add("coming_up", {
     // "Announce" on the rail for R63's reason above; the page's own heading
     // says "Announcements" in full (renamed from "Coming up", owner 2026-09-24).
     label: _t("Announce"),
-    Component: PbHrCommHome,
+    title: _t("Announcements"),
+    // NAV P2: Coming up, plus the Calendar tab for the HR team.
+    Component: PbHrCommAnnounceLens,
     groups: ["base.group_user"],
 }, { sequence: 50 });
 
 /* ------------------------------------------------------------ Settings ---- */
 registry.category(SETTINGS_CATEGORIES).add("announcements", {
     key: "announcements",
+    group: "hr",                       // NAV P2: Settings › HR
     icon: "megaphone",
     label: _t("Announcements"),
     blurb: _t("The announcements somebody has already written once, and who "
@@ -134,12 +131,12 @@ const palette = registry.category("pb_hub_palette");
 palette.add("comm_calendar", {
     id: "comm_calendar",
     label: _t("Announcements"),
-    sublabel: _t("People"),
+    sublabel: _t("Home"),
     icon: "megaphone",
     groups: COMM_GATE,
     requires: "pb_hr_comm_calendar",
-    action: { xmlid: "pb_people_hub.action_pb_people_hub",
-              lens: "announcements" },
+    action: { xmlid: "pb_home_hub.action_pb_home_hub", lens: "coming_up" },
+    keywords: ["announce", "people", "calendar", "thông báo"],
 }, { sequence: 3700 });
 
 palette.add("comm_new", {
@@ -176,8 +173,8 @@ palette.add("comm_celebrations", {
     icon: "cake",
     groups: COMM_GATE,
     requires: "pb_hr_comm_calendar",
-    action: { xmlid: "pb_people_hub.action_pb_people_hub",
-              lens: "announcements" },
+    action: { xmlid: "pb_home_hub.action_pb_home_hub", lens: "coming_up" },
+    keywords: ["announce", "people", "calendar", "thông báo"],
 }, { sequence: 3730 });
 
 /**

@@ -13,14 +13,21 @@
          CLOSED dict inlined in pb_sidebar.js, an unknown name renders a plain
          circle, and pb_sidebar's `test_every_rail_icon_exists_in_the_fixed_set`
          fails on it. `inbox` is in the set and reads as a queue. -->
+    <!-- NAV P2 (2026-10-21): OFF THE MENU. Ask HR is a tab of Home now
+         (askhr_lens.js); Home claims the native action and the model so the
+         menu still lights Home on the native screens. The record is kept,
+         inactive, so the Access home lists it as "off the menu"; the
+         19.0.1.1.0 migration switches it off where it already exists. Its
+         claims move to Home, so they are emptied here. -->
     <record id="item_ask_hr" model="pb.sidebar.item">
+        <field name="active" eval="False"/>
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
         <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
         <field name="name">Ask HR</field>
         <field name="icon">inbox</field>
-        <field name="sequence">22</field>
+        <field name="sequence">983</field>
         <field name="action_xmlid">pb_ask_hr.action_pb_ask_hr_ticket</field>
-        <field name="match_action_xmlids">pb_ask_hr.action_pb_ask_hr_ticket</field>
-        <field name="match_models">pb.ask.hr.ticket</field>
+        <field name="match_action_xmlids" eval="False"/>
+        <field name="match_models" eval="False"/>
     </record>
 </odoo>

@@ -37,6 +37,11 @@
         <field name="action_xmlid">pb_home_hub.action_pb_home_hub</field>
         <field name="action_tag">pb_home_hub</field>
         <field name="match_action_tags">pb_home_hub,pb_dashboard,pb_approval</field>
+        <!-- NAV P2: Ask HR is a tab of Home, so the native Ask HR screens
+             light Home on the menu. Plain strings: Home does not depend on
+             pb_ask_hr, and a claim of an absent action simply never matches. -->
+        <field name="match_action_xmlids">pb_ask_hr.action_pb_ask_hr_ticket</field>
+        <field name="match_models">pb.ask.hr.ticket</field>
     </record>
 
 </odoo>

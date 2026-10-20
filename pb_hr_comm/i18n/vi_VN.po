@@ -64,3 +64,21 @@ msgstr "Thông báo tôi phụ trách"
 #: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
 msgid "Your own"
 msgstr "Của riêng bạn"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_announce_lens.js:0
+msgid "Coming up"
+msgstr "Sắp diễn ra"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_announce_lens.js:0
+msgid "Calendar"
+msgstr "Lịch"
+
+#. module: pb_hr_comm
+#. odoo-javascript
+#: code:addons/pb_hr_comm/static/src/js/comm_palette.js:0
+msgid "Home"
+msgstr "Trang chủ"

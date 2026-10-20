@@ -58,3 +58,15 @@ msgstr "Tổng quan"
 #: code:addons/pb_home_hub/static/src/js/home_hub.js:130
 msgid "This month"
 msgstr "Tháng này"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/home_hub.js:0
+msgid "Inbox"
+msgstr "Hộp thư"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/home_hub.js:0
+msgid "Approvals inbox"
+msgstr "Hộp thư phê duyệt"

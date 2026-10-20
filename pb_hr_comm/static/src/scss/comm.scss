@@ -582,3 +582,26 @@
         color: var(--pbim-muted, #64748B);
     }
 }
+
+// NAV P2 — Home › Announce: Coming up and the Calendar as two tabs. The
+// strip sits on the page background; each tab keeps its own scrolling.
+.pbch-lens {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+}
+.pbch-tabs {
+    flex: none;
+    padding: 12px 20px 0;
+    background: var(--pbim-bg, #F5F6FA);
+}
+.pbch-lens-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    > * { flex: 1 1 auto; min-height: 0; }
+}

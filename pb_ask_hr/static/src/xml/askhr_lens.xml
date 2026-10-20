@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ Home, the Ask HR tab
+       NAV P2. The native kanban inside the Home canvas. The wrapper is a
+       definite-height flex column so the kanban owns its own scrolling
+       inside the hub's canvas (W20). Comments use `=` rules only (W22). -->
+  <t t-name="pb_ask_hr.PbAskHrLens">
+    <div class="pbah-lens o_action">
+      <View t-props="viewProps"/>
+    </div>
+  </t>
+
+</templates>

@@ -5,6 +5,7 @@ T3.1 the model, T3.2 HR's "Send message" vs a note, T3.5 the HR owner
 setting, T3.6 (this module's source on My requests), T3.10 the backend queue
 and access, T3.3 / T3.4 the portal pages over HTTP (T-R6), T3.9 the tile.
 """
+import os
 import logging
 import re
 from datetime import timedelta
@@ -13,6 +14,7 @@ from lxml import html as lxml_html
 
 from odoo import fields, http
 from odoo.exceptions import AccessError, UserError
+from odoo.modules.module import get_module_path
 from odoo.tests import HttpCase, TransactionCase, tagged
 
 from odoo.addons.pb_me_portal.tests.test_portal_accounts import (
@@ -232,9 +234,29 @@ class TestAskHrModel(_AskHrCommon, TransactionCase):
         menu = self.env.ref('pb_ask_hr.menu_pb_ask_hr_ticket')
         self.assertEqual(menu.parent_id, self.env.ref('hr.menu_hr_root'))
         if 'pb.sidebar.item' in self.env:
+            # NAV P2: Ask HR is a tab of Home, so its own entry is off the
+            # menu (kept, in the 900 band) and Home lights on its screens.
             item = self.env.ref('pb_ask_hr.item_ask_hr')
-            self.assertTrue(item.active)
+            self.assertFalse(item.active)
+            self.assertEqual(item.sequence, 983)
             self.assertIn(self.env.ref('hr.group_hr_user'), item.groups_id)
+            home = self.env.ref('pb_home_hub.item_home')
+            self.assertIn('pb_ask_hr.action_pb_ask_hr_ticket',
+                          (home.match_action_xmlids or '').split(','))
+            self.assertIn('pb.ask.hr.ticket', (home.match_models or '').split(','))
+
+    def test_nav_p2_the_home_tab_mounts_the_real_kanban(self):
+        path = os.path.join(get_module_path('pb_ask_hr'), 'static', 'src', 'js',
+                            'askhr_lens.js')
+        with open(path, encoding='utf-8') as fh:
+            src = fh.read()
+        self.assertIn('registry.category(HOME_LENSES).add("askhr"', src)
+        self.assertIn('{ sequence: 15 }', src)
+        self.assertIn('import { View } from "@web/views/view";', src)
+        self.assertIn('resModel: MODEL', src)
+        self.assertIn('type: "kanban"', src)
+        self.assertIn('search_default_filter_open: 1', src)
+        self.assertTrue(self.env.ref('pb_ask_hr.view_pb_ask_hr_ticket_kanban'))
 
 
 @tagged('post_install', '-at_install')

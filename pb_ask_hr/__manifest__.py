@@ -19,12 +19,14 @@ A ticket is a conversation, not an approval (D1): no approval route, no ladder.
 Portal seams are sudo after an ownership guard (ledger T-R11): no portal ACL.
 The employee's own "My requests" list (pb_me_portal) reads this model softly.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['pb_me_portal', 'hr', 'mail', 'portal'],
+    'depends': ['pb_me_portal', 'hr', 'mail', 'portal',
+                # NAV P2: Ask HR is a tab of Home (the HOME_LENSES registry)
+                'pb_home_hub'],
     'data': [
         'security/ir.model.access.csv',
         'security/pb_ask_hr_security.xml',
@@ -42,6 +44,9 @@ The employee's own "My requests" list (pb_me_portal) reads this model softly.
         ],
         'web.assets_backend': [
             'pb_ask_hr/static/src/scss/ask_hr_backend.scss',
+            # NAV P2: Home › Ask HR
+            'pb_ask_hr/static/src/js/askhr_lens.js',
+            'pb_ask_hr/static/src/xml/askhr_lens.xml',
         ],
     },
     'installable': True,

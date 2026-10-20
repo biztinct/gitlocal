@@ -137,7 +137,10 @@ export class PbHomeHub extends Component {
                 // a door may open the inbox ON one request
                 // (`pb_focus: "request:42"`). Without it the lens is mounted
                 // with `embedded` only and the link never reaches it.
-                { key: "approvals", icon: "inbox", label: _t("Approvals"),
+                // NAV P2: the rail word is INBOX (key unchanged); the inbox
+                // is every request anybody is asked to decide.
+                { key: "approvals", icon: "inbox", label: _t("Inbox"),
+                  title: _t("Approvals inbox"),
                   Component: PbInbox, groups: APPROVAL_GATE,
                   wantsArrival: true },
                 // Bolted-on lenses sit after the two this hub ships — what

@@ -192,6 +192,7 @@ msgid "Answered — your turn"
 msgstr "Đã trả lời — đến lượt bạn"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_ask_hr/models/pb_me_home.py:0
 #: model:ir.actions.act_window,name:pb_ask_hr.action_pb_ask_hr_ticket
@@ -202,6 +203,7 @@ msgstr "Đã trả lời — đến lượt bạn"
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_breadcrumbs_ask_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_my_home_ask_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.res_config_settings_view_form_ask_hr
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "Ask HR"
 msgstr "Hỏi Nhân sự"
 
@@ -1030,3 +1032,9 @@ msgstr "đang ở Nhân sự"
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
 msgid "yesterday"
 msgstr "hôm qua"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Home"
+msgstr "Trang chủ"

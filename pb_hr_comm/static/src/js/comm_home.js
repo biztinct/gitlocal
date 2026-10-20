@@ -90,6 +90,11 @@ export class PbHrCommHome extends Component {
     }
 
     async openCalendar() {
+        // NAV P2: inside Home › Announce the calendar is the next tab.
+        if (typeof this.props.onOpenCalendar === "function") {
+            this.props.onOpenCalendar();
+            return;
+        }
         await this.action.doAction({
             type: "ir.actions.client",
             tag: "pb_hr_comm_calendar",

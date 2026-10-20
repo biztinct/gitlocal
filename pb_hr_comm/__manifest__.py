@@ -48,7 +48,7 @@ WHAT IT DELIBERATELY DOES NOT DO. Chat apps and text messages are not
 connected — the screens are built ready for them and say so. There is no
 second wall: praise stays where praise lives.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -88,9 +88,11 @@ second wall: praise stays where praise lives.
             'pb_hr_comm/static/src/scss/comm.scss',
             'pb_hr_comm/static/src/js/comm_calendar.js',
             'pb_hr_comm/static/src/js/comm_home.js',
+            'pb_hr_comm/static/src/js/comm_announce_lens.js',
             'pb_hr_comm/static/src/js/comm_palette.js',
             'pb_hr_comm/static/src/xml/comm_calendar.xml',
             'pb_hr_comm/static/src/xml/comm_home.xml',
+            'pb_hr_comm/static/src/xml/comm_announce_lens.xml',
         ],
     },
     'post_init_hook': 'post_init_hook',
