@@ -24,9 +24,9 @@
         <span class="pbst-sp"/>
 
         <button class="pbst-search" t-on-click="() => this.openPalette()"
-                aria-label="Search surfaces and actions">
+                aria-label="Search screens and actions">
           <span class="pbst-search__ic" t-out="ic('search', 14)"/>
-          <span class="pbst-search__tx">Search surfaces, actions…</span>
+          <span class="pbst-search__tx">Search screens and actions…</span>
           <!-- A keyboard glyph is NOT translated — it is what is printed on
                the key (W80). -->
           <span class="pbst-search__kbd" t-esc="paletteHint"/>

@@ -264,6 +264,22 @@ async function drawerSuite() {
     const rec = calls.find((c) => c.model === "learn.progress" && c.method === "record");
     check(rec && rec.args[0] === "treatment" && rec.args[1].state === "in_progress",
           "progress: in_progress on learn.progress", JSON.stringify(rec));
+    // LEARNREV P5b — thumbs on the step, through the field cards' seam.
+    check(COACH_ACTIONS.has("c-lprate"), "declared action c-lprate");
+    const ref = `lesson.${lesson.key}.0`;
+    check(html.includes('data-act="c-lprate"') && html.includes(`data-key="${ref}"`)
+          && html.includes(runtime.esc(T("gHelpful"))),
+          "the step card asks Was this helpful? with thumbs keyed to the step");
+    const rate = { dataset: { act: "c-lprate", v: "down", key: ref }, closest: () => null };
+    host.onClick({ target: { closest: (sel) => (sel === "[data-act]" ? rate : null) }, preventDefault: noop });
+    const sent = calls.filter((c) => c.model === "learn.guide" && c.method === "rpc_feedback");
+    check(sent.length === 1 && sent[0].args[1] === ref && sent[0].args[2] === false,
+          "a thumbs-down sends one rating row with the step reference", JSON.stringify(sent));
+    const rated = String(host.guideHTML);
+    check(rated.includes("lrn-fbthanks") && rated.includes(" disabled") && /lrn-fbbtn on"[^>]*data-v="down"/.test(rated),
+          "… the card thanks the reader and keeps the choice");
+    host.onClick({ target: { closest: (sel) => (sel === "[data-act]" ? rate : null) }, preventDefault: noop });
+    check(calls.filter((c) => c.method === "rpc_feedback").length === 1, "… and a second press sends nothing");
     host._lpNext();
     check(host.state.lp.index === 1, "Next moves to step 2");
     check(calls.some((c) => c.method === "record" && c.args[1].step_index === 1), "… and records the step");
@@ -292,6 +308,27 @@ async function drawerSuite() {
     const handed = JSON.parse(store.get("pbLearnLessonReturn") || "null");
     check(host.state.lp === null && handed && handed.station === "treatment" && handed.from === "treatment",
           "a rep-* step → handed to the practice copy, with where to come back", JSON.stringify(handed));
+    check(handed && handed.why === "practice", "… and why (practice), so the card can say so (P5b S6)");
+}
+
+// ============================================================ the thumbs
+function rateSuite() {
+    console.log("T2 thumbs on a step (P5b)");
+    check(lp.stepRef("lesson", "L10", 3) === "lesson.L10.3", "lesson step reference");
+    check(lp.stepRef("walk", "sc_matrix", "hero") === "walk.sc_matrix.hero", "walkthrough step reference");
+    check(lp.stepRef("lesson", "L10", -1) === "" && lp.stepRef("walk", "", "x") === "",
+          "nothing to rate → no reference");
+    const blank = lp.rateHTML("", "");
+    check(blank === "", "no reference → no thumbs");
+    const fresh = lp.rateHTML("walk.sc_matrix.hero", "", "s-rate");
+    check((fresh.match(/data-act="s-rate"/g) || []).length === 2 && !fresh.includes("disabled")
+          && fresh.includes('data-v="up"') && fresh.includes('data-v="down"'),
+          "two buttons, the host's own action, not yet rated");
+    const done = lp.rateHTML("walk.sc_matrix.hero", "up", "s-rate");
+    check(done.includes("lrn-fbthanks") && (done.match(/disabled/g) || []).length === 2
+          && /lrn-fbbtn on"[^>]*data-v="up"/.test(done), "rated: the choice shown, both locked, thanks");
+    check(!/="[^"]*"(?![\s>\/])/.test(fresh + done),
+          "every attribute has its own space (the minifier strips whitespace after a closing brace)");
 }
 
 // ============================================================ the content
@@ -329,8 +366,20 @@ function contentSuite() {
         });
     }
     check(!legacy.length, "every step of the eight screens' lessons (+ statutory) has all four lines", legacy.join(","));
+    // LEARNREV P5b — and every other lesson too: no legacy body anywhere.
+    const all = CONTENT.stations.filter((s) => (s.lessons || []).length).map((s) => s.key);
+    const old = [];
+    for (const key of all) {
+        lesson(key).steps.forEach((s, i) => {
+            const v = lp.stepView(s, "VN");
+            if (v.legacy || !v.look || !v.means || !v.affects) {
+                old.push(`${key}#${i + 1}`);
+            }
+        });
+    }
+    check(all.length >= 42 && !old.length, `all ${all.length} lessons: every step in the four lines`, old.join(","));
     const presses = [];
-    for (const key of eight) {
+    for (const key of all) {
         lesson(key).steps.forEach((s) => {
             if (s.press && lp.isPracticeAnchor(s.anchor)) {
                 presses.push(s.anchor);
@@ -341,6 +390,7 @@ function contentSuite() {
 }
 
 cardSuite();
+rateSuite();
 contentSuite();
 placeSuite();
 countrySuite();

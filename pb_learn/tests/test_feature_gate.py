@@ -145,13 +145,19 @@ class TestFeatureGate(TransactionCase):
         tour = next(sc for sc in self.tree['scenarios'] if sc['key'] == 'sc_welcome')
         step = next(st for st in tour['steps'] if st['key'] == 'copilot')
         self.assertNotIn('requires', step)
-        for f in ('title', 'body'):
-            en, vi = step[f]['en'], step[f]['vi']
-            self.assertIn('PayAI', en)
-            self.assertIn('PayAI', vi)
+        # LEARNREV P5b — the step is four lines now (no body): it names PayAI
+        # in its title and in what to look at, promises no action anywhere,
+        # and still says you can speak to it (in the tip).
+        for f in ('title', 'look'):
+            self.assertIn('PayAI', step[f]['en'])
+            self.assertIn('PayAI', step[f]['vi'])
+        for f in ('title', 'look', 'means', 'affects', 'tip'):
+            en = step[f]['en']
             self.assertFalse(ACTING_WORDS.search(en), en)
             self.assertNotRegex(en.lower(), r'\bhelper\b|tab (guide|ask|practice)')
-        self.assertIn('speak', step['body']['en'])
+        # The generator always emits a `body` key; on a four-line step it is empty.
+        self.assertFalse(step.get('body'), step.get('body'))
+        self.assertIn('speak', step['tip']['en'])
         self.assertEqual(tour['name']['vi'], 'Đi một vòng Payobook')
 
     def test_03_every_gate_names_a_feature_the_server_answers(self):

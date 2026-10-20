@@ -72,9 +72,9 @@
             <div class="pbim-panel-h"><h2 class="pbim-h2">Tax brackets</h2>
               <span t-if="state.tax" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="state.tax.year"/></span></div>
             <div t-if="state.tax and state.tax.slabs.length" class="pbim-tablewrap sta-slabs" data-coach="st-slabs">
-              <p t-if="state.tax.canonical" class="px-3"><t t-esc="state.tax.name"/> · <t t-esc="state.tax.basis"/> · <t t-esc="state.tax.method === 'whole_income' ? 'Selected rate applies to whole income' : 'Progressive marginal bands'"/></p>
+              <p t-if="state.tax.canonical" class="px-3"><t t-esc="state.tax.name"/> · <t t-esc="state.tax.basis"/> · <t t-if="state.tax.method === 'whole_income'">Selected rate applies to whole income</t><t t-else="">Progressive marginal bands</t></p>
               <table class="pbim-table">
-                <thead><tr><th t-esc="state.tax.canonical ? 'Above' : 'From'"/><th>Up to</th><th>Rate</th></tr></thead>
+                <thead><tr><th><t t-if="state.tax.canonical">Above</t><t t-else="">From</t></th><th>Up to</th><th>Rate</th></tr></thead>
                 <tbody>
                   <tr t-foreach="state.tax.slabs" t-as="s" t-key="s_index">
                     <td class="money" t-esc="taxMoney(s.from)"/>

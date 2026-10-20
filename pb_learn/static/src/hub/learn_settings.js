@@ -36,56 +36,23 @@ function readMotion() {
 }
 
 /* LEARNREV P5a (S4) — the words of the "What people asked and rated" card.
-   Written here as pairs, not as content-plane keys: P5a does not regenerate
-   the content plane (P5b owns it); P5b's Vietnamese pass reviews these. */
+   LEARNREV P5b — moved into the content plane (chrome `fbk*`, both languages,
+   generated from data.js) so they follow the same English / Vietnamese path
+   as every other Learn word. The multiplication sign is a glyph, not a word,
+   so it stays here (an identical EN/VI chrome value fails the parity gate). */
 const FB = {
-    title: { en: "What people asked and rated", vi: "Mọi người đã hỏi và đánh giá gì" },
-    lead: {
-        en: "Which help people found useful, and what they searched for and did not find. Counts only: no names, no pay figures.",
-        vi: "Phần trợ giúp nào hữu ích, và mọi người đã tìm gì mà không thấy. Chỉ có con số: không có tên, không có số liệu lương.",
-    },
-    period: { en: "Period", vi: "Khoảng thời gian" },
-    d7: { en: "Last 7 days", vi: "7 ngày qua" },
-    d30: { en: "Last 30 days", vi: "30 ngày qua" },
-    d90: { en: "Last 90 days", vi: "90 ngày qua" },
-    export: { en: "Download as CSV", vi: "Tải xuống dạng CSV" },
-    loading: { en: "Reading the numbers…", vi: "Đang đọc số liệu…" },
-    failed: {
-        en: "The numbers could not be read. Try again in a moment.",
-        vi: "Không đọc được số liệu. Hãy thử lại sau ít phút.",
-    },
-    retry: { en: "Try again", vi: "Thử lại" },
-    helpful: { en: "Marked helpful", vi: "Được đánh dấu hữu ích" },
-    notHelpful: { en: "Marked not helpful", vi: "Được đánh dấu chưa hữu ích" },
-    noAnswer: { en: "Helper had no answer", vi: "Trợ lý không có câu trả lời" },
-    noResult: { en: "Searches with no result", vi: "Lượt tìm không có kết quả" },
-    ratingsTitle: { en: "Ratings by screen", vi: "Đánh giá theo màn hình" },
-    ratingsEmpty: {
-        en: "No ratings yet. They appear when someone presses a thumb on a field card.",
-        vi: "Chưa có đánh giá nào. Chúng xuất hiện khi ai đó bấm ngón tay cái trên thẻ của một trường.",
-    },
-    missTitle: { en: "Questions the helper could not answer", vi: "Câu hỏi trợ lý chưa trả lời được" },
-    missEmpty: {
-        en: "None in this period: every question found an answer.",
-        vi: "Không có trong khoảng này: mọi câu hỏi đều có câu trả lời.",
-    },
-    searchTitle: { en: "Top searches with no result", vi: "Các lượt tìm không có kết quả nhiều nhất" },
-    searchEmpty: {
-        en: "None in this period: every search found something.",
-        vi: "Không có trong khoảng này: mọi lượt tìm đều có kết quả.",
-    },
-    searchHidden: {
-        en: "Search words are not kept, so only their counts show. Switch on keeping questions above to read the words.",
-        vi: "Từ khóa tìm kiếm không được lưu, nên chỉ hiện số lượt. Hãy bật việc lưu câu hỏi ở trên để đọc các từ khóa.",
-    },
-    searchHiddenOne: { en: "Words not kept", vi: "Từ khóa không được lưu" },
-    times: { en: "×", vi: "×" },
-    fieldsShow: { en: "Show the fields", vi: "Xem các trường" },
-    fieldsHide: { en: "Hide the fields", vi: "Ẩn các trường" },
-    showMore: { en: "Show all screens", vi: "Xem mọi màn hình" },
-    showLess: { en: "Show fewer", vi: "Thu gọn" },
-    noScreen: { en: "Not tied to a screen", vi: "Không gắn với màn hình nào" },
+    title: "fbkTitle", lead: "fbkLead", period: "fbkPeriod",
+    d7: "fbkD7", d30: "fbkD30", d90: "fbkD90",
+    export: "fbkExport", loading: "fbkLoading", failed: "fbkFailed", retry: "fbkRetry",
+    helpful: "fbkHelpful", notHelpful: "fbkNotHelpful", noAnswer: "fbkNoAnswer", noResult: "fbkNoResult",
+    ratingsTitle: "fbkRatingsTitle", ratingsEmpty: "fbkRatingsEmpty",
+    missTitle: "fbkMissTitle", missEmpty: "fbkMissEmpty",
+    searchTitle: "fbkSearchTitle", searchEmpty: "fbkSearchEmpty",
+    searchHidden: "fbkSearchHidden", searchHiddenOne: "fbkSearchHiddenOne",
+    fieldsShow: "fbkFieldsShow", fieldsHide: "fbkFieldsHide",
+    showMore: "fbkShowMore", showLess: "fbkShowLess", noScreen: "fbkNoScreen",
 };
+const GLYPHS = { times: "×" };
 const SHOWN = 6;
 
 /* The words for each switch. Keys into the content plane's chrome, so the
@@ -144,8 +111,7 @@ export class LearnSettings extends Component {
 
     /** One of the feedback card's words, in the page's language. */
     f(key) {
-        const p = FB[key] || {};
-        return p[RT.lang] || p.en || key;
+        return GLYPHS[key] || (FB[key] ? T(FB[key]) : key);
     }
 
     /** Read the report for the chosen period. A failure is a sentence and a

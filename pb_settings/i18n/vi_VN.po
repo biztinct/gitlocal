@@ -207,14 +207,14 @@ msgstr "Cấu trúc lương"
 #. module: pb_settings
 #. odoo-javascript
 #: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
-msgid "Search surfaces and actions"
-msgstr "Tìm kiếm bề mặt và hành động"
+msgid "Search screens and actions"
+msgstr "Tìm màn hình và hành động"
 
 #. module: pb_settings
 #. odoo-javascript
 #: code:addons/pb_settings/static/src/xml/settings_hub.xml:0
-msgid "Search surfaces, actions…"
-msgstr "Giao diện tìm kiếm, hành động…"
+msgid "Search screens and actions…"
+msgstr "Tìm màn hình và hành động…"
 
 #. module: pb_settings
 #. odoo-javascript

@@ -167,7 +167,7 @@ msgstr "Làm thêm giờ không được cài đặt trên cơ sở dữ liệu 
 #. odoo-javascript
 #: code:addons/pb_workforce_insights/static/src/xml/workforce_insights.xml:0
 msgid "Overtime load"
-msgstr "Tải ngoài giờ"
+msgstr "Khối lượng tăng ca"
 
 #. module: pb_workforce_insights
 #: model:ir.model,name:pb_workforce_insights.model_pb_workforce_insights

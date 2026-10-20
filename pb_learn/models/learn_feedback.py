@@ -16,7 +16,8 @@ WRITING (any internal user)
   question store already existed (handover non-goal).
 
 READING (administrators only, asked again on the server)
-  `report(days, lang)` — per screen and per field: thumbs up/down in the last
+  `report(days, lang)` — per screen and per field (P5b: and per lesson step /
+  walkthrough card, rated through the same seam): thumbs up/down in the last
   `days` days; the helper's "no answer" counts per screen (topics only: that is
   all `coach_miss` carries); the top ten search phrases with no result.
   `export_csv(days, lang)` — the same numbers as one CSV file's text.
@@ -37,7 +38,7 @@ from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
 from .learn_content import text
-from .learn_guide import FEEDBACK_KIND, is_vi
+from .learn_guide import FEEDBACK_KIND, STEP_PREFIXES, is_vi
 from .learn_question import COLLECT_FLAG, _flag_on
 
 MISS_KIND = 'library_miss'
@@ -150,9 +151,15 @@ class LearnFeedback(models.AbstractModel):
             f[verdict] += count
             row[verdict] += count
         thumbs = []
+        Guide = self.env['learn.guide']
         for screen, row in by_screen.items():
             labels = self._field_labels(screen, lang)
-            fields_ = [{'key': k, 'label': labels.get(k) or k,
+            # LEARNREV P5b — a lesson step or a walkthrough card is rated
+            # through the same seam; its row reads "<lesson> · Step 3: <title>".
+            fields_ = [{'key': k,
+                        'kind': 'step' if k.startswith(STEP_PREFIXES) else 'field',
+                        'label': (Guide.step_label(k, lang) if k.startswith(STEP_PREFIXES)
+                                  else labels.get(k) or k),
                         'up': v['up'], 'down': v['down']}
                        for k, v in row['fields'].items()]
             fields_.sort(key=lambda x: (-x['down'], -x['up'], x['label']))

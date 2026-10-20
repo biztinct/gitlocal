@@ -121,7 +121,7 @@ MANIFESTS = {
                 'how': {
                     'en': "Downloads the people and fields you picked as a spreadsheet "
                           "you can edit and bring back.",
-                    'vi': "Tải về các người và trường bạn đã chọn dưới dạng bảng tính để "
+                    'vi': "Tải về những người và trường bạn đã chọn dưới dạng bảng tính để "
                           "bạn sửa rồi nhập lại.",
                 },
                 'if_changed': {

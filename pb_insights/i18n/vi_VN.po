@@ -140,7 +140,7 @@ msgstr "Ước tính từ hợp đồng đang hiệu lực — chưa có đợt 
 #. odoo-javascript
 #: code:addons/pb_insights/static/src/xml/insights.xml:0
 msgid "Ask something else"
-msgstr "Hỏi cái gì khác"
+msgstr "Hỏi điều khác"
 
 #. module: pb_insights
 #. odoo-javascript

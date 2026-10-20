@@ -694,7 +694,7 @@ const PRACTICE = {
       get counts() {
         return [[B("Settlements", "Quyết toán"), this.rows.length],
                 [B("Ready to check", "Cần kiểm tra"), this.rows.filter((r) => r.check).length],
-                [B("Manual", "Nhập tay"), this.rows.filter((r) => r.badge.en === "Manual").length]];
+                [B("Manual", "Thủ công"), this.rows.filter((r) => r.badge.en === "Manual").length]];
       },
       get money() {
         const e = this.rows.reduce((t, r) => t + r.earnings, 0);
@@ -2323,7 +2323,7 @@ const STATUS_LABELS = {
      formula_config.py:529-535). */
   formula: {
     draft: { l: B("Draft", "Nháp"), t: "" },
-    testing: { l: B("Testing", "Đang thử nghiệm"), t: "b" },
+    testing: { l: B("Testing", "Kiểm thử"), t: "b" },
     validated: { l: B("Validated", "Đã xác thực"), t: "warn" },
     active: { l: B("Active", "Đang hoạt động"), t: "ok" },
     archived: { l: B("Archived", "Đã lưu trữ"), t: "" },

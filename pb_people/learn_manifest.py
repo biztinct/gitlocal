@@ -69,7 +69,7 @@ MANIFESTS = {
             },
             {
                 'key': 'ready_share', 'derived': True,
-                'column': {'en': "Payroll-ready", 'vi': "Sẵn sàng trả lương"},
+                'column': {'en': "Payroll-ready", 'vi': "Sẵn sàng tính lương"},
                 'from': _ROSTER,
                 'how': {
                     'en': "The share of people with bank details on file. A row's tick "

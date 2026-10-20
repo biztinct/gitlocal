@@ -621,7 +621,7 @@ MANIFESTS['mapping'] = {
                           "cho tới khi được tính lại."},
          'writes': True},
         {'label': {'en': "Save order for this scheme",
-                   'vi': "Lưu thứ tự cho cơ cấu này"},
+                   'vi': "Lưu thứ tự cho chương trình lương này"},
          'method': 'pb.formula.studio.mapping_priority_save',
          'effect': {'en': "Saves the source order for every input component on the "
                           "scheme.",
@@ -855,7 +855,7 @@ MANIFESTS['formula'] = {
                           "xác thực, Đang hoạt động. Chỉ chương trình đang hoạt động "
                           "mới trả lương."},
          'writes': True},
-        {'label': {'en': "Review value types", 'vi': "Xem lại kiểu giá trị"},
+        {'label': {'en': "Review value types", 'vi': "Xem lại loại giá trị"},
          'method': 'pb.formula.studio.experience_review_types',
          'effect': {'en': "Lists components whose value type looks wrong, with a "
                           "suggested correction for each.",

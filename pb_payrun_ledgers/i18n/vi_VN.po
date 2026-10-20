@@ -497,7 +497,7 @@ msgstr "Quyết toán"
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Manual"
-msgstr "Nhập tay"
+msgstr "Thủ công"
 
 #. module: pb_payrun_ledgers
 #. odoo-python

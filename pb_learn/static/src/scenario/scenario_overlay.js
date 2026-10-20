@@ -61,7 +61,7 @@ import { T, tx, esc, ic, reduced, SP } from "../engine/runtime";
 import { gtx, glossaryOpen, closeGlossary } from "../engine/glossary";
 import { navPlace } from "../engine/places";
 import { DOCK_BELOW, placeCard } from "../engine/spotlight";
-import { linesHTML, stepView } from "../coach/lesson_panel";
+import { linesHTML, rateHTML, stepRef, stepView } from "../coach/lesson_panel";
 import { hubPlace } from "@pb_hub/js/hub_place";
 
 /* LEARN REFRESH step 4 — the words a screen uses when it refuses its reader,
@@ -166,6 +166,8 @@ export class ScenarioOverlay extends Component {
             checkNote: null,
             checkOk: false,
             typed: "",             // Watch mode: the value being "typed"
+            // LEARNREV P5b — cards rated in this page's life ({ref: "up"}).
+            rated: {},
             hole: { top: 0, left: 0, w: 0, h: 0 },
             card: { top: 0, left: 0 },
         });
@@ -828,6 +830,13 @@ export class ScenarioOverlay extends Component {
             }
         } else if (act === "s-mode") {
             this.switchMode(el.dataset.mode);
+        } else if (act === "s-rate") {
+            const ref = el.dataset.key || "";
+            if (ref && !this.ui.rated[ref] && this.step) {
+                const up = el.dataset.v === "up";
+                this.ui.rated = Object.assign({}, this.ui.rated, { [ref]: up ? "up" : "down" });
+                this.sc.rate(this.state.key, this.step.key, up);
+            }
         }
     }
 
@@ -981,6 +990,10 @@ export class ScenarioOverlay extends Component {
             parts.push(`<div class="lrn-tip">${ic("lightbulb")}
                 <span>${esc(tx(step.tip))}</span></div>`);
         }
+        // LEARNREV P5b — was this card helpful? The same thumbs as a field
+        // card and a lesson step; one rating row, no text.
+        const ref = stepRef("walk", this.state.key, step.key);
+        parts.push(rateHTML(ref, this.ui.rated[ref] || "", "s-rate"));
         return parts.join("");
     }
 

@@ -73,7 +73,7 @@ import { loadFieldIndex } from "../content/field_index";
 import { askHelper, guideAt } from "../coach/guide_door";
 /* LEARNREV P4 — the four-line step renderer the Guide panel uses, and the
    panel's own "where does this step play" rule, for the hand-back. */
-import { isPracticeAnchor, linesHTML, stepView } from "../coach/lesson_panel";
+import { isPracticeAnchor, linesHTML, rateHTML, stepRef, stepView } from "../coach/lesson_panel";
 const LP_RETURN_KEY = "pbLearnLessonReturn";
 import { openHub } from "@pb_hub/js/hub_nav";
 
@@ -104,6 +104,8 @@ export class LearnJourney extends Component {
 
     setup() {
         this.orm = useService("orm");
+        // LEARNREV P5b — practice-copy cards rated in this page's life.
+        this._rated = {};
         // Scenarios: the Journey hosts TRY (over the replica, where the
         // missions already run) and hands WATCH and DO to the service, whose
         // overlay is mounted in the web client shell and survives the
@@ -890,6 +892,7 @@ export class LearnJourney extends Component {
         ${this.state.sNudge
             ? `<div class="lrn-scnudge">${ic("info")}${esc(T("scNudge"))}</div>` : ""}
         ${step.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(step.tip))}</span></div>` : ""}
+        ${rateHTML(stepRef("walk", this.scenario && this.scenario.key, step.key), this._rated[stepRef("walk", this.scenario && this.scenario.key, step.key)] || "", "j-rate")}
         <div class="lrn-ctools">
             <span class="lrn-chip">${ic("shield-check")}${esc(T("scTryBadge"))}</span>
             ${acts ? "" : `<button class="lrn-btn sm pri" data-act="s-next"
@@ -1012,8 +1015,14 @@ export class LearnJourney extends Component {
             : linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) });
         // Handed over by the Guide: the card itself says why this step is on
         // the practice copy (a line in the shell sat under the card).
-        const handed = this.state.handoff && isPracticeAnchor(st.anchor)
-            ? `<div class="lrn-lp-note practice">${ic("flask")}<span>${esc(T("lpPracticeNote"))}</span></div>` : "";
+        // LEARNREV P5b (S6) — and on a screen this reader cannot open, it says
+        // that instead (every step of such a lesson plays here).
+        const unreach = this.state.handoff && this.state.handoff.why === "unreachable"
+            && !isPracticeAnchor(st.anchor);
+        const handed = this.state.handoff && (isPracticeAnchor(st.anchor) || unreach)
+            ? `<div class="lrn-lp-note ${unreach ? "unreachable" : "practice"}">${ic(unreach ? "lock" : "flask")}<span>${esc(T(unreach ? "lpUnreachableNote" : "lpPracticeNote"))}</span></div>` : "";
+        // LEARNREV P5b — the same thumbs as the Guide's lesson card.
+        const ref = stepRef("lesson", this.lesson && this.lesson.key, this.steps.indexOf(st));
         return `${handed}
         ${st.kicker ? `<div class="lrn-kicker">${esc(tx(st.kicker))}</div>` : ""}
         <h3>${esc(tx(st.title))}</h3>
@@ -1021,7 +1030,35 @@ export class LearnJourney extends Component {
         ${moment}
         ${st.consequence ? `<div class="lrn-conseq"><h4>${ic("alert-triangle")}${esc(T("consequence"))}</h4>
             <p>${esc(tx(st.consequence))}</p></div>` : ""}
-        ${view.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(view.tip))}</span></div>` : ""}`;
+        ${view.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(view.tip))}</span></div>` : ""}
+        ${rateHTML(ref, this._rated[ref] || "", "j-rate")}`;
+    }
+
+    /** LEARNREV P5b — a thumbs press on a practice-copy card (a lesson step or
+     *  a Try step). The card is drawn by the spotlight, not by OWL, so the
+     *  buttons are marked in place; the choice is remembered for this page so
+     *  a redraw keeps it. One rating row through the field cards' seam. */
+    _rateCard(el) {
+        const ref = el.dataset.key || "";
+        if (!ref || this._rated[ref]) {
+            return;
+        }
+        const v = el.dataset.v === "up" ? "up" : "down";
+        this._rated[ref] = v;
+        const group = el.closest(".lrn-fb");
+        for (const b of Array.from((group || el.parentElement).querySelectorAll(".lrn-fbbtn"))) {
+            b.classList.toggle("on", b.dataset.v === v);
+            b.setAttribute("aria-pressed", b.dataset.v === v ? "true" : "false");
+            b.disabled = true;
+        }
+        if (group && !group.querySelector(".lrn-fbthanks")) {
+            const note = document.createElement("span");
+            note.className = "lrn-fbthanks";
+            note.setAttribute("role", "status");
+            note.textContent = T("gThanks");
+            group.appendChild(note);
+        }
+        this.orm.call("learn.guide", "rpc_feedback", ["", ref, v === "up"]).catch(() => {});
     }
 
     /* ------------------------------------------------------------- quiz view */
@@ -1714,6 +1751,8 @@ export class LearnJourney extends Component {
             "lib-hit": () => this._openHit(Number(act.dataset.i)),
             "lib-ask": () => askHelper(this._q.trim()),
             "lib-team": () => openHub(this.action, { xmlid: LEARN_HUB_XMLID, lens: "team" }),
+            // LEARNREV P5b — thumbs on a practice-copy card.
+            "j-rate": () => this._rateCard(act),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
