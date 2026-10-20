@@ -1,5 +1,5 @@
 // =====================================================================
-//  Mission Control — mockup B's workspace: dark command bar, 76px lens rail,
+//  Mission Control — mockup B's workspace: dark command bar, 72px lens rail,
 //  full-bleed canvas.
 //
 //  Strictly --pbim-* tokens (W1). The mockup painted the command bar in a navy
@@ -237,9 +237,14 @@
         align-items: stretch;
     }
 
+    // THE RAIL STANDARD (NAV ledger R1, owner ruling 2026-10-20): 72px, 60px
+    // buttons, 18px icon above a 9px capital label of at most two lines, soft
+    // pill when selected. pb_hub's shell rail (hub_shell.scss) carries the same
+    // numbers; this rail is not on the kit yet, so change both or neither.
     .pbms-rail {
+        position: relative;
         z-index: 1;
-        flex: 0 0 76px;
+        flex: 0 0 72px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -281,9 +286,32 @@
             background: var(--pbim-soft, #EDEAF8);
             color: var(--pbim-primary, #5A4BB0);
         }
+        // A ring the keyboard can find; a mouse click leaves none behind.
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: 2px;
+        }
     }
     .pbms-rail__ic { display: inline-flex; }
-    .pbms-rail__l { display: block; }
+    // Two lines at most; the full name is in the button's `title`.
+    // The label box is 64px, wider than the pill's 54px content box and
+    // centred over it (it overhangs by up to 5px into the rail's 6px gutter):
+    // at 9px/800/.04em, WORKFORCE measures 62px and CONTRACTS 61px, so a
+    // narrower box either splits a word mid-way or slices its last letter.
+    // Words never break inside (overflow-wrap normal); lines past two are
+    // clipped vertically only (overflow-y clip keeps x visible) with an
+    // ellipsis. Measured 2026-10-20, NAV ledger gotcha row "label box".
+    .pbms-rail__l {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        flex: none;
+        width: 64px;
+        overflow-x: visible;
+        overflow-y: clip;
+        word-break: normal;
+        overflow-wrap: normal;
+    }
 
     // W20: the lens box is DEFINITE-HEIGHT and hands that height straight to the
     // cockpit. `min-height: 0` / `min-width: 0` on both the box and the guest
@@ -317,16 +345,30 @@
     }
 
     // ------------------------------------------------------- narrow screens
-    // Below the small-laptop breakpoint the labels cost more than they inform;
-    // the rail keeps the icons and the tooltip carries the name.
+    // Below the small-laptop breakpoint the command bar sheds its words; the
+    // RAIL KEEPS ITS LABELS and its width (NAV ledger R5).
     @media (max-width: 1099px) {
-        .pbms-rail { flex-basis: 56px; }
-        .pbms-rail__b { width: 46px; }
-        .pbms-rail__l { display: none; }
         .pbms-brand__tx { display: none; }
         // the launcher keeps its icon and its shortcut; the promise of what it
         // searches costs more room than it informs at this width
         .pbms-search { min-width: 0; max-width: 120px; }
         .pbms-search__tx { display: none; }
+    }
+
+    // Phones: the rail becomes a sideways-scrolling strip under the command
+    // bar, same icons and labels, and the canvas takes the full width (R5).
+    @media (max-width: 767px) {
+        .pbms-low { flex-direction: column; }
+        .pbms-rail {
+            flex: none;
+            width: 100%;
+            flex-direction: row;
+            justify-content: flex-start;
+            padding: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-right: 0;
+            border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        }
     }
 }

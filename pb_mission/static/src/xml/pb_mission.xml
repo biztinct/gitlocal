@@ -69,7 +69,8 @@
       <div class="pbms-low">
 
         <!-- ========================= lens rail ========================== -->
-        <nav class="pbms-rail" aria-label="Workforce lenses" data-coach="wf-tabs">
+        <nav class="pbms-rail" aria-label="Workforce lenses" data-coach="wf-tabs"
+             t-on-keydown="(ev) => this.onRailKeydown(ev)">
           <!-- ONE class attribute: a static `class` plus `t-att-class` is the
                documented-safe pair; both t-att-class and t-attf-class compile to
                `class`, so an element carrying both keeps whichever the compiler
@@ -80,7 +81,7 @@
                   t-att-aria-current="state.lens === l.key ? 'page' : false"
                   t-att-title="l.label"
                   t-on-click="() => this.setLens(l.key)">
-            <span class="pbms-rail__ic" t-out="ic(l.icon, 17)"/>
+            <span class="pbms-rail__ic" t-out="ic(l.icon, 18)"/>
             <span class="pbms-rail__l" t-esc="l.label"/>
           </button>
         </nav>

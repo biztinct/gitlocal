@@ -43,9 +43,9 @@ export const COMP_GATE = [
 registry.category(PAY_LENSES).add("paycal", {
     key: "paycal",
     icon: "calendar",
-    // R63 — the lens rail's label box is 60px and it wraps between words but
-    // never inside one. "Calendar" measures well inside it; "Payroll calendar"
-    // would not.
+    // R63 — the lens rail (72px, 60px buttons, NAV ledger R1) gives a label a
+    // 64px box of at most two capital lines. "Calendar" measures well inside
+    // it; "Payroll calendar" would not.
     label: _t("Calendar"),
     Component: PbPaycalBoard,
     groups: COMP_GATE,

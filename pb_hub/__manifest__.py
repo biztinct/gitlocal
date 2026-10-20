@@ -6,7 +6,7 @@
     'description': """
 IA redesign Cycle 1 — the shell every later hub is built from.
 
-Mission Control (`pb_mission`) proved the shape: a dark command bar, a 76px lens
+Mission Control (`pb_mission`) proved the shape: a dark command bar, a 72px lens
 rail, and a full-bleed canvas that hosts existing cockpits as embedded guests.
 Option A of the IA dossier makes that shape the WHOLE product — six missions,
 each one a hub. This module is that shape with the Workforce specifics taken out,

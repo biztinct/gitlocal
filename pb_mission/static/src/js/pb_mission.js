@@ -35,7 +35,7 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
-import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { HubBackChip, hubBack, railKeydown } from "@pb_hub/js/hub_nav";
 // FLEET P4. Workforce is sold on its own, so a company can be on Payobook
 // without it. Mission Control keeps its own shell (not refactoring it onto
 // the kit is a standing non-goal), so it borrows the ONE page the kit draws
@@ -577,6 +577,9 @@ export class PbMission extends Component {
         this._publishPlace();
         try { window.localStorage.setItem(LENS_KEY, key); } catch { /* private mode */ }
     }
+
+    /** Up / Down / Home / End walk the rail; Enter and Space open (NAV P1). */
+    onRailKeydown(ev) { railKeydown(ev, ".pbms-rail__b"); }
 
     /**
      * A lens handing the officer to a sibling lens (§3.5).

@@ -4,9 +4,10 @@
  *
  * This is `pb_mission`'s shell with Workforce taken out of it. The geometry, the
  * tokens and the interaction rules are lifted unchanged (a dark #241F52 command
- * bar, a 76px white lens rail of 60px buttons, a full-bleed canvas, an optional
- * 268px right dock) because the point of a kit is that the fifth hub looks like
- * the first one, not that it looks new.
+ * bar, a 72px white lens rail of 60px buttons with an icon above a short capital
+ * label, always visible (NAV ledger R1, 2026-10-20), a full-bleed canvas, an
+ * optional 268px right dock) because the point of a kit is that the fifth hub
+ * looks like the first one, not that it looks new.
  *
  * What the shell owns:
  *   1. the command bar — brand chip, an optional back chip, a `context` slot for
@@ -33,7 +34,7 @@ import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { HubBackChip, HUB_LENS_KEY } from "@pb_hub/js/hub_nav";
+import { HubBackChip, HUB_LENS_KEY, railKeydown } from "@pb_hub/js/hub_nav";
 import { HubTracker } from "@pb_hub/js/hub_tracker";
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
@@ -124,7 +125,6 @@ export class HubShell extends Component {
             // key -> boolean; null while unresolved, which the rail reads as
             // "show everything" so the shell never flashes an empty rail
             allowed: null,
-            railCalm: false,
         });
 
         // lensProps memo (see the getter). Module-level constants would be
@@ -383,7 +383,6 @@ export class HubShell extends Component {
         // twice tells you twice.
         const def = (this.config.lenses || []).find((l) => l.key === key);
         if (def && this.gate(def.feature).locked) { this.openLock(def); return; }
-        this.state.railCalm = true;     // fold the hover-opened sub-menu back
         if (this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
         this.state.lens = key;
@@ -397,6 +396,13 @@ export class HubShell extends Component {
             window.localStorage.setItem(storageKey, key);
         } catch { /* private mode */ }
     }
+
+    /**
+     * Up / Down (and Home / End) walk the rail with the keyboard; Enter and
+     * Space on the focused button open the lens through `setLens` above, as a
+     * click does (NAV P1). The helper is shared with pb_mission's own rail.
+     */
+    onRailKeydown(ev) { railKeydown(ev, ".pbhub-rail__b"); }
 
     // ------------------------------------------------------------ ⌘K palette
     /** "⌘K" on macOS, "Ctrl K" elsewhere — the label must match the key. */

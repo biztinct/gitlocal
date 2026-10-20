@@ -1,0 +1,62 @@
+# NAV program — conventions and gotcha ledger
+
+Program: menu and submenu redesign. Design of record: `docs/design/payobook-navigation-review-20261019.html`
+sections **12** (second review, rail standard, revised menu) and **13** (inside-screen audit). Handover of
+record for the owner's intent: `docs/design/payobook-navigation-review-handover-20261020.md`.
+Every NAV phase handover references this file. Add a row whenever a phase hits a new gotcha.
+
+## Standing rules that bind every NAV phase
+
+| # | Rule | Source |
+|---|---|---|
+| R1 | **Rail standard.** Every hub's second level is a sticky icon rail: 72 px wide, one column, 60 px buttons, 18 px line icon above a 9 px uppercase 800-weight label (letter-spacing .04em), max two lines, selected = soft tint pill (`--pbim-soft` background, `--pbim-primary` text), hover = `--pbim-line-2`. No hover-widening, no labels beside icons, no text lists. Owner ruling 2026-10-20; it **supersedes** the 2026-10-02 ruling that the sub-menu folds to icons and opens on hover (comment in `pb_hub/static/src/xml/hub_shell.xml:87-89`). | §12.3 |
+| R2 | **Ten items by design, twelve hard max** per rail. Beyond that the rail scrolls inside itself; it never wraps to a second column; labels never shrink. | §12.3 |
+| R3 | **Counts only on queue items** (INBOX, APPROVALS, ASK HR, CLAIMS). Nothing else carries a badge. Quiet-board rule applies. | §12.3, memory quiet-board-pattern |
+| R4 | **Labels are one word, two at most**, in English AND Vietnamese, fitting two lines at 60 px. The full name goes in the page header and the `title` tooltip. Label changes happen in P2, not P1. | §12.4 |
+| R5 | **Phones (< 768 px):** the rail becomes a horizontal strip under the hub header, scrollable sideways, same icons and labels. **Small laptops (< 1099 px):** the rail keeps its labels (today both rails hide them; that is reversed). | §12.3 |
+| R6 | **Hidden, not greyed:** a lens a person cannot use is absent. Feature-locked lenses keep the existing padlock treatment (FLEET P4). | hub_shell.js:16, scss:277 |
+| R7 | **Learn follows the screen.** Any change to a rail, label or placement updates lessons, tours, coach anchors, practice replicas (EN + VI) in the same phase, and bumps `pb_learn`. If nothing is affected the report says so with the grep evidence. Owner re-stated 2026-10-20. | memory lessons-follow-screen-changes |
+| R8 | **Access and delegation shows the latest menu.** After any phase that adds, moves or renames a sidebar item or lens, the Access board's Screens lens (`biz_access/static/src/js/access_board.js`, lens "Screens", reads sidebar items and `pb_hub_lens_gates`) and role bundles must list the new structure with the new words. Owner instruction 2026-10-20. P1 = regression check only. | owner 2026-10-20 |
+| R9 | **No "Odoo" in any user-visible string.** | memory no-odoo-in-ui |
+| R10 | **Old words keep working**: "Pay Run", "Lifecycle", "Trips", "Praise", "Announce", "Ask HR" stay as search aliases; old deep links land on the new item selected. (P2.) | §12.5 F13 |
+| R11 | **Design bar (owner, verbatim):** "extreme WOW, intuitive, out-of-this-world experience, best in class." Hero moment named; zero dead-ends; plain language; motion with purpose; keyboard ergonomics; measured against the best SaaS tool, not stock Odoo. Lucide icons, never emoji. | memory design-mandate |
+| R12 | **Deploy tier is chosen and named** before deploying (looks-only / normal / risky). Every active DB: `payobook`, `payobook_template`, `p0clone`, `rize`. Never `abm`. One browser walk on payobook.com with the QA login; the other DBs get the automated checks (hash identical, served CSS contains the change). | memory tiered-deploy-rule, CLAUDE.md |
+| R13 | **Commit per feature, explicit paths, no secrets**, push `19.1`. Another session may be mid-flight: never `git add .`. | memory commit-per-feature |
+
+## Verified plumbing (do not re-derive)
+
+| Fact | Where |
+|---|---|
+| Shared hub shell component `HubShell`, template `pb_hub.HubShell` | `pb_hub/static/src/js/hub_shell.js`, `pb_hub/static/src/xml/hub_shell.xml` |
+| Rail markup: `nav.pbhub-rail > div.pbhub-rail__in > button.pbhub-rail__b` (`is-on`, `is-locked`, `aria-current`, `title`) with `span.pbhub-rail__ic` (`ic(l.icon, 17)`), `span.pbhub-rail__l`, optional `span.pbhub-rail__lock` | `hub_shell.xml:85-108` |
+| Rail styles: `.pbhub-rail` 64 px flex basis; `.pbhub-rail__in` absolutely positioned, widens to 224 px on `:hover:not(.is-calm)`; labels hidden unless hovered; `.pbhub-rail__b` row layout 13 px/650 | `hub_shell.scss:213-268` |
+| Fold-back state `state.railCalm` set in `setLens()` and cleared on `mouseleave` | `hub_shell.js:127, 386`; `hub_shell.xml:91` |
+| Locked-lens treatment (opacity .72, padlock top-right) | `hub_shell.scss:277-292` |
+| Narrow-screen block (hides brand text, search text, dock) | `hub_shell.scss:527-533` |
+| Shell root is `height:100%; overflow:hidden`; only the canvas scrolls, which is why the rail stays put without `position:sticky` | `hub_shell.scss:21-27`, `.pbhub-low` at `:202` |
+| Lens list per hub = `config.lenses` array + per-hub add-on registry (`pb_home_hub_lens`, `pb_people_hub_lens`, `pb_payhub_lens`, `pb_lifecycle_lenses`, `pb_insights_hub_lens`, `pb_learn_lens`); no central registry | `hub_shell.js:67-89`; each `*_hub.js` |
+| Arrival deep link: `pb_lens` / `pb_focus` / `pb_back` in the action context; last lens remembered in `localStorage pbhub.<key>.lens.v1` | `hub_shell.js:18, 45-53, 191-220` |
+| Hubs on the shared shell: Home, People, Pay Run, Lifecycle, Insights, Compliance, Learn | their `*_hub.xml:9-10` |
+| Workforce (`pb_mission`) has its **own** rail, not on the kit: `nav.pbms-rail > button.pbms-rail__b` 76 px / 60 px buttons / `ic(l.icon, 17)` / 9 px uppercase labels; hides labels below 1099 px | `pb_mission/static/src/xml/pb_mission.xml:72-86`, `pb_mission.scss:240-286, 322-325` |
+| Settings hub has its own 226 px text list `.pbst-nav` (`.pbst-nav__b` row, 15 px icon, 12.5 px label, chevron for single-door categories; 60 px icon-only below 1099 px) | `pb_settings/static/src/xml/settings_hub.xml:55-69`, `settings_hub.scss:123-170, 301-305` |
+| Ask HR is a plain window action (kanban/list/form), not a hub | `pb_ask_hr/views/ticket_views.xml:144` |
+| Sidebar live items ship from each hub module's `data/pb_sidebar.xml`; `pb_sidebar/data/pb_sidebar_data.xml` holds sections only | `pb_sidebar/data/pb_sidebar_data.xml:4-38` |
+| Tokens `--pbim-*` are set per cockpit root (e.g. `pb_payruns/static/src/scss/payruns_kanban.scss:7`); the shell uses them with fallbacks `#EDEAF8 / #5A4BB0 / #E2E8F0 / #64748B / #1B1733 / #F1F5F9` | hub_shell.scss |
+| Stale comments still describing a "76px rail of 60px buttons" | `hub_shell.js:7`, `pb_hub/__manifest__.py`, `pb_comp_ben/static/src/js/comp_ben_palette.js:46` |
+| Learn practice replicas draw their own `lrn-lens` tab buttons and `lrn-rail` step rails; no replica copies `.pbhub-rail` classes (grep 2026-10-20: zero hits in `pb_learn`, `docs/tutorial_poc`, `pb_coach`) | `pb_learn/static/src/engine/screens.js:1505, 2229, 2312` |
+| Learn content text mentions "Workforce's lens rail" once | `learn_content.json` ~line 1503 |
+| QA login for payobook.com lives in Fable's memory, never in the repo | memory payobook-qa-login |
+| Module versions at P1 start: pb_hub 19.0.1.11.4, pb_mission 19.0.1.11.2, pb_settings 19.0.1.9.2, pb_learn 19.0.20.5.11 | manifests |
+
+## Gotchas hit (append as they happen)
+
+| Date | Phase | Gotcha | Rule |
+|---|---|---|---|
+| 2026-10-20 | design | The "list with long labels" the owner rejected is the shared rail's **hover state**, not a separate component. Three second-level styles existed (shared hover rail, Workforce rail, Settings list). | R1 |
+| 2026-10-20 | design | `pb_mission` is deliberately not on the `pb_hub` kit (`pb_hub/__manifest__.py`, `hub_shell.js:27`). Two rail implementations must carry the same numbers until it is folded in. | R1 |
+| 2026-10-20 | design | Below 1099 px both rails hide labels today; the standard keeps labels (R5). Check the brand/search text rules at that width still fit. | R5 |
+| 2026-10-20 | design | Looks-only deploys need the asset purge + `web.assets.version` bump + `INSERT INTO orm_signaling_assets DEFAULT VALUES` per DB, or browsers keep the old CSS for up to two days. | R12 |
+| 2026-10-20 | P1 | **Label box.** A 60 px button with `padding: 9px 3px` leaves a 54 px content box, so the handover's `max-width: 58px` never applied, and `overflow-wrap: anywhere` split words mid-way (EMPLOYEE/S, ANNOUNC/E, APPROVAL/S). Measured at 9px/800/.04em Inter: WORKFORCE 62.4 px, CONTRACTS 61, APPROVALS 58.6, EMPLOYEES 58.2. Fix shipped: the label is a fixed 64 px box centred over the pill (overhangs into the rail's 6 px gutter), `overflow-wrap: normal`, `overflow-x: visible; overflow-y: clip` with the two-line clamp. Any future rail label wider than 64 px in one word will be clipped; keep single words under ~60 px (R4). | R1, R4 |
+| 2026-10-20 | P1 | Design doc §12.3 text says 20 px icon / 10 px label; ledger R1 and the P1 handover say 18 px / 9 px. P1 shipped R1's numbers (18/9). If the owner wants the §12.3 numbers, it is a two-file change (both rails). | R1 |
+| 2026-10-20 | P1 | The keyboard helper `railKeydown(ev, selector)` lives in `pb_hub/static/src/js/hub_nav.js`, not in `hub_shell.js`, because `pb_mission` must reuse it and already imports `hub_nav`. Both rails call it from a one-line `onRailKeydown`. | R1 |
+| 2026-10-20 | P1 | **An implementing agent cannot do the payobook.com browser walk with the QA password**: its safety rules forbid typing a password into a production sign-in (only localhost or a staging/test-named host qualifies). Plan the live walk as an owner step, give agents a test-named host, or have the agent work from an existing signed-in tab. P1 verified with a local harness (real compiled CSS + the real OWL template mounted in OWL 2.8.2) instead. | R12 |

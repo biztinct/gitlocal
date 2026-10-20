@@ -29,6 +29,47 @@ import { ic } from "@pb_import_kit/js/import_icons";
 export const HUB_LENS_KEY = "pb_lens";
 
 /**
+ * Keyboard movement inside a lens rail (NAV P1, ledger R1).
+ *
+ * ArrowUp / ArrowDown move focus to the previous / next rail button and wrap
+ * around; Home / End jump to the first / last. On the phone strip (< 768px)
+ * the rail runs sideways, so ArrowLeft / ArrowRight do the same there. It moves
+ * FOCUS only: Enter and Space on a native <button> already click, so opening a
+ * lens stays the click handler's job and cannot drift from it.
+ *
+ * ONE copy for both rails: pb_hub's shell and pb_mission's own rail (which is
+ * deliberately not on the kit yet) call this with their button selector.
+ *
+ * @param {KeyboardEvent} ev   the keydown on the rail <nav>
+ * @param {string} selector    the rail button selector, e.g. ".pbhub-rail__b"
+ * @returns {boolean} true when the key was handled
+ */
+export function railKeydown(ev, selector) {
+    const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"];
+    if (!keys.includes(ev.key) || ev.altKey || ev.ctrlKey || ev.metaKey) { return false; }
+    const nav = ev.currentTarget;
+    if (!nav) { return false; }
+    const buttons = [...nav.querySelectorAll(selector)];
+    if (!buttons.length) { return false; }
+    const at = buttons.indexOf(document.activeElement);
+    if (at < 0) { return false; }       // focus is not on a rail button
+    let next = at;
+    if (ev.key === "Home") { next = 0; }
+    else if (ev.key === "End") { next = buttons.length - 1; }
+    else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
+        next = (at - 1 + buttons.length) % buttons.length;
+    } else {
+        next = (at + 1) % buttons.length;
+    }
+    ev.preventDefault();                // the rail scrolls itself into view
+    buttons[next].focus();
+    if (buttons[next].scrollIntoView) {
+        buttons[next].scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
+    return true;
+}
+
+/**
  * Open a hub (or any client action) with the arrival protocol filled in.
  *
  * @param {object} actionService  the "action" service (the caller's, so the
