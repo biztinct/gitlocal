@@ -1,0 +1,74 @@
+RIZE LEAVE AND PAYROLL DESIGN POC — VALIDATION RECORD
+Date: 21 October 2026 (Australia/Sydney)
+Scope: design and standalone local HTML POC only. Implementation awaits owner approval.
+
+Deliverables
+- rize-leave-payroll-design-20261021.html: self-contained design, interactive payroll
+  and exit-settlement examples, policy matrix, all-input mapping browser, ownership,
+  architecture, rollout, outstanding decisions and primary sources.
+- rize-leave-payroll-mapping-inventory-20261021.json: 480 current input definitions
+  and reviewed proposed destinations. No employee pay values or credentials.
+
+Evidence and checks
+- Read all 13 physical pages of supplied PDF via text extraction; visually inspected
+  entitlement table and final process/exception pages.
+- Read-only production metadata audit: exactly four active Rize schemas, with
+  135 Vietnam, 114 India, 101 Singapore and 130 Indonesia inputs.
+- Preserved all current input metadata; proposed metadata reviewed separately.
+- Independently reviewed domain ownership, approval-state boundaries and arithmetic.
+- HTML parser: unique IDs, no external JavaScript, no remote data requests.
+- JavaScript syntax: node --check passed.
+- Embedded and standalone JSON are equal; all 480 unique current input records
+  match the original audit apart from the separate proposed-design metadata.
+
+Chrome UI tests (loopback preview, no production calculation)
+PASS: recommendation, payroll, policy and mapping navigation.
+PASS: application-only run produces demo snapshot, 21 units / 2,100.00 base.
+PASS: approved-time mode yields the same 21 units / 2,100.00 base.
+PASS: missing approved workday blocks approved-time run.
+PASS: pending leave approval blocks run.
+PASS: missing monthly certification blocks run.
+PASS: blank required salary is missing, not zero; blocks run.
+PASS: normalized fixed standard units give equal pay across both modes.
+PASS: wholly unpaid 22-workday month gives 0.00 in both modes, including fixed units.
+PASS: conflicting workbook candidate blocks; explicit override needs a reason.
+PASS: authorized demo zero override affects contractual preview (2,200.00).
+PASS: same loss-of-pay override cannot manufacture approved time; coverage blocks.
+PASS: Singapore uses the correct audited schema metadata and does not invent an OT rate.
+PASS: default exit example: 6/12 x20 +8 carried =18 days; gross1,000 /30 x18 =600.
+PASS: 20 days taken gives excess2 days and recovery66.67 in the same example.
+PASS: Indonesia carry cap6 changes result; entering7 produces validation error.
+PASS: all-input catalog shows480; Singapore filter101; pagination and empty search work.
+PASS: asset filter returns the eight country-specific asset type/number inputs,
+      with proposed asset/assignment adapters instead of contract components.
+PASS: desktop visual inspection and 390px narrow-width payroll layout.
+PASS: no Chrome JavaScript warnings/errors observed after the final test sequence.
+
+Interpretation limits
+- Simulation values are illustrative and are not employee data or full-country net pay.
+- Calendar mode is the confirmed default. Fixed standard units are normalized in
+  the POC; a direct salary/30 daily deduction convention remains a separate decision.
+- PDF remains the selected policy, with detailed clauses above summary table.
+  Remaining detailed-clause conflicts and absent semantics are explicitly flagged.
+- Statutory discrepancies are research notes; no statutory rule was activated.
+- User confirmed manager-approved timesheets reconciled with attendance.
+- Mapping proposals are not production-ready migrations without semantic,
+  workflow, data completeness and country formula review.
+- Full production payroll, module tests and deployed Chrome checks are deferred
+  until implementation is authorized. No production settings or business records changed.
+
+Deployment
+- No application/database deployment in this design phase, per explicit owner request
+  to approve design before implementation.
+- Proposed later code targets: Payobook19v2, /odoo/odoo-server/addons; databases
+  payobook, payobook_template, p0clone and rize. Upgrade installed modules only.
+- Rize policy/data/schema migration: rize only. ABM excluded and archive preserved.
+- Preview was served only on127.0.0.1:8766 from a task-owned directory containing
+  the review artifacts and a copy of the source PDF. It is not a production deployment.
+
+Cleanup and concurrency
+- Removed all four policy-render PNGs created by this session; no session PNGs remain.
+- Chrome screenshots were inspected in tool output and were not saved as repo files.
+- Preserved pre-existing product assets, customer workbooks and unrelated files.
+- Re-checked the branch before committing; excluded concurrent Hiring edits,
+  existing workbook deletions and unrelated untracked outputs from this commit.
