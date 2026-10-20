@@ -93,7 +93,7 @@ export class LearnHub extends Component {
                   groups: ["pb_hr_payroll_base.group_payroll_base_manager",
                            "pb_hr_payroll_base.group_payroll_super_admin",
                            "base.group_system"] },
-                { key: "settings", icon: "sliders", label: _t("Settings"),
+                { key: "settings", icon: "sliders", label: _t("Setup"),
                   Component: LearnSettings, groups: ["base.group_system"] },
             ],
         };

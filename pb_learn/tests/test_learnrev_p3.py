@@ -68,6 +68,42 @@ def menu_order():
     return out
 
 
+def declared_item(xmlid):
+    """NAV P2 — a rail item as its module's data files declare it, for a
+    database where that module is not installed yet (Hiring, Expenses and
+    Talent ship in P2's other half, Agent A). Returns
+    {'section': xml-id, 'sequence': int, 'active': bool, 'file': rel} or None
+    when no data file of the module declares it."""
+    import xml.etree.ElementTree as ET
+    module, _dot, name = xmlid.partition('.')
+    path = get_module_path(module, display_warning=False)
+    if not path:
+        return None
+    data = os.path.join(path, 'data')
+    for fn in sorted(os.listdir(data)) if os.path.isdir(data) else ():
+        if not fn.endswith('.xml'):
+            continue
+        try:
+            root = ET.parse(os.path.join(data, fn)).getroot()
+        except ET.ParseError:
+            continue
+        for rec in root.iter('record'):
+            if rec.get('model') != 'pb.sidebar.item' or rec.get('id') not in (name, xmlid):
+                continue
+            out = {'section': '', 'sequence': 0, 'active': True,
+                   'file': '%s/data/%s' % (module, fn)}
+            for fld in rec.findall('field'):
+                if fld.get('name') == 'section_id':
+                    ref = fld.get('ref') or ''
+                    out['section'] = ref if '.' in ref else '%s.%s' % (module, ref)
+                elif fld.get('name') == 'sequence':
+                    out['sequence'] = int((fld.text or '0').strip())
+                elif fld.get('name') == 'active':
+                    out['active'] = (fld.get('eval') or fld.text or 'True').strip() not in ('False', '0')
+            return out
+    return None
+
+
 def line_groups():
     src = _library_src()
     block = re.search(r'export const LINE_GROUP = \{(.*?)\};', src, re.S).group(1)
@@ -132,7 +168,7 @@ class TestLearnrevP3(TransactionCase):
     # ------------------------------------------------------------- (b)
     def test_b_every_station_lands_in_one_menu_group(self):
         order = menu_order()
-        self.assertEqual(len(order), 8, order)
+        self.assertEqual(len(order), 11, order)   # NAV P2: eleven menu pages
         tag_group = {t: g for g, _item, tags in order for t in tags}
         lines = line_groups()
         groups = {g for g, _i, _t in order}
@@ -160,24 +196,45 @@ class TestLearnrevP3(TransactionCase):
 
     # ------------------------------------------------------------- (c)
     def test_c_menu_order_is_the_rails_order(self):
+        """Every MENU_ORDER item is an active rail item, in the rail's order.
+
+        NAV P2: an item whose module is not installed on this database (the
+        new Hiring, Expenses and Talent pages before their modules are
+        installed) is read from its module's data file on disk instead, so
+        the test still checks it exists, is active and sits where the
+        Library puts it. An item declared nowhere — not in the database, not
+        on disk — fails: that is a menu page the Library would list and the
+        product does not have."""
         if 'pb.sidebar.item' not in self.env:
             self.skipTest('the rail module is not installed here')
         order = menu_order()
-        found = []
+        found, missing = [], []
         for group, xmlid, _tags in order:
             rec = self.env.ref(xmlid, raise_if_not_found=False)
             if rec:
-                found.append((group, rec))
-        if len(found) < 2:
+                self.assertEqual(rec._name, 'pb.sidebar.item', rec)
+                self.assertTrue(rec.active, '%s (%s) is not on the rail' % (group, rec.name))
+                found.append((group, (rec.section_id.sequence, rec.section_id.id,
+                                      rec.sequence, rec.id), rec.name))
+                continue
+            decl = declared_item(xmlid)
+            if not decl:
+                missing.append(xmlid)
+                continue
+            self.assertTrue(decl['active'], '%s is declared inactive in %s' % (xmlid, decl['file']))
+            sec = self.env.ref(decl['section'], raise_if_not_found=False)
+            self.assertTrue(sec, '%s names a section that does not exist: %s'
+                            % (xmlid, decl['section']))
+            found.append((group, (sec.sequence, sec.id, decl['sequence'], 10 ** 9),
+                          '%s (on disk)' % xmlid))
+        self.assertFalse(missing, 'MENU_ORDER names rail items that exist neither in this '
+                                  'database nor in a data file on disk: %s' % missing)
+        if sum(1 for _g, key, _n in found if key[3] < 10 ** 9) < 2:
             self.skipTest('the hub modules are not installed here')
-        for group, rec in found:
-            self.assertEqual(rec._name, 'pb.sidebar.item', rec)
-            self.assertTrue(rec.active, '%s (%s) is not on the rail' % (group, rec.name))
-        rail = sorted(found, key=lambda gr: (gr[1].section_id.sequence, gr[1].section_id.id,
-                                             gr[1].sequence, gr[1].id))
-        self.assertEqual([g for g, _r in rail], [g for g, _r in found],
+        rail = sorted(found, key=lambda g: g[1])
+        self.assertEqual([g for g, _k, _n in rail], [g for g, _k, _n in found],
                          'the Library lists the menu groups in another order than the rail: '
-                         'rail %s' % [(g, r.name) for g, r in rail])
+                         'rail %s' % [(g, n) for g, _k, n in rail])
 
     # ------------------------------------------------------------- (d)
     def test_d_bootstrap_keeps_its_contract(self):

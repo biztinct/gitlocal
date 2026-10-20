@@ -1497,19 +1497,24 @@ export const SCREENS = {
     },
 
     /* ------------------------------------------------------------ Settings
-       A page of categories, not a row of tabs (pb_settings settings_hub.js).
-       The four this practice company has replicas for open them; the rest
-       are drawn quiet and say why. */
+       A page of categories, not a row of tabs (pb_settings settings_hub.js),
+       grouped since NAV P2 into the seven rail groups: one titled section
+       per group, its categories as cards. The categories this practice
+       company has replicas for open them; the rest are drawn quiet. */
     hub_settings() {
         const hub = MENU.find((h) => h.key === "settings");
-        const cards = hub.lenses.map((l) => {
-            const card = l.card ? tx(l.card) : tx(l.label);
-            const attr = l.screen ? navAttr(l.screen) : quietAttr(tx(hub.label) + " › " + tx(l.label));
-            return `<button class="lrn-setcard ${l.screen ? "" : "quiet"}" ${attr}>
-                <b>${esc(tx(l.label))}</b><span class="lrn-sub2">${esc(card)}</span></button>`;
+        const groups = hub.lenses.map((g) => {
+            const cards = (g.cats || []).map((l) => {
+                const card = l.card ? tx(l.card) : tx(l.label);
+                const attr = l.screen ? navAttr(l.screen)
+                    : quietAttr(tx(hub.label) + " › " + tx(g.label) + " › " + tx(l.label));
+                return `<button class="lrn-setcard ${l.screen ? "" : "quiet"}" ${attr}>
+                    <b>${esc(tx(l.label))}</b><span class="lrn-sub2">${esc(card)}</span></button>`;
+            }).join("");
+            return `<h3 class="lrn-setgroup">${esc(tx(g.label))}</h3><div class="lrn-setgrid">${cards}</div>`;
         }).join("");
         return `
-            <div class="lrn-setgrid" data-coach="rep-settings">${cards}</div>
+            <div data-coach="rep-settings">${groups}</div>
             <p class="lrn-note">${esc(tx(B(
                 "A category with one card opens that card straight away — Formula Engine opens Formula Studio.",
                 "Mục nào chỉ có một thẻ thì mở thẳng thẻ đó — Bộ máy công thức mở Xưởng công thức.")))}</p>`;
@@ -2411,7 +2416,7 @@ export const SCREENS = {
                     <div class="lrn-yrole"><b>${esc(tx(m.announce.title))}</b><span class="lrn-sub2">${esc(tx(m.announce.when))}</span></div>
                 </div>
                 <div class="lrn-panel" data-coach="rep-pm-plan">
-                    <h3>${ic("calendar")}${esc(tx(B("People › Announce", "Con người › Thông báo")))}</h3>
+                    <h3>${ic("calendar")}${esc(tx(B("Home › Announce › Calendar", "Trang chủ › Thông báo › Lịch")))}</h3>
                     <span class="lrn-sub2">${esc(tx(B("The month's messages on one calendar, planned by the people who send them.",
                         "Các thông báo của tháng trên một lịch, do những người gửi lên kế hoạch.")))}</span>
                 </div>
@@ -3195,16 +3200,21 @@ function placeOf(screen) {
     const id = sub ? sub.owner : screen;
     for (const hub of MENU) {
         if (hub.screen === id) {
-            return { hub, lens: null };
+            return { hub, lens: null, cat: null };
         }
         for (const lens of hub.lenses) {
             if (lens.screen === id || (lens.also || []).includes(id)
                 || (lens.sub || []).some((s) => s.screen === id)) {
-                return { hub, lens };
+                return { hub, lens, cat: null };
+            }
+            // NAV P2 — a Settings group holds its categories as `cats`.
+            const cat = (lens.cats || []).find((c) => c.screen === id || (c.also || []).includes(id));
+            if (cat) {
+                return { hub, lens, cat };
             }
         }
     }
-    return { hub: MENU[0], lens: null };
+    return { hub: MENU[0], lens: null, cat: null };
 }
 
 /** The first screen a hub opens on, or "" when the practice company has none. */
@@ -3221,8 +3231,9 @@ export function screenTitle(id) {
     if (sub) {
         return tx(sub.label);
     }
-    const { hub, lens } = placeOf(id);
-    return lens ? tx(hub.label) + " › " + tx(lens.label) : tx(hub.label);
+    const { hub, lens, cat } = placeOf(id);
+    const tab = cat || lens;
+    return tab ? tx(hub.label) + " › " + tx(tab.label) : tx(hub.label);
 }
 
 export function shellHTML(screen, opts) {
@@ -3249,9 +3260,12 @@ export function shellHTML(screen, opts) {
     // breadcrumb back to the category page, because Settings has no tabs.
     let strip = "";
     if (here.hub.page && here.lens) {
+        // NAV P2 — Settings › group › category when the screen is a category.
+        const groupCrumb = here.cat
+            ? `<span>${esc(tx(here.lens.label))}</span><span>›</span>` : "";
         strip = `<div class="lrn-crumb">
             <button class="lrn-link" ${navAttr(here.hub.screen)}>${ic("chevron-left")}${esc(tx(here.hub.label))}</button>
-            <span>›</span><b>${esc(tx(here.lens.label))}</b></div>`;
+            <span>›</span>${groupCrumb}<b>${esc(tx((here.cat || here.lens).label))}</b></div>`;
     } else if (!here.hub.page) {
         const tabs = here.hub.lenses.map((l) => {
             const cur = l === here.lens;

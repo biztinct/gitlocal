@@ -962,16 +962,16 @@
       "vi": "Phân tích"
     },
     "lines.lifecycle": {
-      "en": "Lifecycle",
-      "vi": "Vòng đời nhân sự"
+      "en": "Joining and leaving",
+      "vi": "Gia nhập và nghỉ việc"
     },
     "lines.overview": {
       "en": "Overview",
       "vi": "Tổng quan"
     },
     "lines.payrun": {
-      "en": "Pay Run",
-      "vi": "Chạy lương"
+      "en": "Payroll",
+      "vi": "Lương"
     },
     "lines.people": {
       "en": "People",
@@ -1014,12 +1014,12 @@
       "vi": "Chưa ai phê duyệt bước nào của kỳ lương này."
     },
     "live.noDivision": {
-      "en": "You do not have a division yet. Open Pay Run › Run once and you will be given one. Each demo account drives its own division's June run.",
-      "vi": "Bạn chưa có bộ phận nào. Hãy mở Đợt lương › Chạy lương một lần là bạn sẽ được gán. Mỗi tài khoản demo tự chạy đợt lương tháng 6 của bộ phận mình."
+      "en": "You do not have a division yet. Open Payroll › Run once and you will be given one. Each demo account drives its own division's June run.",
+      "vi": "Bạn chưa có bộ phận nào. Hãy mở Lương › Chạy lương một lần là bạn sẽ được gán. Mỗi tài khoản demo tự chạy đợt lương tháng 6 của bộ phận mình."
     },
     "live.noRun": {
-      "en": "Your division has no June run yet. Open Pay Run › Run, pick your division's pay scheme and compute it.",
-      "vi": "Bộ phận của bạn chưa có đợt lương tháng 6. Hãy mở Đợt lương › Chạy lương, chọn chương trình lương của bộ phận bạn và tính."
+      "en": "Your division has no June run yet. Open Payroll › Run, pick your division's pay scheme and compute it.",
+      "vi": "Bộ phận của bạn chưa có đợt lương tháng 6. Hãy mở Lương › Chạy lương, chọn chương trình lương của bộ phận bạn và tính."
     },
     "live.noSlips": {
       "en": "The run exists, but it has no payslips yet. Press Compute in the wizard.",
@@ -1070,8 +1070,8 @@
       "vi": "Đã từ chối"
     },
     "live.stillDraft": {
-      "en": "Still a draft. Press Submit for approval on its card in Pay Run › Runs.",
-      "vi": "Vẫn là bản nháp. Hãy bấm Gửi để phê duyệt trên thẻ của nó ở Đợt lương › Các đợt lương."
+      "en": "Still a draft. Press Submit for approval on its card in Payroll › Runs.",
+      "vi": "Vẫn là bản nháp. Hãy bấm Gửi để phê duyệt trên thẻ của nó ở Lương › Các đợt lương."
     },
     "liveAck": {
       "en": "I have done this",
@@ -2227,8 +2227,8 @@
     },
     {
       "body": {
-        "en": "Contracts past their end date. Each is a leaver who still needs settling on Pay Run › Settle, or a renewal that was never agreed.",
-        "vi": "Các hợp đồng đã qua ngày kết thúc. Mỗi hợp đồng là một người nghỉ còn cần quyết toán ở Đợt lương › Quyết toán, hoặc một lần gia hạn chưa ai đồng ý."
+        "en": "Contracts past their end date. Each is a leaver who still needs settling on Payroll › Settle, or a renewal that was never agreed.",
+        "vi": "Các hợp đồng đã qua ngày kết thúc. Mỗi hợp đồng là một người nghỉ còn cần quyết toán ở Lương › Quyết toán, hoặc một lần gia hạn chưa ai đồng ý."
       },
       "key": "expired",
       "label": {
@@ -2331,8 +2331,8 @@
     },
     {
       "body": {
-        "en": "Running contracts that end in the next thirty days. Each is a renewal somebody has to agree, or a leaver somebody has to settle — Lifecycle › Contracts raises the decision.",
-        "vi": "Các hợp đồng đang hiệu lực sẽ kết thúc trong ba mươi ngày tới. Mỗi hợp đồng là một lần gia hạn cần người đồng ý, hoặc một người nghỉ cần quyết toán — Vòng đời nhân sự › Hợp đồng nêu quyết định đó."
+        "en": "Running contracts that end in the next thirty days. Each is a renewal somebody has to agree, or a leaver somebody has to settle — People › Contracts raises the decision.",
+        "vi": "Các hợp đồng đang hiệu lực sẽ kết thúc trong ba mươi ngày tới. Mỗi hợp đồng là một lần gia hạn cần người đồng ý, hoặc một người nghỉ cần quyết toán — Con người › Hợp đồng nêu quyết định đó."
       },
       "key": "expiring_30",
       "label": {
@@ -2812,8 +2812,8 @@
     },
     {
       "body": {
-        "en": "Runs whose approval route is waiting on you right now. This is the only number on the band that is about you; the decision itself happens in Home › Approvals.",
-        "vi": "Các đợt mà lộ trình phê duyệt đang chờ đúng bạn lúc này. Đây là con số duy nhất trên dải nói về bạn; quyết định diễn ra ở Trang chủ › Phê duyệt."
+        "en": "Runs whose approval route is waiting on you right now. This is the only number on the band that is about you; the decision itself happens in Home › Inbox.",
+        "vi": "Các đợt mà lộ trình phê duyệt đang chờ đúng bạn lúc này. Đây là con số duy nhất trên dải nói về bạn; quyết định diễn ra ở Trang chủ › Hộp thư."
       },
       "key": "awaiting_your_approval",
       "label": {
@@ -3189,8 +3189,8 @@
     },
     {
       "body": {
-        "en": "People whose last run falls in this period. Each one needs settling on Pay Run › Settle AND excluding from the ordinary monthly run. Somebody in both is paid twice, and getting that back is a legal conversation rather than a payroll one.",
-        "vi": "Những người có đợt lương cuối cùng rơi vào kỳ này. Mỗi người vừa cần được quyết toán ở Đợt lương › Quyết toán VÀ cần bị loại khỏi đợt lương tháng thông thường. Người nằm ở cả hai chỗ sẽ được trả hai lần, và đòi lại khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương."
+        "en": "People whose last run falls in this period. Each one needs settling on Payroll › Settle AND excluding from the ordinary monthly run. Somebody in both is paid twice, and getting that back is a legal conversation rather than a payroll one.",
+        "vi": "Những người có đợt lương cuối cùng rơi vào kỳ này. Mỗi người vừa cần được quyết toán ở Lương › Quyết toán VÀ cần bị loại khỏi đợt lương tháng thông thường. Người nằm ở cả hai chỗ sẽ được trả hai lần, và đòi lại khoản đó là chuyện pháp lý chứ không còn là chuyện tính lương."
       },
       "key": "leavers",
       "label": {
@@ -3645,8 +3645,8 @@
     },
     {
       "definition": {
-        "en": "Home › Approvals: one place for everything waiting for a decision, pay runs included. My turn is what is waiting for you.",
-        "vi": "Trang chủ › Phê duyệt: một nơi cho mọi thứ đang chờ quyết định, kể cả đợt lương. Đến lượt tôi là những gì đang chờ bạn."
+        "en": "Home › Inbox: one place for everything waiting for a decision, pay runs included. My turn is what is waiting for you.",
+        "vi": "Trang chủ › Hộp thư: một nơi cho mọi thứ đang chờ quyết định, kể cả đợt lương. Đến lượt tôi là những gì đang chờ bạn."
       },
       "key": "inbox",
       "match": {
@@ -3776,8 +3776,8 @@
     },
     {
       "definition": {
-        "en": "The menu of nine pages on the left — Home, Pay Run, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
-        "vi": "Trình đơn chín trang ở bên trái — Trang chủ, Đợt lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."
+        "en": "The menu of eleven pages on the left — Home, Payroll, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
+        "vi": "Trình đơn mười một trang ở bên trái — Trang chủ, Lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."
       },
       "key": "hub",
       "match": {
@@ -3798,8 +3798,8 @@
     },
     {
       "definition": {
-        "en": "One screen inside a page, like Pay Run › Payslips. A page's tabs are the column of icons down its left edge; point at them to read the names. A tab you cannot see is one your access does not open.",
-        "vi": "Một màn hình bên trong một trang, như Đợt lương › Phiếu lương. Các tab của một trang là cột biểu tượng dọc mép trái; trỏ vào để đọc tên. Tab nào bạn không thấy là tab quyền của bạn không mở được."
+        "en": "One screen inside a page, like Payroll › Payslips. A page's tabs are the column of icons down its left edge, each with its name under it. A tab you cannot see is one your access does not open.",
+        "vi": "Một màn hình bên trong một trang, như Lương › Phiếu lương. Các tab của một trang là cột biểu tượng dọc mép trái, mỗi biểu tượng có tên ngay bên dưới. Tab nào bạn không thấy là tab quyền của bạn không mở được."
       },
       "key": "tab",
       "match": {
@@ -3819,8 +3819,8 @@
     },
     {
       "definition": {
-        "en": "Paying part of a month: the monthly amount times the days that count, over the days in the period. Pay Run › Adjust › Proration keeps one line per amount, with the days in its drawer.",
-        "vi": "Trả lương cho một phần của tháng: mức lương tháng nhân với số ngày được tính, chia cho số ngày của kỳ. Đợt lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng, với số ngày trong ngăn chi tiết."
+        "en": "Paying part of a month: the monthly amount times the days that count, over the days in the period. Payroll › Adjust › Proration keeps one line per amount, with the days in its drawer.",
+        "vi": "Trả lương cho một phần của tháng: mức lương tháng nhân với số ngày được tính, chia cho số ngày của kỳ. Lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng, với số ngày trong ngăn chi tiết."
       },
       "key": "proration",
       "match": {
@@ -5731,8 +5731,8 @@
     },
     {
       "definition": {
-        "en": "The go-ahead to send the money, on Pay Run › Deliver. It waits for the bank file to be approved, and then goes through its own approval.",
-        "vi": "Sự cho phép gửi tiền đi, ở Đợt lương › Chi trả. Nó chờ tệp ngân hàng được duyệt, rồi đi qua phê duyệt riêng của nó."
+        "en": "The go-ahead to send the money, on Payroll › Pay out. It waits for the bank file to be approved, and then goes through its own approval.",
+        "vi": "Sự cho phép gửi tiền đi, ở Lương › Chi trả. Nó chờ tệp ngân hàng được duyệt, rồi đi qua phê duyệt riêng của nó."
       },
       "key": "paymentRelease",
       "match": {
@@ -5753,8 +5753,8 @@
     },
     {
       "definition": {
-        "en": "The month's two dates on Pay Run › Calendar: the day changes close and the day people are paid. Reopening a closed month needs a reason.",
-        "vi": "Hai mốc ngày của tháng ở Đợt lương › Lịch lương: ngày chốt thay đổi và ngày trả lương. Mở lại một tháng đã chốt cần nêu lý do."
+        "en": "The month's two dates on Payroll › Calendar: the day changes close and the day people are paid. Reopening a closed month needs a reason.",
+        "vi": "Hai mốc ngày của tháng ở Lương › Lịch lương: ngày chốt thay đổi và ngày trả lương. Mở lại một tháng đã chốt cần nêu lý do."
       },
       "key": "payCalendar",
       "match": {
@@ -5777,8 +5777,8 @@
     },
     {
       "definition": {
-        "en": "A one-off bonus, incentive or spot award on Pay Run › Awards. It is approved first, then put into a draft pay run, which adds it to the payslip and recomputes it.",
-        "vi": "Một khoản thưởng, khuyến khích hoặc thưởng đột xuất ở Đợt lương › Thưởng. Nó được duyệt trước, rồi được đưa vào một đợt lương nháp, cộng vào phiếu lương và tính lại."
+        "en": "A one-off bonus, incentive or spot award on Payroll › Awards. It is approved first, then put into a draft pay run, which adds it to the payslip and recomputes it.",
+        "vi": "Một khoản thưởng, khuyến khích hoặc thưởng đột xuất ở Lương › Thưởng. Nó được duyệt trước, rồi được đưa vào một đợt lương nháp, cộng vào phiếu lương và tính lại."
       },
       "key": "award",
       "match": {
@@ -5993,8 +5993,8 @@
       "blocks": [
         {
           "body": {
-            "en": "A pay run is approved along the route your company drew in the Approval Matrix — by default Payroll check, then HR lead review, then Finance approval. You can decide it only when its current step names you, and then it is on Home › Approvals, My turn.",
-            "vi": "Một đợt lương được duyệt theo lộ trình mà công ty bạn vẽ trong Ma trận phê duyệt — mặc định là Kiểm tra bảng lương, rồi Trưởng nhân sự soát xét, rồi Tài chính phê duyệt. Bạn chỉ quyết định được khi bước hiện tại ghi tên bạn, và khi đó nó nằm ở Trang chủ › Phê duyệt, tab Đến lượt tôi."
+            "en": "A pay run is approved along the route your company drew in the Approval Matrix — by default Payroll check, then HR lead review, then Finance approval. You can decide it only when its current step names you, and then it is on Home › Inbox, My turn.",
+            "vi": "Một đợt lương được duyệt theo lộ trình mà công ty bạn vẽ trong Ma trận phê duyệt — mặc định là Kiểm tra bảng lương, rồi Trưởng nhân sự soát xét, rồi Tài chính phê duyệt. Bạn chỉ quyết định được khi bước hiện tại ghi tên bạn, và khi đó nó nằm ở Trang chủ › Hộp thư, tab Đến lượt tôi."
           },
           "capability": "any",
           "kind": "p",
@@ -6010,8 +6010,8 @@
             {
               "anchor": "ai-tabs",
               "text": {
-                "en": "Open Home › Approvals, My turn",
-                "vi": "Mở Trang chủ › Phê duyệt, tab Đến lượt tôi"
+                "en": "Open Home › Inbox, My turn",
+                "vi": "Mở Trang chủ › Hộp thư, tab Đến lượt tôi"
               }
             },
             {
@@ -6059,8 +6059,8 @@
         },
         {
           "body": {
-            "en": "The people on the route. The run's card on Pay Run › Runs says whose step it is at.",
-            "vi": "Những người trên lộ trình. Thẻ của đợt lương ở Đợt lương › Các đợt lương cho biết nó đang ở bước của ai."
+            "en": "The people on the route. The run's card on Payroll › Runs says whose step it is at.",
+            "vi": "Những người trên lộ trình. Thẻ của đợt lương ở Lương › Các đợt lương cho biết nó đang ở bước của ai."
           },
           "capability": "no_access",
           "kind": "who",
@@ -6089,8 +6089,8 @@
         },
         {
           "body": {
-            "en": "You prepare the run and send it in; the people on its route decide it. Press Submit for approval on its card in Pay Run › Runs, then follow whose step it is at.",
-            "vi": "Bạn lập đợt lương và gửi đi; những người trên lộ trình quyết định. Hãy bấm Gửi để phê duyệt trên thẻ của nó ở Đợt lương › Các đợt lương, rồi theo dõi nó đang ở bước của ai."
+            "en": "You prepare the run and send it in; the people on its route decide it. Press Submit for approval on its card in Payroll › Runs, then follow whose step it is at.",
+            "vi": "Bạn lập đợt lương và gửi đi; những người trên lộ trình quyết định. Hãy bấm Gửi để phê duyệt trên thẻ của nó ở Lương › Các đợt lương, rồi theo dõi nó đang ở bước của ai."
           },
           "capability": "operator",
           "kind": "p",
@@ -6138,8 +6138,8 @@
         },
         {
           "body": {
-            "en": "Yes, when the run's current step names you. It is then on Home › Approvals, My turn. Approving moves all its payslips together — there is no way to approve some of them.",
-            "vi": "Có, khi bước hiện tại của đợt lương ghi tên bạn. Khi đó nó nằm ở Trang chủ › Phê duyệt, tab Đến lượt tôi. Phê duyệt sẽ chuyển toàn bộ phiếu lương cùng lúc — không có cách nào duyệt một phần."
+            "en": "Yes, when the run's current step names you. It is then on Home › Inbox, My turn. Approving moves all its payslips together — there is no way to approve some of them.",
+            "vi": "Có, khi bước hiện tại của đợt lương ghi tên bạn. Khi đó nó nằm ở Trang chủ › Hộp thư, tab Đến lượt tôi. Phê duyệt sẽ chuyển toàn bộ phiếu lương cùng lúc — không có cách nào duyệt một phần."
           },
           "capability": "manager",
           "kind": "ok",
@@ -7126,8 +7126,8 @@
         },
         {
           "body": {
-            "en": "New logic goes in a configuration, always. Pay Run › Run uses a configuration when you pick the pay scheme, so a rule added to a structure is a rule the scheme never sees.",
-            "vi": "Logic mới luôn đặt trong một cấu hình. Đợt lương › Chạy lương dùng một cấu hình khi bạn chọn chương trình lương, nên một quy tắc thêm vào cấu trúc là quy tắc mà bộ phận đó không bao giờ nhìn thấy."
+            "en": "New logic goes in a configuration, always. Payroll › Run uses a configuration when you pick the pay scheme, so a rule added to a structure is a rule the scheme never sees.",
+            "vi": "Logic mới luôn đặt trong một cấu hình. Lương › Chạy lương dùng một cấu hình khi bạn chọn chương trình lương, nên một quy tắc thêm vào cấu trúc là quy tắc mà bộ phận đó không bao giờ nhìn thấy."
           },
           "capability": "any",
           "kind": "ok",
@@ -7196,8 +7196,8 @@
         },
         {
           "body": {
-            "en": "Confirming makes their employee record, contract and sign-in, and starts the welcome checklist under New joiners.",
-            "vi": "Xác nhận sẽ tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."
+            "en": "Confirming makes their employee record, contract and sign-in, and starts the welcome checklist under People › Joiners.",
+            "vi": "Xác nhận sẽ tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Con người › Người mới."
           },
           "capability": "any",
           "kind": "ok",
@@ -7536,8 +7536,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Lifecycle › <b>Probation</b>. Colleagues are asked, the manager decides, HR and leadership review, then the outcome is shared.",
-            "vi": "Vòng đời nhân sự › <b>Thử việc</b>. Đồng nghiệp được hỏi, quản lý quyết định, nhân sự và lãnh đạo xem xét, rồi kết quả được thông báo."
+            "en": "People › <b>Probation</b>. Colleagues are asked, the manager decides, HR and leadership review, then the outcome is shared.",
+            "vi": "Con người › <b>Thử việc</b>. Đồng nghiệp được hỏi, quản lý quyết định, nhân sự và lãnh đạo xem xét, rồi kết quả được thông báo."
           },
           "capability": "any",
           "kind": "p",
@@ -7585,8 +7585,8 @@
         },
         {
           "body": {
-            "en": "Lifecycle › Probation.",
-            "vi": "Vòng đời nhân sự › Thử việc."
+            "en": "People › Probation.",
+            "vi": "Con người › Thử việc."
           },
           "capability": "any",
           "kind": "source",
@@ -7613,7 +7613,7 @@
         "Làm sao để xác nhận chính thức sau thử việc?"
       ],
       "practice_key": "",
-      "screens": "probation,hub_lifecycle",
+      "screens": "probation,hub_people",
       "show_me": [
         "pr-verdict",
         "pr-numbers"
@@ -7973,7 +7973,7 @@
       "blocks": [
         {
           "body": {
-            "en": "Not from the approval itself. Once a run is Done its card offers <b>Pay &amp; Deliver</b>. That opens Deliver for the run: the bank file ({{bankFileFormat}}), then the payment release, each approved on its own, and the payslips.",
+            "en": "Not from the approval itself. Once a run is Done its card offers <b>Pay &amp; Deliver</b>. That opens Pay out for the run: the bank file ({{bankFileFormat}}), then the payment release, each approved on its own, and the payslips.",
             "vi": "Không phải từ chính việc phê duyệt. Khi đợt lương Hoàn tất, thẻ của nó có <b>Chi trả &amp; gửi phiếu</b>. Nút đó mở Chi trả cho đợt: tệp ngân hàng ({{bankFileFormat}}), rồi lệnh chuyển tiền, mỗi thứ được duyệt riêng, và phiếu lương."
           },
           "capability": "any",
@@ -8003,8 +8003,8 @@
         },
         {
           "body": {
-            "en": "The buttons a Done pay run offers on its card, and Pay Run › Deliver.",
-            "vi": "Các nút mà một đợt lương Hoàn tất hiện trên thẻ của nó, và Đợt lương › Chi trả."
+            "en": "The buttons a Done pay run offers on its card, and Payroll › Pay out.",
+            "vi": "Các nút mà một đợt lương Hoàn tất hiện trên thẻ của nó, và Lương › Chi trả."
           },
           "capability": "any",
           "kind": "source",
@@ -8239,8 +8239,8 @@
         },
         {
           "body": {
-            "en": "The frozen facts on the approval request, and the payslips in Pay Run › Payslips.",
-            "vi": "Các dữ kiện được giữ nguyên trên yêu cầu phê duyệt, và các phiếu lương ở Đợt lương › Phiếu lương."
+            "en": "The frozen facts on the approval request, and the payslips in Payroll › Payslips.",
+            "vi": "Các dữ kiện được giữ nguyên trên yêu cầu phê duyệt, và các phiếu lương ở Lương › Phiếu lương."
           },
           "capability": "any",
           "kind": "source",
@@ -8285,8 +8285,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Everything starts in <b>Pay Run › Run</b>. Everything before Submit for approval is a draft, and a draft has paid nobody.",
-            "vi": "Mọi thứ bắt đầu ở <b>Đợt lương › Chạy lương</b>. Mọi thứ trước bước Gửi để phê duyệt đều là bản nháp, và bản nháp thì chưa trả cho ai cả."
+            "en": "Everything starts in <b>Payroll › Run</b>. Everything before Submit for approval is a draft, and a draft has paid nobody.",
+            "vi": "Mọi thứ bắt đầu ở <b>Lương › Chạy lương</b>. Mọi thứ trước bước Gửi để phê duyệt đều là bản nháp, và bản nháp thì chưa trả cho ai cả."
           },
           "capability": "any",
           "kind": "p",
@@ -8302,8 +8302,8 @@
             {
               "anchor": "pw-scheme",
               "text": {
-                "en": "Pay Run › Run: pick the pay scheme under \"Pay run for\", and check the month",
-                "vi": "Đợt lương › Chạy lương: chọn chương trình lương trong \"Đợt lương cho\", và kiểm tra tháng"
+                "en": "Payroll › Run: pick the pay scheme under \"Pay run for\", and check the month",
+                "vi": "Lương › Chạy lương: chọn chương trình lương trong \"Đợt lương cho\", và kiểm tra tháng"
               }
             },
             {
@@ -8330,8 +8330,8 @@
             {
               "anchor": "pk-card-actions",
               "text": {
-                "en": "On Pay Run › Runs, press Submit for approval on the run's card",
-                "vi": "Ở Đợt lương › Các đợt lương, bấm Gửi để phê duyệt trên thẻ của đợt lương"
+                "en": "On Payroll › Runs, press Submit for approval on the run's card",
+                "vi": "Ở Lương › Các đợt lương, bấm Gửi để phê duyệt trên thẻ của đợt lương"
               }
             }
           ]
@@ -8406,8 +8406,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Lifecycle › <b>Exits</b>. The leaver works their notice, IT, HR, Finance and Admin sign them off, and the final settlement waits for all four.",
-            "vi": "Vòng đời nhân sự › <b>Nghỉ việc</b>. Người nghỉ làm hết thời gian báo trước, IT, Nhân sự, Tài chính và Quản trị viên xác nhận bàn giao, và quyết toán chờ đủ cả bốn."
+            "en": "People › <b>Exits</b>. The leaver works their notice, IT, HR, Finance and Admin sign them off, and the final settlement waits for all four.",
+            "vi": "Con người › <b>Nghỉ việc</b>. Người nghỉ làm hết thời gian báo trước, IT, Nhân sự, Tài chính và Quản trị viên xác nhận bàn giao, và quyết toán chờ đủ cả bốn."
           },
           "capability": "any",
           "kind": "p",
@@ -8437,8 +8437,8 @@
             {
               "anchor": "ex2-settle",
               "text": {
-                "en": "Close settlement, then pay it from Pay Run › Settle",
-                "vi": "Chốt quyết toán, rồi chi từ Đợt lương › Quyết toán"
+                "en": "Close settlement, then pay it from Payroll › Settle",
+                "vi": "Chốt quyết toán, rồi chi từ Lương › Quyết toán"
               }
             }
           ]
@@ -8455,8 +8455,8 @@
         },
         {
           "body": {
-            "en": "Lifecycle › Exits, and Pay Run › Settle.",
-            "vi": "Vòng đời nhân sự › Nghỉ việc, và Đợt lương › Quyết toán."
+            "en": "People › Exits, and Payroll › Settle.",
+            "vi": "Con người › Nghỉ việc, và Lương › Quyết toán."
           },
           "capability": "any",
           "kind": "source",
@@ -8484,7 +8484,7 @@
         "Có người nghỉ việc — tôi phải làm gì?"
       ],
       "practice_key": "",
-      "screens": "exits,fullfinal,hub_lifecycle",
+      "screens": "exits,fullfinal,hub_people",
       "show_me": [
         "ex2-clearance",
         "ex2-settle"
@@ -8618,15 +8618,15 @@
             {
               "anchor": "pw-result",
               "text": {
-                "en": "Pay Run › Run, then Submit for approval",
-                "vi": "Đợt lương › Chạy lương, rồi Gửi để phê duyệt"
+                "en": "Payroll › Run, then Submit for approval",
+                "vi": "Lương › Chạy lương, rồi Gửi để phê duyệt"
               }
             },
             {
               "anchor": "pk-card-actions",
               "text": {
-                "en": "Approval in Home › Approvals, then Pay & Deliver around {{payDay}}",
-                "vi": "Phê duyệt ở Trang chủ › Phê duyệt, rồi Chi trả & gửi phiếu vào khoảng {{payDay}}"
+                "en": "Approval in Home › Inbox, then Pay & Deliver around {{payDay}}",
+                "vi": "Phê duyệt ở Trang chủ › Hộp thư, rồi Chi trả & gửi phiếu vào khoảng {{payDay}}"
               }
             }
           ]
@@ -8684,8 +8684,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Open the role from Lifecycle › <b>Hiring</b>, then drag the person's card to another column. You can undo it for five seconds.",
-            "vi": "Mở vị trí từ Vòng đời nhân sự › <b>Tuyển dụng</b>, rồi kéo thẻ của người đó sang cột khác. Bạn có thể hoàn tác trong năm giây."
+            "en": "Open the role from Hiring › <b>Overview</b>, then drag the person's card to another column. You can undo it for five seconds.",
+            "vi": "Mở vị trí từ Tuyển dụng › <b>Tổng quan</b>, rồi kéo thẻ của người đó sang cột khác. Bạn có thể hoàn tác trong năm giây."
           },
           "capability": "any",
           "kind": "p",
@@ -8726,8 +8726,8 @@
         },
         {
           "body": {
-            "en": "A role's page in Lifecycle › Hiring.",
-            "vi": "Trang của một vị trí ở Vòng đời nhân sự › Tuyển dụng."
+            "en": "A role's page in Hiring › Overview.",
+            "vi": "Trang của một vị trí ở Tuyển dụng › Tổng quan."
           },
           "capability": "any",
           "kind": "source",
@@ -8769,8 +8769,8 @@
       "blocks": [
         {
           "body": {
-            "en": "On Pay Run › Run it adds up four things. Payslips whose take-home pay came out at zero or below. Payslips whose take-home pay moved more than 30% on the same person's last payslip in the same scheme. A new joiner has no last payslip, so is never flagged for it. People Payobook could not make a payslip for, such as someone with no running contract in the period. And people in the pay data file who are not in Payobook yet — listed, not paid.",
-            "vi": "Ở Đợt lương › Chạy lương, nó cộng bốn thứ: phiếu lương có thực nhận bằng không hoặc âm; phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của cùng người trong cùng chương trình — người mới vào chưa có phiếu trước nên không bao giờ bị gắn cờ vì điều này; những người Payobook không tạo được phiếu lương (ví dụ không có hợp đồng hiệu lực trong kỳ); và những người có trong tệp dữ liệu lương mà chưa có trong Payobook — được liệt kê, không được trả lương."
+            "en": "On Payroll › Run it adds up four things. Payslips whose take-home pay came out at zero or below. Payslips whose take-home pay moved more than 30% on the same person's last payslip in the same scheme. A new joiner has no last payslip, so is never flagged for it. People Payobook could not make a payslip for, such as someone with no running contract in the period. And people in the pay data file who are not in Payobook yet — listed, not paid.",
+            "vi": "Ở Lương › Chạy lương, nó cộng bốn thứ: phiếu lương có thực nhận bằng không hoặc âm; phiếu có thực nhận thay đổi hơn 30% so với phiếu trước của cùng người trong cùng chương trình — người mới vào chưa có phiếu trước nên không bao giờ bị gắn cờ vì điều này; những người Payobook không tạo được phiếu lương (ví dụ không có hợp đồng hiệu lực trong kỳ); và những người có trong tệp dữ liệu lương mà chưa có trong Payobook — được liệt kê, không được trả lương."
           },
           "capability": "any",
           "kind": "p",
@@ -8779,8 +8779,8 @@
         },
         {
           "body": {
-            "en": "On Pay Run › Payslips it counts the same payslips, and each flagged row says why, like \"Net pay up 42% on June 2026\". The line is 30% unless changed in Settings › Payroll defaults.",
-            "vi": "Ở Đợt lương › Phiếu lương nó đếm đúng những phiếu đó — thực nhận bằng không hoặc âm, hoặc thay đổi vượt ngưỡng — và mỗi dòng bị gắn cờ ghi rõ lý do, như \"Thực nhận tăng 42% so với tháng 6 2026\". Ngưỡng là 30% trừ khi được đổi ở Cài đặt › Mặc định tính lương."
+            "en": "On Payroll › Payslips it counts the same payslips, and each flagged row says why, like \"Net pay up 42% on June 2026\". The line is 30% unless changed in Settings › Payroll defaults.",
+            "vi": "Ở Lương › Phiếu lương nó đếm đúng những phiếu đó — thực nhận bằng không hoặc âm, hoặc thay đổi vượt ngưỡng — và mỗi dòng bị gắn cờ ghi rõ lý do, như \"Thực nhận tăng 42% so với tháng 6 2026\". Ngưỡng là 30% trừ khi được đổi ở Cài đặt › Mặc định tính lương."
           },
           "capability": "any",
           "kind": "p",
@@ -8899,8 +8899,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Lifecycle › <b>New joiners</b>. Each person's card, their buddy, and what is still to do before day one.",
-            "vi": "Vòng đời nhân sự › <b>Nhân viên mới</b>. Thẻ của mỗi người, người đồng hành, và những gì còn phải làm trước ngày đầu."
+            "en": "People › <b>Joiners</b>. Each person's card, their buddy, and what is still to do before day one.",
+            "vi": "Con người › <b>Người mới</b>. Thẻ của mỗi người, người đồng hành, và những gì còn phải làm trước ngày đầu."
           },
           "capability": "any",
           "kind": "p",
@@ -8938,8 +8938,8 @@
         },
         {
           "body": {
-            "en": "Lifecycle › New joiners.",
-            "vi": "Vòng đời nhân sự › Nhân viên mới."
+            "en": "People › Joiners.",
+            "vi": "Con người › Người mới."
           },
           "capability": "any",
           "kind": "source",
@@ -8966,7 +8966,7 @@
         "Làm sao để chuẩn bị cho người sắp vào làm?"
       ],
       "practice_key": "",
-      "screens": "joiners,hiring,hub_lifecycle",
+      "screens": "joiners,hiring,hub_people",
       "show_me": [
         "nj-list",
         "nj-drawer"
@@ -9412,8 +9412,8 @@
         },
         {
           "body": {
-            "en": "Pay Run › Adjust › Proration keeps one line per amount. The row shows old, new and prorated; its drawer holds the basis and the days on each side of the change.",
-            "vi": "Đợt lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng. Dòng hiện mức cũ, mức mới và số đã phân bổ; ngăn chi tiết có cách tính và số ngày ở mỗi phía của thay đổi."
+            "en": "Payroll › Adjust › Proration keeps one line per amount. The row shows old, new and prorated; its drawer holds the basis and the days on each side of the change.",
+            "vi": "Lương › Điều chỉnh › Phân bổ theo tỷ lệ giữ mỗi khoản một dòng. Dòng hiện mức cũ, mức mới và số đã phân bổ; ngăn chi tiết có cách tính và số ngày ở mỗi phía của thay đổi."
           },
           "capability": "any",
           "kind": "p",
@@ -9432,8 +9432,8 @@
         },
         {
           "body": {
-            "en": "The Proration tab of Pay Run › Adjust, and the scheme's Part-month pay setting.",
-            "vi": "Tab Phân bổ theo tỷ lệ của Đợt lương › Điều chỉnh, và thiết lập Lương theo phần tháng của chương trình lương."
+            "en": "The Proration tab of Payroll › Adjust, and the scheme's Part-month pay setting.",
+            "vi": "Tab Phân bổ theo tỷ lệ của Lương › Điều chỉnh, và thiết lập Lương theo phần tháng của chương trình lương."
           },
           "capability": "any",
           "kind": "source",
@@ -9470,8 +9470,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Lifecycle › <b>Hiring</b> › <b>Open a role</b>. Five things and the role exists; you can publish it and meet candidates straight away.",
-            "vi": "Vòng đời nhân sự › <b>Tuyển dụng</b> › <b>Mở một vị trí</b>. Năm điều và vị trí được tạo; bạn có thể đăng tin và gặp ứng viên ngay."
+            "en": "Hiring › <b>Overview</b> › <b>Open a role</b>. Five things and the role exists; you can publish it and meet candidates straight away.",
+            "vi": "Tuyển dụng › <b>Tổng quan</b> › <b>Mở một vị trí</b>. Năm điều và vị trí được tạo; bạn có thể đăng tin và gặp ứng viên ngay."
           },
           "capability": "any",
           "kind": "p",
@@ -9519,8 +9519,8 @@
         },
         {
           "body": {
-            "en": "Lifecycle › Hiring.",
-            "vi": "Vòng đời nhân sự › Tuyển dụng."
+            "en": "Hiring › Overview.",
+            "vi": "Tuyển dụng › Tổng quan."
           },
           "capability": "any",
           "kind": "source",
@@ -9549,7 +9549,7 @@
         "Làm sao để bắt đầu tuyển một vị trí mới?"
       ],
       "practice_key": "",
-      "screens": "hiring,hiring_request,hub_lifecycle",
+      "screens": "hiring,hiring_request,hub_hiring",
       "show_me": [
         "hi-raise",
         "hi-ask"
@@ -9710,8 +9710,8 @@
         },
         {
           "body": {
-            "en": "Each line is on Pay Run › Adjust › Retro with the old amount, the new one and the delta, and its drawer names the month being made good.",
-            "vi": "Mỗi dòng nằm ở Đợt lương › Điều chỉnh › Hồi tố với mức cũ, mức mới và phần chênh, và ngăn chi tiết ghi tháng đang được bù."
+            "en": "Each line is on Payroll › Adjust › Retro with the old amount, the new one and the delta, and its drawer names the month being made good.",
+            "vi": "Mỗi dòng nằm ở Lương › Điều chỉnh › Hồi tố với mức cũ, mức mới và phần chênh, và ngăn chi tiết ghi tháng đang được bù."
           },
           "capability": "any",
           "kind": "p",
@@ -9730,8 +9730,8 @@
         },
         {
           "body": {
-            "en": "The Retro tab of Pay Run › Adjust, and the scheme's Back-pay setting.",
-            "vi": "Tab Hồi tố của Đợt lương › Điều chỉnh, và thiết lập Truy lĩnh của chương trình lương."
+            "en": "The Retro tab of Payroll › Adjust, and the scheme's Back-pay setting.",
+            "vi": "Tab Hồi tố của Lương › Điều chỉnh, và thiết lập Truy lĩnh của chương trình lương."
           },
           "capability": "any",
           "kind": "source",
@@ -9981,8 +9981,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Because the person on its current step has not decided yet. The card on Pay Run › Runs names them — start by asking that person.",
-            "vi": "Vì người ở bước hiện tại chưa quyết định. Thẻ trên Đợt lương › Các đợt lương ghi tên họ — hãy bắt đầu bằng việc hỏi chính người đó."
+            "en": "Because the person on its current step has not decided yet. The card on Payroll › Runs names them — start by asking that person.",
+            "vi": "Vì người ở bước hiện tại chưa quyết định. Thẻ trên Lương › Các đợt lương ghi tên họ — hãy bắt đầu bằng việc hỏi chính người đó."
           },
           "capability": "any",
           "kind": "p",
@@ -10102,8 +10102,8 @@
             {
               "anchor": "pw-pills",
               "text": {
-                "en": "Read Need review in Pay Run › Run after you compute — people missing from the data show up there",
-                "vi": "Đọc Cần xem xét ở Đợt lương › Chạy lương sau khi tính — những người thiếu dữ liệu hiện ra ở đó"
+                "en": "Read Need review in Payroll › Run after you compute — people missing from the data show up there",
+                "vi": "Đọc Cần xem xét ở Lương › Chạy lương sau khi tính — những người thiếu dữ liệu hiện ra ở đó"
               }
             }
           ]
@@ -10181,8 +10181,8 @@
         },
         {
           "body": {
-            "en": "The Pay data step of Pay Run › Run, and the import batch.",
-            "vi": "Bước Dữ liệu lương của Đợt lương › Chạy lương, và đợt nhập liệu."
+            "en": "The Pay data step of Payroll › Run, and the import batch.",
+            "vi": "Bước Dữ liệu lương của Lương › Chạy lương, và đợt nhập liệu."
           },
           "capability": "any",
           "kind": "source",
@@ -10528,8 +10528,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Nine pages on the left menu, each with its own tabs as icons down its left side — point at them to read the names. <b>Home</b> (Pulse, Approvals), <b>Pay Run</b> (Run, Runs, Payslips, Import, Deliver, Adjust, Settle…), <b>People</b>, <b>Lifecycle</b>, <b>Workforce</b>, <b>Insights</b>, <b>Compliance</b>, <b>Learn</b> and <b>Settings</b>.",
-            "vi": "Chín trang trên trình đơn bên trái, mỗi trang có các tab riêng dưới dạng biểu tượng dọc bên trái — trỏ vào để đọc tên. <b>Trang chủ</b> (Tổng quan, Phê duyệt), <b>Đợt lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Nhập, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Vòng đời nhân sự</b>, <b>Lực lượng lao động</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Học cùng Payobook</b> và <b>Cài đặt</b>."
+            "en": "Eleven pages on the left menu, each with its own tabs down its left side, a name under every icon. <b>Home</b> (Pulse, Inbox, Ask HR, Wall, Announce), <b>Payroll</b> (Run, Runs, Payslips, Inputs, Pay out, Adjust, Settle…), <b>People</b>, <b>Hiring</b>, <b>Workforce</b>, <b>Expenses</b>, <b>Insights</b>, <b>Compliance</b>, <b>Talent</b>, <b>Learn</b> and <b>Settings</b>.",
+            "vi": "Mười một trang trên trình đơn bên trái, mỗi trang có các tab riêng dọc bên trái, dưới mỗi biểu tượng có tên của nó. <b>Trang chủ</b> (Tổng quan, Hộp thư, Hỏi Nhân sự, Bảng vinh danh, Thông báo), <b>Lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Đầu vào, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Tuyển dụng</b>, <b>Lực lượng lao động</b>, <b>Chi phí</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Nhân tài</b>, <b>Học cùng Payobook</b> và <b>Cài đặt</b>."
           },
           "capability": "any",
           "kind": "p",
@@ -10545,15 +10545,15 @@
             {
               "anchor": "dash-hero",
               "text": {
-                "en": "Home › Pulse — where payroll people land; Home › Approvals — what waits for you",
-                "vi": "Trang chủ › Tổng quan — nơi người làm lương vào; Trang chủ › Phê duyệt — việc đang chờ bạn"
+                "en": "Home › Pulse — where payroll people land; Home › Inbox — what waits for you",
+                "vi": "Trang chủ › Tổng quan — nơi người làm lương vào; Trang chủ › Hộp thư — việc đang chờ bạn"
               }
             },
             {
               "anchor": "pw-rail",
               "text": {
-                "en": "Pay Run › Run — start a month; Runs — every run and who it is with",
-                "vi": "Đợt lương › Chạy lương — bắt đầu một tháng; Các đợt lương — mọi đợt và đang ở chỗ ai"
+                "en": "Payroll › Run — start a month; Runs — every run and who it is with",
+                "vi": "Lương › Chạy lương — bắt đầu một tháng; Các đợt lương — mọi đợt và đang ở chỗ ai"
               }
             },
             {
@@ -10643,8 +10643,8 @@
         },
         {
           "body": {
-            "en": "You do not have to look it up before running a payroll. Picking the pay scheme in Pay Run › Run picks the configuration, and the Scope panel prints the scheme's name. Reading that name before you compute is the check.",
-            "vi": "Bạn không cần tra cứu trước khi chạy lương. Chọn chương trình lương trong Đợt lương › Chạy lương là đã chọn cấu hình, và bảng Phạm vi in tên chương trình đó. Đọc cái tên đó trước khi tính chính là bước kiểm tra."
+            "en": "You do not have to look it up before running a payroll. Picking the pay scheme in Payroll › Run picks the configuration, and the Scope panel prints the scheme's name. Reading that name before you compute is the check.",
+            "vi": "Bạn không cần tra cứu trước khi chạy lương. Chọn chương trình lương trong Lương › Chạy lương là đã chọn cấu hình, và bảng Phạm vi in tên chương trình đó. Đọc cái tên đó trước khi tính chính là bước kiểm tra."
           },
           "capability": "any",
           "kind": "p",
@@ -10653,8 +10653,8 @@
         },
         {
           "body": {
-            "en": "The configuration codes, and the Scope panel in Pay Run › Run.",
-            "vi": "Các mã cấu hình, và bảng Phạm vi trong Đợt lương › Chạy lương."
+            "en": "The configuration codes, and the Scope panel in Payroll › Run.",
+            "vi": "Các mã cấu hình, và bảng Phạm vi trong Lương › Chạy lương."
           },
           "capability": "any",
           "kind": "source",
@@ -10717,8 +10717,8 @@
             {
               "anchor": "",
               "text": {
-                "en": "Check every run in that month has reached Done before generating anything — on Pay Run › Runs, not here",
-                "vi": "Kiểm tra mọi đợt lương của tháng đó đã đạt Hoàn tất trước khi kết xuất bất cứ gì — ở Đợt lương › Các đợt lương, không phải ở đây"
+                "en": "Check every run in that month has reached Done before generating anything — on Payroll › Runs, not here",
+                "vi": "Kiểm tra mọi đợt lương của tháng đó đã đạt Hoàn tất trước khi kết xuất bất cứ gì — ở Lương › Các đợt lương, không phải ở đây"
               }
             },
             {
@@ -10792,8 +10792,8 @@
       "blocks": [
         {
           "body": {
-            "en": "A run that is Waiting for approval says it on its card in Pay Run › Runs. The card names the step and the person: \"HR lead review · With Đặng Thu Hà\". In the inbox the same request shows its route dots and \"Waiting for …\".",
-            "vi": "Một đợt đang Chờ phê duyệt ghi rõ điều đó trên thẻ của nó ở Đợt lương › Các đợt lương: bước nó đang ở và đang ở chỗ ai — \"Trưởng nhân sự soát xét · Đang ở Đặng Thu Hà\". Trong hộp phê duyệt, cùng yêu cầu đó hiện các chấm lộ trình và \"Đang chờ …\"."
+            "en": "A run that is Waiting for approval says it on its card in Payroll › Runs. The card names the step and the person: \"HR lead review · With Đặng Thu Hà\". In the inbox the same request shows its route dots and \"Waiting for …\".",
+            "vi": "Một đợt đang Chờ phê duyệt ghi rõ điều đó trên thẻ của nó ở Lương › Các đợt lương: bước nó đang ở và đang ở chỗ ai — \"Trưởng nhân sự soát xét · Đang ở Đặng Thu Hà\". Trong hộp phê duyệt, cùng yêu cầu đó hiện các chấm lộ trình và \"Đang chờ …\"."
           },
           "capability": "any",
           "kind": "p",
@@ -11046,15 +11046,15 @@
             {
               "anchor": "pk-route",
               "text": {
-                "en": "On Pay Run › Runs, a waiting run's card names its step and person",
-                "vi": "Ở Đợt lương › Các đợt lương, thẻ của đợt đang chờ ghi rõ bước và người"
+                "en": "On Payroll › Runs, a waiting run's card names its step and person",
+                "vi": "Ở Lương › Các đợt lương, thẻ của đợt đang chờ ghi rõ bước và người"
               }
             },
             {
               "anchor": "ai-route",
               "text": {
-                "en": "In Home › Approvals, the request shows every step as a dot",
-                "vi": "Ở Trang chủ › Phê duyệt, yêu cầu hiện mỗi bước thành một chấm"
+                "en": "In Home › Inbox, the request shows every step as a dot",
+                "vi": "Ở Trang chủ › Hộp thư, yêu cầu hiện mỗi bước thành một chấm"
               }
             },
             {
@@ -11532,8 +11532,8 @@
         },
         {
           "body": {
-            "en": "Lifecycle › Hiring.",
-            "vi": "Vòng đời nhân sự › Tuyển dụng."
+            "en": "Hiring › Overview.",
+            "vi": "Tuyển dụng › Tổng quan."
           },
           "capability": "any",
           "kind": "source",
@@ -11754,16 +11754,16 @@
         {
           "check_key": "",
           "detail": {
-            "en": "It is the first tab of Pay Run on the rail.",
-            "vi": "Đó là tab đầu tiên của Đợt lương trên thanh bên."
+            "en": "It is the first tab of Payroll on the rail.",
+            "vi": "Đó là tab đầu tiên của Lương trên thanh bên."
           },
           "hint": {
             "en": "The steps at the top tell you where you are: Select period, Pay data, Compute, Review exceptions.",
             "vi": "Các bước ở trên cho biết bạn đang ở đâu: Chọn kỳ lương, Dữ liệu lương, Tính lương, Soát ngoại lệ."
           },
           "instruction": {
-            "en": "Open Pay Run › Run",
-            "vi": "Mở Đợt lương › Chạy lương"
+            "en": "Open Payroll › Run",
+            "vi": "Mở Lương › Chạy lương"
           },
           "is_ack": false,
           "is_consequence": false,
@@ -11978,8 +11978,8 @@
             "vi": "Bạn đã gửi nó, nên bạn thu hồi được khi chưa ai quyết xong. Yêu cầu đóng lại và đợt lương quay về Nháp, các phiếu lương sửa được, không có gì bị huỷ. Đó là lối quay lại gọn gàng — khác hẳn với Từ chối, thứ sẽ huỷ đợt lương."
           },
           "hint": {
-            "en": "Withdraw it is in the request's drawer in Home › Approvals, shown only to the person who sent it in.",
-            "vi": "Nút Thu hồi nằm trong ngăn chi tiết của yêu cầu ở Trang chủ › Phê duyệt, chỉ hiện với người đã gửi."
+            "en": "Withdraw it is in the request's drawer in Home › Inbox, shown only to the person who sent it in.",
+            "vi": "Nút Thu hồi nằm trong ngăn chi tiết của yêu cầu ở Trang chủ › Hộp thư, chỉ hiện với người đã gửi."
           },
           "instruction": {
             "en": "Now take it back: Withdraw it",
@@ -12816,8 +12816,8 @@
             "vi": "Chương trình lương của các bộ phận khác cũng có trong danh sách. Bạn cứ xem thoải mái; nhiệm vụ chỉ kiểm tra đúng bộ phận của bạn."
           },
           "instruction": {
-            "en": "Open Pay Run › Run",
-            "vi": "Mở Đợt lương › Chạy lương"
+            "en": "Open Payroll › Run",
+            "vi": "Mở Lương › Chạy lương"
           },
           "is_ack": true,
           "is_consequence": false,
@@ -12874,8 +12874,8 @@
         {
           "check_key": "",
           "detail": {
-            "en": "In Pay Run › Payslips, pick your run. Need review there lists take-home at zero or below and take-home that moved more than 30%, each row saying why. Anything under that line is yours to find: sample the ones with the most overtime, and a few ordinary ones.",
-            "vi": "Ở Đợt lương › Phiếu lương, hãy chọn đợt của bạn. Cần xem xét ở đó liệt kê phiếu có thực nhận bằng không hoặc âm và phiếu có thực nhận thay đổi hơn 30%, mỗi dòng ghi rõ lý do. Điều bất thường dưới ngưỡng đó là bạn phải tự tìm, nên hãy lấy mẫu những phiếu nhiều tăng ca nhất và vài phiếu bình thường."
+            "en": "In Payroll › Payslips, pick your run. Need review there lists take-home at zero or below and take-home that moved more than 30%, each row saying why. Anything under that line is yours to find: sample the ones with the most overtime, and a few ordinary ones.",
+            "vi": "Ở Lương › Phiếu lương, hãy chọn đợt của bạn. Cần xem xét ở đó liệt kê phiếu có thực nhận bằng không hoặc âm và phiếu có thực nhận thay đổi hơn 30%, mỗi dòng ghi rõ lý do. Điều bất thường dưới ngưỡng đó là bạn phải tự tìm, nên hãy lấy mẫu những phiếu nhiều tăng ca nhất và vài phiếu bình thường."
           },
           "hint": {
             "en": "Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit.",
@@ -12897,8 +12897,8 @@
         {
           "check_key": "june_run_submitted",
           "detail": {
-            "en": "Press Submit for approval on its card in Pay Run › Runs. After it, the run moves only by decisions on its route. A step that sends it back returns it to Draft; one that turns it down cancels it.",
-            "vi": "Bấm Gửi để phê duyệt trên thẻ của nó ở Đợt lương › Các đợt lương. Sau bước này, đợt lương chỉ đi tiếp nhờ các quyết định trên lộ trình. Một bước trả lại sẽ đưa nó về Nháp; một bước từ chối sẽ huỷ nó."
+            "en": "Press Submit for approval on its card in Payroll › Runs. After it, the run moves only by decisions on its route. A step that sends it back returns it to Draft; one that turns it down cancels it.",
+            "vi": "Bấm Gửi để phê duyệt trên thẻ của nó ở Lương › Các đợt lương. Sau bước này, đợt lương chỉ đi tiếp nhờ các quyết định trên lộ trình. Một bước trả lại sẽ đưa nó về Nháp; một bước từ chối sẽ huỷ nó."
           },
           "hint": {
             "en": "Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there.",
@@ -12920,12 +12920,12 @@
         {
           "check_key": "june_run_officer_done",
           "detail": {
-            "en": "Open Home › Approvals. If a step names you, it is on My turn: open it, read the facts, and approve. On a real company these are different people, and the waiting between them is most of what payroll week is.",
-            "vi": "Mở Trang chủ › Phê duyệt. Nếu một bước ghi tên bạn, nó nằm ở Đến lượt tôi: mở ra, đọc các dữ kiện, và phê duyệt. Ở một công ty thật, đây là những người khác nhau, và phần lớn một tuần tính lương chính là những khoảng chờ giữa họ."
+            "en": "Open Home › Inbox. If a step names you, it is on My turn: open it, read the facts, and approve. On a real company these are different people, and the waiting between them is most of what payroll week is.",
+            "vi": "Mở Trang chủ › Hộp thư. Nếu một bước ghi tên bạn, nó nằm ở Đến lượt tôi: mở ra, đọc các dữ kiện, và phê duyệt. Ở một công ty thật, đây là những người khác nhau, và phần lớn một tuần tính lương chính là những khoảng chờ giữa họ."
           },
           "hint": {
-            "en": "The card on Pay Run › Runs says whose step it is at. That is the answer to \"who do I chase\".",
-            "vi": "Thẻ trên Đợt lương › Các đợt lương ghi rõ nó đang ở bước của ai. Đó chính là câu trả lời cho \"tôi phải hỏi ai\"."
+            "en": "The card on Payroll › Runs says whose step it is at. That is the answer to \"who do I chase\".",
+            "vi": "Thẻ trên Lương › Các đợt lương ghi rõ nó đang ở bước của ai. Đó chính là câu trả lời cho \"tôi phải hỏi ai\"."
           },
           "instruction": {
             "en": "It is with the first person on its route",
@@ -13099,8 +13099,8 @@
           "guard": false,
           "key": "scheme",
           "kicker": {
-            "en": "Pay Run › Run",
-            "vi": "Đợt lương › Chạy lương"
+            "en": "Payroll › Run",
+            "vi": "Lương › Chạy lương"
           },
           "look": {
             "en": "The Payroll scheme box, the first field of a new run.",
@@ -13152,8 +13152,8 @@
           "guard": false,
           "key": "board",
           "kicker": {
-            "en": "Pay Run › Runs",
-            "vi": "Đợt lương › Các đợt lương"
+            "en": "Payroll › Runs",
+            "vi": "Lương › Các đợt lương"
           },
           "look": {
             "en": "The This month card, then the lanes: 01 Draft, 02 Waiting for approval, 03 Done.",
@@ -13200,16 +13200,16 @@
           "guard": false,
           "key": "inbox",
           "kicker": {
-            "en": "Home › Approvals",
-            "vi": "Trang chủ › Phê duyệt"
+            "en": "Home › Inbox",
+            "vi": "Trang chủ › Hộp thư"
           },
           "look": {
             "en": "The four tabs: My turn, All I can see, Sent back and Finished.",
             "vi": "Bốn tab: Đến lượt tôi, Tất cả tôi xem được, Đã trả lại và Đã xong."
           },
           "means": {
-            "en": "Home › Approvals holds every request waiting for a decision: pay runs, overtime, leave, hiring.",
-            "vi": "Trang chủ › Phê duyệt chứa mọi yêu cầu đang chờ quyết định: đợt lương, tăng ca, nghỉ phép, tuyển dụng."
+            "en": "Home › Inbox holds every request waiting for a decision: pay runs, overtime, leave, hiring.",
+            "vi": "Trang chủ › Hộp thư chứa mọi yêu cầu đang chờ quyết định: đợt lương, tăng ca, nghỉ phép, tuyển dụng."
           },
           "modes": [
             "watch"
@@ -13227,8 +13227,8 @@
         {
           "act": "observe",
           "affects": {
-            "en": "Picking a scheme in Pay Run › Run picks which of these rulebooks runs.",
-            "vi": "Chọn chương trình lương ở Đợt lương › Chạy lương là chọn bộ quy tắc nào sẽ chạy."
+            "en": "Picking a scheme in Payroll › Run picks which of these rulebooks runs.",
+            "vi": "Chọn chương trình lương ở Lương › Chạy lương là chọn bộ quy tắc nào sẽ chạy."
           },
           "anchor": "fs-config",
           "body": "",
@@ -13701,8 +13701,8 @@
           "key": "next",
           "kicker": "",
           "look": {
-            "en": "The run, now on Pay Run › Runs in Draft.",
-            "vi": "Đợt lương, giờ ở Đợt lương › Các đợt lương, cột Nháp."
+            "en": "The run, now on Payroll › Runs in Draft.",
+            "vi": "Đợt lương, giờ ở Lương › Các đợt lương, cột Nháp."
           },
           "means": {
             "en": "Submit for approval sends it along its approval route.",
@@ -13786,8 +13786,8 @@
           "guard": false,
           "key": "kpis",
           "kicker": {
-            "en": "Pay Run › Runs",
-            "vi": "Đợt lương › Các đợt lương"
+            "en": "Payroll › Runs",
+            "vi": "Lương › Các đợt lương"
           },
           "look": {
             "en": "The This month card at the top of the board.",
@@ -13917,8 +13917,8 @@
           "guard": false,
           "key": "runsel",
           "kicker": {
-            "en": "Pay Run › Payslips",
-            "vi": "Đợt lương › Phiếu lương"
+            "en": "Payroll › Payslips",
+            "vi": "Lương › Phiếu lương"
           },
           "look": {
             "en": "The run selector at the top.",
@@ -14782,8 +14782,8 @@
           "guard": false,
           "key": "intro",
           "kicker": {
-            "en": "Pay Run › Import",
-            "vi": "Đợt lương › Nhập"
+            "en": "Payroll › Inputs",
+            "vi": "Lương › Đầu vào"
           },
           "look": {
             "en": "The Load this period's pay data card, and its Load pay data button.",
@@ -16415,8 +16415,8 @@
           "key": "recompute",
           "kicker": "",
           "look": {
-            "en": "The pay run this scheme pays, on Pay Run › Runs.",
-            "vi": "Đợt lương mà chương trình này trả, ở Đợt lương › Các đợt lương."
+            "en": "The pay run this scheme pays, on Payroll › Runs.",
+            "vi": "Đợt lương mà chương trình này trả, ở Lương › Các đợt lương."
           },
           "means": {
             "en": "Saving never rewrites a payslip. A recompute does.",
@@ -17159,8 +17159,8 @@
           "guard": false,
           "key": "run",
           "kicker": {
-            "en": "Pay Run › Run",
-            "vi": "Đợt lương › Chạy lương"
+            "en": "Payroll › Run",
+            "vi": "Lương › Chạy lương"
           },
           "look": {
             "en": "The Payroll scheme box, the first thing a pay run asks.",
@@ -18023,8 +18023,8 @@
           "guard": false,
           "key": "numbers",
           "kicker": {
-            "en": "Lifecycle › Hiring",
-            "vi": "Vòng đời nhân sự › Tuyển dụng"
+            "en": "Hiring › Overview",
+            "vi": "Tuyển dụng › Tổng quan"
           },
           "look": {
             "en": "The small numbers: Requests to agree, Waiting on you, Over budget, Interviews this week, Opinions late.",
@@ -18365,8 +18365,8 @@
           "guard": false,
           "key": "card",
           "kicker": {
-            "en": "Lifecycle › Hiring",
-            "vi": "Vòng đời nhân sự › Tuyển dụng"
+            "en": "Hiring › Overview",
+            "vi": "Tuyển dụng › Tổng quan"
           },
           "look": {
             "en": "The first role's card on the Hiring board.",
@@ -18667,8 +18667,8 @@
           "guard": false,
           "key": "numbers",
           "kicker": {
-            "en": "Lifecycle › New joiners",
-            "vi": "Vòng đời nhân sự › Nhân viên mới"
+            "en": "People › Joiners",
+            "vi": "Con người › Người mới"
           },
           "look": {
             "en": "The numbers at the top: Joining this week, Already started, Still without a buddy, Steps overdue and Said they are struggling.",
@@ -18810,8 +18810,8 @@
           "guard": false,
           "key": "numbers",
           "kicker": {
-            "en": "Lifecycle › Exits",
-            "vi": "Vòng đời nhân sự › Nghỉ việc"
+            "en": "People › Exits",
+            "vi": "Con người › Nghỉ việc"
           },
           "look": {
             "en": "The numbers at the top: Leaving this month, Last day has passed, Settlements held up, Clearances still open, Items not back yet and Settlements to check.",
@@ -19003,8 +19003,8 @@
         {
           "act": "observe",
           "affects": {
-            "en": "Close settlement works once every desk has signed. The payment itself is made from Pay Run › Settle.",
-            "vi": "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."
+            "en": "Close settlement works once every desk has signed. The payment itself is made from Payroll › Settle.",
+            "vi": "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Bản thân khoản chi được thực hiện từ Lương › Quyết toán."
           },
           "anchor": "ex2-settle",
           "body": "",
@@ -19083,8 +19083,8 @@
           "guard": false,
           "key": "numbers",
           "kicker": {
-            "en": "Lifecycle › Probation",
-            "vi": "Vòng đời nhân sự › Thử việc"
+            "en": "People › Probation",
+            "vi": "Con người › Thử việc"
           },
           "look": {
             "en": "The numbers at the top: In a trial period, Reviews running, Waiting on a decision, Answers overdue and Ending within a week.",
@@ -19295,8 +19295,8 @@
           "key": "tabs",
           "kicker": "",
           "look": {
-            "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Trips, Approvals and Close.",
-            "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt và Chốt kỳ."
+            "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Approvals and Close.",
+            "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Phê duyệt và Chốt kỳ."
           },
           "means": {
             "en": "A manager's week, from who is in today to the week's close.",
@@ -20276,8 +20276,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Import",
-        "vi": "Nhập"
+        "en": "Inputs",
+        "vi": "Đầu vào"
       },
       "navs": [
         "pb_import.action_pb_import"
@@ -20380,8 +20380,8 @@
     {
       "action_tags": "",
       "blurb": {
-        "en": "Pay Run › Settle: every final settlement, its net payable, and where it is on the way to approval.",
-        "vi": "Đợt lương › Quyết toán: mọi khoản quyết toán thôi việc, số thực trả, và mỗi khoản đang ở đâu trên đường phê duyệt."
+        "en": "Payroll › Settle: every final settlement, its net payable, and where it is on the way to approval.",
+        "vi": "Lương › Quyết toán: mọi khoản quyết toán thôi việc, số thực trả, và mỗi khoản đang ở đâu trên đường phê duyệt."
       },
       "hub": null,
       "key": "fullfinal",
@@ -20528,8 +20528,8 @@
     {
       "action_tags": "pb_retro,pb_proration",
       "blurb": {
-        "en": "Pay Run › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
-        "vi": "Đợt lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."
+        "en": "Payroll › Adjust: back pay (Retro) and part-month amounts (Proration), filled in when pay data is loaded.",
+        "vi": "Lương › Điều chỉnh: khoản truy lĩnh (Hồi tố) và các khoản theo phần tháng (Phân bổ theo tỷ lệ), được điền khi tải dữ liệu lương."
       },
       "hub": null,
       "key": "adjust",
@@ -20577,7 +20577,7 @@
     {
       "action_tags": "pb_payrun_results,pb_pay_delivery,pb_comp_ben_paycal,pb_comp_ben_incentives",
       "blurb": {
-        "en": "After the run: Results reads it as one grid, Deliver sends the bank file and payslips, Calendar keeps the month's dates, Awards adds one-off money.",
+        "en": "After the run: Results reads it as one grid, Pay out sends the bank file and payslips, Calendar keeps the month's dates, Awards adds one-off money.",
         "vi": "Sau đợt lương: Kết quả đọc nó trong một bảng, Chi trả gửi tệp ngân hàng và phiếu lương, Lịch lương giữ các mốc ngày của tháng, Thưởng thêm các khoản một lần."
       },
       "hub": null,
@@ -20922,8 +20922,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Approvals",
-        "vi": "Phê duyệt"
+        "en": "Inbox",
+        "vi": "Hộp thư"
       },
       "navs": [
         "pb_approval_config.action_pb_approval_inbox"
@@ -21951,16 +21951,16 @@
     {
       "action_tags": "pb_rnr_wall,pb_assignments,pb_assets,pb_hr_comm_calendar,pb_goals_home",
       "blurb": {
-        "en": "The Wall and Announce on Home, and People's smaller tabs: where people work, what they hold, their goals.",
-        "vi": "Bảng vinh danh và Thông báo ở Trang chủ, cùng các tab nhỏ của Con người: nơi mọi người làm, họ giữ gì, mục tiêu của họ."
+        "en": "The Wall and Announce on Home, People's smaller tabs, and Goals and Praise on Talent.",
+        "vi": "Bảng vinh danh và Thông báo ở Trang chủ, các tab nhỏ của Con người, và Mục tiêu, Khen ngợi ở Nhân tài."
       },
       "hub": null,
       "key": "peoplemore",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "The rest of People and Home",
-        "vi": "Phần còn lại của Con người và Trang chủ"
+        "en": "The rest of People, Home and Talent",
+        "vi": "Phần còn lại của Con người, Trang chủ và Nhân tài"
       },
       "navs": [],
       "next_step": {
@@ -21969,13 +21969,12 @@
       },
       "open": "",
       "places": [
-        "pb_home_hub:wall",
-        "pb_home_hub:coming_up",
         "pb_people_hub:where",
         "pb_people_hub:assets",
-        "pb_people_hub:praise",
-        "pb_people_hub:goals",
-        "pb_people_hub:announcements"
+        "pb_home_hub:wall",
+        "pb_home_hub:coming_up",
+        "pb_talent_hub:praise",
+        "pb_talent_hub:goals"
       ],
       "sequence": 360,
       "sidebar_key": "",
@@ -22017,7 +22016,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:hiring/role"
+        "pb_hiring_hub:overview/role"
       ],
       "sequence": 370,
       "sidebar_key": "",
@@ -22073,7 +22072,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:hiring"
+        "pb_hiring_hub:overview"
       ],
       "sequence": 380,
       "sidebar_key": "",
@@ -22258,7 +22257,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:newjoiners"
+        "pb_people_hub:newjoiners"
       ],
       "sequence": 420,
       "sidebar_key": "",
@@ -22307,7 +22306,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:probation"
+        "pb_people_hub:probation"
       ],
       "sequence": 430,
       "sidebar_key": "",
@@ -22356,7 +22355,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:pip"
+        "pb_talent_hub:pip"
       ],
       "sequence": 440,
       "sidebar_key": "",
@@ -22398,7 +22397,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:contracts"
+        "pb_people_hub:contracts"
       ],
       "sequence": 450,
       "sidebar_key": "",
@@ -22447,7 +22446,7 @@
       },
       "open": "",
       "places": [
-        "pb_lifecycle_hub:exits"
+        "pb_people_hub:exits"
       ],
       "sequence": 460,
       "sidebar_key": "",
@@ -22847,14 +22846,24 @@
               "vi": "Một hộp thư cho mọi thứ đang chờ bạn phê duyệt, kể cả các đợt lương."
             },
             "name": {
-              "en": "Approvals",
-              "vi": "Phê duyệt"
+              "en": "Inbox",
+              "vi": "Hộp thư"
+            }
+          },
+          "askhr": {
+            "line": {
+              "en": "Questions people send to HR and the answers, on one board: New, With HR, Answered and Closed.",
+              "vi": "Các câu hỏi mọi người gửi tới bộ phận nhân sự và câu trả lời, trên một bảng: Mới, Nhân sự đang xử lý, Đã trả lời và Đã đóng."
+            },
+            "name": {
+              "en": "Ask HR",
+              "vi": "Hỏi Nhân sự"
             }
           },
           "coming_up": {
             "line": {
-              "en": "What the company is about to tell its people, on one calendar.",
-              "vi": "Những gì công ty sắp thông báo tới mọi người, trên một lịch."
+              "en": "What the company is about to tell its people. Its Calendar tab is where the messages are planned.",
+              "vi": "Những gì công ty sắp thông báo tới mọi người. Tab Lịch của nó là nơi lên kế hoạch cho các thông báo."
             },
             "name": {
               "en": "Announce",
@@ -22894,8 +22903,8 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Open Approvals first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Approvals is your starting point.",
-        "vi": "Hãy mở Phê duyệt trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Phê duyệt là điểm bắt đầu của bạn."
+        "en": "Open Inbox first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Inbox is your starting point.",
+        "vi": "Hãy mở Hộp thư trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Hộp thư là điểm bắt đầu của bạn."
       },
       "open": "",
       "places": [],
@@ -22990,7 +22999,7 @@
               "vi": "Tệp ngân hàng và lệnh chuyển tiền, mỗi thứ có phê duyệt riêng, và phiếu lương dạng PDF có mật khẩu."
             },
             "name": {
-              "en": "Deliver",
+              "en": "Pay out",
               "vi": "Chi trả"
             }
           },
@@ -23000,8 +23009,8 @@
               "vi": "Đưa dữ liệu chấm công, tăng ca và các dữ liệu lương khác vào từ tệp hoặc từ hệ thống đã kết nối."
             },
             "name": {
-              "en": "Import",
-              "vi": "Nhập"
+              "en": "Inputs",
+              "vi": "Đầu vào"
             }
           },
           "paycal": {
@@ -23072,8 +23081,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Pay Run",
-        "vi": "Đợt lương"
+        "en": "Payroll",
+        "vi": "Lương"
       },
       "navs": [],
       "next_step": {
@@ -23118,8 +23127,8 @@
     {
       "action_tags": "pb_people_hub",
       "blurb": {
-        "en": "Your people and what is written down about them: who they are, their contracts, their pay and their goals.",
-        "vi": "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai, hợp đồng, lương và mục tiêu của họ."
+        "en": "Your people and what is written down about them: who they are, their contracts and their pay, and the days they join and leave.",
+        "vi": "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai, hợp đồng, lương của họ, và những ngày họ vào làm và nghỉ việc."
       },
       "hub": {
         "lens_key": "pb_lens",
@@ -23147,16 +23156,6 @@
           }
         ],
         "tabs": {
-          "announcements": {
-            "line": {
-              "en": "Write and schedule messages to your people.",
-              "vi": "Soạn và lên lịch các thông báo gửi tới mọi người."
-            },
-            "name": {
-              "en": "Announce",
-              "vi": "Thông báo"
-            }
-          },
           "assets": {
             "line": {
               "en": "Every laptop, phone, card and account the company has handed out, and who holds it.",
@@ -23167,24 +23166,44 @@
               "vi": "Tài sản"
             }
           },
+          "contracts": {
+            "line": {
+              "en": "Contracts that end soon, decided in good time: renew, change or let them end. All contracts opens every contract.",
+              "vi": "Các hợp đồng sắp hết hạn, được quyết định sớm: gia hạn, thay đổi hoặc để kết thúc. Nút Tất cả hợp đồng mở toàn bộ hợp đồng."
+            },
+            "name": {
+              "en": "Contracts",
+              "vi": "Hợp đồng"
+            }
+          },
           "employees": {
             "line": {
-              "en": "The people list. Open a person, or their contract, from their row. The Contracts button opens every contract.",
-              "vi": "Danh sách nhân sự. Mở một người, hoặc hợp đồng của họ, ngay từ dòng của họ. Nút Hợp đồng mở toàn bộ hợp đồng."
+              "en": "The people list. Open a person, or their contract, from their row.",
+              "vi": "Danh sách nhân sự. Mở một người, hoặc hợp đồng của họ, ngay từ dòng của họ."
             },
             "name": {
               "en": "Employees",
               "vi": "Nhân viên"
             }
           },
-          "goals": {
+          "exits": {
             "line": {
-              "en": "What each person plans to do this year, and how it is going.",
-              "vi": "Điều mỗi người dự định làm trong năm nay, và tiến độ tới đâu."
+              "en": "From resignation to final pay: notice, approval, handover.",
+              "vi": "Từ đơn nghỉ việc tới khoản chi cuối: báo trước, phê duyệt, bàn giao."
             },
             "name": {
-              "en": "Goals",
-              "vi": "Mục tiêu"
+              "en": "Exits",
+              "vi": "Nghỉ việc"
+            }
+          },
+          "newjoiners": {
+            "line": {
+              "en": "New joiners: everyone starting soon, their buddy, their first days and what is still to prepare.",
+              "vi": "Nhân viên mới: những người sắp bắt đầu, người hướng dẫn, những ngày đầu và việc còn phải chuẩn bị."
+            },
+            "name": {
+              "en": "Joiners",
+              "vi": "Người mới"
             }
           },
           "pay": {
@@ -23207,14 +23226,14 @@
               "vi": "Kế hoạch"
             }
           },
-          "praise": {
+          "probation": {
             "line": {
-              "en": "Company values and the praise people give each other.",
-              "vi": "Giá trị của công ty và những lời khen mọi người dành cho nhau."
+              "en": "Trial periods: when each one ends and who has to decide.",
+              "vi": "Thời gian thử việc: khi nào kết thúc và ai phải quyết định."
             },
             "name": {
-              "en": "Praise",
-              "vi": "Khen ngợi"
+              "en": "Probation",
+              "vi": "Thử việc"
             }
           },
           "records": {
@@ -23282,128 +23301,88 @@
       ]
     },
     {
-      "action_tags": "pb_lifecycle_hub",
+      "action_tags": "pb_hiring_hub",
       "blurb": {
-        "en": "The moments in a person's time with the company: hiring, joining, probation, contracts and leaving.",
-        "vi": "Những mốc trong quãng thời gian một người làm việc ở công ty: tuyển dụng, nhận việc, thử việc, hợp đồng và nghỉ việc."
+        "en": "Hiring: every open role, its candidates and their interviews, from the first request to the day someone joins.",
+        "vi": "Tuyển dụng: mọi vị trí đang mở, ứng viên và các buổi phỏng vấn, từ đề xuất đầu tiên tới ngày một người vào làm."
       },
       "hub": {
         "lens_key": "pb_lens",
         "often": [
           {
-            "lens": "hiring",
+            "lens": "overview",
             "text": {
               "en": "Open a role for a new hire",
               "vi": "Mở một vị trí để tuyển người mới"
             }
           },
           {
-            "lens": "newjoiners",
+            "lens": "interviews",
             "text": {
-              "en": "Prepare for someone starting soon",
-              "vi": "Chuẩn bị cho người sắp vào làm"
-            }
-          },
-          {
-            "lens": "exits",
-            "text": {
-              "en": "Handle someone who is leaving",
-              "vi": "Xử lý người sắp nghỉ việc"
+              "en": "See who is interviewing this week",
+              "vi": "Xem tuần này ai đang phỏng vấn"
             }
           }
         ],
         "tabs": {
-          "contracts": {
+          "bank": {
             "line": {
-              "en": "Contracts that end soon, decided in good time: renew, change or let them end.",
-              "vi": "Các hợp đồng sắp hết hạn, được quyết định sớm: gia hạn, thay đổi hoặc để kết thúc."
+              "en": "People who applied before, kept for the next role. Only the hiring team sees it.",
+              "vi": "Những người từng ứng tuyển, được giữ cho vị trí tiếp theo. Chỉ nhóm tuyển dụng thấy."
             },
             "name": {
-              "en": "Contracts",
-              "vi": "Hợp đồng"
+              "en": "Talent pool",
+              "vi": "Kho ứng viên"
             }
           },
-          "exits": {
+          "interviews": {
             "line": {
-              "en": "From resignation to final pay: notice, approval, handover.",
-              "vi": "Từ đơn nghỉ việc tới khoản chi cuối: báo trước, phê duyệt, bàn giao."
+              "en": "Every interview that is arranged, and the opinions still to come in.",
+              "vi": "Mọi buổi phỏng vấn đã được sắp xếp, và các ý kiến còn chưa gửi về."
             },
             "name": {
-              "en": "Exits",
-              "vi": "Nghỉ việc"
+              "en": "Interviews",
+              "vi": "Phỏng vấn"
             }
           },
-          "hiring": {
+          "overview": {
             "line": {
               "en": "Open a role, ask its manager for the request, and move candidates from applied to joined.",
               "vi": "Mở một vị trí, nhờ quản lý gửi đề xuất, và chuyển ứng viên từ nộp hồ sơ tới vào làm."
             },
             "name": {
-              "en": "Hiring",
-              "vi": "Tuyển dụng"
-            }
-          },
-          "journeys": {
-            "line": {
-              "en": "The step-by-step checklists that run when someone joins, moves or leaves.",
-              "vi": "Các danh sách việc từng bước chạy khi có người vào, chuyển vị trí hoặc nghỉ việc."
-            },
-            "name": {
-              "en": "Journeys",
-              "vi": "Hành trình"
-            }
-          },
-          "newjoiners": {
-            "line": {
-              "en": "Everyone starting soon: their buddy, their first days and what is still to prepare.",
-              "vi": "Những người sắp bắt đầu: người hướng dẫn, những ngày đầu và việc còn phải chuẩn bị."
-            },
-            "name": {
-              "en": "New joiners",
-              "vi": "Nhân viên mới"
-            }
-          },
-          "pip": {
-            "line": {
-              "en": "Coaching first, then a written plan with dates on it.",
-              "vi": "Kèm cặp trước, rồi một kế hoạch bằng văn bản có mốc thời gian."
-            },
-            "name": {
-              "en": "Growth plans",
-              "vi": "Kế hoạch phát triển"
-            }
-          },
-          "probation": {
-            "line": {
-              "en": "Trial periods: when each one ends and who has to decide.",
-              "vi": "Thời gian thử việc: khi nào kết thúc và ai phải quyết định."
-            },
-            "name": {
-              "en": "Probation",
-              "vi": "Thử việc"
+              "en": "Overview",
+              "vi": "Tổng quan"
             }
           }
         },
-        "tag": "pb_lifecycle_hub",
-        "xmlid": "pb_lifecycle.action_pb_lifecycle_hub"
+        "tag": "pb_hiring_hub",
+        "xmlid": "pb_hiring.action_pb_hiring_hub"
       },
-      "key": "hub_lifecycle",
+      "key": "hub_hiring",
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Lifecycle",
-        "vi": "Vòng đời nhân sự"
+        "en": "Hiring",
+        "vi": "Tuyển dụng"
       },
       "navs": [],
       "next_step": {
-        "en": "Open the tab for the moment you are handling. Each one lists what is due soonest first.",
-        "vi": "Hãy mở tab ứng với mốc bạn đang xử lý. Mỗi tab liệt kê việc đến hạn sớm nhất lên trước."
+        "en": "Start on Overview. Each role's card says the one thing that moves it on.",
+        "vi": "Hãy bắt đầu ở Tổng quan. Thẻ của mỗi vị trí nói một việc giúp vị trí đó đi tiếp."
       },
       "open": "",
       "places": [],
       "sequence": 580,
       "sidebar_key": "",
       "suggest": [
+        {
+          "key": "raisehire",
+          "label": {
+            "en": "How do I start hiring for a new role?",
+            "vi": "Làm sao để bắt đầu tuyển một vị trí mới?"
+          }
+        },
         {
           "key": "whatpage",
           "label": {
@@ -23541,16 +23520,6 @@
               "en": "Today",
               "vi": "Hôm nay"
             }
-          },
-          "trips": {
-            "line": {
-              "en": "Business trip requests and their approval.",
-              "vi": "Các đề nghị đi công tác và việc phê duyệt chúng."
-            },
-            "name": {
-              "en": "Trips",
-              "vi": "Công tác"
-            }
           }
         },
         "tag": "pb_workforce",
@@ -23571,6 +23540,88 @@
       "open": "",
       "places": [],
       "sequence": 590,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_expenses_hub",
+      "blurb": {
+        "en": "Money people spend for work: business trips before they go, and the claims they send in after.",
+        "vi": "Khoản tiền mọi người chi cho công việc: chuyến công tác trước khi đi, và đề nghị hoàn chi phí gửi sau đó."
+      },
+      "hub": {
+        "lens_key": "pb_lens",
+        "often": [
+          {
+            "lens": "trips",
+            "text": {
+              "en": "Decide on a trip request",
+              "vi": "Quyết định một đề nghị đi công tác"
+            }
+          },
+          {
+            "lens": "claims",
+            "text": {
+              "en": "Check the expense claims",
+              "vi": "Kiểm tra các đề nghị hoàn chi phí"
+            }
+          }
+        ],
+        "tabs": {
+          "claims": {
+            "line": {
+              "en": "Expense claims people send in, and the decision each one is waiting for.",
+              "vi": "Các đề nghị hoàn chi phí mọi người gửi, và quyết định mỗi đề nghị đang chờ."
+            },
+            "name": {
+              "en": "Claims",
+              "vi": "Hoàn chi phí"
+            }
+          },
+          "trips": {
+            "line": {
+              "en": "Business trip requests and their approval.",
+              "vi": "Các đề nghị đi công tác và việc phê duyệt chúng."
+            },
+            "name": {
+              "en": "Trips",
+              "vi": "Công tác"
+            }
+          }
+        },
+        "tag": "pb_expenses_hub",
+        "xmlid": "pb_expenses_hub.action_pb_expenses_hub"
+      },
+      "key": "hub_expenses",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Expenses",
+        "vi": "Chi phí"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Clear what is waiting for a decision. A trip is agreed before it starts; a claim after the money is spent.",
+        "vi": "Hãy xử lý những gì đang chờ quyết định. Chuyến công tác được duyệt trước khi bắt đầu; đề nghị hoàn chi phí sau khi đã chi tiền."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23667,8 +23718,8 @@
               "vi": "Báo cáo lương của một tháng, sẵn sàng để tải xuống."
             },
             "name": {
-              "en": "Payroll Report",
-              "vi": "Báo cáo lương"
+              "en": "Payroll",
+              "vi": "Lương"
             }
           },
           "pulse": {
@@ -23719,7 +23770,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 610,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23795,12 +23846,12 @@
           },
           "young": {
             "line": {
-              "en": "The hour limits for workers under 18, and anyone close to breaking them.",
-              "vi": "Giới hạn giờ làm của lao động dưới 18 tuổi, và những ai sắp vượt giới hạn."
+              "en": "Young workers and safeguards: the hour limits for workers under 18, and anyone close to breaking them.",
+              "vi": "Lao động chưa thành niên và bảo vệ: giới hạn giờ làm của lao động dưới 18 tuổi, và những ai sắp vượt giới hạn."
             },
             "name": {
-              "en": "Young workers",
-              "vi": "Lao động chưa thành niên"
+              "en": "Safeguards",
+              "vi": "Bảo vệ"
             }
           }
         },
@@ -23821,7 +23872,109 @@
       },
       "open": "",
       "places": [],
-      "sequence": 610,
+      "sequence": 620,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_talent_hub",
+      "blurb": {
+        "en": "Growing your people: their goals, growth plans, training and the praise they give each other.",
+        "vi": "Phát triển con người: mục tiêu, kế hoạch phát triển, đào tạo và những lời khen họ dành cho nhau."
+      },
+      "hub": {
+        "lens_key": "pb_lens",
+        "often": [
+          {
+            "lens": "goals",
+            "text": {
+              "en": "See how this year's goals are going",
+              "vi": "Xem tiến độ mục tiêu năm nay"
+            }
+          },
+          {
+            "lens": "pip",
+            "text": {
+              "en": "Help someone who is struggling",
+              "vi": "Hỗ trợ một người đang gặp khó khăn"
+            }
+          }
+        ],
+        "tabs": {
+          "goals": {
+            "line": {
+              "en": "What each person plans to do this year, and how it is going.",
+              "vi": "Điều mỗi người dự định làm trong năm nay, và tiến độ tới đâu."
+            },
+            "name": {
+              "en": "Goals",
+              "vi": "Mục tiêu"
+            }
+          },
+          "pip": {
+            "line": {
+              "en": "Growth plans: coaching first, then a written plan with dates on it.",
+              "vi": "Kế hoạch phát triển: kèm cặp trước, rồi một kế hoạch bằng văn bản có mốc thời gian."
+            },
+            "name": {
+              "en": "Growth",
+              "vi": "Phát triển"
+            }
+          },
+          "praise": {
+            "line": {
+              "en": "Company values and the praise people give each other.",
+              "vi": "Giá trị của công ty và những lời khen mọi người dành cho nhau."
+            },
+            "name": {
+              "en": "Praise",
+              "vi": "Khen ngợi"
+            }
+          },
+          "training": {
+            "line": {
+              "en": "Courses your company gives its people, with their tests.",
+              "vi": "Các khoá học công ty giao cho mọi người, kèm bài kiểm tra."
+            },
+            "name": {
+              "en": "Training",
+              "vi": "Đào tạo"
+            }
+          }
+        },
+        "tag": "pb_talent_hub",
+        "xmlid": "pb_talent_hub.action_pb_talent_hub"
+      },
+      "key": "hub_talent",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Talent",
+        "vi": "Nhân tài"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Open the tab for what you came to do. A growth plan starts with a conversation, not a form.",
+        "vi": "Hãy mở tab cho việc bạn cần làm. Một kế hoạch phát triển bắt đầu bằng một cuộc trao đổi, không phải một biểu mẫu."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 630,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23877,12 +24030,12 @@
           },
           "settings": {
             "line": {
-              "en": "Every learning switch for your company, on one card.",
+              "en": "Learn settings: every learning switch for your company, on one card.",
               "vi": "Mọi công tắc về học tập của công ty, trên một thẻ."
             },
             "name": {
-              "en": "Settings",
-              "vi": "Cài đặt"
+              "en": "Setup",
+              "vi": "Thiết lập"
             }
           },
           "team": {
@@ -23893,16 +24046,6 @@
             "name": {
               "en": "Team",
               "vi": "Nhóm"
-            }
-          },
-          "training": {
-            "line": {
-              "en": "Courses your company has given you, with their tests.",
-              "vi": "Các khoá học công ty giao cho bạn, kèm bài kiểm tra."
-            },
-            "name": {
-              "en": "Training",
-              "vi": "Đào tạo"
             }
           }
         },
@@ -23923,7 +24066,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 620,
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23993,12 +24136,12 @@
           },
           "access": {
             "line": {
-              "en": "Who can open which screens, and who can stand in for whom.",
-              "vi": "Ai được mở màn hình nào, và ai được làm thay ai."
+              "en": "Access & delegation, Navigation and Vendors: who can open what.",
+              "vi": "Quyền truy cập & bàn giao, Điều hướng và Nhà cung cấp: ai được mở những gì."
             },
             "name": {
-              "en": "Access & delegation",
-              "vi": "Quyền truy cập & bàn giao"
+              "en": "Access",
+              "vi": "Truy cập"
             }
           },
           "announcements": {
@@ -24023,12 +24166,12 @@
           },
           "company": {
             "line": {
-              "en": "Your own name, address, tax numbers and logo.",
-              "vi": "Tên, địa chỉ, mã số thuế và logo của công ty bạn."
+              "en": "Your company, Companies & Tenants, and Group.",
+              "vi": "Công ty của bạn, Công ty & Đơn vị thuê bao, và Tập đoàn."
             },
             "name": {
-              "en": "Your company",
-              "vi": "Công ty của bạn"
+              "en": "Company",
+              "vi": "Công ty"
             }
           },
           "demo_data": {
@@ -24081,6 +24224,16 @@
               "vi": "Tuyển dụng"
             }
           },
+          "hr": {
+            "line": {
+              "en": "Hiring set-up, Announcements, and Journeys for joining, moving and leaving.",
+              "vi": "Thiết lập tuyển dụng, Thông báo, và Hành trình khi vào làm, chuyển vị trí và nghỉ việc."
+            },
+            "name": {
+              "en": "HR",
+              "vi": "Nhân sự"
+            }
+          },
           "integrations": {
             "line": {
               "en": "Connected systems, how their fields map, and what they have sent.",
@@ -24088,7 +24241,7 @@
             },
             "name": {
               "en": "Integrations",
-              "vi": "Tích hợp"
+              "vi": "Kết nối"
             }
           },
           "nav": {
@@ -24113,12 +24266,12 @@
           },
           "payroll": {
             "line": {
-              "en": "The payroll settings screen.",
-              "vi": "Màn hình cài đặt bảng lương."
+              "en": "Formula Engine, Salary Structures, Statutory and Payroll defaults: how pay is calculated.",
+              "vi": "Bộ máy công thức, Cấu trúc lương, Bảo hiểm & Thuế và Mặc định tính lương: cách tính lương."
             },
             "name": {
-              "en": "Payroll defaults",
-              "vi": "Mặc định tính lương"
+              "en": "Payroll",
+              "vi": "Lương"
             }
           },
           "statutory": {
@@ -24141,6 +24294,16 @@
               "vi": "Cấu trúc lương"
             }
           },
+          "system": {
+            "line": {
+              "en": "Guided setup, About Payobook, demo data and what PayAI may do.",
+              "vi": "Thiết lập có hướng dẫn, Về Payobook, dữ liệu mẫu và những gì PayAI được làm."
+            },
+            "name": {
+              "en": "System",
+              "vi": "Hệ thống"
+            }
+          },
           "vendors": {
             "line": {
               "en": "Outside firms and what they are allowed to see.",
@@ -24149,6 +24312,16 @@
             "name": {
               "en": "Vendors",
               "vi": "Nhà cung cấp"
+            }
+          },
+          "workflows": {
+            "line": {
+              "en": "Approvals: who signs off what, in which order.",
+              "vi": "Phê duyệt: ai phê duyệt việc gì, theo thứ tự nào."
+            },
+            "name": {
+              "en": "Workflows",
+              "vi": "Phê duyệt"
             }
           }
         },
@@ -24164,12 +24337,12 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Pick the area on the left. Most changes here affect the next pay run, so check them before month-end rather than during it.",
-        "vi": "Hãy chọn một mục ở bên trái. Phần lớn thay đổi ở đây ảnh hưởng tới đợt lương kế tiếp, nên hãy kiểm tra trước kỳ cuối tháng chứ đừng làm giữa chừng."
+        "en": "Pick one of the seven groups on the left. Most changes here affect the next pay run, so check them before month-end rather than during it.",
+        "vi": "Hãy chọn một trong bảy nhóm ở bên trái. Phần lớn thay đổi ở đây ảnh hưởng tới đợt lương kế tiếp, nên hãy kiểm tra trước kỳ cuối tháng chứ đừng làm giữa chừng."
       },
       "open": "",
       "places": [],
-      "sequence": 630,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24328,7 +24501,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24721,8 +24894,8 @@
         {
           "duration_min": 5,
           "goal": {
-            "en": "Know how a bank change is checked twice, what Young workers guards, and where to see who changed what.",
-            "vi": "Biết một thay đổi ngân hàng được kiểm tra hai lần thế nào, Lao động chưa thành niên bảo vệ điều gì, và xem ai đã sửa gì ở đâu."
+            "en": "Know how a bank change is checked twice, what Safeguards protects, and where to see who changed what.",
+            "vi": "Biết một thay đổi ngân hàng được kiểm tra hai lần thế nào, tab Bảo vệ giữ an toàn cho ai, và xem ai đã sửa gì ở đâu."
           },
           "key": "L27",
           "name": {
@@ -24849,8 +25022,8 @@
               "body": "",
               "consequence": "",
               "kicker": {
-                "en": "Young workers",
-                "vi": "Lao động chưa thành niên"
+                "en": "Safeguards",
+                "vi": "Bảo vệ"
               },
               "lines": [],
               "look": {
@@ -24959,12 +25132,12 @@
           }
         ],
         "prereq": {
-          "en": "Everyone can start a bank change. Young workers needs payroll or attendance access; Audit is for payroll managers.",
-          "vi": "Ai cũng bắt đầu được một thay đổi ngân hàng. Lao động chưa thành niên cần quyền lương hoặc chấm công; Nhật ký kiểm toán dành cho quản lý lương."
+          "en": "Everyone can start a bank change. Safeguards needs payroll or attendance access; Audit is for payroll managers.",
+          "vi": "Ai cũng bắt đầu được một thay đổi ngân hàng. Bảo vệ cần quyền lương hoặc chấm công; Nhật ký kiểm toán dành cho quản lý lương."
         },
         "what": {
-          "en": "Compliance › Bank, Young workers and Audit. Bank takes a bank letter and walks it Draft → HR Review → Finance Review → Approved.",
-          "vi": "Tuân thủ › Ngân hàng, Lao động chưa thành niên và Nhật ký kiểm toán. Ngân hàng nhận một thư của ngân hàng và đưa nó qua Nháp → Nhân sự xét duyệt → Tài chính xét duyệt → Đã duyệt."
+          "en": "Compliance › Bank, Safeguards and Audit. Bank takes a bank letter and walks it Draft → HR Review → Finance Review → Approved.",
+          "vi": "Tuân thủ › Ngân hàng, Bảo vệ và Nhật ký kiểm toán. Ngân hàng nhận một thư của ngân hàng và đưa nó qua Nháp → Nhân sự xét duyệt → Tài chính xét duyệt → Đã duyệt."
         },
         "when": {
           "en": "When someone changes bank, when you hire anyone under 18, and when somebody asks who changed a salary.",
@@ -26224,8 +26397,8 @@
           "vi": "Quyền vào đợt lương để xem báo cáo; vai trò ngân sách để xem Ngân sách."
         },
         "what": {
-          "en": "Insights › Payroll Report: one run's totals, earnings, deductions and department summary, with changes against the run before. Insights › Budget: each function's spending against its budget, for the year or any stretch of months.",
-          "vi": "Phân tích › Báo cáo lương: tổng, thu nhập, khấu trừ và tổng theo phòng ban của một đợt, kèm thay đổi so với đợt trước. Phân tích › Ngân sách: chi tiêu của từng bộ phận so với ngân sách, cho cả năm hoặc bất kỳ khoảng tháng nào."
+          "en": "Insights › Payroll: one run's totals, earnings, deductions and department summary, with changes against the run before. Insights › Budget: each function's spending against its budget, for the year or any stretch of months.",
+          "vi": "Phân tích › Lương: tổng, thu nhập, khấu trừ và tổng theo phòng ban của một đợt, kèm thay đổi so với đợt trước. Phân tích › Ngân sách: chi tiêu của từng bộ phận so với ngân sách, cho cả năm hoặc bất kỳ khoảng tháng nào."
         },
         "when": {
           "en": "The report before approving a run. Budget at each month end.",
@@ -26669,8 +26842,8 @@
           "vi": "Quyền tuyển dụng. Tab chỉ hiện với những người mà chính màn hình tuyển dụng cho phép."
         },
         "what": {
-          "en": "Lifecycle › Hiring. Quiet numbers on top, a four-step strip, and a card per role with its request chip and what is next.",
-          "vi": "Vòng đời nhân sự › Tuyển dụng. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo."
+          "en": "Hiring › Overview. Quiet numbers on top, a four-step strip, and a card per role with its request chip and what is next.",
+          "vi": "Tuyển dụng › Tổng quan. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo."
         },
         "when": {
           "en": "As soon as a team needs someone new, or someone is leaving and must be replaced.",
@@ -27092,8 +27265,8 @@
             },
             {
               "affects": {
-                "en": "It makes their employee record, a contract and their sign-in, and starts the welcome checklist under New joiners.",
-                "vi": "Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh sách chào đón ở Nhân viên mới."
+                "en": "It makes their employee record, a contract and their sign-in, and starts the welcome checklist under People › Joiners.",
+                "vi": "Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh sách chào đón ở Con người › Người mới."
               },
               "anchor": "rep-hb-confirm",
               "body": "",
@@ -27150,8 +27323,8 @@
           "vi": "Chỉ chuyên viên tuyển dụng và trưởng nhóm tuyển dụng mới chuyển ứng viên. Quản lý trực tiếp xem vị trí của mình và để lại ghi chú."
         },
         "what": {
-          "en": "Lifecycle › Hiring, then a role's card. A column per stage, a card per person, a Closed list, and a panel for one candidate.",
-          "vi": "Vòng đời nhân sự › Tuyển dụng, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Đã đóng, và một ngăn cho từng ứng viên."
+          "en": "Hiring › Overview, then a role's card. A column per stage, a card per person, a Closed list, and a panel for one candidate.",
+          "vi": "Tuyển dụng › Tổng quan, rồi thẻ của một vị trí. Mỗi giai đoạn một cột, mỗi người một thẻ, một danh sách Đã đóng, và một ngăn cho từng ứng viên."
         },
         "when": {
           "en": "Every day a role is open, and again on the day the new person starts.",
@@ -27479,12 +27652,12 @@
           }
         ],
         "prereq": {
-          "en": "Lifecycle access. The person must be in Payobook with a start date.",
-          "vi": "Quyền Vòng đời nhân sự. Người đó phải có trong Payobook với ngày bắt đầu."
+          "en": "Access to the Joiners tab on People. The person must be in Payobook with a start date.",
+          "vi": "Quyền mở tab Người mới trong Con người. Người đó phải có trong Payobook với ngày bắt đầu."
         },
         "what": {
-          "en": "Lifecycle › New joiners. A card per person, three steps — Getting ready, Settling in, Checklist done — and a drawer of what is left.",
-          "vi": "Vòng đời nhân sự › Nhân viên mới. Mỗi người một thẻ, ba bước — Đang chuẩn bị, Đang hòa nhập, Đã xong danh mục — và một ngăn liệt kê việc còn lại."
+          "en": "People › Joiners. A card per person, three steps — Getting ready, Settling in, Checklist done — and a drawer of what is left.",
+          "vi": "Con người › Người mới. Mỗi người một thẻ, ba bước — Đang chuẩn bị, Đang hòa nhập, Đã xong danh mục — và một ngăn liệt kê việc còn lại."
         },
         "when": {
           "en": "From the day an offer is accepted until the checklist is done.",
@@ -27775,12 +27948,12 @@
           }
         ],
         "prereq": {
-          "en": "Lifecycle access. The manager decides first, then HR and leadership review.",
-          "vi": "Quyền Vòng đời nhân sự. Quản lý quyết định trước, rồi nhân sự và lãnh đạo xem xét."
+          "en": "Access to the Probation tab on People. The manager decides first, then HR and leadership review.",
+          "vi": "Quyền mở tab Thử việc trong Con người. Quản lý quyết định trước, rồi nhân sự và lãnh đạo xem xét."
         },
         "what": {
-          "en": "Lifecycle › Probation. Five steps from Choose peers to Share the outcome, and a card per person with their trial's end date.",
-          "vi": "Vòng đời nhân sự › Thử việc. Năm bước từ Chọn đồng nghiệp tới Thông báo kết quả, và mỗi người một thẻ với ngày kết thúc thử việc."
+          "en": "People › Probation. Five steps from Choose peers to Share the outcome, and a card per person with their trial's end date.",
+          "vi": "Con người › Thử việc. Năm bước từ Chọn đồng nghiệp tới Thông báo kết quả, và mỗi người một thẻ với ngày kết thúc thử việc."
         },
         "when": {
           "en": "Two weeks before a trial ends, and whenever colleagues' answers are overdue.",
@@ -28064,8 +28237,8 @@
           "vi": "Vai trò kế hoạch phát triển. Tab chỉ dành cho số ít người có vai trò đó."
         },
         "what": {
-          "en": "Lifecycle › Growth plans. Four steps — Asked, Coaching, Plan running, Decision — and each plan's objectives marked on track or at risk.",
-          "vi": "Vòng đời nhân sự › Kế hoạch phát triển. Bốn bước — Đã yêu cầu, Kèm cặp, Kế hoạch đang chạy, Quyết định — và mục tiêu của mỗi kế hoạch được đánh dấu đúng hướng hay có rủi ro."
+          "en": "Talent › Growth. Four steps — Asked, Coaching, Plan running, Decision — and each plan's objectives marked on track or at risk.",
+          "vi": "Nhân tài › Phát triển. Bốn bước — Đã yêu cầu, Kèm cặp, Kế hoạch đang chạy, Quyết định — và mục tiêu của mỗi kế hoạch được đánh dấu đúng hướng hay có rủi ro."
         },
         "when": {
           "en": "When a manager asks HR about someone in their team.",
@@ -28338,12 +28511,12 @@
           }
         ],
         "prereq": {
-          "en": "Lifecycle access. Raising the decision needs a contract with an end date.",
-          "vi": "Quyền Vòng đời nhân sự. Muốn nêu quyết định thì hợp đồng phải có ngày kết thúc."
+          "en": "Access to the Contracts tab on People. Raising the decision needs a contract with an end date.",
+          "vi": "Quyền mở tab Hợp đồng trong Con người. Muốn nêu quyết định thì hợp đồng phải có ngày kết thúc."
         },
         "what": {
-          "en": "Lifecycle › Contracts. Four steps — Running, Decision needed, Being agreed, Decided — and a card per contract ending soon.",
-          "vi": "Vòng đời nhân sự › Hợp đồng. Bốn bước — Đang hiệu lực, Cần quyết định, Đang chờ đồng ý, Đã quyết định — và mỗi hợp đồng sắp hết hạn một thẻ."
+          "en": "People › Contracts. Four steps — Running, Decision needed, Being agreed, Decided — and a card per contract ending soon.",
+          "vi": "Con người › Hợp đồng. Bốn bước — Đang hiệu lực, Cần quyết định, Đang chờ đồng ý, Đã quyết định — và mỗi hợp đồng sắp hết hạn một thẻ."
         },
         "when": {
           "en": "Sixty days before a contract ends, when the board starts counting it.",
@@ -28419,8 +28592,8 @@
                 {
                   "correct": false,
                   "feedback": {
-                    "en": "Let's rethink that. A leaver is settled once, from Pay Run › Settle. Paying her in the monthly run as well pays her twice.",
-                    "vi": "Hãy nghĩ lại một chút. Người nghỉ được quyết toán một lần, từ Đợt lương › Quyết toán. Trả thêm trong đợt lương tháng là trả hai lần."
+                    "en": "Let's rethink that. A leaver is settled once, from Payroll › Settle. Paying her in the monthly run as well pays her twice.",
+                    "vi": "Hãy nghĩ lại một chút. Người nghỉ được quyết toán một lần, từ Lương › Quyết toán. Trả thêm trong đợt lương tháng là trả hai lần."
                   },
                   "label": {
                     "en": "Pay her in the monthly run instead",
@@ -28642,8 +28815,8 @@
               },
               "screen": "exits",
               "tip": {
-                "en": "Years after he was hired, this is where Hoàng Văn Nam's road ends on the map — the last stop of the Lifecycle line.",
-                "vi": "Nhiều năm sau khi được tuyển, đây là nơi hành trình của Hoàng Văn Nam kết thúc trên bản đồ — chặng cuối của tuyến Vòng đời nhân sự."
+                "en": "Years after he was hired, this is where Hoàng Văn Nam's road ends on the map — the last stop of the Joining and leaving line.",
+                "vi": "Nhiều năm sau khi được tuyển, đây là nơi hành trình của Hoàng Văn Nam kết thúc trên bản đồ — chặng cuối của tuyến Gia nhập và nghỉ việc."
               },
               "title": {
                 "en": "Handover, and a farewell note",
@@ -28671,12 +28844,12 @@
           }
         ],
         "prereq": {
-          "en": "Lifecycle access. The settlement itself is paid from Pay Run › Settle.",
-          "vi": "Quyền Vòng đời nhân sự. Bản thân khoản quyết toán được chi từ Đợt lương › Quyết toán."
+          "en": "Access to the Exits tab on People. The settlement itself is paid from Payroll › Settle.",
+          "vi": "Quyền mở tab Nghỉ việc trong Con người. Bản thân khoản quyết toán được chi từ Lương › Quyết toán."
         },
         "what": {
-          "en": "Lifecycle › Exits. Four steps — Working their notice, Signing off, Ready to settle, Settled — and IT, HR, Finance and Admin signing off each leaver.",
-          "vi": "Vòng đời nhân sự › Nghỉ việc. Bốn bước — Đang trong thời gian báo trước, Đang xác nhận bàn giao, Sẵn sàng quyết toán, Đã quyết toán — và IT, Nhân sự, Tài chính, Quản trị viên xác nhận cho mỗi người nghỉ."
+          "en": "People › Exits. Four steps — Working their notice, Signing off, Ready to settle, Settled — and IT, HR, Finance and Admin signing off each leaver.",
+          "vi": "Con người › Nghỉ việc. Bốn bước — Đang trong thời gian báo trước, Đang xác nhận bàn giao, Sẵn sàng quyết toán, Đã quyết toán — và IT, Nhân sự, Tài chính, Quản trị viên xác nhận cho mỗi người nghỉ."
         },
         "when": {
           "en": "From the day a resignation is accepted to the day the settlement is closed.",
@@ -29204,8 +29377,8 @@
               "moment_which": "",
               "screen": "dashboard",
               "tip": {
-                "en": "Work only in hiring? You start on Lifecycle › Hiring. Only an employee? You start on My Payobook.",
-                "vi": "Chỉ làm tuyển dụng? Bạn bắt đầu ở Vòng đời nhân sự › Tuyển dụng. Chỉ là nhân viên? Bạn bắt đầu ở Sổ Payobook của tôi."
+                "en": "Work only in hiring? You start on Hiring › Overview. Only an employee? You start on My Payobook.",
+                "vi": "Chỉ làm tuyển dụng? Bạn bắt đầu ở Tuyển dụng › Tổng quan. Chỉ là nhân viên? Bạn bắt đầu ở Sổ Payobook của tôi."
               },
               "title": {
                 "en": "Where payroll is, in one sentence",
@@ -29253,8 +29426,8 @@
             },
             {
               "affects": {
-                "en": "It opens Pay Run on that run, with a Home chip to come back.",
-                "vi": "Nó mở Đợt lương ngay tại đợt đó, kèm một nhãn Trang chủ để quay lại."
+                "en": "It opens Payroll on that run, with a Home chip to come back.",
+                "vi": "Nó mở trang Lương ngay tại đợt đó, kèm một nhãn Trang chủ để quay lại."
               },
               "anchor": "dash-runpayroll",
               "body": "",
@@ -29424,8 +29597,8 @@
                 "vi": "Trình đơn dọc bên trái, và các tab trên mỗi trang."
               },
               "means": {
-                "en": "Home, Pay Run, People, Lifecycle, Workforce, Insights, Compliance, Learn and Settings.",
-                "vi": "Trang chủ, Đợt lương, Con người, Vòng đời nhân sự, Lực lượng lao động, Phân tích, Tuân thủ, Học cùng Payobook và Cài đặt."
+                "en": "Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learn and Settings.",
+                "vi": "Trang chủ, Lương, Con người, Tuyển dụng, Lực lượng lao động, Chi phí, Phân tích, Tuân thủ, Nhân tài, Học cùng Payobook và Cài đặt."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -29434,8 +29607,8 @@
               "screen": "dashboard",
               "tip": "",
               "title": {
-                "en": "Nine pages on the menu, each with tabs",
-                "vi": "Chín trang trên menu, trang nào cũng có tab"
+                "en": "Eleven pages on the menu, each with tabs",
+                "vi": "Mười một trang trên menu, trang nào cũng có tab"
               },
               "visual": "none"
             },
@@ -29524,8 +29697,8 @@
             "vi": "Đọc bốn con số như thể đó là của tháng này. Chúng thuộc về tháng đang chọn trên biểu đồ — thường là tháng hoàn tất gần nhất. Tiến độ của tháng này nằm ở thẻ \"đến nay\" bên cạnh dòng tiêu đề."
           },
           {
-            "en": "Looking for your approvals in the chart. What waits on YOU is in the headline and on the Needs you line; the full list is Home › Approvals, My turn.",
-            "vi": "Tìm việc phê duyệt của mình trong biểu đồ. Việc đang chờ BẠN nằm ở dòng tiêu đề và dòng Cần bạn; danh sách đầy đủ ở Trang chủ › Phê duyệt, tab Đến lượt tôi."
+            "en": "Looking for your approvals in the chart. What waits on YOU is in the headline and on the Needs you line; the full list is Home › Inbox, My turn.",
+            "vi": "Tìm việc phê duyệt của mình trong biểu đồ. Việc đang chờ BẠN nằm ở dòng tiêu đề và dòng Cần bạn; danh sách đầy đủ ở Trang chủ › Hộp thư, tab Đến lượt tôi."
           },
           {
             "en": "Taking a quiet card for a checked one. A card is quiet when nothing needs a person; it does not mean somebody has checked every figure on it.",
@@ -29533,8 +29706,8 @@
           }
         ],
         "prereq": {
-          "en": "Payroll access. People without it get a Home with no Pulse tab; it opens on Approvals.",
-          "vi": "Quyền tính lương. Người không có quyền này có Trang chủ không có tab Tổng quan; trang mở ở Phê duyệt."
+          "en": "Payroll access. People without it get a Home with no Pulse tab; it opens on Inbox.",
+          "vi": "Quyền tính lương. Người không có quyền này có Trang chủ không có tab Tổng quan; trang mở ở Hộp thư."
         },
         "what": {
           "en": "The first tab of Home. A headline that says where this month's payroll stands and what needs you, with one button for the next act. Then the Needs you line, and a 12-month chart that is also the month picker, with four figures under it. Beside it, the month's steps and what is coming up. Below, three cards — People this month, the month's pay runs and Hiring — then your next lesson and your pay schemes.",
@@ -29642,8 +29815,8 @@
                 "vi": "Bốn tab: Đến lượt tôi, Tất cả tôi xem được, Đã trả lại và Đã xong."
               },
               "means": {
-                "en": "Home › Approvals holds every request waiting for a decision: pay runs, overtime, leave, hiring.",
-                "vi": "Trang chủ › Phê duyệt chứa mọi yêu cầu đang chờ quyết định: đợt lương, tăng ca, nghỉ phép, tuyển dụng."
+                "en": "Home › Inbox holds every request waiting for a decision: pay runs, overtime, leave, hiring.",
+                "vi": "Trang chủ › Hộp thư chứa mọi yêu cầu đang chờ quyết định: đợt lương, tăng ca, nghỉ phép, tuyển dụng."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -30056,8 +30229,8 @@
       ],
       "line": "overview",
       "name": {
-        "en": "Approvals",
-        "vi": "Phê duyệt"
+        "en": "Inbox",
+        "vi": "Hộp thư"
       },
       "outline": {
         "mistakes": [
@@ -30099,8 +30272,8 @@
       "sidebar_key": "pb_sidebar.item_approvals",
       "star": true,
       "summary": {
-        "en": "Home › Approvals: one inbox for everything waiting for a decision — pay runs included — and the route each one travels.",
-        "vi": "Trang chủ › Phê duyệt: một hộp duy nhất cho mọi thứ đang chờ quyết định — kể cả đợt lương — và lộ trình mỗi yêu cầu đi qua."
+        "en": "Home › Inbox: one inbox for everything waiting for a decision — pay runs included — and the route each one travels.",
+        "vi": "Trang chủ › Hộp thư: một hộp duy nhất cho mọi thứ đang chờ quyết định — kể cả đợt lương — và lộ trình mỗi yêu cầu đi qua."
       }
     },
     {
@@ -30184,8 +30357,8 @@
                 "vi": "Các bước ở trên cùng: Chọn kỳ lương, Dữ liệu lương, Tính lương, Soát ngoại lệ."
               },
               "means": {
-                "en": "Pay Run › Run takes one pay scheme and one month, and computes a draft payslip for everyone it pays.",
-                "vi": "Đợt lương › Chạy lương nhận một chương trình lương và một tháng, rồi tính phiếu lương nháp cho mọi người mà chương trình đó trả."
+                "en": "Payroll › Run takes one pay scheme and one month, and computes a draft payslip for everyone it pays.",
+                "vi": "Lương › Chạy lương nhận một chương trình lương và một tháng, rồi tính phiếu lương nháp cho mọi người mà chương trình đó trả."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -30534,8 +30707,8 @@
                 "vi": "Con đường một đợt lương đi qua: Nháp, Đang chờ phê duyệt, Hoàn tất."
               },
               "means": {
-                "en": "Open Payroll takes you to Pay Run › Runs. Submit for approval sends the run along your company's route.",
-                "vi": "Mở bảng lương đưa bạn tới Đợt lương › Các đợt lương. Gửi để phê duyệt đưa đợt lương đi theo lộ trình của công ty bạn."
+                "en": "Open Payroll takes you to Payroll › Runs. Submit for approval sends the run along your company's route.",
+                "vi": "Mở bảng lương đưa bạn tới Lương › Các đợt lương. Gửi để phê duyệt đưa đợt lương đi theo lộ trình của công ty bạn."
               },
               "moment_chain": "payrun",
               "moment_from": "",
@@ -30573,12 +30746,12 @@
           }
         ],
         "prereq": {
-          "en": "Access to Pay Run, a pay scheme for the people you are paying, and — if the scheme reads one — this month's pay data file.",
-          "vi": "Quyền vào Đợt lương, một chương trình lương cho những người bạn trả lương, và — nếu chương trình đó cần — tệp dữ liệu lương của tháng này."
+          "en": "Access to Payroll, a pay scheme for the people you are paying, and — if the scheme reads one — this month's pay data file.",
+          "vi": "Quyền vào trang Lương, một chương trình lương cho những người bạn trả lương, và — nếu chương trình đó cần — tệp dữ liệu lương của tháng này."
         },
         "what": {
-          "en": "Pay Run › Run. It asks which pay scheme the run is for, then which month. If that scheme reads a spreadsheet, it asks for this month's file. Then it computes a draft payslip for everyone the scheme pays, and lists what needs a look.",
-          "vi": "Đợt lương › Chạy lương. Nó hỏi đợt lương này dành cho chương trình lương nào, rồi tháng nào. Nếu chương trình đó đọc một bảng tính, nó xin tệp của tháng này. Rồi nó tính phiếu lương nháp cho mọi người mà chương trình đó trả lương, và liệt kê những gì cần xem lại."
+          "en": "Payroll › Run. It asks which pay scheme the run is for, then which month. If that scheme reads a spreadsheet, it asks for this month's file. Then it computes a draft payslip for everyone the scheme pays, and lists what needs a look.",
+          "vi": "Lương › Chạy lương. Nó hỏi đợt lương này dành cho chương trình lương nào, rồi tháng nào. Nếu chương trình đó đọc một bảng tính, nó xin tệp của tháng này. Rồi nó tính phiếu lương nháp cho mọi người mà chương trình đó trả lương, và liệt kê những gì cần xem lại."
         },
         "when": {
           "en": "Once the month's attendance and overtime are in. Not before.",
@@ -30611,8 +30784,8 @@
         {
           "duration_min": 8,
           "goal": {
-            "en": "Read Pay Run › Runs the way payroll week needs it read: what state each run is in, who it is waiting for, and what Reject really does.",
-            "vi": "Đọc Đợt lương › Các đợt lương theo đúng cách tuần tính lương cần: mỗi đợt đang ở trạng thái nào, đang chờ ai, và Từ chối thực sự làm gì."
+            "en": "Read Payroll › Runs the way payroll week needs it read: what state each run is in, who it is waiting for, and what Reject really does.",
+            "vi": "Đọc Lương › Các đợt lương theo đúng cách tuần tính lương cần: mỗi đợt đang ở trạng thái nào, đang chờ ai, và Từ chối thực sự làm gì."
           },
           "key": "L2",
           "name": {
@@ -31070,8 +31243,8 @@
           "vi": "Một đợt đã tính xong. Muốn quyết định về một đợt thì bạn phải là người có tên trên lộ trình phê duyệt của nó."
         },
         "what": {
-          "en": "Pay Run › Runs. A board with three columns — Draft, Waiting for approval and Done — and a folded list of rejected runs. A card shows who the run is with, and offers only what its state allows.",
-          "vi": "Đợt lương › Các đợt lương. Một bảng ba cột — Nháp, Chờ phê duyệt và Hoàn tất — cùng một danh sách thu gọn các đợt bị từ chối. Mỗi thẻ cho biết đợt đang ở chỗ ai, và chỉ mở ra những thao tác trạng thái của nó cho phép."
+          "en": "Payroll › Runs. A board with three columns — Draft, Waiting for approval and Done — and a folded list of rejected runs. A card shows who the run is with, and offers only what its state allows.",
+          "vi": "Lương › Các đợt lương. Một bảng ba cột — Nháp, Chờ phê duyệt và Hoàn tất — cùng một danh sách thu gọn các đợt bị từ chối. Mỗi thẻ cho biết đợt đang ở chỗ ai, và chỉ mở ra những thao tác trạng thái của nó cho phép."
         },
         "when": {
           "en": "Every day of payroll week. And any time you need to know how far a month has got.",
@@ -31513,12 +31686,12 @@
           }
         ],
         "prereq": {
-          "en": "A run that has been computed, and access to Pay Run.",
-          "vi": "Một đợt đã tính, và quyền vào Đợt lương."
+          "en": "A run that has been computed, and access to Payroll.",
+          "vi": "Một đợt đã tính, và quyền vào trang Lương."
         },
         "what": {
-          "en": "Pay Run › Payslips. Pick a run; you get its numbers, its payslips by state, and one payslip opened beside the list with its salary breakdown.",
-          "vi": "Đợt lương › Phiếu lương. Chọn một đợt; bạn có các con số của nó, các phiếu lương theo trạng thái, và một phiếu được mở bên cạnh danh sách kèm chi tiết lương."
+          "en": "Payroll › Payslips. Pick a run; you get its numbers, its payslips by state, and one payslip opened beside the list with its salary breakdown.",
+          "vi": "Lương › Phiếu lương. Chọn một đợt; bạn có các con số của nó, các phiếu lương theo trạng thái, và một phiếu được mở bên cạnh danh sách kèm chi tiết lương."
         },
         "when": {
           "en": "After computing and before submitting for approval. And again whenever somebody asks why their pay is what it is.",
@@ -31917,8 +32090,8 @@
       ],
       "line": "payrun",
       "name": {
-        "en": "Import",
-        "vi": "Nhập"
+        "en": "Inputs",
+        "vi": "Đầu vào"
       },
       "outline": {
         "mistakes": [
@@ -31936,12 +32109,12 @@
           }
         ],
         "prereq": {
-          "en": "Access to Pay Run, a file (or a connected system), and a formula configuration to map the columns onto.",
-          "vi": "Quyền vào Đợt lương, một tệp (hoặc một hệ thống đã kết nối), và một cấu hình công thức để ánh xạ các cột vào."
+          "en": "Access to Payroll, a file (or a connected system), and a formula configuration to map the columns onto.",
+          "vi": "Quyền vào trang Lương, một tệp (hoặc một hệ thống đã kết nối), và một cấu hình công thức để ánh xạ các cột vào."
         },
         "what": {
-          "en": "Pay Run › Import. A guided flow in four steps — Source & file, Review & match, Validate, Commit — plus the history of every batch loaded before.",
-          "vi": "Đợt lương › Nhập. Một luồng có hướng dẫn gồm bốn bước — Nguồn & tệp, Soát & khớp, Kiểm tra, Ghi vào hệ thống — cùng lịch sử mọi đợt đã tải trước đó."
+          "en": "Payroll › Inputs. A guided flow in four steps — Source & file, Review & match, Validate, Commit — plus the history of every batch loaded before.",
+          "vi": "Lương › Đầu vào. Một luồng có hướng dẫn gồm bốn bước — Nguồn & tệp, Soát & khớp, Kiểm tra, Ghi vào hệ thống — cùng lịch sử mọi đợt đã tải trước đó."
         },
         "when": {
           "en": "As soon as the month's data arrives. And always before you compute the run.",
@@ -32281,12 +32454,12 @@
           "vi": "Ngày nghỉ việc trên hồ sơ nhân viên và dữ liệu lương của tháng. Một khoản quyết toán tự xuất hiện sẽ bắt đầu ở bước Đang chuẩn bị, được đánh dấu Cần kiểm tra, và đợi một người gửi duyệt."
         },
         "what": {
-          "en": "Pay Run › Settle. One row per settlement with its net payable, and three steps: Being prepared, Waiting for approval, Approved. A row opens its breakdown.",
-          "vi": "Đợt lương › Quyết toán. Mỗi khoản quyết toán một dòng kèm số thực trả, và ba bước: Đang chuẩn bị, Chờ phê duyệt, Đã phê duyệt. Một dòng mở ra phần chi tiết của nó."
+          "en": "Payroll › Settle. One row per settlement with its net payable, and three steps: Being prepared, Waiting for approval, Approved. A row opens its breakdown.",
+          "vi": "Lương › Quyết toán. Mỗi khoản quyết toán một dòng kèm số thực trả, và ba bước: Đang chuẩn bị, Chờ phê duyệt, Đã phê duyệt. Một dòng mở ra phần chi tiết của nó."
         },
         "when": {
-          "en": "As soon as a leaving date is confirmed. And again once the four desks on Lifecycle › Exits have signed off.",
-          "vi": "Ngay khi ngày nghỉ việc được xác nhận. Và một lần nữa khi bốn bộ phận ở Vòng đời nhân sự › Nghỉ việc đã xác nhận xong."
+          "en": "As soon as a leaving date is confirmed. And again once the four desks on People › Exits have signed off.",
+          "vi": "Ngay khi ngày nghỉ việc được xác nhận. Và một lần nữa khi bốn bộ phận ở Con người › Nghỉ việc đã xác nhận xong."
         },
         "why": {
           "en": "It is the last money a person gets from you, and it has a legal deadline. Two approvals, the HR lead and then Finance, stand between the working and the payment.",
@@ -32340,7 +32513,7 @@
                     "vi": "Đúng vậy. Hoàn tất nghĩa là đợt lương đã được duyệt. Tiền chỉ đi sau lệnh chuyển tiền."
                   },
                   "label": {
-                    "en": "Deliver — whether the bank file and the payment release are approved",
+                    "en": "Pay out — whether the bank file and the payment release are approved",
                     "vi": "Chi trả — tệp ngân hàng và lệnh chuyển tiền đã được duyệt chưa"
                   }
                 },
@@ -32494,7 +32667,7 @@
               "body": "",
               "consequence": "",
               "kicker": {
-                "en": "Deliver",
+                "en": "Pay out",
                 "vi": "Chi trả"
               },
               "lines": [],
@@ -32696,15 +32869,15 @@
           }
         ],
         "prereq": {
-          "en": "An approved run for Deliver. Calendar and Awards show only to people with pay calendar or awards access.",
+          "en": "An approved run for Pay out. Calendar and Awards show only to people with pay calendar or awards access.",
           "vi": "Một đợt đã được duyệt để dùng Chi trả. Lịch lương và Thưởng chỉ hiện với người có quyền về lịch lương hoặc thưởng."
         },
         "what": {
-          "en": "Four Pay Run tabs. Results shows every person's figures in one grid. Deliver sends the bank file, the payment release and the payslips. Calendar says when changes close. Awards holds bonuses on their way into a run.",
-          "vi": "Bốn tab của Đợt lương. Kết quả hiện số liệu của mọi người trong một bảng. Chi trả gửi tệp ngân hàng, lệnh chuyển tiền và phiếu lương. Lịch lương cho biết khi nào chốt thay đổi. Thưởng giữ các khoản thưởng đang trên đường vào đợt lương."
+          "en": "Four Payroll tabs. Results shows every person's figures in one grid. Pay out sends the bank file, the payment release and the payslips. Calendar says when changes close. Awards holds bonuses on their way into a run.",
+          "vi": "Bốn tab của Lương. Kết quả hiện số liệu của mọi người trong một bảng. Chi trả gửi tệp ngân hàng, lệnh chuyển tiền và phiếu lương. Lịch lương cho biết khi nào chốt thay đổi. Thưởng giữ các khoản thưởng đang trên đường vào đợt lương."
         },
         "when": {
-          "en": "Results before and after approval. Deliver once a run is approved. Calendar at the start of each month. Awards whenever one is agreed.",
+          "en": "Results before and after approval. Pay out once a run is approved. Calendar at the start of each month. Awards whenever one is agreed.",
           "vi": "Kết quả trước và sau khi phê duyệt. Chi trả khi một đợt đã được duyệt. Lịch lương vào đầu mỗi tháng. Thưởng bất cứ khi nào có một khoản được đồng ý."
         },
         "why": {
@@ -33066,8 +33239,8 @@
           "vi": "Một chương trình lương đã bật Lương theo phần tháng hoặc Truy lĩnh trong phần Cài đặt, mục Quy tắc lương, và dữ liệu lương của một tháng đã được tải."
         },
         "what": {
-          "en": "Pay Run › Adjust. Two tabs over one ledger. Retro lists back pay as old, new and delta per person. Proration lists every part-month amount as old, new and prorated.",
-          "vi": "Đợt lương › Điều chỉnh. Hai tab trên cùng một sổ. Hồi tố liệt kê khoản truy lĩnh theo cũ, mới và chênh lệch của từng người. Phân bổ theo tỷ lệ liệt kê mọi khoản trả cho một phần tháng theo cũ, mới và đã phân bổ."
+          "en": "Payroll › Adjust. Two tabs over one ledger. Retro lists back pay as old, new and delta per person. Proration lists every part-month amount as old, new and prorated.",
+          "vi": "Lương › Điều chỉnh. Hai tab trên cùng một sổ. Hồi tố liệt kê khoản truy lĩnh theo cũ, mới và chênh lệch của từng người. Phân bổ theo tỷ lệ liệt kê mọi khoản trả cho một phần tháng theo cũ, mới và đã phân bổ."
         },
         "when": {
           "en": "After a month's pay data is loaded with backdated changes, joiners or leavers in it. And whenever someone asks how one of those amounts was worked out.",
@@ -34668,13 +34841,13 @@
         {
           "duration_min": 5,
           "goal": {
-            "en": "Know what the Wall, Announce and the smaller People tabs are for.",
-            "vi": "Biết Bảng vinh danh, Thông báo và các tab nhỏ của Con người dùng để làm gì."
+            "en": "Know what the Wall, Announce, the smaller People tabs, Goals and Praise are for.",
+            "vi": "Biết Bảng vinh danh, Thông báo, các tab nhỏ của Con người, Mục tiêu và Khen ngợi dùng để làm gì."
           },
           "key": "L28",
           "name": {
-            "en": "The rest of People and Home",
-            "vi": "Phần còn lại của Con người và Trang chủ"
+            "en": "The rest of People, Home and Talent",
+            "vi": "Phần còn lại của Con người, Trang chủ và Nhân tài"
           },
           "quizzes": [
             {
@@ -34704,8 +34877,8 @@
                 }
               ],
               "prompt": {
-                "en": "A colleague has no Goals tab under People. What is the likely reason?",
-                "vi": "Một đồng nghiệp không thấy tab Mục tiêu trong Con người. Lý do có thể là gì?"
+                "en": "A colleague has no Goals tab under Talent. What is the likely reason?",
+                "vi": "Một đồng nghiệp không thấy tab Mục tiêu trong Nhân tài. Lý do có thể là gì?"
               }
             }
           ],
@@ -34785,13 +34958,13 @@
               "body": "",
               "consequence": "",
               "kicker": {
-                "en": "People › Announce",
-                "vi": "Con người › Thông báo"
+                "en": "Home › Announce › Calendar",
+                "vi": "Trang chủ › Thông báo › Lịch"
               },
               "lines": [],
               "look": {
-                "en": "People › Announce: the month's messages on one calendar.",
-                "vi": "Con người › Thông báo: các thông báo của tháng trên một lịch."
+                "en": "Home › Announce › Calendar: the month's messages on one calendar.",
+                "vi": "Trang chủ › Thông báo › Lịch: các thông báo của tháng trên một lịch."
               },
               "means": {
                 "en": "The people who send messages plan the month here.",
@@ -34811,24 +34984,24 @@
             },
             {
               "affects": {
-                "en": "Each tile is a tab under People. None of them changes a payslip.",
-                "vi": "Mỗi ô là một tab trong Con người. Không ô nào thay đổi phiếu lương."
+                "en": "Where they work and Assets are tabs under People. Goals and Praise are tabs under Talent. None of them changes a payslip.",
+                "vi": "Nơi họ làm việc và Tài sản là tab trong Con người. Mục tiêu và Khen ngợi là tab trong Nhân tài. Không ô nào thay đổi phiếu lương."
               },
               "anchor": "rep-pm-tiles",
               "body": "",
               "consequence": "",
               "kicker": {
-                "en": "People",
-                "vi": "Con người"
+                "en": "People and Talent",
+                "vi": "Con người và Nhân tài"
               },
               "lines": [],
               "look": {
-                "en": "The four tiles: Where they work, Assets, Goals and Announce.",
-                "vi": "Bốn ô: Nơi họ làm việc, Tài sản, Mục tiêu và Thông báo."
+                "en": "The four tiles: Where they work, Assets, Goals and Praise.",
+                "vi": "Bốn ô: Nơi họ làm việc, Tài sản, Mục tiêu và Khen ngợi."
               },
               "means": {
-                "en": "People who work for more than one company; the laptops and cards handed out; this year's goals; messages on one calendar.",
-                "vi": "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; thông báo trên một lịch."
+                "en": "People who work for more than one company; the laptops and cards handed out; this year's goals; the praise people give.",
+                "vi": "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; lời khen mọi người dành cho nhau."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -34837,8 +35010,8 @@
               "screen": "peoplemore",
               "tip": "",
               "title": {
-                "en": "Where they work, Assets, Goals, Announce",
-                "vi": "Nơi họ làm việc, Tài sản, Mục tiêu, Thông báo"
+                "en": "Where they work, Assets, Goals, Praise",
+                "vi": "Nơi họ làm việc, Tài sản, Mục tiêu, Khen ngợi"
               },
               "visual": "none"
             },
@@ -34860,8 +35033,8 @@
                 "vi": "Các tab dọc phía trên trang."
               },
               "means": {
-                "en": "Goals, Praise and Announce depend on what your company has switched on and on your access.",
-                "vi": "Mục tiêu, Khen ngợi và Thông báo phụ thuộc vào những gì công ty bạn đã bật và quyền của bạn."
+                "en": "Each tab depends on what your company has switched on and on your access.",
+                "vi": "Mỗi tab phụ thuộc vào những gì công ty bạn đã bật và quyền của bạn."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -34880,8 +35053,8 @@
       ],
       "line": "people",
       "name": {
-        "en": "The rest of People and Home",
-        "vi": "Phần còn lại của Con người và Trang chủ"
+        "en": "The rest of People, Home and Talent",
+        "vi": "Phần còn lại của Con người, Trang chủ và Nhân tài"
       },
       "outline": {
         "mistakes": [
@@ -34895,8 +35068,8 @@
           "vi": "Ai cũng đọc được Bảng vinh danh và Thông báo. Các tab của Con người theo quyền riêng của chúng."
         },
         "what": {
-          "en": "Home › Wall and Announce; People › Where they work, Assets, Praise and Goals. Each tab shows only when your company uses it.",
-          "vi": "Trang chủ › Bảng vinh danh và Thông báo; Con người › Nơi họ làm việc, Tài sản, Khen ngợi và Mục tiêu. Mỗi tab chỉ hiện khi công ty bạn dùng nó."
+          "en": "Home › Wall and Announce; People › Where they work and Assets; Talent › Goals and Praise. Each tab shows only when your company uses it.",
+          "vi": "Trang chủ › Bảng vinh danh và Thông báo; Con người › Nơi họ làm việc và Tài sản; Nhân tài › Mục tiêu và Khen ngợi. Mỗi tab chỉ hiện khi công ty bạn dùng nó."
         },
         "when": {
           "en": "Whenever you want to thank someone, tell everyone something, hand out a laptop, or check a goal.",
@@ -34920,8 +35093,8 @@
       "sidebar_key": "",
       "star": false,
       "summary": {
-        "en": "Praise on the Wall, messages in Announce, and the People tabs for where people work, what they hold and what they aim for.",
-        "vi": "Lời khen trên Bảng vinh danh, thông báo ở Thông báo, và các tab của Con người về nơi mọi người làm, họ giữ gì và họ hướng tới điều gì."
+        "en": "Praise on the Wall, messages in Announce, the People tabs for where people work and what they hold, and Goals and Praise on Talent.",
+        "vi": "Lời khen trên Bảng vinh danh, thông báo ở Thông báo, các tab của Con người về nơi mọi người làm và họ giữ gì, cùng Mục tiêu và Khen ngợi ở Nhân tài."
       }
     },
     {
@@ -34989,8 +35162,8 @@
           "steps": [
             {
               "affects": {
-                "en": "Picking a scheme in Pay Run › Run picks which of these rulebooks runs.",
-                "vi": "Chọn chương trình lương ở Đợt lương › Chạy lương là chọn bộ quy tắc nào sẽ chạy."
+                "en": "Picking a scheme in Payroll › Run picks which of these rulebooks runs.",
+                "vi": "Chọn chương trình lương ở Lương › Chạy lương là chọn bộ quy tắc nào sẽ chạy."
               },
               "anchor": "fs-config",
               "body": "",
@@ -36500,8 +36673,8 @@
               "moment_which": "",
               "screen": "integrations",
               "tip": {
-                "en": "Record changes that need a decision also wait in Home › Approvals.",
-                "vi": "Các thay đổi hồ sơ cần quyết định cũng chờ ở Trang chủ › Phê duyệt."
+                "en": "Record changes that need a decision also wait in Home › Inbox.",
+                "vi": "Các thay đổi hồ sơ cần quyết định cũng chờ ở Trang chủ › Hộp thư."
               },
               "title": {
                 "en": "Arrivals from the connected system",
@@ -39625,8 +39798,8 @@
               },
               "lines": [],
               "look": {
-                "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Trips, Approvals and Close.",
-                "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt và Chốt kỳ."
+                "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Approvals and Close.",
+                "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Phê duyệt và Chốt kỳ."
               },
               "means": {
                 "en": "A manager's week runs left to right. Close, after Approvals, is where the week is locked for payroll.",
@@ -40362,5 +40535,5 @@
       }
     }
   ],
-  "version": "a696ab18159e"
+  "version": "68ba417fd7e1"
 }

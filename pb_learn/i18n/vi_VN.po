@@ -1065,6 +1065,12 @@ msgid "Settings"
 msgstr "Cài đặt"
 
 #. module: pb_learn
+#. odoo-javascript
+#: code:addons/pb_learn/static/src/hub/learn_hub.js:0
+msgid "Setup"
+msgstr "Thiết lập"
+
+#. module: pb_learn
 #. odoo-python
 #: code:addons/pb_learn/models/learn_progress.py:0
 msgid "Helper switched tab"

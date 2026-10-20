@@ -1951,7 +1951,16 @@ body.lrn-spot-docked .lrn-screen { padding-bottom: 55vh; }
 .lrn-decide, .lrn-decide2 { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .lrn-moneyline { margin: 0 0 10px; }
 
-/* Settings: the category page. */
+/* Settings: the category page, one titled section per rail group (NAV P2). */
+.lrn-setgroup {
+    margin: 16px 0 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--vuf-muted, #64748B);
+    &:first-child { margin-top: 0; }
+}
 .lrn-setgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
 .lrn-setcard {
     display: grid;

@@ -316,7 +316,7 @@ const RUN = {
   employees: 48, totalNet: 612480000, totalGross: 691200000,
   config: "HOASEN_RETAIL_END", configVersion: "v12",
   /* LEARN REFRESH step 2. The run is picked by its PAY SCHEME now — the
-     "Pay run for" cards in Pay Run › Run — and a scheme's name is a record's
+     "Pay run for" cards in Payroll › Run — and a scheme's name is a record's
      own name, the same in every language (a record's name is data). */
   scheme: "Hoa Sen Retail — End-Month Payroll",
   from: "01/07/2026", to: "31/07/2026",
@@ -512,7 +512,7 @@ const PRACTICE = {
   /* The Run lens's exceptions list: the one person it could not pay. */
   exception: LATER,
 
-  /* -------------------------------------------------------- Pay Run › Run
+  /* -------------------------------------------------------- Payroll › Run
      The pay data step. Retail's scheme reads three components from a
      spreadsheet, so the rail has four steps; the file has one row for a
      person who is not in Payobook yet — listed, never paid. */
@@ -523,7 +523,7 @@ const PRACTICE = {
     missing: ["Lý Thị Hồng"],
   },
 
-  /* ------------------------------------------------------- Pay Run › Runs
+  /* ------------------------------------------------------- Payroll › Runs
      `col` is a REAL state key (pb_payruns/models/hr_payslip_run.py:51-56):
      draft · approval_pending · done, and cancel for the Rejected list. */
   board: [
@@ -569,7 +569,7 @@ const PRACTICE = {
     };
   },
 
-  /* -------------------------------------------------- Pay Run › Payslips
+  /* -------------------------------------------------- Payroll › Payslips
      The run is WAITING, so its payslips are "Waiting for approval" — the
      product freezes them there while the route decides
      (hr_payslip_run.py:920-932). "Need review" on this screen is the same
@@ -585,7 +585,7 @@ const PRACTICE = {
   ],
   slipTotals: { count: 48, net: 612480000, gross: 691200000, flagged: 0 },
 
-  /* ------------------------------------------------------ Home › Approvals
+  /* ------------------------------------------------------ Home › Inbox
      THE ONE INBOX. A pay run is one kind of request among many — leave,
      overtime, hiring — and the practice inbox shows that: one request is the
      July run (your turn, at HR lead review), one is somebody else's. */
@@ -624,7 +624,7 @@ const PRACTICE = {
     };
   },
 
-  /* ------------------------------------------------------ Pay Run › Import
+  /* ------------------------------------------------------ Payroll › Inputs
      The numbers row, the pipeline and the recent batches, as the Import lens
      draws them (pb_import/static/src/xml/import.xml). THERE IS NO CONFIDENCE
      SCORE on this screen or in its wizard; the old content taught one. */
@@ -657,8 +657,8 @@ const PRACTICE = {
   },
 
   /* LEARN REFRESH step 5 — the three ledgers as pb_payrun_ledgers draws them
-     today (ledger.xml, ledger_cockpits.py): Pay Run › Adjust carries two tabs
-     (Retro, Proration) over ONE template; Pay Run › Settle carries one
+     today (ledger.xml, ledger_cockpits.py): Payroll › Adjust carries two tabs
+     (Retro, Proration) over ONE template; Payroll › Settle carries one
      (Full & Final, whose single tab the product never draws). Counts are one
      quiet line, the money totals stand beside it, and a row opens a drawer in
      place. Every money figure is derived from the rows.
@@ -676,7 +676,7 @@ const PRACTICE = {
     fullfinal: {
       subtitle: B("Every settlement, its components and net payable at a glance.",
                   "Mọi khoản quyết toán, các thành phần và số thực trả trong nháy mắt."),
-      /* Hạnh is the leaver on Lifecycle › Exits (same person, same last day).
+      /* Hạnh is the leaver on People › Exits (same person, same last day).
          Her settlement was made by July's pay data load: worked out, NOT sent
          in (LEARN REFRESH step 6 — a person checks it first), so it sits at
          Being prepared as "Ready to check" with Send for approval on the row.
@@ -736,7 +736,7 @@ const PRACTICE = {
         ],
       },
     },
-    /* Pay Run › Adjust › Proration. Two kinds of row, both real: a contract
+    /* Payroll › Adjust › Proration. Two kinds of row, both real: a contract
        whose pay changed mid-month (the pay data import splits the month at the
        change) and a person who was here for part of it (pb_workseg writes old =
        new = the monthly amount, and the days do the work). The DAYS are only in
@@ -790,7 +790,7 @@ const PRACTICE = {
         ],
       },
     },
-    /* Pay Run › Adjust › Retro. Back pay the pay data import worked out by
+    /* Payroll › Adjust › Retro. Back pay the pay data import worked out by
        itself: a pay change dated BEFORE this period, compared with payslips
        already paid for it; the difference for the days it covers is added to
        this month. Khoa's raise was backdated to 1 June; Đức's night-shift
@@ -1730,7 +1730,7 @@ const PRACTICE = {
     exact: 7388500000,
   },
 
-  /* ----------------------------------------------- Lifecycle › Hiring
+  /* ----------------------------------------------- Hiring › Overview
      LEARN REFRESH 2 (2026-10-05) — redrawn over the rebuilt Hiring (RECRUIT
      P1–P8, pb_hiring 19.0.2.7). A role is OPENED in five fields and can meet
      candidates at once; its hiring request is a chip on the card and matters
@@ -1793,7 +1793,7 @@ const PRACTICE = {
     },
   },
 
-  /* ------------------------------------- Lifecycle › Hiring › one role's page
+  /* ------------------------------------- Hiring › Overview › one role's page
      The Store assistant role, open on its Board tab (hiring_board_p1.xml).
      Columns are the role's stages, in the product's seeded names and their
      Vietnamese (pb_hiring journey.py VI_NAMES); a hidden stage is simply not
@@ -1904,7 +1904,7 @@ const PRACTICE = {
               ["Đinh Thị Yến", B("Shortlist", "Danh sách chọn"), EN("6 days")]],
   },
 
-  /* ----------------------------------------------- Lifecycle › New joiners
+  /* ----------------------------------------------- People › Joiners
      Nam, a week before 1 August, with Mai as his buddy. */
   joiners: {
     numbers: [[B("Joining this week", "Vào làm tuần này"), 2], [B("Already started", "Đã bắt đầu làm việc"), 3],
@@ -1922,7 +1922,7 @@ const PRACTICE = {
     done: [B("Contract signed", "Đã ký hợp đồng"), B("Buddy chosen", "Đã chọn người đồng hành")],
   },
 
-  /* ----------------------------------------------- Lifecycle › Probation
+  /* ----------------------------------------------- People › Probation
      Nam's two-month trial, in its last week. */
   probation: {
     numbers: [[B("In a trial period", "Đang thử việc"), 4], [B("Reviews running", "Đánh giá đang chạy"), 2],
@@ -1938,7 +1938,7 @@ const PRACTICE = {
     verdicts: [B("Confirm them", "Xác nhận chính thức"), B("Extend the trial", "Kéo dài thử việc"), B("Do not confirm", "Không xác nhận")],
   },
 
-  /* ----------------------------------------------- Lifecycle › Growth plans */
+  /* ----------------------------------------------- Talent › Growth */
   growth: {
     numbers: [[B("Open", "Đang mở"), 2], [B("Still a conversation", "Vẫn đang trao đổi"), 1], [B("Plans running", "Kế hoạch đang chạy"), 1],
               [B("Waiting on a decision", "Đang chờ quyết định"), 0], [B("Drifting or at risk", "Chệch hướng hoặc có rủi ro"), 1]],
@@ -1948,7 +1948,7 @@ const PRACTICE = {
     ],
   },
 
-  /* ----------------------------------------------- Lifecycle › Contracts */
+  /* ----------------------------------------------- People › Contracts */
   contractends: {
     numbers: [[B("Ending within 60 days", "Kết thúc trong vòng 60 ngày"), 3], [B("Nobody has decided", "Chưa ai quyết định"), 1],
               [B("Waiting to be agreed", "Đang chờ đồng ý"), 1], [B("Being evaluated", "Đang được đánh giá"), 1],
@@ -1960,7 +1960,7 @@ const PRACTICE = {
     choices: [B("Make it permanent", "Chuyển chính thức"), B("Extend it", "Gia hạn"), B("Let it end", "Để hết hạn")],
   },
 
-  /* ----------------------------------------------- Lifecycle › Exits
+  /* ----------------------------------------------- People › Exits
      A leaver whose last day has passed. Three desks have signed; Finance
      has not, so the settlement is held — and says why. */
   exits: {
@@ -2049,7 +2049,7 @@ const PRACTICE = {
       [B("Where they work", "Nơi họ làm việc"), B("People who work for more than one company", "Người làm cho nhiều công ty")],
       [B("Assets", "Tài sản"), B("Laptops, phones and cards, and who holds them", "Máy tính, điện thoại, thẻ, và ai đang giữ")],
       [B("Goals", "Mục tiêu"), B("What each person plans this year", "Điều mỗi người dự định trong năm")],
-      [B("Announce", "Thông báo"), B("Messages to your people, on one calendar", "Thông báo tới mọi người, trên một lịch")],
+      [B("Praise", "Khen ngợi"), B("The thank-yous people give each other", "Những lời cảm ơn mọi người dành cho nhau")],
     ],
   },
 };
@@ -2059,7 +2059,7 @@ const PRACTICE = {
    -----------------------------------------------------------------------------
    LEARN REFRESH step 2. The practice company used to draw the old six-section
    sidebar, which no longer exists: since the rail cutover the product has
-   nine pages on its rail (pb_*_hub modules, in rail order) and every working
+   its pages on its rail (eleven since NAV P2) (pb_*_hub modules, in rail order) and every working
    screen is a TAB inside one of them. The replica draws the same rail and, on
    the page being shown, the same tabs in the same order with the same words —
    the Vietnamese included, as the product's own .po files now say it.
@@ -2068,32 +2068,33 @@ const PRACTICE = {
    present-but-quiet ("Not in the practice company"): it is really there in
    the product, and a replica that hid it would teach a different page; a
    replica that pretended to open it would be a dead click. `sub` is a tab's
-   own inner tabs (Pay Run › Adjust has Retro and Proration).
+   own inner tabs (Payroll › Adjust has Retro and Proration).
 
    Settings is not a row of tabs but a page of categories (pb_settings
-   settings_hub.js:132-241): its screens open FROM that page, so the replica
-   draws it as the `hub_settings` screen and names the category a screen
-   came from in the breadcrumb. */
+   settings_hub.js), grouped since NAV P2 into seven rail groups: its screens
+   open FROM that page, so the replica draws it as the `hub_settings` screen
+   and names the group and category a screen came from in the breadcrumb. */
 const MENU = [
   {
     key: "home", icon: "home", label: B("Home", "Trang chủ"), section: null,
     lenses: [
       { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "dashboard" },
-      { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "approvals" },
+      { key: "approvals", label: B("Inbox", "Hộp thư"), screen: "approvals" },
+      { key: "askhr", label: B("Ask HR", "Hỏi Nhân sự") },
       { key: "wall", label: B("Wall", "Bảng vinh danh"), screen: "peoplemore" },
       { key: "coming_up", label: B("Announce", "Thông báo") },
     ],
   },
   {
-    key: "pay", icon: "zap", label: B("Pay Run", "Đợt lương"),
+    key: "pay", icon: "zap", label: B("Payroll", "Lương"),
     section: B("Operate", "Vận hành"),
     lenses: [
       { key: "run", label: B("Run", "Chạy lương"), screen: "runpayroll" },
       { key: "runs", label: B("Runs", "Các đợt lương"), screen: "payruns" },
       { key: "payslips", label: B("Payslips", "Phiếu lương"), screen: "payslips" },
       { key: "results", label: B("Results", "Kết quả"), screen: "results" },
-      { key: "import", label: B("Import", "Nhập"), screen: "import" },
-      { key: "deliver", label: B("Deliver", "Chi trả"), screen: "deliver" },
+      { key: "import", label: B("Inputs", "Đầu vào"), screen: "import" },
+      { key: "deliver", label: B("Pay out", "Chi trả"), screen: "deliver" },
       { key: "adjust", label: B("Adjust", "Điều chỉnh"), screen: "retro",
         sub: [{ key: "retro", label: B("Retro", "Hồi tố"), screen: "retro" },
               { key: "proration", label: B("Proration", "Phân bổ theo tỷ lệ"), screen: "proration" }] },
@@ -2105,6 +2106,8 @@ const MENU = [
     ],
   },
   {
+    /* NAV P2 — People gained the four Lifecycle boards; Praise and Goals went
+       to Talent, the Announce calendar to Home › Announce. */
     key: "people", icon: "users", label: B("People", "Con người"), section: null,
     lenses: [
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
@@ -2113,22 +2116,19 @@ const MENU = [
       { key: "pay", label: B("Pay", "Lương"), screen: "paybands", also: ["payreview"] },
       { key: "where", label: B("Where they work", "Nơi họ làm việc") },
       { key: "assets", label: B("Assets", "Tài sản") },
-      { key: "praise", label: B("Praise", "Khen ngợi") },
-      { key: "goals", label: B("Goals", "Mục tiêu") },
-      { key: "announcements", label: B("Announce", "Thông báo") },
+      { key: "newjoiners", label: B("Joiners", "Người mới"), screen: "joiners" },
+      { key: "probation", label: B("Probation", "Thử việc"), screen: "probation" },
+      { key: "exits", label: B("Exits", "Nghỉ việc"), screen: "exits" },
+      { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },
       { key: "plan", label: B("Plan", "Kế hoạch"), screen: "decisionroom" },
     ],
   },
   {
-    key: "lifecycle", icon: "git-branch", label: B("Lifecycle", "Vòng đời nhân sự"), section: null,
+    key: "hiring", icon: "user-plus", label: B("Hiring", "Tuyển dụng"), section: null,
     lenses: [
-      { key: "journeys", label: B("Journeys", "Hành trình") },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiring", also: ["hiringrole"] },
-      { key: "newjoiners", label: B("New joiners", "Nhân viên mới"), screen: "joiners" },
-      { key: "exits", label: B("Exits", "Nghỉ việc"), screen: "exits" },
-      { key: "probation", label: B("Probation", "Thử việc"), screen: "probation" },
-      { key: "pip", label: B("Growth plans", "Kế hoạch phát triển"), screen: "growth" },
-      { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },
+      { key: "overview", label: B("Overview", "Tổng quan"), screen: "hiring", also: ["hiringrole"] },
+      { key: "interviews", label: B("Interviews", "Phỏng vấn") },
+      { key: "bank", label: B("Talent pool", "Kho ứng viên") },
     ],
   },
   {
@@ -2139,11 +2139,17 @@ const MENU = [
       { key: "time", label: B("Time", "Chấm công"), screen: "wftime" },
       { key: "timeoff", label: B("Time Off", "Nghỉ phép") },
       { key: "overtime", label: B("Overtime", "Tăng ca") },
-      { key: "trips", label: B("Trips", "Công tác") },
       { key: "approvals", label: B("Approvals", "Phê duyệt") },
       { key: "close", label: B("Close", "Chốt kỳ"), screen: "wfclose" },
       { key: "holidays", label: B("Holidays", "Ngày lễ") },
       { key: "field", label: B("Field", "Hiện trường") },
+    ],
+  },
+  {
+    key: "expenses", icon: "banknote", label: B("Expenses", "Chi phí"), section: null,
+    lenses: [
+      { key: "trips", label: B("Trips", "Công tác") },
+      { key: "claims", label: B("Claims", "Hoàn chi phí") },
     ],
   },
   {
@@ -2153,7 +2159,7 @@ const MENU = [
       { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "insights" },
       { key: "explorer", label: B("Explorer", "Khám phá dữ liệu"), screen: "explorer" },
       { key: "workforce", label: B("Workforce", "Lực lượng lao động"), screen: "workforcean" },
-      { key: "payroll", label: B("Payroll Report", "Báo cáo lương"), screen: "reports" },
+      { key: "payroll", label: B("Payroll", "Lương"), screen: "reports" },
       { key: "budget", label: B("Budget", "Ngân sách"), screen: "reports" },
       { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringnumbers" },
       { key: "training", label: B("Training", "Đào tạo") },
@@ -2165,51 +2171,75 @@ const MENU = [
     lenses: [
       { key: "filings", label: B("Filings", "Tờ khai"), screen: "govreports" },
       { key: "bank", label: B("Bank", "Ngân hàng"), screen: "compliancemore" },
-      { key: "young", label: B("Young workers", "Lao động chưa thành niên") },
+      { key: "young", label: B("Safeguards", "Bảo vệ") },
       { key: "audit", label: B("Audit", "Nhật ký kiểm toán") },
     ],
   },
   {
-    key: "learn", icon: "book-open", label: B("Learn", "Học cùng Payobook"),
+    key: "talent", icon: "grad-cap", label: B("Talent", "Nhân tài"),
     section: B("Grow", "Phát triển"),
     lenses: [
-      { key: "lessons", label: B("Lessons", "Bài học") },
+      { key: "goals", label: B("Goals", "Mục tiêu") },
+      { key: "pip", label: B("Growth", "Phát triển"), screen: "growth" },
       { key: "training", label: B("Training", "Đào tạo") },
+      { key: "praise", label: B("Praise", "Khen ngợi") },
+    ],
+  },
+  {
+    key: "learn", icon: "book-open", label: B("Learn", "Học cùng Payobook"), section: null,
+    lenses: [
+      { key: "lessons", label: B("Lessons", "Bài học") },
       { key: "team", label: B("Team", "Nhóm") },
-      { key: "settings", label: B("Settings", "Cài đặt") },
+      { key: "settings", label: B("Setup", "Thiết lập") },
     ],
   },
   {
     key: "settings", icon: "settings", label: B("Settings", "Cài đặt"), section: null, page: true,
     screen: "hub_settings",
-    /* The category page, in the product's order. `screen` opens a replica;
-       the rest are drawn quiet. */
+    /* NAV P2 — seven groups, in the product's order; each lists its
+       categories (`cats`). A category with `screen` opens a replica; the rest
+       are drawn quiet. */
     lenses: [
-      { key: "formula", label: B("Formula Engine", "Bộ máy công thức"), screen: "formula",
-        card: B("Formula Studio", "Xưởng công thức") },
-      { key: "structures", label: B("Salary Structures", "Cấu trúc lương"), screen: "structures" },
-      { key: "statutory", label: B("Statutory", "Bảo hiểm & Thuế"), screen: "statutory",
-        card: B("Insurance & Tax", "Bảo hiểm & Thuế") },
+      { key: "company", label: B("Company", "Công ty"), cats: [
+        { key: "company", label: B("Your company", "Công ty của bạn") },
+        { key: "org", label: B("Companies & Tenants", "Công ty & Đơn vị thuê bao") },
+        { key: "group", label: B("Group", "Tập đoàn"), screen: "schemes" },
+      ] },
+      { key: "access", label: B("Access", "Truy cập"), cats: [
+        { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền"), screen: "access" },
+        { key: "nav", label: B("Navigation", "Điều hướng") },
+        { key: "vendors", label: B("Vendors", "Nhà cung cấp") },
+      ] },
+      { key: "payroll", label: B("Payroll", "Lương"), cats: [
+        { key: "formula", label: B("Formula Engine", "Bộ máy công thức"), screen: "formula",
+          card: B("Formula Studio", "Xưởng công thức") },
+        { key: "structures", label: B("Salary Structures", "Cấu trúc lương"), screen: "structures" },
+        { key: "statutory", label: B("Statutory", "Bảo hiểm & Thuế"), screen: "statutory",
+          card: B("Insurance & Tax", "Bảo hiểm & Thuế") },
+        { key: "payroll", label: B("Payroll defaults", "Mặc định tính lương") },
+      ] },
+      { key: "hr", label: B("HR", "Nhân sự"), cats: [
+        { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringsetup",
+          card: B("Hiring set-up", "Thiết lập tuyển dụng") },
+        { key: "announcements", label: B("Announcements", "Thông báo") },
+        { key: "journeys", label: B("Journeys", "Hành trình") },
+      ] },
+      { key: "workflows", label: B("Workflows", "Phê duyệt"), cats: [
+        { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",
+          card: B("Approval Matrix", "Ma trận phê duyệt") },
+      ] },
       /* Integrations has two cards: its connectors and Mapping (whose tabs
          include Component treatment). Both replicas live under it. */
-      { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations",
-        also: ["mapping", "treatment"] },
-      { key: "payroll", label: B("Payroll defaults", "Mặc định tính lương") },
-      { key: "org", label: B("Companies & Tenants", "Công ty & Đơn vị thuê bao") },
-      { key: "nav", label: B("Navigation", "Điều hướng") },
-      { key: "company", label: B("Your company", "Công ty của bạn") },
-      { key: "vendors", label: B("Vendors", "Nhà cung cấp") },
-      { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
-        card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
-      { key: "group", label: B("Group", "Tập đoàn"), screen: "schemes" },
-      { key: "access", label: B("Access & delegation", "Quyền truy cập & uỷ quyền"), screen: "access" },
-      { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",
-        card: B("Approval Matrix", "Ma trận phê duyệt") },
-      { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringsetup",
-        card: B("Hiring set-up", "Thiết lập tuyển dụng") },
-      { key: "about", label: B("About Payobook", "Về Payobook") },
-      { key: "announcements", label: B("Announcements", "Thông báo") },
-      { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
+      { key: "integrations", label: B("Integrations", "Kết nối"), cats: [
+        { key: "integrations", label: B("Integrations", "Tích hợp"), screen: "integrations",
+          also: ["mapping", "treatment"] },
+      ] },
+      { key: "system", label: B("System", "Hệ thống"), cats: [
+        { key: "guided_setup", label: B("Guided setup", "Thiết lập có hướng dẫn"),
+          card: B("New configuration", "Cấu hình mới"), screen: "blueprint" },
+        { key: "about", label: B("About Payobook", "Về Payobook") },
+        { key: "demo_data", label: B("Demo data", "Dữ liệu mẫu") },
+      ] },
     ],
   },
 ];

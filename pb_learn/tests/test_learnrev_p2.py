@@ -92,7 +92,7 @@ class TestLearnrevP2(TransactionCase):
         self.assertIn('Tell the pay scheme what each component is', on['blocks'][0]['body']['en'])
         steps = [s['text']['en'] for s in on['blocks'][1]['steps']]
         self.assertEqual(steps[0], 'You are here: Mapping › Component treatment')
-        self.assertEqual(steps[1], 'Next: Pay Run › Run')
+        self.assertEqual(steps[1], 'Next: Payroll › Run')   # NAV P2: Pay Run → Payroll
         vi_steps = [s['text']['vi'] for s in on['blocks'][1]['steps']]
         self.assertTrue(vi_steps[0].startswith('Bạn đang ở đây: '), vi_steps)
         self.assertTrue(on['guide_door'])

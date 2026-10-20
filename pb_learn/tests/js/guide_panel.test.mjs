@@ -438,7 +438,7 @@ async function drawerSuite() {
     const [target, opts] = doActions[0] || [];
     check(target === "pb_payhub.action_pb_pay_hub" && opts.additionalContext.pb_lens === "runs"
           && opts.additionalContext.pb_focus === "319",
-          "Open run lands on Pay Run › Runs with the run's card in focus", JSON.stringify(doActions[0]));
+          "Open run lands on Payroll › Runs with the run's card in focus", JSON.stringify(doActions[0]));
     host._toggleSection("fields");
     check(host.state.gSec.fields === false, "a section header folds its section");
     // The chat's opening card: whatnext goes when there is a live list, two

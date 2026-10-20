@@ -23,30 +23,38 @@ import { RT, T, tx, esc, ic, SP } from "../engine/runtime";
 import { hubScreenOf, parsePlace } from "../engine/places";
 
 /* THE LEFT MENU, IN ITS ORDER. Mirrors the `pb.sidebar.item` records the rail
-   draws (section sequence, then item sequence): Home · Pay Run · People ·
-   Lifecycle · Workforce · Insights · Compliance · Settings. `item` is the
-   record's xml-id and `tags` the hub actions whose tabs belong to it —
-   Mapping (`pb_mapping_studio`) is opened from Settings › Integrations, so
-   its screens are Settings screens. Learn itself is not a group: it is this
-   page. `tests/test_learnrev_p3.py` compares this list with the database's
-   rail, so a reordered menu fails a test, never the page. */
+   draws (section sequence, then item sequence) since NAV P2: Home · Payroll ·
+   People · Hiring · Workforce · Expenses · Insights · Compliance · Talent ·
+   Learn · Settings. `item` is the record's xml-id and `tags` the hub actions
+   whose tabs belong to it — Mapping (`pb_mapping_studio`) is opened from
+   Settings › Integrations, so its screens are Settings screens. A group with
+   no station (Expenses, Learn today) is simply not drawn. The Lifecycle page
+   left the menu in NAV P2; its boards are People, Hiring and Talent tabs.
+   `tests/test_learnrev_p3.py` compares this list with the database's rail
+   (and, for an item whose module is not installed yet, with its data file),
+   so a reordered menu fails a test, never the page. */
 export const MENU_ORDER = [
     { key: "home", item: "pb_home_hub.item_home", tags: ["pb_home_hub"], icon: "home" },
     { key: "payrun", item: "pb_payhub.item_pay_run", tags: ["pb_pay_hub"], icon: "zap" },
     { key: "people", item: "pb_people_hub.item_people", tags: ["pb_people_hub"], icon: "users" },
-    { key: "lifecycle", item: "pb_lifecycle.item_lifecycle", tags: ["pb_lifecycle_hub"], icon: "git-branch" },
+    { key: "hiring", item: "pb_hiring.item_hiring", tags: ["pb_hiring_hub"], icon: "user-plus" },
     { key: "workforce", item: "pb_mission.item_workforce", tags: ["pb_workforce"], icon: "compass" },
+    { key: "expenses", item: "pb_expenses_hub.item_expenses", tags: ["pb_expenses_hub"], icon: "banknote" },
     { key: "insights", item: "pb_insights_hub.item_insights", tags: ["pb_insights_hub"], icon: "trending-up" },
     { key: "compliance", item: "pb_compliance_hub.item_compliance", tags: ["pb_compliance_hub"], icon: "shield-check" },
+    { key: "talent", item: "pb_talent_hub.item_talent", tags: ["pb_talent_hub"], icon: "grad-cap" },
+    { key: "learn", item: "pb_learn.item_learn_journey", tags: ["learn_hub"], icon: "book-open" },
     { key: "settings", item: "pb_settings.item_settings", tags: ["pb_settings_hub", "pb_mapping_studio"], icon: "sliders" },
 ];
 
 /* A station whose screen has no hub tab (the Setup screens that open as
    their own action, a station with no screen yet) is grouped by its Journey
    line. Their `sidebar_key`s name rail items of the retired Setup section
-   (inactive since the IA cutover), so the line is the honest fallback. */
+   (inactive since the IA cutover), so the line is the honest fallback. The
+   joining-and-leaving line (key `lifecycle`) falls back to Hiring: the only
+   station on it without a hub tab is Hiring set-up and numbers. */
 export const LINE_GROUP = {
-    overview: "home", payrun: "payrun", people: "people", lifecycle: "lifecycle",
+    overview: "home", payrun: "payrun", people: "people", lifecycle: "hiring",
     workforce: "workforce", insights: "insights", compliance: "compliance", setup: "settings",
 };
 

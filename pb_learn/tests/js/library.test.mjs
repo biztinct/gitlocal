@@ -3,8 +3,8 @@
  *
  *   T1  the Library from a fixture bootstrap: the real 42 stations of the
  *       content plane, 3 role paths, progress for 5 — the Continue card's
- *       words, the path strip (= the required stations), 8 menu groups in
- *       MENU_ORDER, every station exactly once, no row with more than three
+ *       words, the path strip (= the required stations), the menu groups in
+ *       MENU_ORDER (NAV P2: eleven, empty ones not drawn), every station exactly once, no row with more than three
  *       doors, none of the retired page words; the one search ("pay role"
  *       lands on the field card first, Vietnamese finds "vai trò", an empty
  *       search offers Ask PayAI); the real journey.js renders it; the drawer:
@@ -101,19 +101,31 @@ function librarySuite() {
     const model = lib.buildLibrary(SRC);
     const html = lib.libraryHTML(model, CONTENT.screens, {});
 
-    // -- every station exactly once, 8 groups in menu order
+    // -- every station exactly once, the groups in menu order
     const rows = Array.from(html.matchAll(/data-lib-row="([a-z0-9_]+)"/g), (m) => m[1]);
     check(stations.length === 42, "the fixture has the 42 stations of the content plane", String(stations.length));
     check(rows.length === stations.length && new Set(rows).size === rows.length,
           "every station appears exactly once", `${rows.length} rows, ${new Set(rows).size} distinct`);
     const groups = Array.from(html.matchAll(/class="lrn-lib-group[^"]*" data-group="([a-z]+)"/g), (m) => m[1]);
-    check(JSON.stringify(groups) === JSON.stringify(lib.MENU_ORDER.map((g) => g.key)),
-          "8 groups, in MENU_ORDER (Home, Pay Run, People, Lifecycle, Workforce, Insights, Compliance, Settings)",
+    // NAV P2: eleven menu groups; a group with no station (Expenses, Learn)
+    // is not drawn, and the rest keep MENU_ORDER's order.
+    check(lib.MENU_ORDER.length === 11, "MENU_ORDER lists the eleven menu pages", String(lib.MENU_ORDER.length));
+    check(JSON.stringify(groups) === JSON.stringify(["home", "payrun", "people", "hiring", "workforce",
+                                                     "insights", "compliance", "talent", "settings"]),
+          "9 drawn groups, in MENU_ORDER (Home, Payroll, People, Hiring, Workforce, Insights, Compliance, Talent, Settings)",
           groups.join(","));
+    check(groups.every((g, i) => i === 0 || lib.MENU_ORDER.findIndex((m) => m.key === g)
+                                            > lib.MENU_ORDER.findIndex((m) => m.key === groups[i - 1])),
+          "… a subsequence of MENU_ORDER");
     const names = Array.from(html.matchAll(/class="lrn-lib-gname">([^<]+)</g), (m) => m[1]);
-    check(JSON.stringify(names) === JSON.stringify(["Home", "Pay Run", "People", "Lifecycle", "Workforce",
-                                                    "Insights", "Compliance", "Settings"]),
+    check(JSON.stringify(names) === JSON.stringify(["Home", "Payroll", "People", "Hiring", "Workforce",
+                                                    "Insights", "Compliance", "Talent", "Settings"]),
           "… named as the menu names them", names.join(", "));
+    const grp = (k) => lib.groupOf(stations.find((s) => s.key === k), CONTENT.screens);
+    check(["hiring", "hiringrole", "hiringsetup"].every((k) => grp(k) === "hiring")
+          && ["joiners", "probation", "exits", "contractends"].every((k) => grp(k) === "people")
+          && grp("growth") === "talent",
+          "the old Lifecycle boards land under Hiring, People and Talent");
     const groupOf = (k) => lib.groupOf(stations.find((s) => s.key === k), CONTENT.screens);
     check(["formula", "mapping", "treatment", "matrix", "statutory", "integrations", "blueprint",
            "schemes", "access"].every((k) => groupOf(k) === "settings"),

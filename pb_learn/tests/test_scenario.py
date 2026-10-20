@@ -488,7 +488,7 @@ class TestScenarioEngine(TransactionCase):
     # counting them (ledger, Run A2 review).
     FLOWS = {
         'sc_import': [
-            # LEARN REFRESH step 2: Watch walks the Pay Run › Import tab (the
+            # LEARN REFRESH step 2: Watch walks the Payroll › Inputs tab (the
             # month's pay data), not the formula multi-sheet importer.
             ('intro', 'im-cta', 'observe', False, ['watch']),
             ('pipe', 'im-pipe', 'observe', False, ['watch']),

@@ -151,8 +151,9 @@ SCREEN_ACTION_TAGS = {
     'treatment': 'pb_mapping_studio',
     'blueprint_rules': 'pb_blueprint',
     'matrix_builder': 'pb_approval_matrix',
-    # LEARN REFRESH step 4 — the wider app. Every Lifecycle board, People ›
-    # Pay and the Decision Room are hub TABS and ground by their place; the
+    # LEARN REFRESH step 4 — the wider app. Every Lifecycle board (NAV P2:
+    # now People, Hiring and Talent tabs), People › Pay and the Decision Room
+    # are hub TABS and ground by their place; the
     # tags below cover the standalone door each one also has. Access &
     # delegation and the Generate a filing flow open full-page, so their tag
     # is how the helper knows they are on screen.
@@ -174,7 +175,7 @@ SCREEN_ACTION_TAGS = {
     'payreview': 'pb_pay',
     'hiring_request': 'pb_hiring_board',
     # LEARN REFRESH 2 — the rebuilt Hiring: a role's page is an inner view of
-    # the board (place `pb_lifecycle_hub:hiring/role`), Hiring set-up and the
+    # the board (place `pb_hiring_hub:overview/role` since NAV P2), Hiring set-up and the
     # numbers are their own screens.
     'hiringrole': 'pb_hiring_board',
     'hiringsetup': 'pb_hiring_setup',

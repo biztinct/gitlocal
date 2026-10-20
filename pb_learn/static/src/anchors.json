@@ -1876,7 +1876,7 @@
   },
   "practice": {
     "rep-pm-announce": "The practice Home › Announce card: one message sent to everyone.",
-    "rep-pm-plan": "The practice People › Announce note: where the people who send messages plan the month.",
+    "rep-pm-plan": "The practice Home › Announce › Calendar note: where the people who send messages plan the month.",
     "rep-ig-arrivals": "Arrivals from the connected system, drawn under the Integrations roster. In the product it is its own list, found through the search bar.",
     "rep-cd-terms": "The contract drawer's Terms, drawn beside Components and History so a lesson can walk all three. The product shows one tab at a time.",
     "rep-cd-comps": "The contract drawer's Components with Paid by and each amount's source chip.",
