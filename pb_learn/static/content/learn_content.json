@@ -17874,16 +17874,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "nj-numbers",
-          "body": {
-            "en": "Joining this week, Already started, Still without a buddy, Steps overdue, and those who said they are struggling.",
-            "vi": "Vào làm tuần này, Đã bắt đầu làm việc, Chưa có người đồng hành, Bước quá hạn, và những người cho biết đang gặp khó khăn."
+          "affects": {
+            "en": "A joiner counted under Still without a buddy or Steps overdue walks in on day one with something missing.",
+            "vi": "Người mới nằm trong Chưa có người đồng hành hoặc Bước quá hạn sẽ bước vào ngày đầu với một việc còn thiếu."
           },
+          "anchor": "nj-numbers",
+          "body": "",
           "guard": false,
           "key": "numbers",
           "kicker": {
             "en": "Lifecycle › New joiners",
             "vi": "Vòng đời nhân sự › Nhân viên mới"
+          },
+          "look": {
+            "en": "The numbers at the top: Joining this week, Already started, Still without a buddy, Steps overdue and Said they are struggling.",
+            "vi": "Các con số ở trên cùng: Vào làm tuần này, Đã bắt đầu làm việc, Chưa có người đồng hành, Bước quá hạn và Cho biết đang gặp khó khăn."
+          },
+          "means": {
+            "en": "Each number counts new joiners in that state. A number with a colour needs someone to act.",
+            "vi": "Mỗi con số đếm số người mới đang ở tình trạng đó. Con số có màu là việc cần người xử lý."
           },
           "modes": [
             "watch"
@@ -17903,14 +17912,23 @@
         },
         {
           "act": "observe",
-          "anchor": "nj-steps",
-          "body": {
-            "en": "Press a step to see only the people on it.",
-            "vi": "Bấm một bước để chỉ xem những người đang ở đó."
+          "affects": {
+            "en": "Pressing a step shows only the people on it.",
+            "vi": "Bấm một bước sẽ chỉ hiện những người đang ở bước đó."
           },
+          "anchor": "nj-steps",
+          "body": "",
           "guard": false,
           "key": "steps",
           "kicker": "",
+          "look": {
+            "en": "The three steps: Getting ready, Settling in and Checklist done.",
+            "vi": "Ba bước: Đang chuẩn bị, Đang hòa nhập và Đã xong danh mục."
+          },
+          "means": {
+            "en": "Every joiner is at exactly one of them, from before their first day to a settled checklist.",
+            "vi": "Mỗi người mới ở đúng một bước, từ trước ngày làm đầu tiên tới khi danh mục đã xong."
+          },
           "modes": [
             "watch"
           ],
@@ -17926,14 +17944,23 @@
         },
         {
           "act": "observe",
-          "anchor": "nj-list",
-          "body": {
-            "en": "Open a card for what is still to do, what is done, and the conversations so far — and give them a buddy if they have none. With nobody starting soon, the board says so here.",
-            "vi": "Mở một thẻ để xem việc còn phải làm, việc đã xong, và các cuộc trao đổi — và chọn người đồng hành nếu họ chưa có. Khi không ai sắp vào làm, bảng nói điều đó tại đây."
+          "affects": {
+            "en": "A card with no buddy offers Choose one. With nobody starting soon, the board says so here.",
+            "vi": "Thẻ chưa có người đồng hành có nút Chọn một người. Khi không ai sắp vào làm, bảng nói điều đó tại đây."
           },
+          "anchor": "nj-list",
+          "body": "",
           "guard": false,
           "key": "list",
           "kicker": "",
+          "look": {
+            "en": "The cards, one per joiner, each with their Buddy and HR contact.",
+            "vi": "Các thẻ, mỗi người mới một thẻ, mỗi thẻ có Người đồng hành và Liên hệ nhân sự."
+          },
+          "means": {
+            "en": "Opening a card shows what is Still to do, what is Done, and the Conversations so far.",
+            "vi": "Mở một thẻ sẽ thấy việc Còn phải làm, việc đã Hoàn tất, và các cuộc Trao đổi tới nay."
+          },
           "modes": [
             "watch"
           ],
@@ -17990,16 +18017,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "ex2-numbers",
-          "body": {
-            "en": "Leaving this month, Last day has passed, Settlements held up, Clearances still open, Items not back yet.",
-            "vi": "Nghỉ việc trong tháng này, Đã qua ngày làm việc cuối, Quyết toán bị vướng, Xác nhận bàn giao còn mở, Tài sản chưa trả lại."
+          "affects": {
+            "en": "Settlements held up and Settlements to check are last payments that cannot go out yet.",
+            "vi": "Quyết toán bị vướng và Quyết toán cần kiểm tra là những khoản chi cuối chưa thể chuyển đi."
           },
+          "anchor": "ex2-numbers",
+          "body": "",
           "guard": false,
           "key": "numbers",
           "kicker": {
             "en": "Lifecycle › Exits",
             "vi": "Vòng đời nhân sự › Nghỉ việc"
+          },
+          "look": {
+            "en": "The numbers at the top: Leaving this month, Last day has passed, Settlements held up, Clearances still open, Items not back yet and Settlements to check.",
+            "vi": "Các con số ở trên cùng: Nghỉ việc trong tháng này, Đã qua ngày làm việc cuối, Quyết toán bị vướng, Xác nhận bàn giao còn mở, Tài sản chưa trả lại và Quyết toán cần kiểm tra."
+          },
+          "means": {
+            "en": "Each number counts leavers in that state. A number with a colour needs someone to act.",
+            "vi": "Mỗi con số đếm số người nghỉ đang ở tình trạng đó. Con số có màu là việc cần người xử lý."
           },
           "modes": [
             "watch",
@@ -18020,14 +18056,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ex2-steps",
-          "body": {
-            "en": "The four steps every leaver walks.",
-            "vi": "Bốn bước mọi người nghỉ việc đều đi qua."
+          "affects": {
+            "en": "Ready to settle means the last payment can go out.",
+            "vi": "Sẵn sàng quyết toán nghĩa là có thể chi khoản thanh toán cuối."
           },
+          "anchor": "ex2-steps",
+          "body": "",
           "guard": false,
           "key": "steps",
           "kicker": "",
+          "look": {
+            "en": "The four steps: Working their notice, Signing off, Ready to settle and Settled.",
+            "vi": "Bốn bước: Đang trong thời gian báo trước, Đang xác nhận bàn giao, Sẵn sàng quyết toán và Đã quyết toán."
+          },
+          "means": {
+            "en": "The four steps every leaver walks, one at a time.",
+            "vi": "Bốn bước mọi người nghỉ việc đều đi qua, lần lượt từng bước."
+          },
           "modes": [
             "watch",
             "try"
@@ -18044,14 +18089,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-ex-card",
-          "body": {
-            "en": "Her last day has passed. Press her card to see who has signed her off.",
-            "vi": "Ngày làm cuối của chị đã qua. Bấm vào thẻ để xem ai đã xác nhận bàn giao."
+          "affects": {
+            "en": "Opening it changes nothing.",
+            "vi": "Mở thẻ không thay đổi gì."
           },
+          "anchor": "rep-ex-card",
+          "body": "",
           "guard": false,
           "key": "card",
           "kicker": "",
+          "look": {
+            "en": "Hạnh's card. Her last day has passed.",
+            "vi": "Thẻ của Hạnh. Ngày làm cuối của chị đã qua."
+          },
+          "means": {
+            "en": "Opening her card shows which desks have signed her off.",
+            "vi": "Mở thẻ của chị sẽ thấy những phòng ban nào đã xác nhận bàn giao."
+          },
           "modes": [
             "try"
           ],
@@ -18067,14 +18121,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ex2-list",
-          "body": {
-            "en": "Each card shows Signed off by: IT, HR, Finance and Admin. Open one for the settlement, which waits for all four. With nobody leaving, the board says so here.",
-            "vi": "Mỗi thẻ hiện Được ký tắt bởi: IT, Nhân sự, Tài chính và Quản trị viên. Mở một thẻ để xem quyết toán, vốn chờ đủ cả bốn. Khi không ai nghỉ, bảng nói điều đó tại đây."
+          "affects": {
+            "en": "A card with a dark light is a leaver whose last payment cannot go out yet. With nobody leaving, the board says so here.",
+            "vi": "Thẻ có đèn chưa sáng là người nghỉ chưa thể nhận khoản chi cuối. Khi không ai nghỉ, bảng nói điều đó tại đây."
           },
+          "anchor": "ex2-list",
+          "body": "",
           "guard": false,
           "key": "cards",
           "kicker": "",
+          "look": {
+            "en": "The cards, each with Signed off by: IT, HR, Finance and Admin.",
+            "vi": "Các thẻ, mỗi thẻ có Được ký tắt bởi: IT, HR, Finance và Admin."
+          },
+          "means": {
+            "en": "Each card is one leaver. Opening one shows the settlement, which waits for all four.",
+            "vi": "Mỗi thẻ là một người nghỉ. Mở một thẻ sẽ thấy quyết toán, vốn chờ đủ cả bốn."
+          },
           "modes": [
             "watch"
           ],
@@ -18090,14 +18153,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ex2-clearance",
-          "body": {
-            "en": "One light per desk. A dark one is the desk still waiting for something back.",
-            "vi": "Mỗi phòng ban một đèn. Đèn chưa sáng là phòng ban vẫn đang chờ lấy lại một thứ gì đó."
+          "affects": {
+            "en": "The final settlement waits until every light is on.",
+            "vi": "Quyết toán cuối cùng chờ cho tới khi mọi đèn đều sáng."
           },
+          "anchor": "ex2-clearance",
+          "body": "",
           "guard": false,
           "key": "clearance",
           "kicker": "",
+          "look": {
+            "en": "The Signed off by lights.",
+            "vi": "Các đèn Được ký tắt bởi."
+          },
+          "means": {
+            "en": "One light per desk. A dark one is the desk still waiting for something back.",
+            "vi": "Mỗi phòng ban một đèn. Đèn chưa sáng là phòng ban vẫn đang chờ lấy lại một thứ gì đó."
+          },
           "modes": [
             "watch",
             "try"
@@ -18114,14 +18186,23 @@
         },
         {
           "act": "click",
-          "anchor": "ex2-card",
-          "body": {
-            "en": "I open the first leaver's card: their exit, whole — the money at the top. Opening it changes nothing.",
-            "vi": "Tôi mở thẻ của người nghỉ đầu tiên: toàn bộ quá trình nghỉ việc của họ — khoản tiền ở trên cùng. Mở thẻ không thay đổi gì."
+          "affects": {
+            "en": "Opening it changes nothing.",
+            "vi": "Mở thẻ không thay đổi gì."
           },
+          "anchor": "ex2-card",
+          "body": "",
           "guard": false,
           "key": "cardlive",
           "kicker": "",
+          "look": {
+            "en": "The top of the first leaver's card: their name and last day.",
+            "vi": "Phần trên của thẻ người nghỉ đầu tiên: tên và ngày làm cuối."
+          },
+          "means": {
+            "en": "I open it: their exit, whole, with the money at the top.",
+            "vi": "Tôi mở nó: toàn bộ quá trình nghỉ việc của họ, với khoản tiền ở trên cùng."
+          },
           "modes": [
             "watch"
           ],
@@ -18137,14 +18218,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ex2-settle",
-          "body": {
-            "en": "Close settlement becomes available when every desk has signed. A settlement still ready to check offers Send for approval here first. The payment itself is made from Pay Run › Settle.",
-            "vi": "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Khoản quyết toán còn <b>Cần kiểm tra</b> sẽ có nút Gửi duyệt ở đây trước. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."
+          "affects": {
+            "en": "Close settlement works once every desk has signed. The payment itself is made from Pay Run › Settle.",
+            "vi": "Chốt quyết toán bấm được khi mọi phòng ban đã ký. Bản thân khoản chi được thực hiện từ Đợt lương › Quyết toán."
           },
+          "anchor": "ex2-settle",
+          "body": "",
           "guard": false,
           "key": "settle",
           "kicker": "",
+          "look": {
+            "en": "The settlement block: Close settlement and Open the settlement.",
+            "vi": "Khối quyết toán: Chốt quyết toán và Mở quyết toán."
+          },
+          "means": {
+            "en": "A settlement still to check offers Send for approval here first.",
+            "vi": "Khoản quyết toán còn cần kiểm tra sẽ có nút Gửi duyệt ở đây trước."
+          },
           "modes": [
             "watch",
             "try"
@@ -18200,16 +18290,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "pr-numbers",
-          "body": {
-            "en": "In a trial period, Reviews running, Waiting on a decision, Answers overdue, Ending within a week.",
-            "vi": "Đang thử việc, Đánh giá đang chạy, Đang chờ quyết định, Câu trả lời quá hạn, Kết thúc trong vòng một tuần."
+          "affects": {
+            "en": "A trial counted under Ending within a week needs a decision before its end date.",
+            "vi": "Đợt thử việc nằm trong Kết thúc trong vòng một tuần cần có quyết định trước ngày kết thúc."
           },
+          "anchor": "pr-numbers",
+          "body": "",
           "guard": false,
           "key": "numbers",
           "kicker": {
             "en": "Lifecycle › Probation",
             "vi": "Vòng đời nhân sự › Thử việc"
+          },
+          "look": {
+            "en": "The numbers at the top: In a trial period, Reviews running, Waiting on a decision, Answers overdue and Ending within a week.",
+            "vi": "Các con số ở trên cùng: Đang thử việc, Đánh giá đang chạy, Đang chờ quyết định, Câu trả lời quá hạn và Kết thúc trong vòng một tuần."
+          },
+          "means": {
+            "en": "Each number counts trials in that state. Ending within a week is the one that cannot wait.",
+            "vi": "Mỗi con số đếm các đợt thử việc ở tình trạng đó. Kết thúc trong vòng một tuần là mục không thể chờ."
           },
           "modes": [
             "watch"
@@ -18229,14 +18328,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pr-steps",
-          "body": {
-            "en": "Choose peers, Gather perspectives, Manager conversation, HR & leadership review, Share the outcome.",
-            "vi": "Chọn đồng nghiệp, Thu thập ý kiến, Trao đổi với quản lý, Nhân sự và lãnh đạo xem xét, Thông báo kết quả."
+          "affects": {
+            "en": "At HR & leadership review, the manager's recommendation is being signed off.",
+            "vi": "Ở bước Nhân sự và lãnh đạo xem xét, đề xuất của quản lý đang được phê duyệt."
           },
+          "anchor": "pr-steps",
+          "body": "",
           "guard": false,
           "key": "steps",
           "kicker": "",
+          "look": {
+            "en": "The five steps: Choose peers, Gather perspectives, Manager conversation, HR & leadership review and Share the outcome.",
+            "vi": "Năm bước: Chọn đồng nghiệp, Thu thập ý kiến, Trao đổi với quản lý, Nhân sự và lãnh đạo xem xét và Thông báo kết quả."
+          },
+          "means": {
+            "en": "From choosing colleagues to ask, to telling the person the outcome.",
+            "vi": "Từ chọn đồng nghiệp để hỏi, tới thông báo kết quả cho người đó."
+          },
           "modes": [
             "watch"
           ],
@@ -18252,14 +18360,23 @@
         },
         {
           "act": "observe",
-          "anchor": "pr-list",
-          "body": {
-            "en": "A card's five stops are the five steps above. Inside: colleagues asked and who answered, then Confirm them, Extend the trial or Do not confirm. With nobody on a trial, the board says so here.",
-            "vi": "Năm chặng trên thẻ chính là năm bước ở trên. Bên trong: đồng nghiệp được hỏi và ai đã trả lời, rồi Xác nhận chính thức, Kéo dài thử việc hoặc Không xác nhận. Khi không ai đang thử việc, bảng nói điều đó tại đây."
+          "affects": {
+            "en": "The decision is Confirm them, Extend the trial or Do not confirm, recorded after the required approvals. With nobody on a trial, the board says so here.",
+            "vi": "Quyết định là Xác nhận chính thức, Kéo dài thử việc hoặc Không xác nhận, được ghi nhận sau các phê duyệt cần thiết. Khi không ai đang thử việc, bảng nói điều đó tại đây."
           },
+          "anchor": "pr-list",
+          "body": "",
           "guard": false,
           "key": "list",
           "kicker": "",
+          "look": {
+            "en": "A card's five stops: Peers, Answers, Meeting, Sign-off and Outcome.",
+            "vi": "Năm chặng trên một thẻ: Đồng nghiệp, Phản hồi, Trao đổi, Phê duyệt và Kết quả."
+          },
+          "means": {
+            "en": "They are the five steps above. Inside a card: the colleagues asked, and who has answered.",
+            "vi": "Đó chính là năm bước ở trên. Bên trong thẻ: các đồng nghiệp được hỏi, và ai đã trả lời."
+          },
           "modes": [
             "watch"
           ],
@@ -25712,21 +25829,34 @@
           ],
           "steps": [
             {
-              "anchor": "nj-numbers",
-              "body": {
-                "en": "Lifecycle › <b>New joiners</b>. <b>Joining this week</b>, <b>Already started</b>, <b>Still without a buddy</b>, <b>Steps overdue</b>, and people who <b>said they are struggling</b>.",
-                "vi": "Vòng đời nhân sự › <b>Nhân viên mới</b>. <b>Vào làm tuần này</b>, <b>Đã bắt đầu làm việc</b>, <b>Chưa có người đồng hành</b>, <b>Bước quá hạn</b>, và những người <b>cho biết đang gặp khó khăn</b>."
+              "affects": {
+                "en": "A joiner counted under Still without a buddy or Steps overdue walks in on day one with something missing.",
+                "vi": "Người mới nằm trong Chưa có người đồng hành hoặc Bước quá hạn sẽ bước vào ngày đầu với một việc còn thiếu."
               },
+              "anchor": "nj-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers at the top: Joining this week, Already started, Still without a buddy, Steps overdue and Said they are struggling.",
+                "vi": "Các con số ở trên cùng: Vào làm tuần này, Đã bắt đầu làm việc, Chưa có người đồng hành, Bước quá hạn và Cho biết đang gặp khó khăn."
+              },
+              "means": {
+                "en": "Each number counts new joiners in that state. It stays grey at zero and takes a colour when someone has to act.",
+                "vi": "Mỗi con số đếm số người mới đang ở tình trạng đó. Nó giữ màu xám khi bằng không, và có màu khi cần ai đó xử lý."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A number, to see only those joiners on the board.",
+                "vi": "Một con số, để chỉ xem những người mới đó trên bảng."
+              },
               "screen": "joiners",
               "tip": "",
               "title": {
@@ -25736,21 +25866,34 @@
               "visual": "none"
             },
             {
-              "anchor": "nj-steps",
-              "body": {
-                "en": "Before the first day a joiner is <b>Getting ready</b>; from it, <b>Settling in</b>. They leave the board when their <b>Checklist done</b>.",
-                "vi": "Trước ngày đầu, người mới <b>Đang chuẩn bị</b>; từ ngày đó, <b>Đang hòa nhập</b>. Họ rời bảng khi <b>Đã xong danh mục</b>."
+              "affects": {
+                "en": "Each joiner sits at exactly one step, so the three counts add up to everyone on the board.",
+                "vi": "Mỗi người mới nằm ở đúng một bước, nên ba con số cộng lại bằng tất cả mọi người trên bảng."
               },
+              "anchor": "nj-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Three steps",
                 "vi": "Ba bước"
               },
               "lines": [],
+              "look": {
+                "en": "The three steps: Getting ready, Settling in and Checklist done.",
+                "vi": "Ba bước: Đang chuẩn bị, Đang hòa nhập và Đã xong danh mục."
+              },
+              "means": {
+                "en": "Getting ready is before their first day. Settling in means they have started and the checklist is still open.",
+                "vi": "Đang chuẩn bị là trước ngày làm việc đầu tiên. Đang hòa nhập nghĩa là họ đã vào làm và danh mục vẫn còn việc."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A step, to see only the joiners at it.",
+                "vi": "Một bước, để chỉ xem những người mới đang ở bước đó."
+              },
               "screen": "joiners",
               "tip": "",
               "title": {
@@ -25760,21 +25903,34 @@
               "visual": "none"
             },
             {
-              "anchor": "nj-list",
-              "body": {
-                "en": "Each card is one person and their start date. Đinh Thị Yến has no buddy yet: her card offers <b>Choose one</b>, and she is the one counted under Still without a buddy.",
-                "vi": "Mỗi thẻ là một người và ngày bắt đầu của họ. Đinh Thị Yến chưa có người đồng hành: thẻ của chị có nút <b>Chọn một người</b>, và chị chính là người được đếm ở mục Chưa có người đồng hành."
+              "affects": {
+                "en": "Once a buddy is chosen, their catch-ups go in the diary and that count drops.",
+                "vi": "Khi đã chọn người đồng hành, các buổi gặp của họ được đưa vào lịch và con số đó giảm xuống."
               },
+              "anchor": "nj-list",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The cards",
                 "vi": "Các thẻ"
               },
               "lines": [],
+              "look": {
+                "en": "The cards. Each shows one joiner, their first day, their Buddy and their HR contact.",
+                "vi": "Các thẻ. Mỗi thẻ là một người mới, ngày làm đầu tiên, Người đồng hành và Liên hệ nhân sự của họ."
+              },
+              "means": {
+                "en": "Đinh Thị Yến has no buddy yet, so her card offers Choose one. She is the one counted under Still without a buddy.",
+                "vi": "Đinh Thị Yến chưa có người đồng hành, nên thẻ của chị có nút Chọn một người. Chị chính là người được đếm ở Chưa có người đồng hành."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Choose one on Yến's card, then pick a colleague.",
+                "vi": "Nút Chọn một người trên thẻ của Yến, rồi chọn một đồng nghiệp."
+              },
               "screen": "joiners",
               "tip": "",
               "title": {
@@ -25784,25 +25940,34 @@
               "visual": "none"
             },
             {
-              "anchor": "nj-drawer",
-              "body": {
-                "en": "Open a card and the drawer lists what is <b>Still to do</b> — laptop, store card, bank account, first-week rota — what is <b>Done</b>, and the <b>Conversations</b> so far.",
-                "vi": "Mở một thẻ, ngăn bên cạnh liệt kê việc <b>Còn phải làm</b> — máy tính, thẻ cửa hàng, tài khoản ngân hàng, lịch ca tuần đầu — việc đã <b>Hoàn tất</b>, và các cuộc <b>Trao đổi</b> tới nay."
+              "affects": {
+                "en": "The bank account is payroll's item. Without it Nam is computed in August but cannot be paid.",
+                "vi": "Tài khoản ngân hàng là việc của bảng lương. Thiếu nó, Nam vẫn được tính lương tháng 8 nhưng không chi trả được."
               },
+              "anchor": "nj-drawer",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Open a person",
                 "vi": "Mở một người"
               },
               "lines": [],
+              "look": {
+                "en": "The drawer of an open card: Still to do, Done and Conversations.",
+                "vi": "Ngăn bên cạnh của một thẻ đang mở: Còn phải làm, Hoàn tất và Trao đổi."
+              },
+              "means": {
+                "en": "Still to do lists what is open, like the laptop, the bank account and the first-week rota. Done lists what is finished.",
+                "vi": "Còn phải làm liệt kê những việc chưa xong, như máy tính, tài khoản ngân hàng và lịch ca tuần đầu. Hoàn tất liệt kê việc đã xong."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "joiners",
               "tip": {
-                "en": "The bank account on that list is payroll's item. Without it Nam is computed in August and paid nothing.",
-                "vi": "Tài khoản ngân hàng trong danh sách đó là việc của bảng lương. Thiếu nó, Nam vẫn được tính lương tháng 8 mà không nhận được đồng nào."
+                "en": "Conversations shows the check-ins held so far, and marks any that needs attention.",
+                "vi": "Trao đổi cho thấy các buổi gặp đã diễn ra, và đánh dấu buổi nào cần chú ý."
               },
               "title": {
                 "en": "Still to do, Done, Conversations",
@@ -25811,17 +25976,26 @@
               "visual": "none"
             },
             {
-              "anchor": "nj-buddy",
-              "body": {
-                "en": "The drawer names who the joiner can ask: their HR contact and their <b>Buddy</b>, and opens their record in one press.",
-                "vi": "Ngăn bên cạnh ghi rõ người mới có thể hỏi ai: liên hệ nhân sự và <b>Người đồng hành</b>, và mở hồ sơ của họ chỉ với một lần bấm."
+              "affects": {
+                "en": "The pay run reads the employee record, so a gap listed there can hold up the first payment.",
+                "vi": "Đợt lương đọc hồ sơ nhân viên, nên một chỗ thiếu ghi ở đó có thể làm chậm lần chi trả đầu tiên."
               },
+              "anchor": "nj-buddy",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "People around them",
                 "vi": "Những người bên cạnh"
               },
               "lines": [],
+              "look": {
+                "en": "The names at the top of the drawer: HR contact, Buddy and Their record.",
+                "vi": "Các tên ở đầu ngăn bên cạnh: Liên hệ nhân sự, Người đồng hành và Hồ sơ của họ."
+              },
+              "means": {
+                "en": "HR contact and Buddy are who the joiner can ask. Their record shows how complete their employee record is.",
+                "vi": "Liên hệ nhân sự và Người đồng hành là những người mà người mới có thể hỏi. Hồ sơ của họ cho biết hồ sơ nhân viên đã đầy đủ tới đâu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25835,21 +26009,34 @@
               "visual": "none"
             },
             {
-              "anchor": "nj-run",
-              "body": {
-                "en": "<b>Run today's steps</b> sends what is due today — welcome messages, reminders to the buddy — instead of waiting for tonight's automatic run.",
-                "vi": "<b>Chạy các bước hôm nay</b> gửi những gì đến hạn hôm nay — lời chào mừng, lời nhắc cho người đồng hành — thay vì chờ lần chạy tự động tối nay."
+              "affects": {
+                "en": "Joiners and their buddies get today's messages straight away. A note says how many steps ran.",
+                "vi": "Người mới và người đồng hành nhận tin nhắn của hôm nay ngay. Một thông báo cho biết bao nhiêu bước đã chạy."
               },
+              "anchor": "nj-run",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Every morning",
                 "vi": "Mỗi sáng"
               },
               "lines": [],
+              "look": {
+                "en": "The Run today's steps button, at the top right.",
+                "vi": "Nút Chạy các bước hôm nay, ở góc trên bên phải."
+              },
+              "means": {
+                "en": "It sends today's automatic steps and checks now, instead of waiting for tonight's automatic run.",
+                "vi": "Nó gửi ngay các bước và lần kiểm tra tự động của hôm nay, thay vì chờ lần chạy tự động tối nay."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Run today's steps.",
+                "vi": "Chạy các bước hôm nay."
+              },
               "screen": "joiners",
               "tip": "",
               "title": {
@@ -25947,8 +26134,8 @@
                 {
                   "correct": false,
                   "feedback": {
-                    "en": "Let's rethink that. A yes by default is a decision nobody made, and nobody can explain it later.",
-                    "vi": "Hãy nghĩ lại một chút. Mặc nhiên đồng ý là một quyết định không ai đưa ra, và sau này không ai giải thích được."
+                    "en": "Let's rethink that. Letting Friday pass leaves Nam with no decision at all, and nobody can explain later why he stayed.",
+                    "vi": "Hãy nghĩ lại một chút. Để thứ Sáu trôi qua là để Nam không có quyết định nào, và sau này không ai giải thích được vì sao anh ở lại."
                   },
                   "label": {
                     "en": "Let it pass — he will be confirmed anyway",
@@ -25975,21 +26162,34 @@
           ],
           "steps": [
             {
-              "anchor": "pr-numbers",
-              "body": {
-                "en": "Lifecycle › <b>Probation</b>. <b>In a trial period</b>, <b>Reviews running</b>, <b>Waiting on a decision</b>, <b>Answers overdue</b> and <b>Ending within a week</b> — the one that cannot wait.",
-                "vi": "Vòng đời nhân sự › <b>Thử việc</b>. <b>Đang thử việc</b>, <b>Đánh giá đang chạy</b>, <b>Đang chờ quyết định</b>, <b>Câu trả lời quá hạn</b> và <b>Kết thúc trong vòng một tuần</b> — mục không thể chờ."
+              "affects": {
+                "en": "A trial counted under Ending within a week needs a decision before its end date.",
+                "vi": "Đợt thử việc nằm trong Kết thúc trong vòng một tuần cần có quyết định trước ngày kết thúc."
               },
+              "anchor": "pr-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers at the top: In a trial period, Reviews running, Waiting on a decision, Answers overdue and Ending within a week.",
+                "vi": "Các con số ở trên cùng: Đang thử việc, Đánh giá đang chạy, Đang chờ quyết định, Câu trả lời quá hạn và Kết thúc trong vòng một tuần."
+              },
+              "means": {
+                "en": "Each number counts trials in that state. Ending within a week is the one that cannot wait.",
+                "vi": "Mỗi con số đếm các đợt thử việc ở tình trạng đó. Kết thúc trong vòng một tuần là mục không thể chờ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Ending within a week, to see only those trials.",
+                "vi": "Kết thúc trong vòng một tuần, để chỉ xem những đợt thử việc đó."
+              },
               "screen": "probation",
               "tip": "",
               "title": {
@@ -25999,21 +26199,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pr-steps",
-              "body": {
-                "en": "<b>Choose peers</b>, <b>Gather perspectives</b>, <b>Manager conversation</b>, <b>HR & leadership review</b>, <b>Share the outcome</b>. Nam's trial is at the fourth.",
-                "vi": "<b>Chọn đồng nghiệp</b>, <b>Thu thập ý kiến</b>, <b>Trao đổi với quản lý</b>, <b>Nhân sự và lãnh đạo xem xét</b>, <b>Thông báo kết quả</b>. Đợt thử việc của Nam đang ở bước thứ tư."
+              "affects": {
+                "en": "Nam's trial is at the fourth step, so his outcome is not recorded yet.",
+                "vi": "Đợt thử việc của Nam đang ở bước thứ tư, nên kết quả của anh chưa được ghi nhận."
               },
+              "anchor": "pr-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Five steps",
                 "vi": "Năm bước"
               },
               "lines": [],
+              "look": {
+                "en": "The five steps: Choose peers, Gather perspectives, Manager conversation, HR & leadership review and Share the outcome.",
+                "vi": "Năm bước: Chọn đồng nghiệp, Thu thập ý kiến, Trao đổi với quản lý, Nhân sự và lãnh đạo xem xét và Thông báo kết quả."
+              },
+              "means": {
+                "en": "Colleagues are chosen and answer, the manager talks and recommends, HR and leadership sign it off, then the outcome is shared.",
+                "vi": "Đồng nghiệp được chọn và trả lời, quản lý trao đổi và đề xuất, nhân sự và lãnh đạo phê duyệt, rồi kết quả được thông báo."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A step, to see only the trials at it.",
+                "vi": "Một bước, để chỉ xem các đợt thử việc đang ở bước đó."
+              },
               "screen": "probation",
               "tip": "",
               "title": {
@@ -26023,21 +26236,34 @@
               "visual": "none"
             },
             {
-              "anchor": "pr-list",
-              "body": {
-                "en": "Each card says when the trial ends and how far it has got. Its five stops — Peers, Answers, Meeting, Sign-off, Outcome — are the five steps above, so a card and the strip always agree. Open one to see what everybody said.",
-                "vi": "Mỗi thẻ cho biết thử việc kết thúc khi nào và đã đi tới đâu. Năm chặng trên thẻ — Đồng nghiệp, Phản hồi, Trao đổi, Phê duyệt, Kết quả — chính là năm bước ở trên, nên thẻ và dải bước luôn khớp nhau. Mở một thẻ để xem mọi người đã nói gì."
+              "affects": {
+                "en": "Opening a card shows what everybody said, ready for the decision.",
+                "vi": "Mở một thẻ sẽ thấy mọi người đã nói gì, sẵn sàng cho quyết định."
               },
+              "anchor": "pr-list",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The cards",
                 "vi": "Các thẻ"
               },
               "lines": [],
+              "look": {
+                "en": "A card's five stops: Peers, Answers, Meeting, Sign-off and Outcome.",
+                "vi": "Năm chặng trên một thẻ: Đồng nghiệp, Phản hồi, Trao đổi, Phê duyệt và Kết quả."
+              },
+              "means": {
+                "en": "They are the five steps above, so a card and the steps always agree. The date says when the trial ends.",
+                "vi": "Đó chính là năm bước ở trên, nên thẻ và các bước luôn khớp nhau. Ngày ghi trên thẻ cho biết thử việc kết thúc khi nào."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A card, to open that trial.",
+                "vi": "Một thẻ, để mở đợt thử việc đó."
+              },
               "screen": "probation",
               "tip": "",
               "title": {
@@ -26047,17 +26273,26 @@
               "visual": "none"
             },
             {
-              "anchor": "pr-peers",
-              "body": {
-                "en": "The colleagues chosen are sent a few short questions. Their answers sit beside the manager's view, so the decision is not one person's impression.",
-                "vi": "Những đồng nghiệp được chọn nhận vài câu hỏi ngắn. Câu trả lời của họ nằm cạnh nhận xét của quản lý, để quyết định không chỉ là ấn tượng của một người."
+              "affects": {
+                "en": "Their answers sit beside the manager's view, so the decision is not one person's impression.",
+                "vi": "Câu trả lời của họ nằm cạnh nhận xét của quản lý, để quyết định không chỉ là ấn tượng của một người."
               },
+              "anchor": "pr-peers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Colleagues asked",
                 "vi": "Đồng nghiệp được hỏi"
               },
               "lines": [],
+              "look": {
+                "en": "The Colleagues asked list in the drawer. Three of the four show Answered.",
+                "vi": "Danh sách Đồng nghiệp được hỏi trong ngăn bên cạnh. Ba trên bốn người đã trả lời."
+              },
+              "means": {
+                "en": "The colleagues chosen are sent a few short questions through a private link.",
+                "vi": "Những đồng nghiệp được chọn nhận vài câu hỏi ngắn qua một đường dẫn riêng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26071,11 +26306,12 @@
               "visual": "none"
             },
             {
-              "anchor": "pr-verdict",
-              "body": {
-                "en": "The manager decides first; HR and leadership review it; then it is shared with the person. A trial that ends with nobody deciding becomes a yes by default.",
-                "vi": "Quản lý quyết định trước; nhân sự và lãnh đạo xem xét; rồi kết quả được thông báo cho người đó. Thử việc kết thúc mà không ai quyết định sẽ mặc nhiên thành đồng ý."
+              "affects": {
+                "en": "The outcome and the letter are recorded only after the required approvals. Then it is shared with the person.",
+                "vi": "Kết quả và thư chỉ được ghi nhận sau khi có đủ các phê duyệt cần thiết. Sau đó kết quả được thông báo cho người đó."
               },
+              "anchor": "pr-verdict",
+              "body": "",
               "consequence": {
                 "en": "Affects this person's job and, if confirmed, their pay from the next pay run. Reversible: not once shared. Verify first: colleagues have answered and the end date has not passed.",
                 "vi": "Ảnh hưởng: công việc của người này và, nếu xác nhận, lương của họ từ đợt lương kế tiếp. Hoàn tác: không, một khi đã thông báo. Kiểm tra trước: đồng nghiệp đã trả lời và ngày kết thúc chưa qua."
@@ -26085,6 +26321,14 @@
                 "vi": "Quyết định"
               },
               "lines": [],
+              "look": {
+                "en": "The three choices when deciding: Confirm them, Extend the trial and Do not confirm.",
+                "vi": "Ba lựa chọn khi quyết định: Xác nhận chính thức, Kéo dài thử việc và Không xác nhận."
+              },
+              "means": {
+                "en": "The manager recommends one. The HR lead reviews it next, and the CEO too where the role needs it.",
+                "vi": "Quản lý đề xuất một lựa chọn. Tiếp theo trưởng nhân sự xem xét, và cả CEO nếu vị trí đó cần."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26203,25 +26447,38 @@
           ],
           "steps": [
             {
-              "anchor": "gw-numbers",
-              "body": {
-                "en": "Lifecycle › <b>Growth plans</b>. <b>Open</b>, <b>Still a conversation</b>, <b>Plans running</b>, <b>Waiting on a decision</b>, and plans <b>Drifting or at risk</b>.",
-                "vi": "Vòng đời nhân sự › <b>Kế hoạch phát triển</b>. <b>Đang mở</b>, <b>Vẫn đang trao đổi</b>, <b>Kế hoạch đang chạy</b>, <b>Đang chờ quyết định</b>, và các kế hoạch <b>Chệch hướng hoặc có rủi ro</b>."
+              "affects": {
+                "en": "Drifting or at risk is where someone has to step in: an objective at risk, or a conversation that did not happen.",
+                "vi": "Chệch hướng hoặc có rủi ro là nơi cần người vào cuộc: một mục tiêu có rủi ro, hoặc một buổi trao đổi đã không diễn ra."
               },
+              "anchor": "gw-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers at the top: Open, Still a conversation, Plans running, Waiting on a decision and Drifting or at risk.",
+                "vi": "Các con số ở trên cùng: Đang mở, Vẫn đang trao đổi, Kế hoạch đang chạy, Đang chờ quyết định và Chệch hướng hoặc có rủi ro."
+              },
+              "means": {
+                "en": "Open counts every plan not yet closed. The others split those plans by where they are.",
+                "vi": "Đang mở đếm mọi kế hoạch chưa đóng. Các số còn lại chia những kế hoạch đó theo nơi chúng đang ở."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Drifting or at risk, to see only those plans.",
+                "vi": "Chệch hướng hoặc có rủi ro, để chỉ xem những kế hoạch đó."
+              },
               "screen": "growth",
               "tip": {
-                "en": "Only people with a growth-plan role see this tab. A manager starts from the form Ask HR about someone in your team.",
-                "vi": "Chỉ người có vai trò kế hoạch phát triển mới thấy tab này. Quản lý bắt đầu từ biểu mẫu hỏi nhân sự về một người trong nhóm."
+                "en": "Only people with a growth-plan role see this tab. A manager starts from Ask HR about someone in my team, in the command bar.",
+                "vi": "Chỉ người có vai trò kế hoạch phát triển mới thấy tab này. Quản lý bắt đầu từ Hỏi bộ phận nhân sự về một người trong nhóm của tôi, trên thanh lệnh."
               },
               "title": {
                 "en": "Help that is written down",
@@ -26230,21 +26487,34 @@
               "visual": "none"
             },
             {
-              "anchor": "gw-steps",
-              "body": {
-                "en": "It starts as a conversation and coaching. Only if that is not enough does it become a written plan, and every plan ends in a decision.",
-                "vi": "Nó bắt đầu bằng trao đổi và kèm cặp. Chỉ khi chưa đủ mới thành kế hoạch bằng văn bản, và mọi kế hoạch đều kết thúc bằng một quyết định."
+              "affects": {
+                "en": "Nothing is written to the person's record until the plan is started.",
+                "vi": "Không có gì được ghi vào hồ sơ của người đó cho tới khi kế hoạch được bắt đầu."
               },
+              "anchor": "gw-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Four steps",
                 "vi": "Bốn bước"
               },
               "lines": [],
+              "look": {
+                "en": "The four steps: Asked, Coaching, Plan running and Decision.",
+                "vi": "Bốn bước: Đã yêu cầu, Kèm cặp, Kế hoạch đang chạy và Quyết định."
+              },
+              "means": {
+                "en": "A manager asks HR to look, then coaching starts. Only if that is not enough does it become a written plan.",
+                "vi": "Quản lý nhờ Nhân sự xem xét, rồi việc kèm cặp bắt đầu. Chỉ khi chưa đủ thì mới thành kế hoạch bằng văn bản."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A step, to see only its plans.",
+                "vi": "Một bước, để chỉ xem các kế hoạch của bước đó."
+              },
               "screen": "growth",
               "tip": "",
               "title": {
@@ -26254,21 +26524,34 @@
               "visual": "none"
             },
             {
-              "anchor": "gw-list",
-              "body": {
-                "en": "Each card names the person, the step and how many objectives are on track. Press a step above to see only its cards.",
-                "vi": "Mỗi thẻ ghi tên người, bước hiện tại và bao nhiêu mục tiêu đang đúng hướng. Bấm một bước ở trên để chỉ xem các thẻ của bước đó."
+              "affects": {
+                "en": "A running plan also shows how much of its time has gone. That is time, not a score.",
+                "vi": "Một kế hoạch đang chạy còn cho thấy đã trôi qua bao nhiêu thời gian. Đó là thời gian, không phải điểm số."
               },
+              "anchor": "gw-list",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "One card each",
                 "vi": "Mỗi người một thẻ"
               },
               "lines": [],
+              "look": {
+                "en": "A card: the person, the stops along the card, and the Objectives line.",
+                "vi": "Một thẻ: tên người, các chặng trên thẻ, và dòng mục tiêu."
+              },
+              "means": {
+                "en": "The Objectives line says how many are agreed, or how many of them are at risk.",
+                "vi": "Dòng mục tiêu cho biết đã thống nhất bao nhiêu mục tiêu, hoặc bao nhiêu trong số đó có rủi ro."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A card, to open the plan.",
+                "vi": "Một thẻ, để mở kế hoạch."
+              },
               "screen": "growth",
               "tip": "",
               "title": {
@@ -26278,21 +26561,34 @@
               "visual": "none"
             },
             {
-              "anchor": "gw-objectives",
-              "body": {
-                "en": "Each objective is marked as it goes. One at risk is the moment to talk, not the end of the plan.",
-                "vi": "Mỗi mục tiêu được đánh dấu theo tiến độ. Một mục tiêu có rủi ro là lúc cần trao đổi, không phải lúc kết thúc kế hoạch."
+              "affects": {
+                "en": "One at risk is the moment to talk, not the end of the plan. It also counts under Drifting or at risk.",
+                "vi": "Một mục tiêu có rủi ro là lúc cần trao đổi, không phải lúc kết thúc kế hoạch. Nó cũng được đếm ở Chệch hướng hoặc có rủi ro."
               },
+              "anchor": "gw-objectives",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Objectives",
                 "vi": "Mục tiêu"
               },
               "lines": [],
+              "look": {
+                "en": "What has to change, in the drawer. Each objective carries On track, At risk, Met or Not met.",
+                "vi": "Mục Điều cần thay đổi trong ngăn bên cạnh. Mỗi mục tiêu mang nhãn Đúng hướng, Có rủi ro, Đạt hoặc Không đạt."
+              },
+              "means": {
+                "en": "Each objective is marked as the plan goes, against what good looks like.",
+                "vi": "Mỗi mục tiêu được đánh dấu theo tiến độ của kế hoạch, so với thế nào là tốt."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The state on an objective, to mark how it is going.",
+                "vi": "Nhãn trạng thái trên một mục tiêu, để đánh dấu nó đang thế nào."
+              },
               "screen": "growth",
               "tip": "",
               "title": {
@@ -26302,17 +26598,26 @@
               "visual": "none"
             },
             {
-              "anchor": "gw-steps",
-              "body": {
-                "en": "<b>Waiting on a decision</b> counts plans whose time is up. Nobody should sit there for long: the person is waiting to hear.",
-                "vi": "<b>Đang chờ quyết định</b> đếm các kế hoạch đã hết thời hạn. Không ai nên nằm ở đó lâu: người đó đang chờ nghe kết quả."
+              "affects": {
+                "en": "Nobody should sit there for long: the person is waiting to hear.",
+                "vi": "Không ai nên nằm ở đó lâu: người đó đang chờ nghe kết quả."
               },
+              "anchor": "gw-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The end",
                 "vi": "Kết thúc"
               },
               "lines": [],
+              "look": {
+                "en": "The Decision step, and Waiting on a decision above it.",
+                "vi": "Bước Quyết định, và Đang chờ quyết định ở phía trên."
+              },
+              "means": {
+                "en": "A plan reaches Decision when its manager is asked how each objective went. Waiting on a decision counts those plans.",
+                "vi": "Kế hoạch tới bước Quyết định khi quản lý được hỏi từng mục tiêu đã đi tới đâu. Đang chờ quyết định đếm các kế hoạch đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26427,21 +26732,34 @@
           ],
           "steps": [
             {
-              "anchor": "cl-numbers",
-              "body": {
-                "en": "Lifecycle › <b>Contracts</b>. <b>Ending within 60 days</b>, <b>Nobody has decided</b>, <b>Waiting to be agreed</b>, <b>Being evaluated</b>, <b>Made permanent this year</b>.",
-                "vi": "Vòng đời nhân sự › <b>Hợp đồng</b>. <b>Kết thúc trong vòng 60 ngày</b>, <b>Chưa ai quyết định</b>, <b>Đang chờ đồng ý</b>, <b>Đang được đánh giá</b>, <b>Chuyển chính thức trong năm nay</b>."
+              "affects": {
+                "en": "A contract under Nobody has decided can reach its end date with nothing decided.",
+                "vi": "Hợp đồng nằm trong Chưa ai quyết định có thể tới ngày kết thúc mà chưa có quyết định nào."
               },
+              "anchor": "cl-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers at the top: Ending within 60 days, Nobody has decided, Waiting to be agreed, Being evaluated and Made permanent this year.",
+                "vi": "Các con số ở trên cùng: Kết thúc trong vòng 60 ngày, Chưa ai quyết định, Đang chờ đồng ý, Đang được đánh giá và Chuyển chính thức trong năm nay."
+              },
+              "means": {
+                "en": "The first four count contracts on this board. Made permanent this year counts across the whole year, so it does not filter.",
+                "vi": "Bốn số đầu đếm các hợp đồng trên bảng này. Chuyển chính thức trong năm nay đếm cả năm, nên không dùng để lọc."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Nobody has decided, to see only those contracts.",
+                "vi": "Chưa ai quyết định, để chỉ xem những hợp đồng đó."
+              },
               "screen": "contractends",
               "tip": "",
               "title": {
@@ -26451,21 +26769,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cl-steps",
-              "body": {
-                "en": "Every contract is at one step. <b>Decision needed</b> is the one to empty first.",
-                "vi": "Mỗi hợp đồng nằm ở một bước. <b>Cần quyết định</b> là bước cần dọn trước tiên."
+              "affects": {
+                "en": "Decision needed is the step to empty first. Each contract sits at exactly one step.",
+                "vi": "Cần quyết định là bước cần dọn trước tiên. Mỗi hợp đồng nằm ở đúng một bước."
               },
+              "anchor": "cl-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Four steps",
                 "vi": "Bốn bước"
               },
               "lines": [],
+              "look": {
+                "en": "The four steps: Running, Decision needed, Being agreed and Decided.",
+                "vi": "Bốn bước: Đang hiệu lực, Cần quyết định, Đang chờ đồng ý và Đã quyết định."
+              },
+              "means": {
+                "en": "Running has no decision raised yet. Decision needed means end it, extend it or make it permanent.",
+                "vi": "Đang hiệu lực là chưa đưa ra quyết định nào. Cần quyết định nghĩa là kết thúc, gia hạn hoặc chuyển thành chính thức."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Decision needed, to see only those contracts.",
+                "vi": "Cần quyết định, để chỉ xem những hợp đồng đó."
+              },
               "screen": "contractends",
               "tip": "",
               "title": {
@@ -26475,17 +26806,26 @@
               "visual": "none"
             },
             {
-              "anchor": "cl-list",
-              "body": {
-                "en": "Đức's fixed term ends on 30 September and nobody has decided yet.",
-                "vi": "Hợp đồng xác định thời hạn của Đức kết thúc ngày 30/9 và chưa ai quyết định."
+              "affects": {
+                "en": "Left alone, his card says it ended with nothing decided once that date passes.",
+                "vi": "Nếu bỏ mặc, khi qua ngày đó thẻ của anh sẽ báo đã kết thúc mà chưa quyết định."
               },
+              "anchor": "cl-list",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Who",
                 "vi": "Ai"
               },
               "lines": [],
+              "look": {
+                "en": "Đức's card, with his end date on the right.",
+                "vi": "Thẻ của Đức, với ngày kết thúc ở bên phải."
+              },
+              "means": {
+                "en": "His fixed term ends on 30 September and nobody has decided yet.",
+                "vi": "Hợp đồng xác định thời hạn của Đức kết thúc ngày 30/9 và chưa ai quyết định."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26499,21 +26839,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cl-raise",
-              "body": {
-                "en": "A contract with an end date and no decision yet offers <b>Raise the decision</b>. That puts it in front of the people who must agree.",
-                "vi": "Hợp đồng có ngày kết thúc mà chưa có quyết định sẽ có nút <b>Nêu quyết định</b>. Nút đó đưa nó tới những người phải đồng ý."
+              "affects": {
+                "en": "They are asked by email and on this board, so the decision is not forgotten.",
+                "vi": "Họ được hỏi qua email và trên bảng này, để quyết định không bị quên."
               },
+              "anchor": "cl-raise",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Raise it",
                 "vi": "Nêu ra"
               },
               "lines": [],
+              "look": {
+                "en": "Raise the decision, on a contract with an end date and no decision yet.",
+                "vi": "Nút Nêu quyết định, trên một hợp đồng có ngày kết thúc mà chưa có quyết định."
+              },
+              "means": {
+                "en": "It puts the three choices in front of this person's manager and the HR team.",
+                "vi": "Nó đưa ba lựa chọn tới quản lý của người này và nhóm Nhân sự."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Raise the decision.",
+                "vi": "Nêu quyết định."
+              },
               "screen": "contractends",
               "tip": "",
               "title": {
@@ -26523,17 +26876,26 @@
               "visual": "none"
             },
             {
-              "anchor": "cl-decide",
-              "body": {
-                "en": "Whatever is chosen, it is chosen before the end date. A contract that simply runs out stops the person's pay in the middle of a month.",
-                "vi": "Dù chọn gì, nó phải được chọn trước ngày kết thúc. Hợp đồng cứ thế hết hạn sẽ làm dừng lương của người đó giữa tháng."
+              "affects": {
+                "en": "Choose before the end date. Payroll pays from a running contract, so one that runs out leaves the person out of the next pay run.",
+                "vi": "Hãy chọn trước ngày kết thúc. Bảng lương trả theo hợp đồng đang hiệu lực, nên hợp đồng đã hết hạn sẽ khiến người đó không có trong đợt lương kế tiếp."
               },
+              "anchor": "cl-decide",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Three choices",
                 "vi": "Ba lựa chọn"
               },
               "lines": [],
+              "look": {
+                "en": "The three choices in the drawer: Make it permanent, Extend it and Let it end.",
+                "vi": "Ba lựa chọn trong ngăn bên cạnh: Chuyển chính thức, Gia hạn và Để hết hạn."
+              },
+              "means": {
+                "en": "Make it permanent asks colleagues first. Extend it needs a written reason the manager agrees. Let it end opens their leaving checklist.",
+                "vi": "Chuyển chính thức sẽ hỏi đồng nghiệp trước. Gia hạn cần một lý do viết ra và được quản lý đồng ý. Để hết hạn sẽ mở danh mục việc nghỉ việc của họ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26660,21 +27022,34 @@
           ],
           "steps": [
             {
-              "anchor": "ex2-numbers",
-              "body": {
-                "en": "Lifecycle › <b>Exits</b>. <b>Leaving this month</b>, <b>Last day has passed</b>, <b>Settlements held up</b>, <b>Clearances still open</b>, <b>Items not back yet</b> and <b>Settlements to check</b>.",
-                "vi": "Vòng đời nhân sự › <b>Nghỉ việc</b>. <b>Nghỉ việc trong tháng này</b>, <b>Đã qua ngày làm việc cuối</b>, <b>Quyết toán bị vướng</b>, <b>Xác nhận bàn giao còn mở</b>, <b>Tài sản chưa trả lại</b> và <b>Quyết toán cần kiểm tra</b>."
+              "affects": {
+                "en": "Settlements held up and Settlements to check are last payments that cannot go out yet.",
+                "vi": "Quyết toán bị vướng và Quyết toán cần kiểm tra là những khoản chi cuối chưa thể chuyển đi."
               },
+              "anchor": "ex2-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The numbers at the top: Leaving this month, Last day has passed, Settlements held up, Clearances still open, Items not back yet and Settlements to check.",
+                "vi": "Các con số ở trên cùng: Nghỉ việc trong tháng này, Đã qua ngày làm việc cuối, Quyết toán bị vướng, Xác nhận bàn giao còn mở, Tài sản chưa trả lại và Quyết toán cần kiểm tra."
+              },
+              "means": {
+                "en": "Each number counts leavers in that state. A number with a colour needs someone to act.",
+                "vi": "Mỗi con số đếm số người nghỉ đang ở tình trạng đó. Con số có màu là việc cần người xử lý."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A number, to see only those leavers.",
+                "vi": "Một con số, để chỉ xem những người nghỉ đó."
+              },
               "screen": "exits",
               "tip": "",
               "title": {
@@ -26684,17 +27059,26 @@
               "visual": "none"
             },
             {
-              "anchor": "ex2-steps",
-              "body": {
-                "en": "A leaver works their notice, then the desks sign them off. Only then are they <b>Ready to settle</b>, and <b>Settled</b> when the last payment is closed.",
-                "vi": "Người nghỉ làm hết thời gian báo trước, rồi các phòng ban xác nhận bàn giao. Chỉ khi đó họ mới <b>Sẵn sàng quyết toán</b>, và <b>Đã quyết toán</b> khi khoản chi cuối được chốt."
+              "affects": {
+                "en": "Ready to settle means the last payment can go out. Settled means the settlement is closed.",
+                "vi": "Sẵn sàng quyết toán nghĩa là có thể chi khoản thanh toán cuối. Đã quyết toán nghĩa là quyết toán đã đóng."
               },
+              "anchor": "ex2-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Four steps",
                 "vi": "Bốn bước"
               },
               "lines": [],
+              "look": {
+                "en": "The four steps: Working their notice, Signing off, Ready to settle and Settled.",
+                "vi": "Bốn bước: Đang trong thời gian báo trước, Đang xác nhận bàn giao, Sẵn sàng quyết toán và Đã quyết toán."
+              },
+              "means": {
+                "en": "A leaver works their notice, then the four desks sign them off. Only then are they Ready to settle.",
+                "vi": "Người nghỉ làm hết thời gian báo trước, rồi bốn phòng ban xác nhận bàn giao. Chỉ khi đó họ mới Sẵn sàng quyết toán."
+              },
               "moment_chain": "exit",
               "moment_from": "",
               "moment_to": "",
@@ -26702,23 +27086,32 @@
               "screen": "exits",
               "tip": "",
               "title": {
-                "en": "Notice → Signing off → Ready to settle → Settled",
-                "vi": "Báo trước → Xác nhận bàn giao → Sẵn sàng quyết toán → Đã quyết toán"
+                "en": "Working their notice → Signing off → Ready to settle → Settled",
+                "vi": "Đang trong thời gian báo trước → Đang xác nhận bàn giao → Sẵn sàng quyết toán → Đã quyết toán"
               },
               "visual": "pipeline"
             },
             {
-              "anchor": "ex2-clearance",
-              "body": {
-                "en": "Each light is one desk saying the leaver has handed back what they held. Bùi Thị Hạnh's last day has passed; three lights are on and Finance's is not.",
-                "vi": "Mỗi đèn là một phòng ban xác nhận người nghỉ đã trả lại những gì họ giữ. Ngày làm cuối của Bùi Thị Hạnh đã qua; ba đèn đã sáng và đèn Tài chính thì chưa."
+              "affects": {
+                "en": "The final settlement waits for all four. A desk still open is counted under Clearances still open.",
+                "vi": "Quyết toán cuối cùng chờ đủ cả bốn. Phòng ban nào còn mở sẽ được đếm ở Xác nhận bàn giao còn mở."
               },
+              "anchor": "ex2-clearance",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Signed off by",
                 "vi": "Được ký tắt bởi"
               },
               "lines": [],
+              "look": {
+                "en": "The Signed off by lights on a card: IT, HR, Finance and Admin.",
+                "vi": "Các đèn Được ký tắt bởi trên một thẻ: IT, HR, Finance và Admin."
+              },
+              "means": {
+                "en": "Each light is one desk saying the leaver has handed back what they held. Bùi Thị Hạnh has three lit; Finance is not.",
+                "vi": "Mỗi đèn là một phòng ban xác nhận người nghỉ đã trả lại những gì họ giữ. Bùi Thị Hạnh đã có ba đèn sáng; đèn của bộ phận Tài chính thì chưa."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26732,17 +27125,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-ex-desks",
-              "body": {
-                "en": "Open the card: the laptop is back, the exit conversation is held, the store card is handed in. The store float has not been counted back, so Finance has not signed.",
-                "vi": "Mở thẻ ra: máy tính đã trả, cuộc trao đổi trước khi nghỉ đã diễn ra, thẻ cửa hàng đã nộp. Quỹ tiền lẻ của quầy chưa được đếm lại, nên Tài chính chưa ký."
+              "affects": {
+                "en": "So Finance has not signed, and her settlement is held up until it does.",
+                "vi": "Vì vậy bộ phận Tài chính chưa ký, và quyết toán của chị bị vướng cho tới khi họ ký."
               },
+              "anchor": "rep-ex-desks",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What each desk checks",
                 "vi": "Mỗi phòng ban kiểm tra gì"
               },
               "lines": [],
+              "look": {
+                "en": "Hạnh's card, opened: one line per desk, saying what that desk checked.",
+                "vi": "Thẻ của Hạnh khi mở ra: mỗi phòng ban một dòng, ghi phòng ban đó đã kiểm tra gì."
+              },
+              "means": {
+                "en": "The laptop is back, the exit conversation was held and the store card is handed in. The store float has not been counted back.",
+                "vi": "Máy tính đã trả, cuộc trao đổi trước khi nghỉ đã diễn ra, thẻ cửa hàng đã nộp. Quỹ tiền lẻ của quầy chưa được đếm lại."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -26756,11 +27158,12 @@
               "visual": "none"
             },
             {
-              "anchor": "ex2-settle",
-              "body": {
-                "en": "Two things happen side by side. The figures: while the settlement is ready to check, the card offers <b>Send for approval</b>. The payment: <b>Close settlement</b> waits until every desk has signed. <b>Open the settlement</b> shows the last salary, unused leave and what is still owed.",
-                "vi": "Hai việc diễn ra song song. Con số: khi quyết toán còn cần kiểm tra, thẻ có nút <b>Gửi duyệt</b>. Khoản chi: <b>Chốt quyết toán</b> chờ cho tới khi mọi phòng ban đã ký. <b>Mở quyết toán</b> cho thấy lương cuối, phép chưa dùng và những khoản còn nợ."
+              "affects": {
+                "en": "Close settlement waits until every desk has signed. The leaver's last payment depends on it.",
+                "vi": "Chốt quyết toán chờ cho tới khi mọi phòng ban đã ký. Khoản chi cuối của người nghỉ phụ thuộc vào nó."
               },
+              "anchor": "ex2-settle",
+              "body": "",
               "consequence": {
                 "en": "Affects the leaver's last payment, which has a legal deadline. Reversible: not once it is paid. Verify first: all four desks signed, and the leaver is not also in the monthly run.",
                 "vi": "Ảnh hưởng: khoản chi cuối của người nghỉ, vốn có thời hạn pháp lý. Hoàn tác: không, một khi đã chi. Kiểm tra trước: đủ bốn phòng ban đã ký, và người nghỉ không còn nằm trong đợt lương tháng."
@@ -26770,10 +27173,22 @@
                 "vi": "Quyết toán"
               },
               "lines": [],
+              "look": {
+                "en": "The settlement block in the drawer: Close settlement, Send for approval and Open the settlement.",
+                "vi": "Khối quyết toán trong ngăn bên cạnh: Chốt quyết toán, Gửi duyệt và Mở quyết toán."
+              },
+              "means": {
+                "en": "Send for approval shows while the figures are worked out but not yet checked. Open the settlement opens its full figures.",
+                "vi": "Gửi duyệt hiện ra khi các con số đã được tính nhưng chưa được kiểm tra. Mở quyết toán mở toàn bộ con số của nó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Send for approval, once you have checked the figures.",
+                "vi": "Gửi duyệt, sau khi bạn đã kiểm tra các con số."
+              },
               "screen": "exits",
               "tip": "",
               "title": {
@@ -26783,21 +27198,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ex2-handover",
-              "body": {
-                "en": "<b>Handover</b> lists the work passed to colleagues; <b>Add</b> puts another item on it. A farewell note can go to the team, in words you can change.",
-                "vi": "<b>Bàn giao công việc</b> liệt kê những việc chuyển cho đồng nghiệp; <b>Thêm</b> đưa một việc nữa vào. Có thể gửi một lời chia tay tới nhóm, với câu chữ bạn sửa được."
+              "affects": {
+                "en": "While any item is still open, the HR team is reminded every fifteen days.",
+                "vi": "Khi còn việc chưa bàn giao xong, nhóm Nhân sự được nhắc mỗi mười lăm ngày."
               },
+              "anchor": "ex2-handover",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Before they go",
                 "vi": "Trước khi họ đi"
               },
               "lines": [],
+              "look": {
+                "en": "The Handover heading in the drawer, and its Add button.",
+                "vi": "Tiêu đề Bàn giao công việc trong ngăn bên cạnh, và nút Thêm của nó."
+              },
+              "means": {
+                "en": "It lists the work passed to colleagues, each with who picks it up.",
+                "vi": "Nó liệt kê những việc chuyển cho đồng nghiệp, kèm người nhận từng việc."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Add, to put another item on the list.",
+                "vi": "Thêm, để đưa một việc nữa vào danh sách."
+              },
               "screen": "exits",
               "tip": {
                 "en": "Years after he was hired, this is where Hoàng Văn Nam's road ends on the map — the last stop of the Lifecycle line.",
@@ -37143,5 +37571,5 @@
       }
     }
   ],
-  "version": "6080f2011376"
+  "version": "e9cefd704a77"
 }
