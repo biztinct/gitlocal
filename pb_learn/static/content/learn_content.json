@@ -531,7 +531,7 @@
     },
     "gMistakes": {
       "en": "Mistakes this prevents",
-      "vi": "Những lỗi bài này giúp tránh"
+      "vi": "Những lỗi cần tránh"
     },
     "gNextLine": {
       "en": "Next: {path}",
@@ -931,7 +931,7 @@
     },
     "libYourPath": {
       "en": "Your path as {role} · {done} of {total} done",
-      "vi": "Lộ trình {role} · đã xong {done}/{total}"
+      "vi": "Lộ trình của bạn ({role}) · đã xong {done}/{total}"
     },
     "lifeTrailHere": {
       "en": "Nam is here",
@@ -1343,7 +1343,7 @@
     },
     "nbRequired": {
       "en": "This is the next lesson on your path.",
-      "vi": "Đây là bài kế tiếp mà lộ trình yêu cầu."
+      "vi": "Đây là bài tiếp theo trên lộ trình của bạn."
     },
     "nbResume": {
       "en": "You started this one. Pick up where you stopped.",
@@ -1355,7 +1355,7 @@
     },
     "needReview": {
       "en": "Need review",
-      "vi": "Cần soát xét"
+      "vi": "Cần xem xét"
     },
     "next": {
       "en": "Next",
@@ -1903,7 +1903,7 @@
     },
     "swMotionBody": {
       "en": "Lessons, walkthroughs and PayAI move less on this device. Your system's own setting is always respected.",
-      "vi": "Bài học, hướng dẫn và PayAI ít chuyển động hơn trên thiết bị này. Cài đặt của hệ thống luôn được tôn trọng."
+      "vi": "Bài học, hướng dẫn và PayAI ít chuyển động hơn trên thiết bị này. Cài đặt giảm chuyển động của hệ điều hành vẫn luôn được áp dụng."
     },
     "swMotionTitle": {
       "en": "Reduce motion",
@@ -2376,7 +2376,7 @@
       "key": "payroll_ready",
       "label": {
         "en": "Payroll-ready",
-        "vi": "Sẵn sàng trả lương"
+        "vi": "Sẵn sàng tính lương"
       },
       "screen": "employees",
       "sequence": 60
@@ -2454,7 +2454,7 @@
       "key": "used_by",
       "label": {
         "en": "Used by",
-        "vi": "Được dùng bởi"
+        "vi": "Được sử dụng bởi"
       },
       "screen": "formula",
       "sequence": 30
@@ -2506,7 +2506,7 @@
       "key": "manual",
       "label": {
         "en": "Manual",
-        "vi": "Nhập tay"
+        "vi": "Thủ công"
       },
       "screen": "fullfinal",
       "sequence": 20
@@ -11592,7 +11592,7 @@
               "anchor": "fs-components",
               "text": {
                 "en": "Formula Engine — how each line is computed, for one division",
-                "vi": "Công thức lương — mỗi dòng được tính thế nào, cho một bộ phận"
+                "vi": "Bộ máy công thức — mỗi dòng được tính thế nào, cho một bộ phận"
               }
             },
             {
@@ -13276,7 +13276,7 @@
           },
           "means": {
             "en": "Inputs, earnings, deductions and totals. The coloured tag says which kind each one is.",
-            "vi": "Đầu vào, thu nhập, khấu trừ và các tổng. Thẻ màu cho biết mỗi thành phần thuộc loại nào."
+            "vi": "Đầu vào, thu nhập, khấu trừ và tổng. Nhãn màu cho biết mỗi thành phần thuộc loại nào."
           },
           "modes": [
             "watch"
@@ -13287,7 +13287,7 @@
           "tip": "",
           "title": {
             "en": "Every component, one list",
-            "vi": "Mọi thành phần trong một danh sách"
+            "vi": "Mọi thành phần, một danh sách"
           },
           "value": ""
         },
@@ -13558,7 +13558,7 @@
           },
           "look": {
             "en": "Compute, under the scope.",
-            "vi": "Nút Tính, dưới phần phạm vi."
+            "vi": "Nút Tính lương, dưới phần phạm vi."
           },
           "means": {
             "en": "It creates one draft payslip per person the scheme pays.",
@@ -13572,7 +13572,7 @@
           "nav": "",
           "press": {
             "en": "Compute, once the scheme and the month are right.",
-            "vi": "Tính, khi chương trình lương và tháng đã đúng."
+            "vi": "Tính lương, khi chương trình lương và tháng đã đúng."
           },
           "screen": "runpayroll",
           "timeout": 0,
@@ -13598,15 +13598,15 @@
           "key": "resultcard",
           "kicker": {
             "en": "After Compute",
-            "vi": "Sau khi Tính"
+            "vi": "Sau khi Tính lương"
           },
           "look": {
             "en": "Nothing yet: I did not press Compute.",
-            "vi": "Chưa có gì: tôi không bấm Tính."
+            "vi": "Chưa có gì: tôi không bấm Tính lương."
           },
           "means": {
             "en": "Once computed, three numbers appear: Payslips, Computed and Need review.",
-            "vi": "Khi đã tính, ba con số xuất hiện: Phiếu lương, Đã tính và Cần xem xét."
+            "vi": "Khi đã tính, ba con số xuất hiện: Phiếu lương, Đã tính toán và Cần xem xét."
           },
           "modes": [
             "watch"
@@ -13653,7 +13653,7 @@
           "tip": "",
           "title": {
             "en": "Payslips, Computed, Need review",
-            "vi": "Phiếu lương, Đã tính, Cần xem xét"
+            "vi": "Phiếu lương, Đã tính toán, Cần xem xét"
           },
           "value": ""
         },
@@ -14337,7 +14337,7 @@
           "kicker": "",
           "look": {
             "en": "Depends on and Used by.",
-            "vi": "Phụ thuộc vào và Được dùng bởi."
+            "vi": "Phụ thuộc vào và Được sử dụng bởi."
           },
           "means": {
             "en": "They map exactly how this number connects to the rest of payroll.",
@@ -14501,7 +14501,7 @@
           "kicker": "",
           "look": {
             "en": "Edit with PayAI.",
-            "vi": "Sửa cùng PayAI."
+            "vi": "Chỉnh sửa với PayAI."
           },
           "means": {
             "en": "Change a formula by describing the change in plain language.",
@@ -14549,7 +14549,7 @@
           "tip": "",
           "title": {
             "en": "Cards, Grid, Test, Compare, Health, Settings",
-            "vi": "Thẻ, Lưới, Thử, So sánh, Sức khoẻ, Cài đặt"
+            "vi": "Thẻ, Lưới, Kiểm thử, So sánh, Sức khoẻ, Cài đặt"
           },
           "value": ""
         },
@@ -15315,7 +15315,7 @@
           "timeout": 0,
           "tip": {
             "en": "Payroll-ready on the numbers line counts bank details over headcount. Read it before a run, not after.",
-            "vi": "Sẵn sàng trả lương trên dòng con số đếm số người đã có thông tin ngân hàng trên tổng sĩ số. Hãy đọc nó trước khi chạy đợt lương, đừng đọc sau."
+            "vi": "Sẵn sàng tính lương trên dòng con số đếm số người đã có thông tin ngân hàng trên tổng sĩ số. Hãy đọc nó trước khi chạy đợt lương, đừng đọc sau."
           },
           "title": {
             "en": "On the roster is not the same as paid",
@@ -15896,7 +15896,7 @@
           },
           "means": {
             "en": "Connections, Transformations, Spreadsheet columns, Employee & contract and more. Journey draws them all.",
-            "vi": "Liên kết, Biến đổi, Cột bảng tính, Nhân viên & hợp đồng và nhiều tab khác. Hành trình vẽ tất cả."
+            "vi": "Liên kết, Chuyển đổi, Cột bảng tính, Nhân viên & hợp đồng và nhiều tab khác. Hành trình vẽ tất cả."
           },
           "modes": [
             "watch",
@@ -15962,7 +15962,7 @@
           "kicker": "",
           "look": {
             "en": "Files & systems, Feeds, Transformations, the Scheme, Payobook Source.",
-            "vi": "Tệp & hệ thống, Nguồn cấp, Biến đổi, Chương trình lương, Nguồn Payobook."
+            "vi": "Tệp & hệ thống, Nguồn cấp dữ liệu, Chuyển đổi, Chương trình lương, Nguồn Payobook."
           },
           "means": {
             "en": "Each card is one stop on a value's road.",
@@ -16069,7 +16069,7 @@
           "kicker": "",
           "look": {
             "en": "Payobook asking before a second source is added.",
-            "vi": "Payobook hỏi trước khi thêm nguồn thứ hai."
+            "vi": "Payobook hỏi trước khi thêm một nguồn thứ hai."
           },
           "means": {
             "en": "Keep both and the higher one wins; the lower one only fills an empty box.",
@@ -16123,7 +16123,7 @@
       ],
       "tagline": {
         "en": "FROM a source, TO a scheme — lane by lane, and which source wins when there are two.",
-        "vi": "TỪ một nguồn, ĐẾN một chương trình lương — từng làn một, và nguồn nào thắng khi có hai."
+        "vi": "TỪ một nguồn, TỚI một chương trình lương — từng làn một, và nguồn nào thắng khi có hai."
       }
     },
     {
@@ -16407,7 +16407,7 @@
           "act": "observe",
           "affects": {
             "en": "The These figures do not add up line goes away once the treatment is right.",
-            "vi": "Dòng Các số liệu này không khớp sẽ biến mất khi cách xử lý đã đúng."
+            "vi": "Dòng Số liệu không khớp sẽ biến mất khi cách xử lý đã đúng."
           },
           "anchor": "",
           "body": "",
@@ -16816,7 +16816,7 @@
           },
           "means": {
             "en": "The desk offers only the fields this scheme reads.",
-            "vi": "Bàn này chỉ đưa ra các trường mà chương trình lương đó đọc."
+            "vi": "Bàn hồ sơ chỉ đưa ra các trường mà chương trình lương này đọc."
           },
           "modes": [
             "watch",
@@ -16909,7 +16909,7 @@
           "kicker": "",
           "look": {
             "en": "Export with data, and Import a file.",
-            "vi": "Xuất kèm dữ liệu, và Nhập một tệp."
+            "vi": "Xuất kèm dữ liệu, và Nhập từ tệp."
           },
           "means": {
             "en": "Export, edit the file, then import it.",
@@ -18047,7 +18047,7 @@
           },
           "title": {
             "en": "What needs you",
-            "vi": "Việc gì cần bạn"
+            "vi": "Những gì cần bạn"
           },
           "value": ""
         },
@@ -19574,7 +19574,7 @@
           },
           "means": {
             "en": "Payroll trusts a locked week. This is where it is made trustworthy.",
-            "vi": "Bảng lương tin vào một tuần đã khoá. Đây là nơi làm cho nó đáng tin."
+            "vi": "Bộ phận lương tin vào một tuần đã khoá. Đây là nơi làm cho nó đáng tin."
           },
           "modes": [
             "watch",
@@ -19678,7 +19678,7 @@
           },
           "means": {
             "en": "What payroll will receive for this week.",
-            "vi": "Những gì bảng lương sẽ nhận cho tuần này."
+            "vi": "Những gì bộ phận lương sẽ nhận cho tuần này."
           },
           "modes": [
             "watch",
@@ -19698,7 +19698,7 @@
           "act": "observe",
           "affects": {
             "en": "Once locked, payroll reads the week. Reopen… asks for a reason, and the reason is kept.",
-            "vi": "Khi đã khoá, bảng lương đọc tuần này. Mở lại… sẽ hỏi lý do, và lý do được lưu lại."
+            "vi": "Khi đã khoá, bộ phận lương đọc tuần này. Mở lại… sẽ hỏi lý do, và lý do được lưu lại."
           },
           "anchor": "wf-close-lock",
           "body": "",
@@ -19832,7 +19832,7 @@
           "tip": "",
           "title": {
             "en": "Roles, People, Screens, Hand-overs",
-            "vi": "Bốn tab: Vai trò, Nhân sự, Màn hình, Bàn giao"
+            "vi": "Vai trò, Nhân sự, Màn hình, Bàn giao"
           },
           "value": ""
         },
@@ -25030,7 +25030,7 @@
                   "correct": false,
                   "feedback": {
                     "en": "Let's rethink that. The chip says it is not approved, and it is one division's run.",
-                    "vi": "Hãy nghĩ lại một chút. Chip cho biết nó chưa được duyệt, và đó là đợt của một bộ phận."
+                    "vi": "Hãy nghĩ lại một chút. Nhãn cho biết nó chưa được duyệt, và đó là đợt của một bộ phận."
                   },
                   "label": {
                     "en": "₫612 million, final",
@@ -25040,7 +25040,7 @@
               ],
               "prompt": {
                 "en": "The headline shows ₫612 million with a Waiting for approval chip. Your CFO asks what July cost. What do you say?",
-                "vi": "Con số nổi bật là 612 triệu ₫ kèm chip Chờ phê duyệt. Giám đốc tài chính hỏi tháng 7 tốn bao nhiêu. Bạn trả lời thế nào?"
+                "vi": "Con số nổi bật là 612 triệu ₫ kèm nhãn Chờ phê duyệt. Giám đốc tài chính hỏi tháng 7 tốn bao nhiêu. Bạn trả lời thế nào?"
               }
             }
           ],
@@ -25121,12 +25121,12 @@
               "consequence": "",
               "kicker": {
                 "en": "Cost story",
-                "vi": "Câu chuyện chi phí"
+                "vi": "Diễn biến chi phí"
               },
               "lines": [],
               "look": {
                 "en": "3M, 6M and 12M on the cost story.",
-                "vi": "3M, 6M và 12M trên câu chuyện chi phí."
+                "vi": "3M, 6M và 12M trên Diễn biến chi phí."
               },
               "means": {
                 "en": "They set the window the trend is drawn over.",
@@ -25292,7 +25292,7 @@
         },
         "why": {
           "en": "It answers the usual questions fast, and every figure opens Explorer to show what it is made of.",
-          "vi": "Nó trả lời nhanh những câu hỏi quen thuộc, và mọi con số đều mở Explorer để cho thấy nó được tạo từ đâu."
+          "vi": "Nó trả lời nhanh những câu hỏi quen thuộc, và mọi con số đều mở Khám phá dữ liệu để cho thấy nó được tạo từ đâu."
         }
       },
       "required": true,
@@ -25311,7 +25311,7 @@
       "star": false,
       "summary": {
         "en": "The board that answers the questions every pay month asks, and opens Explorer on any figure.",
-        "vi": "Bảng trả lời những câu hỏi tháng lương nào cũng đặt ra, và mở Explorer trên bất kỳ con số nào."
+        "vi": "Bảng trả lời những câu hỏi tháng lương nào cũng đặt ra, và mở Khám phá dữ liệu trên bất kỳ con số nào."
       }
     },
     {
@@ -25330,7 +25330,7 @@
           "key": "L36",
           "name": {
             "en": "Ask Explorer a question",
-            "vi": "Đặt câu hỏi cho Explorer"
+            "vi": "Đặt câu hỏi cho Khám phá dữ liệu"
           },
           "quizzes": [
             {
@@ -25617,7 +25617,7 @@
         },
         "why": {
           "en": "Real questions are rarely the ones a board expected. Explorer answers them from the payslips themselves, and never adds two currencies together.",
-          "vi": "Câu hỏi thật hiếm khi là câu bảng tổng quan đã lường trước. Explorer trả lời chúng từ chính phiếu lương, và không bao giờ cộng hai loại tiền với nhau."
+          "vi": "Câu hỏi thật hiếm khi là câu bảng tổng quan đã lường trước. Khám phá dữ liệu trả lời chúng từ chính phiếu lương, và không bao giờ cộng hai loại tiền với nhau."
         }
       },
       "required": false,
@@ -25810,12 +25810,12 @@
               "consequence": "",
               "kicker": {
                 "en": "Time",
-                "vi": "Thời gian"
+                "vi": "Chấm công"
               },
               "lines": [],
               "look": {
                 "en": "Attendance exceptions beside Overtime load.",
-                "vi": "Bất thường chấm công bên cạnh Tải ngoài giờ."
+                "vi": "Bất thường chấm công bên cạnh Khối lượng tăng ca."
               },
               "means": {
                 "en": "Exceptions are attendance problems. Overtime is often what they lead to.",
@@ -27190,7 +27190,7 @@
           "duration_min": 7,
           "goal": {
             "en": "Read the New joiners board, make sure every joiner has a buddy and a finished checklist, and know what payroll needs before day one.",
-            "vi": "Đọc bảng Nhân viên mới, đảm bảo mọi người mới đều có người đồng hành và danh mục việc xong, và biết bảng lương cần gì trước ngày đầu."
+            "vi": "Đọc bảng Nhân viên mới, đảm bảo mọi người mới đều có người đồng hành và danh mục việc xong, và biết bộ phận lương cần gì trước ngày đầu."
           },
           "key": "L17",
           "name": {
@@ -27356,7 +27356,7 @@
             {
               "affects": {
                 "en": "The bank account is payroll's item. Without it Nam is computed in August but cannot be paid.",
-                "vi": "Tài khoản ngân hàng là việc của bảng lương. Thiếu nó, Nam vẫn được tính lương tháng 8 nhưng không chi trả được."
+                "vi": "Tài khoản ngân hàng là việc của bộ phận lương. Thiếu nó, Nam vẫn được tính lương tháng 8 nhưng không chi trả được."
               },
               "anchor": "nj-drawer",
               "body": "",
@@ -28119,7 +28119,7 @@
                   "correct": true,
                   "feedback": {
                     "en": "Yes. Payroll pays from a running contract. Raise the decision now.",
-                    "vi": "Đúng vậy. Bảng lương trả theo hợp đồng đang hiệu lực. Hãy nêu quyết định ngay."
+                    "vi": "Đúng vậy. Bộ phận lương trả lương theo hợp đồng đang hiệu lực. Hãy nêu quyết định ngay."
                   },
                   "label": {
                     "en": "His contract stops and October's pay run leaves him out",
@@ -28292,7 +28292,7 @@
             {
               "affects": {
                 "en": "Choose before the end date. Payroll pays from a running contract, so one that runs out leaves the person out of the next pay run.",
-                "vi": "Hãy chọn trước ngày kết thúc. Bảng lương trả theo hợp đồng đang hiệu lực, nên hợp đồng đã hết hạn sẽ khiến người đó không có trong đợt lương kế tiếp."
+                "vi": "Hãy chọn trước ngày kết thúc. Bộ phận lương trả lương theo hợp đồng đang hiệu lực, nên hợp đồng đã hết hạn sẽ khiến người đó không có trong đợt lương kế tiếp."
               },
               "anchor": "cl-decide",
               "body": "",
@@ -28997,7 +28997,7 @@
               "consequence": "",
               "kicker": {
                 "en": "The numbers",
-                "vi": "Số liệu"
+                "vi": "Các con số"
               },
               "lines": [],
               "look": {
@@ -29140,7 +29140,7 @@
                   "correct": false,
                   "feedback": {
                     "en": "Let's rethink that. A pay run waiting on you names itself in the headline: \"1 pay run needs your approval\". \"3 things\" counts the chips on the Needs you line — a settlement to check, a renewal to start, write-ups overdue.",
-                    "vi": "Hãy nghĩ lại một chút. Một đợt lương đang chờ bạn sẽ tự gọi tên trên dòng tiêu đề: \"1 đợt lương cần bạn phê duyệt\". \"3 việc\" đếm các chip trên dòng Cần bạn — một quyết toán cần kiểm tra, một hợp đồng cần gia hạn, các nhận xét phỏng vấn quá hạn."
+                    "vi": "Hãy nghĩ lại một chút. Một đợt lương đang chờ bạn sẽ tự gọi tên trên dòng tiêu đề: \"1 đợt lương cần bạn phê duyệt\". \"3 việc\" đếm các nhãn trên dòng Cần bạn — một quyết toán cần kiểm tra, một hợp đồng cần gia hạn, các nhận xét phỏng vấn quá hạn."
                   },
                   "label": {
                     "en": "Three pay runs are waiting for my approval",
@@ -29151,11 +29151,11 @@
                   "correct": true,
                   "feedback": {
                     "en": "Exactly. The headline counts the chips and the line names them — amber when they wait on you, red when they are late. Press one and you land on the right screen, with a Home chip to come back.",
-                    "vi": "Chính xác. Dòng tiêu đề đếm các chip, còn dòng Cần bạn gọi tên chúng — màu hổ phách khi đang chờ bạn, màu đỏ khi đã trễ. Bấm một chip là bạn tới đúng màn hình, kèm chip Trang chủ để quay lại."
+                    "vi": "Chính xác. Dòng tiêu đề đếm các nhãn, còn dòng Cần bạn gọi tên chúng — màu hổ phách khi đang chờ bạn, màu đỏ khi đã trễ. Bấm một nhãn là bạn tới đúng màn hình, kèm nhãn Trang chủ để quay lại."
                   },
                   "label": {
                     "en": "The Needs you line under the headline lists them; each chip opens the screen the work is on",
-                    "vi": "Dòng Cần bạn dưới tiêu đề liệt kê chúng; mỗi chip mở đúng màn hình chứa phần việc đó"
+                    "vi": "Dòng Cần bạn dưới tiêu đề liệt kê chúng; mỗi nhãn mở đúng màn hình chứa phần việc đó"
                   }
                 },
                 {
@@ -29425,7 +29425,7 @@
               },
               "means": {
                 "en": "Home, Pay Run, People, Lifecycle, Workforce, Insights, Compliance, Learn and Settings.",
-                "vi": "Trang chủ, Đợt lương, Con người, Vòng đời nhân sự, Lực lượng lao động, Phân tích, Tuân thủ, Học tập và Cài đặt."
+                "vi": "Trang chủ, Đợt lương, Con người, Vòng đời nhân sự, Lực lượng lao động, Phân tích, Tuân thủ, Học cùng Payobook và Cài đặt."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -29619,7 +29619,7 @@
               ],
               "prompt": {
                 "en": "A pay run is your turn. It is 2.7% above last month, it contains overtime, nobody has opened the payslips, and payday is {{payDay}}. What do you do?",
-                "vi": "Một đợt lương đang đến lượt bạn. Nó cao hơn tháng trước 2,7%, có làm thêm giờ, chưa ai mở các phiếu lương, và ngày trả lương là {{payDay}}. Bạn làm gì?"
+                "vi": "Một đợt lương đang đến lượt bạn. Nó cao hơn tháng trước 2,7%, có tăng ca, chưa ai mở các phiếu lương, và ngày trả lương là {{payDay}}. Bạn làm gì?"
               }
             }
           ],
@@ -29917,7 +29917,7 @@
               },
               "means": {
                 "en": "It asks What should change? The run goes back to Draft with your note on its card.",
-                "vi": "Nó hỏi Cần thay đổi gì? Đợt lương quay về Nháp kèm ghi chú của bạn trên thẻ."
+                "vi": "Nó hỏi Cần thay đổi điều gì? Đợt lương quay về Nháp kèm ghi chú của bạn trên thẻ."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -29960,7 +29960,7 @@
               },
               "means": {
                 "en": "It asks Why? and ends the request. A pay run becomes Rejected and every payslip in it is cancelled.",
-                "vi": "Nó hỏi Vì sao? rồi chấm dứt yêu cầu. Đợt lương trở thành Bị từ chối và mọi phiếu lương trong đó bị huỷ."
+                "vi": "Nó hỏi Vì sao? rồi chấm dứt yêu cầu. Đợt lương chuyển sang Đã từ chối và mọi phiếu lương trong đó bị huỷ."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -30042,7 +30042,7 @@
               "screen": "approvals",
               "tip": {
                 "en": "PayAI can record this for you, but only when you type APPROVE on its card. A tap or a spoken yes never counts.",
-                "vi": "PayAI có thể ghi nhận việc này cho bạn, nhưng chỉ khi bạn gõ APPROVE trên thẻ của nó. Một cú chạm hay một câu nói đồng ý không bao giờ được tính."
+                "vi": "PayAI có thể ghi nhận việc này cho bạn, nhưng chỉ khi bạn gõ DUYỆT trên thẻ của nó. Một cú chạm hay một câu nói đồng ý không bao giờ được tính."
               },
               "tip_requires": "payai_decide",
               "title": {
@@ -30294,7 +30294,7 @@
             {
               "affects": {
                 "en": "This is the cheapest moment to change the scheme. A scheme that reads a spreadsheet shows Add pay data instead of Compute.",
-                "vi": "Đây là lúc đổi chương trình lương rẻ nhất. Chương trình đọc bảng tính sẽ hiện nút Thêm dữ liệu lương thay cho Tính."
+                "vi": "Đây là lúc đổi chương trình lương rẻ nhất. Chương trình đọc bảng tính sẽ hiện nút Thêm dữ liệu lương thay cho Tính lương."
               },
               "anchor": "pw-summary",
               "body": "",
@@ -30425,7 +30425,7 @@
               "tip": "",
               "title": {
                 "en": "Compute — what actually happened",
-                "vi": "Tính — điều gì thực sự đã diễn ra"
+                "vi": "Tính lương — điều gì thực sự đã diễn ra"
               },
               "variants": {
                 "VN": {
@@ -30483,7 +30483,7 @@
             {
               "affects": {
                 "en": "The flag cannot see a jump inside one line: Hùng's overtime is 382% of June's, yet his take-home rose only 26%.",
-                "vi": "Cờ không thấy được một dòng tăng vọt: tăng ca của Hùng bằng 382% của tháng 6, nhưng thực nhận chỉ tăng 26%."
+                "vi": "Cờ không thấy được mức tăng vọt bên trong một dòng: tăng ca của Hùng bằng 382% của tháng 6, nhưng thực nhận chỉ tăng 26%."
               },
               "anchor": "pw-exceptions",
               "body": "",
@@ -30531,7 +30531,7 @@
               "lines": [],
               "look": {
                 "en": "The road a run takes: Draft, Waiting for approval, Done.",
-                "vi": "Con đường một đợt lương đi qua: Nháp, Chờ phê duyệt, Hoàn tất."
+                "vi": "Con đường một đợt lương đi qua: Nháp, Đang chờ phê duyệt, Hoàn tất."
               },
               "means": {
                 "en": "Open Payroll takes you to Pay Run › Runs. Submit for approval sends the run along your company's route.",
@@ -30659,7 +30659,7 @@
               ],
               "prompt": {
                 "en": "A run you prepared has been Waiting for approval at HR lead review for two days, and payday is {{payDay}}. What do you do?",
-                "vi": "Một đợt lương bạn lập đã Chờ phê duyệt ở bước Trưởng nhân sự soát xét hai ngày, và ngày trả lương là {{payDay}}. Bạn làm gì?"
+                "vi": "Một đợt lương bạn lập đang chờ phê duyệt ở bước Trưởng nhân sự soát xét đã hai ngày, và ngày trả lương là {{payDay}}. Bạn làm gì?"
               }
             }
           ],
@@ -30777,7 +30777,7 @@
               "screen": "payruns",
               "tip": {
                 "en": "A run that says \"These figures do not add up\" has a component set to the wrong thing. Check Component treatment before you send it in.",
-                "vi": "Đợt lương báo \"Các số liệu này không khớp\" có một thành phần bị đặt sai. Hãy kiểm tra Xử lý thành phần trước khi gửi đi."
+                "vi": "Đợt lương báo \"Số liệu không khớp\" có một thành phần bị đặt sai. Hãy kiểm tra Xử lý thành phần trước khi gửi đi."
               },
               "title": {
                 "en": "A waiting run names its step and its person",
@@ -31091,7 +31091,7 @@
       "star": true,
       "summary": {
         "en": "Every pay run on one board: Draft, Waiting for approval, Done — and who each one is waiting for.",
-        "vi": "Mọi đợt lương trên một bảng: Nháp, Chờ phê duyệt, Hoàn tất — và mỗi đợt đang chờ ai."
+        "vi": "Mọi đợt lương trên một bảng: Nháp, Đang chờ phê duyệt, Hoàn tất — và mỗi đợt đang chờ ai."
       }
     },
     {
@@ -31865,7 +31865,7 @@
               },
               "title": {
                 "en": "Update Payobook, or This run only",
-                "vi": "Cập nhật Payobook, hay Chỉ đợt này"
+                "vi": "Cập nhật Payobook, hoặc Chỉ đợt này"
               },
               "uses": [
                 {
@@ -32031,7 +32031,7 @@
               "lines": [],
               "look": {
                 "en": "The figures: Settlements, Ready to check and Manual, then Net payable, Earnings and Deductions.",
-                "vi": "Các con số: Quyết toán, Cần kiểm tra và Nhập tay, rồi Thực trả, Thu nhập và Khấu trừ."
+                "vi": "Các con số: Quyết toán, Cần kiểm tra và Thủ công, rồi Thực trả, Thu nhập và Khấu trừ."
               },
               "means": {
                 "en": "The first three count settlements. The last three add up their money.",
@@ -33142,7 +33142,7 @@
               ],
               "prompt": {
                 "en": "Payroll-ready reads 98%. Đức's row shows a warning: No bank details. Will Đức be paid this month?",
-                "vi": "Sẵn sàng trả lương hiện 98%. Dòng của Đức có cảnh báo: chưa có thông tin ngân hàng. Tháng này Đức có nhận được lương không?"
+                "vi": "Sẵn sàng tính lương hiện 98%. Dòng của Đức có cảnh báo: chưa có thông tin ngân hàng. Tháng này Đức có nhận được lương không?"
               }
             }
           ],
@@ -33162,7 +33162,7 @@
               "lines": [],
               "look": {
                 "en": "The numbers line: Headcount, Running contracts, Expiring within 30 days, New this month, Not payroll-ready, Monthly wage and Payroll-ready.",
-                "vi": "Dòng con số: Số lượng nhân sự, Hợp đồng đang hiệu lực, Hết hạn trong 30 ngày, Mới trong tháng này, Chưa sẵn sàng tính lương, Lương hàng tháng và Sẵn sàng trả lương."
+                "vi": "Dòng con số: Số lượng nhân sự, Hợp đồng đang hiệu lực, Hết hạn trong 30 ngày, Mới trong tháng này, Chưa sẵn sàng tính lương, Lương hàng tháng và Sẵn sàng tính lương."
               },
               "means": {
                 "en": "Each number counts everyone in your companies, not only the rows listed below.",
@@ -33175,7 +33175,7 @@
               "screen": "employees",
               "tip": {
                 "en": "Running contracts counts contracts, not people. Not payroll-ready checks contract and bank details; the Payroll-ready % counts bank details only, so the two can disagree.",
-                "vi": "Hợp đồng đang hiệu lực đếm hợp đồng, không đếm người. Chưa sẵn sàng tính lương kiểm tra cả hợp đồng và ngân hàng; tỷ lệ Sẵn sàng trả lương chỉ đếm thông tin ngân hàng, nên hai con số có thể khác nhau."
+                "vi": "Hợp đồng đang hiệu lực đếm hợp đồng, không đếm người. Chưa sẵn sàng tính lương kiểm tra cả hợp đồng và ngân hàng; tỷ lệ Sẵn sàng tính lương chỉ đếm thông tin ngân hàng, nên hai con số có thể khác nhau."
               },
               "title": {
                 "en": "The numbers line is the filter",
@@ -33490,7 +33490,7 @@
         "mistakes": [
           {
             "en": "Reading Payroll-ready as everyone ready. That number counts bank details only; the tick on each row also needs a running contract.",
-            "vi": "Hiểu Sẵn sàng trả lương là mọi người đã sẵn sàng. Con số đó chỉ đếm thông tin ngân hàng; dấu tích trên từng dòng còn cần hợp đồng đang hiệu lực."
+            "vi": "Hiểu Sẵn sàng tính lương là mọi người đã sẵn sàng. Con số đó chỉ đếm thông tin ngân hàng; dấu tích trên từng dòng còn cần hợp đồng đang hiệu lực."
           },
           {
             "en": "Expecting Components to show this month's amounts. Many arrive with each pay run, so the contract can rightly read 0.",
@@ -35042,7 +35042,7 @@
               "lines": [],
               "look": {
                 "en": "The Table view: each component with its Source / calculation, Value type and Preview value.",
-                "vi": "Dạng Bảng: mỗi thành phần với Nguồn / cách tính, Loại giá trị và Giá trị xem trước."
+                "vi": "Dạng Bảng: mỗi thành phần với Nguồn / phép tính, Loại giá trị và Giá trị xem trước."
               },
               "means": {
                 "en": "Studio opens on this table. Each row is one component of the scheme.",
@@ -35224,7 +35224,7 @@
               "lines": [],
               "look": {
                 "en": "Depends on and Used by, beside the formula.",
-                "vi": "Phụ thuộc vào và Được dùng bởi, bên cạnh công thức."
+                "vi": "Phụ thuộc vào và Được sử dụng bởi, bên cạnh công thức."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -35234,7 +35234,7 @@
               "tip": "",
               "title": {
                 "en": "Depends on, and used by",
-                "vi": "Phụ thuộc vào, và được dùng bởi"
+                "vi": "Phụ thuộc vào, và được sử dụng bởi"
               },
               "variants": {
                 "VN": {
@@ -35246,7 +35246,7 @@
                 "generic": {
                   "means": {
                     "en": "Depends on lists what this formula reads. Used by lists what reads it, all the way to net pay.",
-                    "vi": "Phụ thuộc vào liệt kê những gì công thức này đọc. Được dùng bởi liệt kê những gì đọc nó, tới tận lương thực nhận."
+                    "vi": "Phụ thuộc vào liệt kê những gì công thức này đọc. Được sử dụng bởi liệt kê những gì đọc nó, tới tận lương thực nhận."
                   }
                 }
               },
@@ -35293,7 +35293,7 @@
             {
               "affects": {
                 "en": "The badge also offers Put it back to draft and Retire this configuration, which may need a sign-off.",
-                "vi": "Huy hiệu còn có Đưa về nháp và Ngừng dùng cấu hình này, việc có thể cần phê duyệt."
+                "vi": "Huy hiệu còn có Đưa về bản nháp và Ngừng sử dụng cấu hình này, việc có thể cần phê duyệt."
               },
               "anchor": "rep-fs-stage",
               "body": "",
@@ -35305,11 +35305,11 @@
               "lines": [],
               "look": {
                 "en": "The stage beside the scheme's name: Draft, Testing, Validated, Active.",
-                "vi": "Giai đoạn bên cạnh tên chương trình lương: Nháp, Đang thử, Đã xác nhận, Đang dùng."
+                "vi": "Giai đoạn bên cạnh tên chương trình lương: Nháp, Kiểm thử, Đã xác thực, Đang hoạt động."
               },
               "means": {
                 "en": "A scheme moves one stage at a time. Only an Active scheme pays people.",
-                "vi": "Một chương trình lương đi từng giai đoạn một. Chỉ chương trình Đang dùng mới trả lương cho người."
+                "vi": "Một chương trình lương đi từng giai đoạn một. Chỉ chương trình Đang hoạt động mới trả lương cho người."
               },
               "moment_chain": "formula",
               "moment_from": "",
@@ -35319,7 +35319,7 @@
               "tip": "",
               "title": {
                 "en": "Start testing, Validate, Activate",
-                "vi": "Bắt đầu thử, Xác nhận, Kích hoạt"
+                "vi": "Bắt đầu thử nghiệm, Xác thực, Kích hoạt"
               },
               "visual": "pipeline"
             },
@@ -35506,7 +35506,7 @@
               "consequence": "",
               "kicker": {
                 "en": "The rule",
-                "vi": "Quy tắc"
+                "vi": "Nguyên tắc"
               },
               "lines": [],
               "look": {
@@ -36037,7 +36037,7 @@
                   },
                   "tip": {
                     "en": "The number that priced that line is EEHI, a parameter at the bottom of the component list in Formula Engine.",
-                    "vi": "Con số đã tính ra dòng đó là EEHI, một tham số ở cuối danh sách thành phần trong Công thức lương."
+                    "vi": "Con số đã tính ra dòng đó là EEHI, một tham số ở cuối danh sách thành phần trong Bộ máy công thức."
                   }
                 },
                 "generic": {
@@ -36051,7 +36051,7 @@
                   },
                   "tip": {
                     "en": "The rate that prices a payslip line is a parameter on the pay scheme, in Formula Engine.",
-                    "vi": "Tỷ lệ tính ra một dòng phiếu lương là một tham số của chương trình lương, trong Công thức lương."
+                    "vi": "Tỷ lệ tính ra một dòng phiếu lương là một tham số của chương trình lương, trong Bộ máy công thức."
                   }
                 }
               },
@@ -37230,7 +37230,7 @@
               "lines": [],
               "look": {
                 "en": "Files & systems, Feeds, Transformations, the Scheme, and Payobook Source.",
-                "vi": "Tệp & hệ thống, Nguồn cấp, Biến đổi, Chương trình lương, và Nguồn Payobook."
+                "vi": "Tệp & hệ thống, Nguồn cấp dữ liệu, Chuyển đổi, Chương trình lương, và Nguồn Payobook."
               },
               "means": {
                 "en": "Left to right is the road a value travels to a payslip.",
@@ -37300,11 +37300,11 @@
               "lines": [],
               "look": {
                 "en": "The transformation in the middle lane.",
-                "vi": "Phép biến đổi ở làn giữa."
+                "vi": "Phép chuyển đổi ở làn giữa."
               },
               "means": {
                 "en": "The system sends the salary as text. A transformation turns \"12.000.000\" into a number.",
-                "vi": "Hệ thống gửi tiền lương dưới dạng chữ. Một phép biến đổi chuyển \"12.000.000\" thành con số."
+                "vi": "Hệ thống gửi tiền lương dưới dạng chữ. Một phép chuyển đổi biến \"12.000.000\" thành con số."
               },
               "moment_chain": "",
               "moment_from": "rep-jny-feed",
@@ -37314,7 +37314,7 @@
               "tip": "",
               "title": {
                 "en": "A transformation makes it an amount",
-                "vi": "Một phép biến đổi biến nó thành số tiền"
+                "vi": "Một phép chuyển đổi biến nó thành số tiền"
               },
               "visual": "trace"
             },
@@ -37485,7 +37485,7 @@
         },
         "what": {
           "en": "Settings › Integrations › Mapping. A header reads FROM a source TO a scheme, and tabs show each kind of wire. The Journey tab draws the whole road, lane by lane.",
-          "vi": "Cài đặt › Tích hợp › Ánh xạ. Phần đầu đọc TỪ một nguồn ĐẾN một chương trình lương, và các tab cho thấy từng loại dây nối. Tab Hành trình vẽ cả chặng đường, từng làn một."
+          "vi": "Cài đặt › Tích hợp › Ánh xạ. Phần đầu đọc TỪ một nguồn TỚI một chương trình lương, và các tab cho thấy từng loại dây nối. Tab Hành trình vẽ cả chặng đường, từng làn một."
         },
         "when": {
           "en": "When a scheme is new, when a source system changes its fields, and whenever someone asks where a number came from.",
@@ -37830,7 +37830,7 @@
             {
               "affects": {
                 "en": "A run that said These figures do not add up stays wrong until you recompute it.",
-                "vi": "Một đợt lương báo Các số liệu này không khớp vẫn sai cho tới khi bạn tính lại."
+                "vi": "Một đợt lương báo Số liệu không khớp vẫn sai cho tới khi bạn tính lại."
               },
               "anchor": "tr-save",
               "body": "",
@@ -37900,7 +37900,7 @@
         },
         "when": {
           "en": "Before a scheme's first pay run, after a workbook import, and whenever a run says \"These figures do not add up\".",
-          "vi": "Trước đợt lương đầu tiên của một chương trình, sau khi nhập một sổ tính, và bất cứ khi nào một đợt lương báo \"Các số liệu này không khớp\"."
+          "vi": "Trước đợt lương đầu tiên của một chương trình, sau khi nhập một sổ tính, và bất cứ khi nào một đợt lương báo \"Số liệu không khớp\"."
         },
         "why": {
           "en": "The pay role decides the arithmetic from gross to net. A role set wrong makes deductions bigger than gross, and every report counts the wrong thing.",
@@ -38134,7 +38134,7 @@
               "consequence": "",
               "kicker": {
                 "en": "People",
-                "vi": "Nhân sự"
+                "vi": "Con người"
               },
               "lines": [],
               "look": {
@@ -38509,7 +38509,7 @@
               },
               "means": {
                 "en": "Downloads the people and fields you picked as a spreadsheet you can edit and bring back.",
-                "vi": "Tải về các người và trường bạn đã chọn dưới dạng bảng tính để bạn sửa rồi nhập lại."
+                "vi": "Tải về những người và trường bạn đã chọn dưới dạng bảng tính để bạn sửa rồi nhập lại."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40080,11 +40080,11 @@
                   "correct": false,
                   "feedback": {
                     "en": "Let's rethink that. Payroll cannot see the day behind the number. The person who can is you.",
-                    "vi": "Hãy nghĩ lại một chút. Bảng lương không thấy được ngày đằng sau con số. Người thấy được là bạn."
+                    "vi": "Hãy nghĩ lại một chút. Bộ phận lương không thấy được ngày đằng sau con số. Người thấy được là bạn."
                   },
                   "label": {
                     "en": "Leave the week open for payroll to sort out",
-                    "vi": "Để tuần mở cho bảng lương tự xử lý"
+                    "vi": "Để tuần mở cho bộ phận lương tự xử lý"
                   }
                 }
               ],
@@ -40098,7 +40098,7 @@
             {
               "affects": {
                 "en": "Payroll trusts a locked week. The week cannot be locked while any flag is open.",
-                "vi": "Bảng lương tin vào một tuần đã khoá. Tuần không khoá được khi còn cờ nào đang mở."
+                "vi": "Bộ phận lương tin vào một tuần đã khoá. Tuần không khoá được khi còn cờ nào đang mở."
               },
               "anchor": "wf-close",
               "body": "",
@@ -40114,7 +40114,7 @@
               },
               "means": {
                 "en": "This is the week payroll will receive, and how many days still need an answer from you.",
-                "vi": "Đây là tuần mà bảng lương sẽ nhận, và số ngày vẫn còn cần bạn trả lời."
+                "vi": "Đây là tuần mà bộ phận lương sẽ nhận, và số ngày vẫn còn cần bạn trả lời."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40168,7 +40168,7 @@
             {
               "affects": {
                 "en": "The flag clears once the day adds up, and payroll gets the real hours.",
-                "vi": "Cờ biến mất khi ngày đó khớp, và bảng lương nhận đúng số giờ thật."
+                "vi": "Cờ biến mất khi ngày đó khớp, và bộ phận lương nhận đúng số giờ thật."
               },
               "anchor": "rep-wf-fix",
               "body": "",
@@ -40237,7 +40237,7 @@
             {
               "affects": {
                 "en": "Read them the way payroll will. A number that looks wrong here will be wrong on a payslip.",
-                "vi": "Hãy đọc như bảng lương sẽ đọc. Con số trông sai ở đây sẽ sai trên phiếu lương."
+                "vi": "Hãy đọc như bộ phận lương sẽ đọc. Con số trông sai ở đây sẽ sai trên phiếu lương."
               },
               "anchor": "wf-close-handoff",
               "body": "",
@@ -40253,7 +40253,7 @@
               },
               "means": {
                 "en": "The week's totals as payroll will receive them. Est. gross is worked out from each person's contract rate.",
-                "vi": "Tổng của tuần đúng như bảng lương sẽ nhận. Tổng thu nhập ước tính được tính từ mức lương trong hợp đồng của từng người."
+                "vi": "Tổng của tuần đúng như bộ phận lương sẽ nhận. Tổng thu nhập ước tính được tính từ mức lương trong hợp đồng của từng người."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -40263,20 +40263,20 @@
               "tip": "",
               "title": {
                 "en": "What payroll will receive",
-                "vi": "Những gì bảng lương sẽ nhận"
+                "vi": "Những gì bộ phận lương sẽ nhận"
               },
               "visual": "none"
             },
             {
               "affects": {
                 "en": "Check-ins, corrections and overtime for those days become read-only, and payroll reads the week from now on.",
-                "vi": "Giờ chấm công, các điều chỉnh và tăng ca của những ngày đó chuyển sang chỉ xem, và bảng lương đọc tuần này từ đây."
+                "vi": "Giờ chấm công, các điều chỉnh và tăng ca của những ngày đó chuyển sang chỉ xem, và bộ phận lương đọc tuần này từ đây."
               },
               "anchor": "wf-close-lock",
               "body": "",
               "consequence": {
                 "en": "Affects everyone's time this week — payroll reads it from now on. Reversible: Reopen… asks for a reason, and the reason is kept. Verify first: no flags left, and the handoff numbers make sense.",
-                "vi": "Ảnh hưởng: giờ công của mọi người trong tuần — bảng lương đọc nó từ đây. Hoàn tác: Mở lại… sẽ hỏi lý do, và lý do được lưu lại. Kiểm tra trước: không còn cờ nào, và các con số chuyển giao hợp lý."
+                "vi": "Ảnh hưởng: giờ công của mọi người trong tuần — bộ phận lương đọc nó từ đây. Hoàn tác: Mở lại… sẽ hỏi lý do, và lý do được lưu lại. Kiểm tra trước: không còn cờ nào, và các con số chuyển giao hợp lý."
               },
               "kicker": {
                 "en": "The action",
@@ -40340,7 +40340,7 @@
         },
         "why": {
           "en": "Payroll trusts a locked week. Locking it with a flag unanswered sends a question to payroll as if it were a fact.",
-          "vi": "Bảng lương tin vào một tuần đã khoá. Khoá khi còn cờ chưa trả lời là gửi một câu hỏi sang bảng lương như thể đó là sự thật."
+          "vi": "Bộ phận lương tin vào một tuần đã khoá. Khoá khi còn cờ chưa trả lời là gửi một câu hỏi sang bảng lương như thể đó là sự thật."
         }
       },
       "required": false,
@@ -40362,5 +40362,5 @@
       }
     }
   ],
-  "version": "2200d23054ad"
+  "version": "a696ab18159e"
 }
