@@ -17,6 +17,7 @@ from odoo.tests.common import TransactionCase, tagged
 from odoo.addons.pb_payai_actions.payai import runner
 from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
 from odoo.addons.pb_payai_actions.payai.runner import Ctx
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
 
 DOORS = [
     {'id': 'payhub_run', 'label': 'Run Payroll', 'sublabel': 'Pay Run', 'group': '',
@@ -70,10 +71,12 @@ class _P3Case(TransactionCase):
 
     @classmethod
     def _user(cls, name, groups):
+        # Every fixture user talks to PayAI, so each holds it (a role since
+        # 2026-10-20 — not inherited from being an internal user).
         return cls.env['res.users'].with_context(no_reset_password=True).create({
             'name': name, 'login': '%s@p3.test.invalid' % name.lower().replace(' ', '.'),
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
-            'group_ids': [(6, 0, [cls.g_base] + list(groups))]})
+            'group_ids': [(6, 0, [cls.g_base] + payai_group_ids(cls.env) + list(groups))]})
 
     def setUp(self):
         super().setUp()

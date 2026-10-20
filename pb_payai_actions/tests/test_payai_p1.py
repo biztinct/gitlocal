@@ -16,6 +16,7 @@ from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_payai_actions.payai import gate, registry
 from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
 
 GREEN = {'open_screen', 'run_status', 'download_run_excel', 'what_can_you_do'}
 AMBER = {'run_payroll', 'submit_run', 'update_pay_data', 'send_payslips', 'filing_prepare'}
@@ -89,21 +90,26 @@ class TestPayaiP1(TransactionCase):
         Users = cls.env['res.users'].with_context(no_reset_password=True)
         g = cls.env.ref
         base = g('base.group_user').id
+        # Every internal fixture user talks to PayAI, so each holds it (a role
+        # since 2026-10-20 — not inherited from being an internal user). The
+        # portal user stays without: the gate refuses it on its own terms.
+        payai = payai_group_ids(cls.env)
         cls.officer = Users.create({
             'name': 'PayAI Officer', 'login': 'payai.officer@test.invalid',
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
             'group_ids': [(6, 0, [base, g('pb_hr_payroll_base.group_payroll_base_officer').id,
-                                  g('om_hr_payroll.group_hr_payroll_user').id])]})
+                                  g('om_hr_payroll.group_hr_payroll_user').id] + payai)]})
         # Holds the ACL on pay runs (officer tier) but NOT the permission the
         # Pay Run screen asks for: the back door PA-R1 closes.
         cls.backdoor = Users.create({
             'name': 'PayAI Backdoor', 'login': 'payai.backdoor@test.invalid',
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
-            'group_ids': [(6, 0, [base, g('pb_hr_payroll_base.group_payroll_base_officer').id])]})
+            'group_ids': [(6, 0, [base, g('pb_hr_payroll_base.group_payroll_base_officer').id]
+                          + payai)]})
         cls.plain = Users.create({
             'name': 'PayAI Plain', 'login': 'payai.plain@test.invalid',
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
-            'group_ids': [(6, 0, [base])]})
+            'group_ids': [(6, 0, [base] + payai)]})
         cls.portal = Users.create({
             'name': 'PayAI Portal', 'login': 'payai.portal@test.invalid',
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
@@ -112,7 +118,7 @@ class TestPayaiP1(TransactionCase):
             'name': 'PayAI Manager', 'login': 'payai.manager@test.invalid',
             'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
             'group_ids': [(6, 0, [base, g('om_hr_payroll.group_hr_payroll_manager').id,
-                                  g('om_hr_payroll.group_hr_payroll_user').id])]})
+                                  g('om_hr_payroll.group_hr_payroll_user').id] + payai)]})
         Run = cls.env['hr.payslip.run']
         cls.run_draft = Run.create({'name': 'PAYAI Test June 2031 Zebra',
                                     'date_start': '2031-06-01', 'date_end': '2031-06-30'})
