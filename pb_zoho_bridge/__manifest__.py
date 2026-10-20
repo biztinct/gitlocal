@@ -43,7 +43,7 @@ it is NOT sent then. `send_credentials()` is a separate act, which the joining-d
 step of their journey performs. An account that exists in silence is useful; an
 account announced three weeks early is a support ticket.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

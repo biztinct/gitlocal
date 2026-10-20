@@ -381,8 +381,9 @@ export class PbHiringSetup extends Component {
     openForms() { this.action.doAction("pb_hiring.action_pb_hiring_forms"); }
 
     openBoard() {
-        this.action.doAction("pb_lifecycle.action_pb_lifecycle_hub", {
-            additionalContext: { pb_lens: "hiring" },
+        // NAV P2: Hiring is its own hub now (it was Lifecycle › Hiring).
+        this.action.doAction("pb_hiring.action_pb_hiring_hub", {
+            additionalContext: { pb_lens: "overview" },
         });
     }
 }

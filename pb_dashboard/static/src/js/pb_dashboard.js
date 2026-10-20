@@ -119,7 +119,11 @@ const SC_PAYRUN = "sc_payrun";
 const HOME_XMLID = "pb_home_hub.action_pb_home_hub";
 const PAY_HUB = "pb_payhub.action_pb_pay_hub";
 const INSIGHTS_HUB = "pb_insights_hub.action_pb_insights_hub";
-const LIFECYCLE_HUB = "pb_lifecycle.action_pb_lifecycle_hub";
+// NAV P2: Exits is a People tab and Hiring is its own hub (both were
+// Lifecycle tabs). Named by xmlid string: this module depends on neither.
+// (PEOPLE_HUB is declared further down; a module-level const cannot be read
+// before its line, so the People door below spells the xmlid out.)
+const HIRING_HUB = "pb_hiring.action_pb_hiring_hub";
 
 /** Payroll stage -> Pay Run hub lens (the same table as pb_home_hub's
  *  STAGE_LENS, copied because pb_home_hub depends on THIS module). */
@@ -127,8 +131,8 @@ const STAGE_LENS = { 1: "run", 2: "runs", 3: "payslips", 4: "deliver", 5: "runs"
 
 const DOORS = {
     approvals: { xmlid: HOME_XMLID, lens: "approvals", back: false },
-    exits: { xmlid: LIFECYCLE_HUB, lens: "exits" },
-    hiring: { xmlid: LIFECYCLE_HUB, lens: "hiring" },
+    exits: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "exits" },
+    hiring: { xmlid: HIRING_HUB, lens: "overview" },
     contracts: { xmlid: "pb_people_hub.action_pb_people_contracts" },
     // Mission Control reads its lens from `pb_shell_lens` (hub_nav.js).
     holidays: { xmlid: "pb_mission.action_pb_workforce", lens: "holidays",

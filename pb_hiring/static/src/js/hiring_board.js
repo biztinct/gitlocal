@@ -279,7 +279,7 @@ export class PbHiringBoard extends Component {
         // CAPTURE: the web client's own hotkey handling sees Escape first
         // otherwise, and the drawer never heard it.
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
-        onWillUnmount(() => { clearTimeout(this._toastTimer); clearTimeout(this._landTimer); if (this.props.embedded) { setPlaceSub("pb_lifecycle_hub", "hiring", ""); } });
+        onWillUnmount(() => { clearTimeout(this._toastTimer); clearTimeout(this._landTimer); if (this.props.embedded) { setPlaceSub("pb_hiring_hub", this.props.placeLens || "overview", ""); } });
 
         onWillStart(async () => {
             await this.load();
@@ -288,6 +288,8 @@ export class PbHiringBoard extends Component {
             if (roleId && this.state.allowed) { await this.openRole(Number(roleId)); }
             const startTab = this.props.startTab || (ctx.pb_focus === "bank" ? "bank" : "");
             if (!roleId && startTab === "bank" && this.state.canBank) { this.setTab("bank"); }
+            // NAV P2: the Hiring hub's INTERVIEWS rail item opens this tab.
+            else if (!roleId && startTab === "interviews") { this.setTab("interviews"); }
         });
     }
 
@@ -669,14 +671,16 @@ export class PbHiringBoard extends Component {
     }
 
     /**
-     * Inside the Lifecycle hub, say whether the list of roles or one role's
+     * Inside the Hiring hub (NAV P2; it was the Lifecycle hub's Hiring tab
+     * before), say whether the list of roles or one role's
      * page is showing, so the learning helper can tell the two apart (the
      * precedent is People › Pay's `_publishTab`). On its own the screen is
      * not a hub lens and publishes nothing.
      */
     _publishView() {
         if (this.props.embedded) {
-            setPlaceSub("pb_lifecycle_hub", "hiring", this.state.view === "role" ? "role" : "");
+            setPlaceSub("pb_hiring_hub", this.props.placeLens || "overview",
+                        this.state.view === "role" ? "role" : "");
         }
     }
 

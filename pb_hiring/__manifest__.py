@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.8.1',
+    'version': '19.0.2.9.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -196,7 +196,8 @@ WHAT THIS MODULE IS
         'biz_approval_workflow',    # the route both sign-offs run on
         'pb_hub',                   # the global command-bar registry
         'pb_import_kit',            # pbim tokens/primitives + the shared ic() set
-        'pb_lifecycle',             # the hub this lens joins, and its tiers
+        'pb_lifecycle',             # its tiers (LIFECYCLE_GATE); NAV P2 gave Hiring its own hub
+        'pb_sidebar',               # NAV P2: ships the OPERATE › Hiring entry
         'biz_access',               # its left-menu role lane; the Lifecycle door sits outside it
         'pb_dashboard',             # the payroll first screen a hiring-only person is moved off
         'pb_home_hub',              # Home's Pulse tab, hidden for that same person
@@ -260,6 +261,7 @@ WHAT THIS MODULE IS
         'views/agency_portal_templates.xml',
         'data/recruit_p7.xml',
         'data/recruit_p8.xml',
+        'data/pb_sidebar.xml',      # NAV P2: OPERATE › Hiring
     ],
     'assets': {
         'web.assets_backend': [
@@ -284,6 +286,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_p7.js',
             'pb_hiring/static/src/js/hiring_p8.js',
             'pb_hiring/static/src/js/hiring_numbers.js',
+            'pb_hiring/static/src/js/hiring_hub.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/js/home_no_pulse.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
@@ -297,6 +300,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_p7.xml',
             'pb_hiring/static/src/xml/hiring_p8.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
+            'pb_hiring/static/src/xml/hiring_hub.xml',
         ],
         'web.assets_frontend': [
             'pb_hiring/static/src/scss/portal_hiring.scss',

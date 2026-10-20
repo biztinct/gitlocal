@@ -27,7 +27,9 @@ import { _t } from "@web/core/l10n/translation";
 import { G_ADMIN } from "@pb_hub/js/hub_palette_entries";
 
 const palette = registry.category("pb_hub_palette");
-const REQUIRES = "pb_lifecycle_hub";
+// NAV P2: the Lifecycle hub is retired (its tag is only a redirector), so
+// the presence probe names the Journeys board, from the same module.
+const REQUIRES = "pb_journeys";
 
 // Who may see these rows. The integration tier wires connections up; the
 // lifecycle tiers own the joiners and leavers that come down them; System is

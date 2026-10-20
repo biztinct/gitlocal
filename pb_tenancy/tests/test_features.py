@@ -246,6 +246,9 @@ class TestTenancyFeatures(TransactionCase):
             'pb_insights_hub': 'insights', 'pb_workforce': 'workforce',
             'pb_lifecycle_hub': 'lifecycle', 'pb_compliance_hub': 'compliance',
             'learn_hub': 'learn', 'learn_journey': 'learn',
+            # NAV P2: the two new OPERATE entries carry the switch of the
+            # screens they took over.
+            'pb_hiring_hub': 'lifecycle', 'pb_expenses_hub': 'workforce',
         }
         for tag, key in expected.items():
             items = self.Item.sudo().with_context(active_test=False).search(
@@ -254,7 +257,7 @@ class TestTenancyFeatures(TransactionCase):
                 self.assertEqual(item.feature_key, key, tag)
         # The product itself is never switchable.
         for tag in ('pb_home_hub', 'pb_pay_hub', 'pb_people_hub',
-                    'pb_settings_hub'):
+                    'pb_settings_hub', 'pb_talent_hub'):
             for item in self.Item.sudo().with_context(active_test=False).search(
                     [('action_tag', '=', tag)]):
                 self.assertFalse(

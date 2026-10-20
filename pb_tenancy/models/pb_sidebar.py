@@ -63,6 +63,11 @@ class PbSidebarItem(models.Model):
         'pb_insights_hub': 'insights',
         'pb_workforce': 'workforce',
         'pb_lifecycle_hub': 'lifecycle',
+        # NAV P2: Hiring left the (retired) Lifecycle entry and keeps its
+        # switch; Expenses took Trips from Workforce and keeps that one.
+        # Talent has no switch of its own (absent on purpose).
+        'pb_hiring_hub': 'lifecycle',
+        'pb_expenses_hub': 'workforce',
         'pb_compliance_hub': 'compliance',
         # RIZE W2 E1 renamed the Learn entry's tag to the hub it now opens.
         # BOTH spellings stay: the stamp finds the entry by the surface it
@@ -72,6 +77,22 @@ class PbSidebarItem(models.Model):
         'learn_hub': 'learn',
         'learn_journey': 'learn',
     }
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Stamp a new entry at birth (NAV P2).
+
+        `_seed_feature_keys` runs from this module's data file, and this module
+        loads BEFORE the hubs that ship their own entries. On the run that
+        creates a new entry (Hiring, Expenses) the seed has already passed, so
+        the entry would belong to no part of the product until the next
+        upgrade. An entry given no key whose surface is in the map takes the
+        map's answer as it is created; an explicit key always wins."""
+        for vals in vals_list:
+            tag = vals.get('action_tag')
+            if not vals.get('feature_key') and tag in self.FEATURE_BY_TAG:
+                vals['feature_key'] = self.FEATURE_BY_TAG[tag]
+        return super().create(vals_list)
 
     @api.model
     def _seed_feature_keys(self):

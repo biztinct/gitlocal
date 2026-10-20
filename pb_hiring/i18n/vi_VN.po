@@ -15,6 +15,9 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+#: model:pb.sidebar.item,name:pb_hiring.item_hiring
+#: model:ir.actions.client,name:pb_hiring.action_pb_hiring_hub
 msgid "Hiring"
 msgstr "Tuyển dụng"
 
@@ -123,6 +126,7 @@ msgstr "Vai trò"
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_board.xml:168
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
 msgid "Interviews"
 msgstr "Phỏng vấn"
 
@@ -10838,6 +10842,7 @@ msgstr "Danh sách trên trang riêng của ứng viên, kèm câu giải thích
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
 msgid "Who we are hiring"
 msgstr "Chúng ta đang tuyển ai"
 
@@ -19423,3 +19428,27 @@ msgstr "Phiếu đánh giá cũ"
 #: code:addons/pb_hiring/models/scorecards_p5.py:0
 msgid "The five scored lines every interviewer used before scorecards."
 msgstr "Năm tiêu chí chấm điểm mà mọi người phỏng vấn đã dùng trước khi có phiếu đánh giá."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+msgid "Talent pool"
+msgstr "Kho ứng viên"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
+msgid "Talent pool (resume bank)"
+msgstr "Kho ứng viên (kho hồ sơ)"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
+msgid "Roles, candidates and interviews"
+msgstr "Vị trí, ứng viên và phỏng vấn"

@@ -63,6 +63,17 @@ export const FEATURE_BY_SURFACE = {
     "pb_lifecycle.action_pb_lifecycle_hub": "lifecycle",
     "pb_lifecycle.action_journey_template": "lifecycle",
     "pb_lifecycle.action_hr_letter": "lifecycle",
+    // NAV P2: Hiring left Lifecycle for its own hub and keeps its switch;
+    // Journeys opens on its own (Settings › HR). Talent has no switch: it is
+    // goals, growth plans, training and praise, each sold with the product.
+    pb_hiring_hub: "lifecycle",
+    "pb_hiring.action_pb_hiring_hub": "lifecycle",
+    pb_journeys: "lifecycle",
+    "pb_lifecycle.action_pb_journeys": "lifecycle",
+    // ---------------------------------------------------------- Expenses
+    // NAV P2: Trips moved here from Workforce and keep the Workforce switch.
+    pb_expenses_hub: "workforce",
+    "pb_expenses_hub.action_pb_expenses_hub": "workforce",
     // -------------------------------------------------------- Compliance
     pb_compliance_hub: "compliance",
     "pb_compliance_hub.action_pb_compliance_hub": "compliance",
@@ -107,6 +118,18 @@ export const FEATURE_BY_LENS = {
     "pb_payhub.action_pb_pay_hub#adjust": "retro_proration",
     "pb_people_hub#plan": "people_plan",
     "pb_people_hub.action_pb_people_hub#plan": "people_plan",
+    // NAV P2: the four lifecycle boards are People lenses now and keep the
+    // Lifecycle switch.
+    "pb_people_hub#newjoiners": "lifecycle",
+    "pb_people_hub.action_pb_people_hub#newjoiners": "lifecycle",
+    "pb_people_hub#probation": "lifecycle",
+    "pb_people_hub.action_pb_people_hub#probation": "lifecycle",
+    "pb_people_hub#exits": "lifecycle",
+    "pb_people_hub.action_pb_people_hub#exits": "lifecycle",
+    "pb_people_hub#contracts": "lifecycle",
+    "pb_people_hub.action_pb_people_hub#contracts": "lifecycle",
+    "pb_talent_hub#pip": "lifecycle",
+    "pb_talent_hub.action_pb_talent_hub#pip": "lifecycle",
     // The Decision Room is reachable from Home as well as from People, and
     // one switch has to govern both doors — a tenant with planning turned
     // off must not find it again on the home page.

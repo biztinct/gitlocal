@@ -2,7 +2,9 @@
 /**
  * The Hiring lens's doors.
  *
- *   1. **The Lifecycle hub's Hiring lens.** Registered into P0's lens
+ *   1. **(Retired by NAV P2.)** The board used to be the Lifecycle hub's
+ *      Hiring lens; it is now its own hub (`hiring_hub.js`). The notes below
+ *      are kept for the record. The Lifecycle hub's Hiring lens was registered into P0's lens
  *      registry rather than imported into its config, because the dependency
  *      runs the other way: this module depends on the hub, so the hub cannot
  *      import this one back.
@@ -41,34 +43,13 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { LIFECYCLE_LENSES, LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
-import { PbHiringBoard } from "@pb_hiring/js/hiring_board";
 import { PbHiringNumbers } from "@pb_hiring/js/hiring_numbers";
 
-registry.category(LIFECYCLE_LENSES).add("hiring", {
-    key: "hiring",
-    icon: "userPlus",
-    label: _t("Hiring"),
-    Component: PbHiringBoard,
-    groups: LIFECYCLE_GATE.concat([
-        "pb_hiring.group_hiring_user",
-        "pb_hiring.group_hiring_manager",
-        "pb_hiring.group_hiring_admin",
-        // RECRUIT P1 (RC-D1): a line manager reads the board of their own
-        // roles and holds no hiring group — the probe below is what decides.
-        "base.group_user",
-    ]),
-    // The board's own question (R-gate): Lifecycle readers who are not on
-    // the hiring team, administrators included, are not offered this tab.
-    probe: { model: "pb.hiring", method: "can_open" },
-    // RECRUIT P1: a deep link may name the role to open on arrival.
-    // RECRUIT P4: `pb_focus: "bank"` (the ⌘K row) arrives on the Resume bank.
-    propsFromContext: (ctx) => Object.assign({},
-        ctx && ctx.pb_role_id ? { roleId: ctx.pb_role_id } : {},
-        ctx && ctx.pb_focus === "bank" ? { startTab: "bank" } : {}),
-}, { sequence: 10 });
+// NAV P2 (2026-10-21): the board is no longer a tab of the Lifecycle hub. It
+// is the Hiring hub's three rail items (`hiring_hub.js`), so nothing is
+// registered into LIFECYCLE_LENSES any more.
 
 /* ------------------------------------------------- the Insights lens ----
  * A3. `pb_insights_hub`'s four shipped lenses carry no sequence, so
@@ -101,7 +82,7 @@ registry.category(INSIGHTS_LENSES).add("hiring", {
     probe: { model: "pb.hiring", method: "can_open" },
 }, { sequence: 30 });
 
-const HUB_XMLID = "pb_lifecycle.action_pb_lifecycle_hub";
+const HUB_XMLID = "pb_hiring.action_pb_hiring_hub";
 const HIRING_GATE = [
     "pb_hiring.group_hiring_user",
     "pb_hiring.group_hiring_manager",
@@ -132,6 +113,7 @@ const HIRING_SETUP_GATE = [
 // 20. P11 took Vendors 20 and Access 30 (R119), so Hiring takes 40.
 registry.category(SETTINGS_CATEGORIES).add("hiring", {
     key: "hiring",
+    group: "hr",                       // NAV P2: Settings › HR
     icon: "userPlus",
     label: _t("Hiring"),
     blurb: _t("Who picks a hiring request up, and what a panel is asked to score."),
@@ -180,16 +162,30 @@ registry.category(SETTINGS_CATEGORIES).add("hiring", {
 /* ---------------------------------------------------------- command bar --- */
 const palette = registry.category("pb_hub_palette");
 
+/* NAV P2: the Hiring mission row (135) — under People (130) in the palette, as Hiring
+ * sits under People on the rail. The old word "Lifecycle" still finds it. */
+palette.add("hiring_hub", {
+    id: "hiring_hub",
+    label: _t("Hiring"),
+    sublabel: _t("Roles, candidates and interviews"),
+    icon: "userPlus",
+    groups: HIRING_BOARD_GATE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID },
+    keywords: ["lifecycle", "recruit", "recruitment", "vòng đời", "tuyển dụng"],
+}, { sequence: 135 });
+
 palette.add("hiring_board", {
     id: "hiring_board",
     label: _t("Who we are hiring"),
-    sublabel: _t("Lifecycle"),
+    sublabel: _t("Hiring"),
     icon: "userPlus",
     groups: HIRING_BOARD_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
-    requires: "pb_hiring_board",
-    action: { xmlid: HUB_XMLID, lens: "hiring" },
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "overview" },
+    keywords: ["lifecycle", "recruitment"],
 }, { sequence: 3500 });
 
 palette.add("hiring_requests", {
@@ -320,5 +316,6 @@ palette.add("hiring_bank", {
     icon: "bookOpen",
     groups: ["pb_hiring.group_hiring_user"],
     requires: "pb_hiring_board",
-    action: { xmlid: HUB_XMLID, lens: "hiring", focus: "bank" },
+    action: { xmlid: HUB_XMLID, lens: "bank" },
+    keywords: ["talent pool"],
 }, { sequence: 4020 });

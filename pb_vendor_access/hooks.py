@@ -785,10 +785,22 @@ SCREEN_GATES = {
         'packages-and-awards-head', 'recognition', 'recognition-lead',
         'growth-plans-hr', 'growth-plans-head',
         'lifecycle-read', 'lifecycle-team', 'lifecycle-admin'),
-    'pb_lifecycle.item_lifecycle': (
-        'lifecycle-read', 'lifecycle-team', 'lifecycle-admin'),
+    # NAV P2 (2026-10-21): Lifecycle is off the menu (its boards moved to
+    # People, Hiring and Talent), so it is no longer gated here. The three new
+    # entries carry the roles of the screens they now hold. An entry that is
+    # not on a database (module not installed) is skipped, as ever; the hub
+    # modules call `ensure_screen_gates` again from their own install/upgrade
+    # step because they load AFTER this module.
+    'pb_hiring.item_hiring': (
+        'hiring-recruiter', 'hiring-manager', 'hiring-head'),
     'pb_mission.item_workforce': (
         'budget-holder', 'budget-finance', 'budget-team'),
+    'pb_expenses_hub.item_expenses': (
+        'budget-holder', 'budget-finance', 'budget-team'),
+    'pb_talent_hub.item_talent': (
+        'recognition', 'recognition-lead', 'growth-plans-hr',
+        'growth-plans-head', 'goals-team', 'goals-hr-lead', 'goals-head',
+        'training-trainer', 'training-manager', 'training-head'),
     'pb_insights_hub.item_insights': (
         'pay-reporting-read', 'payroll-manager', 'payroll-administrator'),
     'pb_compliance_hub.item_compliance': (
@@ -808,6 +820,10 @@ def ensure_screen_gates(env):
         _logger.info('pb_vendor_access: no left menu on this database — no '
                      'role gates to put on it')
         return {'gated': 0, 'absent': 0, 'added': 0}
+    # NAV P2: called from other modules' install/upgrade steps right after
+    # their data files load. Records created there may still sit in the ORM
+    # cache; `env.ref` reads `ir_model_data` through SQL and would miss them.
+    env.flush_all()
     Item = env['pb.sidebar.item'].sudo().with_context(active_test=False)
     gated = absent = added = 0
     for xmlid, keys in SCREEN_GATES.items():

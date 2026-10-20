@@ -598,6 +598,14 @@
         <field name="tag">pb_hiring_board</field>
     </record>
 
+    <!-- NAV P2: the Hiring hub — the left-menu entry's door. Overview,
+         Interviews and Talent pool are three rail items over the board above.
+         Test URL: /bizapp/action-pb_hiring_hub -->
+    <record id="action_pb_hiring_hub" model="ir.actions.client">
+        <field name="name">Hiring</field>
+        <field name="tag">pb_hiring_hub</field>
+    </record>
+
     <!-- ================================================================ -->
     <!--  Screening, on the candidate the recruiter already uses          -->
     <!-- ================================================================ -->

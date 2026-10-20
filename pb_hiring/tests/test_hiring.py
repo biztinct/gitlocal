@@ -674,6 +674,13 @@ class TestSourceGates(TransactionCase):
                 self.assertIsNone(group.get('expand'))
 
 
+
+def _code_only(src):
+    """The source with `//` and `/* */` comments removed (W101)."""
+    src = re.sub(r'/\*.*?\*/', '', src, flags=re.S)
+    return re.sub(r'(?<![:"\'])//[^\n]*', '', src)
+
+
 @tagged('post_install', '-at_install')
 class TestTheDoors(TransactionCase):
 
@@ -700,13 +707,44 @@ class TestTheDoors(TransactionCase):
         self.assertLess(seqs[-1], 3600,
                         'A1 owns the 3500 block; B1 starts at 3600')
 
-    def test_the_lens_sits_at_sequence_ten(self):
-        src = _src('static', 'src', 'js', 'hiring_palette.js')
-        self.assertIn('sequence: 10', src)
-        self.assertIn('LIFECYCLE_LENSES', src)
+    def test_the_board_is_the_hiring_hubs_three_tabs(self):
+        """NAV P2: the board left the Lifecycle hub for its own hub, as three
+        rail items over the same component, and registers nothing into the
+        old Lifecycle registry any more."""
+        hub = _src('static', 'src', 'js', 'hiring_hub.js')
+        for key, tab in (('overview', None), ('interviews', 'interviews'),
+                         ('bank', 'bank')):
+            self.assertIn('key: "%s"' % key, hub)
+            if tab:
+                self.assertIn('startTab: "%s"' % tab, hub)
+        self.assertIn('registry.category("actions").add("pb_hiring_hub"', hub)
+        pal = _code_only(_src('static', 'src', 'js', 'hiring_palette.js'))
+        self.assertNotIn('LIFECYCLE_LENSES', pal)
+        self.assertNotIn('pb_lifecycle.action_pb_lifecycle_hub', pal)
+        board = _src('static', 'src', 'js', 'hiring_board.js')
+        self.assertIn('startTab === "interviews"', board)
+
+    def test_the_hiring_entry_is_on_the_menu(self):
+        """NAV P2: OPERATE › Hiring, between People and Workforce, opening
+        the hub; a hiring-only person is sent to it on login."""
+        if 'pb.sidebar.item' not in self.env:
+            self.skipTest('no left menu on this database')
+        item = self.env.ref('pb_hiring.item_hiring')
+        self.assertTrue(item.active)
+        self.assertEqual(item.sequence, 24)
+        self.assertEqual(item.action_tag, 'pb_hiring_hub')
+        self.assertEqual(item.section_id, self.env.ref('pb_sidebar.sec_payrun'))
+        act = self.env.ref('pb_hiring.action_pb_hiring_hub')
+        self.assertEqual(act.tag, 'pb_hiring_hub')
+        from odoo.addons.pb_hiring.models import sidebar_door
+        self.assertEqual(sidebar_door.HIRING_ITEM, 'pb_hiring.item_hiring')
+        self.assertEqual(sidebar_door.HIRING_HUB, 'pb_hiring.action_pb_hiring_hub')
 
     def test_this_module_ships_no_menu_and_no_rail_item(self):
-        """Its doors are the hub lens, the Settings card and the palette."""
+        """Its doors are the hub lens, the Settings card and the palette.
+
+        NAV P2: the ONE rail item it ships is OPERATE › Hiring (the hub's
+        door); the board itself is still on no menu."""
         act = self.env['ir.actions.client'].sudo().search(
             [('tag', '=', 'pb_hiring_board')], limit=1)
         menus = self.env['ir.ui.menu'].sudo().with_context(
@@ -719,7 +757,8 @@ class TestTheDoors(TransactionCase):
             items = self.env['pb.sidebar.item'].sudo().with_context(
                 active_test=False).search(
                     [('match_action_tags', 'ilike', 'pb_hiring')])
-            self.assertFalse(items, 'this module must not add a rail item')
+            self.assertEqual(items, self.env.ref('pb_hiring.item_hiring'),
+                             'the only rail item is OPERATE › Hiring')
 
 
 @tagged('post_install', '-at_install')
