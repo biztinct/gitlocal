@@ -38,7 +38,7 @@ const HUB_TAG = "pb_pay_hub";
 // By XMLID, never by tag: a bare tag leaves any breadcrumb this hub opens
 // reading "Unnamed" (W98). `requires` keeps the registry presence probe.
 const HUB_XMLID = "pb_payhub.action_pb_pay_hub";
-const SUB = _t("Pay Run Hub");
+const SUB = _t("Payroll");
 
 const OFFICER = "pb_hr_payroll_base.group_payroll_base_officer";
 const MANAGER = "pb_hr_payroll_base.group_payroll_base_manager";
@@ -52,10 +52,12 @@ const GATE = [PAYROLL_USER, OFFICER, MANAGER, SUPER];
  * `pb_shell_lens` because it forwards `pb_lens` to the Time hub embedded inside
  * it; a plain pb_hub shell reads `pb_lens`, which is `openHub`'s default.
  */
-/** The mission row. Second in the palette, as Pay Run is second on the rail. */
+/** The mission row. Second in the palette, as Payroll is second on the rail.
+ *  NAV P2: renamed from "Pay Run"; the old words stay searchable (R10). */
 palette.add("payhub", {
-    id: "payhub", label: _t("Pay Run"), sublabel: _t("Payroll operations"),
+    id: "payhub", label: _t("Payroll"), sublabel: _t("Payroll operations"),
     icon: "zap", groups: GATE, requires: HUB_TAG,
+    keywords: ["pay run", "đợt lương", "chạy lương"],
     action: { xmlid: HUB_XMLID },
 }, { sequence: 120 });
 
@@ -68,10 +70,12 @@ const ENTRIES = [
       action: { tag: HUB_TAG, lens: "payslips" } },
     { id: "payhub_results", label: _t("Results Grid"), sublabel: SUB, icon: "table",
       action: { tag: HUB_TAG, lens: "results" } },
-    { id: "payhub_import", label: _t("Import Data"), sublabel: SUB, icon: "download",
-      action: { tag: HUB_TAG, lens: "import" } },
-    { id: "payhub_deliver", label: _t("Pay & Deliver"), sublabel: SUB, icon: "send",
-      action: { tag: HUB_TAG, lens: "deliver" } },
+    { id: "payhub_import", label: _t("Inputs"), sublabel: SUB, icon: "download",
+      action: { tag: HUB_TAG, lens: "import" },
+      keywords: ["import", "import data", "payroll inputs", "nhập"] },
+    { id: "payhub_deliver", label: _t("Pay out"), sublabel: SUB, icon: "send",
+      action: { tag: HUB_TAG, lens: "deliver" },
+      keywords: ["deliver", "delivery", "pay & deliver", "payments", "chi trả"] },
     { id: "payhub_adjust", label: _t("Adjust — retro & proration"), sublabel: SUB,
       icon: "percent", action: { tag: HUB_TAG, lens: "adjust" } },
     { id: "payhub_settle", label: _t("Settle — full & final"), sublabel: SUB,

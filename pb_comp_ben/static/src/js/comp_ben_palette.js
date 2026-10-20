@@ -60,7 +60,8 @@ registry.category(PAY_LENSES).add("awards", {
 }, { sequence: 30 });
 
 const HUB_XMLID = "pb_payhub.action_pb_pay_hub";
-const SUB = _t("Pay Run Hub");
+// NAV P2: the hub is called Payroll (it was "Pay Run Hub").
+const SUB = _t("Payroll");
 const palette = registry.category("pb_hub_palette");
 
 palette.add("cb_paycal", {

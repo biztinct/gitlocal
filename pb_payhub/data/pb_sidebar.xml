@@ -47,7 +47,7 @@
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
         <field name="groups_id"
                eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
-        <field name="name">Pay Run</field>
+        <field name="name">Payroll</field>
         <field name="icon">zap</field>
         <field name="sequence">10</field>
         <field name="action_xmlid">pb_payhub.action_pb_pay_hub</field>

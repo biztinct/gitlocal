@@ -239,6 +239,9 @@ export const hubPaletteService = {
                 id: e.id,
                 label: e.label,
                 sublabel: e.sublabel || "",
+                // NAV P2 (R10) — old words keep finding renamed places: the
+                // matcher reads these alongside label and sublabel.
+                keywords: Array.isArray(e.keywords) ? e.keywords : [],
                 icon: e.icon || "chevron",
                 // "" on every unrestricted database, which is every database
                 // except a demo one — the row then renders exactly as before.

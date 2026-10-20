@@ -126,7 +126,9 @@ export class PbInsightsHub extends Component {
                   Component: PbExplorer, groups: ANALYTICS_GATE },
                 { key: "workforce", icon: "users", label: _t("Workforce"),
                   Component: PbWorkforceInsights, groups: ANALYTICS_GATE },
-                { key: "payroll", icon: "fileText", label: _t("Payroll Report"),
+                // NAV P2: one-word rail label; the full name is the tooltip.
+                { key: "payroll", icon: "fileText", label: _t("Payroll"),
+                  title: _t("Payroll report"),
                   Component: PayrollReport, groups: PAYSLIP_RUN_GATE },
                 // Bolted-on lenses sit after the four this hub ships — what
                 // happened first, everything measured against it after.

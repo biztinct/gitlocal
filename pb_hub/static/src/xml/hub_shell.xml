@@ -98,7 +98,7 @@
                   t-att-class="{ 'is-on': state.lens === l.key,
                                  'is-locked': isLocked(l) }"
                   t-att-aria-current="state.lens === l.key ? 'page' : false"
-                  t-att-title="l.label"
+                  t-att-title="l.title or l.label"
                   t-on-click="() => this.setLens(l.key)">
             <span class="pbhub-rail__ic" t-out="ic(l.icon, 18)"/>
             <span class="pbhub-rail__l" t-esc="l.label"/>

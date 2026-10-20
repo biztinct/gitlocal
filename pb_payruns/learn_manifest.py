@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""LEARNREV P1 — screen manifest for Pay Run › Runs (the pay run board).
+"""LEARNREV P1 — screen manifest for Payroll › Runs (the pay run board; the menu was
+"Pay Run" until NAV P2).
 
 Read by pb_learn's guide; never imported by this module. Plain data only.
 Labels, help texts and choice labels come from the fields (`fields_get()`);
@@ -100,8 +101,8 @@ MANIFESTS = {
                     {'label': {'en': "The figures on Home",
                                'vi': "Các số liệu trên Trang chủ"},
                      'ref': 'pb_dashboard/models/home_data.py:_home_money'},
-                    {'label': {'en': "Pay Run › Results",
-                               'vi': "Đợt lương › Kết quả"},
+                    {'label': {'en': "Payroll › Results",
+                               'vi': "Lương › Kết quả"},
                      'ref': 'pb_payrun_results/models/payrun_results.py:_run_card'},
                     {'label': {'en': "Analytics Explorer", 'vi': "Khám phá dữ liệu"},
                      'ref': 'pb_explorer/models/pb_fact_builder.py:_build_chunk'},
@@ -138,8 +139,8 @@ MANIFESTS = {
                     'vi': "Số phiếu lương trong đợt không bị từ chối.",
                 },
                 'used_by': [
-                    {'label': {'en': "Pay Run › Results",
-                               'vi': "Đợt lương › Kết quả"},
+                    {'label': {'en': "Payroll › Results",
+                               'vi': "Lương › Kết quả"},
                      'ref': 'pb_payrun_results/models/payrun_results.py:_run_card'},
                     {'label': {'en': "The rounding allowance of the balance check",
                                'vi': "Mức dung sai làm tròn của kiểm tra số liệu"},

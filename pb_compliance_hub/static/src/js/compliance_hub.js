@@ -116,7 +116,11 @@ export class PbComplianceHub extends Component {
                 { key: "bank", icon: "scan", label: _t("Bank"),
                   Component: PbBankOcr, groups: BANK_GATE,
                   feature: "bank_ocr" },
-                { key: "young", icon: "shield", label: _t("Young workers"),
+                // NAV P2: "Young workers" became SAFEGUARDS on the rail (the
+                // Vietnamese ran to three lines); key unchanged, full name kept
+                // as the tooltip, old words kept as palette keywords.
+                { key: "young", icon: "shield", label: _t("Safeguards"),
+                  title: _t("Young workers and safeguards"),
                   Component: PbYoungWorker, groups: YOUNG_GATE,
                   feature: "young_workers" },
                 { key: "audit", icon: "scrollText", label: _t("Audit"),

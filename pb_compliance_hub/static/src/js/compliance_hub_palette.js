@@ -55,9 +55,11 @@ const ENTRIES = [
     { id: "cmphub_bank", label: _t("Bank Verification"), sublabel: SUB,
       icon: "scan", groups: BANK_GATE,
       action: { tag: HUB_TAG, lens: "bank" } },
-    { id: "cmphub_young", label: _t("Young Worker Guard"), sublabel: SUB,
+    { id: "cmphub_young", label: _t("Safeguards"), sublabel: SUB,
       icon: "shield", groups: YOUNG_GATE,
-      action: { tag: HUB_TAG, lens: "young" } },
+      action: { tag: HUB_TAG, lens: "young" },
+      // NAV P2 (R10): the rail word changed; the old words still find it.
+      keywords: ["young workers", "young worker guard", "lao động chưa thành niên"] },
     { id: "cmphub_audit", label: _t("Audit & Compliance"), sublabel: SUB,
       icon: "scrollText", groups: AUDIT_GATE,
       action: { tag: HUB_TAG, lens: "audit" } },

@@ -12,7 +12,6 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-
 # ===================================================================
 #  Approval Matrix phase 7 — the doors whose press IS the change.
 # ===================================================================
@@ -1447,3 +1446,9 @@ msgstr "Xong."
 #: code:addons/pb_comp_ben/static/src/js/incentives_board.js:0
 msgid "Nothing was put into the pay run."
 msgstr "Chưa đưa được gì vào đợt lương."
+
+#. module: pb_comp_ben
+#. odoo-javascript
+#: code:addons/pb_comp_ben/static/src/js/comp_ben_palette.js:0
+msgid "Payroll"
+msgstr "Lương"

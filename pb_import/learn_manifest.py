@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""LEARNREV P5 — screen manifest for Pay Run › Import.
+"""LEARNREV P5 — screen manifest for Payroll › Inputs (was Pay Run › Import).
 
 Read by pb_learn's guide; never imported by this module. Plain data only.
 Nothing on this screen is an editable field: every count is worked out per

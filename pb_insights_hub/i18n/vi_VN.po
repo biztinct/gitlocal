@@ -89,3 +89,15 @@ msgstr "Lực lượng lao động"
 #: code:addons/pb_insights_hub/static/src/js/insights_hub_palette.js:52
 msgid "Workforce Insights"
 msgstr "Thông tin chi tiết về lực lượng lao động"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Payroll report"
+msgstr "Báo cáo lương"

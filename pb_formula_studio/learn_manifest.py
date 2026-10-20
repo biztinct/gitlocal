@@ -820,8 +820,8 @@ MANIFESTS['formula'] = {
                            'vi': "Các dòng in trên mỗi phiếu lương"},
                  'ref': 'pb_hr_payroll_formula/models/hr_payslip_formula.py:'
                         '_create_payslip_lines_from_formulas'},
-                {'label': {'en': "Columns of Pay Run › Results",
-                           'vi': "Các cột của Đợt lương › Kết quả"},
+                {'label': {'en': "Columns of Payroll › Results",
+                           'vi': "Các cột của Lương › Kết quả"},
                  'ref': 'pb_payrun_results/models/payrun_results.py:_columns'},
             ],
             'if_changed': {

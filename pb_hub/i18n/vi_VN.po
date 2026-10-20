@@ -631,3 +631,27 @@ msgstr "Chuyển ống kính, tải lại trang: shell"
 #: code:addons/pb_hub/static/src/js/hub_demo.js:104
 msgid "A second lens, mounted with embedded=true —"
 msgstr "Ống kính thứ hai, được gắn với embed=true —"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Home"
+msgstr "Trang chủ"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Inbox"
+msgstr "Hộp thư"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Expenses"
+msgstr "Chi phí"

@@ -116,7 +116,7 @@ export class HubPalette extends Component {
     }
 
     /**
-     * Substring over label + sublabel, both folded to lower case.
+     * Substring over label + sublabel (+ keywords), folded to lower case.
      *
      * Deliberately not fuzzy: these labels are the SAME words that are on the
      * rail, so a user types what they can see. A fuzzy matcher's job is to
@@ -124,7 +124,11 @@ export class HubPalette extends Component {
      * price of surprising rankings.
      */
     _matches(entry, q) {
-        return `${entry.label} ${entry.sublabel || ""}`.toLowerCase().includes(q);
+        // NAV P2 (R10): `keywords` carries the words a place used to be called
+        // ("pay run", "lifecycle", "trips"), so a renamed or moved screen is
+        // still found by the word people remember. Still plain substring.
+        const kw = (entry.keywords || []).join(" ");
+        return `${entry.label} ${entry.sublabel || ""} ${kw}`.toLowerCase().includes(q);
     }
 
     /** The same rows, grouped for rendering, each carrying its FLAT index. */

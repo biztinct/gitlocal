@@ -73,6 +73,9 @@ export class HubShell extends Component {
          *                                         // without it gets the "not
          *                                         // switched on" page instead
          *   lenses:  [ { key, icon, label,
+         *                title?: "Payroll inputs", // the full name, shown as
+         *                                         // the rail tooltip when the
+         *                                         // label is a short word (NAV P2)
          *                groups?: [xmlid],        // absent lens if not granted
          *                probe?: { model, method }, // and absent if this
          *                                         // @api.model call is falsy

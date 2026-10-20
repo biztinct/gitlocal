@@ -54,7 +54,7 @@ const ENTRIES = [
       action: { tag: HUB_TAG, lens: "workforce" } },
     { id: "inshub_payroll", label: _t("Payroll Report"), sublabel: SUB,
       icon: "fileText", groups: PAYSLIP_RUN_GATE,
-      action: { tag: HUB_TAG, lens: "payroll" } },
+      action: { tag: HUB_TAG, lens: "payroll" }, keywords: ["payroll"] },
 ];
 
 ENTRIES.forEach((entry, i) => {

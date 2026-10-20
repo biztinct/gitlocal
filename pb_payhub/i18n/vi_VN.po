@@ -76,7 +76,6 @@ msgstr "Chi trả & gửi phiếu"
 #. odoo-javascript
 #: code:addons/pb_payhub/static/src/js/pay_hub.js:0
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
-#: model:pb.sidebar.item,name:pb_payhub.item_pay_run
 #: code:addons/pb_payhub/static/src/js/pay_hub.js:70
 #: code:addons/pb_payhub/static/src/js/pay_hub.js:105
 #: code:addons/pb_payhub/static/src/js/pay_hub.js:218
@@ -87,7 +86,6 @@ msgstr "Đợt lương"
 #. module: pb_payhub
 #. odoo-javascript
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
-#: model:ir.actions.client,name:pb_payhub.action_pb_pay_hub
 #: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:41
 msgid "Pay Run Hub"
 msgstr "Trung tâm tính lương"
@@ -189,3 +187,38 @@ msgstr "Giải quyết - đầy đủ & cuối cùng"
 #: code:addons/pb_payhub/static/src/js/pay_hub.js:174
 msgid "This month"
 msgstr "Tháng này"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+#: model:pb.sidebar.item,name:pb_payhub.item_pay_run
+#: model:ir.actions.client,name:pb_payhub.action_pb_pay_hub
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+msgid "Inputs"
+msgstr "Đầu vào"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+msgid "Payroll inputs"
+msgstr "Dữ liệu đầu vào lương"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+#: code:addons/pb_payhub/static/src/js/pay_hub_palette.js:0
+msgid "Pay out"
+msgstr "Chi trả"
+
+#. module: pb_payhub
+#. odoo-javascript
+#: code:addons/pb_payhub/static/src/js/pay_hub.js:0
+msgid "Payments and delivery"
+msgstr "Thanh toán và gửi phiếu lương"

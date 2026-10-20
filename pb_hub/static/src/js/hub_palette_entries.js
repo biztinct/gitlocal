@@ -15,6 +15,9 @@
  *                { lens, lensKey },          // optional arrival lens
  *       groups:  [group xmlid, …],           // ANY-of; omitted = ungated
  *       requires: "<client action tag>",     // presence probe for xmlid doors
+ *       keywords: ["pay run", …],            // optional; old or other words
+ *                                            // the matcher also searches
+ *                                            // (NAV P2, R10). Lower case.
  *   }, { sequence });
  *
  * Two rules the seeds obey, both of them scar tissue:
@@ -109,32 +112,34 @@ const ENTRIES = [
     // The xmlid is named as a plain string — the palette resolves a door lazily
     // and simply omits a row whose module is not installed — so `pb_hub` still
     // depends on nothing above it.
-    { id: "approvals", label: _t("Approvals"), sublabel: _t("Overview"), icon: "inbox",
+    // NAV P2: the Home tab is called INBOX now; "approvals" stays findable.
+    { id: "approvals", label: _t("Inbox"), sublabel: _t("Home"), icon: "inbox",
       action: { xmlid: "pb_home_hub.action_pb_home_hub", lens: "approvals" },
-      requires: "pb_home_hub", groups: [] },
+      requires: "pb_home_hub", groups: [],
+      keywords: ["approvals", "approve", "phê duyệt"] },
 
     // ------------------------------------------------------------- pay run
-    { id: "payrun_wizard", label: _t("Run Payroll"), sublabel: _t("Pay Run"), icon: "zap",
+    { id: "payrun_wizard", label: _t("Run Payroll"), sublabel: _t("Payroll"), icon: "zap",
       action: { tag: "pb_payrun_wizard" }, groups: OPS },
-    { id: "payruns", label: _t("Pay Runs"), sublabel: _t("Pay Run"), icon: "calendar",
+    { id: "payruns", label: _t("Pay Runs"), sublabel: _t("Payroll"), icon: "calendar",
       action: { xmlid: "pb_payruns.action_pb_payruns_kanban" },
       requires: "pb_payruns" },
-    { id: "payslips", label: _t("Payslips"), sublabel: _t("Pay Run"), icon: "receipt",
+    { id: "payslips", label: _t("Payslips"), sublabel: _t("Payroll"), icon: "receipt",
       action: { tag: "pb_payslip_review" } },
-    { id: "results", label: _t("Results Grid"), sublabel: _t("Pay Run"), icon: "table",
+    { id: "results", label: _t("Results Grid"), sublabel: _t("Payroll"), icon: "table",
       action: { tag: "pb_payrun_results" } },
-    { id: "import", label: _t("Import Data"), sublabel: _t("Pay Run"), icon: "download",
-      action: { tag: "pb_import" },
+    { id: "import", label: _t("Import Data"), sublabel: _t("Payroll"), icon: "download",
+      action: { tag: "pb_import" }, keywords: ["inputs", "pay run", "nhập"],
       groups: [OFFICER, MANAGER, INTEGRATION, SUPER] },
-    { id: "pay_delivery", label: _t("Pay & Deliver"), sublabel: _t("Pay Run"), icon: "send",
-      action: { tag: "pb_pay_delivery" },
+    { id: "pay_delivery", label: _t("Pay & Deliver"), sublabel: _t("Payroll"), icon: "send",
+      action: { tag: "pb_pay_delivery" }, keywords: ["pay out", "pay run", "chi trả"],
       groups: [PAYROLL_MGR, "account.group_account_invoice",
                "account.group_account_user"] },
-    { id: "fullfinal", label: _t("Full & Final"), sublabel: _t("Pay Run"), icon: "file",
+    { id: "fullfinal", label: _t("Full & Final"), sublabel: _t("Payroll"), icon: "file",
       action: { tag: "pb_fullfinal" } },
-    { id: "proration", label: _t("Proration Audit"), sublabel: _t("Pay Run"),
+    { id: "proration", label: _t("Proration Audit"), sublabel: _t("Payroll"),
       icon: "percent", action: { tag: "pb_proration" } },
-    { id: "retro", label: _t("Retro Adjustments"), sublabel: _t("Pay Run"), icon: "rotate",
+    { id: "retro", label: _t("Retro Adjustments"), sublabel: _t("Payroll"), icon: "rotate",
       action: { tag: "pb_retro" } },
 
     // -------------------------------------------------------------- people
@@ -161,8 +166,12 @@ const ENTRIES = [
       action: { tag: "pb_workforce", lens: "timeoff", lensKey: "pb_shell_lens" } },
     { id: "wf_overtime", label: _t("Overtime"), sublabel: _t("Mission Control"), icon: "zap",
       action: { tag: "pb_workforce", lens: "overtime", lensKey: "pb_shell_lens" } },
-    { id: "wf_trips", label: _t("Trips"), sublabel: _t("Mission Control"), icon: "plane",
-      action: { tag: "pb_workforce", lens: "trips", lensKey: "pb_shell_lens" } },
+    // NAV P2: Trips moved from Workforce to the Expenses hub. The row keeps
+    // its id (recents) and lands on the new place; "workforce" stays a keyword.
+    { id: "wf_trips", label: _t("Trips"), sublabel: _t("Expenses"), icon: "plane",
+      action: { xmlid: "pb_expenses_hub.action_pb_expenses_hub", lens: "trips" },
+      requires: "pb_expenses_hub",
+      keywords: ["business trip", "travel", "workforce", "công tác", "chuyến đi"] },
     { id: "wf_approvals", label: _t("Team Approvals"), sublabel: _t("Mission Control"),
       icon: "inbox",
       action: { tag: "pb_workforce", lens: "approvals", lensKey: "pb_shell_lens" } },
@@ -185,7 +194,8 @@ const ENTRIES = [
     { id: "bank_ocr", label: _t("Bank Verification"), sublabel: _t("Compliance"),
       icon: "scan", action: { tag: "pb_bank_ocr" }, groups: [PAYROLL_USER] },
     { id: "young_worker", label: _t("Young Workers"), sublabel: _t("Compliance"),
-      icon: "shield", action: { tag: "pb_young_worker" }, groups: [PAYROLL_USER] },
+      icon: "shield", action: { tag: "pb_young_worker" }, groups: [PAYROLL_USER],
+      keywords: ["safeguards", "lao động chưa thành niên"] },
 
     // --------------------------------------------------------------- setup
     { id: "formula_studio", label: _t("Formula Engine"), sublabel: _t("Setup"),

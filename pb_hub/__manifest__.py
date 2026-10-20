@@ -43,7 +43,7 @@ registry, flat fills (W1/W2/W3).
     # the same upsell instead of navigating.
     # 19.0.1.11.0 — PAYAI P1: the palette service exposes `entries()` and
     # `run(id)`; a row may answer any typed text (`anyQuery` + `onRun`).
-    'version': '19.0.1.11.4',
+    'version': '19.0.1.12.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -1,6 +1,7 @@
 /** @odoo-module **/
 /**
- * `pb_pay_hub` — the Pay Run mission, on Cycle 1's HubShell.
+ * `pb_pay_hub` — the Payroll mission (named "Pay Run" until NAV P2), on
+ * Cycle 1's HubShell.
  *
  * Eight surfaces that used to be eight rail items become eight lenses of one
  * workspace, in the order the IA mockup specifies:
@@ -83,7 +84,7 @@ export class PbPayHub extends Component {
 
         this.config = {
             key: "pay",                       // -> pbhub.pay.lens.v1
-            brand: { label: _t("Pay Run"), icon: "zap" },
+            brand: { label: _t("Payroll"), icon: "zap" },
             defaultLens: "runs",
             tracker: this.tracker,
             // The cog (Cycle 3). It carries a back door BACK to this hub, so a
@@ -110,7 +111,9 @@ export class PbPayHub extends Component {
                 { key: "results", icon: "table", label: _t("Results"),
                   Component: PbPayrunResults },
                 {
-                    key: "import", icon: "download", label: _t("Import"),
+                    key: "import", icon: "download", label: _t("Inputs"),
+                    // NAV P2: short rail word; the full name is the tooltip.
+                    title: _t("Payroll inputs"),
                     Component: PbImport,
                     // C3: Import's "Manage connectors" deep link comes back to
                     // the HUB, on the lens the user was reading — not to the
@@ -118,11 +121,12 @@ export class PbPayHub extends Component {
                     // opened. The descriptor comes from here because pb_import
                     // must not know the name of a hub built two cycles later.
                     props: {
-                        connectorBack: { label: _t("Pay Run"), tag: "pb_pay_hub",
+                        connectorBack: { label: _t("Payroll"), tag: "pb_pay_hub",
                                          lens: "import" },
                     },
                 },
-                { key: "deliver", icon: "send", label: _t("Deliver"),
+                { key: "deliver", icon: "send", label: _t("Pay out"),
+                  title: _t("Payments and delivery"),
                   Component: PbPayDelivery },
                 {
                     // TWO descriptors in ONE lens: retro and proration are the
@@ -253,7 +257,7 @@ export class PbPayHub extends Component {
             // the breadcrumb Settings' own native cards return through then
             // reads "Unnamed".
             xmlid: "pb_settings.action_pb_settings_hub",
-            back: { label: _t("Pay Run"), tag: "pb_pay_hub" },
+            back: { label: _t("Payroll"), tag: "pb_pay_hub" },
         });
     }
 }

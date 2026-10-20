@@ -103,3 +103,16 @@ msgstr "Bảo vệ Lao động Chưa thành niên"
 #: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:112
 msgid "Young workers"
 msgstr "Lao động chưa thành niên"
+
+#. module: pb_compliance_hub
+#. odoo-javascript
+#: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:0
+#: code:addons/pb_compliance_hub/static/src/js/compliance_hub_palette.js:0
+msgid "Safeguards"
+msgstr "Bảo vệ"
+
+#. module: pb_compliance_hub
+#. odoo-javascript
+#: code:addons/pb_compliance_hub/static/src/js/compliance_hub.js:0
+msgid "Young workers and safeguards"
+msgstr "Lao động chưa thành niên và bảo vệ"
