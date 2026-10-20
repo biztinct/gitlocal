@@ -155,7 +155,8 @@ class TestFeatureGate(TransactionCase):
             en = step[f]['en']
             self.assertFalse(ACTING_WORDS.search(en), en)
             self.assertNotRegex(en.lower(), r'\bhelper\b|tab (guide|ask|practice)')
-        self.assertNotIn('body', step)
+        # The generator always emits a `body` key; on a four-line step it is empty.
+        self.assertFalse(step.get('body'), step.get('body'))
         self.assertIn('speak', step['tip']['en'])
         self.assertEqual(tour['name']['vi'], 'Đi một vòng Payobook')
 
