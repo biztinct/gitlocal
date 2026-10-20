@@ -17391,16 +17391,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "hi-numbers",
-          "body": {
-            "en": "Requests to agree, Waiting on you, Over budget, interviews this week, opinions late. Press a number to see only those roles.",
-            "vi": "Đề xuất chờ đồng ý, Đang chờ bạn, Vượt ngân sách, phỏng vấn tuần này, ý kiến đang trễ. Bấm một con số để chỉ xem các vị trí đó."
+          "affects": {
+            "en": "Pressing a number narrows the board to those roles. Nothing on a role changes.",
+            "vi": "Bấm một con số sẽ lọc bảng theo các vị trí đó. Không có gì trên vị trí bị thay đổi."
           },
+          "anchor": "hi-numbers",
+          "body": "",
           "guard": false,
           "key": "numbers",
           "kicker": {
             "en": "Lifecycle › Hiring",
             "vi": "Vòng đời nhân sự › Tuyển dụng"
+          },
+          "look": {
+            "en": "The small numbers: Requests to agree, Waiting on you, Over budget, Interviews this week, Opinions late.",
+            "vi": "Các con số nhỏ: Đề xuất chờ đồng ý, Đang chờ bạn, Vượt ngân sách, Phỏng vấn tuần này, Ý kiến đang trễ."
+          },
+          "means": {
+            "en": "Each one counts roles or interviews that need someone. Grey means nothing is waiting.",
+            "vi": "Mỗi con số đếm các vị trí hoặc buổi phỏng vấn cần người xử lý. Màu xám nghĩa là không có gì đang chờ."
           },
           "modes": [
             "watch",
@@ -17421,14 +17430,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hi-steps",
-          "body": {
-            "en": "Set up, Prepare & publish, Meet your candidates, Welcome aboard.",
-            "vi": "Thiết lập, Chuẩn bị & đăng tin, Gặp ứng viên, Chào mừng gia nhập."
+          "affects": {
+            "en": "Pressing a step shows only the roles standing on it.",
+            "vi": "Bấm một bước sẽ chỉ hiện các vị trí đang ở bước đó."
           },
+          "anchor": "hi-steps",
+          "body": "",
           "guard": false,
           "key": "steps",
           "kicker": "",
+          "look": {
+            "en": "The four steps: Set up, Prepare & publish, Meet your candidates, Welcome aboard.",
+            "vi": "Bốn bước: Thiết lập, Chuẩn bị & đăng tin, Gặp ứng viên, Chào mừng gia nhập."
+          },
+          "means": {
+            "en": "Every role stands on exactly one of them.",
+            "vi": "Mỗi vị trí đứng ở đúng một bước trong số đó."
+          },
           "modes": [
             "watch",
             "try"
@@ -17445,14 +17463,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hi-row",
-          "body": {
-            "en": "A card says its step, where its hiring request is, and the one thing that moves it on. With no role yet, this is where the board says so.",
-            "vi": "Một thẻ ghi bước hiện tại, đề xuất tuyển dụng đang ở đâu, và một việc giúp nó đi tiếp. Khi chưa có vị trí nào, bảng nói điều đó ngay tại đây."
+          "affects": {
+            "en": "With no role yet, this space reads No roles yet and offers the first one.",
+            "vi": "Khi chưa có vị trí nào, chỗ này ghi Chưa có vị trí nào và mời bạn mở vị trí đầu tiên."
           },
+          "anchor": "hi-row",
+          "body": "",
           "guard": false,
           "key": "roles",
           "kicker": "",
+          "look": {
+            "en": "The role cards, each with its step, its request label and its Next: line.",
+            "vi": "Các thẻ vị trí, mỗi thẻ có bước, nhãn đề xuất và dòng Tiếp theo: của nó."
+          },
+          "means": {
+            "en": "A card says where the role is, where its hiring request is, and the one move that takes it on.",
+            "vi": "Một thẻ cho biết vị trí đang ở đâu, đề xuất tuyển dụng đang ở đâu, và một việc giúp nó đi tiếp."
+          },
           "modes": [
             "watch",
             "try"
@@ -17469,18 +17496,31 @@
         },
         {
           "act": "click",
-          "anchor": "hi-raise",
-          "body": {
-            "en": "A role comes first. Its request is asked for on the way.",
-            "vi": "Vị trí có trước. Đề xuất được nhờ gửi dọc đường."
+          "affects": {
+            "en": "It opens a short window. Nothing is saved until you open the role.",
+            "vi": "Nút này mở một cửa sổ ngắn. Chưa có gì được lưu cho tới khi bạn mở vị trí."
           },
+          "anchor": "hi-raise",
+          "body": "",
           "guard": false,
           "key": "openrole",
           "kicker": "",
+          "look": {
+            "en": "The Open a role button, top right.",
+            "vi": "Nút Mở một vị trí, ở góc trên bên phải."
+          },
+          "means": {
+            "en": "A role comes first. Its request is asked for on the way.",
+            "vi": "Vị trí có trước. Đề xuất được nhờ gửi dọc đường."
+          },
           "modes": [
             "try"
           ],
           "nav": "",
+          "press": {
+            "en": "Open a role.",
+            "vi": "Mở một vị trí."
+          },
           "screen": "hiring",
           "timeout": 0,
           "tip": "",
@@ -17492,14 +17532,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hi-raise",
-          "body": {
-            "en": "For the hiring team this reads Open a role: five things and the role exists. For a team's manager it reads Raise a hiring request. I will not press it.",
-            "vi": "Với nhóm tuyển dụng, nút này ghi Mở một vị trí: năm điều và vị trí được tạo. Với quản lý một nhóm, nó ghi Đề xuất tuyển dụng. Tôi sẽ không bấm."
+          "affects": {
+            "en": "Nothing is made until somebody presses it. I will not press it.",
+            "vi": "Chưa có gì được tạo cho tới khi có người bấm. Tôi sẽ không bấm."
           },
+          "anchor": "hi-raise",
+          "body": "",
           "guard": false,
           "key": "openwatch",
           "kicker": "",
+          "look": {
+            "en": "The main button, top right. For the hiring team it reads Open a role.",
+            "vi": "Nút chính, ở góc trên bên phải. Với nhóm tuyển dụng, nút ghi Mở một vị trí."
+          },
+          "means": {
+            "en": "Five things, and the role exists. For a team's manager the button reads Raise a hiring request.",
+            "vi": "Năm thông tin là có vị trí. Với quản lý một nhóm, nút ghi Đề xuất tuyển dụng."
+          },
           "modes": [
             "watch"
           ],
@@ -17515,14 +17564,23 @@
         },
         {
           "act": "observe",
-          "anchor": "rep-hi-open",
-          "body": {
-            "en": "Its name, department, country, seats and recruiter. The columns and the application form fill in from the department and country.",
-            "vi": "Tên, phòng ban, quốc gia, số chỗ và người tuyển. Các cột và mẫu đơn ứng tuyển được điền sẵn theo phòng ban và quốc gia."
+          "affects": {
+            "en": "Open the role makes it at once. You can publish it straight away.",
+            "vi": "Mở vị trí tạo nó ngay. Bạn có thể đăng tin luôn."
           },
+          "anchor": "rep-hi-open",
+          "body": "",
           "guard": false,
           "key": "five",
           "kicker": "",
+          "look": {
+            "en": "The five fields: What is the role called?, Department, Country, How many seats?, Who recruits it?",
+            "vi": "Năm ô: Tên vị trí là gì?, Phòng ban, Quốc gia, Cần tuyển bao nhiêu người?, Ai phụ trách tuyển?"
+          },
+          "means": {
+            "en": "The columns and the application form fill in from the department and country.",
+            "vi": "Các cột và mẫu đơn ứng tuyển được điền sẵn theo phòng ban và quốc gia."
+          },
           "modes": [
             "try"
           ],
@@ -17538,14 +17596,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hi-askform",
-          "body": {
-            "en": "They get one page by email, with no sign-in. Sending it in is their agreement.",
-            "vi": "Họ nhận một trang qua email, không cần đăng nhập. Gửi trang đó đi chính là sự đồng ý của họ."
+          "affects": {
+            "en": "Sending that page in is their agreement. They are reminded until they do.",
+            "vi": "Gửi trang đó đi chính là sự đồng ý của họ. Họ được nhắc cho tới khi gửi."
           },
+          "anchor": "hi-askform",
+          "body": "",
           "guard": false,
           "key": "ask",
           "kicker": "",
+          "look": {
+            "en": "The Ask a manager window: Which manager? and Remind them every.",
+            "vi": "Cửa sổ Nhờ quản lý: Quản lý nào? và Nhắc họ mỗi."
+          },
+          "means": {
+            "en": "The manager gets one page by email, with no sign-in.",
+            "vi": "Quản lý nhận một trang qua email, không cần đăng nhập."
+          },
           "modes": [
             "try"
           ],
@@ -17561,14 +17628,23 @@
         },
         {
           "act": "observe",
-          "anchor": "rep-hi-route",
-          "body": {
-            "en": "Only the offer waits for it. Everything else on the role carries on.",
-            "vi": "Chỉ lời mời nhận việc phải chờ nó. Mọi việc khác của vị trí vẫn tiếp tục."
+          "affects": {
+            "en": "Only the offer waits for Request agreed. Everything else on the role carries on.",
+            "vi": "Chỉ lời mời nhận việc phải chờ Yêu cầu đã được đồng ý. Mọi việc khác của vị trí vẫn tiếp tục."
           },
+          "anchor": "rep-hi-route",
+          "body": "",
           "guard": false,
           "key": "route",
           "kicker": "",
+          "look": {
+            "en": "The labels in a row: Waiting on Lê Thu Trang, Sent in, Head of HR agreed, Request agreed.",
+            "vi": "Các nhãn nối nhau: Đang chờ Lê Thu Trang, Đã gửi, Trưởng phòng nhân sự đã đồng ý, Yêu cầu đã được đồng ý."
+          },
+          "means": {
+            "en": "This is what the role's card says as the request moves.",
+            "vi": "Đây là điều thẻ của vị trí ghi khi đề xuất đi từng bước."
+          },
           "modes": [
             "try"
           ],
@@ -17584,14 +17660,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-hi-send",
-          "body": {
-            "en": "On your own Payobook this emails the manager. Here it sends nothing.",
-            "vi": "Trên Payobook của bạn, nút này gửi email cho quản lý. Ở đây nó không gửi gì cả."
+          "affects": {
+            "en": "Here, in the practice company, it sends nothing.",
+            "vi": "Ở đây, trong công ty thực hành, nó không gửi gì cả."
           },
+          "anchor": "rep-hi-send",
+          "body": "",
           "guard": true,
           "key": "send",
           "kicker": "",
+          "look": {
+            "en": "The Send the request button, at the foot of the window.",
+            "vi": "Nút Gửi đề xuất, ở cuối cửa sổ."
+          },
+          "means": {
+            "en": "On your own Payobook, pressing it emails the manager their page.",
+            "vi": "Trên Payobook của bạn, bấm nút này sẽ gửi email trang đề xuất cho quản lý."
+          },
           "modes": [
             "try"
           ],
@@ -17648,21 +17733,34 @@
       "steps": [
         {
           "act": "click",
-          "anchor": "hi-card",
-          "body": {
-            "en": "A role opens as a page of its own.",
-            "vi": "Một vị trí mở thành một trang riêng."
+          "affects": {
+            "en": "Opening it changes nothing. All roles brings you back.",
+            "vi": "Mở nó không thay đổi gì. Mọi vị trí đưa bạn quay lại."
           },
+          "anchor": "hi-card",
+          "body": "",
           "guard": false,
           "key": "card",
           "kicker": {
             "en": "Lifecycle › Hiring",
             "vi": "Vòng đời nhân sự › Tuyển dụng"
           },
+          "look": {
+            "en": "The first role's card on the Hiring board.",
+            "vi": "Thẻ của vị trí đầu tiên trên bảng Tuyển dụng."
+          },
+          "means": {
+            "en": "A role opens as a page of its own.",
+            "vi": "Một vị trí mở thành một trang riêng."
+          },
           "modes": [
             "try"
           ],
           "nav": "",
+          "press": {
+            "en": "The role's card.",
+            "vi": "Thẻ của vị trí."
+          },
           "screen": "hiring",
           "timeout": 0,
           "tip": "",
@@ -17674,14 +17772,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-board",
-          "body": {
-            "en": "On your own Payobook you drag a card to move someone, and can undo it for five seconds.",
-            "vi": "Trên Payobook của bạn, bạn kéo một thẻ để chuyển một người, và có thể hoàn tác trong năm giây."
+          "affects": {
+            "en": "On your own Payobook, dragging a card moves someone, and Undo stays for five seconds.",
+            "vi": "Trên Payobook của bạn, kéo một thẻ sẽ chuyển một người, và nút Hoàn tác hiện trong năm giây."
           },
+          "anchor": "hb-board",
+          "body": "",
           "guard": false,
           "key": "board",
           "kicker": "",
+          "look": {
+            "en": "The columns, from Applications received to Post-offer.",
+            "vi": "Các cột, từ Hồ sơ đã nhận tới Chờ nhận việc."
+          },
+          "means": {
+            "en": "Each column is a stage of this role. Each card is one person.",
+            "vi": "Mỗi cột là một giai đoạn của vị trí này. Mỗi thẻ là một người."
+          },
           "modes": [
             "try"
           ],
@@ -17697,14 +17804,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-closed",
-          "body": {
-            "en": "Drop a card here and choose the outcome. Anyone can be dragged back.",
-            "vi": "Thả một thẻ vào đây và chọn kết quả. Ai cũng có thể được kéo trở lại."
+          "affects": {
+            "en": "Nobody is lost. Anyone can be dragged back.",
+            "vi": "Không ai bị mất. Ai cũng có thể được kéo trở lại."
           },
+          "anchor": "hb-closed",
+          "body": "",
           "guard": false,
           "key": "closed",
           "kicker": "",
+          "look": {
+            "en": "The Closed column: CV reject, Interview reject, Drop-out, On hold, Offer drop.",
+            "vi": "Cột Đã đóng: Loại hồ sơ, Loại sau phỏng vấn, Ứng viên rút lui, Tạm hoãn, Từ chối lời mời."
+          },
+          "means": {
+            "en": "Drop a card here and choose the outcome.",
+            "vi": "Thả một thẻ vào đây và chọn kết quả."
+          },
           "modes": [
             "try"
           ],
@@ -17720,14 +17836,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-drawer",
-          "body": {
-            "en": "When they applied, their answers, every interview and each move.",
-            "vi": "Họ nộp hồ sơ khi nào, các câu trả lời, mọi buổi phỏng vấn và từng lần chuyển."
+          "affects": {
+            "en": "Reading it changes nothing.",
+            "vi": "Đọc ngăn này không thay đổi gì."
           },
+          "anchor": "hb-drawer",
+          "body": "",
           "guard": false,
           "key": "person",
           "kicker": "",
+          "look": {
+            "en": "The panel open on Vũ Thị Hoa, beside the board.",
+            "vi": "Ngăn đang mở cho Vũ Thị Hoa, bên cạnh bảng."
+          },
+          "means": {
+            "en": "When she applied, her answers, every interview and each move, on its Timeline.",
+            "vi": "Chị nộp hồ sơ khi nào, các câu trả lời, mọi buổi phỏng vấn và từng lần chuyển, trên Dòng thời gian."
+          },
           "modes": [
             "try"
           ],
@@ -17743,14 +17868,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-cnext",
-          "body": {
-            "en": "The one thing to do for this person. Here, two opinions are late.",
-            "vi": "Một việc cần làm cho người này. Ở đây, hai ý kiến đang trễ."
+          "affects": {
+            "en": "Remind chases the interviewers whose opinions are late.",
+            "vi": "Nhắc sẽ giục những người phỏng vấn có ý kiến đang trễ."
           },
+          "anchor": "hb-cnext",
+          "body": "",
           "guard": false,
           "key": "nextbox",
           "kicker": "",
+          "look": {
+            "en": "The Next box in her panel, with its Remind button.",
+            "vi": "Ô Tiếp theo trong ngăn của chị, với nút Nhắc."
+          },
+          "means": {
+            "en": "The one thing to do for this person. Here, two opinions are late.",
+            "vi": "Một việc cần làm cho người này. Ở đây, hai ý kiến đang trễ."
+          },
           "modes": [
             "try"
           ],
@@ -17766,14 +17900,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-share",
-          "body": {
-            "en": "A manager sees only the parts a recruiter ticked for them.",
-            "vi": "Quản lý chỉ thấy những phần chuyên viên tuyển dụng đã đánh dấu cho họ."
+          "affects": {
+            "en": "A manager she is not shared with sees only her name, stage and interview dates.",
+            "vi": "Quản lý chưa được chia sẻ chỉ thấy tên, giai đoạn và ngày phỏng vấn của chị."
           },
+          "anchor": "hb-share",
+          "body": "",
           "guard": false,
           "key": "sharing",
           "kicker": "",
+          "look": {
+            "en": "The sharing line in her panel: who she is shared with, and which parts.",
+            "vi": "Dòng chia sẻ trong ngăn của chị: chị được chia sẻ với ai, và những phần nào."
+          },
+          "means": {
+            "en": "A manager sees only the parts a recruiter ticked for them.",
+            "vi": "Quản lý chỉ thấy những phần chuyên viên tuyển dụng đã đánh dấu cho họ."
+          },
           "modes": [
             "try"
           ],
@@ -17789,14 +17932,23 @@
         },
         {
           "act": "observe",
-          "anchor": "hb-joining",
-          "body": {
-            "en": "Nam signed. He stays a candidate in Post-offer, with a list of what to prepare.",
-            "vi": "Nam đã ký. Anh vẫn là ứng viên ở Chờ nhận việc, với một danh sách việc cần chuẩn bị."
+          "affects": {
+            "en": "The list shows what to prepare before his first day.",
+            "vi": "Danh sách cho thấy việc cần chuẩn bị trước ngày đầu tiên của anh."
           },
+          "anchor": "hb-joining",
+          "body": "",
           "guard": false,
           "key": "joining",
           "kicker": "",
+          "look": {
+            "en": "Nam's Joining panel, with its Before they join list.",
+            "vi": "Phần Vào làm của Nam, với danh sách Trước khi vào làm."
+          },
+          "means": {
+            "en": "Nam signed. He stays a candidate in Post-offer until he starts.",
+            "vi": "Nam đã ký. Anh vẫn là ứng viên ở Chờ nhận việc cho tới khi bắt đầu làm."
+          },
           "modes": [
             "try"
           ],
@@ -17812,14 +17964,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-hb-confirm",
-          "body": {
-            "en": "On your own Payobook this makes the employee record on day one. Here it changes nothing.",
-            "vi": "Trên Payobook của bạn, nút này tạo hồ sơ nhân viên vào ngày đầu tiên. Ở đây nó không thay đổi gì."
+          "affects": {
+            "en": "Here, in the practice company, it changes nothing.",
+            "vi": "Ở đây, trong công ty thực hành, nó không thay đổi gì."
           },
+          "anchor": "rep-hb-confirm",
+          "body": "",
           "guard": true,
           "key": "started",
           "kicker": "",
+          "look": {
+            "en": "The Confirm they joined button in Nam's panel.",
+            "vi": "Nút Xác nhận đã vào làm trong phần của Nam."
+          },
+          "means": {
+            "en": "On your own Payobook, pressing it on day one makes the employee record.",
+            "vi": "Trên Payobook của bạn, bấm nút này vào ngày đầu tiên sẽ tạo hồ sơ nhân viên."
+          },
           "modes": [
             "try"
           ],
@@ -25104,21 +25265,34 @@
           ],
           "steps": [
             {
-              "anchor": "hi-numbers",
-              "body": {
-                "en": "Lifecycle › <b>Hiring</b>. The quiet numbers say what needs you: <b>Requests to agree</b>, <b>Waiting on you</b>, <b>Over budget</b>, <b>Opinions late</b>. Press a number to see only those roles.",
-                "vi": "Vòng đời nhân sự › <b>Tuyển dụng</b>. Các con số nhỏ cho biết việc gì cần bạn: <b>Đề xuất chờ đồng ý</b>, <b>Đang chờ bạn</b>, <b>Vượt ngân sách</b>, <b>Ý kiến đang trễ</b>. Bấm một con số để chỉ xem các vị trí đó."
+              "affects": {
+                "en": "Pressing one narrows the cards below. Nothing on a role changes.",
+                "vi": "Bấm một con số sẽ lọc các thẻ bên dưới. Không có gì trên vị trí bị thay đổi."
               },
+              "anchor": "hi-numbers",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The row of small numbers under the title: Requests to agree, Waiting on you, Over budget, Opinions late.",
+                "vi": "Dãy con số nhỏ dưới tiêu đề: Đề xuất chờ đồng ý, Đang chờ bạn, Vượt ngân sách, Ý kiến đang trễ."
+              },
+              "means": {
+                "en": "Each number counts roles or interviews that need someone. A number turns colour only when someone has to act.",
+                "vi": "Mỗi con số đếm các vị trí hoặc buổi phỏng vấn cần người xử lý. Con số chỉ đổi màu khi có người phải làm gì đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Waiting on you, to see only the roles that wait for you.",
+                "vi": "Đang chờ bạn, để chỉ xem các vị trí đang chờ bạn."
+              },
               "screen": "hiring",
               "tip": "",
               "title": {
@@ -25128,21 +25302,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hi-steps",
-              "body": {
-                "en": "<b>Set up</b>, <b>Prepare & publish</b>, <b>Meet your candidates</b>, <b>Welcome aboard</b>. Press a step to see only the roles standing on it.",
-                "vi": "<b>Thiết lập</b>, <b>Chuẩn bị & đăng tin</b>, <b>Gặp ứng viên</b>, <b>Chào mừng gia nhập</b>. Bấm một bước để chỉ xem các vị trí đang ở bước đó."
+              "affects": {
+                "en": "The counts add up to every role on the board.",
+                "vi": "Cộng các con số lại là đủ mọi vị trí trên bảng."
               },
+              "anchor": "hi-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Four steps",
                 "vi": "Bốn bước"
               },
               "lines": [],
+              "look": {
+                "en": "The four steps: Set up, Prepare & publish, Meet your candidates, Welcome aboard.",
+                "vi": "Bốn bước: Thiết lập, Chuẩn bị & đăng tin, Gặp ứng viên, Chào mừng gia nhập."
+              },
+              "means": {
+                "en": "Each role stands on exactly one step. The pill on a step counts its roles.",
+                "vi": "Mỗi vị trí đứng ở đúng một bước. Nhãn trên mỗi bước đếm số vị trí ở đó."
+              },
               "moment_chain": "hiring",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A step to see only its roles, then Show all to see everything again.",
+                "vi": "Một bước để chỉ xem các vị trí ở đó, rồi Hiện tất cả để xem lại toàn bộ."
+              },
               "screen": "hiring",
               "tip": "",
               "title": {
@@ -25152,25 +25339,38 @@
               "visual": "pipeline"
             },
             {
-              "anchor": "hi-next",
-              "body": {
-                "en": "A role's card says its step and one <b>Next</b> line, with the button that does it. Here nine candidates are waiting to be looked at.",
-                "vi": "Thẻ của một vị trí ghi bước hiện tại và một dòng <b>Tiếp theo</b>, kèm nút để làm việc đó. Ở đây có chín ứng viên đang chờ được xem."
+              "affects": {
+                "en": "The button opens exactly the place where that move is made.",
+                "vi": "Nút này mở đúng nơi để làm việc đó."
               },
+              "anchor": "hi-next",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Each card",
                 "vi": "Mỗi thẻ"
               },
               "lines": [],
+              "look": {
+                "en": "The Next: line on a role's card, with its one button.",
+                "vi": "Dòng Tiếp theo: trên thẻ của một vị trí, kèm một nút."
+              },
+              "means": {
+                "en": "It names the one move that takes this role forward. Here, 9 candidates to look at.",
+                "vi": "Nó ghi một việc giúp vị trí này đi tiếp. Ở đây là 9 ứng viên cần xem."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Review candidates, to open the role's board on its candidates.",
+                "vi": "Xem ứng viên, để mở bảng của vị trí ở phần ứng viên."
+              },
               "screen": "hiring",
               "tip": {
-                "en": "When the next move belongs to somebody else, the line says who, and shows no button.",
-                "vi": "Khi việc tiếp theo là của người khác, dòng này nói rõ là ai, và không hiện nút nào."
+                "en": "When the next move belongs to somebody else, the line names them.",
+                "vi": "Khi việc tiếp theo là của người khác, dòng này ghi tên người đó."
               },
               "title": {
                 "en": "Step X of 4, and one Next line",
@@ -25179,17 +25379,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hi-reqchip",
-              "body": {
-                "en": "<b>No request yet</b>, <b>Waiting on</b> a manager, or <b>Request agreed</b>. A role never waits for its request: you can publish it and meet candidates today.",
-                "vi": "<b>Chưa có đề xuất</b>, <b>Đang chờ</b> một quản lý, hoặc <b>Yêu cầu đã được đồng ý</b>. Một vị trí không bao giờ phải chờ đề xuất: bạn có thể đăng tin và gặp ứng viên ngay hôm nay."
+              "affects": {
+                "en": "You can publish the role and meet candidates today. Only the offer waits for Request agreed.",
+                "vi": "Bạn có thể đăng tin và gặp ứng viên ngay hôm nay. Chỉ lời mời nhận việc phải chờ Yêu cầu đã được đồng ý."
               },
+              "anchor": "hi-reqchip",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The request",
                 "vi": "Đề xuất"
               },
               "lines": [],
+              "look": {
+                "en": "The request label on the card: No request yet, Waiting on with a manager's name, or Request agreed.",
+                "vi": "Nhãn đề xuất trên thẻ: Chưa có đề xuất, Đang chờ kèm tên một quản lý, hoặc Yêu cầu đã được đồng ý."
+              },
+              "means": {
+                "en": "It says where the role's hiring request is. A role never waits for it.",
+                "vi": "Nó cho biết đề xuất tuyển dụng của vị trí đang ở đâu. Vị trí không bao giờ phải chờ nó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25203,21 +25412,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hi-raise",
-              "body": {
-                "en": "<b>Open a role</b> asks five things and the role exists. It lands on step 1, <b>Set up</b>.",
-                "vi": "<b>Mở một vị trí</b> hỏi năm điều và vị trí được tạo. Vị trí nằm ở bước 1, <b>Thiết lập</b>."
+              "affects": {
+                "en": "The new role lands on step 1, Set up, with No request yet.",
+                "vi": "Vị trí mới nằm ở bước 1, Thiết lập, với nhãn Chưa có đề xuất."
               },
+              "anchor": "hi-raise",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Start",
                 "vi": "Bắt đầu"
               },
               "lines": [],
+              "look": {
+                "en": "The Open a role button, top right.",
+                "vi": "Nút Mở một vị trí, ở góc trên bên phải."
+              },
+              "means": {
+                "en": "It asks five things, and the role exists.",
+                "vi": "Nút này hỏi năm thông tin, và vị trí được tạo."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Open a role.",
+                "vi": "Mở một vị trí."
+              },
               "screen": "hiring",
               "tip": {
                 "en": "Run a team but are not on the hiring team? Your button reads Raise a hiring request, and opens a four-part form instead.",
@@ -25230,25 +25452,34 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hi-open",
-              "body": {
-                "en": "The role's columns and its application form fill in from the department and the country. Leave the recruiter empty and the country's hiring rule picks one.",
-                "vi": "Các cột của vị trí và mẫu đơn ứng tuyển được điền sẵn theo phòng ban và quốc gia. Để trống người tuyển thì quy tắc tuyển dụng của quốc gia sẽ chọn."
+              "affects": {
+                "en": "Left as The hiring rule for the country decides, the country's hiring rule picks the recruiter.",
+                "vi": "Để ở Theo quy tắc tuyển dụng của quốc gia, quy tắc tuyển dụng của quốc gia sẽ chọn người tuyển."
               },
+              "anchor": "rep-hi-open",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Five things",
                 "vi": "Năm điều"
               },
               "lines": [],
+              "look": {
+                "en": "The five fields: What is the role called?, Department, Country, How many seats?, Who recruits it?",
+                "vi": "Năm ô: Tên vị trí là gì?, Phòng ban, Quốc gia, Cần tuyển bao nhiêu người?, Ai phụ trách tuyển?"
+              },
+              "means": {
+                "en": "The role's columns and its application form fill in from the department and the country.",
+                "vi": "Các cột của vị trí và mẫu đơn ứng tuyển được điền sẵn theo phòng ban và quốc gia."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "hiring_request",
               "tip": {
-                "en": "This window is in English on every Payobook, so its labels are named in English here.",
-                "vi": "Cửa sổ này hiển thị tiếng Anh trên mọi Payobook, nên bài học gọi các nhãn bằng tiếng Anh: What is the role called?, Department, Country, How many seats?, Who recruits it?"
+                "en": "Open the role saves it at once. You can publish it straight away.",
+                "vi": "Mở vị trí lưu nó ngay. Bạn có thể đăng tin luôn."
               },
               "title": {
                 "en": "Name, department, country, seats, recruiter",
@@ -25257,17 +25488,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hi-askform",
-              "body": {
-                "en": "The manager gets one page by email — no sign-in, and it saves as they type. Sending it in is their agreement. Payobook reminds them until they do.",
-                "vi": "Quản lý nhận một trang qua email — không cần đăng nhập, và trang tự lưu khi họ gõ. Gửi trang đó đi chính là sự đồng ý của họ. Payobook nhắc họ cho tới khi họ gửi."
+              "affects": {
+                "en": "Sending that page in is their agreement. Payobook reminds them until they do.",
+                "vi": "Gửi trang đó đi chính là sự đồng ý của họ. Payobook nhắc họ cho tới khi họ gửi."
               },
+              "anchor": "hi-askform",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Ask",
                 "vi": "Nhờ gửi"
               },
               "lines": [],
+              "look": {
+                "en": "The Ask a manager window: Which manager? and Remind them every.",
+                "vi": "Cửa sổ Nhờ quản lý: Quản lý nào? và Nhắc họ mỗi."
+              },
+              "means": {
+                "en": "The manager gets one page by email, with no sign-in. It saves as they type.",
+                "vi": "Quản lý nhận một trang qua email, không cần đăng nhập. Trang tự lưu khi họ gõ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25281,11 +25521,12 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hi-route",
-              "body": {
-                "en": "After the manager sends it in, the Head of HR agrees it, and the label turns green. A request over budget is flagged to the people who watch the budget; nothing is blocked.",
-                "vi": "Sau khi quản lý gửi, Trưởng phòng nhân sự đồng ý, và nhãn chuyển sang màu xanh. Đề xuất vượt ngân sách được báo cho những người theo dõi ngân sách; không có gì bị chặn."
+              "affects": {
+                "en": "A request over budget is flagged to the people who watch the budget. Nothing is blocked.",
+                "vi": "Đề xuất vượt ngân sách được báo cho những người theo dõi ngân sách. Không có gì bị chặn."
               },
+              "anchor": "rep-hi-route",
+              "body": "",
               "consequence": {
                 "en": "Affects this one role. Reversible: yes — a request that was not approved can be asked for again. Verify first: the manager you ask has an email address, or you get a link to send them yourself.",
                 "vi": "Ảnh hưởng: chỉ vị trí này. Hoàn tác: có — đề xuất không được duyệt có thể nhờ gửi lại. Kiểm tra trước: quản lý bạn nhờ có địa chỉ email, nếu không bạn nhận một đường dẫn để tự gửi cho họ."
@@ -25295,6 +25536,14 @@
                 "vi": "Ai đồng ý"
               },
               "lines": [],
+              "look": {
+                "en": "The labels in a row: Waiting on Lê Thu Trang, Sent in, Head of HR agreed, Request agreed.",
+                "vi": "Các nhãn nối nhau: Đang chờ Lê Thu Trang, Đã gửi, Trưởng phòng nhân sự đã đồng ý, Yêu cầu đã được đồng ý."
+              },
+              "means": {
+                "en": "The manager sends it in, then the Head of HR agrees it. The label turns green.",
+                "vi": "Quản lý gửi đề xuất, rồi Trưởng phòng nhân sự đồng ý. Nhãn chuyển sang màu xanh."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25308,17 +25557,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hi-rule",
-              "body": {
-                "en": "Everything else records and tells. This is the only thing in Hiring that waits: an offer cannot be sent while the label is not <b>Request agreed</b>.",
-                "vi": "Mọi thứ khác chỉ ghi nhận và thông báo. Đây là điều duy nhất trong Tuyển dụng phải chờ: không gửi được lời mời nhận việc khi nhãn chưa là <b>Yêu cầu đã được đồng ý</b>."
+              "affects": {
+                "en": "An offer cannot be sent while the label is not Request agreed.",
+                "vi": "Không gửi được lời mời nhận việc khi nhãn chưa là Yêu cầu đã được đồng ý."
               },
+              "anchor": "rep-hi-rule",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The one rule",
                 "vi": "Quy tắc duy nhất"
               },
               "lines": [],
+              "look": {
+                "en": "The line with the lock: the one thing that waits.",
+                "vi": "Dòng có biểu tượng khoá: điều duy nhất phải chờ."
+              },
+              "means": {
+                "en": "Everything else in Hiring records and tells. Only the offer waits for the request.",
+                "vi": "Mọi thứ khác trong Tuyển dụng chỉ ghi nhận và thông báo. Chỉ lời mời nhận việc phải chờ đề xuất."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25452,26 +25710,36 @@
           ],
           "steps": [
             {
-              "anchor": "hb-head",
-              "body": {
-                "en": "Press a role's card and it opens as a page. The labels on top say its department, how many openings, where its request is, and where it is published.",
-                "vi": "Bấm thẻ của một vị trí và nó mở thành một trang. Các nhãn ở trên cho biết phòng ban, số chỗ trống, đề xuất đang ở đâu, và vị trí được đăng ở đâu."
+              "affects": {
+                "en": "Pressing a label opens the part of the role behind it.",
+                "vi": "Bấm một nhãn sẽ mở phần của vị trí nằm sau nhãn đó."
               },
+              "anchor": "hb-head",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The labels under the role's name: its department, its seats, its request and where it is published.",
+                "vi": "Các nhãn dưới tên vị trí: phòng ban, số chỗ, đề xuất và nơi vị trí được đăng."
+              },
+              "means": {
+                "en": "A role's card opens as this page. The labels say at a glance where the role stands.",
+                "vi": "Thẻ của một vị trí mở ra thành trang này. Các nhãn cho biết ngay vị trí đang ở đâu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
-              "screen": "hiringrole",
-              "tip": {
-                "en": "All roles, top left, takes you back to the board of every role.",
-                "vi": "Mọi vị trí, ở góc trên bên trái, đưa bạn về bảng của tất cả vị trí."
+              "press": {
+                "en": "All roles, top left, to go back to the board of every role.",
+                "vi": "Mọi vị trí, ở góc trên bên trái, để về bảng của tất cả vị trí."
               },
+              "screen": "hiringrole",
+              "tip": "",
               "title": {
                 "en": "One role, on its own page",
                 "vi": "Một vị trí, trên trang riêng của nó"
@@ -25479,25 +25747,38 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-publish",
-              "body": {
-                "en": "<b>Publish to…</b> lists every place the role can go: the careers page, job sites, colleagues' referrals, an agency. Each has its own link, so every application is counted where it came from.",
-                "vi": "<b>Đăng lên…</b> liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, lời giới thiệu của đồng nghiệp, một đơn vị tuyển dụng. Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."
+              "affects": {
+                "en": "Each place has its own link, so every application is counted where it came from.",
+                "vi": "Mỗi nơi có đường dẫn riêng, nên mỗi hồ sơ được đếm đúng nơi nó đến."
               },
+              "anchor": "hb-publish",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Find people",
                 "vi": "Tìm người"
               },
               "lines": [],
+              "look": {
+                "en": "The Publish to… button, top right.",
+                "vi": "Nút Đăng lên…, ở góc trên bên phải."
+              },
+              "means": {
+                "en": "It lists every place the role can go: the careers page, job sites, referrals, an agency.",
+                "vi": "Nút này liệt kê mọi nơi vị trí có thể xuất hiện: trang tuyển dụng, các trang việc làm, giới thiệu, một đơn vị tuyển dụng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Publish to…, to see every place and its link.",
+                "vi": "Đăng lên…, để xem mọi nơi đăng và đường dẫn của nó."
+              },
               "screen": "hiringrole",
               "tip": {
-                "en": "No job site is connected to Payobook. Paste the advert there with its link, then press Mark as posted.",
-                "vi": "Không trang việc làm nào được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm <b>Đánh dấu đã đăng</b>."
+                "en": "A job site is not connected to Payobook. Paste the advert there with its link, then press Mark as posted.",
+                "vi": "Trang việc làm không được kết nối với Payobook. Hãy dán tin tuyển dụng kèm đường dẫn ở đó, rồi bấm Đánh dấu đã đăng."
               },
               "title": {
                 "en": "Publish to… — one link for each place",
@@ -25506,17 +25787,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-board",
-              "body": {
-                "en": "Drag a card to move someone — any column, either direction. You can undo it for five seconds. Point at a column's name to read what being there means.",
-                "vi": "Kéo một thẻ để chuyển một người — cột nào cũng được, chiều nào cũng được. Bạn có thể hoàn tác trong năm giây. Trỏ vào tên cột để đọc ý nghĩa của việc ở đó."
+              "affects": {
+                "en": "Dragging a card moves that person, to any column, either way. Undo stays for five seconds.",
+                "vi": "Kéo một thẻ sẽ chuyển người đó, sang cột nào cũng được, chiều nào cũng được. Nút Hoàn tác hiện trong năm giây."
               },
+              "anchor": "hb-board",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The board",
                 "vi": "Bảng"
               },
               "lines": [],
+              "look": {
+                "en": "The columns, from Applications received to Post-offer, one card per person.",
+                "vi": "Các cột, từ Hồ sơ đã nhận tới Chờ nhận việc, mỗi người một thẻ."
+              },
+              "means": {
+                "en": "A column is a stage of this role. Point at a column's name to read what being there means.",
+                "vi": "Mỗi cột là một giai đoạn của vị trí này. Trỏ vào tên cột để đọc ý nghĩa của việc ở đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25533,11 +25823,12 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-closed",
-              "body": {
-                "en": "Drop a card on <b>Closed</b> and choose why: <b>CV reject</b>, <b>Interview reject</b>, <b>Drop-out</b>, <b>On hold</b> or <b>Offer drop</b>. A reason is welcome, never required.",
-                "vi": "Thả một thẻ vào <b>Đã đóng</b> và chọn lý do: <b>Loại hồ sơ</b>, <b>Loại sau phỏng vấn</b>, <b>Ứng viên rút lui</b>, <b>Tạm hoãn</b> hoặc <b>Từ chối lời mời</b>. Lý do được hoan nghênh, không bao giờ bắt buộc."
+              "affects": {
+                "en": "The person leaves the working columns. Press a line to see who is in it, and drag anyone back.",
+                "vi": "Người đó rời các cột đang làm. Bấm vào một dòng để xem ai trong đó, và kéo bất kỳ ai ra lại."
               },
+              "anchor": "hb-closed",
+              "body": "",
               "consequence": {
                 "en": "Affects this one person on this role. Reversible: yes — press the line and drag them back. Verify first: the box that sends the not-this-time email, before you close.",
                 "vi": "Ảnh hưởng: một người này trên vị trí này. Hoàn tác: có — bấm vào dòng đó và kéo họ trở lại. Kiểm tra trước: ô gửi email “lần này chưa phù hợp”, trước khi bạn đóng."
@@ -25547,6 +25838,14 @@
                 "vi": "Nói không"
               },
               "lines": [],
+              "look": {
+                "en": "The Closed column: CV reject, Interview reject, Drop-out, On hold, Offer drop.",
+                "vi": "Cột Đã đóng: Loại hồ sơ, Loại sau phỏng vấn, Ứng viên rút lui, Tạm hoãn, Từ chối lời mời."
+              },
+              "means": {
+                "en": "Drop a card here and choose the outcome. A reason is welcome, never required.",
+                "vi": "Thả một thẻ vào đây và chọn kết quả. Lý do là tuỳ chọn, không bắt buộc."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25560,17 +25859,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-drawer",
-              "body": {
-                "en": "When they applied and from where, their answers, every interview, the documents, and a timeline of each move. Arrow keys step to the next person.",
-                "vi": "Họ nộp hồ sơ khi nào và từ đâu, các câu trả lời, mọi buổi phỏng vấn, tài liệu, và dòng thời gian của từng lần chuyển. Phím mũi tên chuyển sang người tiếp theo."
+              "affects": {
+                "en": "Opening it changes nothing. Arrow keys move to the next person.",
+                "vi": "Mở ngăn này không thay đổi gì. Phím mũi tên chuyển sang người tiếp theo."
               },
+              "anchor": "hb-drawer",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "One person",
                 "vi": "Một người"
               },
               "lines": [],
+              "look": {
+                "en": "The panel that opens beside the board, with Applied, Answers, Documents and Timeline.",
+                "vi": "Ngăn mở ra bên cạnh bảng, với Đã nộp hồ sơ, Câu trả lời, Tài liệu và Dòng thời gian."
+              },
+              "means": {
+                "en": "It is one person's whole story: when they applied and from where, their answers, every interview and each move.",
+                "vi": "Đây là toàn bộ câu chuyện của một người: nộp hồ sơ khi nào và từ đâu, câu trả lời, mọi buổi phỏng vấn và từng lần chuyển."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25584,21 +25892,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-cnext",
-              "body": {
-                "en": "Give a first look, arrange a conversation, chase a late opinion, send the offer. Here two opinions from the first round are late, so the box offers <b>Remind</b>.",
-                "vi": "Xem hồ sơ lần đầu, sắp xếp một cuộc trao đổi, nhắc một ý kiến đang trễ, gửi lời mời. Ở đây hai ý kiến của Trao đổi 1 đang trễ, nên ô này đưa ra nút <b>Remind</b> (Nhắc)."
+              "affects": {
+                "en": "Its button does that one thing, so the person is not left waiting.",
+                "vi": "Nút của nó làm đúng việc đó, để người này không phải chờ."
               },
+              "anchor": "hb-cnext",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What now",
                 "vi": "Làm gì tiếp"
               },
               "lines": [],
+              "look": {
+                "en": "The Next box in the person's panel, with its button.",
+                "vi": "Ô Tiếp theo trong ngăn của người đó, kèm nút của nó."
+              },
+              "means": {
+                "en": "It names the one thing to do for this person. Here, two opinions from Discussion 1 are late.",
+                "vi": "Nó ghi một việc cần làm cho người này. Ở đây, hai ý kiến của Trao đổi 1 đang trễ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Remind, to chase the late opinions.",
+                "vi": "Nhắc, để giục những ý kiến đang trễ."
+              },
               "screen": "hiringrole",
               "tip": "",
               "title": {
@@ -25608,21 +25929,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-share",
-              "body": {
-                "en": "A manager sees a candidate's name, stage and interview dates. <b>Share with…</b> adds the parts you tick — the CV, the answers, the expected pay — and nothing else.",
-                "vi": "Quản lý thấy tên, giai đoạn và ngày phỏng vấn của ứng viên. <b>Chia sẻ với…</b> thêm những phần bạn đánh dấu — CV, câu trả lời, mức lương mong muốn — và không gì khác."
+              "affects": {
+                "en": "Share with… adds only the parts you tick, such as the CV, the answers or the expected pay.",
+                "vi": "Chia sẻ với… chỉ thêm những phần bạn đánh dấu, như CV, câu trả lời hay mức lương mong muốn."
               },
+              "anchor": "hb-share",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Privacy",
                 "vi": "Riêng tư"
               },
               "lines": [],
+              "look": {
+                "en": "The sharing line in the panel: Private to hiring, or Shared with and a name.",
+                "vi": "Dòng chia sẻ trong ngăn: Chỉ dành cho bộ phận tuyển dụng, hoặc Đã chia sẻ với kèm một tên."
+              },
+              "means": {
+                "en": "A manager sees only the name, the stage and the interview dates, until you share more.",
+                "vi": "Quản lý chỉ thấy tên, giai đoạn và ngày phỏng vấn, cho tới khi bạn chia sẻ thêm."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Share with…, then tick only what the manager needs.",
+                "vi": "Chia sẻ với…, rồi chỉ đánh dấu những gì quản lý cần."
+              },
               "screen": "hiringrole",
               "tip": {
                 "en": "Expected pay is money: tick it only when the manager needs it.",
@@ -25635,17 +25969,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hb-scores",
-              "body": {
-                "en": "After each conversation, every interviewer fills in a scorecard and decides: Yes, Maybe, No or Hold. <b>Compare finalists</b> puts them side by side: Choose, Keep warm, or Not this time.",
-                "vi": "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Có, Có thể, Không hoặc Tạm hoãn. <b>So sánh ứng viên cuối</b> đặt họ cạnh nhau: Chọn, Giữ liên lạc, hoặc Lần này chưa phù hợp."
+              "affects": {
+                "en": "Compare finalists puts them side by side: Choose, Keep warm, or Not this time.",
+                "vi": "So sánh ứng viên cuối đặt họ cạnh nhau: Chọn, Giữ liên lạc, hoặc Lần này chưa phù hợp."
               },
+              "anchor": "rep-hb-scores",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Interviews",
                 "vi": "Phỏng vấn"
               },
               "lines": [],
+              "look": {
+                "en": "The Decision of each interviewer for Discussion 1. Two are not in yet.",
+                "vi": "Quyết định của từng người phỏng vấn ở Trao đổi 1. Hai người chưa có."
+              },
+              "means": {
+                "en": "After each conversation, every interviewer fills in a scorecard and decides: Yes, Maybe, No or Hold.",
+                "vi": "Sau mỗi cuộc trao đổi, mỗi người phỏng vấn điền một phiếu đánh giá và quyết định: Có, Có thể, Không hoặc Tạm hoãn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25653,7 +25996,7 @@
               "screen": "hiringrole",
               "tip": {
                 "en": "An opinion that reached you another way? Enter it for them; the record says you typed it.",
-                "vi": "Một ý kiến đến với bạn bằng đường khác? Hãy bấm Enter it for them (Nhập thay họ); bản ghi cho biết chính bạn đã gõ."
+                "vi": "Một ý kiến đến với bạn bằng đường khác? Hãy bấm Nhập thay họ; bản ghi cho biết chính bạn đã gõ."
               },
               "title": {
                 "en": "Scorecards, and Compare finalists",
@@ -25662,17 +26005,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hb-joining",
-              "body": {
-                "en": "A signed offer moves the person to <b>Post-offer</b>, still a candidate. <b>Before they join</b> lays out what to prepare, with dates counted back from the joining date.",
-                "vi": "Lời mời đã ký đưa người đó sang <b>Chờ nhận việc</b>, vẫn là ứng viên. <b>Trước khi vào làm</b> liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."
+              "affects": {
+                "en": "Before they join lists what to prepare, with dates counted back from the joining date.",
+                "vi": "Trước khi vào làm liệt kê việc cần chuẩn bị, với ngày tính lùi từ ngày vào làm."
               },
+              "anchor": "hb-joining",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "After the yes",
                 "vi": "Sau lời đồng ý"
               },
               "lines": [],
+              "look": {
+                "en": "The Joining panel and its Before they join list.",
+                "vi": "Phần Vào làm và danh sách Trước khi vào làm."
+              },
+              "means": {
+                "en": "A signed offer moves the person to Post-offer. They are still a candidate.",
+                "vi": "Lời mời đã ký đưa người đó sang Chờ nhận việc. Họ vẫn là ứng viên."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25686,20 +26038,29 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hb-confirm",
-              "body": {
-                "en": "On the day they start, press <b>Confirm they joined</b>. It makes their employee record, their contract and their sign-in, and starts the welcome checklist under New joiners.",
-                "vi": "Vào ngày họ bắt đầu, bấm <b>Xác nhận đã vào làm</b>. Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh mục chào đón ở Nhân viên mới."
+              "affects": {
+                "en": "It makes their employee record, a contract and their sign-in, and starts the welcome checklist under New joiners.",
+                "vi": "Nút này tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, và bắt đầu danh sách chào đón ở Nhân viên mới."
               },
+              "anchor": "rep-hb-confirm",
+              "body": "",
               "consequence": {
                 "en": "Affects this person: a candidate becomes a colleague. Reversible: no, not from here. Verify first: the day they really started — if they did not come, press Did not join instead.",
-                "vi": "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm <b>Không đến nhận việc</b>."
+                "vi": "Ảnh hưởng: người này — một ứng viên trở thành đồng nghiệp. Hoàn tác: không, không làm được từ đây. Kiểm tra trước: ngày họ thật sự bắt đầu — nếu họ không đến, hãy bấm Không đến nhận việc."
               },
               "kicker": {
                 "en": "Day one",
                 "vi": "Ngày đầu tiên"
               },
               "lines": [],
+              "look": {
+                "en": "The Confirm they joined button, for the day they start.",
+                "vi": "Nút Xác nhận đã vào làm, dành cho ngày họ bắt đầu."
+              },
+              "means": {
+                "en": "It turns the candidate into a colleague, on the day they really started.",
+                "vi": "Nút này biến ứng viên thành đồng nghiệp, vào đúng ngày họ thật sự bắt đầu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -27355,21 +27716,34 @@
           ],
           "steps": [
             {
-              "anchor": "hs-cards",
-              "body": {
-                "en": "Settings › Hiring › <b>Hiring set-up</b>, or <b>Set up hiring</b> on the board. One card for each part of hiring; press a card to go to it.",
-                "vi": "Cài đặt › Tuyển dụng › <b>Thiết lập tuyển dụng</b>, hoặc nút <b>Thiết lập tuyển dụng</b> trên bảng. Mỗi phần của việc tuyển dụng một thẻ; bấm một thẻ để tới phần đó."
+              "affects": {
+                "en": "What you set here applies to hiring across the whole company.",
+                "vi": "Những gì bạn đặt ở đây áp dụng cho việc tuyển dụng của cả công ty."
               },
+              "anchor": "hs-cards",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The cards at the top of Hiring set-up. Set up hiring on the board opens this page.",
+                "vi": "Các thẻ ở đầu trang Thiết lập tuyển dụng. Nút Thiết lập tuyển dụng trên bảng mở trang này."
+              },
+              "means": {
+                "en": "Each card is one part of hiring, with a line saying how it is set today.",
+                "vi": "Mỗi thẻ là một phần của việc tuyển dụng, kèm một dòng cho biết hiện nó được đặt thế nào."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A card, to go to that part.",
+                "vi": "Một thẻ, để tới phần đó."
+              },
               "screen": "hiringsetup",
               "tip": "",
               "title": {
@@ -27379,21 +27753,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hs-stages",
-              "body": {
-                "en": "Click a name to rename it everywhere. Drag the handle to reorder. The sentence beside it is what people read when they point at that column on a board.",
-                "vi": "Bấm vào một tên để đổi tên ở mọi nơi. Kéo tay nắm để sắp xếp lại. Câu bên cạnh là điều mọi người đọc khi trỏ vào cột đó trên bảng."
+              "affects": {
+                "en": "A new name shows on every board. The meaning is what people read when they point at that column.",
+                "vi": "Tên mới hiện trên mọi bảng. Câu ý nghĩa là điều mọi người đọc khi trỏ vào cột đó."
               },
+              "anchor": "hs-stages",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Stages",
                 "vi": "Giai đoạn"
               },
               "lines": [],
+              "look": {
+                "en": "The Stages list, each name with its one-sentence meaning beside it.",
+                "vi": "Danh sách Giai đoạn, mỗi tên kèm một câu ý nghĩa bên cạnh."
+              },
+              "means": {
+                "en": "This one list, in this order, is the columns every board can show.",
+                "vi": "Một danh sách này, theo thứ tự này, là các cột mà mọi bảng có thể hiển thị."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A name to rename it everywhere, or drag the handle to reorder.",
+                "vi": "Một tên để đổi tên ở mọi nơi, hoặc kéo tay nắm để sắp xếp lại."
+              },
               "screen": "hiringsetup",
               "tip": "",
               "title": {
@@ -27403,11 +27790,12 @@
               "visual": "none"
             },
             {
-              "anchor": "hs-presets",
-              "body": {
-                "en": "A preset picks the columns for a department, a country, or both. New roles start from it. A role can still show a hidden stage of its own.",
-                "vi": "Một mẫu cột chọn các cột cho một phòng ban, một quốc gia, hoặc cả hai. Vị trí mới bắt đầu từ mẫu đó. Một vị trí vẫn có thể tự hiện một giai đoạn đang ẩn."
+              "affects": {
+                "en": "New roles start from it. Existing roles keep their own columns.",
+                "vi": "Vị trí mới bắt đầu từ mẫu đó. Vị trí hiện có giữ các cột của mình."
               },
+              "anchor": "hs-presets",
+              "body": "",
               "consequence": {
                 "en": "Affects roles opened from now on. Reversible: yes — change the preset back. Verify first: existing roles keep their own columns, so nothing on an open board moves.",
                 "vi": "Ảnh hưởng: các vị trí mở từ bây giờ. Hoàn tác: có — đổi mẫu cột trở lại. Kiểm tra trước: vị trí hiện có giữ các cột của mình, nên không có gì trên bảng đang mở bị dịch chuyển."
@@ -27417,10 +27805,22 @@
                 "vi": "Cột"
               },
               "lines": [],
+              "look": {
+                "en": "Which columns a new role shows: one row per preset, a tick per column.",
+                "vi": "Các cột mà một vị trí mới hiển thị: mỗi mẫu cột một dòng, mỗi cột một dấu tích."
+              },
+              "means": {
+                "en": "A preset picks the columns for a department, a country, or both. The row marked the fallback covers the rest.",
+                "vi": "Một mẫu cột chọn các cột cho một phòng ban, một quốc gia, hoặc cả hai. Dòng ghi mẫu dự phòng áp cho mọi trường hợp còn lại."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Preview as a board, to see the columns before a role uses them.",
+                "vi": "Xem thử dạng bảng, để thấy các cột trước khi một vị trí dùng chúng."
+              },
               "screen": "hiringsetup",
               "tip": "",
               "title": {
@@ -27430,17 +27830,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hs-switches",
-              "body": {
-                "en": "Whether line managers may move candidates on their own roles. Whether candidates are emailed from the board. Whether colleagues are told when a role opens to referrals.",
-                "vi": "Quản lý trực tiếp có được chuyển ứng viên trên vị trí của họ không. Ứng viên có được gửi email từ bảng không. Đồng nghiệp có được báo khi một vị trí mở nhận giới thiệu không."
+              "affects": {
+                "en": "With Email candidates from here off, nothing is sent to a candidate from the board.",
+                "vi": "Khi tắt Gửi email cho ứng viên từ đây, không có gì được gửi cho ứng viên từ bảng."
               },
+              "anchor": "hs-switches",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Switches",
                 "vi": "Công tắc"
               },
               "lines": [],
+              "look": {
+                "en": "The three Switches: Let line managers move candidates on their own roles, Email candidates from here, Tell colleagues when a role opens to referrals.",
+                "vi": "Ba Công tắc: Cho phép quản lý trực tiếp chuyển ứng viên trên vị trí của họ, Gửi email cho ứng viên từ đây, Báo cho đồng nghiệp khi một vị trí mở nhận giới thiệu."
+              },
+              "means": {
+                "en": "Each one turns a single behaviour on or off for every role in the company.",
+                "vi": "Mỗi công tắc bật hoặc tắt một hành vi cho mọi vị trí trong công ty."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -27457,17 +27866,26 @@
               "visual": "none"
             },
             {
-              "anchor": "hs-who",
-              "body": {
-                "en": "Name who is told when a request is over budget, and whether a second person agrees every request. Sign-offs record and tell; nothing waits for them.",
-                "vi": "Chọn ai được báo khi một đề xuất vượt ngân sách, và có cần người thứ hai đồng ý mọi đề xuất không. Các bước duyệt chỉ ghi nhận và thông báo; không có gì phải chờ chúng."
+              "affects": {
+                "en": "The people named get an email and a to-do. Only sending an offer waits for the agreed request.",
+                "vi": "Những người được chọn nhận một email và một việc cần làm. Chỉ việc gửi lời mời phải chờ đề xuất được đồng ý."
               },
+              "anchor": "hs-who",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Who does what",
                 "vi": "Ai làm việc gì"
               },
               "lines": [],
+              "look": {
+                "en": "Who does what: Who is told when a request is over budget, and A second person who agrees every hiring request.",
+                "vi": "Ai làm việc gì: Ai được báo khi yêu cầu vượt ngân sách, và Người thứ hai đồng ý mọi yêu cầu tuyển dụng."
+              },
+              "means": {
+                "en": "Sign-offs record and tell. Nothing waits for them.",
+                "vi": "Các bước phê duyệt chỉ ghi nhận và thông báo. Không có gì phải chờ chúng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -27481,25 +27899,34 @@
               "visual": "none"
             },
             {
-              "anchor": "hs-cards",
-              "body": {
-                "en": "<b>Application forms</b>: the questions, in three languages. <b>Scorecards</b>: what interviewers answer. <b>Emails and languages</b>: every candidate email. <b>Automations</b>: things that happen by themselves.",
-                "vi": "<b>Mẫu đơn ứng tuyển</b>: các câu hỏi, bằng ba ngôn ngữ. <b>Phiếu đánh giá</b>: điều người phỏng vấn trả lời. <b>Email và ngôn ngữ</b>: mọi email gửi ứng viên. <b>Tự động hoá</b>: những việc tự diễn ra."
+              "affects": {
+                "en": "A candidate gets each email in the language they applied in.",
+                "vi": "Ứng viên nhận mỗi email bằng ngôn ngữ họ đã dùng khi nộp hồ sơ."
               },
+              "anchor": "hs-cards",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The other cards",
                 "vi": "Các thẻ khác"
               },
               "lines": [],
+              "look": {
+                "en": "The cards Application forms, Scorecards, Emails and languages, and Automations.",
+                "vi": "Các thẻ Mẫu đơn ứng tuyển, Phiếu đánh giá, Email và ngôn ngữ, và Tự động hoá."
+              },
+              "means": {
+                "en": "The careers-page form, the lines interviewers score, every candidate email, and things that happen by themselves.",
+                "vi": "Mẫu đơn trên trang tuyển dụng, các tiêu chí người phỏng vấn chấm, mọi email gửi ứng viên, và những việc tự diễn ra."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "hiringsetup",
               "tip": {
-                "en": "An automation is written as a sentence. Try it on a real candidate first: nothing is sent and nothing changes.",
-                "vi": "Một quy tắc tự động được viết thành một câu. Hãy thử trên một ứng viên thật trước: không có gì được gửi và không có gì thay đổi."
+                "en": "An automation is written as a sentence. Press Try on a real candidate first: nothing is sent and nothing changes.",
+                "vi": "Một quy tắc tự động được viết thành một câu. Hãy bấm Thử trên một ứng viên thật trước: không gửi gì và không thay đổi gì."
               },
               "title": {
                 "en": "Forms, scorecards, emails, rules",
@@ -27508,26 +27935,36 @@
               "visual": "none"
             },
             {
-              "anchor": "hn-headline",
-              "body": {
-                "en": "The sentence on top says how long a role takes to fill and how often an offer is accepted. Narrow it by department, country or recruiter.",
-                "vi": "Câu ở trên cùng cho biết một vị trí mất bao lâu để tuyển và lời mời được nhận lời thường xuyên đến đâu. Lọc theo phòng ban, quốc gia hoặc chuyên viên tuyển dụng."
+              "affects": {
+                "en": "Every figure below follows the dates and the Narrow to choices above it.",
+                "vi": "Mọi con số bên dưới đi theo khoảng ngày và các lựa chọn Thu hẹp theo ở phía trên."
               },
+              "anchor": "hn-headline",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The numbers",
                 "vi": "Số liệu"
               },
               "lines": [],
+              "look": {
+                "en": "The sentence at the top of the hiring numbers.",
+                "vi": "Câu ở trên cùng của số liệu tuyển dụng."
+              },
+              "means": {
+                "en": "It says how long a role takes to fill and how often an offer is accepted.",
+                "vi": "Nó cho biết một vị trí mất bao lâu để tuyển và lời mời được nhận lời thường xuyên đến đâu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
-              "screen": "hiringnumbers",
-              "tip": {
-                "en": "This screen is in English on every Payobook.",
-                "vi": "Màn hình này hiển thị tiếng Anh trên mọi Payobook."
+              "press": {
+                "en": "The Every department, Every country or Every recruiter list, to narrow it.",
+                "vi": "Danh sách Tất cả phòng ban, Tất cả quốc gia hoặc Tất cả chuyên viên tuyển dụng, để thu hẹp."
               },
+              "screen": "hiringnumbers",
+              "tip": "",
               "title": {
                 "en": "Insights › Hiring: one sentence first",
                 "vi": "Phân tích › Tuyển dụng: một câu trước tiên"
@@ -27535,17 +27972,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-hn-waiting",
-              "body": {
-                "en": "Everyone still in play on an open role, by days since their last move. Fourteen days without a move counts as stalled.",
-                "vi": "Mọi người còn trong quy trình ở một vị trí đang mở, theo số ngày từ lần chuyển gần nhất. Mười bốn ngày không có lần chuyển nào được tính là bị kẹt."
+              "affects": {
+                "en": "Fourteen days without a move counts as stalled. Those are the people to chase first.",
+                "vi": "Mười bốn ngày không có lần chuyển nào được tính là bị đứng. Đó là những người cần giục trước."
               },
+              "anchor": "rep-hn-waiting",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Where it sticks",
                 "vi": "Chỗ bị kẹt"
               },
               "lines": [],
+              "look": {
+                "en": "Who has been waiting longest, with each person's stage and days.",
+                "vi": "Ai đã chờ lâu nhất, với giai đoạn và số ngày của từng người."
+              },
+              "means": {
+                "en": "Everyone still in play on an open role, by days since their last move.",
+                "vi": "Mọi người còn trong quy trình ở một vị trí đang mở, theo số ngày từ lần chuyển gần nhất."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -27553,7 +27999,7 @@
               "screen": "hiringnumbers",
               "tip": {
                 "en": "Each part has a download button, and Download everything gives one Excel file.",
-                "vi": "Mỗi phần có nút tải xuống, và <b>Tải xuống tất cả</b> cho một tệp Excel."
+                "vi": "Mỗi phần có nút tải xuống, và Tải xuống tất cả cho một tệp Excel."
               },
               "title": {
                 "en": "Who has been waiting longest",
@@ -37571,5 +38017,5 @@
       }
     }
   ],
-  "version": "e9cefd704a77"
+  "version": "7852a6fcf5d1"
 }
