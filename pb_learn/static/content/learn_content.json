@@ -18314,16 +18314,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "wf-today",
-          "body": {
-            "en": "On shift, Late, Not started, Checked out, On leave — for the teams you look after.",
-            "vi": "Theo ca, Trễ, Chưa bắt đầu, Đã về, Đang nghỉ phép — cho các nhóm bạn phụ trách."
+          "affects": {
+            "en": "Late and Not started are today's calls: a shift is easier to cover this morning.",
+            "vi": "Trễ và Chưa bắt đầu là việc cần gọi hôm nay: sắp xếp người thay ngay sáng nay dễ hơn."
           },
+          "anchor": "wf-today",
+          "body": "",
           "guard": false,
           "key": "today",
           "kicker": {
             "en": "Workforce › Today",
             "vi": "Lực lượng lao động › Hôm nay"
+          },
+          "look": {
+            "en": "The tiles On shift, Late, Not started, Checked out and On leave.",
+            "vi": "Các ô Theo ca, Trễ, Chưa bắt đầu, Đã về và Đang nghỉ phép."
+          },
+          "means": {
+            "en": "Each tile counts the people in that state today.",
+            "vi": "Mỗi ô đếm số người ở trạng thái đó hôm nay."
           },
           "modes": [
             "watch"
@@ -18343,14 +18352,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-needs",
-          "body": {
-            "en": "Everything waiting for you, beside every Workforce tab. My team or Organisation decides whose.",
-            "vi": "Mọi việc đang chờ bạn, nằm cạnh mọi tab của Lực lượng lao động. Đội của tôi hoặc Tổ chức quyết định là của ai."
+          "affects": {
+            "en": "A tick on a card approves that request at once. A cross asks for a note, then refuses it.",
+            "vi": "Dấu tích trên một thẻ duyệt yêu cầu đó ngay. Dấu chéo hỏi một ghi chú, rồi từ chối yêu cầu."
           },
+          "anchor": "wf-needs",
+          "body": "",
           "guard": false,
           "key": "needs",
           "kicker": "",
+          "look": {
+            "en": "The Needs you panel, beside every Workforce tab.",
+            "vi": "Khung Cần bạn, nằm cạnh mọi tab của Lực lượng lao động."
+          },
+          "means": {
+            "en": "Everything waiting for your decision. My team or Organisation decides whose.",
+            "vi": "Mọi việc đang chờ bạn quyết định. Đội của tôi hoặc Tổ chức quyết định là của ai."
+          },
           "modes": [
             "watch"
           ],
@@ -18366,14 +18384,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-tabs",
-          "body": {
-            "en": "Today, Schedule, Time, Time Off, Overtime, Trips, Approvals — and Close, where the week is locked for payroll.",
-            "vi": "Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt — và Chốt kỳ, nơi tuần được khoá cho bảng lương."
+          "affects": {
+            "en": "Close, after Approvals, is where the week is locked for payroll.",
+            "vi": "Chốt kỳ, sau Phê duyệt, là nơi tuần được khoá cho bảng lương."
           },
+          "anchor": "wf-tabs",
+          "body": "",
           "guard": false,
           "key": "tabs",
           "kicker": "",
+          "look": {
+            "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Trips, Approvals and Close.",
+            "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt và Chốt kỳ."
+          },
+          "means": {
+            "en": "A manager's week, from who is in today to the week's close.",
+            "vi": "Một tuần của quản lý, từ việc hôm nay ai có mặt tới lúc chốt tuần."
+          },
           "modes": [
             "watch"
           ],
@@ -18434,16 +18461,26 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "wf-time",
-          "body": {
-            "en": "Exceptions are the days that did not add up. Left alone, each becomes a flag on Close.",
-            "vi": "Ngoại lệ là những ngày không khớp. Nếu để đó, mỗi ngoại lệ thành một cờ cảnh báo ở Chốt kỳ."
+          "affects": {
+            "en": "Read-only. The count drops as you fix each entry, and the banner above disappears at zero.",
+            "vi": "Chỉ xem. Số này giảm khi bạn sửa từng mục, và dải thông báo phía trên biến mất khi về không."
           },
+          "anchor": "wf-time",
+          "body": "",
+          "field": "wftime.exceptions",
           "guard": false,
           "key": "time",
           "kicker": {
             "en": "Workforce › Time",
             "vi": "Lực lượng lao động › Chấm công"
+          },
+          "look": {
+            "en": "The Exceptions tab, beside Timeline, Week Grid and Import.",
+            "vi": "Tab Ngoại lệ, bên cạnh Dòng thời gian, Lưới tuần và Nhập."
+          },
+          "means": {
+            "en": "Counts the entries in the week that need a look: a missing punch in or out, a late start or an early departure.",
+            "vi": "Đếm các mục trong tuần cần xem: thiếu chấm công vào hoặc ra, đi muộn hoặc về sớm."
           },
           "modes": [
             "watch"
@@ -18463,16 +18500,25 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-leave-queue",
-          "body": {
-            "en": "Leave waiting for a decision. Apply on behalf files leave for someone who cannot.",
-            "vi": "Đơn nghỉ chờ quyết định. Đăng ký thay nộp đơn cho người không tự làm được."
+          "affects": {
+            "en": "Once approved, the days count as leave when the pay run reads that month.",
+            "vi": "Khi được duyệt, các ngày đó được tính là nghỉ phép khi đợt lương đọc tháng đó."
           },
+          "anchor": "wf-leave-queue",
+          "body": "",
           "guard": false,
           "key": "leave",
           "kicker": {
             "en": "Workforce › Time Off",
             "vi": "Lực lượng lao động › Nghỉ phép"
+          },
+          "look": {
+            "en": "The Approval queue on Time Off.",
+            "vi": "Hàng chờ phê duyệt ở tab Nghỉ phép."
+          },
+          "means": {
+            "en": "Leave waiting for a decision, in date order, each with its leave type and number of days.",
+            "vi": "Đơn nghỉ chờ quyết định, theo thứ tự ngày, mỗi đơn kèm loại nghỉ phép và số ngày."
           },
           "modes": [
             "watch"
@@ -18480,7 +18526,10 @@
           "nav": "wftimeoff",
           "screen": "wftimeoff",
           "timeout": 0,
-          "tip": "",
+          "tip": {
+            "en": "Apply on behalf, at the top, files leave for someone who cannot.",
+            "vi": "Đăng ký thay, ở phía trên, nộp đơn nghỉ cho người không tự làm được."
+          },
           "title": {
             "en": "The approval queue",
             "vi": "Hàng chờ phê duyệt"
@@ -18489,16 +18538,25 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-ot-queue",
-          "body": {
-            "en": "Each request with its day and hours. A near-the-limit mark is a warning, not a block.",
-            "vi": "Mỗi yêu cầu kèm ngày và số giờ. Dấu gần giới hạn là lời cảnh báo, không phải điều chặn."
+          "affects": {
+            "en": "Approving adds the hours to that person's month and year totals.",
+            "vi": "Duyệt sẽ cộng số giờ vào tổng tháng và năm của người đó."
           },
+          "anchor": "wf-ot-queue",
+          "body": "",
           "guard": false,
           "key": "overtime",
           "kicker": {
             "en": "Workforce › Overtime",
             "vi": "Lực lượng lao động › Tăng ca"
+          },
+          "look": {
+            "en": "The Approval queue on Overtime. Each card shows the day, the hours and two bars, M and Y.",
+            "vi": "Hàng chờ duyệt ở tab Tăng ca. Mỗi thẻ có ngày, số giờ và hai thanh M và Y."
+          },
+          "means": {
+            "en": "M and Y are this month's and this year's overtime against the ceiling. A red bar is a warning, not a block.",
+            "vi": "M và Y là giờ tăng ca của tháng này và năm nay so với mức trần. Thanh màu đỏ là lời cảnh báo, không phải điều chặn."
           },
           "modes": [
             "watch"
@@ -18515,14 +18573,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-ot-rules",
-          "body": {
-            "en": "The monthly and yearly limits your company works to. A request past one is marked, never quietly approved.",
-            "vi": "Giới hạn theo tháng và theo năm công ty bạn áp dụng. Yêu cầu vượt một giới hạn sẽ được đánh dấu, không bao giờ được duyệt âm thầm."
+          "affects": {
+            "en": "Hours past a ceiling are never lost. The card shows them as bonus hours before you approve.",
+            "vi": "Giờ vượt mức trần không bao giờ bị mất. Thẻ hiện chúng thành giờ thưởng trước khi bạn duyệt."
           },
+          "anchor": "wf-ot-rules",
+          "body": "",
           "guard": false,
           "key": "rules",
           "kicker": "",
+          "look": {
+            "en": "The Overtime rules & ceilings panel, one card for each ceiling with its hours.",
+            "vi": "Khung Quy định và mức trần làm thêm giờ, mỗi mức trần một thẻ kèm số giờ."
+          },
+          "means": {
+            "en": "The monthly and yearly limits your company works to.",
+            "vi": "Giới hạn theo tháng và theo năm công ty bạn áp dụng."
+          },
           "modes": [
             "watch"
           ],
@@ -18588,16 +18655,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "wf-close",
-          "body": {
-            "en": "Payroll trusts a locked week. This is where it is made trustworthy.",
-            "vi": "Bảng lương tin vào một tuần đã khoá. Đây là nơi làm cho nó đáng tin."
+          "affects": {
+            "en": "The week cannot be locked while any flag is open.",
+            "vi": "Tuần không khoá được khi còn cờ nào đang mở."
           },
+          "anchor": "wf-close",
+          "body": "",
           "guard": false,
           "key": "head",
           "kicker": {
             "en": "Workforce › Close",
             "vi": "Lực lượng lao động › Chốt kỳ"
+          },
+          "look": {
+            "en": "The week at the top, and the amber count of flags that remain.",
+            "vi": "Tuần ở phía trên, và nhãn màu cam đếm số cờ còn lại."
+          },
+          "means": {
+            "en": "Payroll trusts a locked week. This is where it is made trustworthy.",
+            "vi": "Bảng lương tin vào một tuần đã khoá. Đây là nơi làm cho nó đáng tin."
           },
           "modes": [
             "watch",
@@ -18618,14 +18694,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-close-flags",
-          "body": {
-            "en": "Fix a day that is wrong; Approve as-is only what really happened. Review all walks one kind together.",
-            "vi": "Điều chỉnh ngày bị sai; chỉ Phê duyệt nguyên trạng những gì thật sự đã xảy ra. Xem lại tất cả đi qua một loại cờ cùng lúc."
+          "affects": {
+            "en": "Every open row keeps the lock button grey.",
+            "vi": "Mỗi dòng còn mở giữ nút khoá màu xám."
           },
+          "anchor": "wf-close-flags",
+          "body": "",
           "guard": false,
           "key": "flags",
           "kicker": "",
+          "look": {
+            "en": "The flags table. Each row has Fix and Approve as-is.",
+            "vi": "Bảng cờ cảnh báo. Mỗi dòng có Điều chỉnh và Phê duyệt nguyên trạng."
+          },
+          "means": {
+            "en": "Fix a day that is wrong. Approve as-is only what really happened.",
+            "vi": "Điều chỉnh ngày bị sai. Chỉ Phê duyệt nguyên trạng những gì thật sự đã xảy ra."
+          },
           "modes": [
             "watch",
             "try"
@@ -18633,7 +18718,10 @@
           "nav": "",
           "screen": "wfclose",
           "timeout": 0,
-          "tip": "",
+          "tip": {
+            "en": "Review all answers one kind of flag together.",
+            "vi": "Xem lại tất cả trả lời cả một loại cờ cùng lúc."
+          },
           "title": {
             "en": "Every day that did not add up",
             "vi": "Mỗi ngày không khớp"
@@ -18642,14 +18730,23 @@
         },
         {
           "act": "click",
-          "anchor": "rep-wf-fix",
-          "body": {
-            "en": "He forgot to check out. Fix opens the day to put in the real time — on your own Payobook that writes the correction.",
-            "vi": "Anh quên chấm giờ ra. Điều chỉnh mở ngày đó để nhập giờ thật — trên Payobook của bạn, việc đó ghi lại phần sửa."
+          "affects": {
+            "en": "On your own Payobook that writes the correction, and the flag clears once the day adds up.",
+            "vi": "Trên Payobook của bạn, việc đó ghi lại phần sửa, và cờ biến mất khi ngày đó khớp."
           },
+          "anchor": "rep-wf-fix",
+          "body": "",
           "guard": true,
           "key": "fix",
           "kicker": "",
+          "look": {
+            "en": "The Fix button on Hùng's Tuesday. He forgot to check out.",
+            "vi": "Nút Điều chỉnh trên ngày thứ Ba của Hùng. Anh quên chấm giờ ra."
+          },
+          "means": {
+            "en": "Pressing Fix opens Time › Exceptions with Hùng picked, to put in the real time.",
+            "vi": "Bấm Điều chỉnh sẽ mở Chấm công › Ngoại lệ với Hùng đã được chọn, để nhập giờ thật."
+          },
           "modes": [
             "try"
           ],
@@ -18665,14 +18762,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-close-handoff",
-          "body": {
-            "en": "Regular hours, Overtime, Bonus hours and an estimated gross: what payroll will receive.",
-            "vi": "Giờ thông thường, Tăng ca, Giờ thưởng và tổng thu nhập ước tính: những gì bảng lương sẽ nhận."
+          "affects": {
+            "en": "A number that looks wrong here will be wrong on a payslip.",
+            "vi": "Con số trông sai ở đây sẽ sai trên phiếu lương."
           },
+          "anchor": "wf-close-handoff",
+          "body": "",
           "guard": false,
           "key": "handoff",
           "kicker": "",
+          "look": {
+            "en": "The Payroll handoff: Regular hours, Overtime, Bonus hours and Est. gross.",
+            "vi": "Phần Chuyển giao tiền lương: Giờ thông thường, Tăng ca, Giờ thưởng và Tổng thu nhập ước tính."
+          },
+          "means": {
+            "en": "What payroll will receive for this week.",
+            "vi": "Những gì bảng lương sẽ nhận cho tuần này."
+          },
           "modes": [
             "watch",
             "try"
@@ -18689,14 +18795,23 @@
         },
         {
           "act": "observe",
-          "anchor": "wf-close-lock",
-          "body": {
-            "en": "Grey until every flag is answered, and only for an attendance or payroll manager. Reopen… asks for a reason.",
-            "vi": "Xám cho tới khi mọi cờ được trả lời, và chỉ dành cho quản lý chấm công hoặc quản lý lương. Mở lại… sẽ hỏi lý do."
+          "affects": {
+            "en": "Once locked, payroll reads the week. Reopen… asks for a reason, and the reason is kept.",
+            "vi": "Khi đã khoá, bảng lương đọc tuần này. Mở lại… sẽ hỏi lý do, và lý do được lưu lại."
           },
+          "anchor": "wf-close-lock",
+          "body": "",
           "guard": false,
           "key": "lock",
           "kicker": "",
+          "look": {
+            "en": "The Lock week & send to payroll button.",
+            "vi": "Nút Khóa tuần và gửi vào bảng lương."
+          },
+          "means": {
+            "en": "Grey until every flag is answered, and only for an attendance or payroll manager.",
+            "vi": "Xám cho tới khi mọi cờ được trả lời, và chỉ dành cho quản lý chấm công hoặc quản lý lương."
+          },
           "modes": [
             "watch",
             "try"
@@ -36135,17 +36250,26 @@
           ],
           "steps": [
             {
-              "anchor": "wf-today",
-              "body": {
-                "en": "Workforce › <b>Today</b>. <b>On shift</b>, <b>Late</b>, <b>Not started</b>, <b>Checked out</b> and <b>On leave</b>, for the teams you look after. <b>Board</b> or <b>Map</b> shows the same people two ways.",
-                "vi": "Lực lượng lao động › <b>Hôm nay</b>. <b>Theo ca</b>, <b>Trễ</b>, <b>Chưa bắt đầu</b>, <b>Đã về</b> và <b>Đang nghỉ phép</b>, cho các nhóm bạn phụ trách. <b>Bảng</b> hoặc <b>Bản đồ</b> cho thấy cùng những người đó theo hai cách."
+              "affects": {
+                "en": "Nothing changes here. It is a reading of today, and the list below shows the people behind each tile.",
+                "vi": "Ở đây không có gì thay đổi. Đây là bức tranh của hôm nay, và danh sách bên dưới cho thấy những người đứng sau mỗi ô."
               },
+              "anchor": "wf-today",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The tiles On shift, Late, Not started, Checked out and On leave.",
+                "vi": "Các ô Theo ca, Trễ, Chưa bắt đầu, Đã về và Đang nghỉ phép."
+              },
+              "means": {
+                "en": "Each tile counts the people in that state today. Board or Map shows the same people two ways.",
+                "vi": "Mỗi ô đếm số người ở trạng thái đó hôm nay. Bảng hoặc Bản đồ cho thấy cùng những người đó theo hai cách."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36159,21 +36283,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-today",
-              "body": {
+              "affects": {
                 "en": "A shift nobody started is easier to cover this morning than to explain on Friday.",
                 "vi": "Một ca chưa ai bắt đầu thì sắp xếp người thay ngay sáng nay dễ hơn là giải thích vào thứ Sáu."
               },
+              "anchor": "wf-today",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Act early",
                 "vi": "Làm sớm"
               },
               "lines": [],
+              "look": {
+                "en": "The Late and Not started tiles.",
+                "vi": "Các ô Trễ và Chưa bắt đầu."
+              },
+              "means": {
+                "en": "People late for their shift, and shifts nobody has started yet.",
+                "vi": "Những người đến trễ so với ca, và những ca chưa ai bắt đầu."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Late, to list only the people who are late.",
+                "vi": "Trễ, để chỉ liệt kê những người đi trễ."
+              },
               "screen": "wftoday",
               "tip": "",
               "title": {
@@ -36183,17 +36320,26 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-needs",
-              "body": {
-                "en": "Leave requests, overtime to approve, flags on this week: everything waiting for you, whichever tab you are on. <b>My team</b> or <b>Organisation</b> decides whose.",
-                "vi": "Đơn nghỉ phép, tăng ca cần duyệt, cờ cảnh báo tuần này: mọi việc đang chờ bạn, dù bạn ở tab nào. <b>Đội của tôi</b> hoặc <b>Tổ chức</b> quyết định là của ai."
+              "affects": {
+                "en": "The tick on a card approves that request at once. The cross asks for a note, then refuses it.",
+                "vi": "Dấu tích trên một thẻ duyệt yêu cầu đó ngay. Dấu chéo hỏi một ghi chú, rồi từ chối yêu cầu."
               },
+              "anchor": "wf-needs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Needs you",
                 "vi": "Cần bạn"
               },
               "lines": [],
+              "look": {
+                "en": "The Needs you panel on the right, beside whichever tab you are on.",
+                "vi": "Khung Cần bạn ở bên phải, nằm cạnh bất kỳ tab nào bạn đang mở."
+              },
+              "means": {
+                "en": "Everything waiting for your decision, grouped as Overtime, Trips, Attendance and Time off. My team or Organisation decides whose.",
+                "vi": "Mọi việc đang chờ bạn quyết định, chia nhóm Tăng ca, Công tác, Chấm công và Nghỉ phép. Đội của tôi hoặc Tổ chức quyết định là của ai."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36207,11 +36353,12 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-clean",
-              "body": {
-                "en": "Clean overtime is overtime whose hours match the grid, stay under every limit and fall on a day that is still open. Only those go in one press; the rest wait for your look.",
-                "vi": "Tăng ca sạch là tăng ca có giờ khớp với lưới, nằm dưới mọi giới hạn và rơi vào ngày còn mở. Chỉ phần đó được duyệt trong một lần bấm; phần còn lại chờ bạn xem."
+              "affects": {
+                "en": "Only those requests are approved in one press. Every other overtime request waits for your look.",
+                "vi": "Chỉ những yêu cầu đó được duyệt trong một lần bấm. Mọi yêu cầu tăng ca khác chờ bạn xem."
               },
+              "anchor": "wf-clean",
+              "body": "",
               "consequence": {
                 "en": "Affects the clean requests listed — they reach payroll this week. Reversible: until the week is locked. Verify first: the count on the button is what you expected.",
                 "vi": "Ảnh hưởng: các yêu cầu sạch được liệt kê — chúng vào bảng lương tuần này. Hoàn tác: được, cho tới khi tuần bị khoá. Kiểm tra trước: con số trên nút đúng như bạn nghĩ."
@@ -36221,10 +36368,22 @@
                 "vi": "Một lần bấm"
               },
               "lines": [],
+              "look": {
+                "en": "The clean overtime line at the foot of the panel, and the Approve all button under it.",
+                "vi": "Dòng tăng ca sạch ở cuối khung, và nút Phê duyệt tất cả bên dưới."
+              },
+              "means": {
+                "en": "Clean overtime has hours that match the grid, stays under every ceiling and falls on a day that is still open.",
+                "vi": "Tăng ca sạch là tăng ca có giờ khớp với lưới, nằm dưới mọi mức trần và rơi vào ngày còn mở."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Approve all, once the count on the button is what you expected.",
+                "vi": "Phê duyệt tất cả, khi con số trên nút đúng như bạn nghĩ."
+              },
               "screen": "wftoday",
               "tip": "",
               "title": {
@@ -36234,17 +36393,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-tabs",
-              "body": {
-                "en": "A manager's week runs left to right: Today, Schedule, Time, Time Off, Overtime, Trips, Approvals, and <b>Close</b> at the end, where the week is locked for payroll.",
-                "vi": "Một tuần của quản lý đi từ trái sang phải: Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt, và <b>Chốt kỳ</b> ở cuối, nơi tuần được khoá cho bảng lương."
+              "affects": {
+                "en": "What you decide on the earlier tabs is what Close hands to payroll.",
+                "vi": "Những gì bạn quyết định ở các tab trước là những gì Chốt kỳ chuyển cho bảng lương."
               },
+              "anchor": "rep-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The week",
                 "vi": "Cả tuần"
               },
               "lines": [],
+              "look": {
+                "en": "The tabs Today, Schedule, Time, Time Off, Overtime, Trips, Approvals and Close.",
+                "vi": "Các tab Hôm nay, Lịch ca, Chấm công, Nghỉ phép, Tăng ca, Công tác, Phê duyệt và Chốt kỳ."
+              },
+              "means": {
+                "en": "A manager's week runs left to right. Close, after Approvals, is where the week is locked for payroll.",
+                "vi": "Một tuần của quản lý đi từ trái sang phải. Chốt kỳ, sau Phê duyệt, là nơi tuần được khoá cho bảng lương."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36346,8 +36514,8 @@
                 {
                   "correct": false,
                   "feedback": {
-                    "en": "Let's rethink that. Near the limit can still be approved. Past it is what the law forbids.",
-                    "vi": "Hãy nghĩ lại một chút. Gần giới hạn vẫn duyệt được. Vượt giới hạn mới là điều luật cấm."
+                    "en": "Let's rethink that. Near the limit can still be approved. Hours past the ceiling are kept as bonus hours.",
+                    "vi": "Hãy nghĩ lại một chút. Gần giới hạn vẫn duyệt được. Giờ vượt mức trần được giữ lại thành giờ thưởng."
                   },
                   "label": {
                     "en": "Nothing — marked requests cannot be approved",
@@ -36374,21 +36542,34 @@
           ],
           "steps": [
             {
-              "anchor": "wf-time",
-              "body": {
-                "en": "<b>Timeline</b> and <b>Week Grid</b> show the hours; <b>Exceptions</b> lists the days that did not add up; <b>Import</b> brings in a time-clock file.",
-                "vi": "<b>Dòng thời gian</b> và <b>Lưới tuần</b> cho thấy số giờ; <b>Ngoại lệ</b> liệt kê những ngày không khớp; <b>Nhập</b> đưa vào tệp của máy chấm công."
+              "affects": {
+                "en": "The hours kept here are what Close hands to payroll at the end of the week.",
+                "vi": "Số giờ lưu ở đây là những gì Chốt kỳ chuyển cho bảng lương vào cuối tuần."
               },
+              "anchor": "wf-time",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Time",
                 "vi": "Chấm công"
               },
               "lines": [],
+              "look": {
+                "en": "The four tabs Timeline, Week Grid, Exceptions and Import.",
+                "vi": "Bốn tab Dòng thời gian, Lưới tuần, Ngoại lệ và Nhập."
+              },
+              "means": {
+                "en": "Timeline and Week Grid show the hours. Exceptions lists what needs a look. Import brings in hours from a file.",
+                "vi": "Dòng thời gian và Lưới tuần cho thấy số giờ. Ngoại lệ liệt kê những gì cần xem. Nhập đưa giờ làm vào từ một tệp."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Exceptions, to see what needs a look this week.",
+                "vi": "Ngoại lệ, để xem những gì cần xem trong tuần này."
+              },
               "screen": "wftime",
               "tip": "",
               "title": {
@@ -36398,23 +36579,36 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-wf-exc",
-              "body": {
-                "en": "A missing check-out or a late start with no reason is an exception. Left alone, each one becomes a flag at the end of the week.",
-                "vi": "Thiếu giờ ra hoặc đi trễ không lý do là một ngoại lệ. Nếu để đó, mỗi ngoại lệ sẽ thành một cờ cảnh báo vào cuối tuần."
+              "affects": {
+                "en": "Read-only. The count drops as you fix each entry, and the banner above disappears at zero.",
+                "vi": "Chỉ xem. Số này giảm khi bạn sửa từng mục, và dải thông báo phía trên biến mất khi về không."
               },
+              "anchor": "rep-wf-exc",
+              "body": "",
               "consequence": "",
+              "field": "wftime.exceptions",
               "kicker": {
                 "en": "Exceptions",
                 "vi": "Ngoại lệ"
               },
               "lines": [],
+              "look": {
+                "en": "The Exceptions tab and the number beside it.",
+                "vi": "Tab Ngoại lệ và con số bên cạnh."
+              },
+              "means": {
+                "en": "Counts the entries in the week that need a look: a missing punch in or out, a late start or an early departure.",
+                "vi": "Đếm các mục trong tuần cần xem: thiếu chấm công vào hoặc ra, đi muộn hoặc về sớm."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "wftime",
-              "tip": "",
+              "tip": {
+                "en": "Left open, each one is still a flag on Close, and the week cannot be locked until it is answered.",
+                "vi": "Nếu để đó, mỗi ngoại lệ vẫn là một cờ cảnh báo ở Chốt kỳ, và tuần không khoá được cho tới khi nó được trả lời."
+              },
               "title": {
                 "en": "Fix them now, or meet them on Close",
                 "vi": "Xử lý ngay, hoặc gặp lại ở Chốt kỳ"
@@ -36422,21 +36616,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-leave-queue",
-              "body": {
-                "en": "Leave waiting for a decision, oldest first. Mai asks for three days in August; approve it here and the days are counted before the pay run reads them.",
-                "vi": "Đơn nghỉ chờ quyết định, đơn cũ nhất lên trước. Mai xin nghỉ ba ngày trong tháng 8; duyệt ở đây và các ngày đó được tính trước khi đợt lương đọc tới."
+              "affects": {
+                "en": "Once approved, the days count as leave when the pay run reads that month.",
+                "vi": "Khi được duyệt, các ngày đó được tính là nghỉ phép khi đợt lương đọc tháng đó."
               },
+              "anchor": "wf-leave-queue",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Time Off",
                 "vi": "Nghỉ phép"
               },
               "lines": [],
+              "look": {
+                "en": "The Approval queue on Time Off. Mai asks for three days in August.",
+                "vi": "Hàng chờ phê duyệt ở tab Nghỉ phép. Mai xin nghỉ ba ngày trong tháng 8."
+              },
+              "means": {
+                "en": "Leave waiting for a decision, in date order, each with its leave type and number of days.",
+                "vi": "Đơn nghỉ chờ quyết định, theo thứ tự ngày, mỗi đơn kèm loại nghỉ phép và số ngày."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Approve on Mai's card, or Refuse to turn it down with a reason.",
+                "vi": "Phê duyệt trên thẻ của Mai, hoặc Từ chối kèm một lý do."
+              },
               "screen": "wftime",
               "tip": "",
               "title": {
@@ -36446,21 +36653,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-timeoff",
-              "body": {
-                "en": "<b>Apply on behalf</b> files leave for somebody who cannot — off sick, no phone. It is recorded as filed by you.",
-                "vi": "<b>Đăng ký thay</b> nộp đơn nghỉ cho người không tự làm được — ốm, không có điện thoại. Việc đó được ghi là do bạn nộp."
+              "affects": {
+                "en": "The request is filed by you and waits in the Approval queue like any other.",
+                "vi": "Đơn được ghi là do bạn nộp và chờ trong Hàng chờ phê duyệt như mọi đơn khác."
               },
+              "anchor": "wf-timeoff",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "On someone's behalf",
                 "vi": "Đăng ký thay"
               },
               "lines": [],
+              "look": {
+                "en": "The Apply on behalf button at the top of Time Off.",
+                "vi": "Nút Đăng ký thay ở phía trên tab Nghỉ phép."
+              },
+              "means": {
+                "en": "It files leave for somebody who cannot do it themselves, such as a person off sick with no phone.",
+                "vi": "Nó nộp đơn nghỉ cho người không tự làm được, như một người đang ốm và không có điện thoại."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Apply on behalf, choose the employee, leave type and dates, then File leave.",
+                "vi": "Đăng ký thay, chọn nhân viên, loại nghỉ phép và ngày, rồi bấm Gửi đơn nghỉ."
+              },
               "screen": "wftime",
               "tip": "",
               "title": {
@@ -36470,21 +36690,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-ot-queue",
-              "body": {
-                "en": "Every request waiting, with its day and hours. Hùng's Thursday is marked near the limit: approve it knowing he has little room left this month.",
-                "vi": "Mọi yêu cầu đang chờ, kèm ngày và số giờ. Ngày thứ Năm của Hùng được đánh dấu gần giới hạn: hãy duyệt khi đã biết anh còn ít chỗ trong tháng này."
+              "affects": {
+                "en": "Approving adds the hours to his month and year totals, so he has little room left this month.",
+                "vi": "Duyệt sẽ cộng số giờ vào tổng tháng và năm của anh, nên anh còn ít chỗ trong tháng này."
               },
+              "anchor": "wf-ot-queue",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Overtime",
                 "vi": "Tăng ca"
               },
               "lines": [],
+              "look": {
+                "en": "The Approval queue on Overtime. Each card shows the day, the hours and two bars, M and Y.",
+                "vi": "Hàng chờ duyệt ở tab Tăng ca. Mỗi thẻ có ngày, số giờ và hai thanh M và Y."
+              },
+              "means": {
+                "en": "M and Y are this month's and this year's overtime against the ceiling. Hùng is close to his monthly ceiling.",
+                "vi": "M và Y là giờ tăng ca của tháng này và năm nay so với mức trần. Hùng đã gần mức trần của tháng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Approve on a card, once you have read its bars.",
+                "vi": "Duyệt trên một thẻ, sau khi đã xem các thanh của nó."
+              },
               "screen": "wftime",
               "tip": "",
               "title": {
@@ -36494,17 +36727,26 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-ot-rules",
-              "body": {
-                "en": "The rules panel lists the limits your company works to — here 40 hours a month and 200 a year. A request past one is marked, never quietly approved.",
-                "vi": "Khung quy định liệt kê các giới hạn công ty bạn áp dụng — ở đây là 40 giờ một tháng và 200 giờ một năm. Yêu cầu vượt một giới hạn sẽ được đánh dấu, không bao giờ được duyệt âm thầm."
+              "affects": {
+                "en": "Hours past a ceiling are never lost. The card shows them as bonus hours before you approve.",
+                "vi": "Giờ vượt mức trần không bao giờ bị mất. Thẻ hiện chúng thành giờ thưởng trước khi bạn duyệt."
               },
+              "anchor": "wf-ot-rules",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The limits",
                 "vi": "Các giới hạn"
               },
               "lines": [],
+              "look": {
+                "en": "The Overtime rules & ceilings panel, one card for each ceiling with its hours.",
+                "vi": "Khung Quy định và mức trần làm thêm giờ, mỗi mức trần một thẻ kèm số giờ."
+              },
+              "means": {
+                "en": "The limits your company works to, here 40 hours a month and 200 a year.",
+                "vi": "Các giới hạn công ty bạn áp dụng, ở đây là 40 giờ một tháng và 200 giờ một năm."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36635,17 +36877,26 @@
           ],
           "steps": [
             {
-              "anchor": "wf-close",
-              "body": {
-                "en": "Workforce › <b>Close</b>. The week at the top, and the number still flagged. Payroll trusts a locked week; this is where it is made trustworthy.",
-                "vi": "Lực lượng lao động › <b>Chốt kỳ</b>. Tuần ở phía trên, và số cờ cảnh báo còn lại. Bảng lương tin vào một tuần đã khoá; đây là nơi làm cho nó đáng tin."
+              "affects": {
+                "en": "Payroll trusts a locked week. The week cannot be locked while any flag is open.",
+                "vi": "Bảng lương tin vào một tuần đã khoá. Tuần không khoá được khi còn cờ nào đang mở."
               },
+              "anchor": "wf-close",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The week at the top, and the amber count of flags that remain.",
+                "vi": "Tuần ở phía trên, và nhãn màu cam đếm số cờ còn lại."
+              },
+              "means": {
+                "en": "This is the week payroll will receive, and how many days still need an answer from you.",
+                "vi": "Đây là tuần mà bảng lương sẽ nhận, và số ngày vẫn còn cần bạn trả lời."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36659,21 +36910,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-close-flags",
-              "body": {
-                "en": "A missing check-out, overtime over the plan, a late start with no reason. <b>Review all</b> walks the flags of one kind together.",
-                "vi": "Thiếu giờ ra, tăng ca vượt kế hoạch, đi trễ không lý do. <b>Xem lại tất cả</b> đi qua các cờ cùng một loại một lượt."
+              "affects": {
+                "en": "Every open row keeps the lock button grey until it is fixed or approved as-is.",
+                "vi": "Mỗi dòng còn mở giữ nút khoá màu xám cho tới khi nó được điều chỉnh hoặc phê duyệt nguyên trạng."
               },
+              "anchor": "wf-close-flags",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The flags",
                 "vi": "Các cờ cảnh báo"
               },
               "lines": [],
+              "look": {
+                "en": "The flags table. Each row is one person and one day, with Fix and Approve as-is.",
+                "vi": "Bảng cờ cảnh báo. Mỗi dòng là một người và một ngày, kèm Điều chỉnh và Phê duyệt nguyên trạng."
+              },
+              "means": {
+                "en": "Each row is a day that did not add up, such as a missing check-out or a late start.",
+                "vi": "Mỗi dòng là một ngày không khớp, như thiếu giờ ra hoặc đi trễ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "One kind of flag above the table, then Review all, to answer that kind together.",
+                "vi": "Một loại cờ phía trên bảng, rồi Xem lại tất cả, để trả lời cả loại đó một lượt."
+              },
               "screen": "wfclose",
               "tip": "",
               "title": {
@@ -36683,17 +36947,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-wf-fix",
-              "body": {
-                "en": "Hùng forgot to check out on Tuesday. <b>Fix</b> opens the day so you can put in the time he really left. The flag clears when the day adds up.",
-                "vi": "Hùng quên chấm giờ ra vào thứ Ba. <b>Điều chỉnh</b> mở ngày đó để bạn nhập đúng giờ anh thực sự về. Cờ biến mất khi ngày đó khớp."
+              "affects": {
+                "en": "The flag clears once the day adds up, and payroll gets the real hours.",
+                "vi": "Cờ biến mất khi ngày đó khớp, và bảng lương nhận đúng số giờ thật."
               },
+              "anchor": "rep-wf-fix",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Fix",
                 "vi": "Điều chỉnh"
               },
               "lines": [],
+              "look": {
+                "en": "The Fix button on Hùng's Tuesday. He forgot to check out.",
+                "vi": "Nút Điều chỉnh trên ngày thứ Ba của Hùng. Anh quên chấm giờ ra."
+              },
+              "means": {
+                "en": "Fix takes you to Time › Exceptions with Hùng picked, so you can put in the time he really left.",
+                "vi": "Điều chỉnh đưa bạn tới Chấm công › Ngoại lệ với Hùng đã được chọn, để bạn nhập đúng giờ anh thực sự về."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36707,23 +36980,35 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-wf-asis",
-              "body": {
-                "en": "Trang's extra hours were a real rush. <b>Approve as-is</b> says so, and the hours go to payroll as they are. It is not a way to make the lock button work.",
-                "vi": "Giờ làm thêm của Trang là một đợt cao điểm thật. <b>Phê duyệt nguyên trạng</b> xác nhận điều đó, và số giờ đi vào bảng lương như hiện có. Đó không phải cách để mở khoá nút."
+              "affects": {
+                "en": "The hours go to payroll as they are. The row stays on the board, marked Reviewed.",
+                "vi": "Số giờ đi vào bảng lương như hiện có. Dòng đó vẫn ở trên bảng, ghi Đã rà soát."
               },
+              "anchor": "rep-wf-asis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Approve as-is",
                 "vi": "Phê duyệt nguyên trạng"
               },
               "lines": [],
+              "look": {
+                "en": "The Approve as-is button on a flag row, like Trang's extra hours.",
+                "vi": "Nút Phê duyệt nguyên trạng trên một dòng cờ, như giờ làm thêm của Trang."
+              },
+              "means": {
+                "en": "It records that you looked and accepted the day as it was. Trang's rush was real.",
+                "vi": "Nó ghi lại rằng bạn đã xem và chấp nhận ngày đó như vốn có. Đợt cao điểm của Trang là thật."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "wfclose",
-              "tip": "",
+              "tip": {
+                "en": "It is not a way to make the lock button work.",
+                "vi": "Đó không phải cách để nút khoá bấm được."
+              },
               "title": {
                 "en": "Approve as-is when it really happened",
                 "vi": "Phê duyệt nguyên trạng khi điều đó thật sự đã xảy ra"
@@ -36731,17 +37016,26 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-close-handoff",
-              "body": {
-                "en": "<b>Regular hours</b>, <b>Overtime</b>, <b>Bonus hours</b> and an estimated gross. Read them the way payroll will: a number that looks wrong here is wrong on a payslip.",
-                "vi": "<b>Giờ thông thường</b>, <b>Tăng ca</b>, <b>Giờ thưởng</b> và tổng thu nhập ước tính. Hãy đọc như bảng lương sẽ đọc: con số trông sai ở đây sẽ sai trên phiếu lương."
+              "affects": {
+                "en": "Read them the way payroll will. A number that looks wrong here will be wrong on a payslip.",
+                "vi": "Hãy đọc như bảng lương sẽ đọc. Con số trông sai ở đây sẽ sai trên phiếu lương."
               },
+              "anchor": "wf-close-handoff",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Payroll handoff",
                 "vi": "Chuyển giao tiền lương"
               },
               "lines": [],
+              "look": {
+                "en": "The Payroll handoff: Regular hours, Overtime, Bonus hours and Est. gross.",
+                "vi": "Phần Chuyển giao tiền lương: Giờ thông thường, Tăng ca, Giờ thưởng và Tổng thu nhập ước tính."
+              },
+              "means": {
+                "en": "The week's totals as payroll will receive them. Est. gross is worked out from each person's contract rate.",
+                "vi": "Tổng của tuần đúng như bảng lương sẽ nhận. Tổng thu nhập ước tính được tính từ mức lương trong hợp đồng của từng người."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36755,11 +37049,12 @@
               "visual": "none"
             },
             {
-              "anchor": "wf-close-lock",
-              "body": {
-                "en": "The button stays grey until every flag is fixed or approved as-is, and only an attendance or payroll manager can press it. Afterwards the week says <b>Week locked</b>.",
-                "vi": "Nút này giữ màu xám cho tới khi mọi cờ đã được điều chỉnh hoặc duyệt nguyên trạng, và chỉ quản lý chấm công hoặc quản lý lương mới bấm được. Sau đó tuần ghi <b>Tuần bị khóa</b>."
+              "affects": {
+                "en": "Check-ins, corrections and overtime for those days become read-only, and payroll reads the week from now on.",
+                "vi": "Giờ chấm công, các điều chỉnh và tăng ca của những ngày đó chuyển sang chỉ xem, và bảng lương đọc tuần này từ đây."
               },
+              "anchor": "wf-close-lock",
+              "body": "",
               "consequence": {
                 "en": "Affects everyone's time this week — payroll reads it from now on. Reversible: Reopen… asks for a reason, and the reason is kept. Verify first: no flags left, and the handoff numbers make sense.",
                 "vi": "Ảnh hưởng: giờ công của mọi người trong tuần — bảng lương đọc nó từ đây. Hoàn tác: Mở lại… sẽ hỏi lý do, và lý do được lưu lại. Kiểm tra trước: không còn cờ nào, và các con số chuyển giao hợp lý."
@@ -36769,10 +37064,22 @@
                 "vi": "Thao tác chính"
               },
               "lines": [],
+              "look": {
+                "en": "The Lock week & send to payroll button. It stays grey until every flag is answered.",
+                "vi": "Nút Khóa tuần và gửi vào bảng lương. Nút giữ màu xám cho tới khi mọi cờ được trả lời."
+              },
+              "means": {
+                "en": "Only an attendance or payroll manager can press it. Afterwards the board says Week locked.",
+                "vi": "Chỉ quản lý chấm công hoặc quản lý lương mới bấm được. Sau đó bảng ghi Tuần bị khóa."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Lock week & send to payroll, once no flags are left and the handoff makes sense.",
+                "vi": "Khóa tuần và gửi vào bảng lương, khi không còn cờ nào và các con số chuyển giao hợp lý."
+              },
               "screen": "wfclose",
               "tip": "",
               "title": {
@@ -36836,5 +37143,5 @@
       }
     }
   ],
-  "version": "54530e0e4e1c"
+  "version": "6080f2011376"
 }
