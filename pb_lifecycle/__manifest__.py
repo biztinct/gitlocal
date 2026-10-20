@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.4.4',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -96,7 +96,6 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/js/lifecycle_hub.js',
             'pb_lifecycle/static/src/js/lifecycle_palette.js',
             'pb_lifecycle/static/src/xml/journeys.xml',
-            'pb_lifecycle/static/src/xml/lifecycle_hub.xml',
         ],
         # A LEAN frontend bundle for the two login-less pages: the kit's tokens
         # and this module's page block. No backend asset is leaked into them.

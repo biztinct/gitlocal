@@ -35,6 +35,7 @@
           <!-- ===================== header ===================== -->
           <div class="lcj-head">
             <div class="lcj-head-id" t-if="!props.embedded">
+              <HubBackChip t-if="back" back="back" tone="'light'"/>
               <h1 class="pbim-h1">Journeys</h1>
               <p class="pbim-sub">Everything that has to happen around a person —
                  joining, leaving, probation — with a date on it and a name

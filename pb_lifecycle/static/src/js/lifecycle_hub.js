@@ -1,51 +1,34 @@
 /** @odoo-module **/
 /**
- * `pb_lifecycle_hub` — the Lifecycle mission, on the shared HubShell.
+ * `pb_lifecycle_hub` — RETIRED by NAV P2 (2026-10-21), kept as a redirector.
  *
- * One lens today:
+ * The Lifecycle hub held Journeys plus six boards bolted on by other modules.
+ * The owner's revised menu (design review §12.4) moved every one of them to
+ * the place a person looks for it:
  *
- *     journeys
+ *     hiring                               → Hiring › Overview (or Talent pool)
+ *     newjoiners · probation · exits ·
+ *     contracts                            → People › the same tab
+ *     pip                                  → Talent › Growth
+ *     journeys (or nothing)                → Journeys on its own (Settings › HR)
  *
- * and a REGISTRY where P5 (Probation), P6 (PIP) and P10 (Contract lifecycle)
- * bolt theirs on. A registry rather than an import, and the direction of the
- * dependency is the whole reason: those modules will depend on this hub because
- * they are mounted inside it, so this hub cannot import them back without a
- * cycle no manifest can express. The mechanism is `pb_people_hub`'s, copied
- * verbatim — absent module, absent lens, no error.
+ * The left-menu entry is switched off (data + migration), but the CLIENT
+ * ACTION stays registered, because bookmarks, old links, lesson places and
+ * other modules' doors still say `pb_lifecycle_hub`. Zero dead ends (R10):
+ * this tag is now a FUNCTION client action — the action service calls it and
+ * it opens the new place with the same tab, carrying `pb_back` and `pb_focus`
+ * along. Nothing is drawn, so nothing flashes.
  *
- *     import { LIFECYCLE_LENSES } from "@pb_lifecycle/js/lifecycle_hub";
- *     registry.category(LIFECYCLE_LENSES).add("probation", {
- *         key, icon, label, Component, groups,
- *         propsFromContext(ctx) { return { ... }; },   // optional
- *     }, { sequence: 20 });
+ * The new places are named by XMLID string, never imported: this module must
+ * not depend on the hubs that took its boards (they depend on it, for
+ * LIFECYCLE_GATE). A target that is not installed falls back to Journeys.
  *
- * `propsFromContext` exists because <HubShell/> hands a lens only
- * `{embedded, ...def.props}` and never the action — so a lens that needs the
- * deep link reads the arrival context ONCE here, at config time, which is also
- * what keeps the lens props identity-stable across renders (W21).
- *
- * ---------------------------------------------------------------------------
- * THE GATE (W95: derived from the model behind the door, never copied from the
- * rail item that opens it)
- *
- *   journeys   `pb.journeys._can_read()` — the three lifecycle tiers. Restated
- *              here as `LIFECYCLE_GATE` because the Python/JS boundary cannot
- *              be imported across; the facade still enforces its own (W12), and
- *              it answers an EMPTY BOARD rather than an access dialog, which is
- *              why the RAIL item beside it is deliberately ungated.
- * ---------------------------------------------------------------------------
- *
- * `config` is built ONCE per instance, never in a getter (W21).
+ * `LIFECYCLE_GATE` and `LIFECYCLE_LENSES` stay exported: other modules still
+ * gate on the lifecycle tiers, and an add-on written before NAV P2 that still
+ * registers into the old registry must keep loading without an error.
  */
-import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
-import { _t } from "@web/core/l10n/translation";
-import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
-import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
-
-import { PbJourneys } from "@pb_lifecycle/js/journeys";
 
 /** `pb.journeys._can_read()`'s tiers, verbatim. */
 export const LIFECYCLE_GATE = [
@@ -55,61 +38,73 @@ export const LIFECYCLE_GATE = [
     "base.group_system",
 ];
 
-/** Where a later phase bolts a lens onto this hub. */
+/** The pre-NAV-P2 lens registry. Nothing is read from it any more. */
 export const LIFECYCLE_LENSES = "pb_lifecycle_lenses";
 
-export class PbLifecycleHub extends Component {
-    static template = "pb_lifecycle.PbLifecycleHub";
-    static components = { HubShell };
-    static props = { action: { type: Object, optional: true }, "*": true };
+/** Journeys on its own — where an old link with no tab, or `journeys`, lands. */
+export const JOURNEYS_XMLID = "pb_lifecycle.action_pb_journeys";
 
-    setup() {
-        this.actionService = useService("action");
+/**
+ * Old lens key → `{ xmlid, lens }` of its new home.
+ *
+ * Exported so the redirector's mapping can be read (and tested) without
+ * driving the web client.
+ */
+export const LIFECYCLE_REDIRECTS = {
+    hiring: { xmlid: "pb_hiring.action_pb_hiring_hub", lens: "overview" },
+    newjoiners: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "newjoiners" },
+    probation: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "probation" },
+    exits: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "exits" },
+    contracts: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "contracts" },
+    pip: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "pip" },
+    journeys: { xmlid: JOURNEYS_XMLID, lens: "" },
+};
 
-        this.config = {
-            key: "lifecycle",                 // -> pbhub.lifecycle.lens.v1
-            brand: { label: _t("Lifecycle"), icon: "refresh" },
-            // FLEET P4. Journeys are sold on their own.
-            feature: "lifecycle",
-            defaultLens: "journeys",
-            cog: () => this.openSettings(),
-            lenses: [
-                { key: "journeys", icon: "list", label: _t("Journeys"),
-                  Component: PbJourneys, groups: LIFECYCLE_GATE },
-                // Bolted-on lenses sit after the board every one of them is a
-                // detail of.
-                ...this.extraLenses(),
-            ],
-        };
+/**
+ * Where an arrival context sends the reader.
+ *
+ * @param {object} ctx  the old action's context (`pb_lens`, `pb_focus`, …)
+ * @returns {{xmlid: string, lens: string}}
+ */
+export function lifecycleTarget(ctx = {}) {
+    const asked = ctx.pb_lens || "";
+    const hit = LIFECYCLE_REDIRECTS[asked];
+    if (!hit) {
+        return { xmlid: JOURNEYS_XMLID, lens: "" };
     }
-
-    /** Lenses other modules registered, resolved ONCE (never in a getter, W21). */
-    extraLenses() {
-        const ctx = (this.props.action && this.props.action.context) || {};
-        return registry.category(LIFECYCLE_LENSES).getAll().map((def) => {
-            const props = typeof def.propsFromContext === "function"
-                ? def.propsFromContext(ctx) : (def.props || {});
-            return { ...def, props };
-        });
+    // RECRUIT P4's ⌘K row used to arrive on Hiring with `pb_focus: "bank"`;
+    // the resume bank is its own rail item now.
+    if (asked === "hiring" && ctx.pb_focus === "bank") {
+        return { xmlid: hit.xmlid, lens: "bank" };
     }
+    return hit;
+}
 
-    /** The cog. A CLICK handler — the shell calls it, nothing else does. */
-    openSettings() {
-        openHub(this.actionService, {
-            // By XMLID: a bare tag reaches the shell with no action NAME, and
-            // anything returning through a breadcrumb reads "Unnamed" (W98).
-            xmlid: "pb_settings.action_pb_settings_hub",
-            back: { label: _t("Lifecycle"),
-                    xmlid: "pb_lifecycle.action_pb_lifecycle_hub" },
+/**
+ * The redirector. A FUNCTION client action (Odoo 19 `_executeClientAction`
+ * awaits it and draws nothing). Never throws past the action service: if the
+ * new home is not installed on this database, Journeys opens instead.
+ */
+async function lifecycleRedirect(env, action) {
+    const ctx = (action && action.context) || {};
+    const target = lifecycleTarget(ctx);
+    const passOn = {};
+    for (const key of ["pb_role_id", "pb_back"]) {
+        if (ctx[key]) { passOn[key] = ctx[key]; }
+    }
+    const focus = ctx.pb_focus && ctx.pb_focus !== "bank" ? ctx.pb_focus : undefined;
+    const actionService = env.services.action;
+    try {
+        await openHub(actionService, {
+            xmlid: target.xmlid, lens: target.lens || undefined, focus,
+            context: passOn,
         });
+    } catch (e) {
+        if (target.xmlid === JOURNEYS_XMLID) { throw e; }
+        console.warn("pb_lifecycle: the new home of this tab is not installed; "
+                     + "opening Journeys", target.xmlid, e);
+        await openHub(actionService, { xmlid: JOURNEYS_XMLID, context: passOn });
     }
 }
 
-registry.category("actions").add("pb_lifecycle_hub", PbLifecycleHub);
-
-// LEARN REFRESH step 4 — the tabs' gates, as the config above declares them,
-// so a lesson can say "not in your company" before anybody opens the hub.
-registry.category(HUB_LENS_GATES).add("pb_lifecycle_hub", () => [
-    { key: "journeys", groups: LIFECYCLE_GATE },
-    ...registry.category(LIFECYCLE_LENSES).getAll(),
-].map((l) => ({ ...l, hubFeature: "lifecycle" })));
+registry.category("actions").add("pb_lifecycle_hub", lifecycleRedirect);

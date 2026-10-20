@@ -41,16 +41,25 @@
 
          `(4, ref(…))` never `(6, 0, …)` — an ADD, so a joined group survives the
          next upgrade of this module. -->
+    <!-- NAV P2 (2026-10-21): OFF THE MENU. The owner's revised menu moved
+         every board this entry held — Hiring to its own entry, New joiners,
+         Probation, Exits and Contracts to People, Growth plans to Talent — and
+         Journeys to Settings › HR. The record is KEPT, inactive, so the Access
+         home lists it as "off the menu" and an administrator can bring it back;
+         the hub's tag is now a redirector (lifecycle_hub.js). Its claims are
+         emptied so a retired entry claims nothing. The migration of 19.0.1.5.0
+         switches it off on databases that already have it. -->
     <record id="item_lifecycle" model="pb.sidebar.item">
+        <field name="active" eval="False"/>
         <field name="section_id" ref="pb_sidebar.sec_payrun"/>
         <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
         <field name="name">Lifecycle</field>
         <field name="icon">refresh-cw</field>
-        <field name="sequence">25</field>
+        <field name="sequence">982</field>
         <field name="action_xmlid">pb_lifecycle.action_pb_lifecycle_hub</field>
         <field name="action_tag">pb_lifecycle_hub</field>
-        <field name="match_action_tags">pb_lifecycle_hub,pb_journeys</field>
-        <field name="match_models">pb.journey.case,pb.journey.task,pb.journey.template,pb.letter.template,pb.hr.letter,pb.employee.checkin,pb.feedback.request</field>
+        <field name="match_action_tags">pb_lifecycle_hub</field>
+        <field name="match_models" eval="False"/>
     </record>
 
 </odoo>

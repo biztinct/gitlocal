@@ -23,6 +23,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 
 const STATE_CLS = {
     done: "ok", pending: "info", in_progress: "warn", blocked: "err",
@@ -46,9 +47,13 @@ const TYPE_IC = {
 
 export class PbJourneys extends Component {
     static template = "pb_lifecycle.PbJourneys";
+    static components = { HubBackChip };
     static props = ["*"];
 
     setup() {
+        // NAV P2: Journeys opens on its own (from Settings › HR, or an old
+        // Lifecycle link), so it draws the return door it was handed.
+        this.back = this.props.embedded ? null : hubBack(this.props);
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
