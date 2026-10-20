@@ -14,6 +14,7 @@ from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_payai_actions.payai import catalogue, gate, i18n, resolve, runner
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
 
 GONE = ("I cannot see your list of screens yet", "Close and reopen this panel",
         "Hãy đóng rồi mở lại khung này")
@@ -31,7 +32,7 @@ class TestLearnrevDoors(TransactionCase):
         # PayAI's conversation needs "PayAI User". The module makes every
         # internal user one, but a database can take that away (payobook has),
         # so the fixture says it rather than inheriting it.
-        payai = g('pb_payroll_ai_insights.group_payai_user').id
+        payai = payai_group_ids(cls.env)[0]
         company = cls.env.company
         cls.officer = Users.create({
             'name': 'Learnrev Officer', 'login': 'learnrev.officer@test.invalid',

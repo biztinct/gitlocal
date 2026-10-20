@@ -22,6 +22,7 @@ from odoo.tests.common import TransactionCase, tagged
 from odoo.addons.pb_payroll_ai_insights.ai_providers.openai_provider import OpenAIProvider
 from odoo.addons.pb_payroll_ai_insights.models import payroll_ai_conversation as conv_mod
 from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_consent import VOICE_FLAG
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
 
 AUDIO = 'dm9pY2UtYnl0ZXM='          # base64 of b"voice-bytes"
 DECISION_WORDS = ('approve', 'send back', 'turn down', 'reject', 'go ahead', 'confirm',
@@ -45,7 +46,8 @@ class TestOneChatVoice(TransactionCase):
         super().setUpClass()
         cls.user = cls.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'OC3 Voice', 'login': 'oc3.voice@test.invalid',
-            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id])]})
+            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id]
+                          + payai_group_ids(cls.env))]})
 
     def setUp(self):
         super().setUp()

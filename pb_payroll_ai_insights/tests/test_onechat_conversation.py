@@ -20,6 +20,8 @@ from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.pb_payroll_ai_insights.models import payroll_ai_conversation as conv_mod
 from odoo.addons.pb_payroll_ai_insights.models.payroll_ai_engine import PayrollAIEngine
+from odoo.addons.pb_payroll_ai_insights.tests.common import (
+    PAYAI_USER, drop_staff_payai, payai_group_ids)
 
 
 class _Provider:
@@ -51,13 +53,13 @@ class TestOneChatConversation(TransactionCase):
         super().setUpClass()
         Users = cls.env['res.users'].with_context(no_reset_password=True)
         base = cls.env.ref('base.group_user').id
+        # PayAI is a role (owner 2026-10-20): the fixture gives it.
         cls.anna = Users.create({
             'name': 'OneChat Anna', 'login': 'onechat.anna@test.invalid',
-            'group_ids': [(6, 0, [base])]})
+            'group_ids': [(6, 0, [base] + payai_group_ids(cls.env))]})
         cls.boss = Users.create({
             'name': 'OneChat Boss', 'login': 'onechat.boss@test.invalid',
-            'group_ids': [(6, 0, [base, cls.env.ref(
-                'pb_payroll_ai_insights.group_payai_manager').id])]})
+            'group_ids': [(6, 0, [base] + payai_group_ids(cls.env, manager=True))]})
 
     def _conv(self, user, **ctx):
         return self.env['payroll.ai.conversation'].with_user(user).with_context(**ctx)
@@ -165,6 +167,25 @@ class TestOneChatConversation(TransactionCase):
         self.assertTrue(status['session_id'])
         self.assertIn('voice', status)
         self.assertIn('can_act', status)
+
+    def test_1_17b_without_payai_nothing_answers(self):
+        """Owner 2026-10-20: PayAI is a role. Somebody who does not hold it
+        opens no conversation and the helper says the assistant cannot answer
+        — even with a working provider. Anna, who holds it, still can."""
+        drop_staff_payai(self.env)
+        outsider = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'OneChat No PayAI', 'login': 'onechat.nopayai@test.invalid',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.assertFalse(outsider.has_group(PAYAI_USER))
+        self.assertTrue(self.anna.has_group(PAYAI_USER))
+        with self.assertRaises(AccessError):
+            self._session(outsider)
+        Config = type(self.env['payroll.ai.config'])
+        Helper = self.env['learn.helper']
+        with patch.object(Config, 'get_active_config',
+                          lambda self_, *a, **k: _Config(_Provider(True))):
+            self.assertFalse(Helper.with_user(outsider)._payai_available())
+            self.assertTrue(Helper.with_user(self.anna)._payai_available())
 
     # ----------------------------------------------------------- 1.18
     def test_1_18_the_catch_all_shows_no_exception_text(self):

@@ -25,6 +25,7 @@ from odoo.addons.pb_payai_actions.payai import resolve
 from odoo.addons.pb_payai_actions.payai.actions_green import money
 from odoo.addons.pb_payai_actions.payai.registry import ACTIONS
 from odoo.addons.pb_payai_actions.payai.runner import Ctx
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
 
 DOORS = [
     {'id': 'payhub', 'label': 'Pay Run', 'sublabel': 'Payroll operations', 'group': '',
@@ -68,11 +69,15 @@ class TestPayaiP2(TransactionCase):
         pay_user = g('om_hr_payroll.group_hr_payroll_user').id
         pay_mgr = g('om_hr_payroll.group_hr_payroll_manager').id
 
+        # Every fixture user talks to PayAI, so each holds it (a role since
+        # 2026-10-20 — not inherited from being an internal user).
+        payai = payai_group_ids(cls.env)
+
         def user(name, groups):
             return Users.create({
                 'name': name, 'login': '%s@p2.test.invalid' % name.lower().replace(' ', '.'),
                 'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])],
-                'group_ids': [(6, 0, [base] + groups)]})
+                'group_ids': [(6, 0, [base] + payai + groups)]})
         cls.officer = user('P2 Officer', [officer, pay_user])
         cls.manager = user('P2 Manager', [pay_mgr, pay_user])
         cls.hr_user = user('P2 Records', [g('hr.group_hr_user').id, officer, pay_user])
@@ -591,7 +596,8 @@ class TestPayaiP2(TransactionCase):
         approver = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'P2 HR Lead', 'login': 'p2.hrlead@test.invalid',
             'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
-                                  self.env.ref('hr.group_hr_user').id])]})
+                                  self.env.ref('hr.group_hr_user').id]
+                          + payai_group_ids(self.env))]})
         role = self.env['biz.approval.role'].sudo().search([('key', '=', 'hr_lead')], limit=1)
         if not role:
             self.skipTest('No HR lead role here.')
@@ -790,7 +796,8 @@ class TestPayaiP2(TransactionCase):
         plain = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'P2 Plain', 'login': 'p2.plain@p2.test.invalid',
             'company_id': self.company.id, 'company_ids': [(6, 0, [self.company.id])],
-            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id]
+                          + payai_group_ids(self.env))]})
 
         def on(self_, user):
             out = real(self_, user)

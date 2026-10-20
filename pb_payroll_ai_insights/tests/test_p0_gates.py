@@ -7,6 +7,8 @@
 """
 from odoo.tests.common import TransactionCase, tagged
 
+from odoo.addons.pb_payroll_ai_insights.tests.common import payai_group_ids
+
 
 class _FakeMessages:
     def __init__(self, sink):
@@ -36,14 +38,17 @@ class TestP0Gates(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         Users = cls.env['res.users'].with_context(no_reset_password=True)
+        # Both hold PayAI (a role since 2026-10-20): what differs between them
+        # is the payslip right the pulse test is about.
+        payai = payai_group_ids(cls.env)
         cls.plain = Users.create({
             'name': 'P0 plain user', 'login': 'p0.plain@test.invalid',
-            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id])]})
+            'group_ids': [(6, 0, [cls.env.ref('base.group_user').id] + payai)]})
         cls.manager = Users.create({
             'name': 'P0 payroll manager', 'login': 'p0.manager@test.invalid',
             'group_ids': [(6, 0, [
                 cls.env.ref('base.group_user').id,
-                cls.env.ref('om_hr_payroll.group_hr_payroll_manager').id])]})
+                cls.env.ref('om_hr_payroll.group_hr_payroll_manager').id] + payai)]})
 
     # ------------------------------------------------------------ 1. pulse
     def test_pulse_alerts_follow_the_readers_payslip_right(self):
