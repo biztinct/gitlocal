@@ -23358,11 +23358,11 @@
           "offers": {
             "line": {
               "en": "Every offer, its papers, its check and its joining date.",
-              "vi": "Mọi đề nghị, giấy tờ, kiểm tra lý lịch và ngày vào làm của nó."
+              "vi": "Mọi lời mời, giấy tờ, kiểm tra lý lịch và ngày vào làm của nó."
             },
             "name": {
               "en": "Offers",
-              "vi": "Đề nghị"
+              "vi": "Lời mời"
             }
           },
           "overview": {
@@ -26863,7 +26863,7 @@
         },
         "what": {
           "en": "Hiring › Overview. Quiet numbers on top, a four-step strip, and a card per role with its request chip and what is next. Hiring › Applicants puts everyone who applied, for every role, on one board. Hiring › Offers lists every offer with its papers, its check and its joining date.",
-          "vi": "Tuyển dụng › Tổng quan. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo. Tuyển dụng › Ứng viên đặt mọi người đã ứng tuyển, của mọi vị trí, trên một bảng. Tuyển dụng › Đề nghị liệt kê mọi đề nghị kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
+          "vi": "Tuyển dụng › Tổng quan. Các con số nhỏ ở trên, một dải bốn bước, và mỗi vị trí một thẻ có nhãn đề xuất và việc tiếp theo. Tuyển dụng › Ứng viên đặt mọi người đã ứng tuyển, của mọi vị trí, trên một bảng. Tuyển dụng › Lời mời liệt kê mọi lời mời kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
         },
         "when": {
           "en": "As soon as a team needs someone new, or someone is leaving and must be replaced.",
@@ -40555,5 +40555,5 @@
       }
     }
   ],
-  "version": "77221ff20fcd"
+  "version": "eea2d91ac261"
 }

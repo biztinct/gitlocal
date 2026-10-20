@@ -208,7 +208,7 @@ palette.add("hiring_offers", {
     groups: HIRING_BOARD_GATE,
     requires: "pb_hiring_hub",
     action: { xmlid: HUB_XMLID, lens: "offers" },
-    keywords: ["offer letters", "joining", "đề nghị", "nhận việc"],
+    keywords: ["offer letters", "joining", "lời mời", "nhận việc"],
 }, { sequence: 3502 });
 
 palette.add("hiring_requests", {

@@ -23,12 +23,12 @@ pb_hiring 19.0.2.9.0 → **19.0.2.10.0**, pb_learn 19.0.20.5.12 → **19.0.20.5.
 | `pb_hiring/static/src/js/hiring_registers_p9.js` (new) | Patch of `PbHiringBoard`: the two home tabs, their loading, filters persisted in `pbhr.applicants.v1` / `pbhr.offers.v1`, board / list (sortable), selection only on cards whose role the reader moves, the move menu listing only stages every chosen person's role uses (with a sentence when roles differ), the offer row menu, the Joiners hand-over (`openHub` → People › Joiners, back chip to Hiring › Offers). While a register shows, `reloadRole`, `refresh`, `p6Refresh`, `cards`, `canMove`, `stageByKey`, `flatOrder`, `closedCards`, `nextKeyFor`, `moveTargets`, `offer`, `onKey` answer from the register, so the drawer and every joining dialog work unchanged. |
 | `pb_hiring/static/src/js/hiring_board.js` | Overview strip: Offers waiting on you · Joining soon · Joined this month open Offers pre-filtered; Offers out, Candidates, Referrals this month removed (10 figures). `kcMove(cd)` (the card asks per card). |
 | `pb_hiring/static/src/js/hiring_hub.js` | Lenses applicants (`columns`, "Applicants", tooltip "Applications across jobs") and offers (`send`, "Offers", tooltip "Offers and joining checks") between Overview and Interviews; `HUB_LENS_GATES` updated. |
-| `pb_hiring/static/src/js/hiring_palette.js` | ⌘K rows Applicants (keywords applications, candidates, pipeline, ứng viên) and Offers (offer letters, joining, đề nghị, nhận việc), seq 3501/3502. |
+| `pb_hiring/static/src/js/hiring_palette.js` | ⌘K rows Applicants (keywords applications, candidates, pipeline, ứng viên) and Offers (offer letters, joining, lời mời, nhận việc), seq 3501/3502. |
 | `pb_hiring/static/src/xml/hiring_p9.xml` (new) | The two templates. Anchors `hi-applicants`, `hi-applicants-board`, `hi-offers`, `hi-offers-steps`, `hi-offer-row`. |
 | `pb_hiring/static/src/xml/hiring_board.xml` | Inner tabs Applicants / Offers; the role strip and four steps hide on the two register tabs (each has its own hero). |
 | `pb_hiring/static/src/xml/hiring_board_p1.xml` | Card: per-card move, role line on Applicants. Move menu: mixed-roles sentence. **Bug fix:** the drawer's Advance / Not this time called `candCard()` unbound and threw on every role page (live since RECRUIT P1). |
 | `pb_hiring/static/src/scss/hiring_p9.scss` (new) | Hero, view switch, role line, tables, pills, fixed-position row menu, phone rules; tokens only, dark via P1's palette. |
-| `pb_hiring/i18n/vi_VN.po` | 90 new entries (`#. module:` / `#. odoo-javascript` or `#. odoo-python` / `#: code:…:0`), 8 existing python entries gained the JS flag, `Offers` msgstr "Lời mời" → **"Đề nghị"** (see §5). |
+| `pb_hiring/i18n/vi_VN.po` | 90 new entries (`#. module:` / `#. odoo-javascript` or `#. odoo-python` / `#: code:…:0`), 8 existing python entries gained the JS flag. Offers in Vietnamese is the module's existing **"Lời mời"** throughout (shared entry untouched; see §5). |
 | `pb_hiring/tests/test_registers_p9.py` (new) | Tests 1–7 of the spec plus the rail-order check. |
 | `pb_learn` + `docs/tutorial_poc` | See §4. |
 
@@ -63,15 +63,15 @@ route opened a seat for a hiring user; the wiring is also proven by patching `_c
 | 8 | Joining soon / tiles | **Pass.** Overview "Joining soon 2" → Offers with "Joining in 30 days" on, soonest first; "Joined this month" → the joined row. |
 | 9 | Handed to People › Joiners | **Pass.** Lands on People › JOINERS with a "Hiring" back chip; the chip returns to Hiring › OFFERS. (The Joiners board does not read `pb_focus` yet, so the person is not highlighted.) |
 | 10 | Empty states | **Pass.** "No offer matches these filters" / "Nobody matches these filters", each with Clear. |
-| 11 | ⌘K | **Pass.** "pipeline" → Applicants; "đề nghị" → Offers. |
-| 12 | Vietnamese | **Pass.** Rail TỔNG QUAN · ỨNG VIÊN · ĐỀ NGHỊ · PHỎNG VẤN · KHO ỨNG VIÊN, every label measured as fitting its box; tooltips "Hồ sơ ứng tuyển theo mọi vị trí", "Đề nghị và kiểm tra trước ngày vào"; strip and both registers in Vietnamese (state pills, papers, check). Two words fixed during the walk: the check said "Xoá" (Clear) → "All clear" / "Không có vấn đề"; the state pills were English → translated. |
+| 11 | ⌘K | **Pass.** "pipeline" → Applicants; "đề nghị" → Offers (walked before the keyword became "lời mời", see §9). |
+| 12 | Vietnamese | **Pass.** Rail TỔNG QUAN · ỨNG VIÊN · ĐỀ NGHỊ · PHỎNG VẤN · KHO ỨNG VIÊN at walk time (now LỜI MỜI, §9), every label measured as fitting its box; tooltips "Hồ sơ ứng tuyển theo mọi vị trí", "Đề nghị và kiểm tra trước ngày vào" (now "Lời mời và kiểm tra trước ngày vào"); strip and both registers in Vietnamese (state pills, papers, check). Two words fixed during the walk: the check said "Xoá" (Clear) → "All clear" / "Không có vấn đề"; the state pills were English → translated. |
 | 13 | Console | **Pass** on the final code (two errors met and fixed during the walk: `String()` in a template, the unbound `candCard()`). |
 | — | Not walked | A non-team reader in the browser (covered by tests 2 and 5); phone width; the Access › Screens lens (no sidebar change; check after deploy as the spec says). Screenshots: Applicants board, Offers register (paths in the hand-back message). |
 
 ## 4. Learn (R7)
 
 - `data.js` `hub_hiring.tabs`: applicants "Applicants / Ứng viên" and offers "Offers / Đề nghị" between overview and
-  interviews, one line each EN + VI. Station `hiring` outline `what` gains one sentence per tab (EN + VI).
+  interviews, one line each EN + VI (Offers = "Lời mời"). Station `hiring` outline `what` gains one sentence per tab (EN + VI).
 - `practice-data.js`: MENU Hiring lenses add applicants and offers (quiet tabs, no replica); the practice Overview
   strip follows the product (Candidates and Offers out out; Offers waiting on you 0, Joining soon 1, Joined this month 0).
 - `anchors.json`: five product anchors, `reserved: true`, file `pb_hiring/static/src/xml/hiring_p9.xml`;
@@ -83,9 +83,9 @@ route opened a seat for a hiring user; the wiring is also proven by patching `_c
 
 ## 5. Deviations (spec vs code) and decisions
 
-1. **"Waiting on you" on Applicants** means what the role board already calls "waiting on you": a first look or an
-   interview outcome owed on that person. The spec's reading (the role's request waits on my sign-off) would put two
-   meanings under the same words on two tabs; the request sign-off stays on the Overview figure.
+1. **"Waiting on you" on Applicants** keeps the role board's existing meaning: a first look or an interview outcome
+   owed on that person. **Decided 2026-10-21** (coordinator); the spec's sentence now says the same. The request
+   sign-off stays on the Overview figure.
 2. **Offer steps:** five steps, every offer at exactly one (quiet-board rule). Drafts sit in **In approval** ("Being
    prepared or signed off"). **Joining soon** is a flag on step 03, a chip and an Overview figure, not a sixth step —
    it is a subset of Accepted and signing.
@@ -93,8 +93,9 @@ route opened a seat for a hiring user; the wiring is also proven by patching `_c
    every filter (used by the tests). Steps and counts are over all 200.
 4. **Overview strip:** to stay at ten figures, Candidates and Referrals this month (count-only, no door) left as well as
    Offers out.
-5. **Vietnamese "Offers":** pb_hiring already said "Lời mời" for `Offers`. The spec's rail word "Đề nghị" needed the
-   shared entry changed, so the Hiring numbers column header (Insights) now also reads "Đề nghị". One word, same meaning.
+5. **Vietnamese "Offers" = "Lời mời"** — the module's existing word, **decided 2026-10-21** (coordinator): rail LỜI MỜI,
+   full name "Lời mời và kiểm tra trước ngày vào", every P3a string that names an offer says "lời mời". The shared
+   `Offers` entry is untouched, so Hiring numbers (Insights) is unchanged. The first build had used "Đề nghị".
 6. Spec named the list decoration and `f_joined`; the same `closed` test also hid two header buttons and the **Day
    one** page on the offer form — fixed with them.
 7. **Live bug fixed:** the candidate drawer's Advance / Not this time (unbound `candCard()`), on every role page.
@@ -124,6 +125,15 @@ because other sessions' uncommitted model changes break any server on the shared
 5. Keyboard: Esc closes menu / drawer / selection, arrows step through people in the drawer, Enter opens a list row;
    weakest point — the inner tab bar and the rail can disagree (ledger), and the offer table scrolls sideways below
    ~1,500 px.
+
+## 9. After review (2026-10-21)
+
+Coordinator decisions applied in one follow-up commit: Offers = "Lời mời" everywhere (16 P3a msgstrs, ⌘K keyword,
+Learn hub tab, station sentence, practice menu and strip; the shared `Offers` entry restored byte-for-byte), and the
+spec's "waiting on you" sentence aligned with the board. Learn regenerated (`--check` 0, contract 73 ✓, JS
+111/117/113, pb_learn vi_VN.po unchanged); pb_hiring vi_VN.po parses (3,221 rows). Not re-walked in the browser:
+the change is translation text only, checked through the parser (`Offers` → Lời mời, `Offers and joining checks` →
+Lời mời và kiểm tra trước ngày vào). "LỜI MỜI" is shorter than "KHO ỨNG VIÊN", which fits.
 
 ## 8. Commits (local, not pushed)
 

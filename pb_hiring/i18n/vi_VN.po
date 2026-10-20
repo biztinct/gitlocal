@@ -6080,14 +6080,11 @@ msgstr "Đã phỏng vấn"
 #. module: pb_hiring
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
-#: code:addons/pb_hiring/static/src/js/hiring_palette.js:0
-#: code:addons/pb_hiring/static/src/xml/hiring_board.xml:0
 #: code:addons/pb_hiring/static/src/xml/hiring_numbers.xml:0
 #: code:addons/pb_hiring/models/analytics_p7.py:0
 #: code:addons/pb_hiring/models/requisition_a3.py:0
 msgid "Offers"
-msgstr "Đề nghị"
+msgstr "Lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19489,7 +19486,7 @@ msgstr "%(in)s trên %(total)s · %(late)s trễ"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "%(n)s of %(all)s offers"
-msgstr "%(n)s trên %(all)s đề nghị"
+msgstr "%(n)s trên %(all)s lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19531,7 +19528,7 @@ msgstr "%s người trong số này thuộc vị trí bạn không phụ trách 
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "%s offers"
-msgstr "%s đề nghị"
+msgstr "%s lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19561,7 +19558,7 @@ msgstr "1 điểm cần lưu ý"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "1 offer"
-msgstr "1 đề nghị"
+msgstr "1 lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19647,7 +19644,7 @@ msgstr "Lý lịch có vấn đề"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "Clear them to see every offer again."
-msgstr "Bỏ bộ lọc để xem lại mọi đề nghị."
+msgstr "Bỏ bộ lọc để xem lại mọi lời mời."
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19780,13 +19777,13 @@ msgstr "Phỏng vấn tiếp theo"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "No offer matches these filters"
-msgstr "Không có đề nghị nào khớp bộ lọc"
+msgstr "Không có lời mời nào khớp bộ lọc"
 
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "No offers yet"
-msgstr "Chưa có đề nghị nào"
+msgstr "Chưa có lời mời nào"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19810,19 +19807,19 @@ msgstr "Chưa yêu cầu"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_hub.js:0
 msgid "Offers and joining checks"
-msgstr "Đề nghị và kiểm tra trước ngày vào"
+msgstr "Lời mời và kiểm tra trước ngày vào"
 
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "Offers are made from a role's Offer & joining panel, once the panel has picked somebody. Every offer then shows up here, with its papers, its check and its joining date."
-msgstr "Đề nghị được lập từ mục Lời mời và nhận việc của từng vị trí, khi hội đồng đã chọn được người. Sau đó mọi đề nghị hiện ở đây, kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
+msgstr "Lời mời được lập từ mục Lời mời và nhận việc của từng vị trí, khi hội đồng đã chọn được người. Sau đó mọi lời mời hiện ở đây, kèm giấy tờ, kiểm tra lý lịch và ngày vào làm."
 
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_board.js:0
 msgid "Offers waiting on you"
-msgstr "Đề nghị đang chờ bạn"
+msgstr "Lời mời đang chờ bạn"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19852,7 +19849,7 @@ msgstr "Mở danh sách việc khi vào làm"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "Open the offer"
-msgstr "Mở đề nghị"
+msgstr "Mở lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19888,7 +19885,7 @@ msgstr "Nhắc nộp giấy tờ"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "Search a candidate, a role, an offer…"
-msgstr "Tìm ứng viên, vị trí, đề nghị…"
+msgstr "Tìm ứng viên, vị trí, lời mời…"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19906,7 +19903,7 @@ msgstr "Tìm ứng viên"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "Search the offers"
-msgstr "Tìm đề nghị"
+msgstr "Tìm lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19918,7 +19915,7 @@ msgstr "Đã gửi, đang chờ câu trả lời"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "Showing the newest %(n)s of %(total)s offers."
-msgstr "Đang hiện %(n)s đề nghị mới nhất trên tổng số %(total)s."
+msgstr "Đang hiện %(n)s lời mời mới nhất trên tổng số %(total)s."
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19960,7 +19957,7 @@ msgstr "Bị từ chối, không đến nhận việc hoặc không được duy
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/xml/hiring_p9.xml:0
 msgid "What you can do with this offer"
-msgstr "Việc bạn có thể làm với đề nghị này"
+msgstr "Việc bạn có thể làm với lời mời này"
 
 #. module: pb_hiring
 #. odoo-javascript
@@ -19972,13 +19969,13 @@ msgstr "Bạn chưa tham gia vị trí nào"
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "all %s offers"
-msgstr "tất cả %s đề nghị"
+msgstr "tất cả %s lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript
 #: code:addons/pb_hiring/static/src/js/hiring_registers_p9.js:0
 msgid "all 1 offer"
-msgstr "tất cả 1 đề nghị"
+msgstr "tất cả 1 lời mời"
 
 #. module: pb_hiring
 #. odoo-javascript

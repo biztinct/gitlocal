@@ -1739,7 +1739,7 @@ const PRACTICE = {
       [B("Over budget", "Vượt ngân sách"), 0],
       [B("Interviews this week", "Phỏng vấn tuần này"), 4], [B("Opinions late", "Ý kiến đang trễ"), 2],
       /* NAV P3a: the offer figures open Hiring › Offers; Candidates and Offers out left the strip. */
-      [B("Offers waiting on you", "Đề nghị đang chờ bạn"), 0], [B("Joining soon", "Sắp vào làm"), 1],
+      [B("Offers waiting on you", "Lời mời đang chờ bạn"), 0], [B("Joining soon", "Sắp vào làm"), 1],
       [B("Joined this month", "Đã nhận việc tháng này"), 0],
     ],
     steps: [
@@ -2125,7 +2125,7 @@ const MENU = [
     lenses: [
       { key: "overview", label: B("Overview", "Tổng quan"), screen: "hiring", also: ["hiringrole"] },
       { key: "applicants", label: B("Applicants", "Ứng viên") },
-      { key: "offers", label: B("Offers", "Đề nghị") },
+      { key: "offers", label: B("Offers", "Lời mời") },
       { key: "interviews", label: B("Interviews", "Phỏng vấn") },
       { key: "bank", label: B("Talent pool", "Kho ứng viên") },
     ],
