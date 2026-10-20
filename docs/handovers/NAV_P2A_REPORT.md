@@ -119,3 +119,42 @@ bundle — seen locally). Agent B regenerates Learn for the two screen-guide str
 9f9ebeece payroll rename + aliases · 9527d39f9 Hiring hub · 7b26c106f People regroup · f2c5d9aba Lifecycle redirector ·
 cd8b544b2 Talent hub · 9b965cf78 Expenses hub · 2c1b3a2ba Home Ask HR + Announce · 3f93e8606 Settings groups ·
 b6790559c tests + ledger · (this report).
+
+## 8. Deploy record (A13, risky tier, 2026-10-20 21:16–21:26 UTC, Payobook19v2)
+
+Other sessions holding; nothing else running on the box. **Service down ~6 minutes** (stop 21:19, start 21:24:54).
+
+| Step | Result |
+|---|---|
+| Pre-flight | `origin/19.1..HEAD` = my 10 commits + Agent B's 082b632a0 and 4e02d6cdd; tree clean; nothing rebased. |
+| Backups | `/odoo/backups/nav-p2-20261020/`: p0clone 25.1 MB, payobook 77.7 MB, payobook_template 25.0 MB, rize 31.7 MB (`pg_dump -Fc`, written by root; every archive lists with `pg_restore -l`). |
+| Stage | Clean `/tmp/deployNAVP2`, 33 modules (30 in `-u` + pb_import + the 2 new). |
+| pb_learn check | Dry run against live lists only `__manifest__.py`, `i18n/vi_VN.po`, `learn_content.json`, `anchors.json`, `fixture.js`, `screens.js`, `learn_hub.js`, `journey.scss`, `library.js`, and 5 tests. No deletions. `grep -c "gõ DUYỆT"` = 1. |
+| Overwrite check | For every other module, the files the copy would change are exactly files changed in our commits, plus our new folders and the intended deletion of `pb_lifecycle/static/src/xml/lifecycle_hub.xml`. |
+| PO gate (on the box, Odoo `PoFileReader`) | 35 staged `.po`/`.pot` files, **0 failures**, 7,430 code rows reach a screen. |
+| Copy + hashes | Per-module scoped `rsync -a --delete`. **33/33 module trees byte-identical** local vs server (sha1 of the sorted per-file list, skipping `__pycache__`, `*.pyc`, `.DS_Store`). New modules owned like the rest (ubuntu). |
+| Crons before | payobook 37, rize 69, p0clone 26, payobook_template 0. |
+| Stop | `service odoo-server stop`; 0 `odoo-bin` processes. |
+| p0clone | `-i pb_expenses_hub,pb_talent_hub -u <30>`, detached (`systemd-run`). 257 modules in 43 s, 0 Traceback/CRITICAL, no ERROR lines; all five NAV P2 migrations logged. The EXIT line was lost (root may not append to the odoo-owned log in /tmp, `fs.protected_regular`); confirmed instead by all 32 modules installed at the manifest versions. Script fixed to write `/tmp/navp2_<db>.exit`. |
+| payobook | EXIT=0, 262 modules in 56 s, 0 Traceback/CRITICAL, 0 ERROR. |
+| payobook_template | EXIT=0, 257 modules in 44 s, clean. |
+| rize | EXIT=0, 260 modules in 46 s, clean. |
+| Crons after | No new active job on payobook, rize, p0clone. payobook_template had 24 jobs switched on by the upgrade (ids 43–75); all switched off again. **Final: payobook 37, rize 69, p0clone 26, payobook_template 0** — as expected. |
+| Assets | Per DB: `INSERT INTO orm_signaling_assets`, asset attachments deleted, `web.assets.version` = 1792531486947. |
+| Start | Active, 1 master, port 8069 listening, `/web/health` 200, "Registry loaded" ×4, **0 ERROR/CRITICAL since start**. |
+
+Per-database verification (all four identical):
+
+| Check | p0clone | payobook | payobook_template | rize |
+|---|---|---|---|---|
+| 32 modules (`-i`+`-u`) installed at manifest version | yes | yes | yes | yes |
+| Payroll entry's Vietnamese name | Lương | Lương | Lương | Lương |
+| item_lifecycle / item_ask_hr | off, 982 / off, 983 | same | same | same |
+| item_hiring / item_expenses / item_talent | on 24 / 35 / 5 | same | same | same |
+| Roles on Hiring / Expenses / Talent | 4 / 4 / 11 | same | same | same |
+| Live top-level menu entries | 11 | 11 | 11 | 11 |
+| Served `web.assets_web.min.js` contains `pb_hiring_hub` / `pb_expenses_hub` / `pb_talent_hub` / Lifecycle redirect / Settings groups | 15 / 40 / 41 / yes / yes | same | same | same |
+
+`abm` not touched (no such database on the box; `/odoo/archives/abm-20261020` preserved). Branch `19.1` pushed
+(`cac3bf798..4e02d6cdd`). Still open: the payobook.com browser walk (Fable), and Agent B's Learn regeneration for
+the two screen-guide strings (pb_payruns, pb_formula_studio) if not yet done.
