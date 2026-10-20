@@ -1563,8 +1563,8 @@ msgstr "Chi trả & gửi phiếu"
 #. odoo-python
 #: code:addons/pb_payai_actions/payai/actions_amber.py:0
 #: code:addons/pb_payai_actions/payai/actions_green.py:0
-msgid "Pay Run"
-msgstr "Đợt lương"
+msgid "Payroll"
+msgstr "Lương"
 
 #. module: pb_payai_actions
 #. odoo-python

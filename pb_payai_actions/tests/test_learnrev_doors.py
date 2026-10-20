@@ -67,7 +67,7 @@ class TestLearnrevDoors(TransactionCase):
         self.assertEqual(res['value'], 'pbdoor.pb_pay_hub.runs')
         row = ctx.door_row(res['value'])
         self.assertTrue(row)
-        self.assertEqual(resolve.door_title(row), 'Pay Run › Runs')
+        self.assertEqual(resolve.door_title(row), 'Payroll › Runs')
         # It opens through its own destination (no ⌘K row in the browser).
         self.assertEqual(row['hub'], {'tag': 'pb_pay_hub',
                                       'xmlid': 'pb_payhub.action_pb_pay_hub',

@@ -169,7 +169,7 @@ class _RunLook(Action):
     screen_keys = RUN_SCREENS
     door_id = RUNS_DOOR
     right_subject = _lt('Seeing pay runs')
-    right_label = _lt('Pay Run')
+    right_label = _lt('Payroll')
 
     def method_gate(self, env, user):
         return env['hr.payslip.run'].with_user(user).has_access('read')

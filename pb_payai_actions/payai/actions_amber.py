@@ -1734,7 +1734,7 @@ class SubmitRun(_RunAmber):
                   "Which pay run, in the person's words: a month and "
                   "optionally a scheme. Never an id."),)
     right_subject = _lt('Sending a pay run for approval')
-    right_label = _lt('Pay Run')
+    right_label = _lt('Payroll')
     phrases_vi = _vi_not_send_back('submit_run')
     phrases = (
         r'^(?:send\s+' + _NOT_SEND_BACK + r'|(?:submit|forward)\s+)'
