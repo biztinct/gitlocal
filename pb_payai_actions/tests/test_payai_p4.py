@@ -371,10 +371,15 @@ class TestPayaiP4Catalogue(_P3Case):
         ask = [st for st in steps['payruns'] if (st.get('kicker') or {}).get('en') == 'Ask PayAI']
         self.assertEqual(len(ask), 1, 'the Runs lesson has no "Ask PayAI" step')
         ask = ask[0]
+        # LEARNREV P4/P5b: a lesson step says it in four lines (Look at · It
+        # means · It affects · Press); a legacy step kept a `body`. Read both.
+        def said(step, lang):
+            return ' '.join((step.get(f) or {}).get(lang, '') if isinstance(step.get(f), dict) else ''
+                            for f in ('body', 'look', 'means', 'affects', 'press', 'tip'))
         for lang, words in (('en', ('plan card', 'Do it', 'Withdraw', '10 minutes')),
                             ('vi', ('thẻ kế hoạch', 'Thực hiện', 'Thu hồi', '10 phút'))):
             for word in words:
-                self.assertIn(word, ask['body'][lang] + ask['tip'][lang], (lang, word))
+                self.assertIn(word, said(ask, lang), (lang, word))
         self.assertIn('Undo', ask['tip']['en'])
         self.assertIn('Hoàn tác', ask['tip']['vi'])
         approve = [st for st in steps['approvals'] if st['anchor'] == 'ai-approve'][0]
