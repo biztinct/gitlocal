@@ -191,13 +191,13 @@ msgstr "Nhân viên"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Employee leg"
-msgstr "Chân nhân viên"
+msgstr "Phần người lao động"
 
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Employee total"
-msgstr "Tổng số nhân viên"
+msgstr "Tổng phần người lao động"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -210,13 +210,13 @@ msgstr "Doanh nghiệp"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Employer leg"
-msgstr "Chân chủ"
+msgstr "Phần doanh nghiệp"
 
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Employer total"
-msgstr "Tổng số nhà tuyển dụng"
+msgstr "Tổng phần doanh nghiệp"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -584,7 +584,7 @@ msgstr "dấu ngoặc được tạo"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "· effective"
-msgstr "· hiệu quả"
+msgstr "· hiệu lực từ"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -738,3 +738,45 @@ msgstr "Nội dung"
 #. module: pb_statutory
 msgid "What happens"
 msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Tax country"
+msgstr "Quốc gia tính thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Manage country tables"
+msgstr "Quản lý bảng của quốc gia"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Refresh payroll constants"
+msgstr "Làm mới hằng số tính lương"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Up to"
+msgstr "Đến"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Above"
+msgstr "Trên"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Selected rate applies to whole income"
+msgstr "Mức thuế suất được chọn áp dụng cho toàn bộ thu nhập"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Progressive marginal bands"
+msgstr "Biểu lũy tiến từng phần"
