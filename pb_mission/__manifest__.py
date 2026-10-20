@@ -79,7 +79,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
     # later module bolts a lens onto this workspace without editing it, exactly
     # as every other hub in the product already allows — with the dependency
     # running the other way, so the guests name the category by its string.
-    'version': '19.0.1.11.2',
+    'version': '19.0.1.12.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -92,7 +92,7 @@ a new navy), Lucide icons through the shared `ic()` registry, flat fills.
         'pb_time_hub',          # Time lens (and the W26 arrival protocol)
         'pb_timeoff',           # Time Off lens
         'pb_hr_workforce',      # Overtime lens
-        'pb_business_trip',     # Trips lens
+        'pb_business_trip',     # the dock's trip approvals (the Trips lens moved to Expenses, NAV P2)
         'pb_approval_config',   # Approvals lens: the one inbox, scoped to my team
         'pb_close',             # P4: pb.close / pb.wf.lock behind the Close lens
         'pb_sidebar',           # the single rail entry that replaces seven

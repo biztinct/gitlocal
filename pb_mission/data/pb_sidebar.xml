@@ -88,7 +88,7 @@
              A match dimension is a claim on a real surface (W71) — an entry
              that can never match is not harmless, it is a reader being told
              there is a screen somewhere that there is not. -->
-        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_trips,pb_team,pb_attendance_weekgrid,pb_attendance_flow,pb_driver_map</field>
+        <field name="match_action_tags">pb_workforce,pb_today,pb_schedule,pb_time_hub,pb_timeoff,pb_ot_desk,pb_team,pb_attendance_weekgrid,pb_attendance_flow,pb_driver_map</field>
     </record>
 
 </odoo>

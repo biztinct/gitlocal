@@ -41,7 +41,7 @@ _LENSES = [
     ('time', 'PbTimeHub'),
     ('timeoff', 'PbTimeoff'),
     ('overtime', 'PbOtDesk'),
-    ('trips', 'PbTrips'),
+    # NAV P2: Trips moved to OPERATE › Expenses (pb_expenses_hub).
     ('approvals', 'PbInbox'),
     ('close', 'PbCloseLens'),
 ]
@@ -520,7 +520,7 @@ class TestMissionStaticGates(TransactionCase):
             self.assertTrue(block, '%s not found in LENSES' % key)
             self.assertIn('ownsPersonDrawer: true', block.group(0),
                           '%s owns a drawer and must say so' % key)
-        for key in ('timeoff', 'overtime', 'trips', 'approvals', 'close'):
+        for key in ('timeoff', 'overtime', 'approvals', 'close'):
             block = re.search(r'key: "%s".*?\n    \},' % key, js, re.S)
             self.assertNotIn('ownsPersonDrawer', block.group(0),
                              '%s has no drawer of its own' % key)

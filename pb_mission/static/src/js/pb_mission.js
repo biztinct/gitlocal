@@ -26,7 +26,7 @@
  * Time, Today and Schedule lenses already fetch). Everything it calls existed
  * before it did.
  */
-import { Component, useState, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useEffect, onWillStart, onWillUnmount, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
@@ -35,7 +35,7 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfContextBar } from "@pb_wf_kit/js/wf_context_bar";
-import { HubBackChip, hubBack, railKeydown } from "@pb_hub/js/hub_nav";
+import { HubBackChip, hubBack, railKeydown, openHub } from "@pb_hub/js/hub_nav";
 // FLEET P4. Workforce is sold on its own, so a company can be on Payobook
 // without it. Mission Control keeps its own shell (not refactoring it onto
 // the kit is a standing non-goal), so it borrows the ONE page the kit draws
@@ -54,7 +54,6 @@ import { PbSchedule } from "@pb_schedule/js/pb_schedule";
 import { PbTimeHub } from "@pb_time_hub/js/time_hub";
 import { PbTimeoff } from "@pb_timeoff/js/pb_timeoff";
 import { PbOtDesk } from "@pb_hr_workforce/js/pb_ot_desk";
-import { PbTrips } from "@pb_business_trip/js/pb_trips";
 // W17 is about reuse, and the Approvals lens is now the same inbox every
 // other part of the product uses — one screen, every kind of request, mounted
 // here with its scope set to "my team". `pb_team`'s own cockpit is retired:
@@ -171,11 +170,9 @@ const LENSES = [
                  "om_hr_payroll.group_hr_payroll_manager"],
         features: { department: false, week: false, person: false, day: false, search: false },
     },
-    {
-        // its retired rail item was ungated — every internal user could open it
-        key: "trips", icon: "plane", groups: [],
-        features: { department: false, week: false, person: false, day: false, search: false },
-    },
+    // NAV P2 (2026-10-21): Trips left this workspace for OPERATE › Expenses
+    // (pb_expenses_hub). An old link that still names the lens is handed on
+    // there on mount (see `setup`).
     {
         key: "approvals", icon: "inbox", groups: [],
         features: { department: false, week: false, person: false, day: false, search: false },
@@ -242,7 +239,7 @@ export class PbMission extends Component {
     static template = "pb_mission.PbMission";
     static components = {
         WfContextBar, WfDock, WfDrawer, WfPersonWeek,
-        PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbTrips, PbInbox,
+        PbToday, PbSchedule, PbTimeHub, PbTimeoff, PbOtDesk, PbInbox,
         PbCloseLens, HubBackChip, HubFeatureOff,
     };
     static props = { action: { type: Object, optional: true }, "*": true };
@@ -274,6 +271,17 @@ export class PbMission extends Component {
         this.allKeys = this.allLenses.map((l) => l.key);
 
         const arrival = this._arrival();
+
+        // NAV P2 (R10): an old link to Workforce › Trips lands on
+        // Expenses › Trips. Said on mount, from the one place that read it.
+        const ctx0 = (this.props.action && this.props.action.context) || {};
+        if (ctx0.pb_shell_lens === "trips") {
+            onMounted(() => {
+                openHub(this.actionService, {
+                    xmlid: "pb_expenses_hub.action_pb_expenses_hub", lens: "trips",
+                }).catch((e) => console.warn("pb_mission: Expenses is not installed", e));
+            });
+        }
 
         this.state = useState({
             lens: arrival.lens || this._restoreLens(),
@@ -544,7 +552,6 @@ export class PbMission extends Component {
             time: _t("Time"),
             timeoff: _t("Time Off"),
             overtime: _t("Overtime"),
-            trips: _t("Trips"),
             close: _t("Close"),
             // The shell's rail, not the sidebar's: `pb_sidebar.item_approvals`
             // owns the label "Approvals" on the SIDEBAR (the payroll payslip-run

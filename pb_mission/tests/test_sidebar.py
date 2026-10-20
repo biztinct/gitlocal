@@ -137,8 +137,10 @@ class TestP3aSidebar(TransactionCase):
             self.skipTest('pb_mission is not installed')
         tags = {t.strip() for t in (item.match_action_tags or '').split(',')}
         for tag in ('pb_today', 'pb_schedule', 'pb_time_hub', 'pb_timeoff',
-                    'pb_ot_desk', 'pb_trips', 'pb_team', 'pb_workforce'):
+                    'pb_ot_desk', 'pb_team', 'pb_workforce'):
             self.assertIn(tag, tags, '%s must still light the Workforce item' % tag)
+        # NAV P2: the Trips board lights OPERATE › Expenses now.
+        self.assertNotIn('pb_trips', tags)
 
     # ======================================================== the retirement
     def test_the_seven_moved_into_the_900_band(self):

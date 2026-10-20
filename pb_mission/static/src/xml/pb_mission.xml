@@ -123,9 +123,6 @@
             <PbOtDesk t-key="'lens-overtime'" embedded="true" pbCmd="state.cmd"/>
           </div>
 
-          <div class="pbms-lens" t-if="state.lens === 'trips'">
-            <PbTrips t-key="'lens-trips'" embedded="true"/>
-          </div>
 
           <div class="pbms-lens" t-if="state.lens === 'approvals'">
             <PbInbox t-key="'lens-approvals'" embedded="true" scope="'team'"/>
