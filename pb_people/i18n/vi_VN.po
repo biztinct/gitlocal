@@ -180,7 +180,7 @@ msgstr "Bảng lương đã sẵn sàng"
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Payroll-ready"
-msgstr "Sẵn sàng trả lương"
+msgstr "Sẵn sàng tính lương"
 
 #. module: pb_people
 #. odoo-javascript

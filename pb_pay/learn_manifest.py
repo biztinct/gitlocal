@@ -24,7 +24,7 @@ MANIFESTS = {
         'before': [
             {'screen': 'paybands',
              'why': {'en': "Set the pay bands first; the review checks pay against them.",
-                     'vi': "Đặt các dải lương trước; đợt xét lương đối chiếu lương "
+                     'vi': "Đặt các khoảng lương trước; đợt xét lương đối chiếu lương "
                            "với chúng."}},
         ],
         'after': [
@@ -42,7 +42,7 @@ MANIFESTS = {
                     'en': "What the proposed rises add up to, against the budget set "
                           "for the review. The bar turns over when it passes it.",
                     'vi': "Tổng các mức tăng được đề xuất, so với ngân sách đã đặt "
-                          "cho đợt xét lương. Thanh chuyển sang vượt khi quá mức.",
+                          "cho đợt xét lương. Thanh báo vượt khi tổng vượt ngân sách.",
                 },
                 'if_changed': {
                     'en': "Read-only. It moves as you change rises on the rows; "

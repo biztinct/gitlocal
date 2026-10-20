@@ -29,7 +29,7 @@ msgstr "/tháng)"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Active insurance rates"
-msgstr "Tỷ lệ bảo hiểm tích cực"
+msgstr "Tỷ lệ bảo hiểm đang áp dụng"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -72,7 +72,7 @@ msgstr "Dấu ngoặc đơn"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Ceiling"
-msgstr "Trần nhà"
+msgstr "Mức trần"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -102,7 +102,7 @@ msgstr "Tỷ lệ đóng góp, mức trần, khung thuế và số liệu thực
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Contributions"
-msgstr "Đóng góp"
+msgstr "Khoản đóng"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -421,7 +421,7 @@ msgstr "Dấu ngoặc lũy tiến"
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Rate"
-msgstr "Hệ số"
+msgstr "Tỷ lệ"
 
 #. module: pb_statutory
 #. odoo-javascript
@@ -503,7 +503,7 @@ msgstr "Bảng thuế"
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Tax brackets"
-msgstr "khung thuế"
+msgstr "Bậc thuế"
 
 #. module: pb_statutory
 #. odoo-javascript

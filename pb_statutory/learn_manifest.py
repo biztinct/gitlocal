@@ -21,7 +21,7 @@ _READ_ONLY = {
     'en': "Read-only here. To change a rate, add a new policy dated from the day the "
           "change applies; never edit the one in force.",
     'vi': "Chỉ xem ở đây. Muốn đổi một tỷ lệ, hãy thêm chính sách mới đề ngày bắt đầu "
-          "áp dụng; đừng bao giờ sửa chính sách đang chạy.",
+          "áp dụng; đừng bao giờ sửa chính sách đang có hiệu lực.",
 }
 
 
@@ -70,7 +70,7 @@ MANIFESTS = {
             {
                 'key': 'rates', 'derived': True,
                 'column': {'en': "Active insurance rates",
-                           'vi': "Tỷ lệ bảo hiểm tích cực"},
+                           'vi': "Tỷ lệ bảo hiểm đang áp dụng"},
                 'from': _PY + ':get_statutory_data',
                 'how': {
                     'en': "The company's active policy with the latest effective date. "
@@ -114,7 +114,7 @@ MANIFESTS = {
             },
             {
                 'key': 'ceiling', 'derived': True,
-                'column': {'en': "Ceiling", 'vi': "Trần nhà"},
+                'column': {'en': "Ceiling", 'vi': "Mức trần"},
                 'from': _PY + ':get_statutory_data',
                 'how': {
                     'en': "The most pay that insurance is worked out on. Pay above it "
@@ -129,7 +129,7 @@ MANIFESTS = {
             },
             {
                 'key': 'brackets', 'derived': True,
-                'column': {'en': "Tax brackets", 'vi': "khung thuế"},
+                'column': {'en': "Tax brackets", 'vi': "Bậc thuế"},
                 'from': _PY + ':get_statutory_data',
                 'how': {
                     'en': "The tax table in force today for the tax country shown: "
@@ -159,7 +159,7 @@ MANIFESTS = {
             },
             {
                 'key': 'rate', 'derived': True,
-                'column': {'en': "Rate", 'vi': "Hệ số"},
+                'column': {'en': "Rate", 'vi': "Tỷ lệ"},
                 'from': _PY + ':get_statutory_data',
                 'how': {
                     'en': "The tax rate for the slice of income inside that bracket. "
@@ -183,7 +183,7 @@ MANIFESTS = {
             },
             {
                 'key': 'contributions', 'derived': True,
-                'column': {'en': "Contributions", 'vi': "Đóng góp"},
+                'column': {'en': "Contributions", 'vi': "Khoản đóng"},
                 'from': _PY + ':get_statutory_data',
                 'how': {
                     'en': "The insurance lines of the latest pay run, added up: what "

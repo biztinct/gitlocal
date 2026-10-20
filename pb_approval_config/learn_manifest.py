@@ -61,7 +61,7 @@ MANIFESTS = {
                               "lương trở lại thành bản nháp."},
                     'rejected': {
                         'en': "Ended for good. A pay run is Rejected.",
-                        'vi': "Kết thúc hẳn. Một đợt lương bị Từ chối."},
+                        'vi': "Kết thúc hẳn. Đợt lương chuyển sang Đã từ chối."},
                     'blocked': {
                         'en': "The route cannot move until a step is set up; the request "
                               "says what is missing.",
@@ -223,7 +223,7 @@ MANIFESTS = {
             {'label': {'en': "Turn it down", 'vi': "Từ chối"},
              'method': 'pb.approval.inbox.decide',
              'effect': {'en': "Ends the request for good. A pay run is Rejected.",
-                        'vi': "Kết thúc hẳn yêu cầu. Một đợt lương bị Từ chối."},
+                        'vi': "Kết thúc hẳn yêu cầu. Đợt lương chuyển sang Đã từ chối."},
              'writes': True},
             {'label': {'en': "Move it to somebody else", 'vi': "Chuyển cho người khác"},
              'method': 'pb.approval.inbox.move_it',
@@ -267,7 +267,7 @@ MANIFESTS = {
              'why': {'en': "New requests travel the route you publish, and arrive "
                            "in the inbox of whoever is named.",
                      'vi': "Yêu cầu mới đi theo lộ trình bạn ban hành và đến hộp "
-                           "thư của người được ghi tên."}},
+                           "Phê duyệt của người được ghi tên."}},
         ],
         'fields': [
             {
