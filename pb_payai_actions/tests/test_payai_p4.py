@@ -373,8 +373,13 @@ class TestPayaiP4Catalogue(_P3Case):
         ask = ask[0]
         for lang, words in (('en', ('plan card', 'Do it', 'Withdraw', '10 minutes')),
                             ('vi', ('thẻ kế hoạch', 'Thực hiện', 'Thu hồi', '10 phút'))):
+            # LEARNREV P4 moved a step's words into the four lines (look /
+            # means / affects) and left `body` empty; read whichever is there.
+            said = ' '.join((st_part or {}).get(lang, '') if isinstance(st_part, dict) else ''
+                            for st_part in (ask.get('body'), ask.get('look'), ask.get('means'),
+                                            ask.get('affects'), ask.get('tip')))
             for word in words:
-                self.assertIn(word, ask['body'][lang] + ask['tip'][lang], (lang, word))
+                self.assertIn(word, said, (lang, word))
         self.assertIn('Undo', ask['tip']['en'])
         self.assertIn('Hoàn tác', ask['tip']['vi'])
         approve = [st for st in steps['approvals'] if st['anchor'] == 'ai-approve'][0]
