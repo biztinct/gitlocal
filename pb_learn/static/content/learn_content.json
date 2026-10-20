@@ -19145,16 +19145,25 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "ac-head",
-          "body": {
-            "en": "Everyone can open this page. Giving roles and See it as are for access managers.",
-            "vi": "Ai cũng mở được trang này. Cấp vai trò và Xem như dành cho người quản lý truy cập."
+          "affects": {
+            "en": "What a person is given here decides which screens they see on the left menu.",
+            "vi": "Những gì một người được giao ở đây quyết định họ thấy những màn hình nào trên menu bên trái."
           },
+          "anchor": "ac-head",
+          "body": "",
           "guard": false,
           "key": "head",
           "kicker": {
             "en": "Settings › Access & delegation",
             "vi": "Cài đặt › Quyền truy cập & bàn giao"
+          },
+          "look": {
+            "en": "The buttons at the top, starting with Hand my access over.",
+            "vi": "Các nút ở trên cùng, bắt đầu với Bàn giao quyền của tôi."
+          },
+          "means": {
+            "en": "Everyone can open this page. Giving roles and See it as are for access managers.",
+            "vi": "Ai cũng mở được trang này. Giao vai trò và Xem như dành cho người quản lý truy cập."
           },
           "modes": [
             "watch"
@@ -19174,14 +19183,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ac-tabs",
-          "body": {
-            "en": "What can be given, what each person holds, who opens each screen, and what is lent for a while.",
-            "vi": "Những gì có thể cấp, mỗi người đang có gì, ai mở được từng màn hình, và những gì đang cho mượn tạm thời."
+          "affects": {
+            "en": "Switching tabs changes nobody's access. Pick the tab that matches your question.",
+            "vi": "Đổi tab không thay đổi quyền của ai. Hãy chọn tab đúng với câu hỏi của bạn."
           },
+          "anchor": "ac-tabs",
+          "body": "",
           "guard": false,
           "key": "tabs",
           "kicker": "",
+          "look": {
+            "en": "The four tabs: Roles, People, Screens and Hand-overs.",
+            "vi": "Bốn tab: Vai trò, Nhân sự, Màn hình và Bàn giao."
+          },
+          "means": {
+            "en": "Four views of the same access: what can be given, who holds what, who opens each screen, and what is lent for a while.",
+            "vi": "Bốn cách xem cùng một quyền truy cập: những gì có thể giao, ai đang giữ gì, ai mở được từng màn hình, và những gì đang cho mượn tạm thời."
+          },
           "modes": [
             "watch"
           ],
@@ -19197,14 +19215,23 @@
         },
         {
           "act": "observe",
-          "anchor": "ac-rolecard",
-          "body": {
-            "en": "Each card says what the role lets someone do, and who holds it.",
-            "vi": "Mỗi thẻ nói vai trò đó cho phép làm gì, và ai đang có nó."
+          "affects": {
+            "en": "Whoever is given the role gets exactly what the card lists under Opens on the left menu and Lets them.",
+            "vi": "Ai được giao vai trò sẽ có đúng những gì thẻ ghi ở Mở trên menu bên trái và Cho phép họ."
           },
+          "anchor": "ac-rolecard",
+          "body": "",
           "guard": false,
           "key": "roles",
           "kicker": "",
+          "look": {
+            "en": "A role card: its name, one sentence, and the number of people who hold it.",
+            "vi": "Một thẻ vai trò: tên, một câu mô tả, và số người đang giữ nó."
+          },
+          "means": {
+            "en": "The sentence says in plain words what the role lets someone do.",
+            "vi": "Câu đó nói bằng lời dễ hiểu vai trò cho phép một người làm gì."
+          },
           "modes": [
             "watch"
           ],
@@ -19220,21 +19247,33 @@
         },
         {
           "act": "observe",
-          "anchor": "ac-handover",
-          "body": {
-            "en": "Who, what and until when. It is taken back automatically the morning after the end date. I will not press it.",
-            "vi": "Cho ai, quyền nào và đến khi nào. Quyền được tự động thu hồi vào sáng hôm sau ngày kết thúc. Tôi sẽ không bấm."
+          "affects": {
+            "en": "On the morning after the end date, exactly what was given is taken back.",
+            "vi": "Vào sáng hôm sau ngày kết thúc, đúng những gì đã trao sẽ được thu hồi."
           },
+          "anchor": "ac-handover",
+          "body": "",
           "guard": false,
           "key": "handover",
           "kicker": "",
+          "look": {
+            "en": "The Hand my access over button.",
+            "vi": "Nút Bàn giao quyền của tôi."
+          },
+          "means": {
+            "en": "You choose who covers for you, which of your roles, and until when.",
+            "vi": "Bạn chọn ai làm thay, những vai trò nào của bạn, và đến ngày nào."
+          },
           "modes": [
             "watch"
           ],
           "nav": "",
           "screen": "",
           "timeout": 0,
-          "tip": "",
+          "tip": {
+            "en": "I will not press it. Handing over is yours to do.",
+            "vi": "Tôi sẽ không bấm. Việc bàn giao là để bạn làm."
+          },
           "title": {
             "en": "Hand my access over",
             "vi": "Bàn giao quyền của tôi"
@@ -19283,16 +19322,26 @@
       "steps": [
         {
           "act": "observe",
-          "anchor": "gr-head",
-          "body": {
-            "en": "The company and the month, then a tile per filing.",
-            "vi": "Công ty và tháng, rồi mỗi báo cáo một ô."
+          "affects": {
+            "en": "Read-only. Switch company from the company menu to see another company's filings.",
+            "vi": "Chỉ xem. Hãy đổi công ty từ menu công ty để xem báo cáo của công ty khác."
           },
+          "anchor": "gr-head",
+          "body": "",
+          "field": "govreports.company_line",
           "guard": false,
           "key": "head",
           "kicker": {
             "en": "Compliance › Filings",
             "vi": "Tuân thủ › Tờ khai"
+          },
+          "look": {
+            "en": "The line Statutory filings for, with the company and its country.",
+            "vi": "Dòng Hồ sơ theo luật định cho, kèm công ty và quốc gia của nó."
+          },
+          "means": {
+            "en": "The company you are working in and the country whose filings are on show.",
+            "vi": "Công ty bạn đang làm việc và quốc gia có các báo cáo đang hiển thị."
           },
           "modes": [
             "watch"
@@ -19312,21 +19361,33 @@
         },
         {
           "act": "observe",
-          "anchor": "",
-          "body": {
-            "en": "When your companies pay in more than one country, chips above the tiles switch country. \"Coming soon\" means that country's module is not installed here — not that its filings do not exist.",
-            "vi": "Khi các công ty của bạn trả lương ở nhiều quốc gia, các nhãn phía trên các ô dùng để chuyển quốc gia. \"Sắp có\" nghĩa là mô-đun của quốc gia đó chưa được cài ở đây — không phải các báo cáo không tồn tại."
+          "affects": {
+            "en": "A chip changes only the list of filings, never the company or its data.",
+            "vi": "Một nhãn chỉ đổi danh sách báo cáo, không bao giờ đổi công ty hay dữ liệu của nó."
           },
+          "anchor": "",
+          "body": "",
           "guard": false,
           "key": "countries",
           "kicker": "",
+          "look": {
+            "en": "The Country chips above the tiles, when your companies pay in more than one country.",
+            "vi": "Các nhãn Quốc gia phía trên các ô, khi các công ty của bạn trả lương ở nhiều quốc gia."
+          },
+          "means": {
+            "en": "Each chip shows the filings of that country.",
+            "vi": "Mỗi nhãn hiện các báo cáo của quốc gia đó."
+          },
           "modes": [
             "watch"
           ],
           "nav": "",
           "screen": "",
           "timeout": 0,
-          "tip": "",
+          "tip": {
+            "en": "A country whose filings are not here yet says they are coming soon.",
+            "vi": "Quốc gia nào chưa có báo cáo ở đây sẽ ghi là đang đến sớm."
+          },
           "title": {
             "en": "One country at a time",
             "vi": "Mỗi lần một quốc gia"
@@ -19335,31 +19396,50 @@
         },
         {
           "act": "observe",
-          "anchor": "gr-grid",
-          "body": {
-            "en": "Generate on a tile opens Generate a filing on its Scope step: check the company and the month, then Generate. Nothing is sent anywhere.",
-            "vi": "Tạo trên một ô mở Tạo hồ sơ ở bước Phạm vi: kiểm tra công ty và tháng, rồi Tạo. Không có gì được gửi đi."
+          "affects": {
+            "en": "Read-only. A country with no tile is shown as coming soon; nothing on this board can add one.",
+            "vi": "Chỉ xem. Quốc gia chưa có biểu mẫu được hiện là sắp ra mắt; không có gì trên bảng này thêm được biểu mẫu."
           },
+          "anchor": "gr-grid",
+          "body": "",
+          "field": "govreports.filings",
           "guard": false,
           "key": "grid",
           "kicker": "",
+          "look": {
+            "en": "The Government Reports tiles, grouped by the office that reads them. Each names its form.",
+            "vi": "Các ô Báo cáo chính phủ, nhóm theo cơ quan tiếp nhận. Mỗi ô ghi tên mẫu của nó."
+          },
+          "means": {
+            "en": "A fixed list for each country, grouped by authority.",
+            "vi": "Một danh sách cố định cho mỗi quốc gia, nhóm theo cơ quan."
+          },
           "modes": [
             "watch"
           ],
           "nav": "",
           "screen": "",
           "timeout": 0,
-          "tip": "",
+          "tip": {
+            "en": "Generate on a tile opens Generate a filing at its Scope step. Nothing is sent anywhere.",
+            "vi": "Tạo trên một ô mở Tạo hồ sơ ở bước Phạm vi. Không có gì được gửi đi."
+          },
           "title": {
             "en": "Grouped by the office that reads them",
             "vi": "Nhóm theo cơ quan tiếp nhận"
           },
+          "uses": [
+            {
+              "en": "The filing flow's first step",
+              "vi": "Bước đầu của quy trình nộp báo cáo"
+            }
+          ],
           "value": ""
         }
       ],
       "tagline": {
         "en": "The filings your country asks for, and the three steps that make one.",
-        "vi": "Các báo cáo quốc gia bạn yêu cầu, và ba bước để tạo một báo cáo."
+        "vi": "Các báo cáo mà quốc gia của bạn yêu cầu, và ba bước để tạo một báo cáo."
       }
     }
   ],
@@ -23722,21 +23802,35 @@
           ],
           "steps": [
             {
-              "anchor": "gr-head",
-              "body": {
-                "en": "Compliance › <b>Filings</b>. The company and the month at the top, and a tile for every filing this country asks for.",
-                "vi": "Tuân thủ › <b>Tờ khai</b>. Công ty và tháng ở trên cùng, và mỗi báo cáo quốc gia này yêu cầu có một ô."
+              "affects": {
+                "en": "Read-only. Switch company from the company menu to see another company's filings.",
+                "vi": "Chỉ xem. Hãy đổi công ty từ menu công ty để xem báo cáo của công ty khác."
               },
+              "anchor": "gr-head",
+              "body": "",
               "consequence": "",
+              "field": "govreports.company_line",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The line Statutory filings for, with the company and its country.",
+                "vi": "Dòng Hồ sơ theo luật định cho, kèm công ty và quốc gia của nó."
+              },
+              "means": {
+                "en": "The company you are working in and the country whose filings are on show.",
+                "vi": "Công ty bạn đang làm việc và quốc gia có các báo cáo đang hiển thị."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The month box beside it, to pick the month you are filing for.",
+                "vi": "Ô tháng bên cạnh, để chọn tháng bạn đang nộp báo cáo."
+              },
               "screen": "govreports",
               "tip": "",
               "title": {
@@ -23746,65 +23840,114 @@
               "visual": "none"
             },
             {
-              "anchor": "gr-countries",
-              "body": {
-                "en": "The chips switch country. A country whose payroll module is not installed shows <b>coming soon</b> — the filings exist; this system has not got them yet.",
-                "vi": "Các nhãn chuyển quốc gia. Quốc gia nào chưa cài mô-đun tính lương sẽ hiện <b>sắp có</b> — các báo cáo vẫn tồn tại; chỉ là hệ thống này chưa có chúng."
+              "affects": {
+                "en": "Choosing a chip changes the list of filings, not the company or any data.",
+                "vi": "Chọn một nút chỉ đổi danh sách báo cáo, không đổi công ty hay dữ liệu nào."
               },
+              "anchor": "gr-countries",
+              "body": "",
               "consequence": "",
+              "field": "govreports.country",
               "kicker": {
                 "en": "Which country",
                 "vi": "Quốc gia nào"
               },
               "lines": [],
+              "look": {
+                "en": "The Country chips, shown when your company pays in more than one country.",
+                "vi": "Các nhãn Quốc gia, chỉ hiện khi công ty bạn trả lương ở nhiều quốc gia."
+              },
+              "means": {
+                "en": "The company's own country, plus any country its pay schemes are set up for.",
+                "vi": "Quốc gia của chính công ty, cộng các quốc gia mà chương trình lương của công ty được thiết lập."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A country, to see its filings.",
+                "vi": "Một quốc gia, để xem các báo cáo của nó."
+              },
               "screen": "govreports",
               "tip": "",
               "title": {
                 "en": "One country at a time",
                 "vi": "Mỗi lần một quốc gia"
               },
+              "uses": [
+                {
+                  "en": "Which filings the flow offers",
+                  "vi": "Quy trình nộp báo cáo đưa ra những báo cáo nào"
+                }
+              ],
               "visual": "none"
             },
             {
-              "anchor": "gr-grid",
-              "body": {
-                "en": "Social insurance filings in one group, labour changes in another. Each tile names the form, and <b>Generate</b> starts it.",
-                "vi": "Các báo cáo bảo hiểm xã hội một nhóm, biến động lao động một nhóm. Mỗi ô ghi tên mẫu, và <b>Tạo</b> bắt đầu nó."
+              "affects": {
+                "en": "Read-only. A country with no tile is shown as coming soon; nothing on this board can add one.",
+                "vi": "Chỉ xem. Quốc gia chưa có biểu mẫu được hiện là sắp ra mắt; không có gì trên bảng này thêm được biểu mẫu."
               },
+              "anchor": "gr-grid",
+              "body": "",
               "consequence": "",
+              "field": "govreports.filings",
               "kicker": {
                 "en": "The tiles",
                 "vi": "Các ô"
               },
               "lines": [],
+              "look": {
+                "en": "The Government Reports tiles, grouped by the office that reads them. Each names its form.",
+                "vi": "Các ô Báo cáo chính phủ, nhóm theo cơ quan tiếp nhận. Mỗi ô ghi tên mẫu của nó."
+              },
+              "means": {
+                "en": "A fixed list for each country, grouped by authority.",
+                "vi": "Một danh sách cố định cho mỗi quốc gia, nhóm theo cơ quan."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Generate on a tile, to start that filing.",
+                "vi": "Tạo trên một ô, để bắt đầu báo cáo đó."
+              },
               "screen": "govreports",
               "tip": "",
               "title": {
                 "en": "Grouped by the office that reads them",
                 "vi": "Nhóm theo cơ quan tiếp nhận"
               },
+              "uses": [
+                {
+                  "en": "The filing flow's first step",
+                  "vi": "Bước đầu của quy trình nộp báo cáo"
+                }
+              ],
               "visual": "none"
             },
             {
-              "anchor": "cp-gen-steps",
-              "body": {
-                "en": "Pressing a tile's Generate lands you on <b>Scope</b> with the filing already chosen. The same flow opens from the search bar: type \"Generate a filing\".",
-                "vi": "Bấm Tạo trên một ô đưa bạn thẳng tới <b>Phạm vi</b> với báo cáo đã được chọn. Luồng này cũng mở từ thanh tìm kiếm: gõ \"Tạo hồ sơ\"."
+              "affects": {
+                "en": "Scope asks only for what this filing needs. Questions that belong to other filings stay hidden.",
+                "vi": "Phạm vi chỉ hỏi những gì hồ sơ này cần. Các câu hỏi thuộc hồ sơ khác được ẩn đi."
               },
+              "anchor": "cp-gen-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Generate a filing",
                 "vi": "Tạo hồ sơ"
               },
               "lines": [],
+              "look": {
+                "en": "The three steps at the top: Choose the filing, Scope and Generate.",
+                "vi": "Ba bước ở trên cùng: Chọn hồ sơ, Phạm vi và Tạo."
+              },
+              "means": {
+                "en": "A tile's Generate lands you on Scope, with the filing already chosen.",
+                "vi": "Bấm Tạo trên một ô đưa bạn thẳng tới Phạm vi, với hồ sơ đã được chọn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -23818,17 +23961,26 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-generate",
-              "body": {
-                "en": "Check the company and the month before you generate. A month whose pay runs are not all done makes a filing that is short.",
-                "vi": "Kiểm tra công ty và tháng trước khi tạo. Một tháng mà các đợt lương chưa hoàn tất hết sẽ cho ra một báo cáo bị thiếu."
+              "affects": {
+                "en": "A month whose pay runs are not all done makes a filing that is short.",
+                "vi": "Một tháng mà các đợt lương chưa hoàn tất hết sẽ cho ra một hồ sơ bị thiếu."
               },
+              "anchor": "cp-generate",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Scope",
                 "vi": "Phạm vi"
               },
               "lines": [],
+              "look": {
+                "en": "The Scope section: the company and the period the filing covers.",
+                "vi": "Phần Phạm vi: công ty và khoảng thời gian mà hồ sơ bao gồm."
+              },
+              "means": {
+                "en": "The filing reads the pay runs of that company in that period.",
+                "vi": "Hồ sơ đọc các đợt lương của công ty đó trong khoảng thời gian đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -23842,21 +23994,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-gen-go",
-              "body": {
-                "en": "<b>Generate</b> makes the files for you to download. Nothing is sent anywhere; you submit them to the office yourself.",
-                "vi": "<b>Tạo</b> sinh ra các tệp để bạn tải xuống. Không có gì được gửi đi đâu cả; bạn tự nộp chúng cho cơ quan."
+              "affects": {
+                "en": "You submit the files yourself. If a sign-off is needed first, the screen says Sent for approval.",
+                "vi": "Bạn tự nộp các tệp. Nếu cần phê duyệt trước, màn hình sẽ ghi Đã gửi phê duyệt."
               },
+              "anchor": "cp-gen-go",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The action",
                 "vi": "Thao tác chính"
               },
               "lines": [],
+              "look": {
+                "en": "The Generate button at the foot of Scope.",
+                "vi": "Nút Tạo ở cuối bước Phạm vi."
+              },
+              "means": {
+                "en": "It makes the files for you to download. Nothing is sent to any office.",
+                "vi": "Nó sinh ra các tệp để bạn tải xuống. Không có gì được gửi tới cơ quan nào."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Generate, once the company and the month are right.",
+                "vi": "Tạo, khi công ty và tháng đã đúng."
+              },
               "screen": "filing_flow",
               "tip": "",
               "title": {
@@ -23976,21 +24141,34 @@
           ],
           "steps": [
             {
-              "anchor": "cp-bank-steps",
-              "body": {
-                "en": "Drop a bank letter under <b>New bank-change request</b>. HR checks it, then Finance, and only then does the employee's bank account change.",
-                "vi": "Thả thư của ngân hàng vào <b>Yêu cầu thay đổi ngân hàng mới</b>. Nhân sự kiểm tra, rồi Tài chính, và chỉ khi đó tài khoản ngân hàng của nhân viên mới thay đổi."
+              "affects": {
+                "en": "Pay goes to the new account only once the request is Approved.",
+                "vi": "Lương chỉ được chuyển vào tài khoản mới khi yêu cầu đã ở bước Đã duyệt."
               },
+              "anchor": "cp-bank-steps",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Bank",
                 "vi": "Ngân hàng"
               },
               "lines": [],
+              "look": {
+                "en": "The steps Draft, HR Review, Finance Review and Approved, each with its count.",
+                "vi": "Các bước Nháp, Nhân sự xét duyệt, Tài chính xét duyệt và Đã duyệt, mỗi bước kèm số lượng."
+              },
+              "means": {
+                "en": "A bank change is checked by HR, then by Finance. Only Approved changes the employee's bank account.",
+                "vi": "Một thay đổi ngân hàng được Nhân sự kiểm tra, rồi tới Tài chính. Chỉ khi Đã duyệt thì tài khoản ngân hàng của nhân viên mới thay đổi."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A step, to see only the requests waiting there.",
+                "vi": "Một bước, để chỉ xem những yêu cầu đang nằm ở đó."
+              },
               "screen": "compliancemore",
               "tip": {
                 "en": "An account already used by someone else is flagged before anyone approves it.",
@@ -24003,21 +24181,34 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-bank-new",
-              "body": {
-                "en": "Drop the bank's confirmation letter, statement or passbook. Without a document there is nothing for HR and Finance to check against.",
-                "vi": "Thả thư xác nhận của ngân hàng, sao kê hoặc sổ tiết kiệm. Không có chứng từ thì Nhân sự và Tài chính không có gì để đối chiếu."
+              "affects": {
+                "en": "Without a document, HR and Finance have nothing to check the new account against.",
+                "vi": "Không có chứng từ thì Nhân sự và Tài chính không có gì để đối chiếu tài khoản mới."
               },
+              "anchor": "cp-bank-new",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Start one",
                 "vi": "Bắt đầu một yêu cầu"
               },
               "lines": [],
+              "look": {
+                "en": "The New bank-change request box.",
+                "vi": "Ô Yêu cầu thay đổi ngân hàng mới."
+              },
+              "means": {
+                "en": "You drop the bank's confirmation letter, a statement or a passbook there. The account details are read from it.",
+                "vi": "Bạn thả thư xác nhận của ngân hàng, sao kê hoặc sổ tiết kiệm vào đó. Thông tin tài khoản được đọc từ chứng từ."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The box under New bank-change request, with the bank's letter.",
+                "vi": "Ô dưới Yêu cầu thay đổi ngân hàng mới, kèm thư của ngân hàng."
+              },
               "screen": "compliancemore",
               "tip": "",
               "title": {
@@ -24027,17 +24218,26 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-young",
-              "body": {
-                "en": "<b>Protected</b>, <b>Compliant this week</b>, <b>Violations in the last 30 days</b> and <b>Missing birthdays</b> — a missing birthday means the guard cannot tell who to protect.",
-                "vi": "<b>Được bảo vệ</b>, <b>Tuân thủ tuần này</b>, <b>Vi phạm trong 30 ngày qua</b> và <b>Thiếu ngày sinh</b> — thiếu ngày sinh nghĩa là hệ thống không biết cần bảo vệ ai."
+              "affects": {
+                "en": "A missing birthday means the guard cannot tell who to protect. Fill it on the employee record.",
+                "vi": "Thiếu ngày sinh nghĩa là hệ thống không biết cần bảo vệ ai. Hãy điền nó trên hồ sơ nhân viên."
               },
+              "anchor": "cp-young",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Young workers",
                 "vi": "Lao động chưa thành niên"
               },
               "lines": [],
+              "look": {
+                "en": "The four figures: Protected, Compliant this week, Violations in the last 30 days and Missing birthdays.",
+                "vi": "Bốn con số: Được bảo vệ, Tuân thủ tuần này, Vi phạm trong 30 ngày qua và Thiếu ngày sinh."
+              },
+              "means": {
+                "en": "The guard checks working hours for everyone under 18.",
+                "vi": "Hệ thống kiểm tra giờ làm của mọi người dưới 18 tuổi."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -24051,17 +24251,26 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-audit",
-              "body": {
-                "en": "A read-only record of changes. Filter to <b>Salary only</b> to answer \"who changed this salary\"; the login view shows who signed in.",
-                "vi": "Nhật ký chỉ đọc về các thay đổi. Lọc <b>Chỉ có lương</b> để trả lời \"ai đã sửa mức lương này\"; chế độ đăng nhập cho biết ai đã đăng nhập."
+              "affects": {
+                "en": "When someone asks who changed a salary, this is where the answer is.",
+                "vi": "Khi có người hỏi ai đã sửa một mức lương, câu trả lời nằm ở đây."
               },
+              "anchor": "cp-audit",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Audit",
                 "vi": "Nhật ký kiểm toán"
               },
               "lines": [],
+              "look": {
+                "en": "The counts Events today and Last 7 days.",
+                "vi": "Các con số Sự kiện hôm nay và 7 ngày qua."
+              },
+              "means": {
+                "en": "Every change, approval, delivery and login is kept here, in one trail nobody can edit.",
+                "vi": "Mọi thay đổi, phê duyệt, lần gửi và đăng nhập đều được giữ ở đây, trong một nhật ký không ai sửa được."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -24075,26 +24284,39 @@
               "visual": "none"
             },
             {
-              "anchor": "cp-audit-filters",
-              "body": {
-                "en": "Pick the filter that matches the question. Nothing here can be edited, which is why it can be trusted.",
-                "vi": "Chọn bộ lọc đúng với câu hỏi. Không gì ở đây sửa được, và đó là lý do nó đáng tin."
+              "affects": {
+                "en": "Nothing here can be edited, which is why it can be trusted.",
+                "vi": "Không gì ở đây sửa được, và đó là lý do nó đáng tin."
               },
+              "anchor": "cp-audit-filters",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Narrow it",
                 "vi": "Thu hẹp"
               },
               "lines": [],
+              "look": {
+                "en": "The chips Today, This week, By me, Salary only and Logins.",
+                "vi": "Các nhãn Hôm nay, Tuần này, Bởi tôi, Chỉ có lương và Đăng nhập."
+              },
+              "means": {
+                "en": "Each chip narrows the trail to one question. Logins shows who signed in.",
+                "vi": "Mỗi nhãn thu hẹp nhật ký về một câu hỏi. Đăng nhập cho biết ai đã đăng nhập."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Salary only, to see salary changes alone.",
+                "vi": "Chỉ có lương, để chỉ xem các thay đổi về lương."
+              },
               "screen": "compliancemore",
               "tip": "",
               "title": {
                 "en": "Today, This week, By me, Salary only, Logins",
-                "vi": "Hôm nay, Tuần này, Do tôi, Chỉ có lương, Đăng nhập"
+                "vi": "Hôm nay, Tuần này, Bởi tôi, Chỉ có lương, Đăng nhập"
               },
               "visual": "none"
             }
@@ -24522,21 +24744,34 @@
           ],
           "steps": [
             {
-              "anchor": "ex-head",
-              "body": {
-                "en": "Insights › <b>Explorer</b>. <b>Starting points</b> are ready-made questions. <b>Compare schemes</b> puts every pay scheme side by side, month by month.",
-                "vi": "Phân tích › <b>Khám phá dữ liệu</b>. <b>Điểm xuất phát</b> là các câu hỏi dựng sẵn. <b>So sánh các phương án lương</b> đặt mọi chương trình lương cạnh nhau, theo từng tháng."
+              "affects": {
+                "en": "Opening one sets the measure, the split and the time for you. You can change any of them.",
+                "vi": "Mở một điểm sẽ đặt sẵn chỉ tiêu, cách chia và thời gian cho bạn. Bạn có thể đổi bất kỳ phần nào."
               },
+              "anchor": "ex-head",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "Starting points, below the heading.",
+                "vi": "Điểm xuất phát, bên dưới tiêu đề."
+              },
+              "means": {
+                "en": "Each one is a ready-made question, such as Compare schemes: every pay scheme side by side, month by month.",
+                "vi": "Mỗi điểm là một câu hỏi dựng sẵn, như So sánh các phương án lương: mọi chương trình lương đặt cạnh nhau, theo từng tháng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Starting points, to see the ready-made questions.",
+                "vi": "Điểm xuất phát, để xem các câu hỏi dựng sẵn."
+              },
               "screen": "explorer",
               "tip": "",
               "title": {
@@ -24546,21 +24781,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ex-rail",
-              "body": {
-                "en": "Choose what to count, like Net pay, then how to split it, like Division. Most wrong answers are the right filter on the wrong measure.",
-                "vi": "Chọn thứ cần đếm, như Lương thực nhận, rồi cách chia, như Khối. Phần lớn câu trả lời sai là lọc đúng mà chọn nhầm chỉ tiêu."
+              "affects": {
+                "en": "Most wrong answers are the right filter on the wrong measure, so check Measure first.",
+                "vi": "Phần lớn câu trả lời sai là lọc đúng mà chọn nhầm chỉ tiêu, nên hãy kiểm tra Chỉ tiêu trước."
               },
+              "anchor": "ex-rail",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The question",
                 "vi": "Câu hỏi"
               },
               "lines": [],
+              "look": {
+                "en": "The Measure and By chips.",
+                "vi": "Các nhãn Chỉ tiêu và Theo."
+              },
+              "means": {
+                "en": "Measure is what to count, like Net pay. By is how to split it, like Division.",
+                "vi": "Chỉ tiêu là thứ cần đếm, như Lương thực nhận. Theo là cách chia nó, như Khối."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The Measure chip, to choose what to count.",
+                "vi": "Nhãn Chỉ tiêu, để chọn thứ cần đếm."
+              },
               "screen": "explorer",
               "tip": "",
               "title": {
@@ -24570,21 +24818,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ex-when",
-              "body": {
-                "en": "Pick This month, Last month, This year, or drag across the month strip.",
-                "vi": "Chọn Tháng này, Tháng trước, Năm nay, hoặc kéo qua dải các tháng."
+              "affects": {
+                "en": "Every number on the screen follows it, so say the time when you quote a figure.",
+                "vi": "Mọi con số trên màn hình đều theo nó, nên hãy nói rõ thời gian khi trích một con số."
               },
+              "anchor": "ex-when",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "When",
                 "vi": "Khi nào"
               },
               "lines": [],
+              "look": {
+                "en": "The When chip.",
+                "vi": "Nhãn Khi nào."
+              },
+              "means": {
+                "en": "It sets the time: This month, Last month, This year, or a stretch of the month strip.",
+                "vi": "Nó đặt thời gian: Tháng này, Tháng trước, Năm nay, hoặc một khoảng trên dải các tháng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "When, then Last month or a month on the strip.",
+                "vi": "Khi nào, rồi Tháng trước hoặc một tháng trên dải."
+              },
               "screen": "explorer",
               "tip": "",
               "title": {
@@ -24594,21 +24855,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ex-filters",
-              "body": {
-                "en": "<b>Main runs only</b> is on by default, so mid-month advances are left out. Remove a tag and the figure changes.",
-                "vi": "<b>Chỉ các kỳ lương chính</b> bật sẵn, nên các đợt tạm ứng giữa tháng không được tính. Gỡ một thẻ là con số thay đổi."
+              "affects": {
+                "en": "Remove a tag and the figure changes, so quote the tags with the number.",
+                "vi": "Gỡ một thẻ là con số thay đổi, nên hãy trích kèm các thẻ cùng con số."
               },
+              "anchor": "ex-filters",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Where",
                 "vi": "Ở đâu"
               },
               "lines": [],
+              "look": {
+                "en": "The tags under Where. Main runs only is on by default.",
+                "vi": "Các thẻ dưới Ở đâu. Chỉ các kỳ lương chính được bật sẵn."
+              },
+              "means": {
+                "en": "Mid-month advances are left out, so nobody is counted twice in one month.",
+                "vi": "Các khoản tạm ứng giữa tháng không được tính, nên không ai bị đếm hai lần trong một tháng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Add filter, to narrow the question further.",
+                "vi": "Thêm bộ lọc, để thu hẹp câu hỏi hơn nữa."
+              },
               "screen": "explorer",
               "tip": "",
               "title": {
@@ -24618,21 +24892,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ex-headline",
-              "body": {
-                "en": "The headline names the measure, the split and the total. <b>Explain</b> says what moved it; <b>Per person</b> divides it by the people in it.",
-                "vi": "Dòng đầu ghi chỉ tiêu, cách chia và tổng. <b>Giải thích</b> cho biết điều gì làm nó thay đổi; <b>Trên mỗi người</b> chia nó cho số người trong đó."
+              "affects": {
+                "en": "Explain says what moved it. Per person divides it by the people in it.",
+                "vi": "Giải thích cho biết điều gì làm nó thay đổi. Trên mỗi người chia nó cho số người trong đó."
               },
+              "anchor": "ex-headline",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The answer",
                 "vi": "Câu trả lời"
               },
               "lines": [],
+              "look": {
+                "en": "The headline: the measure, the split and the total.",
+                "vi": "Dòng đầu: chỉ tiêu, cách chia và tổng."
+              },
+              "means": {
+                "en": "The total is what the table below adds up to.",
+                "vi": "Tổng là con số mà bảng bên dưới cộng lại."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Explain, to read what moved the figure.",
+                "vi": "Giải thích, để đọc điều gì làm con số thay đổi."
+              },
               "screen": "explorer",
               "tip": "",
               "title": {
@@ -24642,17 +24929,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-ex-compare",
-              "body": {
-                "en": "One row per pay scheme, each in its own money. Explorer never adds two currencies together.",
-                "vi": "Mỗi chương trình lương một dòng, mỗi dòng theo đồng tiền riêng. Explorer không bao giờ cộng hai loại tiền với nhau."
+              "affects": {
+                "en": "Two currencies are never added together. Group currency converts them first, then adds them up.",
+                "vi": "Hai loại tiền không bao giờ bị cộng thẳng với nhau. Đồng tiền của tập đoàn quy đổi trước, rồi mới cộng lại."
               },
+              "anchor": "rep-ex-compare",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Two schemes",
                 "vi": "Hai chương trình"
               },
               "lines": [],
+              "look": {
+                "en": "Compare schemes, with Each in its own money switched on.",
+                "vi": "So sánh các phương án lương, với Mỗi bên theo đồng tiền của mình đang bật."
+              },
+              "means": {
+                "en": "One row per pay scheme, each in its own money.",
+                "vi": "Mỗi chương trình lương một dòng, mỗi dòng theo đồng tiền riêng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -24772,21 +25068,34 @@
           ],
           "steps": [
             {
-              "anchor": "wa-head",
-              "body": {
-                "en": "Insights › <b>Workforce</b>. Pick the window: 1, 3, 6 or 12 months.",
-                "vi": "Phân tích › <b>Lực lượng lao động</b>. Chọn khoảng thời gian: 1, 3, 6 hoặc 12 tháng."
+              "affects": {
+                "en": "Every panel below follows the window you pick.",
+                "vi": "Mọi phần bên dưới đều theo khoảng thời gian bạn chọn."
               },
+              "anchor": "wa-head",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The 1M, 3M, 6M and 12M chips beside the heading.",
+                "vi": "Các nhãn 1M, 3M, 6M và 12M bên cạnh tiêu đề."
+              },
+              "means": {
+                "en": "They set how many months the screen reads, from payroll and attendance.",
+                "vi": "Chúng đặt số tháng mà màn hình đọc, từ dữ liệu lương và chấm công."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "3M, to read the last three months.",
+                "vi": "3M, để đọc ba tháng gần nhất."
+              },
               "screen": "workforcean",
               "tip": "",
               "title": {
@@ -24796,23 +25105,39 @@
               "visual": "none"
             },
             {
-              "anchor": "wa-kpis",
-              "body": {
-                "en": "<b>employees paid</b> counts payslips, not people employed. Cost per head is the fair way to compare two months.",
-                "vi": "<b>nhân viên được trả lương</b> đếm phiếu lương, không đếm người đang làm. Chi phí bình quân đầu người là cách so hai tháng cho công bằng."
+              "affects": {
+                "en": "Cost per head is the fair way to compare two months of different size.",
+                "vi": "Chi phí bình quân đầu người là cách so hai tháng có quy mô khác nhau cho công bằng."
               },
+              "anchor": "wa-kpis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The numbers",
                 "vi": "Các con số"
               },
               "lines": [],
+              "look": {
+                "en": "The figures employees paid, joined, left and cost per head.",
+                "vi": "Các con số nhân viên được trả lương, đã tham gia, đã nghỉ và chi phí bình quân đầu người."
+              },
+              "means": {
+                "en": "Employees paid counts payslips, not people employed.",
+                "vi": "Nhân viên được trả lương đếm phiếu lương, không đếm người đang làm."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Joined or left, to see the people behind the number.",
+                "vi": "Đã tham gia hoặc đã nghỉ, để xem những người đứng sau con số."
+              },
               "screen": "workforcean",
-              "tip": "",
+              "tip": {
+                "en": "In a month still in progress, anyone not yet paid counts as left. Read a finished month.",
+                "vi": "Trong một tháng chưa xong, ai chưa được trả lương đều bị tính là đã nghỉ. Hãy đọc một tháng đã xong."
+              },
               "title": {
                 "en": "Paid, joined, left, cost per head",
                 "vi": "Được trả, vào làm, đã nghỉ, chi phí bình quân"
@@ -24820,17 +25145,26 @@
               "visual": "none"
             },
             {
-              "anchor": "wa-chart",
-              "body": {
-                "en": "A step is a wave of joiners or leavers — or a run that left somebody out. Compare it with People › Employees before you explain it.",
-                "vi": "Một bậc nhảy là một đợt người vào hoặc người nghỉ — hoặc một đợt lương đã bỏ sót ai đó. Hãy so với Con người › Nhân viên trước khi giải thích."
+              "affects": {
+                "en": "Compare it with People › Employees before you explain it to anyone.",
+                "vi": "Hãy so với Con người › Nhân viên trước khi giải thích cho bất kỳ ai."
               },
+              "anchor": "wa-chart",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Read the line",
                 "vi": "Đọc đường biểu đồ"
               },
               "lines": [],
+              "look": {
+                "en": "The Headcount paid chart, month by month.",
+                "vi": "Biểu đồ Số lượng nhân viên được trả, từng tháng."
+              },
+              "means": {
+                "en": "A step in the line is a wave of joiners or leavers, or a run that left somebody out.",
+                "vi": "Một bậc trên đường biểu đồ là một đợt người vào hoặc người nghỉ, hoặc một đợt lương đã bỏ sót ai đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -24844,21 +25178,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wa-duo",
-              "body": {
-                "en": "Attendance exceptions and who carries the overtime. Hùng carries the most this month.",
-                "vi": "Bất thường chấm công và ai đang gánh phần tăng ca. Tháng này Hùng gánh nhiều nhất."
+              "affects": {
+                "en": "People close to the monthly overtime ceiling are flagged here, before it becomes a breach.",
+                "vi": "Những người gần chạm trần tăng ca của tháng được đánh dấu ở đây, trước khi thành vi phạm."
               },
+              "anchor": "wa-duo",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Time",
                 "vi": "Thời gian"
               },
               "lines": [],
+              "look": {
+                "en": "Attendance exceptions beside Overtime load.",
+                "vi": "Bất thường chấm công bên cạnh Tải ngoài giờ."
+              },
+              "means": {
+                "en": "Exceptions are attendance problems. Overtime is often what they lead to.",
+                "vi": "Bất thường là các vấn đề chấm công. Tăng ca thường là hệ quả của chúng."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "An exception row, to see the employees it affects.",
+                "vi": "Một dòng bất thường, để xem những nhân viên bị ảnh hưởng."
+              },
               "screen": "workforcean",
               "tip": "",
               "title": {
@@ -24868,21 +25215,34 @@
               "visual": "none"
             },
             {
-              "anchor": "wa-filters",
-              "body": {
-                "en": "Pick a division or department to see only its people. <b>Clear filters</b> brings the whole company back.",
-                "vi": "Chọn một bộ phận hoặc phòng ban để chỉ xem người của nó. <b>Bỏ bộ lọc</b> đưa cả công ty trở lại."
+              "affects": {
+                "en": "Read an alarming number again with these in view. Clear filters brings the whole company back.",
+                "vi": "Hãy đọc lại một con số đáng lo khi nhìn thấy các ô này. Bỏ bộ lọc đưa cả công ty trở lại."
               },
+              "anchor": "wa-filters",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Narrow it",
                 "vi": "Thu hẹp"
               },
               "lines": [],
+              "look": {
+                "en": "The All divisions and All departments pickers.",
+                "vi": "Các ô chọn Tất cả các bộ phận và Tất cả phòng ban."
+              },
+              "means": {
+                "en": "They narrow every panel to one division or department.",
+                "vi": "Chúng thu hẹp mọi phần về một bộ phận hoặc phòng ban."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "All divisions, to pick one division.",
+                "vi": "Tất cả các bộ phận, để chọn một bộ phận."
+              },
               "screen": "workforcean",
               "tip": "",
               "title": {
@@ -24998,21 +25358,34 @@
           ],
           "steps": [
             {
-              "anchor": "rp-pick",
-              "body": {
-                "en": "Insights › <b>Payroll Report</b> opens on the newest run. Pick another from the list.",
-                "vi": "Phân tích › <b>Báo cáo lương</b> mở trên đợt mới nhất. Chọn đợt khác trong danh sách."
+              "affects": {
+                "en": "Every total and table below follows the run you pick.",
+                "vi": "Mọi tổng và bảng bên dưới đều theo đợt lương bạn chọn."
               },
+              "anchor": "rp-pick",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Payroll Report",
                 "vi": "Báo cáo lương"
               },
               "lines": [],
+              "look": {
+                "en": "The pay run picker at the top of Payroll Report.",
+                "vi": "Ô chọn đợt lương ở đầu Báo cáo lương."
+              },
+              "means": {
+                "en": "It opens on the newest pay run, compared with the run before it.",
+                "vi": "Nó mở trên đợt lương mới nhất, so với đợt liền trước."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "The picker, to choose another pay run.",
+                "vi": "Ô chọn, để chọn một đợt lương khác."
+              },
               "screen": "reports",
               "tip": "",
               "title": {
@@ -25022,17 +25395,26 @@
               "visual": "none"
             },
             {
-              "anchor": "rp-kpis",
-              "body": {
-                "en": "<b>Changes</b> counts the people whose pay moved against the previous run. Open those first.",
-                "vi": "<b>Thay đổi</b> đếm số người có lương thay đổi so với đợt trước. Hãy mở những người đó trước."
+              "affects": {
+                "en": "Open those people first. A mistake in this run shows there.",
+                "vi": "Hãy mở những người đó trước. Sai sót của đợt này sẽ lộ ra ở đó."
               },
+              "anchor": "rp-kpis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The totals",
                 "vi": "Các tổng"
               },
               "lines": [],
+              "look": {
+                "en": "The totals: Employees, Total Gross, Total Deductions, Total Net Pay and Changes.",
+                "vi": "Các tổng: Nhân viên, Tổng thu nhập, Tổng khấu trừ, Tổng thực lĩnh và Thay đổi."
+              },
+              "means": {
+                "en": "Changes counts the people whose pay moved against the previous run.",
+                "vi": "Thay đổi đếm số người có lương thay đổi so với đợt trước."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -25046,21 +25428,34 @@
               "visual": "none"
             },
             {
-              "anchor": "rp-tabs",
-              "body": {
-                "en": "Each row expands to its breakdown. Dept Summary adds the run up by department.",
-                "vi": "Mỗi dòng mở ra phần chi tiết. <b>Tổng hợp theo phòng ban</b> cộng đợt lương theo phòng ban."
+              "affects": {
+                "en": "Dept Summary adds the run up by department.",
+                "vi": "Tổng hợp theo phòng ban cộng đợt lương theo phòng ban."
               },
+              "anchor": "rp-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Three views",
                 "vi": "Ba cách xem"
               },
               "lines": [],
+              "look": {
+                "en": "The tabs Earnings, Deductions and Dept Summary.",
+                "vi": "Các tab Thu nhập, Khấu trừ và Tổng hợp theo phòng ban."
+              },
+              "means": {
+                "en": "Earnings and Deductions list each person. A row opens to its breakdown.",
+                "vi": "Thu nhập và Khấu trừ liệt kê từng người. Mỗi dòng mở ra phần chi tiết."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "Dept Summary, to see the run by department.",
+                "vi": "Tổng hợp theo phòng ban, để xem đợt lương theo phòng ban."
+              },
               "screen": "reports",
               "tip": "",
               "title": {
@@ -25070,25 +25465,34 @@
               "visual": "none"
             },
             {
-              "anchor": "bg-kpis",
-              "body": {
-                "en": "Insights › <b>Budget</b> opens on the year: <b>budget for the year</b>, <b>spent so far</b>, <b>left</b>, and <b>functions running warm or worse</b>. <b>Money gone, year gone</b> sets the share of the budget spent against the share of the year passed.",
-                "vi": "Phân tích › <b>Ngân sách</b> mở trên cả năm: <b>ngân sách cho cả năm</b>, <b>đã chi đến nay</b>, <b>còn lại</b>, và <b>bộ phận đang nóng lên hoặc tệ hơn</b>. <b>Tiền đã đi, năm đã trôi</b> đặt phần ngân sách đã chi cạnh phần năm đã qua."
+              "affects": {
+                "en": "Left turns red once spending passes the budget.",
+                "vi": "Ô Còn lại chuyển đỏ khi chi tiêu vượt ngân sách."
               },
+              "anchor": "bg-kpis",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Budget",
                 "vi": "Ngân sách"
               },
               "lines": [],
+              "look": {
+                "en": "The five big figures: budget for the year, spent so far, left, money gone, year gone, and functions running warm or worse.",
+                "vi": "Năm con số lớn: ngân sách cho cả năm, đã chi đến nay, còn lại, tiền đã đi, năm đã trôi, và bộ phận đang nóng lên hoặc tệ hơn."
+              },
+              "means": {
+                "en": "Money gone, year gone sets the share of the budget spent against the share of the year passed.",
+                "vi": "Tiền đã đi, năm đã trôi đặt phần ngân sách đã chi cạnh phần năm đã qua."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "screen": "reports",
               "tip": {
-                "en": "Press a month below and the same five figures speak for that month. Left turns red once spending passes the budget.",
-                "vi": "Bấm một tháng bên dưới thì năm con số này nói về tháng đó. Ô Còn lại chuyển đỏ khi chi tiêu vượt ngân sách."
+                "en": "Press a month below and the same five figures speak for that month.",
+                "vi": "Bấm một tháng bên dưới thì năm con số này nói về tháng đó."
               },
               "title": {
                 "en": "Five big figures, read first",
@@ -25097,21 +25501,34 @@
               "visual": "none"
             },
             {
-              "anchor": "bg-months",
-              "body": {
-                "en": "<b>Whole year</b>, or press a month, shift-press another, or drag across them.",
-                "vi": "<b>Cả năm</b>, hoặc bấm một tháng, giữ Shift bấm tháng khác, hoặc kéo qua các tháng."
+              "affects": {
+                "en": "The five figures and every function's tile follow the period you choose.",
+                "vi": "Năm con số và ô của mọi bộ phận đều theo khoảng thời gian bạn chọn."
               },
+              "anchor": "bg-months",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The period",
                 "vi": "Khoảng thời gian"
               },
               "lines": [],
+              "look": {
+                "en": "The month strip, starting with Whole year.",
+                "vi": "Dải các tháng, bắt đầu bằng Cả năm."
+              },
+              "means": {
+                "en": "Whole year reads the full year. A month, or a stretch of months, reads only that.",
+                "vi": "Cả năm đọc toàn bộ năm. Một tháng, hoặc một khoảng nhiều tháng, chỉ đọc phần đó."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A month, then shift-press another or drag across them.",
+                "vi": "Một tháng, rồi giữ Shift bấm tháng khác hoặc kéo qua các tháng."
+              },
               "screen": "reports",
               "tip": "",
               "title": {
@@ -25121,21 +25538,34 @@
               "visual": "none"
             },
             {
-              "anchor": "bg-heat",
-              "body": {
-                "en": "Each function compares money gone with year gone. People is <b>On pace</b>; HR operations is <b>Running warm</b>.",
-                "vi": "Mỗi bộ phận so tiền đã đi với năm đã trôi. Con người đang <b>Đúng nhịp</b>; Vận hành nhân sự <b>Đang nóng lên</b>."
+              "affects": {
+                "en": "A function running warm will run out of budget before the year ends, unless spending slows.",
+                "vi": "Một bộ phận đang nóng lên sẽ hết ngân sách trước khi hết năm, nếu chi tiêu không chậm lại."
               },
+              "anchor": "bg-heat",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "The reading",
                 "vi": "Nhận định"
               },
               "lines": [],
+              "look": {
+                "en": "Each function's tile and its word: People is On pace, HR operations is Running warm.",
+                "vi": "Ô của mỗi bộ phận và nhận định của nó: Con người Đúng nhịp, Vận hành nhân sự Đang nóng lên."
+              },
+              "means": {
+                "en": "Each tile compares money gone with year gone.",
+                "vi": "Mỗi ô so tiền đã đi với năm đã trôi."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A tile, to open that function.",
+                "vi": "Một ô, để mở bộ phận đó."
+              },
               "screen": "reports",
               "tip": {
                 "en": "The pay figures fill in by themselves every night; nobody types them.",
@@ -36861,17 +37291,26 @@
           ],
           "steps": [
             {
-              "anchor": "ac-head",
-              "body": {
-                "en": "Settings › <b>Access & delegation</b>. Everyone can open it. Giving roles, <b>See it as</b> and <b>New role</b> are for access managers.",
-                "vi": "Cài đặt › <b>Quyền truy cập & bàn giao</b>. Ai cũng mở được. Giao vai trò, <b>Xem như</b> và <b>Vai trò mới</b> dành cho người quản lý truy cập."
+              "affects": {
+                "en": "What a person is given here decides which screens they see on the left menu.",
+                "vi": "Những gì một người được giao ở đây quyết định họ thấy những màn hình nào trên menu bên trái."
               },
+              "anchor": "ac-head",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "What & why",
                 "vi": "Là gì & vì sao"
               },
               "lines": [],
+              "look": {
+                "en": "The buttons at the top: Hand my access over, and for access managers See it as and New role.",
+                "vi": "Các nút ở trên cùng: Bàn giao quyền của tôi, và với người quản lý truy cập là Xem như và Vai trò mới."
+              },
+              "means": {
+                "en": "Everyone can open this page. Only access managers can give roles or see the app as someone else.",
+                "vi": "Ai cũng mở được trang này. Chỉ người quản lý truy cập mới giao được vai trò hoặc xem ứng dụng như một người khác."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36885,21 +37324,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ac-tabs",
-              "body": {
-                "en": "<b>Roles</b> lists what can be given. <b>People</b> shows what each person holds. <b>Screens</b> shows who opens each screen. <b>Hand-overs</b> lists access lent for a while.",
-                "vi": "<b>Vai trò</b> liệt kê những gì có thể giao. <b>Nhân sự</b> cho thấy mỗi người đang có gì. <b>Màn hình</b> cho thấy ai mở được từng màn hình. <b>Bàn giao</b> liệt kê quyền đang cho mượn tạm thời."
+              "affects": {
+                "en": "Switching tabs changes nobody's access. Pick the tab that matches your question.",
+                "vi": "Đổi tab không thay đổi quyền của ai. Hãy chọn tab đúng với câu hỏi của bạn."
               },
+              "anchor": "ac-tabs",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Four tabs",
                 "vi": "Bốn tab"
               },
               "lines": [],
+              "look": {
+                "en": "The four tabs: Roles, People, Screens and Hand-overs.",
+                "vi": "Bốn tab: Vai trò, Nhân sự, Màn hình và Bàn giao."
+              },
+              "means": {
+                "en": "Four views of the same access: what can be given, who holds what, who opens each screen, and what is lent for a while.",
+                "vi": "Bốn cách xem cùng một quyền truy cập: những gì có thể giao, ai đang giữ gì, ai mở được từng màn hình, và những gì đang cho mượn tạm thời."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "People, to see what one person holds.",
+                "vi": "Nhân sự, để xem một người đang giữ gì."
+              },
               "screen": "access",
               "tip": "",
               "title": {
@@ -36909,21 +37361,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ac-rolecard",
-              "body": {
-                "en": "Each card says in one sentence what the role lets someone do, and <b>Held by</b> how many. Open it for what it opens on the left menu, and what it lets them do.",
-                "vi": "Mỗi thẻ nói trong một câu vai trò đó cho phép làm gì, và bao nhiêu người <b>đang giữ</b>. Mở thẻ để xem nó <b>Mở trên menu bên trái</b> những gì và <b>Cho phép họ</b> làm gì."
+              "affects": {
+                "en": "Whoever is given the role gets exactly what the card lists under Opens on the left menu and Lets them.",
+                "vi": "Ai được giao vai trò sẽ có đúng những gì thẻ ghi ở Mở trên menu bên trái và Cho phép họ."
               },
+              "anchor": "ac-rolecard",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "A role",
                 "vi": "Một vai trò"
               },
               "lines": [],
+              "look": {
+                "en": "A role card: its name, one sentence, and the number of people who hold it.",
+                "vi": "Một thẻ vai trò: tên, một câu mô tả, và số người đang giữ nó."
+              },
+              "means": {
+                "en": "The sentence says in plain words what the role lets someone do.",
+                "vi": "Câu đó nói bằng lời dễ hiểu vai trò cho phép một người làm gì."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "A card, to open it.",
+                "vi": "Một thẻ, để mở nó ra."
+              },
               "screen": "access",
               "tip": "",
               "title": {
@@ -36933,17 +37398,26 @@
               "visual": "none"
             },
             {
-              "anchor": "ac-newrole",
-              "body": {
-                "en": "<b>New role</b> asks what it is called, then where it belongs, and works out the rest. You give a role to a person with <b>Give a role</b>; <b>Take this role away</b> ends it.",
-                "vi": "<b>Vai trò mới</b> hỏi tên gọi, rồi nó thuộc khu vực nào, và tự xác định phần còn lại. Bạn giao vai trò cho một người bằng <b>Giao vai trò</b>; <b>Gỡ vai trò này</b> kết thúc nó."
+              "affects": {
+                "en": "Nobody holds a new role until it is given. Give this to somebody on its card does that, and Take back ends it.",
+                "vi": "Chưa ai giữ vai trò mới cho tới khi nó được giao. Giao vai trò này cho ai đó trên thẻ làm việc đó, và Thu hồi kết thúc nó."
               },
+              "anchor": "ac-newrole",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "A new role",
                 "vi": "Một vai trò mới"
               },
               "lines": [],
+              "look": {
+                "en": "The New role button, for access managers.",
+                "vi": "Nút Vai trò mới, dành cho người quản lý truy cập."
+              },
+              "means": {
+                "en": "It asks What it is called and Where it belongs, then what the role lets someone do.",
+                "vi": "Nó hỏi Tên vai trò và Thuộc khu vực, rồi vai trò đó cho phép một người làm gì."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -36957,21 +37431,34 @@
               "visual": "none"
             },
             {
-              "anchor": "ac-seeas",
-              "body": {
-                "en": "<b>See it as</b> shows the app as that person sees it. A banner says <b>Looking at this as</b> them, and that you still have exactly your own access. <b>Back to your own view</b> ends it.",
-                "vi": "<b>Xem như</b> cho thấy ứng dụng như người đó nhìn thấy. Một dải thông báo ghi bạn đang xem như người đó, và rằng quyền của bạn vẫn giữ nguyên. <b>Quay lại góc nhìn của bạn</b> kết thúc việc xem."
+              "affects": {
+                "en": "Nothing changes for anyone: you still have exactly your own access. Back to your own view ends it.",
+                "vi": "Không có gì thay đổi với ai: quyền của bạn vẫn giữ nguyên. Quay lại góc nhìn của bạn sẽ kết thúc việc xem."
               },
+              "anchor": "ac-seeas",
+              "body": "",
               "consequence": "",
               "kicker": {
                 "en": "Checking",
                 "vi": "Kiểm tra"
               },
               "lines": [],
+              "look": {
+                "en": "The See it as chip, for access managers.",
+                "vi": "Nhãn Xem như, dành cho người quản lý truy cập."
+              },
+              "means": {
+                "en": "It draws the screens the way that person sees them. A banner shows whose eyes you are using.",
+                "vi": "Nó vẽ các màn hình theo cách người đó nhìn thấy. Một dải thông báo cho biết bạn đang xem như ai."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
+              "press": {
+                "en": "See it as, then start typing a name.",
+                "vi": "Xem như, rồi bắt đầu gõ tên."
+              },
               "screen": "access",
               "tip": "",
               "title": {
@@ -36981,11 +37468,12 @@
               "visual": "none"
             },
             {
-              "anchor": "rep-ac-handover",
-              "body": {
-                "en": "Who, what and until when, then <b>Hand it over</b>. Here Lan Anh covers until 21 August. It is taken back automatically the morning after the end date.",
-                "vi": "Cho ai, quyền nào và đến khi nào, rồi <b>Bàn giao</b>. Ở đây Lan Anh trực thay tới hết 21/8. Quyền được tự động thu hồi vào sáng hôm sau ngày kết thúc."
+              "affects": {
+                "en": "On the morning after the end date, exactly what was given is taken back. Both of you get an email.",
+                "vi": "Vào sáng hôm sau ngày kết thúc, đúng những gì đã trao sẽ được thu hồi. Cả hai người đều nhận được email."
               },
+              "anchor": "rep-ac-handover",
+              "body": "",
               "consequence": {
                 "en": "Affects what that person can open until the end date. Reversible: yes — Take back what has ended, or end it early. Verify first: the end date, and that you picked only what they need.",
                 "vi": "Ảnh hưởng: những gì người đó mở được cho tới ngày kết thúc. Hoàn tác: có — thu hồi phần đã hết hạn, hoặc kết thúc sớm. Kiểm tra trước: ngày kết thúc, và bạn chỉ chọn những gì họ cần."
@@ -36995,6 +37483,14 @@
                 "vi": "Khi đi vắng"
               },
               "lines": [],
+              "look": {
+                "en": "The Hand my access over window, drawn open: who, what, and until when.",
+                "vi": "Cửa sổ Bàn giao quyền của tôi, đang mở sẵn: ai, quyền nào, và đến ngày nào."
+              },
+              "means": {
+                "en": "Here Lan Anh covers until 21 August. Pressing Hand it over lends her only the roles you picked.",
+                "vi": "Ở đây Lan Anh trực thay tới hết 21/8. Bấm Bàn giao chỉ cho chị mượn những vai trò bạn đã chọn."
+              },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
@@ -38017,5 +38513,5 @@
       }
     }
   ],
-  "version": "7852a6fcf5d1"
+  "version": "5701ff7a4d3a"
 }
