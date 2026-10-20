@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
@@ -41,9 +42,8 @@ class TestBackupRetention(TransactionCase):
                 records |= rec
             records.invalidate_recordset(['create_date'])
             with patch.object(type(service), '_backup_root', return_value=folder):
-                tenant.slug = 'rize'
-                self.assertEqual(service._prune_nightly(tenant), 0)
-                tenant.slug = 'retentioncheck'
+                self.assertEqual(service._prune_nightly(SimpleNamespace(slug='rize', state='live')), 0)
+                self.assertEqual(service._prune_nightly(SimpleNamespace(slug='retired', state='decommissioned')), 0)
                 self.assertEqual(service._prune_nightly(tenant), 1)
             self.assertFalse((root / tenant.slug / 'old').exists())
             self.assertTrue((root / tenant.slug / 'latest').is_file())
