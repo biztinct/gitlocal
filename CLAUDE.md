@@ -35,8 +35,10 @@ databases. The screens simply showed old behaviour.
    its own odoo git clone. Split them with:
    `git -C /odoo/odoo-server ls-files addons | cut -d/ -f2 | sort -u` — that is
    the standard set; everything else is ours.
-5. **Upgrade every database**, not just one: `payobook`, `abm`, `acme`,
-   `payobook_template` drift apart independently. New files with an old
+5. **Check every active database**, not just one: `payobook`, `payobook_template`,
+   `p0clone`, `rize`. Upgrade modules where already installed. ABM is retired:
+   do not deploy to or recreate it until the owner explicitly requests it.
+   Preserve `/odoo/archives/abm-20261020`. New files with an old
    `ir_module_module.latest_version` means none of that module's views, data or
    assets have loaded.
 6. After JS/SCSS changes: `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'`
