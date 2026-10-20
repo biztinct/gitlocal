@@ -215,8 +215,13 @@ class TestMission(TransactionCase):
         calls = set(re.findall(r'orm\.call\(\s*"([a-z_.]+)"', src))
         # LEARN v3: learn.path (the learner's own role pick) is part of the
         # learning spine too.
+        # LEARNREV P5b: learn.guide only for `rpc_feedback` — the thumbs on a
+        # practice-copy card write one learning-log row, nothing else.
         allowed = {'learn.runtime', 'learn.progress', 'learn.event', 'learn.confidence',
-                   'learn.path', 'learn.feedback'}
+                   'learn.path', 'learn.feedback', 'learn.guide'}
+        guide_calls = set(re.findall(r'orm\.call\(\s*"learn\.guide"\s*,\s*"([a-z_]+)"', src))
+        self.assertLessEqual(guide_calls, {'rpc_feedback'},
+                             "The Journey may only rate through learn.guide: %s" % guide_calls)
         self.assertFalse(calls - allowed,
                          "The Journey calls models outside the learning spine: %s"
                          % (calls - allowed))
