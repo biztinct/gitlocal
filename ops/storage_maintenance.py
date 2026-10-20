@@ -103,7 +103,9 @@ def backup_database(path):
                 info = archive.getinfo('manifest.json')
                 if info.file_size > 1024 * 1024 or 'dump.sql' not in archive.namelist():
                     return None
-                return json.loads(archive.read(info)).get('db_name')
+                manifest = json.loads(archive.read(info))
+                database = manifest.get('db_name') if isinstance(manifest, dict) else None
+                return database if isinstance(database, str) else None
         if path.suffix in {'.dump', '.backup'}:
             result = subprocess.run(['pg_restore', '--list', str(path)],
                 capture_output=True, text=True, timeout=60, check=True)
