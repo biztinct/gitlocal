@@ -3,3 +3,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # Server uses UTC. Daily retention, with a seven-day age threshold.
 15 16 * * * root /usr/bin/python3 /odoo/ops/storage_maintenance.py tmp --apply >> /var/log/payobook-storage-cleanup.log 2>&1
 25 16 * * * root /usr/bin/python3 /odoo/ops/storage_maintenance.py backups --apply >> /var/log/payobook-storage-cleanup.log 2>&1
+# Check the size cap hourly as well as the system's daily log rotation.
+17 * * * * root /usr/sbin/logrotate /etc/logrotate.d/odoo-server >> /var/log/payobook-storage-cleanup.log 2>&1
