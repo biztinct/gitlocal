@@ -89,6 +89,25 @@ class PbResignation(models.Model):
         string='Agreed last working day', tracking=True,
         help='What HR agreed. This is the date that goes on the employee '
              'record and the date the leaving checklist counts from.')
+    pb_contractual_lwd = fields.Date(
+        string='Last working day under notice', tracking=True,
+        groups='pb_lifecycle.group_lifecycle_manager',
+        help='Reviewed contractual notice end date, distinct from the requested or approved last day.')
+    pb_unserved_notice_days = fields.Integer(
+        string='Unserved notice days', tracking=True,
+        groups='pb_lifecycle.group_lifecycle_manager',
+        help='Reviewed notice shortfall. This does not authorize a deduction or waive notice.')
+    pb_interview_status = fields.Selection([
+        ('not_scheduled', 'Not scheduled'), ('scheduled', 'Scheduled'),
+        ('conducted', 'Conducted'), ('waived', 'Waived'),
+    ], string='Exit interview status', tracking=True,
+        groups='pb_lifecycle.group_lifecycle_manager',
+        help='An interview is separate from the exit feedback questionnaire. No status is inferred from feedback.')
+    pb_interview_date = fields.Date('Exit interview date', tracking=True,
+                                    groups='pb_lifecycle.group_lifecycle_manager')
+    pb_interview_owner_id = fields.Many2one(
+        'res.users', string='Exit interviewer', tracking=True,
+        groups='pb_lifecycle.group_lifecycle_manager')
     departure_reason_id = fields.Many2one(
         'hr.departure.reason', string='Reason on the record',
         default=lambda self: self.env.ref('hr.departure_resigned',

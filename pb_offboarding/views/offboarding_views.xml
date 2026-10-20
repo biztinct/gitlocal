@@ -97,6 +97,11 @@
                     </group>
                     <group string="HR only"
                            groups="pb_lifecycle.group_lifecycle_manager">
+                        <field name="pb_contractual_lwd"/>
+                        <field name="pb_unserved_notice_days"/>
+                        <field name="pb_interview_status"/>
+                        <field name="pb_interview_date" invisible="not pb_interview_status or pb_interview_status == 'not_scheduled'"/>
+                        <field name="pb_interview_owner_id" invisible="not pb_interview_status or pb_interview_status == 'not_scheduled'"/>
                         <field name="regrettable"/>
                         <field name="hr_note"
                                placeholder="Anything worth remembering about this one…"/>

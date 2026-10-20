@@ -6,9 +6,8 @@
     'description': """
 Sudima Phase K — Leave Management (#8) as a bespoke HR Command Center.
 
-A FACADE-ONLY cockpit over the existing hr_holidays engine — pb_timeoff adds NO
-leave logic. Every mutation rides core hr.leave's own gated actions AS THE REAL
-USER (C18.17); there is no sudo anywhere in the module.
+A cockpit over the native hr_holidays engine, with versioned country policy rules,
+audited allocation posting, payroll classification and exit assessment.
 
   * Who's out today · pending KPIs · this-week out-by-day
   * Approval queue (To approve / 2nd approval) with one-click approve/refuse
@@ -29,7 +28,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # it: a published revision is FROZEN (requests under way keep the rules
     # they were given), so the migration publishes a new revision instead of
     # writing over the old one. Found live; see the ledger.
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -49,6 +48,10 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
         'security/ir.model.access.csv',
         'views/holiday_journey.xml',
         'security/pb_timeoff_security.xml',
+        'security/policy/ir.model.access.csv',
+        'security/rize_policy_security.xml',
+        'views/rize_policy_views.xml',
+        'views/policy_year_opening_views.xml',
         'views/pb_timeoff_action.xml',
         'views/hr_leave_type_views.xml',
         'views/portal_holidays.xml',

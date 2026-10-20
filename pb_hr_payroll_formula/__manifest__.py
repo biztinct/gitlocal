@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.149.3',
+    'version': '19.0.1.150.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
@@ -63,6 +63,8 @@ License: LGPL-3
         'security/ir.model.access.csv',
         'security/import_approval_rules.xml',
         'security/p7_proposal_rules.xml',
+        'security/application_source_security.xml',
+        'security/payroll_period_input_security.xml',
 
         # Data
         'data/formula_functions_data.xml',
@@ -117,6 +119,8 @@ License: LGPL-3
         'views/menu_views.xml',
         'views/hr_payslip_formula_views.xml',
         'views/hr_payslip_run_views.xml',
+        'views/application_source_views.xml',
+        'views/payroll_period_input_views.xml',
         # Reports
         'report/shadow_certificate.xml',
         'report/payslip_themed.xml',
@@ -139,6 +143,8 @@ License: LGPL-3
             # T4.4 — source-field autocomplete widget (integration field mapping)
             'pb_hr_payroll_formula/static/src/js/source_field_autocomplete.js',
             'pb_hr_payroll_formula/static/src/xml/source_field_autocomplete.xml',
+            'pb_hr_payroll_formula/static/src/js/application_source_field.js',
+            'pb_hr_payroll_formula/static/src/xml/application_source_field.xml',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation
             # The standard Odoo tree view is used instead for formula configuration

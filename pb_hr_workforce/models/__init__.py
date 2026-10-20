@@ -11,3 +11,5 @@ from . import ot_ceiling
 from . import attendance_weekentry
 from . import ot_desk
 from . import overtime_request_approval
+
+from . import overtime_extended

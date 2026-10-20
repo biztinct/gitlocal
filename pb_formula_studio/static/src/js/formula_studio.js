@@ -3574,6 +3574,12 @@ export class PbFormulaStudio extends Component {
      * (another company). Every one of those falls back to the old panel while
      * it is still here, and to a plain sentence once it is gone.
      */
+    async openApplicationSources() {
+        if (!this.state.config?.id) { return; }
+        const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[this.state.config.id]]);
+        return this.action.doAction(action);
+    }
+
     async openSettings() {
         if (!this.state.config || !this.state.config.id) return;
         const cid = this.state.config.id;

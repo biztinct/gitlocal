@@ -13,3 +13,5 @@ from . import test_two_schemes_one_month
 # PAYAI P0 — the door has a lock; Clean and Run has rails.
 from . import test_p0_runner_gate
 from . import test_contract_period_population
+
+from . import test_application_payroll_wizard

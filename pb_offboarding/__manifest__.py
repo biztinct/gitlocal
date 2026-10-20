@@ -60,7 +60,7 @@ Nothing here modifies `pb_lifecycle`, `pb_zoho_bridge`, `pb_assets`,
 declared inside this module, so a plain install is the whole deployment.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

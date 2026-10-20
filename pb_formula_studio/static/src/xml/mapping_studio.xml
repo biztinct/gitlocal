@@ -19,6 +19,7 @@
             <span class="pbms-brand__ic" t-out="ic('gitMerge', 18)"/>
             <span class="pbms-brand__t">Mapping</span>
           </div>
+          <button t-if="state.configId" class="pbim-btn" t-on-click="openApplicationSources">Application sources</button>
           <button t-if="isDesk or isJourney" class="pbim-btn pbms-compact-scheme" t-on-click="(ev) => this.togglePicker('config', ev)"><t t-esc="configName"/> ▾</button>
         </div>
 

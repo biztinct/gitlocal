@@ -1,0 +1,63 @@
+Rize absence policy and application-data payroll — implementation release
+Owner approval: 21 October 2026. Prospective Rize activation: 1 November 2026.
+
+Scope
+Generic functionality ships to payobook, payobook_template, p0clone and rize,
+only upgrading already-installed modules. Client mapping and policy seed helpers
+refuse any database other than rize. ABM is retired and out of scope.
+
+Decisions
+Contractual payroll is the default, with employee work-calendar standard days
+and an optional scheme fixed divisor. Timesheet mode requires manager approval
+and attendance reconciliation. Paid absence contributes once; unpaid/partial
+absence reduces employer-paid day equivalents. Spreadsheet calculations retain
+their existing branches. No prior result or opening balance is fabricated.
+
+Application runs require explicit period completeness review, typed sources,
+required-input coverage, and frozen evidence checked at payroll approval.
+Pending adjustments cannot be certified as zero. Nonzero overtime must reach a
+pay-affecting component. Vietnam adds 150/200/300 percent application OT using
+the existing hourly basis and existing downstream tax routing; other categories
+require explicit mapped treatment. Policy controls require prior employee and
+manager approval evidence, timesheet evidence, 40 monthly / 200 annual hours;
+300 annual requires verified industry authority in a new published edition.
+
+Canonical ownership
+The 480 reviewed inputs have 350 resolved-provider bindings (including eight
+protected HR-only blood/religion bindings excluded from payroll snapshots),
+85 explicit pending domain metadata bindings, 20 retained recurring contract
+terms, 21 retained reviewed payroll controls, and four legacy spreadsheet-only
+inputs. Exact existing values may fill empty canonical fields; conflicts remain
+for review. Assets, exit cases, documents and probation use their native owners.
+New mode, paid-day, settlement and Vietnam OT inputs are additional to the 480.
+
+Policy
+Detailed country clauses take precedence over summary tables. Current active
+employees covered by the four approved Rize schemas have owner-confirmed
+full-time eligibility. Versioned country editions and native country leave types
+are seeded prospectively. Annual allocations/opening balances need reconciled
+HR evidence; optional scheduled year openings require explicit enrollment.
+Singapore leave cashout and every country's excess-leave recovery remain
+pending HR/payroll tax-treatment confirmation. Ambiguous or unfunded leave
+categories block only affected requests/inputs until reviewed. Terminal leave
+settlement preserves allocation history and prevents duplicate payout.
+
+Validation before release
+57 affected Odoo tests passed after the overtime and pending-adjustment review.
+Six application payroll wizard tests passed. Two Node orchestration tests passed.
+354 Python files parsed and module XML validated. Final completeness regression
+run and deployed validation are recorded in the deployment receipt/report.
+
+Deployment procedure
+1. Recheck branch and current server jobs; acquire deployment locks.
+2. Back up four databases, filestores and changed custom modules. Rize backup
+   is permanent; nonproduction retention is seven days, preserving the latest.
+3. Deploy latest combined custom content; never replace server standard addons.
+4. Upgrade installed changed modules, test p0clone, then the remaining databases.
+5. Run tools/migrate_rize_application_sources.py in rize dry-run mode. Verify
+   spreadsheet controls and unchanged business hashes; then apply once.
+6. Seed tools/seed_rize_absence_policy.py with owner-approved exact schema scope,
+   dry-run/transaction rollback first, then commit. Verify idempotence.
+7. Restore prior cron states (template stays fully inactive), verify module
+   content/versions, restart, check all hosts, walk the deployed UI in Chrome.
+8. Remove only screenshots created by this test run. Preserve unrelated files.

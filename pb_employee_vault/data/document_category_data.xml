@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+    <record id="cat_offer_letter" model="pb.employee.document.category">
+        <field name="name">Offer Letter</field>
+        <field name="code">OFFER</field>
+        <field name="requires_expiry" eval="False"/>
+        <field name="sequence">9</field>
+    </record>
     <!-- Default document categories. noupdate=1 so a deployment may rename /
          re-sequence / add its own without a -u reverting the edits. -->
     <record id="cat_labor_contract" model="pb.employee.document.category">

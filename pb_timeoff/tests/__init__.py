@@ -7,3 +7,7 @@ from . import test_carry_watch
 from . import test_holiday_journey
 # TIERS T3b: tokened papers links
 from . import test_t3b_papers_token
+
+from . import test_rize_policy
+
+from . import test_policy_year_opening

@@ -164,6 +164,12 @@ export class MappingStudio extends Component {
                           RuleComposer, HubBackChip };
     static props = ["*"];
 
+    async openApplicationSources() {
+        if (!this.state.configId) { return; }
+        const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[this.state.configId]]);
+        return this.action.doAction(action);
+    }
+
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");

@@ -71,6 +71,7 @@
                             <field name="rate_display" string="Rate Multiplier"/>
                         </group>
                     </group>
+                    <group string="Policy evidence"><field name="policy_approval_reference"/><field name="policy_employee_agreed_on"/><field name="policy_manager_approved_on"/><field name="policy_timesheet_reference"/></group>
                     <group string="Reason">
                         <field name="reason" nolabel="1"/>
                     </group>

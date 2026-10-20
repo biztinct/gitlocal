@@ -291,6 +291,10 @@ export class PayrunWizard extends Component {
                 loading: false,
                 open: false,        // the "just a few people" panel
             },
+            application: {
+                loading: false, preview: null, error: "", reason: "", zeroKeys: [],
+                channels: { leave: false, overtime: false, adjustments: false, timesheets: false },
+            },
             sheet: {
                 gate: null,        // spreadsheet_gate(): null / {wanted:false} / {wanted:true, …}
                 file_b64: "", file_name: "",
@@ -305,6 +309,10 @@ export class PayrunWizard extends Component {
                 mode: freshSheetMode(),
             },
         });
+        if (!this.state.application) {
+            this.state.application = { loading: false, preview: null, error: "", reason: "", zeroKeys: [],
+                channels: { leave: false, overtime: false, adjustments: false, timesheets: false } };
+        }
         // Breadcrumb navigation remounts client actions. Keep the selected
         // period, scope, upload and current step in the controller's memory.
         useSetupAction({ getLocalState: () => ({ payrun: JSON.parse(JSON.stringify(this.state)) }) });
@@ -412,6 +420,62 @@ export class PayrunWizard extends Component {
     /** A count with the reader's own thousands separator — "1,002", not "1002". */
     num(n) { return Number(n || 0).toLocaleString(); }
     get wantsSheet() { const g = this.state.sheet.gate; return !!(g && g.wanted); }
+    get applicationSettings() { return this.state.sheet.gate?.application || {}; }
+    get applicationEnabled() { return !!this.applicationSettings.enabled; }
+    get wantsPayData() { return this.wantsSheet || this.applicationEnabled; }
+    get applicationBlockers() { return (this.state.application.preview?.blockers || []).slice(0, 80); }
+    get applicationZeroOptions() { return this.state.application.preview?.zero_options || []; }
+    applicationPayload() {
+        const payload = { ...this.state.form, spreadsheet_skipped: true,
+            application_certifications: { channels: { ...this.state.application.channels },
+                zero_keys: [...this.state.application.zeroKeys] },
+            application_certification_reason: this.state.application.reason };
+        if (this.hasStatusFilter) { payload.statuses = this.chosenStatuses; }
+        if (this.state.who.picked.length) { payload.employee_ids = [...this.state.who.picked]; }
+        return payload;
+    }
+    invalidateApplicationScope() {
+        Object.assign(this.state.application, { preview: null, reason: "", zeroKeys: [],
+            channels: { leave: false, overtime: false, adjustments: false, timesheets: false } });
+    }
+    changeApplicationChannel(key, ev) {
+        this.state.application.channels[key] = ev.target.checked;
+        this.state.application.preview = null;
+    }
+    changeApplicationZero(key, ev) {
+        this.state.application.zeroKeys = ev.target.checked
+            ? [...new Set([...this.state.application.zeroKeys, key])]
+            : this.state.application.zeroKeys.filter((v) => v !== key);
+        if (this.state.application.preview) { this.state.application.preview.ok = false; }
+    }
+    changeApplicationReason(ev) {
+        this.state.application.reason = ev.target.value;
+        if (this.state.application.preview) { this.state.application.preview.ok = false; }
+    }
+    async previewApplicationData() {
+        const a = this.state.application;
+        a.loading = true; a.error = "";
+        try {
+            a.preview = await this.orm.silent.call("pb.payrun.wizard", "application_data_preview", [this.applicationPayload()]);
+            return a.preview.ok;
+        } catch (e) {
+            a.error = e?.data?.message || e?.message || "Application data could not be checked.";
+            a.preview = null;
+            return false;
+        } finally { a.loading = false; }
+    }
+    async openApplicationSettings() {
+        const id = this.sheetConfigId;
+        if (!id) { return; }
+        const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[id]]);
+        await this.action.doAction(action, { onClose: () => this._refreshGate(false) });
+    }
+    async openApplicationEvents() {
+        const id = this.sheetConfigId;
+        if (!id) { return; }
+        const action = await this.orm.call("hr.formula.config", "action_application_period_inputs", [[id]]);
+        return this.action.doAction(action);
+    }
     // SC-4 — the scheme's source lanes, from the gate payload. Everything
     // defaults ON so an old server changes nothing about this screen.
     get lanes() {
@@ -513,7 +577,7 @@ export class PayrunWizard extends Component {
                 ? "1 name copied." : `${this.missingPeople.length} names copied.`,
             { type: "info" });
     }
-    get stepKeys() { return this.wantsSheet ? STEPS_SHEET : STEPS_PLAIN; }
+    get stepKeys() { return this.wantsPayData ? STEPS_SHEET : STEPS_PLAIN; }
     get steps() { return this.stepKeys.map((k) => STEP_LABELS[k]); }
     get stepKey() { return this.stepKeys[this.state.step - 1] || "period"; }
     gotoKey(k) { const i = this.stepKeys.indexOf(k); if (i >= 0) { this.state.step = i + 1; } }
@@ -524,6 +588,7 @@ export class PayrunWizard extends Component {
             ? `${this.chosenScheme.name} · ${this._periodLabel()}` : null;
         this.state.form[f] = ev.target.value;
         if (f === "date_start" || f === "date_end") {
+            this.invalidateApplicationScope();
             // A changed period can add a new hire or remove a leaver. Refresh
             // both scope previews before the user proceeds with that period.
             if (automaticName && this.state.form.name === automaticName) {
@@ -636,8 +701,15 @@ export class PayrunWizard extends Component {
                   [{ formula_config_id: this.state.form.formula_config_id || 0 }])
             .catch(() => null);
         if (!gate) { return; }
+        if (this.state.sheet.gate?.application?.settings_stamp !== gate.application?.settings_stamp) {
+            this.invalidateApplicationScope();
+        }
         this.state.sheet.gate = gate;
-        if (clearFile) { this.clearSheetFile(); }
+        if (clearFile) {
+            this.clearSheetFile();
+            Object.assign(this.state.application, { preview: null, error: "", reason: "", zeroKeys: [],
+                channels: { leave: false, overtime: false, adjustments: false, timesheets: false } });
+        }
     }
 
     /** How many people this scheme covers, and who it leaves out. */
@@ -708,6 +780,7 @@ export class PayrunWizard extends Component {
     }
 
     toggleStatus(value) {
+        this.invalidateApplicationScope();
         const t = this.state.who.statuses;
         if (!t) { return; }
         t[value] = !t[value];
@@ -721,12 +794,13 @@ export class PayrunWizard extends Component {
     }
 
     togglePicked(id) {
+        this.invalidateApplicationScope();
         const picked = this.state.who.picked;
         const at = picked.indexOf(id);
         if (at >= 0) { picked.splice(at, 1); } else { picked.push(id); }
     }
 
-    clearPicked() { this.state.who.picked = []; }
+    clearPicked() { this.state.who.picked = []; this.invalidateApplicationScope(); }
 
     /** Live count, so nobody presses Run Payroll and then discovers the scope. */
     async refreshWho() {
@@ -916,7 +990,8 @@ export class PayrunWizard extends Component {
 
     // "Run without a spreadsheet" — a choice made while looking at the list of
     // components that will fall back, never a silent default.
-    runWithoutSheet() {
+    async runWithoutSheet() {
+        if (this.applicationEnabled && !(await this.previewApplicationData())) { return; }
         Object.assign(this.state.sheet, {
             skipped: true, file_b64: "", file_name: "", preflight: null, error: "",
         });
@@ -944,7 +1019,7 @@ export class PayrunWizard extends Component {
                 { type: "warning" });
             return;
         }
-        if (this.wantsSheet) { return this.gotoKey("data"); }
+        if (this.wantsPayData) { return this.gotoKey("data"); }
         return this.toCompute();
     }
 
@@ -956,8 +1031,12 @@ export class PayrunWizard extends Component {
         try {
             await this._compute(false);
         } catch (e) {
-            this.notif.add("Could not compute the run. See server logs.", { type: "danger" });
-            this.gotoKey("period");
+            const reason = e?.data?.message || e?.message || "Could not compute the run. See server logs.";
+            this.notif.add(reason, { type: "danger" });
+            if (this.state.sheet.skipped && this.applicationEnabled) {
+                this.state.application.error = reason;
+                this.gotoKey("data");
+            } else { this.gotoKey("period"); }
         } finally {
             this.state.loading = false;
             this.state.progress = null;
@@ -970,7 +1049,7 @@ export class PayrunWizard extends Component {
     // (no more "two spinners"). Each batch commits independently on the server.
     async _compute(force) {
         const sheet = this.state.sheet;
-        const payload = { ...this.state.form, force_clean: force };
+        const payload = { ...(sheet.skipped && this.applicationEnabled ? this.applicationPayload() : this.state.form), force_clean: force };
         if (sheet.skipped) { payload.spreadsheet_skipped = true; }
         // VALUEKIND P4 — who the person chose. Absent when the scheme names no
         // employment-status component, in which case the server takes no view
@@ -1006,7 +1085,10 @@ export class PayrunWizard extends Component {
             // PAYAI P0 — the period's payroll is approved, paid or waiting for
             // approval. The server names the runs and the reasons; there is no
             // "Clean and Run" to offer, only the way back to step 1.
-            this.gotoKey("period");
+            if (prep.application_preflight) {
+                this.state.application.preview = prep.application_preflight;
+                this.gotoKey("data");
+            } else { this.gotoKey("period"); }
             this.notif.add(prep.message, { type: "warning", sticky: true });
             return;
         }

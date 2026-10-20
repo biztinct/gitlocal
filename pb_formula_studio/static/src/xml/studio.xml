@@ -128,6 +128,7 @@
               </div>
             </div>
             <div class="pbfs-top-actions">
+              <button class="pbfs-btn soft" t-if="state.config" t-on-click="openApplicationSources" title="Calculation basis and application source mappings">Application sources</button>
               <button class="pbfs-btn pbfs-cmdbtn" data-coach="fs-command" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Command Center","desc":"Every tool in one place. Press Ctrl or Cmd + K"}' t-on-click="openCommand" title="Command Center — every tool in one place (Ctrl/Cmd K)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                 <span>Tools</span>

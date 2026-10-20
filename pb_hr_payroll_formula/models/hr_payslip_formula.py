@@ -181,7 +181,16 @@ class HrPayslipFormula(models.Model):
             # the values, never derived afterwards: re-deriving would have to guess
             # which branch won, which is the whole class of bug this replaces.
             input_sources = {}
-            input_values = payslip._get_formula_input_values(config, provenance=input_sources)
+            if hasattr(payslip, '_application_mode') and payslip._application_mode():
+                # Materialize line definitions before freezing the scheme
+                # stamp. Creating their links afterwards would stale the
+                # snapshot during its own first successful computation.
+                for rule in config.rule_ids.filtered(lambda r: r.appears_on_payslip
+                        and value_kind_classifier.wants_number(r.value_kind) and not r.salary_rule_id):
+                    rule._pb_ensure_salary_rule(payslip.company_id)
+                input_values, input_sources = payslip._application_resolve_inputs(config)
+            else:
+                input_values = payslip._get_formula_input_values(config, provenance=input_sources)
             payslip.formula_input_values = json.dumps(input_values, indent=2)
             payslip.formula_input_sources = json.dumps(input_sources, indent=2)
             payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
@@ -609,7 +618,10 @@ class HrPayslipFormula(models.Model):
         if not lane_rank:
             lane_rank = (self.env['hr.formula.rule']._SOURCE_RANK
                          + ('contract_component',))
-        api_lane_ok = 'feed' in lane_rank
+        # An explicit application-data run never consumes cached import/feed
+        # payloads. Its final typed providers and signed coverage run after
+        # this legacy record-only resolution.
+        api_lane_ok = 'feed' in lane_rank and not self.env.context.get('pb_application_data_mode')
         records_lane_ok = 'employee_field' in lane_rank
         records_first = records_lane_ok and (
             not api_lane_ok
@@ -854,7 +866,7 @@ class HrPayslipFormula(models.Model):
         #     the failure is logged where the run summary can read it and the
         #     payslip computes as a full month, exactly as it does today.
         # ==============================================================
-        if 'pb.work.segment' in self.env:
+        if 'pb.work.segment' in self.env and not self.env.context.get('pb_application_data_mode'):
             try:
                 self.env['pb.work.segment'].apply_to_inputs(
                     self, config, values, provenance)
@@ -1087,6 +1099,12 @@ class HrPayslipFormula(models.Model):
                 payslip.formula_config_id = config.id
             if payslip.calculation_method != 'formula':
                 payslip.calculation_method = 'formula'
+
+            if hasattr(payslip, '_application_mode') and payslip._application_mode():
+                # Never reuse an old import line or stored spreadsheet blob
+                # when the user explicitly selected application records.
+                payslip.compute_sheet_with_formulas()
+                continue
 
             import_line = self.env['hr.payroll.import.line'].search(
                 [('payslip_id', '=', payslip.id)],

@@ -469,3 +469,24 @@ $pw-lock-bd: #A7E3D5;
     opacity: 1; box-shadow: none; cursor: not-allowed; transform: none;
     &:hover { background: #e9ecf3; border-color: #dce0e9; color: #9098aa; }
 }
+
+// Application payroll: period review and traceable source values.
+.pw-appdata {
+    margin-bottom: 22px; padding: 22px; border: 1px solid #ccd5f3;
+    border-radius: 16px; background: #fff;
+    h3 { margin: 0 0 8px; font-size: 19px; }
+    .pw-appdata-head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+    .pw-appdata-basis { display: flex; flex-wrap: wrap; gap: 10px 20px; padding: 14px 0; border-bottom: 1px solid #e5e8f2; font-size: 13px; }
+    .pw-appdata-review { display: grid; grid-template-columns: 1.5fr 1fr; gap: 26px; padding-top: 18px; }
+    .pw-appcheck { display: flex; align-items: start; gap: 9px; margin: 11px 0; font-size: 13px; input { margin-top: 3px; accent-color: #5c49b5; } }
+    .pw-appreason { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; font-size: 13px; input { padding: 10px; border: 1px solid #ccd5ed; border-radius: 8px; width: 100%; } }
+    .pw-appdata-check { display: flex; flex-direction: column; gap: 12px; align-items: stretch; .pw-cov { display: flex; flex-direction: column; gap: 6px; } }
+    details { border-top: 1px solid #e5e8f2; padding-top: 12px; margin-top: 14px; }
+    summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+    .pw-apptable { max-height: 340px; overflow: auto; margin-top: 16px; border: 1px solid #e5e8f2; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #edf0f7; vertical-align: top; }
+    th { background: #f4f6fc; position: sticky; top: 0; z-index: 1; }
+    small { color: #77728d; display: block; }
+    @media (max-width: 700px) { .pw-appdata-review { grid-template-columns: 1fr; } .pw-appdata-head { flex-direction: column; } }
+}

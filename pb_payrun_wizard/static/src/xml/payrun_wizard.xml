@@ -189,13 +189,89 @@
                 <!-- Pay data (NETROLE P3) — present only when a scheme binds
                      components to spreadsheet columns. -->
                 <t t-elif="stepKey === 'data'">
+                    <section class="pw-appdata" t-if="state.sheet.gate.application">
+                        <div class="pw-appdata-head">
+                            <div><h3>Run from application data</h3>
+                                <p class="pw-muted">Use employee records, approved time off, overtime and monthly adjustments for the selected period.</p></div>
+                            <button class="pw-btn ghost pw-btn--sm" t-on-click="openApplicationSettings">Source settings</button>
+                        </div>
+                        <t t-if="applicationEnabled and !state.sheet.file_name">
+                            <div class="pw-appdata-basis">
+                                <b t-if="applicationSettings.basis === 'contractual'">Contractual paid days</b>
+                                <b t-else="">Approved timesheets · reconciled with attendance</b>
+                                <span t-if="applicationSettings.standard_day_basis === 'calendar'">Standard days: employee work calendar</span>
+                                <span t-else="">Standard days: <t t-esc="applicationSettings.fixed_standard_days"/> fixed divisor</span>
+                                <span>Effective from <t t-esc="applicationSettings.effective_from"/></span>
+                            </div>
+                            <div class="pw-appdata-review">
+                                <div>
+                                    <h4>Confirm this period is complete</h4>
+                                    <p class="pw-hint">A payroll manager confirms that all relevant records have been entered and reviewed. Outstanding approvals and conflicting values still block the run.</p>
+                                    <t t-foreach="['leave', 'overtime', 'adjustments', 'timesheets']" t-as="channel" t-key="channel"><label class="pw-appcheck" t-if="channel !== 'timesheets' or applicationSettings.basis === 'timesheet'">
+                                        <input type="checkbox" t-att-checked="state.application.channels[channel]"
+                                               t-att-disabled="!applicationSettings.can_certify"
+                                               t-on-change="(ev) => this.changeApplicationChannel(channel, ev)"/>
+                                        <span><t t-esc="({leave: 'Time off', overtime: 'Overtime', adjustments: 'Monthly adjustments', timesheets: 'Timesheets and attendance'})[channel]"/> records are complete for this period</span>
+                                    </label></t>
+                                    <label class="pw-appreason">Review reference or reason
+                                        <input type="text" placeholder="e.g. October records reviewed against manager approvals" t-att-value="state.application.reason" t-on-input="changeApplicationReason"
+                                               t-att-disabled="!applicationSettings.can_certify"/>
+                                    </label>
+                                    <p class="pw-hint" t-if="!applicationSettings.can_certify">A payroll or HR manager must sign the period review before this run can proceed.</p>
+                                </div>
+                                <div class="pw-appdata-check">
+                                    <button class="pw-btn primary" t-on-click="previewApplicationData" t-att-disabled="state.application.loading">
+                                        <t t-if="state.application.loading">Checking records…</t><t t-else="">Check application data</t>
+                                    </button>
+                                    <button class="pw-btn ghost" t-on-click="openApplicationEvents">Review monthly adjustments</button>
+                                    <div class="pw-err" t-if="state.application.error" t-esc="state.application.error"/>
+                                    <div t-if="state.application.preview" t-attf-class="pw-cov {{state.application.preview.ok ? '' : 'pw-cov--warn'}}" role="status">
+                                        <b><t t-esc="state.application.preview.ok ? 'Ready to compute' : 'Review required'"/></b>
+                                        <span><t t-esc="state.application.preview.summary.employees"/> employees · <t t-esc="state.application.preview.summary.resolved"/> of <t t-esc="state.application.preview.summary.inputs"/> inputs resolved</span>
+                                        <span t-if="state.application.preview.blockers.length"><t t-esc="state.application.preview.blockers.length"/> blocking items</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <details class="pw-appzero" t-if="applicationZeroOptions.length">
+                                <summary>Confirm specific monthly items have no activity</summary>
+                                <p class="pw-hint">Select only items reviewed as zero for every selected employee. Missing contract values and statutory rates cannot be waived here.</p>
+                                <label class="pw-appcheck" t-foreach="applicationZeroOptions" t-as="option" t-key="option.key">
+                                    <input type="checkbox" t-att-checked="state.application.zeroKeys.includes(option.key)" t-att-disabled="!applicationSettings.can_certify"
+                                           t-on-change="(ev) => this.changeApplicationZero(option.key, ev)"/>
+                                    <span t-esc="option.label"/>
+                                </label>
+                            </details>
+                            <div class="pw-apptable" t-if="applicationBlockers.length">
+                                <table><thead><tr><th>Employee</th><th>Component</th><th>Action needed</th></tr></thead>
+                                    <tbody><tr t-foreach="applicationBlockers" t-as="b" t-key="b_index">
+                                        <td t-esc="b.employee"/><td t-esc="b.code"/><td t-esc="b.reason"/>
+                                    </tr></tbody></table>
+                                <p class="pw-hint" t-if="state.application.preview.blockers.length > 80">Showing the first 80 blockers. Fix the source records, then check again.</p>
+                            </div>
+                            <details class="pw-appvalues" t-if="state.application.preview">
+                                <summary>Inspect resolved values and their sources</summary>
+                                <details t-foreach="state.application.preview.employees.slice(0, 10)" t-as="person" t-key="person.employee_id">
+                                    <summary><t t-esc="person.name"/> · <t t-esc="person.ok ? 'Ready' : 'Review needed'"/></summary>
+                                    <div class="pw-apptable"><table><thead><tr><th>Component</th><th>Value</th><th>Source</th><th>Status</th></tr></thead><tbody>
+                                        <tr t-foreach="person.inputs" t-as="value" t-key="value.code">
+                                            <td><t t-esc="value.label"/> <small t-esc="value.code"/></td><td><t t-esc="value.value"/> <small t-esc="value.unit"/></td>
+                                            <td t-esc="value.key || 'Employee / contract record'"/><td t-esc="value.status"/>
+                                        </tr>
+                                    </tbody></table></div>
+                                </details>
+                                <p class="pw-hint" t-if="state.application.preview.employees.length > 10">Preview shows the first ten employees. Every employee is validated before computation; each computed payslip retains its input snapshot.</p>
+                            </details>
+                        </t>
+                        <p class="pw-hint" t-elif="!applicationEnabled">Application payroll is not enabled for this scheme. Configure the calculation basis and source mappings to use it.</p>
+                        <p class="pw-hint" t-else="">A spreadsheet is selected. Remove it to review application data, or continue with this file.</p>
+                    </section>
                     <div class="pw-grid2 pw-datagrid" data-coach="pw-paydata">
                         <div class="pw-sec">
                             <h4>This month's pay data</h4>
                             <p class="pw-muted mb">
                                 <b t-esc="state.sheet.gate.config_name"/> reads
                                 <b><t t-esc="sheetComponents.length"/></b> pay component<t t-if="sheetComponents.length !== 1">s</t>
-                                from a spreadsheet. Load the file for this period.
+                                from a spreadsheet. Upload a file, or review application data above.
                             </p>
                             <label t-attf-class="pw-drop {{ state.sheet.dragging ? 'over' : '' }}"
                                    t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop">
@@ -494,11 +570,11 @@
                 <button class="pw-btn ghost" t-if="stepKey === 'period' and !props.embedded" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
                 <button class="pw-btn primary" data-coach="pw-compute" t-if="stepKey === 'period'" t-on-click="advanceFromPeriod">
-                    <t t-if="wantsSheet">Add pay data</t><t t-else="">Compute payslips</t>
+                    <t t-if="wantsPayData">Review pay data</t><t t-else="">Compute payslips</t>
                     <t t-out="ic('arrow',14)"/>
                 </button>
                 <!-- Skipping is a CHOICE made in front of the list, never a default. -->
-                <button class="pw-btn ghost" data-coach="pw-skipsheet" t-if="stepKey === 'data'" t-on-click="runWithoutSheet">Run without a spreadsheet</button>
+                <button class="pw-btn ghost" data-coach="pw-skipsheet" t-if="stepKey === 'data'" t-att-disabled="state.application.loading or (applicationEnabled and !applicationSettings.can_certify)" t-on-click="runWithoutSheet">Run without a spreadsheet</button>
                 <button t-attf-class="pw-btn primary {{ sheetOnce ? 'pw-btn--lock' : '' }}"
                         t-if="stepKey === 'data'" t-att-disabled="!sheetReady" t-on-click="continueWithSheet">
                     <t t-if="sheetOnce"><t t-out="ic('shield',14)"/></t>

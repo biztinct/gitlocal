@@ -120,7 +120,8 @@ export async function runPayroll(orm, payload, { onStep, onProgress, sheet } = {
         const chunk = empIds.slice(i, i + CHUNK);
         const r = await orm.silent.call(
             "pb.payrun.wizard", "compute_batch",
-            [{ run_id, name, date_start, date_end, division, emp_ids: chunk }]);
+            [{ run_id, name, date_start, date_end, division,
+                formula_config_id: prep.formula_config_id, emp_ids: chunk }]);
         computed += (r && r.computed) || 0;
         if (r && r.exceptions) { exceptions.push(...r.exceptions); }
         const done = Math.min(total, i + chunk.length);

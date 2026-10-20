@@ -118,3 +118,9 @@ from . import schememap_approval
 from . import demo_approval
 from . import payroll_tax_table
 from . import treatment_classification
+
+from . import application_payroll_source
+from . import application_domain_sources
+from . import application_source_ui
+
+from . import payroll_period_input

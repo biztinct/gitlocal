@@ -172,3 +172,7 @@ from . import test_schemectx_p2_scope
 from . import test_treatment_classification
 # LEARNREV P0 T6 — a Pay role reason says "net pay", never the NET component name.
 from . import test_learnrev_net_words
+
+from . import test_application_payroll_source
+
+from . import test_payroll_period_input

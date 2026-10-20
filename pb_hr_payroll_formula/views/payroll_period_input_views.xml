@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="payroll_period_input_list" model="ir.ui.view">
+    <field name="name">hr.payroll.period.input.list</field><field name="model">hr.payroll.period.input</field>
+    <field name="arch" type="xml"><list decoration-success="state == 'approved'" decoration-muted="state == 'superseded'">
+      <field name="employee_id"/><field name="config_id"/><field name="component_id"/>
+      <field name="date_from"/><field name="date_to"/><field name="value_decimal"/><field name="value_text" optional="hide"/>
+      <field name="unit"/><field name="state"/><field name="approved_by"/>
+      <field name="reserved_run_id" optional="hide"/><field name="consumed_payslip_id" optional="show"/>
+    </list></field>
+  </record>
+  <record id="payroll_period_input_form" model="ir.ui.view">
+    <field name="name">hr.payroll.period.input.form</field><field name="model">hr.payroll.period.input</field>
+    <field name="arch" type="xml"><form string="Period pay input">
+      <header><button name="action_approve" type="object" string="Approve input" class="oe_highlight" invisible="state != 'draft'" groups="pb_hr_payroll_formula.group_formula_manager"/>
+        <button name="action_supersede" type="object" string="Supersede unused input" invisible="state != 'approved' or reserved_payslip_id" groups="pb_hr_payroll_formula.group_formula_manager"/>
+        <field name="state" widget="statusbar"/></header>
+      <sheet><group readonly="state != 'draft'">
+        <group><field name="company_id" readonly="state != 'draft'" groups="base.group_multi_company"/><field name="config_id" readonly="state != 'draft'"/><field name="employee_id" readonly="state != 'draft'" domain="[('company_id', '=', company_id)]"/><field name="component_id" readonly="state != 'draft'"/></group>
+        <group><field name="date_from" readonly="state != 'draft'"/><field name="date_to" readonly="state != 'draft'"/><field name="value_kind"/><field name="value_decimal" readonly="state != 'draft'" invisible="value_kind not in ['money', 'quantity', 'rate', 'integer']"/><field name="value_text" readonly="state != 'draft'" invisible="value_kind in ['money', 'quantity', 'rate', 'integer']"/><field name="unit" readonly="state != 'draft'"/></group>
+        <field name="reason" readonly="state != 'draft'"/><field name="evidence_reference" readonly="state != 'draft'"/>
+        <field name="settlement_kind" readonly="state != 'draft'"/>
+        <group string="Policy exit calculation" invisible="settlement_kind == 'none'">
+          <field name="exit_reference" readonly="state != 'draft'"/><field name="leave_type_reference" readonly="state != 'draft'"/><field name="settlement_gross_salary" readonly="state != 'draft'"/>
+          <field name="settlement_tax_review_reference" readonly="state != 'draft'"/><field name="settlement_employment_start" readonly="state != 'draft'"/><field name="settlement_review_months" readonly="state != 'draft'"/>
+          <field name="settlement_months" readonly="state != 'draft'" invisible="not settlement_review_months"/>
+        </group>
+      </group><group string="Approval and payment"><field name="approved_by"/><field name="approved_at"/><field name="approved_currency_id"/><field name="reserved_run_id"/><field name="reserved_payslip_id"/><field name="consumed_payslip_id"/><field name="consumed_at"/><field name="policy_assessment_json" invisible="not policy_assessment_json"/></group></sheet>
+      <chatter/>
+    </form></field>
+  </record>
+  <record id="action_payroll_period_inputs" model="ir.actions.act_window">
+    <field name="name">Period pay inputs</field><field name="res_model">hr.payroll.period.input</field><field name="view_mode">list,form</field>
+    <field name="help" type="html"><p>Record a period amount or reviewed control here, attach its evidence reference and approve it before payroll. No entry is different from a confirmed zero.</p></field>
+  </record>
+</odoo>
