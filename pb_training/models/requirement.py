@@ -312,7 +312,7 @@ class PbTrainingRequirement(models.Model):
             ids = self.country_ids.ids
             domain += ['|', ('address_id.country_id', 'in', ids),
                        '&', ('address_id.country_id', '=', False),
-                       ('company_id.country_id', 'in', ids)]
+                       ('company_id.partner_id.country_id', 'in', ids)]
         return domain
 
     def _people(self):
