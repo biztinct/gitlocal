@@ -142,7 +142,9 @@ export class PbInbox extends Component {
         this.onEscape = this.onEscape.bind(this);
         const arrival = inboxArrival(this.props);
         const focus = focusRequest(arrival);
-        const area = focusArea(arrival);
+        // A request focus always wins (PayAI's doors): it is never combined
+        // with an area, so the drawer opens on whatever area the request is.
+        const area = focus ? "" : focusArea(arrival);
         if (area && !_consumedArea.has(arrival)) {
             _consumedArea.add(arrival);
             this.state.area = area;

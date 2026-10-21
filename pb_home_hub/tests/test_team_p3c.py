@@ -483,6 +483,11 @@ class TestTeamP3c(TransactionCase):
                       'inbox.js')
         self.assertIn('export function focusArea', inbox)
         self.assertIn('this.state.area = area', inbox)
+        # PayAI opens ONE request from `request:<id>`; an area never rides
+        # along with it and never filters that request out of view.
+        self.assertIn('const area = focus ? "" : focusArea(arrival);', inbox)
+        self.assertIn(r'/^area:([a-z]+)$/', inbox)
+        self.assertIn(r'/^request:(\d+)(?::(me|team|org))?$/', inbox)
         prob = _read(ROOT, 'pb_probation', 'static', 'src', 'js',
                      'probation_board.js')
         self.assertIn('person:(\\d+)', prob)
