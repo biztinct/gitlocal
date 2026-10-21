@@ -250,7 +250,7 @@ for spec in plan['schemes']:
     assert not cfg.use_proration, ('salary_history_proration_needs_review', cfg.code)
     before_rules = {r.code:snapshot(r,rfields) for r in cfg.rule_ids if r.column_type=='input'}
     source_order = cfg.source_priority
-    controls = sample_values(cfg)
+    controls = []
     people = env['hr.employee'].with_context(active_test=False).search([('company_id','=',cfg.company_id.id)])
     people = people.filtered(lambda e: cfg in Config.schemes_for_employee(e))
     catalogue = cfg._application_source_catalogue()
@@ -325,6 +325,10 @@ for spec in plan['schemes']:
                 app,count=re.subn(pattern,cashout.column_letter+'2<0',original.lstrip('='))
                 assert count==1, ('readiness_formula_changed',cfg.code)
                 changes[readycode]='=IF(%s2=1,%s,%s)'%(mode.column_letter,app,original.lstrip('='))
+    # Repeated runs with no formula changes do not need to reevaluate every
+    # historical sample. A real formula migration still checks every sample
+    # before and after its audited branch merge.
+    controls = sample_values(cfg) if changes else []
     release = branch_formulas(cfg,changes)
     checks = compare_samples(cfg,controls)
     if cfg.country_code == 'VN':
