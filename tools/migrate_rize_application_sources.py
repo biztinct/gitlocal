@@ -284,7 +284,11 @@ for spec in plan['schemes']:
                 receipt['unresolved'].append(dict(scheme=cfg.code,code=rule.code,reason='retained_current_source_pending_ownership_review',note=row['note']))
             continue
         if rule.application_source_key and rule.application_source_key!=key:
-            raise AssertionError(('concurrent_source_mapping_preserved',cfg.code,rule.code))
+            previous = row.get('previous_source_key')
+            assert (previous == 'pending.domain.' + rule.code
+                    and rule.application_source_key == previous
+                    and key in catalogue and not key.startswith('pending.domain.')), (
+                'concurrent_source_mapping_preserved', cfg.code, rule.code)
         owner_values = dict(application_source_owner=row.get('canonical_owner') or False,
                             application_source_owner_model=row.get('owner_model') or False)
         if key.startswith('pending.domain.'):

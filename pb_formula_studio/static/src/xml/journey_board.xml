@@ -30,6 +30,13 @@
         <div class="jny-bar__say">
           <b t-esc="d.config and d.config.name"/>
           <span class="jny-bar__sub" t-esc="headline"/>
+          <span t-if="d.header?.application" class="jny-bar__sub">
+            <t t-esc="d.header.application.spreadsheet"/> spreadsheet mappings ·
+            <t t-esc="d.header.application.mapped"/> application mappings ·
+            <t t-esc="d.header.application.pending"/> application mappings need review
+            <t t-if="d.header.application.excluded"> · <t t-esc="d.header.application.excluded"/> restricted HR fields excluded</t>
+          </span>
+          <span t-if="d.header?.application" class="jny-bar__sub">Mapping counts describe sources, not employee-data completeness. Application payroll starts <t t-esc="d.header.application.effective_from"/>; readiness is checked for the selected pay period.</span>
         </div>
         <div class="jny-q">
           <span class="jny-q__ic" t-out="ic('search', 14)"/>

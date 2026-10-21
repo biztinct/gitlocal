@@ -35,7 +35,7 @@ EMPLOYEE_FIELDS = (
 PAYROLL_EXCLUDED_FIELDS = {'pb_blood_type', 'pb_religion'}
 CONTRACT_FIELDS = (
     'date_end', 'date_start', 'location', 'tax_identification_number',
-    'trial_date_end', 'wage', 'currency_id', 'costcenter', 'contract_type_id',
+    'trial_date_end', 'pb_trial_date_start', 'wage', 'currency_id', 'costcenter', 'contract_type_id',
     'pb_signed_date', 'pb_salary_basis',
     'pb_payroll_contract_type', 'pb_payroll_nationality_status',
 )
@@ -116,6 +116,28 @@ def scalar_value(record, field_name):
 class HrFormulaConfigApplicationDomains(models.Model):
     _inherit = 'hr.formula.config'
 
+    def _application_mapping_descriptors(self):
+        """Mapping definitions, not employee-data coverage or run readiness."""
+        self.ensure_one()
+        catalogue = self._application_source_catalogue()
+        result = {}
+        record_prefixes = ('employee.', 'contract.', 'bank.', 'assets.', 'exit.',
+                           'probation.', 'documents.', 'pending.domain.')
+        for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input' and r.application_source_key):
+            key = rule.application_source_key
+            spec = catalogue.get(key, {})
+            pending = not spec or spec.get('requires_domain_review', False)
+            result[rule.id] = {
+                'key': key, 'label': spec.get('label') or key,
+                'model': spec.get('model') or rule.application_source_owner_model or '',
+                'record': key.startswith(record_prefixes),
+                'pending': pending,
+                'available': not pending and spec.get('available', True),
+                'payroll_excluded': spec.get('persist_in_payroll') is False,
+                'note': rule.application_source_note or '',
+            }
+        return result
+
     def _application_source_catalogue(self):
         parent = getattr(super(), '_application_source_catalogue', None)
         result = dict(parent() if parent else {})
@@ -167,7 +189,7 @@ class HrFormulaConfigApplicationDomains(models.Model):
                 }
         return result
 
-    def _application_domain_values(self, employee, contract, date_from, date_to):
+    def _application_domain_values(self, employee, contract, date_from, date_to, source_keys=None):
         self.ensure_one()
         parent = getattr(super(), '_application_domain_values', None)
         result = dict(parent(employee, contract, date_from, date_to) if parent else {})
@@ -177,6 +199,8 @@ class HrFormulaConfigApplicationDomains(models.Model):
             return result
         wanted = {r.application_source_key for r in self.rule_ids
                   if r.column_type == 'input' and r.application_source_key}
+        if source_keys is not None:
+            wanted.intersection_update(source_keys)
         start, end = fields.Date.to_date(date_from), fields.Date.to_date(date_to)
         if not start or not end or start > end:
             return result

@@ -5953,7 +5953,8 @@ class PbFormulaStudio(models.AbstractModel):
         } for c in cons]
 
         configs = []
-        for cfg in Config.search([], order='sequence, id desc'):
+        for cfg in Config.search(['|', ('parent_branch_id', '=', False),
+                                  ('branch_state', '=', 'open')], order='sequence, id desc'):
             rules = cfg.rule_ids
             configs.append({
                 'id': cfg.id, 'name': cfg.name or '—', 'code': cfg.code or '',
@@ -5984,7 +5985,9 @@ class PbFormulaStudio(models.AbstractModel):
         cfg_id = self._as_id(arrival.get('config_id'))
         if cfg_id and cfg_id not in {c['id'] for c in configs}:
             fell_back.append('config')
-            cfg_id = 0
+            previous = Config.search([('id', '=', cfg_id)], limit=1)
+            parent_id = previous.parent_branch_id.id
+            cfg_id = parent_id if parent_id in {c['id'] for c in configs} else 0
         if not cfg_id and cid:
             # A link that arrives naming a CONNECTOR and no scheme is the board
             # card's "6 mappings" being clicked. Landing on the default scheme
@@ -7461,7 +7464,7 @@ class PbFormulaStudio(models.AbstractModel):
     #: The Payobook Source card's groups, in the order the card shows them.
     #: A group is rendered only when it has rows; the ORDER is fixed so the
     #: card reads the same way on every scheme.
-    _JOURNEY_SOURCE_GROUPS = ('emp', 'con', 'bank', 'comp', 'run')
+    _JOURNEY_SOURCE_GROUPS = ('emp', 'con', 'bank', 'comp', 'run', 'application', 'pending')
 
     #: Rows whose sort key nothing set sink to the bottom, in label order.
     _JOURNEY_LAST = 1 << 30
@@ -7475,6 +7478,8 @@ class PbFormulaStudio(models.AbstractModel):
             'bank': _("Bank"),
             'comp': _("Contract pay components"),
             'run': _("Pay run"),
+            'application': _("Application records and period inputs"),
+            'pending': _("Application mapping needs review"),
         }
 
     @api.model
@@ -7584,6 +7589,7 @@ class PbFormulaStudio(models.AbstractModel):
         wire_dests = self._source_wire_dests(config)
         conflicts = self._source_conflicts(config)
         emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
+        application = config._application_mapping_descriptors() if config.application_data_enabled else {}
         scheme_counts, _wired_ids = self._journey_scheme_lane(
             config, record_dests, wire_dests)
 
@@ -7681,6 +7687,8 @@ class PbFormulaStudio(models.AbstractModel):
         if sample:
             types = self._import_column_types(config)
             def in_file(rule):
+                if rule.id in application:
+                    return True
                 declared, legacy = declared_by_rule[rule.id]
                 if any(d['kind'] in ('feed', 'rule', 'period') for d in declared):
                     return True
@@ -7973,6 +7981,19 @@ class PbFormulaStudio(models.AbstractModel):
                 if frow is not None:
                     join(frow['id'], srid, 'excel')
                     fed = True
+            app = application.get(rule.id)
+            if app:
+                pending = app['pending'] or not app['available']
+                prid = 'p:app:%s' % app['key']
+                detail = (_('Mapping needs review') if pending else
+                          _('Excluded from payroll snapshots') if app['payroll_excluded'] else
+                          _('Application mapping · values checked at run time'))
+                source_row(prid, app['label'], 'pending' if pending else 'application',
+                           '%s · %s' % (app['model'], detail))
+                join(prid, srid, 'record', 'back', dimmed=pending or app['payroll_excluded'])
+                srow['sub'] = detail
+                if not pending and not app['payroll_excluded']:
+                    fed = True
             # `state` is what the row LOOKS like; `fed` is the arithmetic the
             # header counts. They are two facts: a component fed twice is fed,
             # and a component whose key no longer exists is not, and neither
@@ -8191,6 +8212,15 @@ class PbFormulaStudio(models.AbstractModel):
             'wired': fed_n,
             'components': scheme_counts['total'],
         }
+        if application:
+            header['application'] = {
+                'mapped': sum(a['available'] and not a['payroll_excluded'] for a in application.values()),
+                'pending': sum(a['pending'] or not a['available'] for a in application.values()),
+                'excluded': sum(a['payroll_excluded'] for a in application.values()),
+                'spreadsheet': sum(bool(r.source_ids.filtered(lambda s: s.kind == 'excel') or r.data_source_field)
+                                   for r in rules if r.column_type == 'input'),
+                'effective_from': str(config.application_effective_from or ''),
+            }
         return {
             'ok': True,
             'v': 2,

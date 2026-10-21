@@ -28,6 +28,8 @@ class HrEmployeePayrollProfile(models.Model):
 class HrContractPayrollProfile(models.Model):
     _inherit = 'hr.contract'
 
+    pb_trial_date_start = fields.Date('Probation start date',
+        help='Explicit start of the probation period on this contract. Never inferred from joining or contract signature dates.')
     pb_signed_date = fields.Date('Contract signed on', help='Signature date, distinct from the effective start date.')
     pb_salary_basis = fields.Selection([('gross', 'Gross'), ('net', 'Net')],
                                         string='Salary denomination',

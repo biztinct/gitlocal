@@ -95,6 +95,8 @@ class PayrollTemplates(models.AbstractModel):
             lambda c: not c.company_id or c.company_id == self.env.company)
         if not cfg:
             raise AccessError(_('Choose a payroll configuration in the current company.'))
+        if cfg.parent_branch_id and cfg.branch_state != 'open':
+            raise UserError(_('This branch is closed. Open Templates from the main payroll configuration.'))
         if write:
             self.env['pb.payrun.wizard']._require_runner()
         return cfg
@@ -129,9 +131,25 @@ class PayrollTemplates(models.AbstractModel):
         return str(employee.barcode or employee.employee_id or '').strip()
 
     def _cards(self, cfg):
-        return {k: dict(v, label=(v.get('component') or {}).get('name') or v['label'])
+        cards = {k: dict(v, label=(v.get('component') or {}).get('name') or v['label'])
                 for k, v in self.env['pb.records.desk']._cards(cfg.id).items()
                 if v.get('field') not in IDENTITY}
+        # Domain sources are read-only context. They are never writable payroll
+        # contract components, even where legacy source metadata says otherwise.
+        descriptors = cfg._application_mapping_descriptors() if cfg.application_data_enabled else {}
+        native_rules = {c['component']['id'] for c in cards.values() if c.get('component')}
+        native_rules.update(m.component_id.id for m in self.env['pb.records.desk']._mappings(cfg.id))
+        for rule in cfg.rule_ids:
+            app = descriptors.get(rule.id)
+            if not app or not app['record'] or rule.id in native_rules:
+                continue
+            cards['app:%s' % rule.id] = {
+                'label': rule.name, 'group': 'application', 'editable': False,
+                'ttype': 'date' if rule.value_kind == 'date' else 'text',
+                'component': {'id': rule.id, 'name': rule.name},
+                'application': app,
+            }
+        return cards
 
     def _identity_rules(self, cfg):
         found = {}
@@ -202,6 +220,7 @@ class PayrollTemplates(models.AbstractModel):
 
     def _catalog(self, cfg):
         cards = self._cards(cfg)
+        descriptors = cfg._application_mapping_descriptors() if cfg.application_data_enabled else {}
         by_rule = {}
         for fid, card in cards.items():
             if card.get('component'):
@@ -214,6 +233,9 @@ class PayrollTemplates(models.AbstractModel):
                 'f:%s:%s' % (mapping.target_model_id.model, mapping.target_field_id.name))
             if fid in cards and mapping.component_id:
                 by_rule[mapping.component_id.id] = fid
+        for fid, card in cards.items():
+            if card.get('application'):
+                by_rule[card['component']['id']] = fid
         result = []
         identity_rules = self._identity_rules(cfg)
         for rule in cfg.rule_ids.filtered(lambda r: r.column_type == 'input'):
@@ -226,6 +248,8 @@ class PayrollTemplates(models.AbstractModel):
                 continue
             quantity = rule.value_kind == 'quantity' or bool(TIME.search(text) and rule.value_kind in ('integer', 'decimal', 'money'))
             recurring = bool(card_id)
+            app = cards[card_id].get('application') if card_id else None
+            binding = descriptors.get(rule.id)
             # Mapped dates, names, status and recurring salary are read from records.
             default = 'records' if recurring else 'available' if rule.value_kind in ('date', 'text', 'boolean') else ('time' if quantity else 'adjustments')
             result.append({'id': 'rule:%s' % rule.id, 'label': rule.name or rule.code,
@@ -235,8 +259,13 @@ class PayrollTemplates(models.AbstractModel):
                            'record_id': card_id, 'readonly': recurring,
                            'record_eligible': recurring,
                            'record_group': cards[card_id]['group'] if card_id else '',
+                           'application_source': app,
+                           'source_summary': (_('Mapping needs review · %s') % binding['model'] if binding and binding['pending'] else
+                               _('Application source · %s') % binding['label'] if binding and not recurring else ''),
                            'default': default,
-                           'reason': _('Saved employee / contract context') if recurring else (_('Time quantity') if quantity else _('Monthly input — review the suggested placement'))})
+                           'reason': (_('Mapping needs review · %s') % app['model'] if app and app['pending'] else
+                                      _('Application record · %s') % app['model'] if app else
+                                      _('Saved employee / contract context') if recurring else (_('Time quantity') if quantity else _('Monthly input — review the suggested placement')))})
         represented = {c['record_id'] for c in result if c.get('record_id')}
         kinds = {'date': 'date', 'datetime': 'date', 'integer': 'integer',
                  'float': 'decimal', 'monetary': 'money', 'amount': 'money', 'boolean': 'boolean'}
@@ -282,9 +311,14 @@ class PayrollTemplates(models.AbstractModel):
     def workspace(self, config_id=0, period=''):
         desk = self.env['pb.records.desk']
         desk._check_read()
-        configs = desk._configs().filtered(lambda c: not c.company_id or c.company_id == self.env.company)
+        configs = desk._configs().filtered(lambda c: (not c.company_id or c.company_id == self.env.company)
+            and (not c.parent_branch_id or c.branch_state == 'open'))
         if not configs:
             return {'configs': [], 'fields': [], 'layout': {}, 'people': 0}
+        previous = desk._configs(int(config_id)) if config_id else self.env['hr.formula.config']
+        closed_branch = bool(previous.parent_branch_id and previous.branch_state != 'open')
+        if closed_branch:
+            config_id = previous.parent_branch_id.id
         cfg = self._config(config_id or configs[0].id)
         period = period or fields.Date.context_today(self).strftime('%Y-%m')
         people = self._roster(cfg, period)
@@ -296,6 +330,7 @@ class PayrollTemplates(models.AbstractModel):
         return {'configs': [{'id': c.id, 'name': c.name, 'country': c.country_code, 'state': c.state} for c in configs],
                 'config_id': cfg.id, 'name': cfg.name, 'country': cfg.country_code,
                 'state': cfg.state,
+                'selection_notice': _('The migration branch is closed. Showing its main payroll configuration.') if closed_branch else '',
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'roster_note': (_('Draft review roster: %s existing Employee records out of %s source people. Payroll assignments are unchanged.') % (len(people), expected)) if expected else '',
                 'record_columns': len(self._layout(cfg, catalog)['records']) + int('f:hr.employee:name' in cards), 'fields': catalog,
@@ -380,16 +415,26 @@ class PayrollTemplates(models.AbstractModel):
             result[row.employee_id.id].update(row.payload or {})
         return result
 
-    def _record_values(self, cfg, people, cards):
+    def _record_values(self, cfg, people, cards, period=None):
         desk = self.env['pb.records.desk']
         contracts = desk._io_contracts(people)
         probe = desk._probe(cfg.id)
         result = {}
+        start, end = self._period(period or fields.Date.context_today(self).strftime('%Y-%m'))
+        context_keys = {c['application']['key'] for c in cards.values()
+                        if c.get('application') and c['application']['available']
+                        and not c['application']['payroll_excluded']}
         for employee in people:
             contract = contracts.get(employee.id) or self.env['hr.contract']
             values = {}
+            domains = cfg._application_domain_values(employee, contract, start, end,
+                source_keys=context_keys) if context_keys else {}
             for fid, card in cards.items():
-                if fid.startswith('c:') and card.get('ttype') == 'amount':
+                if card.get('application'):
+                    app = card['application']
+                    resolved = domains.get(app['key'], {})
+                    value = resolved.get('value') if resolved.get('status') == 'resolved' and not app['payroll_excluded'] else None
+                elif fid.startswith('c:') and card.get('ttype') == 'amount':
                     # Records exports leave zero component amounts visually
                     # blank. Payroll must retain the numeric zero: coverage and
                     # reimbursement flags can require an explicit 0. The same
@@ -417,7 +462,7 @@ class PayrollTemplates(models.AbstractModel):
         if any(not c for c in codes) or len(set(codes)) != len(codes):
             raise UserError(_('Every employee needs a unique value for %s before downloading. Update missing or duplicate values in the mapped employee field.') % identity_columns[0]['label'])
         cards = self._cards(cfg)
-        records = self._record_values(cfg, people, cards)
+        records = self._record_values(cfg, people, cards, period)
         catalog = self._catalog(cfg)
         layout = self._layout(cfg, catalog)
         monthly = {e.id: {} for e in people} if reusable else self._current(cfg, period, people)
@@ -588,7 +633,7 @@ class PayrollTemplates(models.AbstractModel):
         allowed = set(people.ids)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
         cards = self._cards(cfg)
-        records = self._record_values(cfg, people, cards)
+        records = self._record_values(cfg, people, cards, period)
         monthly = self._current(cfg, period, people)
         changes, issues, blanks, unchanged = [], [], 0, 0
         change_keys = set()
@@ -735,7 +780,7 @@ class PayrollTemplates(models.AbstractModel):
                 raise UserError(_('The layout changed. Review a fresh workbook.'))
             current = self._current(cfg, data['period'], people)
         else:
-            current = self._record_values(cfg, people, self._cards(cfg))
+            current = self._record_values(cfg, people, self._cards(cfg), data['period'])
         for c in changes:
             if current[c['emp_id']].get(c['field_id']) != c['old']:
                 raise UserError(_('%s · %s changed after review. Review the file again; nothing was applied.') % (c['emp_name'], c['field_label']))
@@ -778,7 +823,7 @@ class PayrollTemplates(models.AbstractModel):
             raise UserError(_('Activate this payroll configuration before using its monthly inputs in Pay Run.'))
         people = self._roster(cfg, period)
         cards = self._cards(cfg)
-        records = self._record_values(cfg, people, cards)
+        records = self._record_values(cfg, people, cards, period)
         current = self._current(cfg, period, people)
         catalog = [c for c in self._catalog(cfg) if c['id'].startswith('rule:')]
         resolved = self._resolved_month(cfg, period, people, catalog)
@@ -973,7 +1018,7 @@ class TemplateBatch(models.Model):
         facade = self.env['pb.payroll.templates'].with_company(self.company_id)
         catalog = [c for c in facade._catalog(cfg) if c['id'].startswith('rule:')]
         cards = facade._cards(cfg)
-        saved = facade._record_values(cfg, employee, cards)[employee.id]
+        saved = facade._record_values(cfg, employee, cards, period)[employee.id]
         raw_data = dict(raw_data or {})
         override_row = self.env['pb.payroll.month.inputs'].sudo().search([('config_id', '=', cfg.id), ('company_id', '=', self.company_id.id), ('employee_id', '=', employee.id), ('period', '=', period)], limit=1)
         overrides = override_row.record_overrides or {}
@@ -981,6 +1026,11 @@ class TemplateBatch(models.Model):
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
         for c in catalog:
             if not (c.get('readonly') and c.get('record_id')):
+                continue
+            if c.get('application_source'):
+                # Domain snapshots explain ownership. The application payroll
+                # resolver owns their values; don't overwrite historical Excel
+                # inputs or fabricate a bank-field provenance here.
                 continue
             value = overrides[c['id']] if c['id'] in overrides else saved.get(c['record_id'])
             if c['id'] in salary_keys and value in (None, ''):

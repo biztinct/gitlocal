@@ -43,6 +43,31 @@ class TestMappingExperience(TransactionCase):
         self.assertEqual([s['kind'] for s in row['sources']], ['feed', 'excel'])
         self.assertEqual(before, (self.config.write_date, self.rule.write_date, self.rule.value_kind, self.rule.source_ids.ids))
 
+    def test_application_journey_separates_mapping_from_data_readiness(self):
+        self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        self.rule.write({'application_source_key': 'period.paid_day_equivalents'})
+        pending = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'code': 'DESKPENDING', 'name': 'Unreviewed metadata', 'column_type': 'input',
+            'application_source_key': 'pending.domain.DESKPENDING'})
+        data = self.studio.journey_data(self.config.id)
+        app = data['header']['application']
+        self.assertEqual(app['spreadsheet'], 1)
+        self.assertEqual(app['pending'], 1)
+        self.assertEqual(app['mapped'], 1)
+        self.assertEqual(data['header']['fed'], 1)
+        pending_row = next(r for r in data['lanes']['scheme'][0]['rows'] if r['id'] == 's:%s' % pending.id)
+        self.assertFalse(pending_row['fed'])
+        self.assertIn('review', pending_row['sub'])
+        self.assertTrue(any(r['group'] == 'application' for r in data['lanes']['source'][0]['rows']))
+
+    def test_completed_branch_arrival_returns_mainline(self):
+        branch = self.config.copy({'name': 'Merged migration branch', 'code': 'DESKMERGED',
+                                  'parent_branch_id': self.config.id, 'branch_state': 'merged'})
+        data = self.studio.mapping_pickers({'config_id': branch.id})
+        self.assertNotIn(branch.id, [c['id'] for c in data['configs']])
+        self.assertEqual(data['defaults']['config_id'], self.config.id)
+        self.assertIn('config', data['defaults']['fell_back'])
+
     def test_preview_is_read_only_and_save_matches_engine_order(self):
         order = ['excel', 'records', 'api']
         before = self.config.source_priority

@@ -433,18 +433,22 @@
       "scheme_code": "RIZE_VIETNAM_MASTER_V3",
       "code": "VNHCY",
       "name": "Probation Start Date",
-      "source_key": "pending.domain.VNHCY",
-      "native_target": null,
+      "source_key": "contract.pb_trial_date_start",
+      "native_target": [
+        "hr.contract",
+        "pb_trial_date_start"
+      ],
       "remove_contract_flag": true,
       "zero_allowed": false,
       "spreadsheet_only": false,
-      "note": "Canonical owner: pb.probation.review trial_start extension. Meaning/identity/evidence requires HR review before copying; legacy contract metadata is retained only for reconciliation and never read on the application-data route. Unclassified or unresolved ownership: Keep probation start distinct from legal entity joining date and contract date.",
+      "note": "Explicit probation start on the effective employment contract, separate from joining, signature and effective-start dates. Copy only an unambiguous ISO date from the same unique contract; retain unresolved historical values for HR reconciliation.",
       "original_contract": true,
       "original_text": true,
-      "canonical_domain": "Probation",
-      "canonical_owner": "pb.probation.review trial_start extension",
-      "migration_outcome": "pending_domain_review",
-      "owner_model": "pb.probation.review"
+      "canonical_domain": "Probation contract terms",
+      "canonical_owner": "hr.contract.pb_trial_date_start",
+      "migration_outcome": "bound_application_source",
+      "owner_model": "hr.contract",
+      "previous_source_key": "pending.domain.VNHCY"
     },
     {
       "scheme_code": "RIZE_VIETNAM_MASTER_V3",
@@ -3277,18 +3281,22 @@
       "scheme_code": "RIZE_INDIA_CLIENT_MASTER_2026",
       "code": "INHCY",
       "name": "Probation Start Date",
-      "source_key": "pending.domain.INHCY",
-      "native_target": null,
+      "source_key": "contract.pb_trial_date_start",
+      "native_target": [
+        "hr.contract",
+        "pb_trial_date_start"
+      ],
       "remove_contract_flag": true,
       "zero_allowed": false,
       "spreadsheet_only": false,
-      "note": "Canonical owner: pb.probation.review trial_start extension. Meaning/identity/evidence requires HR review before copying; legacy contract metadata is retained only for reconciliation and never read on the application-data route. Unclassified or unresolved ownership: Keep probation start distinct from legal entity joining date and contract date.",
+      "note": "Explicit probation start on the effective employment contract, separate from joining, signature and effective-start dates. Copy only an unambiguous ISO date from the same unique contract; retain unresolved historical values for HR reconciliation.",
       "original_contract": true,
       "original_text": true,
-      "canonical_domain": "Probation",
-      "canonical_owner": "pb.probation.review trial_start extension",
-      "migration_outcome": "pending_domain_review",
-      "owner_model": "pb.probation.review"
+      "canonical_domain": "Probation contract terms",
+      "canonical_owner": "hr.contract.pb_trial_date_start",
+      "migration_outcome": "bound_application_source",
+      "owner_model": "hr.contract",
+      "previous_source_key": "pending.domain.INHCY"
     },
     {
       "scheme_code": "RIZE_INDIA_CLIENT_MASTER_2026",
@@ -5009,18 +5017,22 @@
       "scheme_code": "RIZE_SINGAPORE_CLIENT_MASTER_2026",
       "code": "SGHCY",
       "name": "Master Probation Start Date",
-      "source_key": "pending.domain.SGHCY",
-      "native_target": null,
+      "source_key": "contract.pb_trial_date_start",
+      "native_target": [
+        "hr.contract",
+        "pb_trial_date_start"
+      ],
       "remove_contract_flag": true,
       "zero_allowed": false,
       "spreadsheet_only": false,
-      "note": "Canonical owner: pb.probation.review trial_start extension. Meaning/identity/evidence requires HR review before copying; legacy contract metadata is retained only for reconciliation and never read on the application-data route. Unclassified or unresolved ownership: Keep probation start distinct from legal entity joining date and contract date.",
+      "note": "Explicit probation start on the effective employment contract, separate from joining, signature and effective-start dates. Copy only an unambiguous ISO date from the same unique contract; retain unresolved historical values for HR reconciliation.",
       "original_contract": true,
       "original_text": true,
-      "canonical_domain": "Probation",
-      "canonical_owner": "pb.probation.review trial_start extension",
-      "migration_outcome": "pending_domain_review",
-      "owner_model": "pb.probation.review"
+      "canonical_domain": "Probation contract terms",
+      "canonical_owner": "hr.contract.pb_trial_date_start",
+      "migration_outcome": "bound_application_source",
+      "owner_model": "hr.contract",
+      "previous_source_key": "pending.domain.SGHCY"
     },
     {
       "scheme_code": "RIZE_SINGAPORE_CLIENT_MASTER_2026",
@@ -7098,18 +7110,22 @@
       "scheme_code": "RIZE_INDONESIA_CLIENT_MASTER_2026",
       "code": "IDHCY",
       "name": "Master Probation Start Date",
-      "source_key": "pending.domain.IDHCY",
-      "native_target": null,
+      "source_key": "contract.pb_trial_date_start",
+      "native_target": [
+        "hr.contract",
+        "pb_trial_date_start"
+      ],
       "remove_contract_flag": true,
       "zero_allowed": false,
       "spreadsheet_only": false,
-      "note": "Canonical owner: pb.probation.review trial_start extension. Meaning/identity/evidence requires HR review before copying; legacy contract metadata is retained only for reconciliation and never read on the application-data route. Unclassified or unresolved ownership: Keep probation start distinct from legal entity joining date and contract date.",
+      "note": "Explicit probation start on the effective employment contract, separate from joining, signature and effective-start dates. Copy only an unambiguous ISO date from the same unique contract; retain unresolved historical values for HR reconciliation.",
       "original_contract": true,
       "original_text": true,
-      "canonical_domain": "Probation",
-      "canonical_owner": "pb.probation.review trial_start extension",
-      "migration_outcome": "pending_domain_review",
-      "owner_model": "pb.probation.review"
+      "canonical_domain": "Probation contract terms",
+      "canonical_owner": "hr.contract.pb_trial_date_start",
+      "migration_outcome": "bound_application_source",
+      "owner_model": "hr.contract",
+      "previous_source_key": "pending.domain.IDHCY"
     },
     {
       "scheme_code": "RIZE_INDONESIA_CLIENT_MASTER_2026",
@@ -8369,8 +8385,8 @@
     "No deletion of legacy contract component lines or approval status manipulation."
   ],
   "ownership_summary": {
-    "bound_application_source": 350,
-    "pending_domain_review": 85,
+    "bound_application_source": 354,
+    "pending_domain_review": 81,
     "retained_recurring_contract_term": 20,
     "retained_reviewed_contract_payroll_control": 21,
     "retained_spreadsheet_legacy_branch": 4

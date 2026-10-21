@@ -65,6 +65,37 @@ class TestPayrollTemplates(TransactionCase):
             self.assertEqual(wb[s].freeze_panes,'C2')
         self.assertEqual(self.review(wb)['changes'],[])
 
+    def test_application_domain_context_is_not_monthly_input(self):
+        self.cfg.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        end = self.rule('Probation end', 'WBTRIALEND', 'date')
+        end.application_source_key = 'contract.trial_date_end'
+        self.contract.trial_date_end = '2026-03-31'
+        pending = self.rule('Historical hiring evidence', 'WBPENDING', 'text')
+        pending.application_source_key = 'pending.domain.WBPENDING'
+        pending.application_source_owner_model = 'hr.applicant'
+        catalogue = {c['code']: c for c in self.api._catalog(self.cfg)}
+        for code in (end.code, pending.code):
+            self.assertTrue(catalogue[code]['readonly'])
+            self.assertEqual(catalogue[code]['default'], 'records')
+        self.assertIn('review', catalogue[pending.code]['reason'])
+        # Existing writable native salary mappings retain their normal resolver.
+        self.assertFalse(catalogue[self.salary.code]['application_source'])
+        wb = self.export()
+        self.assertNotIn('Probation end', [c.value for c in wb['Time'][1]])
+        headers = [c.value for c in wb['Employee records'][1]]
+        self.assertEqual(wb['Employee records'].cell(2, headers.index('Probation end') + 1).value, '2026-03-31')
+        self.assertFalse(self.review(wb)['issues'])
+
+    def test_completed_branch_templates_redirect_without_accepting_branch_writes(self):
+        branch = self.cfg.copy({'name': 'Closed workbook branch', 'code': 'WBCLOSED',
+                               'parent_branch_id': self.cfg.id, 'branch_state': 'merged'})
+        data = self.api.workspace(branch.id, '2026-11')
+        self.assertEqual(data['config_id'], self.cfg.id)
+        self.assertNotIn(branch.id, [c['id'] for c in data['configs']])
+        self.assertTrue(data['selection_notice'])
+        with self.assertRaises(UserError):
+            self.api._config(branch.id, write=True)
+
     def test_empty_monthly_tabs_are_unprotected(self):
         with patch.object(type(self.api),'_roster',return_value=self.emp.browse()):
             wb=self.export()

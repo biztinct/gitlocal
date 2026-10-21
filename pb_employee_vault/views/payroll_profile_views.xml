@@ -17,6 +17,6 @@
     <record id="view_contract_payroll_profile" model="ir.ui.view">
         <field name="name">hr.contract.domain.profile</field><field name="model">hr.contract</field>
         <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
-        <field name="arch" type="xml"><xpath expr="//sheet" position="inside"><group string="Agreement details"><field name="pb_signed_date"/><field name="pb_salary_basis"/><field name="pb_payroll_contract_type"/><field name="pb_payroll_nationality_status"/></group></xpath></field>
+        <field name="arch" type="xml"><xpath expr="//sheet" position="inside"><group string="Agreement details"><field name="pb_trial_date_start"/><field name="pb_signed_date"/><field name="pb_salary_basis"/><field name="pb_payroll_contract_type"/><field name="pb_payroll_nationality_status"/></group></xpath></field>
     </record>
 </odoo>

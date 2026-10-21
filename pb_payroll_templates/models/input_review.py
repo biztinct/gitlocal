@@ -46,7 +46,7 @@ class PayrollInputReview(models.AbstractModel):
     def _resolved_month(self, cfg, period, people, catalog):
         current = self._current(cfg, period, people)
         cards = self._cards(cfg)
-        records = self._record_values(cfg, people, cards)
+        records = self._record_values(cfg, people, cards, period)
         rows = self.env['pb.payroll.month.inputs'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id),
             ('period', '=', period), ('employee_id', 'in', people.ids)])
