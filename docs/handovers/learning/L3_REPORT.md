@@ -1,7 +1,7 @@
 # LEARNING L3 — Learning paths — report
 
 Implementer: Opus, 2026-10-22. Spec: `L3_PATHS.md`. Ledger: `LEARNING_LEDGER.md` (candidate rows LN36+ in §5).
-Status: **AT DEPLOY GATE** — built, committed (commits (a)–(e) below), tested locally (suites + Chrome walk). Not deployed. Not pushed.
+Status: **COMPLETE** — LIVE ×4 DBs 2026-10-22 07:01 AEDT (DONE 20:01 UTC 10-21); live walk by Fable passed (§12). Not pushed.
 
 ## 1. What shipped (committed on 19.1, not pushed)
 
@@ -153,6 +153,8 @@ entries (all of the bridge's words; the stock "Display Name" / "ID" / the pb_pip
   `assignment_ids` alone.
 - LN38: `pb_training`'s Overview queue now has a sixth chip only when the company has a path (`has_paths`); tests that assert the
   queue length must run in a company of their own (L0's T7 does).
+- LN39–LN44: written into the ledger after the walk (seed emails, the demo learner, walk triage, the Numbers OwlError under a peer
+  restart, password typing blocked on live, deploy logfile / moving HEAD).
 
 ## 6. Score against the design bar
 
@@ -176,8 +178,16 @@ entries (all of the bridge's words; the stock "Display Name" / "ID" / the pb_pip
    it is off on payobook).
 4. **Demo:** "DEMO New agronomist" starts with the real "Agronomist basics" course, which ends in a test only two demo people have
    passed, so most demo people sit at step 1. The career path shows the fuller picture.
-5. **Not Learning's, but found:** the L4 handover (`L4_SESSIONS_SIGNOFF.md`, fact F11) has two demo passwords written in it, in a commit
-   that is on this computer only (not pushed). It must be cleaned before anything is pushed.
+5. **Not Learning's, but found:** the L4 handover (`L4_SESSIONS_SIGNOFF.md`, fact F11) had two demo passwords written in it, in a commit
+   on this computer only. The coordinator has since removed them (`5379f4e51`).
+6. **The demo learner cannot be put on a path.** `demo.learner@example.com` on payobook is a login for the employee portal only, with no
+   employee record behind it. Paths (like courses HR assigns) are given to employees, so the demo learner shows no "My path". The HR lead
+   and the manager Ngô Bảo Lâm show it. Say if you want the demo learner given an employee record.
+7. **Three demo emails were stopped.** Setting up the demo marked a first lesson done for three demo people, and the standard
+   "New rank: Newbie" reward email was queued for each (all to made-up example.com addresses). They were cancelled before sending;
+   nothing was deleted. The demo setup now picks only demo accounts and cancels anything it would send.
+8. **Not Learning's:** in the live walk, "Open it" on Nghiêm Hải Yến's growth plan showed a "502" page. That was the server being
+   restarted by another release at that moment (three in a row: 20:02, 20:12, 20:18 UTC), not a fault in growth plans or paths.
 
 ## 8. Deploy plan (as at the gate) — risky tier (new module install)
 
@@ -246,3 +256,55 @@ block. Vietnamese rail label "Lộ trình". Console clean.
 
 Shared files (manifest, `models/__init__.py`) went into (a) with their final content, so (a) and (b) are feature-scoped but not each
 separately installable (the manifest lists the lens files); (c) is, and (d) on top of it.
+
+## 11. Deploy record (GO DEPLOY 2026-10-22 06:55 AEDT)
+
+| Step | Result |
+|---|---|
+| Notes / lock | START written 19:55 UTC right after ChatGPT's 19:52 NOTE ("preparing a payroll release … combined Learning L3"), lock held by detached unit `l3-lock` until the DONE line (20:01 UTC, carries "LEARNING L3 DONE"); lock released |
+| Versions before | pb_training 19.0.1.6.2 ×4, pb_training_growth unknown ×4 (nobody had shipped L3) |
+| Backups | `/odoo/backups/learning-l3-20261022/` p0clone 24 MB, payobook 75 MB, payobook_template 24 MB, rize 31 MB (each `pg_restore -l` ok) |
+| Files | local HEAD had moved to `5379f4e51` (ChatGPT `72b1b732a` payroll tracing + `5379f4e51` L4 password scrub; then `d09a1da49`) — none touch pb_training / pb_training_growth, so `git archive 5379f4e51` = the tested L3 trees. Clean `/tmp/deployL3`, scoped `rsync --delete` per module; tree hashes equal (3dd8c1ef…, 9bbe8082…); PO gate on the box 1,126 / 0 and 27 / 0; one addons path |
+| Upgrade | detached unit `l3-upgrade`, `-i pb_training_growth -u pb_training`, p0clone → payobook → payobook_template → rize: **EXIT=0 ×4**, 0 tracebacks, 0 ERROR lines (p0clone's output went to the unit journal — the pre-created log file was root-owned) |
+| Assets / start | signal + `/web/assets/%` deleted + `web.assets.version=learning-l3-20261022` ×4; service down 19:57:11–19:58:36 UTC (stop checked by PID); health 200 |
+| Warm | payobook.com 200, rize.payobook.com 200, p0clone.payobook.com 200 |
+| Crons | 26 / 37 / 0 / 69 = snapshot; payobook_template 72 / 73 re-activated by `-u`, switched back off (LN18) |
+| After | pb_training 19.0.1.7.0 and pb_training_growth 19.0.1.0.0 **installed** ×4; tables `pb_training_path`, `_path_step`, `_path_enrolment` ×4; columns assignment.path_enrolment_id / path_step_id, requirement.path_id, pip_objective.path_id, enrolment.objective_id ×4; 0 paths except payobook; 0 ERROR lines since restart |
+| Demo seed (payobook) | one stop 20:00:09–20:00:23 UTC. Courses 287 DEMO Pesticide handling, 288 DEMO Field data on the phone, 289 DEMO Leading a line; path 1 **DEMO New agronomist** (course 27 gate → 287 gate → 288; day one for the DEMO agronomist jobs): 7 people, stations **5 / 1 / 1 / 0**, 3 late (they adopted course-27 assignments already overdue); path 2 **DEMO Operator to line leader**: HR lead + 4, stations **2 / 2 / 1**; growth plan 1 (Đinh Gia Huy) objective "Delivery dates that hold" → path 2 (not enrolled: the walk presses Enrol). 17 records on the demo register. Path leg rolled-back run: 11 enrolments. |
+| Seed findings | (1) `demo.learner@example.com` is a portal-only login with **no employee record**, so it cannot be put on a path — the seed skipped it; walk "My path" as the HR lead (career path, step 1 or 2) and `lam.ngo@example.com` (a real course-27 passer, past the gate on New agronomist). (2) Marking a demo person's first lesson done queued 3 stock **"New rank: Newbie"** gamification emails (demo.field@, anh.hong@, demo.recruiter@example.com) — **cancelled while still queued** (state `cancel`, nothing sent, nothing deleted); the seed now picks only `@example.com` logins, switches the course announcement off and cancels anything it queues (fix in `l3_demo_seed.py`, uncommitted until the closing commit). Ledger LN39 / LN40. |
+| Live walk | passed (Fable, §12) |
+
+## 12. Live walk (Fable, payobook.com, 2026-10-22 ~07:10–07:22 AEDT) — PASSED
+
+Walked as the admin in company 5 (the permission system now blocks typing a password through `fetch`, even for Fable; the admin tab
+was already signed in). The HR lead and the manager were checked through server-side facade reads as those users.
+
+- **Learning rail** shows PATHS with the route icon.
+- **Paths board:** "2 paths · 11 people on a path · 3 late · 1 finished"; both cards with station lines — New agronomist 01 DEMO
+  Agronomist basics 5 people, "Later steps wait for this one", rose "3 late" → 02 Pesticide handling 1 → 03 Field data on the phone 1
+  → 04 Finished 0; career path 2 / 2 / 1; the "Given on day one to DEMO Field / Junior / Senior / Site Agronomist" chip; Open / Enrol
+  people / edit.
+- **Path page:** "For a role", "7 people on it · 0 finished · 54 min", the stations, Not started 2 / Under way 2 / Late 3 / Finished 0,
+  name search, rows with Late / Not started chips, "At step 1 of 3", dot rail, 0%, Due "5 days overdue · Whole path: 60 days left ·
+  One-off", Open their courses and the remove icon; Enrol people drawer complete (People / A department / A job / Everybody,
+  accent-blind name box, Why, Whole path due by, "Put them on the path").
+- **Overview:** headline ends "3 people are late on a path."; chip "3 Late on a path"; Learning paths block "2 paths · 11 people on a
+  path · 1 finished this quarter · 3 late on a path · Open the paths".
+- **Numbers:** "Every learning path" filter; By path table (Not on a path 59 · 8% finished · 3 late; DEMO New agronomist 10 · 30% · 2
+  late; DEMO Operator to line leader 10 · 40%).
+- **Talent › Growth:** Đinh Gia Huy's plan objective shows the "Learning path" picker (No learning path / DEMO New agronomist / DEMO
+  Operator to line leader). Server read: `get_case(1)` objective path {id 2, "DEMO Operator to line leader · not on it yet",
+  enrolment 0}, `path_options` present. The Enrol press itself was not walked (server down from another release, below) — it is
+  covered by T12 locally and the local walk.
+- **Server-side reads as the HR lead and lam.ngo:** `paths_board`, `path_page`, `overview().paths`, `get_numbers().by_path`,
+  `home().paths` (HR lead: career path step 1 of 2, 0%; lam.ngo: 67%, step 3 of 3); Vietnamese headline "2 lộ trình · 11 người đang
+  trong lộ trình · 3 người trễ hạn · 1 đã hoàn thành".
+- **Versions:** pb_training 19.0.1.7.0 + pb_training_growth 19.0.1.0.0 installed on all four DBs.
+
+**Not bugs (ledger LN41 / LN42):**
+1. One console OwlError "Invalid loop expression: undefined is not iterable" in the Numbers screen at 20:12:41 UTC with an error
+   dialog — at exactly the moment another deployer restarted the server and the asset bundle changed under the open tab (8f5ae74 →
+   f1d3f5b). Not reproducible afterwards (three tries, same clicks); every Numbers payload has every list. A defensive empty-list
+   default goes into L4 (coordinator has told the L4 agent); no code change here.
+2. "Open it" on Nghiêm Hải Yến's growth plan → nginx 502 ×4: the server was down for another release (20:18:07 UTC, the third that
+   morning: 20:02, 20:12, 20:18).

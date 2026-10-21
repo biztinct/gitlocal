@@ -33,6 +33,9 @@ when that module is installed):
      (not enrolled — the walk presses "Enrol").
   6. Runs the morning job's path leg once inside a rolled-back savepoint and
      prints what it would do (nothing should change).
+  7. NO EMAIL: only demo logins ending "@example.com" are picked, and the
+     "a course has been added" announcement (email + to-do) is switched off
+     for this run — payobook also holds real sign-up accounts.
 Nothing here contains a password or a real person's data.
 """
 import os
@@ -64,6 +67,10 @@ Emp = env['hr.employee'].sudo()
 Users = env['res.users'].sudo()
 new_records = []
 base = Channel.browse(COURSE_ID).exists()
+DEMO_LOGIN = os.environ.get('L3_SEED_LOGIN_LIKE') or '%@example.com'
+# 7. No email from this run: the announcement is a no-op while seeding.
+type(env['pb.training.assignment'])._announce = lambda self: True
+mails_last = env['mail.mail'].sudo().search([], order='id desc', limit=1).id or 0
 say('company %s "%s"; course %s', company.id, company.name,
     '%s "%s"' % (base.id, base.name) if base else 'NOT FOUND')
 
@@ -172,11 +179,16 @@ if base:
             ('survey_id', '=', test.survey_id.id), ('state', '=', 'done'),
             ('scoring_success', '=', True)]).mapped('partner_id')
         passers = Emp.search([('user_id.partner_id', 'in', partners.ids),
+                              ('user_id.login', '=like', DEMO_LOGIN),
                               ('company_id', '=', company.id)])
 exclude = (learner | hr_lead | passers).ids
 pool = Emp.search([('company_id', '=', company.id), ('user_id', '!=', False),
+                   ('user_id.login', '=like', DEMO_LOGIN),
                    ('active', '=', True), ('id', 'not in', exclude)],
                   order='id', limit=9)
+say('demo cast: learner %s, HR lead %s, passers %s, pool %s',
+    learner.name or '-', hr_lead.name or '-', passers.mapped('name'),
+    pool.mapped('user_id.login'))
 starters = pool[:5]
 movers = pool[5:9]
 
@@ -227,5 +239,13 @@ with env.cr.savepoint(flush=True) as sp:
     say('morning path leg (rolled back): %s enrolment(s) brought up to date',
         n)
     sp.rollback()
+# Marking a demo person's first lesson done earns the stock "New rank"
+# gamification email (found on the live run, 2026-10-22): cancel anything
+# this run queued, so the seed never writes to anybody.
+queued = env['mail.mail'].sudo().search([('state', '=', 'outgoing')],
+                                        order='id desc', limit=200).filtered(
+    lambda m: m.id > mails_last)
+queued.write({'state': 'cancel'})
+say('mail queued by this run and cancelled: %s', len(queued))
 env.cr.commit()
 say('done')
