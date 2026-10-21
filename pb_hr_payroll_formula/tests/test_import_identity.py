@@ -66,6 +66,9 @@ class TestImportIdentity(TransactionCase):
     # ------------------------------------------------ the key, and the round trip
     def test_a_created_employee_carries_the_source_key(self):
         employee = self.batch._create_employee(self._line('11708', 'Thuy Bui'))
+        self.assertEqual(employee.payroll_country, 'VN')
+        self.assertEqual(employee.tz, 'Asia/Ho_Chi_Minh')
+        self.assertEqual(employee.resource_calendar_id.tz, 'Asia/Ho_Chi_Minh')
         self.assertEqual(employee.pb_source_ref,
                          '%s:11708' % self.connector.id)
 

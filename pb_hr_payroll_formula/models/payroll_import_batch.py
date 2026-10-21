@@ -1808,6 +1808,9 @@ class HrPayrollImportBatch(models.Model):
             vals['private_email'] = mapped_email
 
         self._drop_taken_barcode(vals)
+        # The scheme identifies employment country; nationality does not.
+        if self.formula_config_id.country_code:
+            vals['payroll_country'] = self.formula_config_id.country_code
         employee = self.env['hr.employee'].create(vals)
         self._update_employee_from_raw_data(employee, raw_data, line=line)
         self._log("Created employee: %s [%s]" % (employee.name, employee.identification_id))
