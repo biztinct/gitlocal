@@ -870,3 +870,76 @@ msgstr "Mọi câu hỏi bạn đã viết, cho bất kỳ bài kiểm tra nào"
 #: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "New test"
 msgstr "Bài kiểm tra mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "Write your first test"
+msgstr "Viết bài kiểm tra đầu tiên"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item and nobody can take it until they have finished every lesson."
+msgstr "Bài kiểm tra là một bộ câu hỏi có điểm đạt và số lần làm giới hạn. Hãy thêm nó làm mục cuối cùng của khóa học; chưa học xong mọi bài thì chưa ai làm được."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Due today"
+msgstr "Đến hạn hôm nay"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "1 day left"
+msgstr "Còn 1 ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s days left"
+msgstr "Còn %s ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "1 day overdue"
+msgstr "Quá hạn 1 ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s days overdue"
+msgstr "Quá hạn %s ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Day one"
+msgstr "Ngày đầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Trial period"
+msgstr "Thử việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Compliance"
+msgstr "Tuân thủ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "One-off"
+msgstr "Một lần"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Leadership programme"
+msgstr "Chương trình lãnh đạo"

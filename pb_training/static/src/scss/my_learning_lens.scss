@@ -184,6 +184,10 @@
     span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 .pbml-remind { justify-self: end; display: inline-flex; align-items: center; gap: 5px; }
+// A grid item is blockified and stretches to its column; the chip must
+// hug its word (found in the L0 walk: a full-width red bar).
+.pbml-trow .pbml-chip { justify-self: start; }
+.pbml-card .pbml-hero-bar .pbml-dim { white-space: nowrap; }
 
 // ------------------------------------------------------------ money
 .pbml-money-line {

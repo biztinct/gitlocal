@@ -13,9 +13,10 @@
  * `noBreadcrumbs` is a PROP, `searchViewId: false` loads the model's search
  * view, `selectRecord` / `createRecord` are handed in (ledger rows, NAV P2).
  */
-import { Component } from "@odoo/owl";
+import { Component, markup } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { escape } from "@web/core/utils/strings";
 import { View } from "@web/views/view";
 import { ic } from "@pb_import_kit/js/import_icons";
 
@@ -43,6 +44,11 @@ export class PbTrainingTestsLens extends Component {
             searchViewId: false,
             selectRecord: (resId) => this.openTest(resId),
             createRecord: () => this.newTest(),
+            // Zero dead ends: an empty list says what a test is and what to
+            // press, instead of the stock empty rows (found in the L0 walk).
+            noContentHelp: markup(
+                `<p class="o_view_nocontent_smiling_face">${escape(_t("Write your first test"))}</p>` +
+                `<p>${escape(_t("A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item and nobody can take it until they have finished every lesson."))}</p>`),
         };
     }
 

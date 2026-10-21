@@ -149,6 +149,34 @@ export class PbMyLearningLens extends Component {
         }
     }
 
+    /**
+     * "3 days left" / "8 days overdue", in the reader's language. The server
+     * sends English words (`due_words`, a pre-existing gap in the module's
+     * translations), so the lens says it from the date itself — the same five
+     * whole sentences, never a frame with a number dropped in (R117).
+     */
+    dueWords(due) {
+        if (!due) { return ""; }
+        const [y, m, d] = due.split("-").map(Number);
+        const now = new Date();
+        const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        const days = Math.round((Date.UTC(y, m - 1, d) - today) / 86400000);
+        if (days === 0) { return _t("Due today"); }
+        if (days === 1) { return _t("1 day left"); }
+        if (days > 1) { return _t("%s days left", days); }
+        if (days === -1) { return _t("1 day overdue"); }
+        return _t("%s days overdue", -days);
+    }
+
+    /** Why they are on it, in the reader's language (server word as fallback). */
+    reasonWord(key, fallback) {
+        return {
+            day_one: _t("Day one"), probation: _t("Trial period"),
+            compliance: _t("Compliance"), adhoc: _t("One-off"),
+            leadership: _t("Leadership programme"),
+        }[key] || fallback || "";
+    }
+
     dueClass(a) {
         if (!a) { return ""; }
         if (a.late) { return "is-bad"; }

@@ -50,7 +50,7 @@
                   <span t-if="nxt.duration"><t t-out="ic('clock',13)"/> <t t-esc="nxt.duration"/></span>
                   <span t-if="nxt.assignment and nxt.assignment.due_words"
                         class="pbml-due" t-att-class="dueClass(nxt.assignment)">
-                    <t t-out="ic('calendar',13)"/> <t t-esc="nxt.assignment.due_words"/>
+                    <t t-out="ic('calendar',13)"/> <t t-esc="dueWords(nxt.assignment.due)"/>
                   </span>
                 </div>
                 <div class="pbml-hero-bar">
@@ -94,8 +94,8 @@
               <div t-foreach="shownCourses" t-as="crs" t-key="crs.id" class="pbml-card">
                 <div class="pbml-card-top">
                   <b class="pbml-card-name" t-esc="crs.name"/>
-                  <span t-if="crs.assignment and crs.assignment.reason_word"
-                        class="pbml-chip" t-esc="crs.assignment.reason_word"/>
+                  <span t-if="crs.assignment and crs.assignment.reason"
+                        class="pbml-chip" t-esc="reasonWord(crs.assignment.reason, crs.assignment.reason_word)"/>
                 </div>
                 <div class="pbml-hero-bar">
                   <span class="pbml-bar"><span class="pbml-bar-fill"
@@ -106,7 +106,7 @@
                 <div class="pbml-card-chips">
                   <span t-if="crs.assignment and crs.assignment.due_words and !crs.finished"
                         class="pbml-chip" t-att-class="dueClass(crs.assignment)">
-                    <t t-out="ic('calendar',12)"/> <t t-esc="crs.assignment.due_words"/>
+                    <t t-out="ic('calendar',12)"/> <t t-esc="dueWords(crs.assignment.due)"/>
                   </span>
                   <t t-set="tc" t-value="testChip(crs)"/>
                   <span t-if="tc" class="pbml-chip" t-att-class="tc.cls">
@@ -143,7 +143,7 @@
                   <b t-esc="row.who"/>
                   <span class="pbml-dim" t-esc="row.course"/>
                 </div>
-                <span class="pbml-dim pbml-trow-due" t-esc="row.due_words"/>
+                <span class="pbml-dim pbml-trow-due" t-esc="dueWords(row.due)"/>
                 <span class="pbml-chip" t-att-class="stateClass(row.state)"
                       t-esc="stateWord(row.state)"/>
                 <button t-if="row.state !== 'done'" class="pbim-btn ghost pbml-remind"
