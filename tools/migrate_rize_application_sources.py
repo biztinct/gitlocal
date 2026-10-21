@@ -60,6 +60,12 @@ def snapshot(record, names):
     return {name: saved(record[name]) for name in names}
 
 
+def write_changed(record, values):
+    changes = {key: value for key, value in values.items() if saved(record[key]) != saved(value)}
+    if changes:
+        record.write(changes)
+
+
 def frozen_business():
     result = {}
     for table in ('hr_payslip', 'hr_payslip_run', 'hr_leave', 'hr_leave_allocation',
@@ -265,7 +271,7 @@ for spec in plan['schemes']:
                             application_source_owner_model=row.get('owner_model') or False)
         if key.startswith('pending.domain.'):
             assert key == 'pending.domain.'+rule.code
-            rule.write(dict(owner_values, application_source_key=key, application_source_note=row['note']))
+            write_changed(rule, dict(owner_values, application_source_key=key, application_source_note=row['note']))
             catalogue = cfg._application_source_catalogue()
         assert key in catalogue, ('provider_not_registered',cfg.code,rule.code,key)
         if row['native_target']:
@@ -274,7 +280,7 @@ for spec in plan['schemes']:
                       application_zero_allowed=row['zero_allowed'], **owner_values)
         if row['remove_contract_flag']:
             values.update(is_contract_component=False,is_text_component=False)
-        rule.write(values)
+        write_changed(rule, values)
         mapped += 1
     mode = add_input(cfg,'PBAPPDATA','Application data mode','quantity','application.mode')
     changes = {}
@@ -330,7 +336,7 @@ for spec in plan['schemes']:
         values['PBAPPDATA'] = 0
         assert ot_rule._run_formula(values, ot_rule.excel_formula, write_diagnostics=False) == 20
         checks += 2
-    cfg.write(dict(payroll_basis='contractual',standard_day_basis='calendar',
+    write_changed(cfg, dict(payroll_basis='contractual',standard_day_basis='calendar',
                    application_data_enabled=True,application_effective_from=effective))
     assert cfg.source_priority==source_order, 'Existing source precedence must not change.'
     after_catalogue = cfg._application_source_catalogue()
