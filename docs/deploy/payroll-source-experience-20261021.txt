@@ -91,3 +91,12 @@ Cleanup
 - No PNG or screenshot files were saved by this test run. Inline browser inspection
   only; temporary QA directory scanned with zero PNG files. Existing product assets,
   user images and other sessions' files preserved.
+
+Concurrent release boundary
+- Final branch check found Learning-only commit f7182ccde after our 10:22 release.
+  Its L1_REPORT.md section 10 explicitly records coordinator scope as commit-only,
+  to ride the next pb_training upgrade. It is intentionally not deployed by this
+  payroll release. No payroll runtime changes remain undeployed.
+- The verified combined deployment baseline remains 145948261; the subsequent
+  documentation commits do not change runtime content. Other sessions' working
+  files, deleted output files and staged future Learning work were left untouched.
