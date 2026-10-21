@@ -72,6 +72,77 @@ class TestMappingExperience(TransactionCase):
         self.assertEqual(data['defaults']['config_id'], self.config.id)
         self.assertIn('config', data['defaults']['fell_back'])
 
+    def _journey_record_mapping(self, rule, model, field):
+        return self.env['hr.payslip.import.mapping'].create({
+            'salary_structure_id': self.config.id, 'component_id': rule.id,
+            'destination_type': 'field',
+            'target_model_id': self.env['ir.model']._get(model).id,
+            'target_field_id': self.env['ir.model.fields']._get(model, field).id})
+
+    def test_journey_direct_record_sources_share_rows_and_keep_write_direction(self):
+        self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        fixtures = [('employee', 'hr.employee', 'name', 'emp'),
+                    ('employee', 'hr.employee', 'barcode', 'emp'),
+                    ('employee', 'hr.employee', 'department_id', 'emp'),
+                    ('employee', 'hr.employee', 'job_title', 'emp'),
+                    ('contract', 'hr.contract', 'date_start', 'con'),
+                    ('contract', 'hr.contract', 'date_end', 'con')]
+        expected = []
+        for n, (prefix, model, field, group) in enumerate(fixtures):
+            rule = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+                'code': 'DEDUPE%s' % n, 'name': field, 'column_type': 'input',
+                'application_source_key': '%s.%s' % (prefix, field)})
+            self._journey_record_mapping(rule, model, field)
+            expected.append((rule.id, 'p:%s:%s' % (group, field)))
+        self.env.flush_all()
+        data = self.studio.journey_data(self.config.id)
+        rows = data['lanes']['source'][0]['rows']
+        self.assertEqual({r['id'] for r in rows}, {rid for _, rid in expected})
+        for rule_id, rid in expected:
+            links = [l for l in data['links'] if {l['a'], l['b']} == {'s:%s' % rule_id, rid}]
+            self.assertEqual(len(links), 1)
+            self.assertEqual(links[0]['dir'], 'both')
+        self.assertTrue(all('checked at run time' in r['sub'] for r in rows))
+
+    def test_journey_shared_field_across_components_keeps_distinct_calculation(self):
+        self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        self.rule.write({'application_source_key': 'employee.name', 'sequence': 1})
+        other = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'code': 'DEDUPEOTHER', 'name': 'Master name', 'column_type': 'input', 'sequence': 2})
+        self._journey_record_mapping(other, 'hr.employee', 'name')
+        related = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'code': 'DEDUPEMANAGER', 'name': 'Manager', 'column_type': 'input',
+            'application_source_key': 'employee.manager_name'})
+        self.env.flush_all()
+        descriptors = self.config._application_mapping_descriptors()
+        # Same label is deliberately insufficient: a manager-name path is a
+        # different source from the employee's own name.
+        descriptors[related.id]['label'] = descriptors[self.rule.id]['label']
+        with patch.object(type(self.config), '_application_mapping_descriptors', return_value=descriptors):
+            data = self.studio.journey_data(self.config.id)
+        rows = data['lanes']['source'][0]['rows']
+        self.assertEqual({r['id'] for r in rows}, {'p:emp:name', 'p:app:employee.manager_name'})
+        record_links = [l for l in data['links'] if l['kind'] == 'record']
+        self.assertEqual(len(record_links), 3)
+        self.assertTrue(any(l['a'] == 'p:emp:name' and l['b'] == 's:%s' % self.rule.id
+                            and l['dir'] == 'back' for l in record_links))
+        self.assertTrue(any(l['a'] == 's:%s' % other.id and l['b'] == 'p:emp:name'
+                            and l['dir'] == 'both' for l in record_links))
+
+    def test_journey_bank_row_only_gains_read_direction_with_application_source(self):
+        self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        self.env['hr.payslip.import.mapping'].create({'salary_structure_id': self.config.id,
+            'component_id': self.rule.id, 'destination_type': 'bank_account', 'bank_role': 'acc_number'})
+        self.env.flush_all()
+        before = self.studio.journey_data(self.config.id)
+        self.assertEqual(next(l for l in before['links'] if l['b'] == 'p:bank:acc_number')['dir'], 'fwd')
+        self.rule.application_source_key = 'bank.acc_number'
+        after = self.studio.journey_data(self.config.id)
+        self.assertEqual([r['id'] for r in after['lanes']['source'][0]['rows']], ['p:bank:acc_number'])
+        links = [l for l in after['links'] if l['kind'] == 'record']
+        self.assertEqual(len(links), 1)
+        self.assertEqual(links[0]['dir'], 'both')
+
     def test_unified_mapping_keeps_hr_context_and_period_sources_honest(self):
         self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
         self.rule.application_source_key = 'period.paid_day_equivalents'

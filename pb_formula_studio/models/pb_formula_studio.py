@@ -7597,6 +7597,7 @@ class PbFormulaStudio(models.AbstractModel):
         conflicts = self._source_conflicts(config)
         emp_total, read_back_ids, bank_rows = self._journey_people_mappings(config)
         application = config._application_mapping_descriptors() if config.application_data_enabled else {}
+        application_catalogue = config._application_source_catalogue() if application else {}
         scheme_counts, _wired_ids = self._journey_scheme_lane(
             config, record_dests, wire_dests)
 
@@ -7992,12 +7993,36 @@ class PbFormulaStudio(models.AbstractModel):
             if app:
                 pending = app['pending'] or not app['available']
                 prid = 'p:app:%s' % app['key']
+                group = 'pending' if pending else 'application'
+                # A direct application read and an import/read-back mapping
+                # can name the SAME record field. Give that field one row,
+                # regardless of which component reaches it first. Labels are
+                # not identities; related paths and calculations stay separate.
+                spec = application_catalogue.get(app['key'], {})
+                field = spec.get('field')
+                record_group = {'hr.employee': 'emp', 'hr.contract': 'con'}.get(spec.get('model'))
+                if record_group and field and not spec.get('path') and not pending:
+                    group = record_group
+                    prid = 'p:%s:%s' % (group, field)
+                elif (not pending and spec.get('model') == 'res.partner.bank'
+                      and app['key'] in ('bank.acc_number', 'bank.acc_holder_name',
+                                         'bank.bank_name', 'bank.bank_bic')):
+                    group = 'bank'
+                    prid = 'p:bank:%s' % app['key'].split('.', 1)[1]
                 detail = (_('Mapping needs review') if pending else
                           _('Excluded from payroll snapshots') if app['payroll_excluded'] else
                           _('Application mapping · values checked at run time'))
-                source_row(prid, app['label'], 'pending' if pending else 'application',
-                           '%s · %s' % (app['model'], detail))
-                join(prid, srid, 'record', 'back', dimmed=pending or app['payroll_excluded'])
+                app_row = source_row(prid, app['label'], group)
+                app_row['sub'] = '%s · %s' % (app['model'], detail)
+                # Reuse a native record edge, preserving its import direction.
+                # Bank writeback alone is one-way; only an active application
+                # read makes that particular component's relationship two-way.
+                record_link = next((link for link in links if link['a'] == srid
+                                    and link['b'] == prid and link['kind'] == 'record'), None)
+                if record_link and not pending and not app['payroll_excluded']:
+                    record_link['dir'] = 'both'
+                elif not record_link:
+                    join(prid, srid, 'record', 'back', dimmed=pending or app['payroll_excluded'])
                 srow['sub'] = detail
                 if not pending and not app['payroll_excluded']:
                     fed = True
