@@ -169,7 +169,7 @@ export class MappingStudio extends Component {
     async openApplicationSources(componentId = 0) {
         if (!this.state.configId) { return; }
         const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[this.state.configId]]);
-        action.params = {...action.params, tab: "sources", component_id: Number(componentId) || 0, from_mapping: true};
+        action.params = {...action.params, tab: "sources", component_id: Number(componentId) || 0, from_mapping: true, return_mapping: {mode:this.state.mode, component_id:Number(componentId)||this.state.componentId||0}};
         return this.action.doAction(action);
     }
 

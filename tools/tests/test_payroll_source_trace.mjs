@@ -19,4 +19,5 @@ page.state.dirty=true; await page.inspect(42);
 assert.equal(calls.length,4); assert.equal(calls[3],'notice');
 page.state.dirty=false; page.orm.call=async()=>{throw new Error('Access denied')};
 await page.openRecords('hr.leave'); assert.equal(page.state.error,'Access denied');
-console.log('7 source inspector scope, dialog and unsaved-edit checks passed');
+page.sourceScope={from_mapping:true,return_mapping:{mode:'journey',component_id:33205}};page.action.doAction=(id,options)=>{assert.equal(id,'pb_formula_studio.action_pb_mapping_studio');assert.deepEqual(options.additionalContext,{pb_config:7118,pb_mode:'journey',pb_component:33205});};page.back();
+console.log('Source inspector scope, real-record dialogs, return navigation and unsaved-edit checks passed');
