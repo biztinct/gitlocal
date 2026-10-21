@@ -362,7 +362,13 @@ export class PayrunWizard extends Component {
             // PAYAI P2 — "Open in the screen instead": the run PayAI planned,
             // filled in. Nothing is pressed for the person.
             const pre = takePrefill(this.props.action && this.props.action.context);
-            if (pre) { this._applyPrefill(pre); }
+            if (pre) {
+                this._applyPrefill(pre);
+                if (pre.from_sources) {
+                    await this._refreshGate(false);
+                    this.gotoKey('data');
+                }
+            }
         });
     }
 
@@ -389,7 +395,11 @@ export class PayrunWizard extends Component {
             }
             this.refreshWho();
         }
+        if (pre.from_sources && Array.isArray(pre.employee_ids)) {
+            this.state.who.picked = pre.employee_ids.filter(id => Number.isInteger(id) && id > 0);
+        }
         this.notif.add(
+            pre.from_sources ? _t("Your payroll selection is restored. Check readiness again after changing sources.") :
             _t("PayAI filled this in from your request. Check it, then run it when you are ready."),
             { type: "info" });
     }
@@ -432,7 +442,7 @@ export class PayrunWizard extends Component {
     async openApplicationIssue(group, employeeId=false) {
         if(group.kind==='setup')return this.openApplicationSettings();
         try { const action=await this.orm.call('pb.payrun.wizard','application_issue_action',[this.applicationPayload(),group.kind==='review'?group.channel:group.kind,group.code||'',employeeId]);
-            return this.action.doAction(action, {onClose:()=>this.previewApplicationData()});
+            return this.action.doAction({...action, target:'new'}, {onClose:()=>this.previewApplicationData()});
         } catch(e) {this.state.application.error=e?.data?.message||e.message;}
     }
     applicationPayload() {
@@ -478,13 +488,17 @@ export class PayrunWizard extends Component {
         const id = this.sheetConfigId;
         if (!id) { return; }
         const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[id]]);
+        const payload = this.applicationPayload();
+        action.params = {...action.params, return_payrun: {from_sources:true,
+            name:payload.name, date_start:payload.date_start, date_end:payload.date_end,
+            formula_config_id:id, statuses:payload.statuses, employee_ids:payload.employee_ids}};
         await this.action.doAction(action, { onClose: () => this._refreshGate(false) });
     }
     async openApplicationEvents() {
         const id = this.sheetConfigId;
         if (!id) { return; }
-        const action = await this.orm.call("hr.formula.config", "action_application_period_inputs", [[id]]);
-        return this.action.doAction(action);
+        const action = await this.orm.call('pb.payrun.wizard','application_issue_action',[this.applicationPayload(),'adjustments']);
+        return this.action.doAction({...action, target:'new'}, {onClose:()=>this.previewApplicationData()});
     }
     // SC-4 — the scheme's source lanes, from the gate payload. Everything
     // defaults ON so an old server changes nothing about this screen.
