@@ -43,10 +43,39 @@ Fable designs, Opus builds, reviews and tests each phase (owner's standing workf
   missing punch-out (punch = a blow); "Hết tiền" ("out of money") for money out; earlier "Trần nhà" for a contribution
   ceiling and "Tìm kiếm bề mặt" for search surfaces (both fixed in LEARNREV).
 
+## PICK-UP NOTE: start here in a new session (status 2026-10-21, ON HOLD by the owner)
+The owner paused the clean-up after the audit: "Will do that later — just put some note somewhere so it's easy to
+pick up in some other session." Nothing in the product has changed yet. To resume:
+1. Read this file, `VIFIX_LEDGER.md` (VF1–VF10) and `VIFIX_P1_REPORT.md`, especially "F. Wave plan" (9 waves, 46
+   pieces of 1–2 days, about 70 working days in all) and "Open questions for the owner".
+2. **Ask the owner first** (AskUserQuestion cards) how much to do. The options offered on 2026-10-21 were:
+   - the most-used areas first: W1 Home/app frame/employee pages, W2 Approvals and W3 Running payroll, about 14 days;
+   - all 9 areas;
+   - only the worst machine words.
+3. Then ask the decisions still open from the report's list:
+   - #4 division "Khối" vs "Bộ phận";
+   - #5 overtime "Tăng ca" vs "làm thêm giờ";
+   - #6 English loanwords;
+   - #7 Vietnamese date style (needs code);
+   - #8 pay-run names in the company's language and renaming existing ones;
+   - #9 the tenant console (911 strings);
+   - #10 making the product match practice copies whose Vietnamese is better;
+   - the 25 glossary terms marked for review in `VIFIX_GLOSSARY.md`.
+4. Re-run the P1 tools first (`docs/handovers/vifix/tools/`, all offline, under 60 s). Other sessions keep changing
+   screens, so the 2026-10-21 baseline in `p1_out/` goes stale. Then write `VIFIX_P2_HANDOVER.md` for the first wave
+   and launch Opus.
+
+**Owner decisions already made (2026-10-21), binding on every wave:**
+| Topic | Decision | Notes |
+|---|---|---|
+| Pay run | **đợt lương** everywhere | Learn's "đợt tính lương" changes to match. "kỳ lương" stays only for the pay PERIOD. |
+| People menu | **Nhân sự** (was "Con người") | Lesson breadcrumbs must follow, so regenerate Learn and diff `pb_learn/i18n/vi_VN.po`. |
+| Workforce menu | **Chấm công** (was "Lực lượng lao động") | Same Learn follow-up. Menu names are stored terms: overwrite per database with the guard (LR29) or a targeted update. |
+
 ## Phases
 | Phase | What | Status |
 |---|---|---|
-| P1 | Audit: static .po scan, unextracted-literal scan, live Vietnamese sweep of every screen on a clone, glossary draft, replica drift report, wave plan. No product string changes. | handover written |
-| P2…Pn | Fix waves by product area, as P1's wave plan proposes | to design after P1 |
+| P1 | Audit: static .po scan, unextracted-literal scan, live Vietnamese sweep of every screen on a clone, glossary draft, replica drift report, wave plan. No product string changes. | **DONE** 2026-10-21 (branch `vifix-p1`, merged 75d221b71, pushed). Report `VIFIX_P1_REPORT.md`. |
+| P2…Pn | Fix waves by product area, as P1's wave plan proposes | **ON HOLD** (owner): see the pick-up note above |
 
 Ledger: `VIFIX_LEDGER.md` (rows VF1…). Every handover references it; add a row for every new gotcha.
