@@ -1,0 +1,53 @@
+Unified payroll mapping presentation — deployment record
+Date: 2026-10-21 UTC
+
+Implementation commits
+- 610de2758: unified component ownership, direction and availability; relevance filters; historical branches.
+- 448d676a2f6f5df19625df6de8e69e029c128e65: preserve employee barcode identifiers, clarify history metrics and writeback wording.
+- Final pb_formula_studio version: 19.0.1.206.0.
+
+Delivered behavior
+- Connections shows each component's owning model, field or calculation, read/write direction and mapping availability.
+- Payroll inputs and formula dependencies remain visible; other HR context is opt-in and remains stored/mapped.
+- Employee field picker defaults to curated or already-mapped fields. Standard weekday workplace fields remain available only through the advanced catalogue.
+- Operational configuration lists agree on four Rize main schemas. Four merged branches are explicitly historical, with links to their main schema.
+- Import destination wording now distinguishes record writeback from application payroll sources.
+- This release changes presentation only: no payroll formula, employee data, financial run, schema mapping or source-priority migration.
+
+Deployment
+- Server Payobook19v2; sole addons target /odoo/odoo-server/addons.
+- All active databases upgraded: p0clone, payobook, payobook_template, rize.
+- Rehearsed installed module and tests on p0clone before other databases.
+- Shared deploy notes checked, START/DONE logged, runner held /tmp/payobook-studio-deploy.lock.
+- Per-module copy only. All 151 combined committed custom-module trees matched live hashes after deployment. Other sessions' uncommitted learning changes were preserved and excluded.
+- Final release stage: /tmp/rize-unified-release-448d676a2 (receipt.json, logs, DONE sentinel).
+- Final release downtime: 155 seconds. Earlier release 610de2758: 153 seconds.
+- Final permanent Rize backup: /odoo/archives/rize-unified-mapping-20261021T041422Z.
+- Final nonproduction backups: /odoo/backups/unified-mapping-20261021T041422Z (retention metadata preserves latest usable backup).
+- Active cron IDs restored exactly: payobook 37; payobook_template 0; p0clone 26; rize 69.
+- Installed custom versions verified on all four databases; service active, no upgrade jobs left running.
+- payobook.com, rize.payobook.com and p0clone.payobook.com login pages warmed and returned HTTP 200.
+- ABM excluded and untouched.
+
+Validation
+- Local combined mapping suites: 54 passed. Additional identity-focused suite: 19 passed.
+- Final deployed p0clone suites: 55 tests, 0 failures, 0 errors.
+- Python/XML/JS syntax and diff checks passed; client filtering/selection smoke checks passed.
+- HOOT regression test added; HOOT suite not executed.
+- Chrome on Rize: operational gallery contains four main schemas; history contains four merged branches without unreleased metrics; employee barcode identifier remains visible in Indonesia; Vietnam asset context hidden by default and revealed by opt-in; asset inspector shows pb.asset.assignment, asset_id.code aggregation, read-only direction and unchecked period availability.
+- Chrome on first release: weekday picker fields hidden by default and revealed only with Show other application fields; mapping layout visually inspected.
+- Final read-only ORM verification covered all four schema identities, model details, hidden context, curated weekday exclusion and spreadsheet binding preservation.
+
+Final Rize counts (inputs / default visible / optional HR context / Excel bindings)
+- Vietnam: 139 / 58 / 81 / 135.
+- India: 116 / 38 / 78 / 114.
+- Singapore: 103 / 21 / 82 / 101.
+- Indonesia: 132 / 44 / 88 / 130.
+
+Limits
+- Configured mapping is not proof that employee/period values exist. The UI explicitly says these values have not been checked; payroll-period validation remains authoritative.
+- Existing pending application-source decisions are unchanged. Optional HR-context counts are not counts of pending or missing mappings.
+- No production payroll was computed or posted as part of these UI checks.
+- No screenshot or PNG files were saved by this test run; unrelated images and assets were preserved.
+
+Local verification evidence: /tmp/rize-unified-mapping-20261021/inventory-final.json and test logs.
