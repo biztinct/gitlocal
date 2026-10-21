@@ -618,8 +618,11 @@ class TestT14Exports(RequirementCase):
         many = self._req(department_ids=[(6, 0, dept.ids)])
         res = self.Board.matrix_xlsx({'requirement_id': many.id})
         self.assertEqual(res['rows'], 250)
-        pdf = self.Board.matrix_pdf({'requirement_id': many.id})
-        self.assertTrue(pdf['file_b64'])
+        # Over the print-out's limit: a sentence, never a 100 MB file.
+        with self.assertRaisesRegex(UserError, 'up to 200'):
+            self.Board.matrix_pdf({'requirement_id': many.id})
+        self.assertTrue(self.Board.matrix_pdf(
+            {'requirement_id': many.id, 'q': 'M 007'})['file_b64'])
         export = self.env['pb.training.matrix.export'].create(
             {'filters_json': '{"requirement_id": %s}' % many.id})
         self.assertEqual(len(export.data()['pages_rows']), 7, '40 a page')

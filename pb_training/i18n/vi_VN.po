@@ -4639,3 +4639,9 @@ msgstr "Hiệu lực khóa định hướng an toàn, người sơ cứu tại t
 #: code:addons/pb_training/models/pb_training_required.py:0
 msgid "No course was put on."
 msgstr "Chưa giao được khóa học nào."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "That is %(n)s people. The print-out takes up to %(cap)s at a time — narrow it by department, site, job or rule. The spreadsheet has everybody."
+msgstr "Đó là %(n)s người. Bản in chỉ nhận tối đa %(cap)s người mỗi lần — hãy thu hẹp theo phòng ban, địa điểm, chức danh hoặc quy định. Bảng tính có đầy đủ mọi người."

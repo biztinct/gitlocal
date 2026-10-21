@@ -41,6 +41,9 @@ _logger = logging.getLogger(__name__)
 #: People per page on the matrix (the roster's own cap, handover F6).
 ROW_CAP = 200
 
+#: The most people one auditor print-out takes (5 printed pages of 40).
+PDF_MAX_PEOPLE = 200
+
 #: Problem first: who is missing something, then expiring, then under way.
 _ROW_RANK = {'missing': 0, 'expiring': 1, 'in_progress': 2, 'not_due': 3}
 
@@ -823,8 +826,21 @@ class PbTrainingRequired(models.AbstractModel):
 
     @api.model
     def matrix_pdf(self, filters=None):
+        """The print-out, for at most PDF_MAX_PEOPLE people.
+
+        FOUND LIVE: a printed page of 40 people is ~3.7 MB from the live PDF
+        engine, so the whole demo company (4,547 people) came to 428 MB — a
+        file no browser takes in one answer. An auditor prints a site or a
+        department; the spreadsheet carries everybody."""
         self._require_read()
-        return self.env['pb.training.matrix.export'].build(filters or {})
+        filters = filters or {}
+        total = self._matrix_data(filters, paged=False)['total']
+        if total > PDF_MAX_PEOPLE:
+            raise UserError(_(
+                "That is %(n)s people. The print-out takes up to %(cap)s at a "
+                "time — narrow it by department, site, job or rule. The "
+                "spreadsheet has everybody.", n=total, cap=PDF_MAX_PEOPLE))
+        return self.env['pb.training.matrix.export'].build(filters)
 
     # =====================================================================
     #  settings (Settings › HR › Required training)
