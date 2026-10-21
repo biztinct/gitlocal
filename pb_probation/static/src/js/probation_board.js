@@ -48,6 +48,9 @@ const STAGE_LABEL = {
     outcome: _t("Outcome"),
 };
 
+// One arrival opens one drawer (NAV P3c), keyed on the hub's arrival object.
+const _openedFor = new WeakSet();
+
 export class PbProbationBoard extends Component {
     static template = "pb_probation.PbProbationBoard";
     static props = ["*"];
@@ -91,7 +94,18 @@ export class PbProbationBoard extends Component {
             talking: null,
         });
 
-        onWillStart(async () => { await this.load(); });
+        onWillStart(async () => {
+            await this.load();
+            // NAV P3c — a door may open the board ON one person
+            // (`pb_focus: "person:<employee id>"`, Home › TEAM). Once per
+            // arrival: tabbing away and back does not pop the drawer again.
+            const arrival = this.props.arrival;
+            const m = /^person:(\d+)$/.exec(String((arrival && arrival.focus) || ""));
+            if (m && this.state.allowed && !_openedFor.has(arrival)) {
+                _openedFor.add(arrival);
+                await this.openPerson(Number(m[1]));
+            }
+        });
     }
 
     ic(n, s = 16) { return ic(n, s); }

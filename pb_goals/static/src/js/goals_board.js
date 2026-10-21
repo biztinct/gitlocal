@@ -83,6 +83,9 @@ const CHANGE_TONE = {
     refused: "bad",
 };
 
+// One arrival chooses the tab once (NAV P3c), keyed on the hub's arrival.
+const _tabFor = new WeakSet();
+
 export class PbGoalsBoard extends Component {
     static template = "pb_goals.PbGoalsBoard";
     static props = ["*"];
@@ -170,6 +173,15 @@ export class PbGoalsBoard extends Component {
 
         onWillStart(async () => {
             await this.load();
+            // NAV P3c — a door may open the board on the check-ins or the
+            // reviews tab (`pb_focus: "tab:checkins"`, Home › TEAM). Once per
+            // arrival, so tabbing away and back keeps the reader's own tab.
+            const arrival = this.props.arrival;
+            const m = /^tab:(checkins|reviews)$/.exec(String((arrival && arrival.focus) || ""));
+            if (m && this.state.allowed && !_tabFor.has(arrival)) {
+                _tabFor.add(arrival);
+                await this.setTab(m[1]);
+            }
         });
     }
 

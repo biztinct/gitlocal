@@ -34,9 +34,15 @@ its click hands over to the Pay Run hub on the lens where the outstanding work
 lives, with a back chip that says Home.
 
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
-one accent (W1/W2/W3). No model, no ACL, no RPC of its own.
+one accent (W1/W2/W3).
+
+NAV P3c adds the TEAM tab for people who manage others: one read-only facade
+(`pb.home.team`, an AbstractModel — no table, no ACL) that asks the inbox,
+attendance, leave, probation, goals, training and hiring for the reader's
+direct reports, every one of them softly (`env.get`), so this module gains no
+dependency. No money is read or sent.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -58,6 +64,10 @@ one accent (W1/W2/W3). No model, no ACL, no RPC of its own.
             'pb_home_hub/static/src/js/home_hub.js',
             'pb_home_hub/static/src/js/home_hub_palette.js',
             'pb_home_hub/static/src/xml/home_hub.xml',
+            # NAV P3c: Home > TEAM
+            'pb_home_hub/static/src/scss/team_lens.scss',
+            'pb_home_hub/static/src/js/team_lens.js',
+            'pb_home_hub/static/src/xml/team_lens.xml',
         ],
     },
     'installable': True,

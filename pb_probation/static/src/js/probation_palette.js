@@ -46,6 +46,8 @@ registry.category(PEOPLE_LENSES).add("probation", {
     Component: PbProbationBoard,
     groups: LIFECYCLE_GATE,
     feature: "lifecycle",
+    // NAV P3c: Home › TEAM opens this tab on one person.
+    wantsArrival: true,
 }, { sequence: 54 });
 
 const HUB_XMLID = "pb_people_hub.action_pb_people_hub";

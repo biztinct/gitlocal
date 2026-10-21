@@ -83,6 +83,8 @@ registry.category(TALENT_LENSES).add("goals", {
     // Everybody may ASK; the tab shows only when the board has something
     // for them (a goals group, or a sheet the rules let them read).
     probe: { model: "pb.goals", method: "can_open" },
+    // NAV P3c: Home › TEAM opens this tab on check-ins or reviews.
+    wantsArrival: true,
 }, { sequence: 10 });
 
 const palette = registry.category("pb_hub_palette");

@@ -181,10 +181,22 @@ class TestHomeHubStatic(TransactionCase):
                 [('action', '=', 'ir.actions.client,%s' % act.id)]),
             'pb_home_hub must ship no ir.ui.menu — the rail is the door')
 
-    def test_the_hub_ships_no_model_and_no_python_at_all(self):
-        """The shell owns no data. A hub that grew a model would be a second
-        place a period stage or an approval count lives."""
-        self.assertFalse(os.path.isdir(os.path.join(HERE, 'models')))
+    def test_the_hub_ships_no_stored_model(self):
+        """The shell owns no data. A hub that grew a TABLE would be a second
+        place a period stage or an approval count lives.
+
+        NAV P3c gave it one read-only facade (`pb.home.team`, Home › TEAM),
+        and that is the whole of its Python: an AbstractModel, so no table,
+        no access rule, nothing stored."""
+        models_dir = os.path.join(HERE, 'models')
+        self.assertEqual(sorted(f for f in os.listdir(models_dir)
+                                if f.endswith('.py')),
+                         ['__init__.py', 'team_facade.py'])
+        src = _read(models_dir, 'team_facade.py')
+        self.assertIn('models.AbstractModel', src)
+        self.assertNotIn('models.Model)', src)
+        self.assertNotIn('models.TransientModel', src)
+        self.assertFalse(os.path.isdir(os.path.join(HERE, 'security')))
 
     def test_the_hub_declares_no_local_palette(self):
         for f in ('home_hub.js', 'home_hub_palette.js'):

@@ -70,3 +70,432 @@ msgstr "Hộp thư"
 #: code:addons/pb_home_hub/static/src/js/home_hub.js:0
 msgid "Approvals inbox"
 msgstr "Hộp thư phê duyệt"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "%(n)s days late"
+msgstr "trễ %(n)s ngày"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "1 day late"
+msgstr "trễ 1 ngày"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "due today"
+msgstr "đến hạn hôm nay"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "due tomorrow"
+msgstr "đến hạn ngày mai"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "due %(day)s"
+msgstr "đến hạn %(day)s"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "late, not in yet (%(n)s min)"
+msgstr "đi muộn, chưa có mặt (%(n)s phút)"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "late %(n)s min"
+msgstr "đi muộn %(n)s phút"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "in today, has left"
+msgstr "có mặt hôm nay, đã về"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "in since %(time)s"
+msgstr "có mặt từ %(time)s"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "in today"
+msgstr "có mặt hôm nay"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "on leave until %(day)s"
+msgstr "nghỉ phép đến %(day)s"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "on leave"
+msgstr "nghỉ phép"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "not working today"
+msgstr "không làm việc hôm nay"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "not started yet"
+msgstr "chưa bắt đầu"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "the 1:1 conversation"
+msgstr "buổi trao đổi 1:1"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "to arrange"
+msgstr "cần sắp xếp"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "read what colleagues said"
+msgstr "đọc ý kiến của đồng nghiệp"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "your recommendation"
+msgstr "đề xuất của bạn"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "trial ends %(day)s"
+msgstr "hết thử việc %(day)s"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "missed"
+msgstr "đã bỏ lỡ"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "monthly conversation"
+msgstr "cuộc trò chuyện hằng tháng"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "half-way review"
+msgstr "đánh giá giữa năm"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "end-of-year review"
+msgstr "đánh giá cuối năm"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "Waiting for you to write it"
+msgstr "Đang chờ bạn viết"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "You are writing it"
+msgstr "Bạn đang viết"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "Sent in, with HR"
+msgstr "Đã gửi, nhân sự đang xem"
+
+#. module: pb_home_hub
+#. odoo-python
+#: code:addons/pb_home_hub/models/team_facade.py:0
+msgid "HR agreed, waiting for the final yes"
+msgstr "Nhân sự đã đồng ý, chờ phê duyệt cuối"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Team"
+msgstr "Đội của tôi"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "My team"
+msgstr "Đội của tôi"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Overtime and timesheets"
+msgstr "Tăng ca và bảng chấm công"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Expenses and trips"
+msgstr "Chi phí và công tác"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s in today"
+msgstr "%s có mặt hôm nay"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s late"
+msgstr "%s đi muộn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s on leave"
+msgstr "%s nghỉ phép"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s not started yet"
+msgstr "%s chưa bắt đầu"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s not working today"
+msgstr "%s không làm việc hôm nay"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Your team of %s"
+msgstr "Đội của bạn gồm %s người"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "1 thing waiting on you"
+msgstr "1 việc đang chờ bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s things waiting on you"
+msgstr "%s việc đang chờ bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s people, all accounted for."
+msgstr "Đã rõ tình hình cả %s người."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Nobody on your team is past a training date."
+msgstr "Không ai trong đội của bạn bị trễ hạn đào tạo."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "1 person has required training past its date"
+msgstr "1 người có khóa đào tạo bắt buộc đã quá hạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s people have required training past its date"
+msgstr "%s người có khóa đào tạo bắt buộc đã quá hạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "%s days late"
+msgstr "trễ %s ngày"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "That screen is not available here."
+msgstr "Màn hình đó không có ở đây."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Your team could not be read just now."
+msgstr "Chưa đọc được thông tin đội của bạn lúc này."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Nothing has changed. Try again in a moment."
+msgstr "Không có gì thay đổi. Hãy thử lại sau giây lát."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Your team today"
+msgstr "Đội của bạn hôm nay"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "In"
+msgstr "Có mặt"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Late"
+msgstr "Đi muộn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Not started yet"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "On leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Nobody reports to you in the company you are looking at. Switch company at the top to see the others."
+msgstr "Không có ai báo cáo cho bạn trong công ty bạn đang xem. Hãy đổi công ty ở phía trên để xem những người khác."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Nothing needs you today."
+msgstr "Hôm nay không có gì cần bạn."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Open your inbox"
+msgstr "Mở hộp thư của bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Conversations due"
+msgstr "Cuộc trò chuyện đến hạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Probation"
+msgstr "Thử việc"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "No trial periods need you right now."
+msgstr "Hiện không có kỳ thử việc nào cần bạn."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Goals"
+msgstr "Mục tiêu"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "No goal conversations due in the next two weeks."
+msgstr "Không có cuộc trò chuyện về mục tiêu nào đến hạn trong hai tuần tới."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "more"
+msgstr "khác"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Learning"
+msgstr "Đào tạo"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Open team training"
+msgstr "Mở đào tạo của đội"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "Hiring requests I own"
+msgstr "Yêu cầu tuyển dụng của tôi"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "You have no hiring requests in progress."
+msgstr "Bạn không có yêu cầu tuyển dụng nào đang xử lý."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
+msgid "The HR team runs these reviews and will ask you for each step."
+msgstr "Bộ phận nhân sự điều phối các buổi đánh giá này và sẽ nhờ bạn ở từng bước."

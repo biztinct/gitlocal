@@ -54,6 +54,20 @@ export function focusRequest(context) {
 }
 
 /**
+ * NAV P3c — a door may open the inbox with one AREA already chosen:
+ * `pb_focus: "area:time"` lights the Time chip, exactly as pressing it would
+ * (Home › TEAM's "Waiting on you" tiles). An unknown area is ignored; the
+ * `request:<id>` form above keeps working and wins when both could apply.
+ */
+const FOCUS_AREAS = ["pay", "money", "data", "people", "time", "setup",
+                     "platform", "other"];
+export function focusArea(context) {
+    const raw = context && (context.pb_focus || context.focus);
+    const m = /^area:([a-z]+)$/.exec(String(raw || ""));
+    return m && FOCUS_AREAS.includes(m[1]) ? m[1] : "";
+}
+
+/**
  * PAYAI FIX-1 (P4:link-1) — WHERE THE DEEP LINK REACHES THE INBOX.
  *
  * As the Home hub's Approvals lens, the inbox is handed the hub's arrival
@@ -76,6 +90,8 @@ export function inboxArrival(props) {
 // One arrival opens one drawer: a lens re-mounted later (tab away and back)
 // does not pop the same request open again.
 const _consumedFocus = new WeakSet();
+// The same for an area: chosen once on arrival, never again on a re-mount.
+const _consumedArea = new WeakSet();
 
 export class PbInbox extends Component {
     static template = "pb_approval_config.PbInbox";
@@ -126,6 +142,11 @@ export class PbInbox extends Component {
         this.onEscape = this.onEscape.bind(this);
         const arrival = inboxArrival(this.props);
         const focus = focusRequest(arrival);
+        const area = focusArea(arrival);
+        if (area && !_consumedArea.has(arrival)) {
+            _consumedArea.add(arrival);
+            this.state.area = area;
+        }
         onWillStart(async () => {
             // Find the pile first, so the list is read ONCE, on the tab and
             // scope where the request really is.

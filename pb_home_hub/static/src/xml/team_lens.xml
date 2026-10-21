@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================== Home, TEAM
+       NAV P3c. One read (pb.home.team.get_team); every section is absent
+       when its module is not installed. Lucide through ic(); no money on
+       this screen. Section comments never spell a CSS custom property: a
+       doubled hyphen inside an XML comment is a parse error (W22/W72). -->
+  <t t-name="pb_home_hub.PbTeamLens">
+    <div class="pbtm" t-att-class="{ 'pbtm--embedded': props.embedded }">
+      <div class="pbtm-wrap">
+
+        <!-- loading -->
+        <t t-if="state.loading and !state.d">
+          <div class="pbtm-skel" aria-busy="true" aria-live="polite">
+            <div class="pbtm-skel__line pbtm-skel__line--l"/>
+            <div class="pbtm-skel__faces">
+              <t t-foreach="[1,2,3,4,5,6]" t-as="sk" t-key="sk"><span class="pbtm-skel__face"/></t>
+            </div>
+            <div class="pbtm-skel__line"/>
+          </div>
+        </t>
+
+        <!-- failed -->
+        <t t-elif="state.failed">
+          <div class="pbtm-fail" role="alert">
+            <span class="pbtm-fail__ic" t-out="ic('alert', 18)"/>
+            <div>
+              <div class="pbtm-fail__t">Your team could not be read just now.</div>
+              <div class="pbtm-fail__s">Nothing has changed. Try again in a moment.</div>
+            </div>
+            <button type="button" class="pbtm-btn" t-on-click="() => this.load()">
+              <span t-out="ic('refresh', 14)"/> Try again
+            </button>
+          </div>
+        </t>
+
+        <t t-else="">
+          <!-- ============================================== the hero -->
+          <header class="pbtm-hero" data-coach="tm-hero">
+            <div class="pbtm-hero__eyebrow">
+              <span t-out="ic('users', 14)"/>
+              <span>My team</span>
+              <span class="pbtm-dotsep" aria-hidden="true">·</span>
+              <span t-esc="d.today_label"/>
+            </div>
+            <h2 class="pbtm-hero__line">
+              <button type="button" class="pbtm-num pbtm-num--lead"
+                      t-att-aria-pressed="state.pick ? 'false' : 'true'"
+                      t-on-click="() => this.pickBit('')" t-esc="teamWords"/>
+              <t t-foreach="heroBits" t-as="b" t-key="b.key">
+                <span t-if="b.key !== 'late'" class="pbtm-dotsep" aria-hidden="true">·</span>
+                <button type="button" class="pbtm-num"
+                        t-att-class="(b.tone ? 'is-' + b.tone + ' ' : '') + (b.key === 'late' ? 'pbtm-num--sub ' : '') + (state.pick === b.key ? 'is-on' : '')"
+                        t-att-aria-pressed="state.pick === b.key ? 'true' : 'false'"
+                        t-on-click="() => this.pickBit(b.key)" t-esc="b.label"/>
+              </t>
+              <t t-if="d.decisions">
+                <span class="pbtm-dotsep" aria-hidden="true">·</span>
+                <button type="button" class="pbtm-num pbtm-num--wait"
+                        t-att-class="waitingTotal ? 'is-amber' : 'is-zero'"
+                        t-on-click="() => this.openInbox('')" t-esc="waitingWords"/>
+              </t>
+            </h2>
+
+            <div class="pbtm-strip" role="toolbar" aria-label="Your team today"
+                 t-on-keydown="onStripKeydown">
+              <t t-foreach="people" t-as="p" t-key="p.id">
+                <button type="button" class="pbtm-face"
+                        t-att-class="'is-' + p.status + (this.lit(p) ? '' : ' is-dim')"
+                        t-att-style="'animation-delay:' + (p_index * 28) + 'ms'"
+                        t-att-title="faceTitle(p)" t-att-aria-label="faceTitle(p)"
+                        t-on-click="() => this.openPerson(p)">
+                  <span class="pbtm-face__img">
+                    <img t-if="p.avatar" t-att-src="p.avatar" alt="" loading="lazy"/>
+                    <span class="pbtm-face__ini" t-esc="p.initials"/>
+                  </span>
+                  <span class="pbtm-face__dot" aria-hidden="true"/>
+                  <span class="pbtm-face__n" t-esc="p.short"/>
+                </button>
+              </t>
+              <span t-if="d.people_more" class="pbtm-face pbtm-face--more">+<t t-esc="d.people_more"/></span>
+            </div>
+            <div class="pbtm-key" aria-hidden="true">
+              <span class="pbtm-key__i is-in">In</span>
+              <span class="pbtm-key__i is-late">Late</span>
+              <span class="pbtm-key__i is-not_started">Not started yet</span>
+              <span class="pbtm-key__i is-on_leave">On leave</span>
+            </div>
+            <p t-if="!d.size" class="pbtm-hero__none">Nobody reports to you in the company you are looking at. Switch company at the top to see the others.</p>
+          </header>
+
+          <!-- ============================================== calm -->
+          <div t-if="calm" class="pbtm-calm" role="status">
+            <span class="pbtm-calm__ic" t-out="ic('checkCircle', 18)"/>
+            <span class="pbtm-calm__t">Nothing needs you today.</span>
+            <span t-if="calmWords" class="pbtm-calm__s" t-esc="calmWords"/>
+          </div>
+
+          <!-- ============================================== waiting on you -->
+          <section t-if="d.decisions" class="pbtm-sec" data-coach="tm-waiting">
+            <div class="pbtm-sec__h">
+              <span class="pbtm-sec__ic" t-out="ic('inbox', 15)"/>
+              <h3>Waiting on you</h3>
+              <button type="button" class="pbtm-link" t-on-click="() => this.openInbox('')">
+                Open your inbox <span t-out="ic('arrow', 13)"/>
+              </button>
+            </div>
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="''"/>
+            </t>
+          </section>
+
+          <!-- ============================================== conversations -->
+          <section t-if="hasConversations" class="pbtm-sec" data-coach="tm-conversations">
+            <div class="pbtm-sec__h">
+              <span class="pbtm-sec__ic" t-out="ic('messageSquare', 15)"/>
+              <h3>Conversations due</h3>
+            </div>
+            <div class="pbtm-pair">
+              <div t-if="d.probation" class="pbtm-card">
+                <div class="pbtm-card__h">
+                  <span t-out="ic('stamp', 14)"/>
+                  <span>Probation</span>
+                  <span t-if="d.probation.total" class="pbtm-pill" t-esc="d.probation.total"/>
+                </div>
+                <t t-if="d.probation.rows.length">
+                  <button t-foreach="d.probation.rows" t-as="r" t-key="r.review_id" type="button"
+                          class="pbtm-row" t-att-class="(r.late ? 'is-late ' : '') + (probationDoor ? '' : 'is-flat')"
+                          t-att-disabled="!probationDoor"
+                          t-on-click="() => this.openProbation(r)">
+                    <span class="pbtm-row__who" t-esc="r.short"/>
+                    <span class="pbtm-row__what" t-esc="r.what"/>
+                    <span t-if="r.when" class="pbtm-row__when" t-esc="r.when"/>
+                    <span class="pbtm-row__go" t-out="probationDoor ? ic('chevron', 14) : ''"/>
+                  </button>
+                  <div t-if="d.probation.more" class="pbtm-more">+<t t-esc="d.probation.more"/> more</div>
+                  <p t-if="!probationDoor" class="pbtm-note">The HR team runs these reviews and will ask you for each step.</p>
+                </t>
+                <p t-else="" class="pbtm-quiet">No trial periods need you right now.</p>
+              </div>
+
+              <div t-if="d.goals" class="pbtm-card">
+                <div class="pbtm-card__h">
+                  <span t-out="ic('target', 14)"/>
+                  <span>Goals</span>
+                  <span t-if="d.goals.total" class="pbtm-pill" t-esc="d.goals.total"/>
+                </div>
+                <t t-if="d.goals.rows.length">
+                  <button t-foreach="d.goals.rows" t-as="g" t-key="g.kind + g.id" type="button"
+                          class="pbtm-row" t-att-class="g.late ? 'is-late' : ''"
+                          t-on-click="() => this.openGoal(g)">
+                    <span class="pbtm-row__who" t-esc="g.short"/>
+                    <span class="pbtm-row__what" t-esc="g.what"/>
+                    <span t-if="g.when" class="pbtm-row__when" t-esc="g.when"/>
+                    <span class="pbtm-row__go" t-out="ic('chevron', 14)"/>
+                  </button>
+                  <div t-if="d.goals.more" class="pbtm-more">+<t t-esc="d.goals.more"/> more</div>
+                </t>
+                <p t-else="" class="pbtm-quiet">No goal conversations due in the next two weeks.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================== learning -->
+          <section t-if="d.training" class="pbtm-sec" data-coach="tm-learning">
+            <div class="pbtm-sec__h">
+              <span class="pbtm-sec__ic" t-out="ic('graduationCap', 15)"/>
+              <h3>Learning</h3>
+            </div>
+            <div class="pbtm-card pbtm-card--line" t-att-class="d.training.overdue_people ? 'is-amber' : ''">
+              <span class="pbtm-line__t" t-esc="trainingWords"/>
+              <span t-if="d.training.people.length" class="pbtm-line__who">
+                <t t-foreach="d.training.people" t-as="tp" t-key="tp.employee_id">
+                  <span class="pbtm-chip" t-att-title="tp.course">
+                    <t t-esc="tp.short"/> · <t t-esc="daysOver(tp)"/>
+                  </span>
+                </t>
+                <span t-if="d.training.more" class="pbtm-chip">+<t t-esc="d.training.more"/></span>
+              </span>
+              <button type="button" class="pbtm-link" t-on-click="() => this.openTraining()">
+                Open team training <span t-out="ic('arrow', 13)"/>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============================================== hiring -->
+          <section t-if="d.hiring" class="pbtm-sec" data-coach="tm-hiring">
+            <div class="pbtm-sec__h">
+              <span class="pbtm-sec__ic" t-out="ic('userPlus', 15)"/>
+              <h3>Hiring requests I own</h3>
+            </div>
+            <div class="pbtm-card">
+              <t t-if="d.hiring.rows.length">
+                <button t-foreach="d.hiring.rows" t-as="h" t-key="h.id" type="button"
+                        class="pbtm-row" t-att-class="h.on_me ? 'is-mine' : ''"
+                        t-on-click="() => this.openRole(h)">
+                  <span class="pbtm-row__who" t-esc="h.title"/>
+                  <span class="pbtm-row__what" t-esc="h.state_word"/>
+                  <span t-if="h.on_me" class="pbtm-tag">Waiting on you</span>
+                  <span t-elif="h.wanted_by" class="pbtm-row__when"><t t-esc="h.wanted_by"/></span>
+                  <span class="pbtm-row__go" t-out="ic('chevron', 14)"/>
+                </button>
+                <div t-if="d.hiring.more" class="pbtm-more">+<t t-esc="d.hiring.more"/> more</div>
+              </t>
+              <p t-else="" class="pbtm-quiet">You have no hiring requests in progress.</p>
+            </div>
+          </section>
+        </t>
+      </div>
+
+      <t t-if="state.drawerEmpId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
+    </div>
+  </t>
+
+</templates>
