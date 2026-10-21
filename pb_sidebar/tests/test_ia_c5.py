@@ -49,8 +49,12 @@ TARGET_RAIL = [
     ]),
     ('learn', 40, True, [
         # NAV P2: GROW › Talent sits above Learn.
-        ('pb_talent_hub.item_talent', 5, 'graduation-cap', 'Talent'),
-        ('pb_learn.item_learn_journey', 10, 'book-open', 'Learn'),
+        # LEARNING L0 (2026-10-21): Learning joins between Talent and the
+        # product guide, which is renamed Help; Talent takes `target`,
+        # Learning the cap, Help the life-buoy.
+        ('pb_talent_hub.item_talent', 5, 'target', 'Talent'),
+        ('pb_learning_hub.item_learning', 7, 'graduation-cap', 'Learning'),
+        ('pb_learn.item_learn_journey', 10, 'life-buoy', 'Help'),
     ]),
     ('system', 50, False, [
         ('pb_settings.item_settings', 10, 'settings', 'Settings'),
@@ -154,8 +158,10 @@ MATCH_TAGS = {
     # the entry has to stay lit for both (R126).
     'pb_learn.item_learn_journey': ['learn_hub', 'learn_journey'],
     'pb_talent_hub.item_talent': [
-        'pb_talent_hub', 'pb_goals_board', 'pb_pip_board', 'pb_training_board',
-        'pb_rnr_board'],
+        'pb_talent_hub', 'pb_goals_board', 'pb_pip_board', 'pb_rnr_board'],
+    # LEARNING L0: the training boards moved from Talent to Learning.
+    'pb_learning_hub.item_learning': [
+        'pb_learning_hub', 'pb_training_board', 'pb_training_numbers'],
 }
 
 MATCH_MODELS = {
@@ -172,8 +178,12 @@ MATCH_MODELS = {
         'pb.business.trip', 'pb.expense.claim', 'hr.expense'],
     'pb_talent_hub.item_talent': [
         'pb.goal', 'pb.goal.set', 'pb.goal.cycle', 'pb.pip.case',
-        'pb.training', 'pb.training.assignment', 'pb.rnr.nomination',
-        'pb.rnr.cycle'],
+        'pb.rnr.nomination', 'pb.rnr.cycle'],
+    'pb_learning_hub.item_learning': [
+        'pb.training', 'pb.training.assignment', 'pb.training.delay',
+        'pb.training.schedule', 'pb.training.rule', 'pb.training.claim',
+        'pb.training.allowance', 'slide.channel', 'slide.slide',
+        'survey.survey', 'survey.question'],
     'pb_settings.item_settings': [
         'hr.integration.connector', 'hr.formula.config', 'hr.payroll.structure',
         'hr.salary.rule', 'vietnam.insurance.policy', 'vietnam.tax.table',
@@ -565,8 +575,15 @@ class TestIaCycle5MatchMatrix(TransactionCase):
             ('the structures cockpit', dict(tag='pb_structures'), 'Settings'),
             ('the users list', dict(xmlid='base.action_res_users'), 'Settings'),
             ('the formula studio', dict(tag='pb_formula_studio'), 'Settings'),
-            ('the learn hub', dict(tag='learn_hub'), 'Learn'),
-            ('the learn journey', dict(tag='learn_journey'), 'Learn'),
+            ('the learn hub', dict(tag='learn_hub'), 'Help'),
+            ('the learn journey', dict(tag='learn_journey'), 'Help'),
+            # LEARNING L0: the Learning hub and the training boards.
+            ('the learning hub', dict(tag='pb_learning_hub'), 'Learning'),
+            ('the training board', dict(tag='pb_training_board'), 'Learning'),
+            ('a training assignment',
+             dict(model='pb.training.assignment'), 'Learning'),
+            ('a course', dict(model='slide.channel'), 'Learning'),
+            ('a test', dict(model='survey.survey'), 'Learning'),
             # NAV P2: the regrouped menu.
             ('the Hiring hub', dict(tag='pb_hiring_hub'), 'Hiring'),
             ('the hiring board', dict(tag='pb_hiring_board'), 'Hiring'),
