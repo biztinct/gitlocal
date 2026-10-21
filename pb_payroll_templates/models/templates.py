@@ -244,7 +244,8 @@ class PayrollTemplates(models.AbstractModel):
                 continue
             text = '%s %s' % (rule.name, rule.code)
             card_id = by_rule.get(rule.id)
-            if card_id and cards[card_id].get('field') in IDENTITY:
+            if (card_id and cards[card_id].get('field') in IDENTITY
+                    and not (cfg.focused_payroll_inputs and cards[card_id].get('field') == 'identification_id')):
                 continue
             quantity = rule.value_kind == 'quantity' or bool(TIME.search(text) and rule.value_kind in ('integer', 'decimal', 'money'))
             recurring = bool(card_id)
@@ -329,7 +330,7 @@ class PayrollTemplates(models.AbstractModel):
         expected = (preview.payload or {}).get('preview_expected_count') if preview and cfg.state == 'draft' else 0
         return {'configs': [{'id': c.id, 'name': c.name, 'country': c.country_code, 'state': c.state} for c in configs],
                 'config_id': cfg.id, 'name': cfg.name, 'country': cfg.country_code,
-                'state': cfg.state,
+                'state': cfg.state, 'focused_payroll_inputs': cfg.focused_payroll_inputs,
                 'selection_notice': _('The migration branch is closed. Showing its main payroll configuration.') if closed_branch else '',
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'roster_note': (_('Draft review roster: %s existing Employee records out of %s source people. Payroll assignments are unchanged.') % (len(people), expected)) if expected else '',
@@ -486,7 +487,7 @@ class PayrollTemplates(models.AbstractModel):
             columns = {**{TABS[k]: [by_id[i] for i in layout[k]] for k in TABS},
                        RECORD_TAB: [by_id[i] for i in layout['records']]}
         snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
-        snapshot['readonly_sheets'] = [] if mode == 'records' else [RECORD_TAB]
+        snapshot['readonly_sheets'] = [] if mode == 'records' or cfg.focused_payroll_inputs else [RECORD_TAB]
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
@@ -497,7 +498,7 @@ class PayrollTemplates(models.AbstractModel):
                          'component': ('70538A', 'F3ECFA'), 'bank': ('916326', 'FFF3DD')}
         for sheet_name, cols in columns.items():
             ws = wb.create_sheet(sheet_name)
-            master_snapshot = mode != 'records' and sheet_name == RECORD_TAB
+            master_snapshot = mode != 'records' and sheet_name == RECORD_TAB and not cfg.focused_payroll_inputs
             identity = [c['label'] for c in identity_columns]
             headers = identity + [c['label'] for c in cols] + ['_row']
             # Record columns are keyed by their saved field IDs in comments.
@@ -519,7 +520,7 @@ class PayrollTemplates(models.AbstractModel):
                              for part in str(label).split('\n')) for label in headers), default=1)
             ws.row_dimensions[1].height = max(32, lines * 15 + 8)
             for ci, c in enumerate(cols, len(identity) + 1):
-                ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'Read-only context.' if c.get('readonly') else ''), 'Payobook')
+                ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'May be submitted for a reviewed master-record update.' if c.get('record_editable') else ('Read-only context.' if c.get('readonly') else '')), 'Payobook')
                 if master_snapshot:
                     color = record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[0]
                     ws.cell(1, ci).fill = PatternFill('solid', fgColor=color)
@@ -544,7 +545,8 @@ class PayrollTemplates(models.AbstractModel):
                         cell.data_type = 's'  # Excel must never execute imported text.
                     if ci == 1:
                         cell.number_format = '@'
-                    editable = not master_snapshot and len(identity) < ci <= len(identity) + len(cols) and not cols[ci - len(identity) - 1].get('readonly')
+                    editable = not master_snapshot and len(identity) < ci <= len(identity) + len(cols) and (
+                        not cols[ci - len(identity) - 1].get('readonly') or cols[ci - len(identity) - 1].get('record_editable'))
                     cell.protection = Protection(locked=not editable)
                     cell.font = Font(name='Calibri', color='241F52' if editable else '63718A')
                     if master_snapshot and len(identity) < ci <= len(identity) + len(cols):

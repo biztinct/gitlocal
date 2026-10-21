@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Records Desk',
-    'summary': 'Update the employee, contract and bank details a pay scheme '
-               'reads — one person or hundreds at once',
+    'summary': 'Review and update master records independently of payroll',
     'description': """
-RECORDS phase R2 — the Records Desk.
-
-One spreadsheet-feeling surface over the records a pay scheme actually reads.
-The picker offers MAPPED destinations only (the scheme's own
-`hr.payslip.import.mapping` rows plus its contract components), because a field
-the scheme does not read is a field changing it cannot change the pay.
+A spreadsheet interface for employee, contract, compensation and bank records.
+Master records is available without payroll configurations or mappings.
+Optional scheme views narrow the catalogue to a payroll configuration.
+All changes retain record permissions, review, approval and audit history.
 
 What it is:
 
@@ -53,7 +50,7 @@ clear of the floating helpers other modules pin to the same corner, the header's
 export/import controls fold into one File menu under 1440px, and a dropped file
 says how many rows it is matching while it matches them.
 """,
-    'version': '19.0.1.5.2',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

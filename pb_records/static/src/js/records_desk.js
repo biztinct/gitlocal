@@ -307,7 +307,7 @@ export class PbRecordsDesk extends Component {
 
     get schemeName() {
         const hit = this.state.schemes.find((s) => s.id === this.state.configId);
-        return hit ? hit.name : _t("Pick a pay scheme");
+        return hit ? hit.name : _t("Master records");
     }
 
     // --------------------------------------------------------------- rows
@@ -1051,16 +1051,13 @@ export class PbRecordsDesk extends Component {
 
     get title() { return _t("Records Desk"); }
     get subtitle() {
-        return _t("Update the employee, contract and bank details your pay "
-                  + "scheme reads — one person or hundreds at once.");
+        return _t("Review and update employee, contract and bank records — directly or through Excel.");
     }
     get emptyFieldsTitle() {
-        return _t("This scheme doesn't map any employee, contract or bank fields yet");
+        return _t("No record fields are available in this view");
     }
     get emptyFieldsBody() {
-        return _t("The desk only offers fields your pay scheme actually reads, so "
-                  + "there is nothing to change until a column is wired to one. "
-                  + "Wire one in Mapping and it appears here.");
+        return _t("Choose Master records to maintain employee, contract and bank data independently of payroll.");
     }
     get noFieldsPickedTitle() { return _t("Pick a field to start"); }
     get noFieldsPickedBody() {

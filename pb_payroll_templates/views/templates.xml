@@ -11,6 +11,7 @@
             <xpath expr="//header" position="inside">
                 <button name="%(action_templates)d" type="action" string="Configure Templates" context="{'templates_config_id': id}"/>
             </xpath>
+            <xpath expr="//sheet" position="inside"><group string="Payroll input maintenance"><field name="focused_payroll_inputs"/></group></xpath>
         </field>
     </record>
 </odoo>

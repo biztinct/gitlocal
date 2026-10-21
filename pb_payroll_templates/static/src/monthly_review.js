@@ -30,9 +30,9 @@ export class MonthlyInputReview extends Component {
     static components={Dialog};
     static props={data:Object, configId:Number, onApplied:Function, close:Function};
     setup(){
-        this.gridRef=useRef('grid');this.orm=useService('orm');this.dialog=useService('dialog');
+        this.gridRef=useRef('grid');this.orm=useService('orm');this.dialog=useService('dialog');this.notification=useService('notification');
         this.original=JSON.parse(JSON.stringify(this.props.data));
-        this.state=useState({data:JSON.parse(JSON.stringify(this.props.data)),busy:false,error:'',expanded:false,query:'',fieldQuery:'',tab:'all',filter:'all',page:0,active:null,edits:{}});
+        this.state=useState({data:JSON.parse(JSON.stringify(this.props.data)),busy:false,error:'',expanded:false,query:'',fieldQuery:'',tab:'all',filter:'all',page:0,active:null,edits:{},updateRecords:false});
     }
     get data(){return this.state.data;}
     get columns(){
@@ -98,10 +98,11 @@ export class MonthlyInputReview extends Component {
         if(!this.canConfirm)return;
         this.state.busy=true;this.state.error='';
         try{
-            const result=await this.orm.call('pb.payroll.templates','confirm_monthly_review',[this.props.configId,this.data.token,Object.values(this.state.edits)]);
+            const result=await this.orm.call('pb.payroll.templates','confirm_monthly_review',[this.props.configId,this.data.token,Object.values(this.state.edits),this.state.updateRecords]);
             // Once saved, retries must refresh from the applied receipt rather
             // than attempting to consume the single-use review token again.
             this.state.edits={};
+            if(result.record_update){const r=result.record_update;this.notification.add(r.pending?'Master-record changes submitted for approval'+(r.reference?' · '+r.reference:''):'Mapped master records updated',{type:r.pending?'info':'success'});}
             await this.props.onApplied(result);this.props.close();
         }catch(e){this.state.error=e?.data?.message||e.message||'Please try again.';}finally{this.state.busy=false;}
     }

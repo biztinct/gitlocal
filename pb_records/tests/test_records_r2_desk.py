@@ -192,7 +192,7 @@ class TestRecordsR2Desk(TransactionCase):
     # =====================================================================
     # 1 — the catalogue offers what the scheme maps, and nothing else
     # =====================================================================
-    def test_01a_get_fields_returns_exactly_the_mapped_destinations(self):
+    def test_01a_get_fields_returns_mapped_and_standard_record_destinations(self):
         data = self._cards()
         ids = self._card_ids(data)
         self.assertEqual(ids, {
@@ -202,6 +202,10 @@ class TestRecordsR2Desk(TransactionCase):
             'f:hr.employee:%s' % self.bool_field,
             'b:acc_number', 'b:bank_name',
             'c:RDBONUS',
+            'f:hr.employee:birthday', 'f:hr.employee:name',
+            'f:hr.employee:mobile_phone', 'f:hr.employee:work_phone',
+            'f:hr.employee:job_title', 'f:hr.employee:department_id',
+            'f:hr.contract:wage', 'f:hr.contract:date_start', 'f:hr.contract:date_end',
         })
         groups = {g['key'] for g in data['groups']}
         self.assertEqual(groups, {'employee', 'contract', 'bank', 'component'})
@@ -209,7 +213,7 @@ class TestRecordsR2Desk(TransactionCase):
     def test_01b_a_field_the_scheme_does_not_map_is_absent(self):
         ids = self._card_ids(self._cards())
         self.assertNotIn('f:hr.employee:barcode', ids)
-        self.assertNotIn('f:hr.contract:wage', ids)
+        self.assertNotIn('f:hr.employee:study_field', ids)
 
     def test_01c_a_selection_card_carries_its_pairs_and_a_hint(self):
         card = self._card(self._cards(), 'f:hr.contract:shuipart')
@@ -225,12 +229,14 @@ class TestRecordsR2Desk(TransactionCase):
         self.assertEqual(card['m2o']['comodel'], 'hr.department')
         self.assertTrue(card['m2o']['creates_missing'])
 
-    def test_01e_config_zero_unions_the_schemes_without_duplicates(self):
+    def test_01e_config_zero_has_independent_master_fields_without_duplicates(self):
         data = self.Desk.get_fields(0)
         ids = [c['id'] for g in data['groups'] for c in g['fields']]
         self.assertEqual(len(ids), len(set(ids)), "a destination two schemes "
                                                   "share must appear once")
-        self.assertIn('f:hr.employee:full_name_vn', set(ids))  # B only
+        self.assertIn('f:hr.employee:study_field', set(ids))
+        self.assertNotIn('f:hr.employee:sunday_location_id', set(ids))
+        self.assertIn('f:hr.employee:full_name_vn', set(ids))
         self.assertIn('f:hr.contract:shuipart', set(ids))     # A only
         self.assertIn('f:hr.employee:location', set(ids))      # both
 
@@ -742,3 +748,12 @@ class TestRecordsR2Desk(TransactionCase):
     def test_12c_the_lens_icon_is_one_the_rail_knows(self):
         palette = _src('pb_records', 'static', 'src', 'js', 'records_palette.js')
         self.assertIn('icon: "database"', palette)
+
+    def test_master_records_edit_without_any_payroll_mapping(self):
+        self.Mapping.search([('salary_structure_id', 'in', (self.cfg | self.cfg_b).ids)]).unlink()
+        change = {'emp_id': self.e1.id, 'field_id': 'f:hr.employee:study_field', 'value': 'Agronomy'}
+        result = self.Desk.apply_changes(0, [change], note='Independent master record')
+        self.assertEqual(self.e1.study_field, 'Agronomy')
+        self.assertFalse(result.get('refused'))
+        self.assertEqual(self.Desk.get_schemes()['default_id'], 0)
+        self.assertFalse(self.Mapping.search([('salary_structure_id', 'in', (self.cfg | self.cfg_b).ids)]))

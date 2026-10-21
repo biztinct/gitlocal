@@ -1171,7 +1171,7 @@ class PbRecordsDesk(models.AbstractModel):
             return value, None
 
         if kind == 'c':
-            template = probe._get_or_create_advantage_template(
+            template = card.get('_template') or probe._get_or_create_advantage_template(
                 card['_rule'], {})
             wanted = 'text' if card['ttype'] == 'text_component' else 'amount'
             if 'value_type' in template._fields and template.value_type != wanted:

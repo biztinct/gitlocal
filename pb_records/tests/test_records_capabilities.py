@@ -36,7 +36,7 @@ class TestRecordsCapabilities(TestRecordsR2Desk):
     def test_editor_cannot_change_unmapped_field(self):
         desk=self.Desk.with_user(self.editor)
         with self.assertRaises(UserError):
-            desk.preview_changes(self.cfg.id,[{'emp_id':self.e1.id,'field_id':'f:hr.employee:name','value':'Denied'}])
+            desk.preview_changes(self.cfg.id,[{'emp_id':self.e1.id,'field_id':'f:hr.employee:study_field','value':'Denied'}])
 
     def test_export_is_separate_from_edit(self):
         self.viewer.write({'group_ids':[(4,self.env.ref('pb_records.group_records_exporter').id)]})

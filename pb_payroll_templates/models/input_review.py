@@ -198,7 +198,8 @@ class PayrollInputReview(models.AbstractModel):
                         'emp_name': row['name'], 'field_id': c['id'], 'field_label': c['label'],
                         'tab': c['tab'], 'old': cell['stored'], 'value': cell['value']})
             stats['people_changed'] += int(moved)
-        data.update(changes=changes, issues=issues, stats=stats)
+        data.update(changes=changes, issues=issues, stats=stats,
+                    allow_record_updates=any(c.get('record_editable') for c in data['grid']['columns']))
         return data
 
     def _review_monthly(self, cfg, period, file_b64, filename):
@@ -292,7 +293,7 @@ class PayrollInputReview(models.AbstractModel):
                     value = cells[ids[c['id']]].value
                     if value is None or value == '':
                         continue
-                    if c.get('readonly'):
+                    if c.get('readonly') and not c.get('record_editable'):
                         if plain(value) != resolved[eid][c['id']]['value']:
                             warnings.append(_('%s · %s: saved records refreshed; workbook context was ignored.') % (people.browse(eid).name, c['label']))
                         continue
@@ -356,13 +357,13 @@ class PayrollInputReview(models.AbstractModel):
         return dict(data, token=receipt.token)
 
     @api.model
-    def confirm_monthly_review(self, config_id, token, edits=None):
+    def confirm_monthly_review(self, config_id, token, edits=None, update_records=False):
         cfg = self._config(config_id, write=True)
         self._lock(cfg)
         receipt = self._get_exchange(cfg, token, 'review')
-        return self._confirm_monthly(cfg, receipt, edits or [])
+        return self._confirm_monthly(cfg, receipt, edits or [], update_records=update_records)
 
-    def _confirm_monthly(self, cfg, receipt, edits):
+    def _confirm_monthly(self, cfg, receipt, edits, update_records=False):
         self.env['pb.payrun.wizard']._require_runner()
         data = copy.deepcopy(receipt.payload)
         if data.get('mode') != 'monthly' or not data.get('grid'):
@@ -396,6 +397,30 @@ class PayrollInputReview(models.AbstractModel):
                 cell, now = row['cells'][c['id']], resolved[row['emp_id']][c['id']]
                 if cell['current'] != now['value'] or cell['stored'] != now['stored'] or cell['was_override'] != now['override']:
                     raise UserError(_('%s · %s changed after review. Review the file again; nothing was applied.') % (row['name'], c['label']))
+        record_result = None
+        if update_records:
+            if not cfg.focused_payroll_inputs:
+                raise UserError(_('This configuration does not allow master-record updates from payroll inputs.'))
+            record_changes = {}
+            for row in data['grid']['rows']:
+                for c in catalog:
+                    cell = row['cells'][c['id']]
+                    if not c.get('record_editable') or cell['source'] not in ('excel', 'edited'):
+                        continue
+                    key = (row['emp_id'], c['record_id'])
+                    if key in record_changes and record_changes[key]['value'] != cell['value']:
+                        raise UserError(_('Two inputs propose different values for the same master record.'))
+                    record_changes[key] = dict(emp_id=row['emp_id'], field_id=c['record_id'], value=cell['value'])
+            if record_changes:
+                desk = self.env['pb.records.desk']
+                changes = list(record_changes.values())
+                preview = desk.preview_changes(cfg.id, changes)
+                if preview['counts']['refused']:
+                    raise UserError(_('Some mapped record changes cannot be applied. Review them in Records Desk before continuing.'))
+                record_result = desk.apply_changes(cfg.id, changes,
+                    note=_('Reviewed payroll inputs for %s') % data['period'], source='import')
+                if record_result.get('refused'):
+                    raise UserError(_('A mapped record update was refused. Nothing was applied; review the values in Records Desk.'))
         Model = self.env['pb.payroll.month.inputs'].sudo()
         for row in data['grid']['rows']:
             saved = Model.search([('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id),
@@ -408,7 +433,7 @@ class PayrollInputReview(models.AbstractModel):
                 cell = row['cells'][c['id']]
                 snapshot[c['id']] = cell['value']
                 if c.get('readonly'):
-                    if cell['source'] == 'edited':
+                    if cell['source'] in ('edited', 'excel'):
                         overrides[c['id']] = cell['value']
                 elif cell['value'] is not None:
                     payload[c['id']] = cell['value']
@@ -421,5 +446,6 @@ class PayrollInputReview(models.AbstractModel):
                     employee_id=row['emp_id'], period=data['period']))
         result = {'ok': True, 'written': len(data['changes']), 'pending': False,
                   'reviewed': len(cells), 'changed_since_previous': data['stats']['changed'], 'review_token': receipt.token}
+        result['record_update'] = record_result
         receipt.write({'kind': 'applied', 'payload': dict(data, result=result, selected=[c['key'] for c in data['changes']])})
         return result

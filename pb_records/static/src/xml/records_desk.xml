@@ -298,7 +298,7 @@
         <t t-else="">
           <div class="rd-file-note">
             <t t-out="ic('minusCircle',13)"/>
-            <span>These columns are not fields this pay scheme maps, so they
+            <span>These columns are not available in the selected records view, so they
                   were read past. Nothing in them is used.</span>
           </div>
           <div class="rd-ignored">

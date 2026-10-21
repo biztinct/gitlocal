@@ -1010,3 +1010,47 @@ class TestPayrollTemplates(TransactionCase):
         reviewed = self.review(workbook, 'records')
         self.assertTrue(any('read-only context' in i for i in reviewed['issues']))
         self.assertEqual(self.emp.name, 'Workbook One')
+
+    def test_focused_template_edits_record_only_when_explicitly_selected(self):
+        self.cfg.focused_payroll_inputs = True
+        self.assertTrue(all(c['id'].startswith('rule:') for c in self.api._catalog(self.cfg)))
+        wb = self.export()
+        self.set_value(wb, 'Employee records', 'Salary', 1200)
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        self.assertTrue(review['allow_record_updates'])
+        self.assertEqual(self.cell(review, self.salary)['value'], 1200)
+        self.api.confirm_monthly_review(self.cfg.id, review['token'])
+        self.assertEqual(self.contract.wage, 1000)
+        next_review = self.api.reopen_monthly_review(self.cfg.id, review['token'])
+        result = self.api.confirm_monthly_review(self.cfg.id, next_review['token'], [
+            {'emp_id': self.emp.id, 'field_id': 'rule:%s' % self.salary.id, 'value': 1300}], True)
+        self.assertTrue(result['record_update'])
+        self.assertEqual(self.contract.wage, 1300)
+
+    def test_focused_record_update_rejects_conflicting_aliases(self):
+        self.cfg.focused_payroll_inputs = True
+        alias = self.rule('Contract salary', 'WBALIAS', 'money')
+        self.map_field(alias, 'hr.contract', 'wage')
+        wb = self.export()
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        with self.assertRaisesRegex(UserError, 'different values'):
+            self.api.confirm_monthly_review(self.cfg.id, review['token'], [
+                {'emp_id': self.emp.id, 'field_id': 'rule:%s' % self.salary.id, 'value': 1200},
+                {'emp_id': self.emp.id, 'field_id': 'rule:%s' % alias.id, 'value': 1300}], True)
+        self.assertEqual(self.contract.wage, 1000)
+
+    def test_focused_national_tax_identifier_is_editable_without_changing_matching_key(self):
+        self.cfg.focused_payroll_inputs = True
+        tax = self.rule('Tax identity', 'WBTAXIDENTITY', 'identifier')
+        self.map_field(tax, 'hr.employee', 'identification_id')
+        card = next(c for c in self.api._catalog(self.cfg) if c['code'] == tax.code)
+        self.assertTrue(card['record_editable'])
+        wb = self.export()
+        self.set_value(wb, 'Employee records', 'Tax identity', 'TAX-TEST')
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        self.api.confirm_monthly_review(self.cfg.id, review['token'], [], True)
+        self.assertEqual(self.emp.identification_id, 'TAX-TEST')
+        self.assertEqual(self.emp.barcode, '000001')
