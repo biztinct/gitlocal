@@ -301,6 +301,8 @@ MAPPING = {
     'contractends': ['pb_contract_lifecycle/static/src/xml/contractlife_board.xml'],
     # anchors 6 (ex2-*) in exits_board.xml
     'exits': ['pb_offboarding/static/src/xml/exits_board.xml'],
+    # NAV P3d: anchors 4 (ah-*) in askhr_lens.xml (Home › Ask HR board)
+    'askhr': ['pb_ask_hr/static/src/xml/askhr_lens.xml'],
     # anchors 3 (rs-*) in payrun_results.xml
     'results': ['pb_payrun_results/static/src/xml/payrun_results.xml'],
     # anchors 3 (dl-*) in pb_pay_delivery.xml

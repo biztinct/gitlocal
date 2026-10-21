@@ -2942,6 +2942,32 @@ export const SCREENS = {
             </div>`;
     },
 
+    /* ------------------------------------------------ Home › Ask HR
+       NAV P3d — the board HR answers from: the numbers, the four steps a
+       question moves through, and the cards at New, newest first. The one
+       nobody has yet carries Take it, as on the real board (ah-* anchors). */
+    askhr() {
+        const a = PRACTICE.askhr;
+        const nums = a.numbers.concat([[a.median[0], tx(a.median[1])]]);
+        const cards = a.cards.map((c) => `<div class="lrn-yrole" data-coach="ah-card">
+                <b>${ic("message-circle")}${esc(c.num)}${DOT}${esc(c.name)}</b>
+                <span class="lrn-sub2">${esc(tx(c.dept))}</span>
+                <span>${esc(tx(c.q))}</span>
+                <span class="lrn-strip"><span class="lrn-chip">${esc(tx(c.cat))}</span><span class="lrn-chip ${c.late ? "a" : ""}">${ic("clock")}${esc(tx(c.age))}</span>${c.owner
+                    ? `<span class="lrn-chip b">${ic("user-check")}${esc(tx(c.owner))}</span>`
+                    : `<span class="lrn-chip a">${ic("user")}${esc(tx(B("Nobody has it yet", "Chưa ai nhận")))}</span>`}</span>
+                ${c.owner ? "" : `<button class="lrn-btn sm pri" ${c.late ? ATTR_AH_TAKE : ""}>${esc(tx(B("Take it", "Nhận xử lý")))}</button>`}
+            </div>`).join("");
+        return `
+            ${quietNums(nums, ATTR_AH_NUMS)}
+            <div class="lrn-steps" data-coach="ah-steps">${stepButtons(a.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 0 })), B("questions", "câu hỏi"))}</div>
+            <div class="lrn-strip">
+                <span class="lrn-chip">${esc(tx(B("Mine", "Của tôi")))}</span>
+                <span class="lrn-chip a">${esc(tx(B("Nobody has it yet", "Chưa ai nhận")))}</span>
+            </div>
+            <div class="lrn-yroles">${cards}</div>`;
+    },
+
     /* ==================================================================
        LEARN REFRESH step 5 — AFTER THE RUN. Pay Run › Results, Deliver,
        Calendar, Awards, each drawn as its own template draws it inside the
@@ -3069,6 +3095,8 @@ const ATTR_GW_NUMS = 'data-coach="gw-numbers"';
 const ATTR_CL_NUMS = 'data-coach="cl-numbers"';
 const ATTR_EX_NUMS = 'data-coach="ex2-numbers"';
 const ATTR_EX_CARD = 'data-coach="rep-ex-card"';
+const ATTR_AH_NUMS = 'data-coach="ah-glance"';
+const ATTR_AH_TAKE = 'data-coach="ah-take"';
 const ATTR_EX_OPEN = 'data-coach="rep-ex-open"';
 /* LEARN REFRESH step 5 */
 const ATTR_PE_ROWCONTRACT = 'data-coach="pe-rowcontract"';

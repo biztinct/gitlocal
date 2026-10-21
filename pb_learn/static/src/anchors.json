@@ -239,6 +239,30 @@
       "desc": "Home › Team, Hiring requests I own: the requests you asked for or were asked to write, still in flight, with Waiting on you on the ones you must write.",
       "reserved": true
     },
+    "ah-glance": {
+      "screen": "askhr",
+      "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
+      "desc": "Home › Ask HR, top: one slim line of numbers. For HR: new, with HR, waiting on the person, answered this week, and the median first reply over the last 30 days. For an employee: waiting for HR, answered (your turn), closed. A number opens its step.",
+      "reserved": true
+    },
+    "ah-steps": {
+      "screen": "askhr",
+      "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
+      "desc": "Home › Ask HR, the four steps a question moves through: New, With HR, Answered, Closed, each with how many questions are there. Every question is at exactly one step.",
+      "reserved": true
+    },
+    "ah-card": {
+      "screen": "askhr",
+      "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
+      "desc": "Home › Ask HR, a question: its number, the person and their department, the category, the question in one line, how long ago it was asked, and who in HR has it, or Nobody has it yet in amber.",
+      "reserved": true
+    },
+    "ah-take": {
+      "screen": "askhr",
+      "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
+      "desc": "Home › Ask HR, Take it on a question nobody has yet (HR only). You become the owner and it moves to With HR. The T key does the same on the card you are on.",
+      "reserved": true
+    },
     "ps-runsel": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
@@ -2063,6 +2087,7 @@
       "pb_payruns/static/src/xml/payruns.xml",
       "pb_approval_config/static/src/xml/inbox.xml",
       "pb_home_hub/static/src/xml/team_lens.xml",
+      "pb_ask_hr/static/src/xml/askhr_lens.xml",
       "pb_blueprint/static/src/xml/blueprint.xml",
       "pb_blueprint/static/src/xml/steps.xml",
       "pb_formula_studio/static/src/xml/mapping_studio.xml",

@@ -1961,6 +1961,28 @@ const PRACTICE = {
     ],
   },
 
+  /* ----------------------------------------------- Home › Ask HR
+     NAV P3d. The HR officer's board on a morning: two new questions (one
+     nobody has yet, waiting three working days), one with HR that is yours,
+     one answered and waiting on the person. */
+  askhr: {
+    numbers: [[B("new", "mới"), 2], [B("with HR", "nhân sự đang xử lý"), 1],
+              [B("waiting on the person", "đang chờ người hỏi"), 1], [B("answered this week", "đã trả lời tuần này"), 4]],
+    median: [B("median first reply (last 30 days)", "thời gian trả lời đầu tiên (trung vị), 30 ngày qua"), B("1.4 days", "1,4 ngày")],
+    steps: [[B("New", "Mới"), 2], [B("With HR", "Nhân sự đang xử lý"), 1], [B("Answered", "Đã trả lời"), 1], [B("Closed", "Đã đóng"), 12]],
+    cards: [
+      { num: "ASK-00041", name: "Đinh Thị Yến", dept: B("Store 3", "Cửa hàng 3"), cat: B("Pay & payslips", "Lương & phiếu lương"),
+        q: B("My overtime from 12 October is not on my payslip", "Giờ tăng ca ngày 12 tháng 10 chưa có trong phiếu lương của tôi"),
+        age: B("3 days", "3 ngày"), late: true, owner: "" },
+      { num: "ASK-00042", name: "Võ Quang Huy", dept: B("Warehouse", "Kho"), cat: B("Documents & letters", "Giấy tờ & thư xác nhận"),
+        q: B("Can I have a letter for my bank?", "Tôi có thể xin một lá thư cho ngân hàng không?"),
+        age: B("5 hours", "5 giờ"), late: false, owner: "" },
+      { num: "ASK-00043", name: LATER.name, dept: B("Store 1", "Cửa hàng 1"), cat: B("Leave & attendance", "Nghỉ phép & chấm công"),
+        q: B("How many leave days do I have left this year?", "Năm nay tôi còn bao nhiêu ngày phép?"),
+        age: B("1 day", "1 ngày"), late: false, owner: B("You", "Bạn") },
+    ],
+  },
+
   /* ----------------------------------------------- People › Contracts */
   contractends: {
     numbers: [[B("Ending within 60 days", "Kết thúc trong vòng 60 ngày"), 3], [B("Nobody has decided", "Chưa ai quyết định"), 1],
@@ -2095,7 +2117,8 @@ const MENU = [
       { key: "approvals", label: B("Inbox", "Hộp thư"), screen: "approvals" },
       /* NAV P3c — Home › Team, only for people with direct reports. */
       { key: "team", label: B("Team", "Đội của tôi") },
-      { key: "askhr", label: B("Ask HR", "Hỏi Nhân sự") },
+      /* NAV P3d — Ask HR is a Payobook board; the replica draws it. */
+      { key: "askhr", label: B("Ask HR", "Hỏi Nhân sự"), screen: "askhr" },
       { key: "wall", label: B("Wall", "Bảng vinh danh"), screen: "peoplemore" },
       { key: "coming_up", label: B("Announce", "Thông báo") },
     ],

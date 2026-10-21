@@ -22852,8 +22852,8 @@
           },
           "askhr": {
             "line": {
-              "en": "Questions people send to HR and the answers, on one board: New, With HR, Answered and Closed.",
-              "vi": "Các câu hỏi mọi người gửi tới bộ phận nhân sự và câu trả lời, trên một bảng: Mới, Nhân sự đang xử lý, Đã trả lời và Đã đóng."
+              "en": "Questions people send to HR and the answers, on one board: New, With HR, Answered and Closed. HR sees every question and can Take it, Hand to… or Close with a note; everybody else sees only their own.",
+              "vi": "Các câu hỏi mọi người gửi tới bộ phận nhân sự và câu trả lời, trên một bảng: Mới, Nhân sự đang xử lý, Đã trả lời và Đã đóng. Nhân sự thấy mọi câu hỏi và có thể Nhận xử lý, Chuyển cho… hoặc Đóng kèm ghi chú; những người khác chỉ thấy câu hỏi của mình."
             },
             "name": {
               "en": "Ask HR",
@@ -22913,8 +22913,8 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Open Inbox first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Inbox is your starting point. If people report to you, Team shows your day with them on one screen.",
-        "vi": "Hãy mở Hộp thư trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Hộp thư là điểm bắt đầu của bạn. Nếu có người báo cáo cho bạn, tab Đội của tôi cho thấy ngày làm việc của bạn với họ trên một màn hình."
+        "en": "Open Inbox first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Inbox is your starting point. If people report to you, Team shows your day with them on one screen. If you answer HR questions, Ask HR shows the ones nobody has yet.",
+        "vi": "Hãy mở Hộp thư trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Hộp thư là điểm bắt đầu của bạn. Nếu có người báo cáo cho bạn, tab Đội của tôi cho thấy ngày làm việc của bạn với họ trên một màn hình. Nếu bạn trả lời câu hỏi gửi Nhân sự, tab Hỏi Nhân sự cho thấy những câu hỏi chưa ai nhận."
       },
       "open": "",
       "places": [],
@@ -40565,5 +40565,5 @@
       }
     }
   ],
-  "version": "1ab21c289e49"
+  "version": "f416a6a69338"
 }
