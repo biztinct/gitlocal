@@ -54,4 +54,5 @@ new gotcha, ruling or convention is hit. Rows are `LN` (ledger) and `LD` (owner 
 
 | phase | status | handover | report |
 |---|---|---|---|
-| L0 The Learning menu | built + tested; at deploy gate (L0 a–e shipping inside ChatGPT combined deploy 07:50 UTC) | `L0_LEARNING_MENU.md` | `L0_REPORT.md` |
+| L0 The Learning menu | **LIVE ×4 DBs 2026-10-21 19:01 AEDT** inside ChatGPT's combined release f8b0c00fa (DONE 08:01 UTC): pb_learning_hub 19.0.1.0.0, pb_training 19.0.1.4.1, pb_learn 19.0.20.6.0, pb_talent_hub 19.0.1.1.0, pb_sidebar 19.0.3.2.5; stored names Help / Trợ giúp verified; crons 37 / 0 / 26 / 69 | `L0_LEARNING_MENU.md` | `L0_REPORT.md` |
+| L1 Certificates and expiry | launching after the L0 live walk | `L1_CERTIFICATES.md` | `L1_REPORT.md` |
