@@ -52,7 +52,7 @@ export class PbTrainingNumbers extends Component {
             from: "",
             to: "",
             custom: false,
-            filters: { department_id: 0, channel_id: 0, reason: "" },
+            filters: { department_id: 0, channel_id: 0, path_id: 0, reason: "" },
             headline: "",
             total: 0,
             tiles: [],
@@ -112,6 +112,7 @@ export class PbTrainingNumbers extends Component {
         const out = {};
         if (f.department_id) { out.department_id = Number(f.department_id); }
         if (f.channel_id) { out.channel_id = Number(f.channel_id); }
+        if (f.path_id) { out.path_id = Number(f.path_id); }
         if (f.reason) { out.reason = f.reason; }
         return out;
     }
@@ -132,6 +133,7 @@ export class PbTrainingNumbers extends Component {
     async clearFilters() {
         this.state.filters.department_id = 0;
         this.state.filters.channel_id = 0;
+        this.state.filters.path_id = 0;
         this.state.filters.reason = "";
         await this.load();
     }
@@ -151,12 +153,13 @@ export class PbTrainingNumbers extends Component {
                 byDepartment: d.by_department || [],
                 byCourse: d.by_course || [],
                 byReason: d.by_reason || [],
+                byPath: d.by_path || [],
                 byCertificate: d.by_certificate || [],
                 required: d.required || { has_rules: false },
                 countryReports: d.country_reports || [],
                 trend: d.trend || [],
                 claims: d.claims || {},
-                lists: d.lists || { courses: [], departments: [] },
+                lists: d.lists || { courses: [], departments: [], paths: [] },
                 reasons: d.reasons || [],
                 loaded: true,
             });
@@ -196,6 +199,9 @@ export class PbTrainingNumbers extends Component {
         }
         return _t("%s%% finished", row.completion);
     }
+
+    /** "2 late" (LEARNING L3, By path). */
+    lateWords(n) { return n === 1 ? _t("1 late") : _t("%s late", n); }
 
     /** "3 hold it · 1 expires within 30 days · 1 expired" (LEARNING L1). */
     certWords(row) {

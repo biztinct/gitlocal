@@ -6,3 +6,4 @@ from . import test_learning_rail
 from . import test_certificates
 from . import test_requirements
 from . import test_packs
+from . import test_paths

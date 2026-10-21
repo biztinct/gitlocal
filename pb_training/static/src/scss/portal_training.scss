@@ -617,3 +617,44 @@ body:has(.o_survey_form) .modal-body {
         .pbtr-certnext-act, .pbtr-certnext-act .pbme-btn { width: 100%; justify-content: center; }
     }
 }
+
+// ----------------------------------------------- my path (LEARNING L3)
+.pbtr-paths { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.pbtr-path { padding: 16px 18px; }
+.pbtr-path.is-late { border-left: 3px solid #B91C1C; }
+.pbtr-path-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pbtr-path-id { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0;
+                .pbtr-course-name { margin: 0; } }
+.pbtr-path-chip {
+    display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 700; background: #EDEAF8; color: #5A4BB0; border: 1px solid #CBC2EE;
+    &.is-bad { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
+    &.is-ok { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+}
+.pbtr-path-where { margin: 8px 0 12px; font-weight: 600; color: #1B1733; }
+.pbtr-rail {
+    display: grid; grid-template-columns: repeat(var(--pbtr-cols, 4), minmax(0, 1fr)); gap: 4px;
+}
+.pbtr-dot { position: relative; text-align: center; min-width: 0; padding-top: 20px; }
+.pbtr-dot::after {
+    content: ""; position: absolute; top: 8px; left: 50%; right: -50%;
+    height: 2px; background: #EEF0F5; z-index: 0;
+}
+.pbtr-dot:last-child::after { display: none; }
+.pbtr-dot-c {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 17px; height: 17px; border-radius: 50%; z-index: 1;
+    border: 2px solid #E2E8F0; background: #fff; display: grid; place-items: center; color: #fff;
+    svg { width: 10px; height: 10px; }
+}
+.pbtr-dot-l {
+    display: block; font-size: 11.5px; font-weight: 650; color: #64748B;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
+}
+.pbtr-dot--done { .pbtr-dot-c { background: #2E7D4F; border-color: #2E7D4F; } .pbtr-dot-l { color: #334155; }
+                  &::after { background: #2E7D4F; } }
+.pbtr-dot--now { .pbtr-dot-c { border-color: #5A4BB0; box-shadow: 0 0 0 4px rgba(90, 75, 176, .18); }
+                 .pbtr-dot-l { color: #5A4BB0; } }
+.pbtr-dot--next .pbtr-dot-c { border-color: #A5B4FC; }
+.pbtr-dot--waits .pbtr-dot-c { border-style: dashed; }
+@media (max-width: 575px) { .pbtr-dot-l { font-size: 10px; } }

@@ -120,6 +120,10 @@ class PbTrainingAnalytics(models.AbstractModel):
             domain.append(('channel_id', '=', as_id(filters['channel_id'])))
         if filters.get('reason'):
             domain.append(('reason', '=', filters['reason']))
+        # LEARNING L3: one learning path's courses.
+        if filters.get('path_id'):
+            domain.append(('path_enrolment_id.path_id', '=',
+                           as_id(filters['path_id'])))
         return domain
 
     # =====================================================================
@@ -148,6 +152,7 @@ class PbTrainingAnalytics(models.AbstractModel):
             'by_department': [],
             'by_course': [],
             'by_reason': [],
+            'by_path': [],
             'by_certificate': self._safe(self._by_certificate, default=[]),
             'cert_expiring': self._safe(
                 lambda: self.env['pb.training']._cert_counts().get(
@@ -178,6 +183,9 @@ class PbTrainingAnalytics(models.AbstractModel):
                                     default=[]),
             'by_reason': self._safe(lambda: self._split(rows, 'reason'),
                                     default=[]),
+            # LEARNING L3: with a "Not on a path" row so it adds up.
+            'by_path': self._safe(lambda: self._split(rows, 'path'),
+                                  default=[]),
             'trend': self._safe(lambda: self._trend(rows, start, end),
                                 default=[]),
             'claims': self._safe(lambda: self._claims(start, end, filters),
@@ -344,6 +352,9 @@ class PbTrainingAnalytics(models.AbstractModel):
                     or _('No department')
             elif key == 'course':
                 name = row.channel_id.sudo().name or _('A course that is gone')
+            elif key == 'path':
+                name = row.path_enrolment_id.sudo().path_id.name \
+                    or _('Not on a path')
             else:
                 name = reason_word(self.env, row.reason) or _('Not said')
             buckets.setdefault(name, self.env['pb.training.assignment'])
@@ -431,8 +442,11 @@ class PbTrainingAnalytics(models.AbstractModel):
         """
         rows = self.env['pb.training.assignment'].sudo().search(
             [('company_id', 'in', self.env.companies.ids)])
-        courses, departments = {}, {}
+        courses, departments, paths = {}, {}, {}
         for row in rows:
+            path = row.path_enrolment_id.sudo().path_id
+            if path:
+                paths[path.id] = path.name or ''
             channel = row.channel_id.sudo()
             if channel:
                 courses[channel.id] = channel.name or ''
@@ -445,6 +459,9 @@ class PbTrainingAnalytics(models.AbstractModel):
                 key=lambda r: fold(r['name'])),
             'departments': sorted(
                 [{'id': k, 'name': v} for k, v in departments.items()],
+                key=lambda r: fold(r['name'])),
+            'paths': sorted(
+                [{'id': k, 'name': v} for k, v in paths.items()],
                 key=lambda r: fold(r['name'])),
         }
 
@@ -530,7 +547,8 @@ class PbTrainingAnalytics(models.AbstractModel):
                    _('Finished %'), _('Passed %')]
         for key, title in (('by_department', _('By department')),
                            ('by_course', _('By course')),
-                           ('by_reason', _('Why'))):
+                           ('by_reason', _('Why')),
+                           ('by_path', _('By path'))):
             tab = sheet(wb.create_sheet(), title, columns)
             for row, line in enumerate(board.get(key) or [], start=2):
                 for col, value in enumerate(

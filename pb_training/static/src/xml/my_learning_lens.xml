@@ -47,6 +47,7 @@
                 <h2 class="pbml-next" t-esc="step.title"/>
                 <div class="pbml-hero-meta">
                   <span><t t-out="ic('bookOpen',13)"/> <t t-esc="nxt.name"/></span>
+                  <span t-if="nextPath"><t t-out="ic('route',13)"/> <t t-esc="nextPath.name"/></span>
                   <span t-if="nxt.duration"><t t-out="ic('clock',13)"/> <t t-esc="nxt.duration"/></span>
                   <span t-if="nxt.assignment and nxt.assignment.due_words"
                         class="pbml-due" t-att-class="dueClass(nxt.assignment)">
@@ -70,6 +71,33 @@
               <h2 class="pbml-next">Nothing to do right now.</h2>
               <p t-if="courses.length" class="pbml-dim">Every course you are on is finished. When the training team puts you on a new one, it appears here.</p>
               <p t-else="" class="pbml-dim">You are not on any course yet. When the training team puts you on one, it appears here.</p>
+            </div>
+          </section>
+
+          <!-- ============ my path (LEARNING L3) ============ -->
+          <section t-if="paths.length" class="pbml-panel pbml-paths">
+            <div class="pbml-sec-h">
+              <h3><t t-if="paths.length === 1">My path</t><t t-else="">My paths</t></h3>
+              <span class="pbml-dim">Courses in order — each one opens when it is due</span>
+            </div>
+            <div t-foreach="paths" t-as="pth" t-key="pth.enrolment_id" class="pbml-path" t-att-class="{ 'is-late': pth.late, 'is-done': pth.state === 'done' }">
+              <div class="pbml-path-top">
+                <div class="pbml-path-id">
+                  <b class="pbml-card-name" t-esc="pth.name"/>
+                  <span class="pbml-chip" t-esc="pth.purpose_word"/>
+                  <span t-if="pth.late" class="pbml-chip is-bad"><t t-out="ic('alert',12)"/> Late</span>
+                  <span t-if="pth.state === 'done'" class="pbml-chip is-ok"><t t-out="ic('checkCircle',12)"/> Finished</span>
+                </div>
+                <button t-if="pth.next and pth.state !== 'done'" class="pbim-btn primary pbml-path-go" t-on-click="() => this.continuePath(pth)">Continue <t t-out="ic('arrow',14)"/></button>
+              </div>
+              <p class="pbml-path-where" t-esc="pth.where_words"/>
+              <div class="pbml-rail" t-att-style="pathStyle(pth)" role="list" t-att-aria-label="pth.where_words">
+                <div t-foreach="pth.steps" t-as="pst" t-key="pst.id" class="pbml-dot" t-att-class="pathDotClass(pst)" role="listitem" t-att-title="pathDotTitle(pst)">
+                  <span class="pbml-dot-c"><t t-if="pst.state === 'done'"><t t-out="ic('check',10)"/></t><t t-elif="pst.state === 'waits'"><t t-out="ic('lock',9)"/></t></span>
+                  <span class="pbml-dot-l" t-esc="pst.name"/>
+                  <span t-if="pst.state === 'waits' and pst.after" class="pbml-dot-n" t-esc="afterWords(pst)"/>
+                </div>
+              </div>
             </div>
           </section>
 

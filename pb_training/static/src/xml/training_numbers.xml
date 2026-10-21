@@ -101,6 +101,12 @@
                 <option t-att-value="cs.id" t-esc="cs.name"/>
               </t>
             </select>
+            <select t-if="(state.lists.paths || []).length" class="pbtnm-in" t-model="state.filters.path_id" t-on-change="() => this.load()" aria-label="Learning path">
+              <option value="0">Every learning path</option>
+              <t t-foreach="state.lists.paths" t-as="lp" t-key="lp.id">
+                <option t-att-value="lp.id" t-esc="lp.name"/>
+              </t>
+            </select>
             <t t-foreach="state.reasons" t-as="rs" t-key="rs.key">
               <button class="pbtnm-chip"
                       t-att-class="{ on: state.filters.reason === rs.key }"
@@ -251,6 +257,24 @@
                 </t>
               </div>
 
+            </div>
+
+            <!-- ==================== by path (LEARNING L3) ====================
+                 Courses set through a learning path, per path, with a row for
+                 everything set outside one so the rows add up. -->
+            <div t-if="state.byPath.length and (state.lists.paths || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('route',16)"/> By path</h3>
+                <p>Courses set through a learning path, and a row for everything set outside one, so these add up to the figure above.</p>
+              </div>
+              <t t-foreach="state.byPath" t-as="bp" t-key="bp.name">
+                <div class="pbtnm-row" t-att-class="{ bad: bp.overdue > 0 }">
+                  <div class="pbtnm-row-name" t-esc="bp.name"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ share(state.byPath, bp.total) }}%;"/></div>
+                  <div class="pbtnm-row-n" t-esc="bp.total"/>
+                  <div class="pbtnm-row-sub"><t t-esc="finishedWord(bp)"/><t t-if="bp.overdue"> · </t><t t-if="bp.overdue" t-esc="lateWords(bp.overdue)"/></div>
+                </div>
+              </t>
             </div>
 
             <!-- ==================== by certificate (LEARNING L1) ====================

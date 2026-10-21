@@ -93,6 +93,24 @@
             </div>
           </section>
 
+          <!-- ============ learning paths (LEARNING L3) ============ -->
+          <section t-if="paths.has_paths" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Learning paths</h3>
+              <span class="pblo-dim">Courses in order, for a role, a career move or a skill</span>
+            </div>
+            <div class="pblo-certbits">
+              <button t-foreach="pathBits" t-as="pb" t-key="pb.key" class="pblo-certbit" t-att-class="{ 'is-bad': pb.bad and pb.n, 'is-good': pb.good and pb.n, 'is-zero': !pb.n }" t-on-click="() => this.openPaths(pb.key === 'late' and pb.n ? 'overdue' : '')">
+                <t t-esc="pb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openPaths('')">
+                <t t-out="ic('route',14)"/> Open the paths
+              </button>
+            </div>
+          </section>
+
           <!-- ============ certificates (LEARNING L1) ============ -->
           <section class="pblo-panel pblo-certs">
             <div class="pblo-sec-h">

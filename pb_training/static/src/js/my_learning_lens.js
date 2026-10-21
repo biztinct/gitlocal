@@ -16,6 +16,11 @@
  * words on a second press), and My allowance when the reader has an
  * employee record.
  *
+ * LEARNING L3: "My path" right under the hero — one card per path the reader
+ * is on, with the dot rail (done tick, now ring, waiting grey with "after
+ * <the step it waits for>"), "At step 2 of 4: …" and Continue. The hero
+ * prefers a path's current step, so the reader sees one thing to do.
+ *
  * Reads only `pb.my.training` — "me" is the session user and is never a
  * parameter, so nothing here can show somebody else's courses. The team
  * block is the existing `team()` read (direct reports, as the system).
@@ -95,8 +100,41 @@ export class PbMyLearningLens extends Component {
     // ------------------------------------------------------------- next up
     get courses() { return this.state.home.courses || []; }
 
-    /** The open course that matters most: late first, then by date. */
+    // ------------------------------------------------------------- my paths
+    get paths() { return this.state.home.paths || []; }
+
+    /** The path whose current step the hero shows (late paths come first). */
+    get nextPath() {
+        return this.paths.find((p) => p.state !== "done" && p.next && p.next.channel_id
+            && this.courses.some((c) => c.id === p.next.channel_id && !c.finished)) || null;
+    }
+
+    pathDotClass(step) { return `pbml-dot--${step.state}`; }
+
+    pathDotTitle(step) {
+        const word = { done: _t("Finished"), now: _t("On it now"), next: _t("Open"),
+                       waits: step.after ? _t("Opens after %s", step.after) : _t("Waiting") }[step.state] || "";
+        return `${step.name} — ${word}`;
+    }
+
+    afterWords(step) { return _t("after %s", step.after); }
+
+    pathStyle(p) { return `--pbml-cols: ${Math.max((p.steps || []).length, 1)};`; }
+
+    /** A CLICK handler: the current step — its next lesson when we know it. */
+    continuePath(p) {
+        if (!p.next || !p.next.channel_id) { return; }
+        const tile = this.courses.find((c) => c.id === p.next.channel_id);
+        this.go(tile ? this.nextStep(tile).url : `/my/training/${p.next.channel_id}`);
+    }
+
+    /** The open course that matters most: a path's current step first (one
+     *  thing to do), then late, then by date. */
     get nextCourse() {
+        const viaPath = this.nextPath;
+        if (viaPath) {
+            return this.courses.find((c) => c.id === viaPath.next.channel_id);
+        }
         const open = this.courses.filter((c) => !c.finished);
         if (!open.length) { return null; }
         const rank = (c) => {
@@ -190,6 +228,7 @@ export class PbMyLearningLens extends Component {
             day_one: _t("Day one"), probation: _t("Trial period"),
             compliance: _t("Compliance"), adhoc: _t("One-off"),
             leadership: _t("Leadership programme"), renewal: _t("Renewal"),
+            required: _t("Required"),
         }[key] || fallback || "";
     }
 

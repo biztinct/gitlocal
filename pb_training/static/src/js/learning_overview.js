@@ -26,7 +26,10 @@ export const TRAINING_TAB_KEY = "pb_training_tab";
 /** The context key the Certificates lens reads its first filter from (LEARNING L1). */
 export const CERT_FILTER_KEY = "pb_training_cert_filter";
 
-const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks" };
+const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks", paths: "route" };
+
+/** The context key the Paths lens reads its arrival filter from (LEARNING L3). */
+const PATH_STATE_KEY = "pb_training_path_state";
 
 /** The context keys the Required lens reads its arrival from (LEARNING L2). */
 const REQ_TAB_KEY = "pb_training_req_tab";
@@ -118,6 +121,7 @@ export class PbLearningOverview extends Component {
     openQueue(row) {
         if (row.filter) { return this.openCerts(row.filter); }
         if (row.lens === "required") { return this.openRequired(row.state || ""); }
+        if (row.lens === "paths") { return this.openPaths(row.count ? row.path_state : ""); }
         openHub(this.action, {
             xmlid: LEARNING_HUB_XMLID,
             lens: row.lens,
@@ -150,6 +154,31 @@ export class PbLearningOverview extends Component {
         const context = { [REQ_TAB_KEY]: "matrix" };
         if (state) { context[REQ_STATE_KEY] = state; }
         openHub(this.action, { xmlid: LEARNING_HUB_XMLID, lens: "required", context });
+    }
+
+    /** LEARNING L3: the learning-paths block. */
+    get paths() { return this.data.paths || {}; }
+
+    get pathBits() {
+        const p = this.paths;
+        return [
+            { key: "paths", n: p.paths || 0,
+              text: (p.paths || 0) === 1 ? _t("1 path") : _t("%s paths", p.paths || 0) },
+            { key: "people", n: p.people || 0,
+              text: (p.people || 0) === 1 ? _t("1 person on a path") : _t("%s people on a path", p.people || 0) },
+            { key: "done", n: p.done_quarter || 0, good: true,
+              text: (p.done_quarter || 0) === 1 ? _t("1 finished this quarter") : _t("%s finished this quarter", p.done_quarter || 0) },
+            { key: "late", n: p.late || 0, bad: true,
+              text: (p.late || 0) === 1 ? _t("1 late on a path") : _t("%s late on a path", p.late || 0) },
+        ];
+    }
+
+    openPaths(state) {
+        openHub(this.action, {
+            xmlid: LEARNING_HUB_XMLID,
+            lens: "paths",
+            context: state ? { [PATH_STATE_KEY]: state } : {},
+        });
     }
 
     openLens(lens) {

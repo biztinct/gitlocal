@@ -125,6 +125,8 @@ msgstr "Chưa gửi"
 #: code:addons/pb_training/models/training_common.py:0
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__assigned
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__not_started
 msgid "Not started"
 msgstr "Chưa bắt đầu"
 
@@ -547,6 +549,8 @@ msgstr "1 đã hoàn thành"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/learning_overview.js:0
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
 msgid "%s finished"
 msgstr "%s đã hoàn thành"
 
@@ -724,6 +728,8 @@ msgstr "Chưa đạt"
 #: code:addons/pb_training/static/src/js/training_board.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__in_progress
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__in_progress
 msgid "Under way"
 msgstr "Đang học"
 
@@ -760,6 +766,11 @@ msgstr "Đã được thêm thời gian"
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_team
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__done_count
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__done
 msgid "Finished"
 msgstr "Đã hoàn thành"
 
@@ -2658,6 +2669,7 @@ msgstr "Quy định của gói quốc gia chưa được xác nhận chi tiết.
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__course
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_step__kind__course
 msgid "A course"
 msgstr "Một khóa học"
 
@@ -4645,3 +4657,1190 @@ msgstr "Chưa giao được khóa học nào."
 #: code:addons/pb_training/models/pb_training_required.py:0
 msgid "That is %(n)s people. The print-out takes up to %(cap)s at a time — narrow it by department, site, job or rule. The spreadsheet has everybody."
 msgstr "Đó là %(n)s người. Bản in chỉ nhận tối đa %(cap)s người mỗi lần — hãy thu hẹp theo phòng ban, địa điểm, chức danh hoặc quy định. Bảng tính có đầy đủ mọi người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%(n)s on it · %(done)s finished"
+msgstr "%(n)s trong lộ trình · %(done)s đã hoàn thành"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%(n)s people are now on %(path)s."
+msgstr "%(n)s người đã được đưa vào %(path)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%(who)s is already on %(path)s."
+msgstr "%(who)s đã ở trong %(path)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%(who)s is off %(path)s."
+msgstr "%(who)s đã rút khỏi %(path)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(who)s is on the path %(path)s, due %(when)s."
+msgstr "%(who)s đã vào lộ trình %(path)s, hạn %(when)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/journey_ext.py:0
+msgid "%s could not be given — try the step again."
+msgstr "Không giao được %s — hãy chạy lại bước này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%s could not be put on — tell the training team."
+msgstr "Không đưa được %s vào — hãy báo bộ phận đào tạo."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s courses they had not started are taken off their list."
+msgstr "%s khóa học họ chưa bắt đầu đã được bỏ khỏi danh sách."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s courses they had started stay on their list."
+msgstr "%s khóa học họ đã bắt đầu vẫn ở trong danh sách."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s finished this quarter"
+msgstr "%s người hoàn thành trong quý này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%s has no login yet, so there is nowhere for the courses to appear."
+msgstr "%s chưa có tài khoản, nên các khóa học không có chỗ để hiển thị."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%s have no login yet, so there is nowhere for the courses to appear."
+msgstr "%s chưa có tài khoản, nên các khóa học không có chỗ để hiển thị."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s is already off the path."
+msgstr "%s đã rút khỏi lộ trình rồi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s is archived. Bring it back before putting people on it."
+msgstr "%s đã được lưu trữ. Hãy khôi phục trước khi đưa người vào."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s is archived. Nobody new can be put on it; the people already on it carry on."
+msgstr "%s đã được lưu trữ. Không thể đưa thêm người mới; người đang học vẫn tiếp tục."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s is back on the board."
+msgstr "%s đã trở lại bảng."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s is ready. Put people on it with Enrol people."
+msgstr "%s đã sẵn sàng. Hãy đưa người vào bằng nút Đưa người vào."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s late"
+msgstr "%s người trễ hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s late on a path"
+msgstr "%s người trễ hạn ở lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s paths"
+msgstr "%s lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "%s people are late on a path."
+msgstr "%s người bị trễ hạn ở lộ trình."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s people on a path"
+msgstr "%s người đang trong lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "%s people shown"
+msgstr "Đang hiện %s người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%s was already on it."
+msgstr "%s đã ở trong lộ trình."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "%s were already on it."
+msgstr "%s đã ở trong lộ trình."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "1 course they had not started is taken off their list."
+msgstr "1 khóa học họ chưa bắt đầu đã được bỏ khỏi danh sách."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "1 course they had started stays on their list."
+msgstr "1 khóa học họ đã bắt đầu vẫn ở trong danh sách."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 finished this quarter"
+msgstr "1 người hoàn thành trong quý này"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 late"
+msgstr "1 người trễ hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 late on a path"
+msgstr "1 người trễ hạn ở lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 path"
+msgstr "1 lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "1 person is late on a path."
+msgstr "1 người bị trễ hạn ở một lộ trình."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "1 person is now on %s."
+msgstr "1 người đã được đưa vào %s."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 person on a path"
+msgstr "1 người đang trong lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "1 person shown"
+msgstr "Đang hiện 1 người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "A course can be on a path only once."
+msgstr "Mỗi khóa học chỉ có mặt một lần trong lộ trình."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A course on it is not published"
+msgstr "Có khóa học trong lộ trình chưa được xuất bản"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A department"
+msgstr "Một phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A department includes every department under it. With none picked, everybody in the company gets it on their first day. It works while day-one training is switched on."
+msgstr "Một phòng ban bao gồm mọi phòng ban trực thuộc. Nếu không chọn gì, mọi người trong công ty đều được giao vào ngày đầu. Chỉ hoạt động khi đào tạo ngày đầu đang bật."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "A job"
+msgstr "Một vị trí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A learner cannot open a course that is not published"
+msgstr "Người học không mở được khóa học chưa xuất bản"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__path
+msgid "A learning path"
+msgstr "Một lộ trình học tập"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__path_id
+msgid "A learning path rule counts as held once the person has finished the path, for as long as it stays valid."
+msgstr "Quy định theo lộ trình học tập được tính là đạt khi người đó hoàn thành lộ trình, trong thời gian còn hiệu lực."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A path puts several courses in order — for a role, a career move or a skill. People are put on it as one thing, and each course opens when it is due."
+msgstr "Một lộ trình xếp nhiều khóa học theo thứ tự — cho một vai trò, một bước thăng tiến hoặc một kỹ năng. Người học được đưa vào lộ trình như một việc duy nhất, và mỗi khóa học mở ra khi đến lượt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A path you are on shows on My learning, with the step you are at."
+msgstr "Lộ trình của bạn hiện ở mục Học tập của tôi, kèm bước bạn đang học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "A training manager can make the first one."
+msgstr "Quản lý đào tạo có thể tạo lộ trình đầu tiên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Add a course — type to find it"
+msgstr "Thêm khóa học — gõ để tìm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Add at least one course to the path first."
+msgstr "Hãy thêm ít nhất một khóa học vào lộ trình trước."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Add at least one course."
+msgstr "Hãy thêm ít nhất một khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Add the first course below. Drag a course to move it, or use the arrows."
+msgstr "Thêm khóa học đầu tiên bên dưới. Kéo một khóa học để đổi chỗ, hoặc dùng các mũi tên."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/journey_ext.py:0
+msgid "Already on %s."
+msgstr "Đã có %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Archive"
+msgstr "Lưu trữ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Archived:"
+msgstr "Đã lưu trữ:"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Bring back"
+msgstr "Khôi phục"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Bring it back"
+msgstr "Khôi phục"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By path"
+msgstr "Theo lộ trình"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_allowance__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_rule__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_schedule__company_id
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_search
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path__due_days
+msgid "Counted from the day a person is put on it. Each step is due by its own date, never later than this."
+msgstr "Tính từ ngày một người được đưa vào. Mỗi bước có hạn riêng, không bao giờ muộn hơn hạn này."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path_step__due_days
+msgid "Counted from the day the step opens. Empty = the usual number of days for a course."
+msgstr "Tính từ ngày bước này mở. Để trống = số ngày thông thường cho một khóa học."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__course_name
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__name
+msgid "Course name"
+msgstr "Tên khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Courses in order — each one opens when it is due"
+msgstr "Các khóa học theo thứ tự — mỗi khóa mở ra khi đến lượt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Courses in order, for a role, a career move or a skill"
+msgstr "Các khóa học theo thứ tự, cho một vai trò, một bước thăng tiến hoặc một kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Courses in order, given as one thing"
+msgstr "Các khóa học theo thứ tự, giao như một việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Courses set through a learning path, and a row for everything set outside one, so these add up to the figure above."
+msgstr "Các khóa học được giao qua lộ trình học tập, và một dòng cho mọi khóa giao ngoài lộ trình, nên cộng lại bằng con số ở trên."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__department_ids
+msgid "Day one for these departments"
+msgstr "Giao ngày đầu cho các phòng ban này"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__job_ids
+msgid "Day one for these jobs"
+msgstr "Giao ngày đầu cho các vị trí này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__due_days
+msgid "Days for the whole path"
+msgstr "Số ngày cho cả lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__due_days
+msgid "Days for this step"
+msgstr "Số ngày cho bước này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Department (with every department under it)"
+msgstr "Phòng ban (gồm mọi phòng ban trực thuộc)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Done."
+msgstr "Đã xong."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Due"
+msgstr "Hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Edit path"
+msgstr "Sửa lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Enrol people"
+msgstr "Đưa người vào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Every learning path"
+msgstr "Mọi lộ trình học tập"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Every path"
+msgstr "Mọi lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "Every step done"
+msgstr "Đã xong mọi bước"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path__counts_for_probation
+msgid "Every step is put on the person with the trial-period link."
+msgstr "Mỗi bước được giao kèm liên kết với kỳ thử việc."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Every step needs a course."
+msgstr "Bước nào cũng cần một khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Everybody in your company with a login. People already on the path are left as they are."
+msgstr "Mọi người trong công ty có tài khoản. Người đã trong lộ trình được giữ nguyên."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Finished every step of %s."
+msgstr "Đã hoàn thành mọi bước của %s."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path__purpose__career
+#: code:addons/pb_training/models/training_common.py:0
+msgid "For a career move"
+msgstr "Cho lộ trình thăng tiến"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path__purpose__role
+#: code:addons/pb_training/models/training_common.py:0
+msgid "For a role"
+msgstr "Cho vai trò"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path__purpose__skills
+#: code:addons/pb_training/models/training_common.py:0
+msgid "For a skill"
+msgstr "Cho kỹ năng"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__path_enrolment_id
+msgid "From the learning path"
+msgstr "Từ lộ trình học tập"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__day_one
+msgid "Give it on day one"
+msgstr "Giao từ ngày đầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Give it to new joiners on their first day"
+msgstr "Giao cho người mới vào ngày đầu tiên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "Give the path a name people will recognise."
+msgstr "Hãy đặt cho lộ trình một cái tên mọi người dễ nhận ra."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Given on day one to %s"
+msgstr "Giao từ ngày đầu cho %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Given on day one to everybody in the company"
+msgstr "Giao từ ngày đầu cho mọi người trong công ty"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Held once the person has finished every step of the path. Assign now puts them on it."
+msgstr "Được tính khi người đó hoàn thành mọi bước của lộ trình. Giao ngay sẽ đưa họ vào lộ trình."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__blurb
+msgid "In one sentence"
+msgstr "Trong một câu"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__overdue
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Late"
+msgstr "Trễ hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "Late on a path"
+msgstr "Trễ hạn ở lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__gate
+msgid "Later steps wait for this one"
+msgstr "Các bước sau chờ bước này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.model,name:pb_training.model_pb_training_path
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__path_id
+msgid "Learning path"
+msgstr "Lộ trình học tập"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_path_step
+msgid "Learning path step"
+msgstr "Bước của lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Learning paths"
+msgstr "Lộ trình học tập"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Learning paths are looked after by the training team"
+msgstr "Lộ trình học tập do bộ phận đào tạo quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Leave it empty and the whole path is due %s days from today."
+msgstr "Để trống thì cả lộ trình có hạn sau %s ngày kể từ hôm nay."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Move down"
+msgstr "Chuyển xuống"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Move up"
+msgstr "Chuyển lên"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My path"
+msgstr "Lộ trình của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My paths"
+msgstr "Lộ trình của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "New agronomist"
+msgstr "Kỹ sư nông học mới"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path__day_one
+msgid "New joiners in these departments or jobs are put on the path by the joining checklist (while day-one training is switched on)."
+msgstr "Người mới ở các phòng ban hoặc vị trí này được danh sách nhập môn đưa vào lộ trình (khi đào tạo ngày đầu đang bật)."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "New path"
+msgstr "Lộ trình mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "No course matches that"
+msgstr "Không có khóa học nào khớp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "No course matches that."
+msgstr "Không có khóa học nào khớp."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "No path linked yet"
+msgstr "Chưa gắn lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "No paths yet"
+msgstr "Chưa có lộ trình nào"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "No paths yet."
+msgstr "Chưa có lộ trình nào."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Nobody is late on any path."
+msgstr "Không ai bị trễ hạn ở lộ trình nào."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Nobody is on this path yet"
+msgstr "Chưa có ai trong lộ trình này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Nobody matches. Press the filter again, or Show everybody."
+msgstr "Không ai khớp. Bấm lại bộ lọc, hoặc chọn Hiện mọi người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Nobody new was put on the path."
+msgstr "Không có ai mới được đưa vào lộ trình."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Nobody with a login matches that."
+msgstr "Không có ai có tài khoản khớp với tên này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "Not on a path"
+msgstr "Không thuộc lộ trình nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Not published"
+msgstr "Chưa xuất bản"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "On it now"
+msgstr "Đang học bước này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "One of those courses is not here any more."
+msgstr "Một trong các khóa học đó không còn nữa."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Open the paths"
+msgstr "Mở các lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Open their courses"
+msgstr "Mở các khóa học của họ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Opens after %s"
+msgstr "Mở sau khi xong %s"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__path_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__path_id
+msgid "Path"
+msgstr "Lộ trình"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__path_step_id
+msgid "Path step"
+msgstr "Bước của lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Path: %s"
+msgstr "Lộ trình: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Paths"
+msgstr "Lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "People"
+msgstr "Từng người"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__enrolment_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__people_count
+msgid "People on it"
+msgstr "Người trong lộ trình"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_path_enrolment
+msgid "Person on a learning path"
+msgstr "Người trong lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Pick a department"
+msgstr "Chọn phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Pick a job"
+msgstr "Chọn vị trí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Pick a path"
+msgstr "Chọn lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Pick the learning path people must finish."
+msgstr "Hãy chọn lộ trình học tập mọi người phải hoàn thành."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Put on %(path)s by %(who)s."
+msgstr "%(who)s đã đưa vào %(path)s."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__assigned_on
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__started_on
+msgid "Put on it"
+msgstr "Ngày được giao"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__assigned_by_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__assigned_by_id
+msgid "Put on it by"
+msgstr "Người giao"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/journey_ext.py:0
+msgid "Put on the learning path %s."
+msgstr "Đã đưa vào lộ trình học tập %s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/journey_ext.py:0
+msgid "Put on the learning paths %s."
+msgstr "Đã đưa vào các lộ trình học tập %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Put one person, a department, a job or everybody on it. Each course opens when it is due."
+msgstr "Đưa một người, một phòng ban, một vị trí hoặc mọi người vào lộ trình. Mỗi khóa học mở ra khi đến lượt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Put them on the path"
+msgstr "Đưa họ vào lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Remove from path"
+msgstr "Rút khỏi lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Save the path"
+msgstr "Lưu lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Show every path"
+msgstr "Hiện mọi lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Show everybody"
+msgstr "Hiện mọi người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Showing the first 200 of %s people — narrow it with a filter"
+msgstr "Đang hiện 200 người đầu trong %s người — hãy thu hẹp bằng bộ lọc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Showing the paths where somebody is late."
+msgstr "Đang hiện các lộ trình có người bị trễ hạn."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path__blurb
+msgid "Shown on the path card and to the learner."
+msgstr "Hiện trên thẻ lộ trình và cho người học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/assignment.py:0
+#: code:addons/pb_training/models/claim.py:0
+#: code:addons/pb_training/models/path.py:0
+msgid "Somebody"
+msgstr "Một người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Start with a name people will recognise."
+msgstr "Hãy bắt đầu bằng một cái tên mọi người dễ nhận ra."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Step %(n)s of %(total)s · %(path)s"
+msgstr "Bước %(n)s/%(total)s · %(path)s"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__assignment_ids
+msgid "Step assignments"
+msgstr "Các khóa học của từng bước"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__current_step_id
+msgid "Step they are on"
+msgstr "Bước đang học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__step_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__steps_count
+msgid "Steps"
+msgstr "Các bước"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__percent
+msgid "Steps finished (%)"
+msgstr "Số bước đã xong (%)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Take it off the path"
+msgstr "Bỏ khỏi lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "Taken off %(path)s by %(who)s."
+msgstr "%(who)s đã rút khỏi %(path)s."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__cancelled
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Taken off the path"
+msgstr "Đã rút khỏi lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "That is %(n)s people at once. The most this screen will do in one press is %(cap)s — pick a smaller group."
+msgstr "Đó là %(n)s người cùng lúc. Màn hình này chỉ làm tối đa %(cap)s người mỗi lần bấm — hãy chọn nhóm nhỏ hơn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "That path could not be read just now."
+msgstr "Hiện chưa đọc được lộ trình này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "That path is not here any more."
+msgstr "Lộ trình này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "That person is not on the path any more."
+msgstr "Người này không còn trong lộ trình nữa."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "The courses, in order"
+msgstr "Các khóa học, theo thứ tự"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "The first course opens today; a course after a step that others wait for opens when that step is finished. People with no login are left out and named."
+msgstr "Khóa học đầu tiên mở ngay hôm nay; khóa học sau một bước phải chờ sẽ mở khi bước đó hoàn thành. Người chưa có tài khoản được bỏ qua và ghi tên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "The learning paths could not be read just now"
+msgstr "Hiện chưa đọc được các lộ trình học tập"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path_step__gate
+msgid "The steps after this one open only when it is finished."
+msgstr "Các bước sau chỉ mở khi bước này hoàn thành."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__partner_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__partner_id
+msgid "Their contact"
+msgstr "Liên hệ của họ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Their courses on Assigned"
+msgstr "Các khóa học của họ ở mục Đã giao"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "Their trial period waits for every course on it"
+msgstr "Kỳ thử việc chờ mọi khóa học trong lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "There is already a path called %s in this company. Give this one another name."
+msgstr "Công ty đã có lộ trình tên %s. Hãy đặt tên khác cho lộ trình này."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_path__department_ids
+msgid "These departments and every department under them."
+msgstr "Các phòng ban này và mọi phòng ban trực thuộc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/static/src/js/paths_lens.js:0
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__purpose
+msgid "What it is for"
+msgstr "Dùng cho"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+msgid "What somebody can do once they have finished it."
+msgstr "Người học làm được gì khi hoàn thành lộ trình."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__state
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__where_words
+msgid "Where they are"
+msgstr "Đang ở đâu"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__state_words
+msgid "Where they stand"
+msgstr "Tình trạng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__employee_id
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__due_date
+msgid "Whole path due by"
+msgstr "Hạn cho cả lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/delay_approval.py:0
+#: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__reason
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__reason_kind
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__reason
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/assignment.py:0
+#: code:addons/pb_training/models/claim.py:0
+msgid "a course"
+msgstr "một khóa học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/path.py:0
+msgid "a path"
+msgstr "một lộ trình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "after %s"
+msgstr "sau %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "At step %s of %s: %s"
+msgstr "Đang ở bước %s/%s: %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Finished all %s steps"
+msgstr "Đã hoàn thành cả %s bước"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Finished the one step"
+msgstr "Đã hoàn thành bước duy nhất"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "On the path, %s%% done"
+msgstr "Đang trong lộ trình, xong %s%%"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Not on the path"
+msgstr "Chưa vào lộ trình"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_paths.py:0
+msgid "Whole path: %s"
+msgstr "Cả lộ trình: %s"

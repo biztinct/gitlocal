@@ -315,6 +315,37 @@
           </div>
         </div>
 
+        <!-- ============== my path (LEARNING L3) ==============
+             The same block as My learning: one card per path, the dot rail,
+             "At step 2 of 4: ..." and Continue into the current step. -->
+        <div t-if="me.get('paths')" class="pbtr-paths">
+          <div t-foreach="me['paths']" t-as="pth" t-attf-class="pbme-card pbtr-path #{'is-late' if pth['late'] else ''}">
+            <div class="pbtr-path-top">
+              <div class="pbtr-path-id">
+                <h3 class="pbtr-course-name"><t t-esc="pth['name']"/></h3>
+                <span class="pbtr-path-chip"><t t-esc="pth['purpose_word']"/></span>
+                <span t-if="pth['late']" class="pbtr-path-chip is-bad">Late</span>
+                <span t-if="pth['state'] == 'done'" class="pbtr-path-chip is-ok">Finished</span>
+              </div>
+              <a t-if="pth['next'] and pth['state'] != 'done'" t-attf-href="/my/training/#{pth['next']['channel_id']}" class="pbme-btn pbtr-btn--primary">Continue</a>
+            </div>
+            <p class="pbtr-path-where"><t t-esc="pth['where_words']"/></p>
+            <div class="pbtr-rail" t-attf-style="--pbtr-cols: #{len(pth['steps']) or 1};">
+              <div t-foreach="pth['steps']" t-as="pst" t-attf-class="pbtr-dot pbtr-dot--#{pst['state']}">
+                <span class="pbtr-dot-c">
+                  <t t-if="pst['state'] == 'done'">
+                    <t t-call="pb_training.tr_icon">
+                      <t t-set="icon" t-value="'check'"/>
+                      <t t-set="isz" t-value="10"/>
+                    </t>
+                  </t>
+                </span>
+                <span class="pbtr-dot-l"><t t-esc="pst['name']"/></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== nothing yet ==================== -->
         <div t-if="not me['courses']" class="pbme-card pbme-empty">
           <div class="pbme-empty-ic">

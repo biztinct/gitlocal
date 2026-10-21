@@ -219,6 +219,52 @@
     &:hover { text-decoration: underline; }
 }
 
+// ---------------------------------------------- my path (LEARNING L3)
+// The dot rail is the growth-plan rail's shape (pb_pip `.pip-rail`) with the
+// column count as a variable: a colour AND a shape — done a tick, now a
+// ring, waiting a lock.
+.pbml-path {
+    padding: 14px 0; border-top: 1px solid #F1F5F9;
+    &:first-of-type { border-top: 0; padding-top: 4px; }
+}
+.pbml-path-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pbml-path-id { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.pbml-path-go { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.pbml-path-where { margin: 6px 0 10px; color: var(--pbml-ink); font-weight: 600; }
+.pbml-rail {
+    --pbml-cols: 4;
+    display: grid; grid-template-columns: repeat(var(--pbml-cols), minmax(0, 1fr)); gap: 4px;
+}
+.pbml-dot { position: relative; text-align: center; min-width: 0; padding-top: 20px; }
+.pbml-dot::after {
+    content: ""; position: absolute; top: 8px; left: 50%; right: -50%;
+    height: 2px; background: var(--pbim-line-2, #EEF0F5); z-index: 0;
+}
+.pbml-dot:last-child::after { display: none; }
+.pbml-dot-c {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 17px; height: 17px; border-radius: 50%; z-index: 1;
+    border: 2px solid var(--pbml-line); background: var(--pbml-surface);
+    display: grid; place-items: center; color: #fff;
+}
+.pbml-dot-l {
+    display: block; font-size: 11.5px; font-weight: 650; color: var(--pbml-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
+}
+.pbml-dot-n { display: block; font-size: 10.5px; color: var(--pbml-muted); padding: 0 4px;
+              overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbml-dot--done {
+    .pbml-dot-c { background: var(--pbml-green); border-color: var(--pbml-green); }
+    .pbml-dot-l { color: var(--pbml-text); }
+    &::after { background: var(--pbml-green); }
+}
+.pbml-dot--now {
+    .pbml-dot-c { border-color: var(--pbml-primary); box-shadow: 0 0 0 4px rgba(90, 75, 176, .18); }
+    .pbml-dot-l { color: var(--pbml-primary); }
+}
+.pbml-dot--next .pbml-dot-c { border-color: #A5B4FC; }
+.pbml-dot--waits .pbml-dot-c { color: var(--pbml-muted); border-style: dashed; }
+
 // ------------------------------------------------------------ skeleton
 .pbml-skel { display: flex; flex-direction: column; gap: 12px; }
 .pbml-skel-line {
@@ -245,4 +291,7 @@
     .pbml-trow-due { grid-column: 1; }
     .pbml-money-line { grid-template-columns: 1fr; }
     .pbml-cert { flex-wrap: wrap; }
+    .pbml-path-top { flex-direction: column; align-items: stretch; }
+    .pbml-path-go { justify-content: center; }
+    .pbml-dot-l, .pbml-dot-n { font-size: 10px; }
 }
