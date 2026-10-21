@@ -67,6 +67,7 @@ SUSPICIOUS = [
     ("ngăn kéo", "drawer (furniture); a slide-over panel = 'bảng bên'"),
     ("con chip", "microchip; a UI chip = 'nhãn'"),
     ("viên thuốc", "pill literal; a UI pill = 'nhãn'"),
+    ("sân khấu", "theatre stage; a step of a process = 'bước'/'giai đoạn' (seen live: 'SÂN KHẤU 2 / 5')"),
     ("odoo", "white-label rule: never 'Odoo' on screen"),
 ]
 SUSPICIOUS_RES = [(re.compile(r"(?<![\wÀ-ỹ])" + re.escape(s) + r"(?![\wÀ-ỹ])", re.I), s, why)
