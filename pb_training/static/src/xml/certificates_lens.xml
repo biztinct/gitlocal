@@ -228,6 +228,10 @@
               <span class="pbcl-f-l">Valid until</span>
               <input class="pbcl-in" type="date" t-att-value="state.form.expiry_date" t-on-change="(ev) => this.setField('expiry_date', ev)"/>
             </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Training hours (optional)</span>
+              <input class="pbcl-in" type="number" min="0" step="0.5" t-att-value="state.form.hours" t-on-input="(ev) => this.setField('hours', ev)"/>
+            </label>
             <label class="pbcl-f pbcl-f--wide">
               <span class="pbcl-f-l">The file</span>
               <input class="pbcl-in" type="file" accept="image/png,image/jpeg,application/pdf" t-on-change="onFile"/>

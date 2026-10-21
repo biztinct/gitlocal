@@ -27,7 +27,7 @@ const MAX_BYTES = 10 * 1024 * 1024;
 
 function blankForm() {
     return { name: "", kind: "CERT", source: "upload", issuer: "", reference: "",
-             issue_date: "", expiry_date: "", file_name: "", file_b64: "" };
+             issue_date: "", expiry_date: "", hours: "", file_name: "", file_b64: "" };
 }
 
 export class PbCertificatesLens extends Component {

@@ -60,6 +60,9 @@ export class PbTrainingNumbers extends Component {
             byCourse: [],
             byReason: [],
             byCertificate: [],
+            required: { has_rules: false },
+            countryReports: [],
+            reporting: "",
             trend: [],
             claims: {},
             lists: { courses: [], departments: [] },
@@ -149,6 +152,8 @@ export class PbTrainingNumbers extends Component {
                 byCourse: d.by_course || [],
                 byReason: d.by_reason || [],
                 byCertificate: d.by_certificate || [],
+                required: d.required || { has_rules: false },
+                countryReports: d.country_reports || [],
                 trend: d.trend || [],
                 claims: d.claims || {},
                 lists: d.lists || { courses: [], departments: [] },
@@ -210,6 +215,35 @@ export class PbTrainingNumbers extends Component {
             ...this.state.trend.map((w) => Math.max(w.set, w.done)), 0);
         if (!top) { return 2; }
         return Math.max(Math.round((Number(value || 0) / top) * 100), 2);
+    }
+
+    /** "92% in date · 4 missing" for one row of a required-training split. */
+    requiredWords(row) {
+        const bits = [row.percent === null || row.percent === undefined
+            ? _t("nothing due yet") : _t("%s%% in date", row.percent)];
+        if (row.missing) { bits.push(row.missing === 1 ? _t("1 missing") : _t("%s missing", row.missing)); }
+        if (row.expiring) { bits.push(row.expiring === 1 ? _t("1 expiring") : _t("%s expiring", row.expiring)); }
+        return bits.join(" · ");
+    }
+
+    /** LEARNING L2: one country report, as a spreadsheet in the downloads. */
+    async countryReport(rep) {
+        this.state.reporting = rep.cc;
+        try {
+            const res = await this.orm.call("pb.training.analytics", "country_report_xlsx", [rep.cc]);
+            if (!res || !res.file_b64) { return; }
+            const a = document.createElement("a");
+            a.href = `data:${res.mimetype};base64,${res.file_b64}`;
+            a.download = res.filename || "report.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            this.notif.add(_t("The spreadsheet is in your downloads."), { type: "success" });
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || _t("That did not work."), { type: "danger" });
+        } finally {
+            this.state.reporting = "";
+        }
     }
 
     async download() {

@@ -4,7 +4,7 @@
   <!-- ====================================================================
        Learning › Overview (LEARNING L0). Section comments use `=` rules and
        never a doubled hyphen (R35). Loop variables avoid OWL's reserved
-       words (R1): `que`, `bit`, `dep`, `cb`.
+       words (R1): `que`, `bit`, `dep`, `cb`, `rb`.
        ==================================================================== -->
   <t t-name="pb_training.PbLearningOverview">
     <div class="pblo" t-att-class="{ 'pblo--embedded': props.embedded }">
@@ -69,6 +69,29 @@
                     t-esc="bit.text"/>
             </t>
           </div>
+
+          <!-- ============ required training (LEARNING L2) ============ -->
+          <section t-if="required.has_rules" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Required training</h3>
+              <span class="pblo-dim">Who must hold what</span>
+            </div>
+            <div class="pblo-certbits">
+              <button class="pblo-certbit" t-att-class="{ 'is-good': required.percent !== null and required.percent >= 95, 'is-warn': required.percent !== null and required.percent &lt; 95 }" t-on-click="() => this.openRequired('')">
+                <t t-esc="requiredWords"/>
+              </button>
+              <button t-foreach="requiredBits" t-as="rb" t-key="rb.key" class="pblo-certbit"
+                      t-att-class="{ 'is-warn': rb.warn and rb.n, 'is-bad': rb.bad and rb.n, 'is-zero': !rb.n }"
+                      t-on-click="() => this.openRequired(rb.key)">
+                <t t-esc="rb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openRequired('')">
+                <t t-out="ic('layoutGrid',14)"/> Open the matrix
+              </button>
+            </div>
+          </section>
 
           <!-- ============ certificates (LEARNING L1) ============ -->
           <section class="pblo-panel pblo-certs">

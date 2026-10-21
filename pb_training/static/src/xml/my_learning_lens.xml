@@ -125,6 +125,27 @@
             </div>
           </section>
 
+          <!-- ============ required for you (LEARNING L2) ============ -->
+          <section t-if="requiredRows.length" class="pbml-panel pbml-certs">
+            <div class="pbml-sec-h">
+              <h3>Required for you</h3>
+            </div>
+            <div class="pbml-certlist">
+              <div t-foreach="requiredRows" t-as="rqd" t-key="rqd.id" class="pbml-cert">
+                <div class="pbml-cert-main">
+                  <b t-esc="rqd.name"/>
+                </div>
+                <span class="pbml-chip" t-att-class="requiredClass(rqd)">
+                  <t t-out="ic('listChecks',12)"/> <t t-esc="rqd.words"/>
+                </span>
+                <button t-if="rqd.channel_id" class="pbim-btn primary pbml-renew"
+                        t-on-click="() => this.go('/my/training/' + rqd.channel_id)">
+                  Start <t t-out="ic('arrow',14)"/>
+                </button>
+              </div>
+            </div>
+          </section>
+
           <!-- ============ my certificates (LEARNING L1) ============ -->
           <section t-if="certs" class="pbml-panel pbml-certs">
             <div class="pbml-sec-h">

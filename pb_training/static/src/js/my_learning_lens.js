@@ -42,6 +42,7 @@ export class PbMyLearningLens extends Component {
             team: null,
             claims: null,
             certs: null,
+            required: null,
             filter: "",
             reminding: 0,
         });
@@ -54,7 +55,7 @@ export class PbMyLearningLens extends Component {
     async load() {
         this.state.failed = false;
         try {
-            const [home, claims, certs] = await Promise.all([
+            const [home, claims, certs, required] = await Promise.all([
                 this.orm.call(MODEL, "home", []),
                 this.orm.call(MODEL, "claims", []).catch((e) => {
                     // The allowance block is optional: a failure there must
@@ -66,10 +67,16 @@ export class PbMyLearningLens extends Component {
                     console.warn("pb_training: my certificates could not be read", e);
                     return null;
                 }),
+                // LEARNING L2: "Required for you" — optional like the others.
+                this.orm.call(MODEL, "required_for_me", []).catch((e) => {
+                    console.warn("pb_training: required training could not be read", e);
+                    return null;
+                }),
             ]);
             this.state.home = home || { courses: [] };
             this.state.claims = claims;
             this.state.certs = certs;
+            this.state.required = required;
             this.state.team = home && home.manages
                 ? await this.orm.call(MODEL, "team", []) : null;
         } catch (e) {
@@ -251,6 +258,16 @@ export class PbMyLearningLens extends Component {
 
     /** The certificate on a course card, when that course has one. */
     courseCertClass(c) { return c.certificate ? this.certClass(c.certificate) : ""; }
+
+    // ------------------------------------------------------------- required
+    get requiredRows() {
+        const r = this.state.required;
+        return (r && r.has_employee && r.rows) || [];
+    }
+
+    requiredClass(row) {
+        return { missing: "is-bad", expiring: "is-warn", valid: "is-ok" }[row.state] || "";
+    }
 
     // ------------------------------------------------------------- allowance
     get allowance() {

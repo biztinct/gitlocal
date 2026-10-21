@@ -839,3 +839,18 @@
         color: var(--pbim-primary, #4F46E5);
     }
 }
+
+// LEARNING L2: required training and the country reports on the Numbers page.
+.pbtnm {
+    .pbtnm-req { margin-top: 16px; }
+    .pbtnm-req .pbtnm-grid { margin-bottom: 0; }
+    .pbtnm-req-h {
+        margin: 4px 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+    }
+    .pbtnm-reports { margin-top: 16px; }
+    .pbtnm-report-row {
+        display: flex; gap: 8px; flex-wrap: wrap;
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+}

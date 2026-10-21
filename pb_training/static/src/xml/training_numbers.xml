@@ -11,7 +11,7 @@
        Loop variables are never named lt / gt / lte / gte / and / or / not /
        in: OWL reserves those as operators and the loop compiles into a bare
        `<` that kills the whole template (R1). The loops here are `tl`, `rg`,
-       `dp`, `cs`, `rs`, `wk` and `ct`.
+       `dp`, `cs`, `rs`, `wk`, `ct`, `rq`, `rd`, `rsi` and `rep`.
 
        `t-att-class` with a DICT is correct HERE and only here — this is an
        OWL template, where the dict form MERGES with the static class. On a
@@ -298,6 +298,65 @@
             </div>
 
           </t>
+
+          <!-- ==================== required training (LEARNING L2) ====================
+               Today's position, not the date range: a rule is met or not met
+               today. The same cells as the matrix (R80). -->
+          <div t-if="state.required.has_rules" class="pbim-panel pbtnm-table pbtnm-req">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('listChecks',16)"/> Required training</h3>
+              <p t-esc="state.required.headline"/>
+            </div>
+            <div class="pbtnm-grid">
+              <div>
+                <h4 class="pbtnm-req-h">By rule</h4>
+                <t t-foreach="state.required.by_requirement" t-as="rq" t-key="rq.name">
+                  <div class="pbtnm-row" t-att-class="{ bad: rq.missing > 0 }">
+                    <div class="pbtnm-row-name" t-esc="rq.name"/>
+                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rq.percent || 0 }}%;"/></div>
+                    <div class="pbtnm-row-n" t-esc="rq.measured"/>
+                    <div class="pbtnm-row-sub" t-esc="requiredWords(rq)"/>
+                  </div>
+                </t>
+              </div>
+              <div>
+                <h4 class="pbtnm-req-h">By department</h4>
+                <t t-foreach="state.required.by_department" t-as="rd" t-key="rd.name">
+                  <div class="pbtnm-row" t-att-class="{ bad: rd.missing > 0 }">
+                    <div class="pbtnm-row-name" t-esc="rd.name"/>
+                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rd.percent || 0 }}%;"/></div>
+                    <div class="pbtnm-row-n" t-esc="rd.measured"/>
+                    <div class="pbtnm-row-sub" t-esc="requiredWords(rd)"/>
+                  </div>
+                </t>
+              </div>
+              <div>
+                <h4 class="pbtnm-req-h">By site</h4>
+                <t t-foreach="state.required.by_site" t-as="rsi" t-key="rsi.name">
+                  <div class="pbtnm-row" t-att-class="{ bad: rsi.missing > 0 }">
+                    <div class="pbtnm-row-name" t-esc="rsi.name"/>
+                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rsi.percent || 0 }}%;"/></div>
+                    <div class="pbtnm-row-n" t-esc="rsi.measured"/>
+                    <div class="pbtnm-row-sub" t-esc="requiredWords(rsi)"/>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== country reports (LEARNING L2) ==================== -->
+          <div t-if="state.countryReports.length" class="pbim-panel pbtnm-reports">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('globe',16)"/> Country reports</h3>
+              <p>The statutory lists for the country packs switched on for this company, as spreadsheets.</p>
+            </div>
+            <div class="pbtnm-report-row">
+              <button t-foreach="state.countryReports" t-as="rep" t-key="rep.cc" class="pbim-btn ghost"
+                      t-att-disabled="state.reporting === rep.cc" t-on-click="() => this.countryReport(rep)" t-att-title="rep.pack">
+                <t t-out="ic('fileSpreadsheet',15)"/> <t t-esc="rep.title"/>
+              </button>
+            </div>
+          </div>
         </t>
       </div>
     </div>

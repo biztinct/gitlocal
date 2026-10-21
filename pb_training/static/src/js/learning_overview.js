@@ -26,7 +26,11 @@ export const TRAINING_TAB_KEY = "pb_training_tab";
 /** The context key the Certificates lens reads its first filter from (LEARNING L1). */
 export const CERT_FILTER_KEY = "pb_training_cert_filter";
 
-const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award" };
+const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks" };
+
+/** The context keys the Required lens reads its arrival from (LEARNING L2). */
+const REQ_TAB_KEY = "pb_training_req_tab";
+const REQ_STATE_KEY = "pb_training_req_state";
 
 export class PbLearningOverview extends Component {
     static template = "pb_training.PbLearningOverview";
@@ -113,11 +117,39 @@ export class PbLearningOverview extends Component {
     /** A CLICK handler: the lens that holds this queue, on its own tab. */
     openQueue(row) {
         if (row.filter) { return this.openCerts(row.filter); }
+        if (row.lens === "required") { return this.openRequired(row.state || ""); }
         openHub(this.action, {
             xmlid: LEARNING_HUB_XMLID,
             lens: row.lens,
             context: row.tab ? { [TRAINING_TAB_KEY]: row.tab } : {},
         });
+    }
+
+    /** LEARNING L2: the required-training block. */
+    get required() { return this.data.required || {}; }
+
+    get requiredWords() {
+        const r = this.required;
+        if (r.percent === null || r.percent === undefined) {
+            return _t("Nothing is due yet.");
+        }
+        return _t("%s%% in date", r.percent);
+    }
+
+    get requiredBits() {
+        const r = this.required;
+        return [
+            { key: "missing", n: r.missing || 0, bad: true,
+              text: (r.missing || 0) === 1 ? _t("1 missing") : _t("%s missing", r.missing || 0) },
+            { key: "expiring", n: r.expiring || 0, warn: true,
+              text: (r.expiring || 0) === 1 ? _t("1 expiring") : _t("%s expiring", r.expiring || 0) },
+        ];
+    }
+
+    openRequired(state) {
+        const context = { [REQ_TAB_KEY]: "matrix" };
+        if (state) { context[REQ_STATE_KEY] = state; }
+        openHub(this.action, { xmlid: LEARNING_HUB_XMLID, lens: "required", context });
     }
 
     openLens(lens) {

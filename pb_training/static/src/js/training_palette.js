@@ -52,6 +52,8 @@ import { PbLearningOverview, TRAINING_TAB_KEY, CERT_FILTER_KEY } from "@pb_train
 import { PbCertificatesLens } from "@pb_training/js/certificates_lens";
 import { PbMyLearningLens } from "@pb_training/js/my_learning_lens";
 import { PbTrainingTestsLens } from "@pb_training/js/training_tests_lens";
+import { PbRequiredLens } from "@pb_training/js/required_lens";
+import { REQ_TAB_KEY, REQ_STATE_KEY, REQ_PACK_KEY } from "@pb_training/js/required_settings";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -108,14 +110,28 @@ lenses.add("assigned", {
     },
 }, { sequence: 40 });
 
+// LEARNING L2: the Required lens is its own screen — Matrix · Rules · Day one
+// · Comes round again. Arrivals may ask for a tab, a cell state (Overview's
+// "Missing required training") or a country pack (Settings' "Review the
+// rules"). The old board's Day one / Comes round again tabs live on inside
+// it, read-only, as "from before".
+const REQUIRED_TABS = ["matrix", "rules", "day_one", "recurring"];
 lenses.add("required", {
     key: "required",
     icon: "listChecks",
     label: _t("Required"),
-    title: _t("Day one and courses that come round again"),
-    Component: PbTrainingBoard,
+    title: _t("Who must hold what, and who is missing it"),
+    Component: PbRequiredLens,
     groups: TRAINING_GATE,
-    props: { startTab: "rules", tabs: ["rules", "schedules"] },
+    propsFromContext(ctx) {
+        const c = ctx || {};
+        const tab = c[REQ_TAB_KEY] || c[TRAINING_TAB_KEY];
+        return {
+            startTab: REQUIRED_TABS.includes(tab) ? tab : "matrix",
+            startState: c[REQ_STATE_KEY] || "",
+            startPack: c[REQ_PACK_KEY] || "",
+        };
+    },
 }, { sequence: 50 });
 
 lenses.add("tests", {
@@ -160,6 +176,27 @@ lenses.add("numbers", {
     Component: PbTrainingNumbers,
     groups: TRAINING_GATE.concat(["base.group_system"]),
 }, { sequence: 80 });
+
+/* ------------------------------------------- Settings › HR (LEARNING L2) ---
+ * The category names its own group, so pb_settings needs no change. The
+ * registry key is written out (not imported) so this module does not have to
+ * depend on pb_settings: without it the entry is simply never read.
+ */
+registry.category("pb_settings_category").add("required_training", {
+    key: "required_training",
+    group: "hr",
+    icon: "listChecks",
+    label: _t("Required training"),
+    blurb: _t("Country packs, the renewal window and how many courses the morning job may put on."),
+    groups: ["pb_training.group_training_manager", "pb_training.group_training_admin", "base.group_system"],
+    cards: [{
+        id: "required_training",
+        xmlid: "pb_training.action_pb_training_required_settings",
+        icon: "listChecks",
+        label: _t("Required training"),
+        sub: _t("Country packs for Vietnam, India, Indonesia and Singapore."),
+    }],
+}, { sequence: 47 });
 
 /* ---------------------------------------------------------- command bar --- */
 const palette = registry.category("pb_hub_palette");
@@ -250,7 +287,7 @@ palette.add("training_schedules", {
     groups: TRAINING_GATE,
     requires: "pb_training_board",
     action: { xmlid: HUB_XMLID, lens: "required" },
-    keywords: ["training", "talent"],
+    keywords: ["training", "talent", "required", "matrix", "bắt buộc", "safety", "an toàn"],
 }, { sequence: 3950 });
 
 /* --------------------------------------------- E3, the Insights lens ----
