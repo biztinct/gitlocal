@@ -167,7 +167,12 @@ class PbAskHrPortal(PbMePortal):
         return request.render('pb_ask_hr.portal_ask_hr_list', values)
 
     # ================================================================ new
-    def _render_new(self, values=None, error=None):
+    def _ask_hr_render_new(self, values=None, error=None):
+        # NAV P3d: named `_ask_hr_*` like every other helper here. As
+        # `_render_new` it shared its name with pb_me_expense's portal helper
+        # `_render_new(emp, …)` on the same controller class, and whichever
+        # loaded last won: /my/ask-hr/new answered 403 "That is not your
+        # employee record" on every database with Expenses installed.
         values = dict(values or {})
         values.update({
             'page_name': 'ask_hr_new',
@@ -183,7 +188,7 @@ class PbAskHrPortal(PbMePortal):
     def portal_ask_hr_new(self, category=None, **kw):
         if not self._ess_employee():
             return request.redirect('/my')
-        return self._render_new({'category': category if category in dict(CATEGORIES) else 'other'})
+        return self._ask_hr_render_new({'category': category if category in dict(CATEGORIES) else 'other'})
 
     @http.route(['/my/ask-hr/new'], type='http', auth='user', website=True,
                 methods=['POST'])
@@ -197,10 +202,10 @@ class PbAskHrPortal(PbMePortal):
             'text': (post.get('text') or '').strip(),
         }
         if not kept['subject']:
-            return self._render_new(kept, 'subject')
+            return self._ask_hr_render_new(kept, 'subject')
         files, error = self._ask_hr_files()
         if error:
-            return self._render_new(kept, error)
+            return self._ask_hr_render_new(kept, error)
         Ticket = request.env['pb.ask.hr.ticket'].sudo()
         try:
             # T-R11: sudo AFTER the guard — the employee is the session's own
@@ -213,7 +218,7 @@ class PbAskHrPortal(PbMePortal):
                     ticket.write({'attachment_ids': [(6, 0, atts.ids)]})
         except (AccessError, UserError, ValidationError) as exc:
             _logger.info('pb_ask_hr: a new question was refused: %s', exc)
-            return self._render_new(kept, 'failed')
+            return self._ask_hr_render_new(kept, 'failed')
         return request.redirect('/my/ask-hr/%s?done=sent' % ticket.id)
 
     # ============================================================= ticket

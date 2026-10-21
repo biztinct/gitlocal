@@ -174,9 +174,11 @@ msgid "Answer %(number)s: %(subject)s"
 msgstr "Trả lời %(number)s: %(subject)s"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__answered
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "Answered"
 msgstr "Đã trả lời"
 
@@ -204,6 +206,7 @@ msgstr "Đã trả lời — đến lượt bạn"
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_my_home_ask_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.res_config_settings_view_form_ask_hr
 #: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Ask HR"
 msgstr "Hỏi Nhân sự"
 
@@ -213,7 +216,9 @@ msgid "Ask HR question"
 msgstr "Câu hỏi gửi Nhân sự"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_ticket
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Ask a new question"
 msgstr "Đặt câu hỏi mới"
 
@@ -254,7 +259,9 @@ msgid "Benefits & insurance"
 msgstr "Phúc lợi & bảo hiểm"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_new
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -270,12 +277,14 @@ msgid "Close"
 msgstr "Đóng"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_ask_hr/models/pb_me_home.py:0
 #: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__closed
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "Closed"
 msgstr "Đã đóng"
 
@@ -557,7 +566,9 @@ msgid "Messages"
 msgstr "Tin nhắn"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Mine"
 msgstr "Của tôi"
 
@@ -572,10 +583,12 @@ msgid "Need more help? Ask a new question and HR will pick it up."
 msgstr "Cần thêm trợ giúp? Hãy đặt câu hỏi mới, phòng nhân sự sẽ tiếp nhận."
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_ask_hr/models/ticket.py:0
 #: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__new
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "New"
 msgstr "Mới"
 
@@ -625,9 +638,12 @@ msgid "No questions waiting"
 msgstr "Không có câu hỏi nào đang chờ"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Nobody has it yet"
-msgstr "Chưa có ai nhận"
+msgstr "Chưa ai nhận"
 
 #. module: pb_ask_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
@@ -809,8 +825,10 @@ msgid "Subject"
 msgstr "Tiêu đề"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_form
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_kanban
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
 msgid "Take it"
 msgstr "Nhận xử lý"
 
@@ -929,13 +947,15 @@ msgid "Who picks up Ask HR questions"
 msgstr "Ai tiếp nhận câu hỏi gửi Nhân sự"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_ask_hr/models/pb_me_home.py:0
 #: model:ir.model.fields.selection,name:pb_ask_hr.selection__pb_ask_hr_ticket__state__with_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_pill
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.view_pb_ask_hr_ticket_search
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "With HR"
-msgstr "Đang ở Nhân sự"
+msgstr "Nhân sự đang xử lý"
 
 #. module: pb_ask_hr
 #. odoo-python
@@ -950,7 +970,9 @@ msgid "Write a reply to HR"
 msgstr "Viết câu trả lời cho phòng nhân sự"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_bubble
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "You"
 msgstr "Bạn"
 
@@ -979,7 +1001,9 @@ msgid "answered"
 msgstr "đã trả lời"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "closed"
 msgstr "đã đóng"
 
@@ -1024,9 +1048,11 @@ msgid "waiting"
 msgstr "chờ"
 
 #. module: pb_ask_hr
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.portal_ask_hr_list
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "with HR"
-msgstr "đang ở Nhân sự"
+msgstr "nhân sự đang xử lý"
 
 #. module: pb_ask_hr
 #: model_terms:ir.ui.view,arch_db:pb_ask_hr.pbah_ago
@@ -1038,3 +1064,525 @@ msgstr "hôm qua"
 #: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
 msgid "Home"
 msgstr "Trang chủ"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "less than an hour"
+msgstr "chưa đến một giờ"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "1 hour"
+msgstr "1 giờ"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "They replied"
+msgstr "Người hỏi vừa phản hồi"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "HR replied"
+msgstr "Nhân sự đã trả lời"
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Last question answered %s ago."
+msgstr "Câu hỏi gần nhất được trả lời cách đây %s."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Only the HR team can hand a question on."
+msgstr "Chỉ đội Nhân sự mới có thể chuyển câu hỏi."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Only the HR team can do that."
+msgstr "Chỉ đội Nhân sự mới làm được việc này."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Those questions are no longer here. Read the board again."
+msgstr "Những câu hỏi đó không còn ở đây. Hãy tải lại bảng."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "That is not something this board can do."
+msgstr "Bảng này không làm được việc đó."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "You have it."
+msgstr "Câu hỏi này giờ là của bạn."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "You have %s questions."
+msgstr "Bạn đã nhận %s câu hỏi."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Handed to %s."
+msgstr "Đã chuyển cho %s."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "%(n)s questions handed to %(name)s."
+msgstr "Đã chuyển %(n)s câu hỏi cho %(name)s."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "Closed."
+msgstr "Đã đóng."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "%s questions closed."
+msgstr "Đã đóng %s câu hỏi."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "%s already closed, left as they were."
+msgstr "%s câu hỏi đã đóng từ trước, được giữ nguyên."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/askhr_board.py:0
+msgid "1 already closed, left as it was."
+msgstr "1 câu hỏi đã đóng từ trước, được giữ nguyên."
+
+#. module: pb_ask_hr
+#. odoo-python
+#: code:addons/pb_ask_hr/models/ticket.py:0
+msgid "Pick somebody in the HR team."
+msgstr "Hãy chọn một người trong đội Nhân sự."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "new"
+msgstr "mới"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "waiting on the person"
+msgstr "đang chờ người hỏi"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "answered this week"
+msgstr "đã trả lời tuần này"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "median first reply (last 30 days)"
+msgstr "thời gian trả lời đầu tiên (trung vị), 30 ngày qua"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "waiting for HR"
+msgstr "đang chờ Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "answered, your turn"
+msgstr "đã trả lời, đến lượt bạn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Where every question is"
+msgstr "Mỗi câu hỏi đang ở đâu"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "move"
+msgstr "di chuyển"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "open"
+msgstr "mở"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "select"
+msgstr "chọn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "take it"
+msgstr "nhận xử lý"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "hand to…"
+msgstr "chuyển cho…"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "find"
+msgstr "tìm"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "1 waiting over 2 working days"
+msgstr "1 câu hỏi chờ quá 2 ngày làm việc"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "%s waiting over 2 working days"
+msgstr "%s câu hỏi chờ quá 2 ngày làm việc"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "1 is yours"
+msgstr "1 câu hỏi là của bạn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "%s are yours"
+msgstr "%s câu hỏi là của bạn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "1 question"
+msgstr "1 câu hỏi"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "%s questions"
+msgstr "%s câu hỏi"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "1 question at %s"
+msgstr "1 câu hỏi ở mục %s"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "%(n)s questions at %(where)s"
+msgstr "%(n)s câu hỏi ở mục %(where)s"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Showing %(shown)s of %(all)s at %(where)s"
+msgstr "Đang hiện %(shown)s trên %(all)s câu hỏi ở mục %(where)s"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Nothing at %s right now."
+msgstr "Hiện không có gì ở mục %s."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "1 selected"
+msgstr "Đã chọn 1"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "%s selected"
+msgstr "Đã chọn %s"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "That could not be done. Nothing has changed."
+msgstr "Không làm được việc đó. Chưa có gì thay đổi."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "The HR team could not be read just now."
+msgstr "Chưa đọc được danh sách đội Nhân sự lúc này."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Hand %s to…"
+msgstr "Chuyển %s cho…"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Hand %s questions to…"
+msgstr "Chuyển %s câu hỏi cho…"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Close this question"
+msgstr "Đóng câu hỏi này"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Close %s questions"
+msgstr "Đóng %s câu hỏi"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/js/askhr_lens.js:0
+msgid "Asked %s ago"
+msgstr "Đã hỏi cách đây %s"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "The questions could not be read just now."
+msgstr "Chưa đọc được các câu hỏi lúc này."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Nothing has changed. Try again in a moment."
+msgstr "Không có gì thay đổi. Hãy thử lại sau giây lát."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Questions people asked HR"
+msgstr "Câu hỏi mọi người gửi Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Your questions to HR"
+msgstr "Câu hỏi bạn gửi Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Read the board again"
+msgstr "Tải lại bảng"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Open as a list"
+msgstr "Mở dạng danh sách"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Filters"
+msgstr "Bộ lọc"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Find a number, a name or a word"
+msgstr "Tìm theo số, tên hoặc một từ"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Clear"
+msgstr "Xoá bộ lọc"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Select all here"
+msgstr "Chọn tất cả ở đây"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Nothing is waiting."
+msgstr "Không có gì đang chờ."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Show closed"
+msgstr "Xem câu hỏi đã đóng"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "You have not asked HR anything yet."
+msgstr "Bạn chưa hỏi Nhân sự điều gì."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Ask about your pay, leave, documents or anything else. HR answers here and by e-mail."
+msgstr "Hãy hỏi về lương, nghỉ phép, giấy tờ hoặc bất cứ điều gì. Nhân sự trả lời ở đây và qua e-mail."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Nobody matches"
+msgstr "Không có câu hỏi nào khớp"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "No question here matches the filters you chose."
+msgstr "Không có câu hỏi nào ở đây khớp với bộ lọc bạn chọn."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Take it (T)"
+msgstr "Nhận xử lý (T)"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Hand to…"
+msgstr "Chuyển cho…"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Hand to… (H)"
+msgstr "Chuyển cho… (H)"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Only the most recent closed questions are shown here."
+msgstr "Ở đây chỉ hiện các câu hỏi đã đóng gần đây nhất."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Selected questions"
+msgstr "Các câu hỏi đã chọn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Close with a note"
+msgstr "Đóng kèm ghi chú"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Clear the selection (Esc)"
+msgstr "Bỏ chọn (Esc)"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Clear the selection"
+msgstr "Bỏ chọn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Find somebody in HR"
+msgstr "Tìm một người trong đội Nhân sự"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Reading the HR team…"
+msgstr "Đang đọc danh sách đội Nhân sự…"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "you"
+msgstr "bạn"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Nobody in HR matches."
+msgstr "Không có ai trong đội Nhân sự khớp."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "A few words (you can leave this empty)"
+msgstr "Vài lời (có thể để trống)"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "A few words"
+msgstr "Vài lời"
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Tell the person. They get it by e-mail and on their page."
+msgstr "Báo cho người hỏi. Họ nhận được qua e-mail và trên trang của họ."
+
+#. module: pb_ask_hr
+#. odoo-javascript
+#: code:addons/pb_ask_hr/static/src/xml/askhr_lens.xml:0
+msgid "Keep it inside HR, as a private note."
+msgstr "Chỉ lưu trong Nhân sự, như một ghi chú riêng."

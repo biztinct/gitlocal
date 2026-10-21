@@ -245,17 +245,16 @@ class TestAskHrModel(_AskHrCommon, TransactionCase):
                           (home.match_action_xmlids or '').split(','))
             self.assertIn('pb.ask.hr.ticket', (home.match_models or '').split(','))
 
-    def test_nav_p2_the_home_tab_mounts_the_real_kanban(self):
+    def test_nav_p2_the_home_tab_is_registered(self):
+        # NAV P3d: the tab is a Payobook board now (test_board_p3d); the
+        # native kanban stays as the off-menu fallback.
         path = os.path.join(get_module_path('pb_ask_hr'), 'static', 'src', 'js',
                             'askhr_lens.js')
         with open(path, encoding='utf-8') as fh:
             src = fh.read()
         self.assertIn('registry.category(HOME_LENSES).add("askhr"', src)
         self.assertIn('{ sequence: 15 }', src)
-        self.assertIn('import { View } from "@web/views/view";', src)
-        self.assertIn('resModel: MODEL', src)
-        self.assertIn('type: "kanban"', src)
-        self.assertIn('search_default_filter_open: 1', src)
+        self.assertIn('res_model: MODEL', src)
         self.assertTrue(self.env.ref('pb_ask_hr.view_pb_ask_hr_ticket_kanban'))
 
 

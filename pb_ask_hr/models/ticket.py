@@ -264,16 +264,63 @@ class PbAskHrTicket(models.Model):
                 todo.action_feedback()
 
     # ----------------------------------------------------------- HR actions
+    def _pb_set_owner(self, user, remind=False):
+        """The ONE way a question changes hands (NAV P3d): "Take it" on the
+        form, and Take it / Hand to… on the Home board, all come here.
+
+        The new owner follows the question; a new question moves to "With
+        HR"; an open to-do moves to the new owner with it. ``remind`` puts a
+        to-do on the new owner when there was none (a hand-over: the person
+        receiving it learns of it from the to-do, as at creation — no second
+        "you have been assigned" mail, hence the context key)."""
+        todo_type = self.env.ref('mail.mail_activity_data_todo',
+                                 raise_if_not_found=False)
+        for ticket in self:
+            vals = {'user_id': user.id}
+            if ticket.state == 'new':
+                vals['state'] = 'with_hr'
+            ticket.with_context(mail_auto_subscribe_no_notify=True).write(vals)
+            ticket.message_subscribe(partner_ids=user.partner_id.ids)
+            if ticket.state not in ('new', 'with_hr') or not todo_type:
+                continue
+            todo = ticket.activity_ids.filtered(
+                lambda a: a.activity_type_id == todo_type)
+            if todo:
+                todo.filtered(lambda a: a.user_id != user).write({'user_id': user.id})
+            elif remind:
+                ticket.activity_schedule(
+                    'mail.mail_activity_data_todo', user_id=user.id,
+                    summary=_('Answer %(number)s: %(subject)s',
+                              number=ticket.number, subject=ticket.name))
+        return True
+
     def action_take(self):
         """"Take it": the HR person pressing it becomes the owner and follows;
         a new question moves to "With HR"."""
-        for ticket in self:
-            vals = {'user_id': self.env.uid}
-            if ticket.state == 'new':
-                vals['state'] = 'with_hr'
-            ticket.write(vals)
-            ticket.message_subscribe(partner_ids=self.env.user.partner_id.ids)
-        return True
+        return self._pb_set_owner(self.env.user)
+
+    def action_hand_to(self, user_id):
+        """"Hand to…": somebody else in HR becomes the owner (NAV P3d). Only
+        a person who can work the queue may receive it — handing a question
+        to somebody who cannot even read it would lose it."""
+        user = self.env['res.users'].browse(int(user_id or 0)).exists()
+        if not user or user.share or not user.active or not (
+                user.has_group('hr.group_hr_user')
+                or user.has_group('base.group_system')):
+            raise UserError(_('Pick somebody in the HR team.'))
+        return self._pb_set_owner(user, remind=user != self.env.user)
+
+    def action_close_with_note(self, note=None, tell_person=False):
+        """Close, with a few words (NAV P3d). ``tell_person`` sends them to
+        the person as a reply (by e-mail and on their page); otherwise they
+        stay a private HR note. Then the ordinary :meth:`action_close`."""
+        text = (note or '').strip()
+        if text:
+            for ticket in self.filtered(lambda t: t.state != 'closed'):
+                ticket.message_post(
+                    body=plaintext2html(text), message_type='comment',
+                    subtype_xmlid='mail.mt_comment' if tell_person else 'mail.mt_note')
+        return self.action_close()
 
     def action_answer_done(self):
         """HR marks it answered without writing (rare — e.g. answered by phone)."""

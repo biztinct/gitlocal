@@ -2,3 +2,4 @@
 from . import ticket
 from . import pb_me_home
 from . import res_config_settings
+from . import askhr_board

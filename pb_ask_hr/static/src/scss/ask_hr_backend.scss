@@ -39,24 +39,3 @@
 
 // the form's one-line instruction under the title
 .pbah-form-hint { font-size: 13px; }
-
-// NAV P2 — Home › Ask HR: the native kanban inside the hub canvas. A definite
-// height so the kanban scrolls inside itself rather than growing the canvas
-// (the hub's W20 rule); the controller fills the box.
-.pbah-lens {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    width: 100%;
-    overflow: hidden;
-    background: #F5F6FA;
-
-    > .o_view_controller {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-    }
-    .o_content { flex: 1 1 auto; min-height: 0; overflow: auto; }
-}
