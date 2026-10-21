@@ -43,7 +43,10 @@ class ReportLearningRecord(models.AbstractModel):
             'finished': date_words(row.completed_on) if row.completed_on
             else '',
             'score': ('%s%%' % int(round(row.score))) if row.score else '',
+            # LEARNING L2: the hours the course counted for when finished.
+            'hours': _hours_words(row.hours),
         } for row in done]
+        total_hours = sum(done.mapped('hours'))
         certs = []
         if 'pb.employee.document' in self.env:
             docs = self.env['pb.employee.document'].sudo().search(
@@ -69,6 +72,7 @@ class ReportLearningRecord(models.AbstractModel):
             'courses': courses,
             'certificates': certs,
             'summary': self._summary(len(courses), live),
+            'hours_total': _hours_words(total_hours),
         }
 
     @api.model
@@ -89,3 +93,10 @@ class ReportLearningRecord(models.AbstractModel):
             bits.append(tr(env, '1 expired') if gone == 1
                         else tr(env, '%s expired', gone))
         return ' · '.join(bits)
+
+
+def _hours_words(hours):
+    hours = float(hours or 0.0)
+    if not hours:
+        return ''
+    return ('%d' % hours) if hours == int(hours) else ('%.1f' % hours)

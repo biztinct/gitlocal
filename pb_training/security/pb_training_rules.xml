@@ -228,5 +228,18 @@
         <field name="groups" eval="[(4, ref('group_training_user')), (4, ref('group_training_manager')), (4, ref('group_training_admin'))]"/>
     </record>
 
+    <!-- ================= required training (LEARNING L2) =================
+         One global company rule. A country-pack TEMPLATE has no company and
+         is readable by the training tiers (the Settings card counts its
+         rows); nobody below a trainer holds any ACL on the model at all, so
+         a plain employee meets an AccessError and sees their own status only
+         through the My learning facade. -->
+    <record id="rule_requirement_company" model="ir.rule">
+        <field name="name">Required training: my companies</field>
+        <field name="model_id" ref="model_pb_training_requirement"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
 </data>
 </odoo>

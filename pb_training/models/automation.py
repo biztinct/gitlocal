@@ -59,11 +59,19 @@ class PbTrainingAutomation(models.AbstractModel):
         today = fields.Date.today()
         counts = {'refreshed': 0, 'scheduled': 0, 'employee': 0,
                   'manager': 0, 'hr': 0, 'capped': 0, 'renewals': 0,
-                  'certificates': 0}
+                  'certificates': 0, 'required': 0}
         counts['refreshed'] = self._leg('bring assignments up to date',
                                         lambda: self._refresh_all(today))
         counts['scheduled'] = self._leg('run the compliance schedules',
                                         lambda: self._run_schedules(today))
+        # LEARNING L2, leg 5: whoever is missing a required course (or whose
+        # one is about to run out) is put on it. Beside the schedules and not
+        # behind the reminders switch, because it MAKES assignments rather
+        # than chasing them — the same as a schedule does.
+        required = self._leg('put required courses on people',
+                             lambda: self._enforce_requirements(today),
+                             default={})
+        counts['required'] = (required or {}).get('made', 0)
         if not flag(self.env, P_REMINDERS):
             _logger.info(
                 'pb_training: %s assignment(s) brought up to date, %s new '
@@ -86,10 +94,11 @@ class PbTrainingAutomation(models.AbstractModel):
         _logger.info(
             'pb_training: %s assignment(s) brought up to date, %s new from a '
             'schedule, %s nudge(s) to people, %s to managers, %s to the HR '
-            'lead, %s renewal course(s) put on, %s certificate reminder(s)%s',
+            'lead, %s renewal course(s) put on, %s certificate reminder(s), '
+            '%s required course(s) put on%s',
             counts['refreshed'], counts['scheduled'], counts['employee'],
             counts['manager'], counts['hr'], counts['renewals'],
-            counts['certificates'],
+            counts['certificates'], counts['required'],
             ' — the send cap was reached, the rest go out tomorrow'
             if counts.get('capped') else '')
         return counts
@@ -258,7 +267,7 @@ class PbTrainingAutomation(models.AbstractModel):
         # sixty days, so a certificate this job is watching is caught long
         # before its day; anything older is a person for HR to decide on
         # (the register's "Assign the refresher").
-        return self.env['pb.employee.document'].sudo().search([
+        docs = self.env['pb.employee.document'].sudo().search([
             ('training_source', '=', 'test'),
             ('renewed_by_id', '=', False),
             ('renewal_assignment_id', '=', False),
@@ -267,6 +276,14 @@ class PbTrainingAutomation(models.AbstractModel):
             ('expiry_date', '<=', today + timedelta(days=window)),
             ('employee_id.active', '=', True),
         ])
+        # LEARNING L2: ONE OWNER PER COURSE. A course a required-training rule
+        # assigns by itself is renewed by that rule (leg 5), never by this
+        # leg as well — one course, one person, one assignment.
+        owned = self._required_owned_courses()
+        if owned:
+            docs = docs.filtered(
+                lambda d: (d.channel_id.id, d.company_id.id) not in owned)
+        return docs
 
     @api.model
     def _renewals(self, today):
@@ -342,6 +359,88 @@ class PbTrainingAutomation(models.AbstractModel):
                 'message': _("%(who)s is on %(course)s again, to be finished "
                              "by %(when)s.", who=emp.name or '',
                              course=channel.name or '', when=due)}
+
+    # =====================================================================
+    #  LEARNING L2 — leg 5, required training
+    # =====================================================================
+    @api.model
+    def _enforce_rules(self):
+        """The rules this leg owns: live, auto-assigned, in a company, with a
+        course to put people on, and not a converted legacy row (a day-one
+        rule or a schedule still assigns through its own mechanism)."""
+        return self.env['pb.training.requirement'].sudo().search([
+            ('active', '=', True), ('auto_assign', '=', True),
+            ('company_id', '!=', False), ('channel_id', '!=', False),
+            ('rule_id', '=', False), ('schedule_id', '=', False),
+            ('ratio_people', '=', 0),
+        ])
+
+    @api.model
+    def _required_owned_courses(self):
+        out = set()
+        for req in self._enforce_rules():
+            for channel in req.channel_id | req.refresher_channel_id:
+                out.add((channel.id, req.company_id.id))
+        return out
+
+    @api.model
+    def _enforce_requirements(self, today):
+        """For every missing cell (or expiring one) of every rule above,
+        the course — reason `required`, `requirement_id` set, due per
+        `_required_due`. Never a second open one (`_guard_one_open`), each in
+        its own savepoint, capped per run (`pb_training.enforce_cap`)."""
+        from .training_common import P_ENFORCE_CAP
+        cap = max(number(self.env, P_ENFORCE_CAP, 500), 0)
+        counts = {'made': 0, 'capped': 0, 'no_login': 0, 'failed': 0}
+        rules = self._enforce_rules()
+        if not rules:
+            return counts
+        Req = self.env['pb.training.requirement']
+        cells = Req.evaluate(rules, today=today)
+        employees = self.env['hr.employee'].sudo().browse(
+            sorted({emp for _rid, emp in cells}))
+        logins = {e.id: bool(e.user_id) for e in employees}
+        joins = Req._join_dates(employees) \
+            if any(r.kind == 'day_one' for r in rules) else {}
+        Assignment = self.env['pb.training.assignment'].with_user(
+            SUPERUSER_ID).sudo()
+        for rule in rules:
+            for emp in employees:
+                cell = cells.get((rule.id, emp.id))
+                if not cell or cell['state'] not in ('missing', 'expiring'):
+                    continue
+                if cell.get('open_id'):
+                    continue
+                channel = rule.refresher_channel_id \
+                    if cell['state'] == 'expiring' and rule.refresher_channel_id \
+                    else rule.channel_id
+                if counts['made'] >= cap:
+                    counts['capped'] += 1
+                    continue
+                if not logins.get(emp.id):
+                    counts['no_login'] += 1
+                    continue
+                if Assignment.search_count([
+                        ('channel_id', '=', channel.id),
+                        ('employee_id', '=', emp.id),
+                        ('state', 'in', ASSIGN_OPEN)]):
+                    continue
+                try:
+                    with self.env.cr.savepoint():
+                        Assignment.create(rule._assignment_vals(
+                            emp, channel, today, joins.get(emp.id),
+                            cell))
+                    counts['made'] += 1
+                except Exception:       # noqa: BLE001 — one person, one grave
+                    counts['failed'] += 1
+                    _logger.warning('pb_training: required course %s could '
+                                    'not be put on %s', channel.id, emp.id,
+                                    exc_info=True)
+        if counts['capped']:
+            _logger.info('pb_training: the required-training cap (%s) was '
+                         'reached; %s more go on tomorrow', cap,
+                         counts['capped'])
+        return counts
 
     # =====================================================================
     #  LEARNING L1 — the certificate ladder

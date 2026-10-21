@@ -47,3 +47,15 @@ from . import pb_training_certificates
 from . import pb_my_training_certificates
 from . import learning_record
 from . import me_home_tile
+
+# ---------------------------------------------------------------- LEARNING L2
+# Required training: the rule table and its set-based evaluation
+# (`requirement`), the three employee facts it reads, hours on the course /
+# assignment / certificate, then the facades that read them — the Required
+# lens (extends the certificates facade's verb tuple, so it comes after it),
+# and the Numbers / Overview / My learning additions.
+from . import hr_employee_ext
+from . import hours
+from . import requirement
+from . import pb_training_required
+from . import required_reports

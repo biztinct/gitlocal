@@ -62,6 +62,13 @@ P_RENEW_BEFORE = 'pb_training.renew_before_days'
 P_CERT_REMINDERS = 'pb_training.cert_reminders'
 P_CERT_MANAGER_DAYS = 'pb_training.cert_manager_days'
 
+# ------------------------------------------------------- LEARNING L2 dials
+P_ENFORCE_CAP = 'pb_training.enforce_cap'
+#: `pb_training.pack.<cc>.<company_id>` = '1' while a country pack is on for
+#: that company ('0' once it has been switched off — never '', which deletes
+#: the row on this build).
+P_PACK_SWITCH = 'pb_training.pack.%s.%s'
+
 DEFAULTS = {
     # ON. The pages that came with the content engine are a PUBLIC WEB SITE
     # with a course catalogue, a member leaderboard and a public profile per
@@ -140,6 +147,11 @@ DEFAULTS = {
     P_CERT_REMINDERS: '1',
     # When the manager hears about a certificate running out.
     P_CERT_MANAGER_DAYS: '14',
+    # LEARNING L2. The most courses the morning job puts on people in one
+    # run because a required course is missing. A safety rail, not a page
+    # size: a rule pointed at the wrong audience cannot enrol the whole
+    # company in one night. The log says so when it bites.
+    P_ENFORCE_CAP: '500',
 }
 
 # =========================================================================
@@ -156,6 +168,9 @@ ASSIGN_REASONS = [
     ('leadership', 'Leadership programme'),
     # LEARNING L1: put on by itself because a certificate is running out.
     ('renewal', 'Renewal'),
+    # LEARNING L2: put on because a required-training rule says they must
+    # hold it and they do not (or it is about to run out).
+    ('required', 'Required'),
 ]
 ASSIGN_REASON_LABEL = dict(ASSIGN_REASONS)
 

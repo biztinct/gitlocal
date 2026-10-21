@@ -232,6 +232,9 @@ class PbTrainingAnalytics(models.AbstractModel):
             if scored else None,
             'mean_late': round(sum(late_days) / len(late_days), 1)
             if late_days else None,
+            # LEARNING L2: hours of training finished (each assignment's
+            # hours as stored when it was finished).
+            'hours_total': round(sum(done.mapped('hours')), 1),
         }
 
     def _tiles(self, core):
@@ -507,6 +510,7 @@ class PbTrainingAnalytics(models.AbstractModel):
             (_('Past their date'), core.get('overdue', 0)),
             (_('Days late on average'), core.get('mean_late')),
             (_('More time agreed'), core.get('excused', 0)),
+            (_('Hours of training finished'), core.get('hours_total', 0)),
         ]
         claims = board.get('claims') or {}
         if claims:

@@ -50,7 +50,7 @@
                             <div style="color: #64748B; margin-top: 4px;"><span>As at</span> <span t-esc="rec['as_at']"/></div>
                         </div>
 
-                        <p style="font-size: 14px; font-weight: 600; margin: 0 0 18px;" t-esc="rec['summary']"/>
+                        <p style="font-size: 14px; font-weight: 600; margin: 0 0 18px;"><span t-esc="rec['summary']"/><t t-if="rec.get('hours_total')"> · <span t-esc="rec['hours_total']"/> <span>hours of training</span></t></p>
 
                         <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #1B1733;">Courses finished</h4>
                         <p t-if="not rec['courses']" style="color: #64748B;">No course finished yet.</p>
@@ -59,6 +59,7 @@
                                 <tr style="background: #EDEAF8;">
                                     <th style="text-align: left; padding: 6px 8px;">Course</th>
                                     <th style="text-align: left; padding: 6px 8px; width: 28%;">Finished on</th>
+                                    <th style="text-align: right; padding: 6px 8px; width: 10%;">Hours</th>
                                     <th style="text-align: right; padding: 6px 8px; width: 14%;">Score</th>
                                 </tr>
                             </thead>
@@ -66,6 +67,7 @@
                                 <tr t-foreach="rec['courses']" t-as="crs" style="border-bottom: 1px solid #E2E8F0;">
                                     <td style="padding: 6px 8px;" t-esc="crs['course']"/>
                                     <td style="padding: 6px 8px;" t-esc="crs['finished']"/>
+                                    <td style="padding: 6px 8px; text-align: right;" t-esc="crs.get('hours') or ''"/>
                                     <td style="padding: 6px 8px; text-align: right;" t-esc="crs['score']"/>
                                 </tr>
                             </tbody>

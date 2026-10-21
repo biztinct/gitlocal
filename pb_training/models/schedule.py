@@ -88,8 +88,14 @@ class PbTrainingRule(models.Model):
 
     def _matches(self, emp):
         self.ensure_one()
-        if self.department_ids and emp.department_id not in self.department_ids:
-            return False
+        # LEARNING L2 (F3): a department means it AND everything under it, the
+        # same as a schedule's audience (`child_of`), so "Manufacturing"
+        # covers "Assembly Line A".
+        if self.department_ids:
+            covered = self.env['hr.department'].sudo().search(
+                [('id', 'child_of', self.department_ids.ids)])
+            if emp.department_id not in covered:
+                return False
         if self.job_ids and emp.job_id not in self.job_ids:
             return False
         return bool(self.channel_ids)

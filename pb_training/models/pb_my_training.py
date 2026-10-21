@@ -160,7 +160,7 @@ class PbMyTraining(models.AbstractModel):
             'score': score,
             'next_id': nxt.id if nxt else 0,
             'next_name': nxt.name if nxt else '',
-            'duration': duration_words(minutes(channel.total_time), self.env),
+            'duration': duration_words(minutes(channel._pb_hours()), self.env),
         }
 
     @api.model
@@ -318,7 +318,7 @@ class PbMyTraining(models.AbstractModel):
             'left': left,
             'percent': int(round(100.0 * (len(lessons) - left) / len(lessons)))
             if lessons else 0,
-            'duration': duration_words(minutes(channel.total_time), self.env),
+            'duration': duration_words(minutes(channel._pb_hours()), self.env),
             'next_id': next((s.id for s in lessons
                              if s.id not in done_ids), 0),
             'test': test,

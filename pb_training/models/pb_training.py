@@ -169,7 +169,7 @@ class PbTraining(models.AbstractModel):
             if test_slide else 0,
             'passed': passed,
             'failed': failed,
-            'duration': duration_words(minutes(channel.total_time), self.env),
+            'duration': duration_words(minutes(channel._pb_hours()), self.env),
             'rank': rank,
         }
 

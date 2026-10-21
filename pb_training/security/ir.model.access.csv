@@ -21,3 +21,7 @@ access_pb_training_allowance_staff,Training allowance — everybody reads their 
 access_pb_training_allowance_user,Training allowance — trainer reads,model_pb_training_allowance,pb_training.group_training_user,1,0,0,0
 access_pb_training_allowance_manager,Training allowance — training manager,model_pb_training_allowance,pb_training.group_training_manager,1,1,1,1
 access_pb_training_allowance_admin,Training allowance — head of training,model_pb_training_allowance,pb_training.group_training_admin,1,1,1,1
+access_pb_training_requirement_user,Required training — trainer reads,model_pb_training_requirement,pb_training.group_training_user,1,0,0,0
+access_pb_training_requirement_manager,Required training — training manager,model_pb_training_requirement,pb_training.group_training_manager,1,1,1,1
+access_pb_training_requirement_admin,Required training — head of training,model_pb_training_requirement,pb_training.group_training_admin,1,1,1,1
+access_pb_training_matrix_export_user,Required training matrix export — trainer,model_pb_training_matrix_export,pb_training.group_training_user,1,1,1,0

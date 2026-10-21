@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COUNTRY PACK: INDONESIA (id_k3). LEARNING L2, handover §3.6.3.
+         Template rows (company empty, archived); see pack_vn.xml.
+
+         Sources: Permenaker 8/2020 lifting and transport equipment
+         (peraturan.bpk.go.id); Permenaker 4/1987 P2K3 (its.ac.id PDF) and
+         13/2025 (peraturan.go.id); Permenaker 38/2016; Kepmenaker 186/1999
+         fire (damkar.dumaikota); PP 50/2012 SMK3 (peraturan.go.id);
+         UU 1/1970 Art 9.
+
+         The licence register is the Indonesia report on the Numbers page.
+         Fire wardens are a HEADCOUNT rule (two per 25 workers per site): the
+         matrix shows a per-site shortfall line instead of a column.
+         ================================================================== -->
+
+    <record id="req_id_lic_lifting" model="pb.training.requirement">
+        <field name="name">Operator licence — lifting and transport equipment</field>
+        <field name="code">id_lic_lifting</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="same_company_only" eval="True"/>
+        <field name="sequence">301</field>
+        <field name="target">licence</field>
+        <field name="document_category_id" ref="pb_training.cat_licence"/>
+        <field name="name_pattern">Lisensi K3|SIO|Forklift</field>
+        <field name="validity_months">60</field>
+        <field name="grace_days">30</field>
+        <field name="note">Permenaker 8/2020 Art 162-163: valid five years, renewal applied for at least 30 days before it runs out, and only valid while employed by the company that applied. Pick the jobs (forklift, crane and hoist operators, riggers).</field>
+    </record>
+
+    <record id="req_id_ak3u_skp" model="pb.training.requirement">
+        <field name="name">General safety expert appointment (SKP)</field>
+        <field name="code">id_ak3u_skp</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">302</field>
+        <field name="target">licence</field>
+        <field name="document_category_id" ref="pb_training.cat_licence"/>
+        <field name="name_pattern">SKP</field>
+        <field name="validity_months">36</field>
+        <field name="note">Permenaker 4/1987 Art 11(1): the appointment of a general safety expert (Ahli K3 Umum) runs three years; lapsed more than a year means the full course again. Pick the job (Safety Officer) or the people.</field>
+    </record>
+
+    <record id="req_id_ak3_lifting_skp" model="pb.training.requirement">
+        <field name="name">Lifting-equipment safety expert appointment (SKP)</field>
+        <field name="code">id_ak3_lifting_skp</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">303</field>
+        <field name="target">licence</field>
+        <field name="document_category_id" ref="pb_training.cat_licence"/>
+        <field name="name_pattern">SKP Pesawat Angkat</field>
+        <field name="validity_months">36</field>
+        <field name="note">Permenaker 8/2020 Art 162(1): the company's lifting-equipment expert, three years.</field>
+    </record>
+
+    <record id="req_id_lic_production" model="pb.training.requirement">
+        <field name="name">Operator licence — power and production machines</field>
+        <field name="code">id_lic_production</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">304</field>
+        <field name="target">licence</field>
+        <field name="document_category_id" ref="pb_training.cat_licence"/>
+        <field name="name_pattern">SIO</field>
+        <field name="validity_months">60</field>
+        <field name="note">Confirm before switching on. Permenaker 38/2016 (scanned text, partly revoked by 11/2026): five years assumed. Confirm the effect of Permenaker 11/2026 on operator licences.</field>
+    </record>
+
+    <record id="req_id_k3_induction" model="pb.training.requirement">
+        <field name="name">K3 induction (every new worker)</field>
+        <field name="code">id_k3_induction</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">day_one</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">305</field>
+        <field name="target">course</field>
+        <field name="due_days">1</field>
+        <field name="note">UU 1/1970 Art 9: every new worker is told about the hazards and protection of the workplace before starting. No legal repeat; set one if the company wants it. Link your induction course here.</field>
+    </record>
+
+    <record id="req_id_fire_warden" model="pb.training.requirement">
+        <field name="name">Fire wardens per site</field>
+        <field name="code">id_fire_warden</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">306</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Fire warden|Dasar I</field>
+        <field name="ratio_people">25</field>
+        <field name="ratio_holders">2</field>
+        <field name="note">Kepmenaker 186/1999 Art 6(1): at least two fire wardens for every 25 workers; a fire team and specialist from 300 workers or on higher-risk sites (Art 6(2)); a coordinator per 100 workers (Art 6(3)). No expiry stated.</field>
+    </record>
+
+    <record id="req_id_p2k3_report" model="pb.training.requirement">
+        <field name="name">Safety committee (P2K3) report</field>
+        <field name="code">id_p2k3_report</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">307</field>
+        <field name="target">certificate</field>
+        <field name="name_pattern">P2K3</field>
+        <field name="validity_months">3</field>
+        <field name="note">Confirm before switching on. Companies with 100 or more workers or high risk keep a safety committee that reports every 3 months (Permenaker 4/1987 Art 12), every 6 months under 13/2025 from 19 Nov 2025 (secondary sources). A reminder rather than training: pick the committee secretary and upload each report.</field>
+    </record>
+
+    <record id="req_id_smk3_audit" model="pb.training.requirement">
+        <field name="name">Safety management system (SMK3) certificate</field>
+        <field name="code">id_smk3_audit</field>
+        <field name="pack_key">id_k3</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">308</field>
+        <field name="target">certificate</field>
+        <field name="name_pattern">SMK3</field>
+        <field name="validity_months">36</field>
+        <field name="note">Confirm before switching on. PP 50/2012 Art 5(2): companies with 100 or more workers or high hazard. Three years assumed; confirm the re-audit interval.</field>
+    </record>
+
+</data>
+</odoo>
