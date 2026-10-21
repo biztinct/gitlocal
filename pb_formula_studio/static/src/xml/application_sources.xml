@@ -3,7 +3,7 @@
 <t t-name="pb_formula_studio.ApplicationSources">
 <div class="pas-workspace">
   <div class="pas-shell">
-    <button class="pas-back" t-on-click="back"><t t-esc="props.action.params.from_mapping ? '← Back to mapping' : '← Back to payroll'"/></button>
+    <button class="pas-back" t-on-click="back"><t t-esc="sourceScope.from_mapping ? '← Back to mapping' : '← Back to payroll'"/></button>
     <header class="pas-hero"><div><div class="pas-eyebrow">PAYROLL SOURCES</div><h1>Your records. Ready for payroll.</h1><p>Choose how pay is calculated and where each payroll item gets its value.</p><strong t-if="state.data" t-esc="state.data.name"/></div><div class="pas-save"><span t-esc="state.dirty ? 'Unsaved changes' : 'All changes saved'"/><button class="pas-primary" t-on-click="save" t-att-disabled="state.busy or !state.dirty or !state.data?.can_edit">Save changes</button></div></header>
     <div class="pas-error" t-if="state.error" role="alert" t-esc="state.error"/>
     <div t-if="!state.data" class="pas-empty">Loading payroll sources…</div>

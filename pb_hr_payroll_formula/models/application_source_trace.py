@@ -117,4 +117,18 @@ class ApplicationSourceTrace(models.Model):
         return {'type': 'ir.actions.act_window', 'name': OWNER_NAMES[model], 'res_model': model,
             'domain': domain, 'views': [(False, 'form')] if len(records) == 1 else [(False, 'list'), (False, 'form')],
             'res_id': records.id if len(records) == 1 else False, 'target': 'new',
+            'globalState': {'useSampleModel': False},
+            'help': '<p>No source records match this employee and period.</p>',
             'context': {'allowed_company_ids': [self.company_id.id], 'create': False}}
+
+
+class PayrollSourceCalendar(models.Model):
+    _inherit = 'resource.calendar'
+
+    def _compute_contracts_count(self):
+        """The legacy contract addon uses pre-19 aggregate arguments here."""
+        counts = dict(self.env['hr.contract']._read_group(
+            [('resource_calendar_id', 'in', self.ids), ('employee_id', '!=', False)],
+            ['resource_calendar_id'], ['__count']))
+        for calendar in self:
+            calendar.contracts_count = counts.get(calendar, 0)

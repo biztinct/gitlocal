@@ -457,3 +457,13 @@ class TestApplicationPayrollSource(TransactionCase):
         self.assertEqual({a['model'] for a in detail['actions']}, {'hr.contract', 'resource.calendar'})
         self.paid.application_source_key = 'period.regular_work_days'
         self.assertIn('hr.attendance', self.config._source_trace_models(self.paid))
+
+    def test_source_calendar_form_count_uses_current_aggregate_api(self):
+        self.assertEqual(self.calendar.contracts_count, 1)
+        blank = self.env['resource.calendar'].create({'name': 'Unassigned trace calendar'})
+        self.assertEqual(blank.contracts_count, 0)
+        rows = (self.calendar | blank).read(['name', 'contracts_count', 'work_resources_count'])
+        self.assertEqual(len(rows), 2)
+        action = self.config.application_source_record_action(self.paid.id, 'hr.leave', self.employee.id, self.start, self.end)
+        self.assertFalse(action['globalState']['useSampleModel'])
+        self.assertIn('No source records', action['help'])

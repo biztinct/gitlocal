@@ -1,5 +1,6 @@
 /** @odoo-module **/
 import { Component, useState, onWillStart, useRef, useEffect } from '@odoo/owl';
+import { browser } from '@web/core/browser/browser';
 import { registry } from '@web/core/registry';
 import { useService } from '@web/core/utils/hooks';
 import { useSetupAction } from '@web/search/action_hook';
@@ -33,14 +34,19 @@ export class ApplicationSources extends Component {
     static props = {'*': true};
     setup() {
         this.orm=useService('orm'); this.action=useService('action'); this.notification=useService('notification'); this.dialog=useService('dialog');
-        this.configId=this.props.action.params.config_id;
+        const supplied=this.props.action.params || {};
+        let restored={};
+        try{restored=JSON.parse(browser.sessionStorage.getItem('pb.payroll.sources.scope')||'{}');}catch{}
+        this.sourceScope=supplied.config_id ? supplied : {...restored,...supplied};
+        this.configId=Number(this.sourceScope.config_id)||0;
         this.traceRef=useRef('sourceTrace');
         useEffect(()=>{this.traceRef.el?.scrollIntoView({behavior:'smooth',block:'start'});},()=>[this.state.detail?.id]);
-        this.state=useState({data:null,settings:{},rows:[],tab:this.props.action.params.tab || 'calculation',detail:null,detailBusy:false,employeeId:0,dateFrom:this.props.action.params.return_payrun?.date_start || '',dateTo:this.props.action.params.return_payrun?.date_end || '',query:'',filter:'all',busy:false,error:'',dirty:false,picker:0,sourceQuery:'',showAllSources:false});
+        this.state=useState({data:null,settings:{},rows:[],tab:this.sourceScope.tab || 'calculation',detail:null,detailBusy:false,employeeId:0,dateFrom:this.props.action.params.return_payrun?.date_start || '',dateTo:this.props.action.params.return_payrun?.date_end || '',query:'',filter:'all',busy:false,error:'',dirty:false,picker:0,sourceQuery:'',showAllSources:false});
+        useEffect(()=>{if(this.configId)browser.sessionStorage.setItem('pb.payroll.sources.scope',JSON.stringify({config_id:this.configId,tab:this.state.tab,component_id:this.state.detail?.id||0,from_mapping:!!this.sourceScope.from_mapping}));},()=>[this.configId,this.state.tab,this.state.detail?.id]);
         useSetupAction({beforeLeave:()=>!this.state.dirty||new Promise(resolve=>this.dialog.add(ConfirmationDialog,{body:'Your payroll source changes are not saved. Leave without saving?',confirmLabel:'Leave without saving',confirm:()=>resolve(true),cancel:()=>resolve(false)}))});
-        onWillStart(async()=>{await this.load();const id=Number(this.props.action.params.component_id);if(id){this.state.tab='sources';await this.inspect(id);}});
+        onWillStart(async()=>{await this.load();const id=Number(this.sourceScope.component_id);if(id){this.state.tab='sources';await this.inspect(id);}});
     }
-    async load(){this.state.busy=true;try{this.accept(await this.orm.call('hr.formula.config','application_source_workspace',[[this.configId]]));}catch(e){this.fail(e);}finally{this.state.busy=false;}}
+    async load(){if(!this.configId){this.state.error='Open Payroll sources from a selected payroll configuration.';return;}this.state.busy=true;try{this.accept(await this.orm.call('hr.formula.config','application_source_workspace',[[this.configId]]));}catch(e){this.fail(e);}finally{this.state.busy=false;}}
     accept(data){this.state.data=data;this.state.settings={...data.settings};this.state.rows=data.rows.map(r=>({...r}));this.state.dirty=false;}
     fail(e){this.state.error=e?.data?.message||e.message||'Unable to load payroll sources.';}
     set(key,value){if(!this.state.data.can_edit)return;this.state.settings[key]=value;this.state.detail=null;this.state.dirty=true;}
