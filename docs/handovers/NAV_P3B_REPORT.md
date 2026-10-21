@@ -1,7 +1,7 @@
 # NAV P3b — Payroll: readiness on the run cards — report
 
 Implementer: Opus, 2026-10-21. Spec: `docs/handovers/NAV_P3B_PAYROLL_READINESS.md` §1–5. Ledger: six new P3b rows in
-`docs/handovers/NAV_LEDGER.md`. **Not deployed — stopped at the deploy gate (§6 waits for the coordinator's go).**
+`docs/handovers/NAV_LEDGER.md`. **Deployed 2026-10-21 00:43–00:47 UTC on all four databases, normal tier, under the shared deploy lock — see §6.**
 
 ## 0. Exact deploy lists
 
@@ -111,10 +111,31 @@ none).
    of the brief's "Fable 5.1" line — the brief's line came from the coordinator, not from a rule I could see in the
    repo or memory.
 
-## 6. Deploy
+## 6. Deploy record (normal tier, 2026-10-21 00:43–00:47 UTC, Payobook19v2)
 
-Not done. Waiting for the coordinator's go (§6 of the spec: normal tier, p0clone first, PO gate, asset signal + purge
-+ version bump, bundle warm-up curl per DB, cron snapshot, push after).
+Coordinator's go, conditional on the shared lock. ChatGPT's 00:14 START (Rize configuration) held
+`/tmp/payobook-studio-deploy.lock`; polled every 2 min from 00:30, its DONE landed at 00:42 and the lock was free at
+00:43. The whole deploy then ran as one detached unit under `flock /tmp/payobook-studio-deploy.lock` (script: START
+line → cron snapshot → stop → copy → hash → PO gate → four upgrades → asset steps → start → warm-up → crons →
+versions → DONE line). Service down **3 min 10 s** (stop 00:43:31, port 8069 back 00:46:25).
+
+| Step | Result |
+|---|---|
+| Staging | `git archive HEAD pb_payruns pb_learn` at `713c833df` (includes the started-weeks fix), 163 files, git blob hash per file = HEAD; uploaded to a clean `/tmp/deployP3B`. |
+| Overwrite check | `rsync --dry-run --checksum`: content changes are exactly this phase's files (pb_payruns: manifest, learn_manifest, vi_VN.po, models/pb_payruns.py, payruns.js/.scss/.xml, tests/__init__, test_board_redesign, test_readiness_p3b new; pb_learn: manifest, learn_content.json, anchors.json, fixture.js, screens.js, tests/guide_truth.py); every other file timestamp-only; no deletions. |
+| Crons before | p0clone 26, payobook 37, payobook_template 0, rize 69. |
+| Copy + hashes | Per-module scoped `rsync -a --delete`; tree hash live = staged: pb_payruns `7c185e68de11`, pb_learn `7ca5e69e2e3b`; owner as the other modules. |
+| PO gate (on the box, Odoo `PoFileReader`) | pb_payruns vi_VN 404 rows, pb_learn vi_VN 240 rows, **0 failures**. |
+| Upgrades `-u pb_payruns,pb_learn` | p0clone EXIT=0 44 s · payobook EXIT=0 48 s · payobook_template EXIT=0 38 s · rize EXIT=0 41 s; 0 CRITICAL, 0 ERROR (only a docstring RST warning from another module). |
+| Assets | Per DB `INSERT INTO orm_signaling_assets`, `/web/assets/%` attachments deleted, `web.assets.version` = 1792543583511. |
+| Start | Port 8069 up, `/web/health` 200, **0 ERROR/CRITICAL since start**. |
+| Warm-up (one at a time) | payobook.com, rize.payobook.com, p0clone.payobook.com: login 200; `web.assets_web.min.css` 3.77 / 3.68 / 3.68 MB, `.min.js` 13.7 / 13.5 / 13.5 MB — none empty; served JS has "weeks so far", served CSS has `.pbr-checks` on all three. payobook_template has no hostname (files identical, versions current). |
+| Crons after | The upgrade switched on 20 jobs in payobook_template (43, 44, 46, 50, 51, 54–58, 60, 62, 63, 67, 68, 71–75), as in P2/P3a; switched off again. **Final: p0clone 26, payobook 37, payobook_template 0, rize 69.** |
+| Versions | pb_payruns 19.0.3.1.0 and pb_learn 19.0.20.5.14 on all four databases. |
+| Notes file | START 00:43 and DONE 00:47 lines in `/opt/deploy-notes.md`; lock released. |
+
+Still open: the payobook.com browser walk with the QA login (coordinator / owner — an agent may not type that
+password), and a look at Access › Screens (no menu, lens or gate changed, so nothing new is expected there).
 
 ## 7. R11 self-score
 
@@ -129,7 +150,8 @@ Not done. Waiting for the coordinator's go (§6 of the spec: normal tier, p0clon
 5. Keyboard: doors are real buttons (focus ring, Enter), the quick look keeps its keys; weakest point — phone width
    was not walked, and the lane titles stay English in Vietnamese (pre-existing).
 
-## 8. Commits (not pushed)
+## 8. Commits (pushed to origin/19.1)
 
 f9ab3e608 feat(nav-p3b): readiness checklist and month deadlines on the pay run cards ·
-6183b0a4f feat(nav-p3b): Learn knows the run checklist and the deadline line · (this report + ledger).
+6183b0a4f feat(nav-p3b): Learn knows the run checklist and the deadline line · f30a2182c docs(nav-p3b): report and
+ledger · 713c833df fix(nav-p3b): list only attendance weeks that have started · (this deploy record).
