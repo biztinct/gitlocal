@@ -236,6 +236,24 @@ def branch_formulas(cfg, changes):
     return dict(branch_id=branch.id,release_id=merged['release_id'],changed=len(changes))
 
 
+# Lock the complete mainline scope before a long sample-equivalence rehearsal.
+# Locking only the config rows leaves stored dependency/diagnostic fields on
+# rules exposed to concurrent writes and can fail the final flush after minutes
+# of successful checks. Readers remain available; writers wait for this bounded
+# migration transaction. Acquire every row in a consistent order.
+scope_configs = Config.browse()
+for spec in plan['schemes']:
+    candidate = Config.search([('code', '=', spec['code']), ('active', '=', True),
+        ('state', '=', 'active'), ('parent_branch_id', '=', False)])
+    assert len(candidate) == 1 and candidate.country_code == spec['country_code'], spec
+    scope_configs |= candidate
+env.cr.execute('SELECT id FROM hr_formula_config WHERE id = ANY(%s) ORDER BY id FOR UPDATE',
+               [scope_configs.ids])
+env.cr.execute('SELECT id FROM hr_formula_rule WHERE config_id = ANY(%s) ORDER BY id FOR UPDATE',
+               [scope_configs.ids])
+scope_configs.invalidate_recordset()
+scope_configs.mapped('rule_ids').invalidate_recordset()
+
 for spec in plan['schemes']:
     cfg = Config.search([('code','=',spec['code']),('active','=',True),('state','=','active'),('parent_branch_id','=',False)])
     assert len(cfg)==1 and cfg.country_code==spec['country_code'], spec
