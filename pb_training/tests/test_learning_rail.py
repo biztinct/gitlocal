@@ -28,7 +28,8 @@ RAIL = [
     ('mine', 20, 'My learning', 'user', 'PbMyLearningLens'),
     ('courses', 30, 'Courses', 'bookOpen', 'PbTrainingBoard'),
     ('assigned', 40, 'Assigned', 'userCheck', 'PbTrainingBoard'),
-    ('required', 50, 'Required', 'listChecks', 'PbTrainingBoard'),
+    # LEARNING L2: its own screen (Matrix · Rules · Day one · Comes round again)
+    ('required', 50, 'Required', 'listChecks', 'PbRequiredLens'),
     ('tests', 60, 'Tests', 'fileCheck', 'PbTrainingTestsLens'),
     # LEARNING L1
     ('certificates', 65, 'Certificates', 'award', 'PbCertificatesLens'),
@@ -79,8 +80,10 @@ class TestT4TheRail(TransactionCase):
         blocks = _lens_blocks(_src('static', 'src', 'js', 'training_palette.js'))
         self.assertIn('props: { startTab: "courses", tabs: ["courses"] }',
                       blocks['courses'][0])
-        self.assertIn('props: { startTab: "rules", tabs: ["rules", "schedules"] }',
-                      blocks['required'][0])
+        # LEARNING L2: Required reads its arrival (tab, cell state, pack).
+        self.assertIn('propsFromContext(ctx)', blocks['required'][0])
+        self.assertIn('const REQUIRED_TABS = ["matrix", "rules", "day_one", "recurring"];',
+                      _src('static', 'src', 'js', 'training_palette.js'))
         self.assertIn('props: { startTab: "claims", tabs: ["claims"] }',
                       blocks['claims'][0])
         # Assigned reads the arrival so Overview can open the requests.
