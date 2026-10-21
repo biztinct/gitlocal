@@ -44,6 +44,8 @@ class PbTrainingAssignments(models.AbstractModel):
         'assign', 'set_due', 'drop', 'run_reminders', 'open_assignment',
         'open_delay', 'open_assignments', 'open_schedules', 'new_schedule',
         'open_rules', 'new_rule', 'expand_people',
+        # LEARNING L0: the one-tap reminder, same rule as My learning's.
+        'remind',
     )
 
     # =====================================================================
@@ -430,4 +432,10 @@ class PbTrainingAssignments(models.AbstractModel):
         if verb == 'expand_people':
             return self.expand_people(payload.get('kind'),
                                       payload.get('value'))
+        if verb == 'remind':
+            # ONE rule for both doors (Assigned rows and My learning › My
+            # team): `pb.my.training.remind` decides who may press it, sends
+            # the morning job's own email and refuses a second one today.
+            return self.env['pb.my.training'].remind(
+                payload.get('assignment_id'))
         return super().act(verb, payload)

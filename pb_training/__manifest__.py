@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -76,10 +76,13 @@ public.
         'survey',
         'website_slides_survey',
         'pb_hub',               # the global command-bar registry
-        'pb_talent_hub',          # NAV P2: this board is a Talent tab
+        # LEARNING L0: the eight tabs of GROW › Learning are registered from
+        # here (they were one Talent tab since NAV P2, a Learn tab before).
+        # `pb_learn` is no longer named: nothing here imports from it, and
+        # the Learning hub brings it in for its GROW section.
+        'pb_learning_hub',
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
         'pb_me_portal',         # the .pbme employee-page kit
-        'pb_learn',             # the hub this lens joins
         # E2. The trial-period gate is joined by DATA and not by code — one
         # column on `pb.training.status` — so the module that owns that table
         # is a real dependency (it brings the joining checklist and the
@@ -119,11 +122,20 @@ public.
     'assets': {
         'web.assets_backend': [
             'pb_training/static/src/scss/training.scss',
+            'pb_training/static/src/scss/learning_overview.scss',
+            'pb_training/static/src/scss/my_learning_lens.scss',
+            'pb_training/static/src/scss/training_tests_lens.scss',
             'pb_training/static/src/js/training_board.js',
             'pb_training/static/src/js/training_numbers.js',
+            'pb_training/static/src/js/learning_overview.js',
+            'pb_training/static/src/js/my_learning_lens.js',
+            'pb_training/static/src/js/training_tests_lens.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
             'pb_training/static/src/xml/training_numbers.xml',
+            'pb_training/static/src/xml/learning_overview.xml',
+            'pb_training/static/src/xml/my_learning_lens.xml',
+            'pb_training/static/src/xml/training_tests_lens.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

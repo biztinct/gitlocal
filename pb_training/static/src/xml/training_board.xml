@@ -82,38 +82,43 @@
                owes what". They have different orders, different numbers and
                different empty states, so they are tabs.
                ================================================================ -->
-          <div class="pbtn-tabs" role="tablist">
-            <button class="pbtn-tab" role="tab"
+          <!-- LEARNING L0: a Learning lens passes `tabs` (the inner tabs it
+               owns); one tab means no row at all, because the rail already
+               says where the reader is. No `tabs` (the old client action)
+               draws all six. -->
+          <div t-if="!props.tabs or props.tabs.length > 1" class="pbtn-tabs"
+               role="tablist">
+            <button t-if="showTab('courses')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'courses' }"
                     t-on-click="() => this.setTab('courses')">
               <t t-out="ic('bookOpen',15)"/> Courses
             </button>
-            <button class="pbtn-tab" role="tab"
+            <button t-if="showTab('assignments')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'assignments' }"
                     t-on-click="() => this.setTab('assignments')">
               <t t-out="ic('userCheck',15)"/> Assignments
               <span t-if="state.aLoaded and state.aKpis.overdue"
                     class="pbtn-tab-n"><t t-esc="state.aKpis.overdue"/></span>
             </button>
-            <button class="pbtn-tab" role="tab"
+            <button t-if="showTab('requests')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'requests' }"
                     t-on-click="() => this.setTab('requests')">
               <t t-out="ic('clock',15)"/> More time
               <span t-if="state.aLoaded and state.aKpis.waiting"
                     class="pbtn-tab-n"><t t-esc="state.aKpis.waiting"/></span>
             </button>
-            <button class="pbtn-tab" role="tab"
+            <button t-if="showTab('schedules')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'schedules' }"
                     t-on-click="() => this.setTab('schedules')">
               <t t-out="ic('repeat',15)"/> Comes round again
             </button>
-            <button class="pbtn-tab" role="tab"
+            <button t-if="showTab('rules')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'rules' }"
                     t-on-click="() => this.setTab('rules')">
               <t t-out="ic('sunrise',15)"/> Day one
             </button>
             <!-- E3. A THIRD QUESTION: whose money is waiting on me. -->
-            <button class="pbtn-tab" role="tab"
+            <button t-if="showTab('claims')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'claims' }"
                     t-on-click="() => this.setTab('claims')">
               <t t-out="ic('receipt',15)"/> Claims
@@ -344,6 +349,14 @@
                             t-on-click="() => this.openAssignment(asg.id)"
                             title="Open the assignment">
                       <t t-out="ic('external',14)"/>
+                    </button>
+                    <!-- LEARNING L0: one-tap Remind, one a day (the
+                         server refuses a second in words). -->
+                    <button t-if="asg.state !== 'done'"
+                            class="pbim-btn ghost pbtn-remind"
+                            t-on-click="() => this.remindAssignment(asg.id)"
+                            title="Send them the reminder email now">
+                      <t t-out="ic('bell',14)"/> Remind
                     </button>
                     <button t-if="state.canWrite and asg.state !== 'done'"
                             class="pbim-btn ghost"

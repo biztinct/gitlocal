@@ -1,6 +1,9 @@
 /** @odoo-module **/
 /**
- * `pb_training_board` — the Training lens on the Learn hub.
+ * `pb_training_board` — the training team's board. Since LEARNING L0 it is
+ * mounted by five lenses of GROW › Learning (Courses, Assigned, Required,
+ * Claims, and the old `pb_training_board` client action with every tab),
+ * each with `startTab` / `tabs` props (see `static props`).
  *
  * THE QUESTION THIS BOARD ANSWERS is "who still has to do what", so the order
  * is PROBLEM FIRST and the server decides it (R113): a course fourteen people
@@ -33,7 +36,19 @@ function fold(text) {
 
 export class PbTrainingBoard extends Component {
     static template = "pb_training.PbTrainingBoard";
-    static props = ["*"];
+    /**
+     * LEARNING L0. A Learning lens says which inner tab it opens on
+     * (`startTab`) and which inner tabs it owns (`tabs`); the board draws
+     * only those, and no tab row at all for one. Without them (the old
+     * `pb_training_board` client action) it is the six-tab board it always
+     * was. Precedent: the Hiring board (`hiring_board.js`, NAV P3a).
+     */
+    static props = {
+        startTab: { type: String, optional: true },
+        tabs: { type: Array, optional: true },
+        embedded: { type: Boolean, optional: true },
+        "*": true,
+    };
 
     setup() {
         this.orm = useService("orm");
@@ -127,10 +142,22 @@ export class PbTrainingBoard extends Component {
             refuseNote: "",
         });
 
-        onWillStart(async () => { await this.load(); });
+        onWillStart(async () => {
+            await this.load();
+            // LEARNING L0: open on the lens's own tab (clone of the Hiring
+            // board's startTab, `hiring_board.js:289-292`).
+            if (this.props.startTab && this.props.startTab !== this.state.tab) {
+                await this.setTab(this.props.startTab);
+            }
+        });
     }
 
     ic(n, s = 16) { return ic(n, s); }
+
+    /** LEARNING L0: is this inner tab one the lens owns? (all, without `tabs`) */
+    showTab(key) {
+        return !this.props.tabs || this.props.tabs.includes(key);
+    }
 
     // ------------------------------------------------------------- reading
     async load() {
@@ -623,6 +650,11 @@ export class PbTrainingBoard extends Component {
 
     async runReminders() {
         await this.actA("run_reminders", {});
+    }
+
+    /** LEARNING L0: one person, one course, one email; one a day. */
+    async remindAssignment(id) {
+        await this.actA("remind", { assignment_id: id });
     }
 
     // =====================================================================

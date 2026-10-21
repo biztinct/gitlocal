@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Overview (LEARNING L0). Section comments use `=` rules and
+       never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1): `que`, `bit`, `dep`.
+       ==================================================================== -->
+  <t t-name="pb_training.PbLearningOverview">
+    <div class="pblo" t-att-class="{ 'pblo--embedded': props.embedded }">
+      <div class="pblo-wrap">
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pblo-hero pblo-skel" aria-busy="true">
+            <div class="pblo-skel-line pblo-skel-line--s"/>
+            <div class="pblo-skel-line"/>
+            <div class="pblo-skel-line pblo-skel-line--m"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pblo-panel pblo-empty">
+          <div class="pblo-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The overview could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment; if it keeps happening, the Courses and Assigned tabs still work on their own.</p>
+          <button class="pbim-btn primary" t-on-click="retry">
+            <t t-out="ic('refresh',15)"/> Try again
+          </button>
+        </div>
+
+        <!-- ============ not for this reader ============ -->
+        <div t-elif="!allowed" class="pblo-panel pblo-empty">
+          <div class="pblo-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Learning numbers are for the training team</h2>
+          <p>Your own courses, what is next and how far you have got are on My learning.</p>
+          <button class="pbim-btn primary" t-on-click="() => this.openLens('mine')">
+            <t t-out="ic('user',15)"/> Open My learning
+          </button>
+        </div>
+
+        <t t-else="">
+          <!-- ============ the hero: one sentence, three doors ============ -->
+          <section class="pblo-hero" t-att-class="{ 'is-calm': data.calm }">
+            <div class="pblo-eyebrow">
+              <t t-out="ic('graduationCap',14)"/> Training at a glance
+            </div>
+            <p class="pblo-headline" t-esc="data.headline"/>
+            <div class="pblo-queue" role="list">
+              <button t-foreach="queue" t-as="que" t-key="que.key"
+                      role="listitem" class="pblo-chip"
+                      t-att-class="{ 'is-act': que.count > 0 }"
+                      t-on-click="() => this.openQueue(que)"
+                      t-att-title="que.label">
+                <span class="pblo-chip-ic"><t t-out="ic(queueIcon(que),14)"/></span>
+                <b class="pblo-chip-n" t-esc="que.count"/>
+                <span t-esc="que.label"/>
+                <span class="pblo-chip-go"><t t-out="ic('chevron',13)"/></span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ this month, one slim line ============ -->
+          <div class="pblo-month">
+            <span class="pblo-month-l">This month</span>
+            <t t-foreach="monthBits" t-as="bit" t-key="bit.key">
+              <span class="pblo-month-b"
+                    t-att-class="{ 'is-warn': bit.warn and bit.n, 'is-good': bit.good and bit.n, 'is-zero': !bit.n }"
+                    t-esc="bit.text"/>
+            </t>
+          </div>
+
+          <!-- ============ departments ============ -->
+          <section class="pblo-panel">
+            <div class="pblo-sec-h">
+              <h3>Departments</h3>
+              <span class="pblo-dim">The last 90 days, biggest first</span>
+            </div>
+            <p t-if="!departments.length" class="pblo-calm">
+              <t t-out="ic('info',14)"/>
+              No department has had a course set in the last 90 days. Put people on a course from Assigned and the figures start here.
+            </p>
+            <div t-else="" class="pblo-deps">
+              <div t-foreach="departments" t-as="dep" t-key="dep.name"
+                   class="pblo-dep">
+                <div class="pblo-dep-name">
+                  <b t-esc="dep.name"/>
+                  <span class="pblo-dim" t-esc="peopleWords(dep.people)"/>
+                </div>
+                <div class="pblo-dep-bar" role="img"
+                     t-att-aria-label="dep.percent + '%'">
+                  <div class="pblo-dep-fill" t-attf-style="width: {{ dep.percent }}%;"/>
+                </div>
+                <span class="pblo-dep-pc"><t t-esc="dep.percent"/>%</span>
+                <span t-if="dep.overdue" class="pblo-dep-late"
+                      t-att-title="lateWords(dep.overdue)">
+                  <t t-out="ic('alert',12)"/> <t t-esc="dep.overdue"/>
+                </span>
+              </div>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openLens('courses')">
+                <t t-out="ic('bookOpen',14)"/> Every course
+              </button>
+              <button class="pbim-btn ghost" t-on-click="() => this.openLens('assigned')">
+                <t t-out="ic('userCheck',14)"/> Who is on what
+              </button>
+            </div>
+          </section>
+        </t>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

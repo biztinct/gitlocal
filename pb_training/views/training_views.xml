@@ -2,9 +2,10 @@
 <odoo>
 
     <!-- ==================================================================
-         THIS MODULE SHIPS NO MENU AND NO RAIL ITEM. Training is a LENS on
-         the Learn mission, reached from the rail entry that is already
-         there; a second door would be a second place to look.
+         THIS MODULE SHIPS NO MENU AND NO RAIL ITEM. Training is eight
+         LENSES on GROW › Learning (`pb_learning_hub`, LEARNING L0), reached
+         from that hub's rail entry; a second door would be a second place
+         to look.
          ================================================================== -->
 
     <!-- The board. A RECORD and never a bare tag: a bare tag reaches the

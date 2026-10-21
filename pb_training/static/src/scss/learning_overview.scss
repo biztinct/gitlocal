@@ -1,0 +1,184 @@
+// =====================================================================
+//  Learning › OVERVIEW (LEARNING L0) — .pblo-*
+//
+//  pbim tokens with literal fallbacks, flat fills, one accent (no
+//  gradients). Quiet board: a queue chip is grey at zero and turns amber
+//  only when somebody is waiting. Every @keyframes is top level and
+//  declares both ends (R85/R156). No min()/max() with mixed units.
+// =====================================================================
+
+@keyframes pblo-rise {
+    from { transform: translateY(8px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+@keyframes pblo-pulse {
+    from { opacity: .55; }
+    to   { opacity: 1; }
+}
+
+.pblo {
+    --pblo-ink: var(--pbim-ink, #1B1733);
+    --pblo-text: var(--pbim-text, #334155);
+    --pblo-muted: var(--pbim-muted, #64748B);
+    --pblo-line: var(--pbim-line, #E2E8F0);
+    --pblo-soft: var(--pbim-soft, #EDEAF8);
+    --pblo-primary: var(--pbim-primary, #5A4BB0);
+    --pblo-surface: var(--pbim-surface, #FFFFFF);
+    --pblo-amber: #B45309;
+    --pblo-amber-bg: #FFFBEB;
+    --pblo-amber-line: #FDE68A;
+    --pblo-green: #2E7D4F;
+
+    background: var(--pbim-canvas, #F6F7FB);
+    color: var(--pblo-text);
+    font-size: 13px;
+}
+// The lens box is definite-height: this tab owns its own scrollport (W20).
+.pblo.pblo--embedded { height: 100%; min-height: 0; overflow: auto; }
+
+.pblo-wrap {
+    max-width: 1120px; margin: 0 auto; padding: 22px 28px 48px;
+    display: flex; flex-direction: column; gap: 16px;
+}
+
+// ------------------------------------------------------------- the hero
+.pblo-hero {
+    background: var(--pblo-soft); border: 1px solid #DCD6F2;
+    border-radius: 16px; padding: 20px 24px 18px;
+    &.is-calm .pblo-headline { color: var(--pblo-muted); }
+}
+.pblo-eyebrow {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--pblo-primary);
+    svg { width: 14px; height: 14px; }
+}
+.pblo-headline {
+    margin: 10px 0 16px; font-size: 22px; line-height: 1.35;
+    font-weight: 650; color: var(--pblo-ink); max-width: 62ch;
+}
+.pblo-queue { display: flex; flex-wrap: wrap; gap: 8px; }
+.pblo-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 10px 7px 8px; border-radius: 999px;
+    border: 1px solid var(--pblo-line); background: var(--pblo-surface);
+    color: var(--pblo-muted); font: inherit; font-size: 13px; cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+
+    &:hover { border-color: var(--pblo-primary); transform: translateY(-1px); }
+    &:focus-visible { outline: 3px solid rgba(90, 75, 176, .25); outline-offset: 1px; }
+    .pblo-chip-ic {
+        display: grid; place-items: center; width: 24px; height: 24px;
+        border-radius: 50%; background: #F1F5F9; color: var(--pblo-muted);
+    }
+    .pblo-chip-n { font-weight: 800; color: var(--pblo-muted); }
+    .pblo-chip-go { opacity: .5; display: inline-flex; }
+
+    &.is-act {
+        border-color: var(--pblo-amber-line); background: var(--pblo-amber-bg);
+        color: var(--pblo-amber);
+        .pblo-chip-ic { background: #FEF3C7; color: var(--pblo-amber); }
+        .pblo-chip-n { color: var(--pblo-amber); }
+    }
+}
+
+// ------------------------------------------------------ the month line
+.pblo-month {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
+    padding: 10px 16px; border-radius: 12px;
+    background: var(--pblo-surface); border: 1px solid var(--pblo-line);
+    font-size: 13px;
+}
+.pblo-month-l {
+    font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--pblo-muted);
+}
+.pblo-month-b {
+    font-weight: 650; color: var(--pblo-ink);
+    &.is-zero { color: var(--pblo-muted); font-weight: 500; }
+    &.is-warn { color: var(--pblo-amber); }
+    &.is-good { color: var(--pblo-green); }
+}
+
+// ------------------------------------------------------- panels, empty
+.pblo-panel {
+    background: var(--pblo-surface); border: 1px solid var(--pblo-line);
+    border-radius: 16px; padding: 18px 20px;
+}
+.pblo-sec-h {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+    h3 { margin: 0; font-size: 15px; font-weight: 750; color: var(--pblo-ink); }
+}
+.pblo-dim { color: var(--pblo-muted); font-size: 12px; }
+.pblo-calm {
+    display: flex; gap: 8px; align-items: flex-start; margin: 0;
+    padding: 12px 14px; border-radius: 11px; background: #F8FAFC;
+    color: var(--pblo-muted); line-height: 1.55;
+    svg { flex: 0 0 auto; margin-top: 2px; }
+}
+.pblo-empty {
+    text-align: center; padding: 42px 28px;
+    h2 { margin: 0 0 8px; font-size: 18px; font-weight: 740; color: var(--pblo-ink); }
+    p  { margin: 0 auto 18px; max-width: 58ch; line-height: 1.6; color: var(--pblo-muted); }
+}
+.pblo-empty-ic {
+    width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 14px;
+    display: grid; place-items: center;
+    background: var(--pblo-soft); color: var(--pblo-primary);
+}
+
+// ---------------------------------------------------------- departments
+.pblo-deps { display: flex; flex-direction: column; gap: 10px; }
+.pblo-dep {
+    display: grid; align-items: center; gap: 12px;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 44px 46px;
+}
+.pblo-dep-name {
+    display: flex; flex-direction: column; min-width: 0;
+    b { font-weight: 650; color: var(--pblo-ink); overflow: hidden;
+        text-overflow: ellipsis; white-space: nowrap; }
+}
+.pblo-dep-bar {
+    height: 8px; border-radius: 999px; background: var(--pblo-line);
+    overflow: hidden; padding: 0; box-sizing: border-box;
+}
+.pblo-dep-fill {
+    height: 100%; border-radius: 999px; background: var(--pblo-primary);
+    padding: 0; box-sizing: border-box;
+}
+.pblo-dep-pc { font-weight: 700; color: var(--pblo-ink); text-align: right;
+               font-variant-numeric: tabular-nums; }
+.pblo-dep-late {
+    display: inline-flex; align-items: center; gap: 3px; justify-content: center;
+    padding: 2px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+    background: var(--pblo-amber-bg); color: var(--pblo-amber);
+    border: 1px solid var(--pblo-amber-line);
+}
+.pblo-foot { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+// ------------------------------------------------------------ skeleton
+.pblo-skel { display: flex; flex-direction: column; gap: 12px; }
+.pblo-skel-line {
+    height: 18px; border-radius: 8px; background: rgba(255, 255, 255, .8);
+    width: 80%;
+    &.pblo-skel-line--s { width: 30%; height: 12px; }
+    &.pblo-skel-line--m { width: 55%; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pblo-hero, .pblo-month, .pblo-panel { animation: pblo-rise .28s ease-out both; }
+    .pblo-month { animation-delay: .04s; }
+    .pblo-panel { animation-delay: .08s; }
+    .pblo-dep-fill { transition: width .45s ease; }
+    .pblo-skel-line { animation: pblo-pulse .9s ease-in-out infinite alternate; }
+}
+
+// ---------------------------------------------------------------- phone
+@media (max-width: 767px) {
+    .pblo-wrap { padding: 14px 12px 32px; }
+    .pblo-headline { font-size: 19px; }
+    .pblo-dep { grid-template-columns: minmax(0, 1fr) 44px; }
+    .pblo-dep-bar { grid-column: 1 / -1; grid-row: 2; }
+    .pblo-dep-late { display: none; }
+}

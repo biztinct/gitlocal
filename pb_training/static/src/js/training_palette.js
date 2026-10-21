@@ -2,28 +2,26 @@
 /**
  * The Training lens's doors.
  *
- *   1. **The Learn hub's Training lens.** Registered into E1's lens registry
- *      rather than imported into the hub's config, because the dependency
- *      runs the other way: this module depends on the hub, so the hub cannot
- *      import this one back.
+ *   1. **The Learning hub's eight lenses** (LEARNING L0, 2026-10-21).
+ *      GROW › Learning (`pb_learning_hub`) ships no lens of its own; this
+ *      module registers all eight into `LEARNING_LENSES`, because the
+ *      dependency runs this way (this module depends on the hub, so the hub
+ *      cannot import this one back). Training left Talent completely (owner
+ *      decision LD3): nothing here registers into Talent's registry any more.
  *
- *      SEQUENCE 20. The hub's one shipped lens (Lessons, the product journey)
- *      carries no sequence, so bolted-on lenses start at 20 and land after it
- *      — which is also the right reading order: how to use Payobook, then the
- *      courses a company puts its own people through.
+ *          10 overview · 20 mine · 30 courses · 40 assigned · 50 required ·
+ *          60 tests · 70 claims · 80 numbers
  *
- *      The LABEL is "Training", eight characters. The lens rail's label box is
- *      60px and it wraps between words but never inside one (R63), so what
- *      matters is the longest WORD: "Training" is one word and measures
- *      comfortably inside — the two labels that spilled ("Improvement",
- *      "Recognition") were eleven characters with no break in them.
+ *      Courses, Assigned, Required and Claims are the SAME board with
+ *      `startTab` / `tabs` props (the Hiring precedent); Assigned reads its
+ *      inner tab from the arrival (`pb_training_tab`) so Overview's "More
+ *      time requests" lands on the requests. Labels are one word or two and
+ *      fit the 64px rail box in English and Vietnamese (ledger L2).
  *
- *      Its gate is this module's own tier list, restated here because the
- *      Python/JS boundary cannot be imported across. `pb.training._can_read()`
- *      enforces the real one independently; this only decides whether the lens
- *      is OFFERED on the hub. Deliberately NOT the hub's own gate: the Lessons
- *      lens is ungated (a learning screen must not hide itself from the person
- *      who needs it), and running courses is a job with a team attached to it.
+ *      Gates: the training tiers, restated here because the Python/JS
+ *      boundary cannot be imported across. `pb.training._can_read()`
+ *      enforces the real one independently; this only decides whether a lens
+ *      is OFFERED. MY LEARNING is every member of staff's (`base.group_user`).
  *
  *   2. **⌘K palette rows**, in the **3900** block — E's block in the Wave 2
  *      plan, after A's 3500. Every door is an XMLID and never a bare tag: a
@@ -42,10 +40,13 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
+import { LEARNING_LENSES, LEARNING_HUB_XMLID } from "@pb_learning_hub/js/learning_hub";
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
 import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
+import { PbLearningOverview, TRAINING_TAB_KEY } from "@pb_training/js/learning_overview";
+import { PbMyLearningLens } from "@pb_training/js/my_learning_lens";
+import { PbTrainingTestsLens } from "@pb_training/js/training_tests_lens";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -53,61 +54,144 @@ const TRAINING_GATE = [
     "pb_training.group_training_admin",
 ];
 
-// NAV P2 (2026-10-21): a Talent tab now (it was a Learn tab).
-registry.category(TALENT_LENSES).add("training", {
-    key: "training",
-    icon: "graduationCap",
-    label: _t("Training"),
+/* ------------------------------------------------- the Learning rail --- */
+const lenses = registry.category(LEARNING_LENSES);
+
+lenses.add("overview", {
+    key: "overview",
+    icon: "layoutGrid",
+    label: _t("Overview"),
+    title: _t("Training at a glance"),
+    Component: PbLearningOverview,
+    groups: TRAINING_GATE,
+}, { sequence: 10 });
+
+// Everybody's: the one tab a plain employee sees.
+lenses.add("mine", {
+    key: "mine",
+    icon: "user",
+    label: _t("My learning"),
+    Component: PbMyLearningLens,
+    groups: ["base.group_user"],
+}, { sequence: 20 });
+
+lenses.add("courses", {
+    key: "courses",
+    icon: "bookOpen",
+    label: _t("Courses"),
+    title: _t("Every course"),
     Component: PbTrainingBoard,
     groups: TRAINING_GATE,
+    props: { startTab: "courses", tabs: ["courses"] },
 }, { sequence: 30 });
+
+// The arrival may ask for the "More time" tab (Overview's queue chip).
+const ASSIGNED_TABS = ["assignments", "requests"];
+lenses.add("assigned", {
+    key: "assigned",
+    icon: "userCheck",
+    label: _t("Assigned"),
+    title: _t("Who is on what, and more time"),
+    Component: PbTrainingBoard,
+    groups: TRAINING_GATE,
+    propsFromContext(ctx) {
+        const asked = ctx && ctx[TRAINING_TAB_KEY];
+        return {
+            startTab: ASSIGNED_TABS.includes(asked) ? asked : "assignments",
+            tabs: ASSIGNED_TABS,
+        };
+    },
+}, { sequence: 40 });
+
+lenses.add("required", {
+    key: "required",
+    icon: "listChecks",
+    label: _t("Required"),
+    title: _t("Day one and courses that come round again"),
+    Component: PbTrainingBoard,
+    groups: TRAINING_GATE,
+    props: { startTab: "rules", tabs: ["rules", "schedules"] },
+}, { sequence: 50 });
+
+lenses.add("tests", {
+    key: "tests",
+    icon: "fileCheck",
+    label: _t("Tests"),
+    title: _t("Tests and question bank"),
+    Component: PbTrainingTestsLens,
+    groups: TRAINING_GATE,
+}, { sequence: 60 });
+
+lenses.add("claims", {
+    key: "claims",
+    icon: "receipt",
+    label: _t("Claims"),
+    title: _t("Training claims"),
+    Component: PbTrainingBoard,
+    groups: TRAINING_GATE,
+    props: { startTab: "claims", tabs: ["claims"] },
+}, { sequence: 70 });
+
+lenses.add("numbers", {
+    key: "numbers",
+    icon: "barChart",
+    label: _t("Numbers"),
+    title: _t("Training numbers"),
+    Component: PbTrainingNumbers,
+    groups: TRAINING_GATE.concat(["base.group_system"]),
+}, { sequence: 80 });
 
 /* ---------------------------------------------------------- command bar --- */
 const palette = registry.category("pb_hub_palette");
-const HUB_XMLID = "pb_talent_hub.action_pb_talent_hub";
+const HUB_XMLID = LEARNING_HUB_XMLID;
 
 palette.add("training_board", {
     id: "training_board",
     label: _t("Training"),
-    sublabel: _t("Talent"),
+    sublabel: _t("Learning"),
     icon: "graduationCap",
     groups: TRAINING_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_training_board",
-    action: { xmlid: HUB_XMLID, lens: "training" },
-    keywords: ["learn", "đào tạo"],
+    action: { xmlid: HUB_XMLID, lens: "overview" },
+    // R10: people looked for this under Talent until LEARNING L0.
+    keywords: ["learn", "đào tạo", "talent", "learning", "học tập"],
 }, { sequence: 3900 });
 
 palette.add("training_courses", {
     id: "training_courses",
     label: _t("Courses"),
-    sublabel: _t("Training"),
+    sublabel: _t("Learning"),
     icon: "bookOpen",
     groups: TRAINING_GATE,
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_pb_training_courses" },
+    action: { xmlid: HUB_XMLID, lens: "courses" },
+    keywords: ["training", "talent"],
 }, { sequence: 3910 });
 
 palette.add("training_tests", {
     id: "training_tests",
     label: _t("Tests and question bank"),
-    sublabel: _t("Training"),
-    icon: "target",
+    sublabel: _t("Learning"),
+    icon: "fileCheck",
     groups: TRAINING_GATE,
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_pb_training_tests" },
+    action: { xmlid: HUB_XMLID, lens: "tests" },
+    keywords: ["training", "talent"],
 }, { sequence: 3920 });
 
 // UNGATED, and that is the point: everybody in the company can be put on a
-// course, so this is the one row here that is for everybody.
+// course, so this is the one row here that is for everybody. LEARNING L0:
+// it opens Learning › My learning (was the portal page "My training").
 palette.add("training_my", {
     id: "training_my",
-    label: _t("My training"),
-    sublabel: _t("Me"),
-    icon: "award",
+    label: _t("My learning"),
+    sublabel: _t("Learning"),
+    icon: "user",
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_my_training" },
+    action: { xmlid: HUB_XMLID, lens: "mine" },
+    keywords: ["my training", "training", "talent", "đào tạo của tôi"],
 }, { sequence: 3930 });
 
 /* -------------------------------------------------------------- E2 rows ---
@@ -118,21 +202,23 @@ palette.add("training_my", {
 palette.add("training_assignments", {
     id: "training_assignments",
     label: _t("Training assignments"),
-    sublabel: _t("Training"),
+    sublabel: _t("Learning"),
     icon: "userCheck",
     groups: TRAINING_GATE,
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_pb_training_assignments" },
+    action: { xmlid: HUB_XMLID, lens: "assigned" },
+    keywords: ["training", "talent"],
 }, { sequence: 3940 });
 
 palette.add("training_schedules", {
     id: "training_schedules",
     label: _t("Compliance schedules"),
-    sublabel: _t("Training"),
+    sublabel: _t("Learning"),
     icon: "repeat",
     groups: TRAINING_GATE,
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_pb_training_schedules" },
+    action: { xmlid: HUB_XMLID, lens: "required" },
+    keywords: ["training", "talent"],
 }, { sequence: 3950 });
 
 /* --------------------------------------------- E3, the Insights lens ----
@@ -152,8 +238,8 @@ palette.add("training_schedules", {
  * 60px and wraps between words but never inside one (R63), so what matters is
  * the longest WORD — the two labels that spilled ("Improvement",
  * "Recognition") were eleven characters with no break in them. It is also the
- * same word this module already uses on the Learn hub, which is the point:
- * one thing, one name, wherever a reader meets it.
+ * word the command bar uses for this module's Learning row, which is the
+ * point: one thing, one name, wherever a reader meets it.
  */
 registry.category(INSIGHTS_LENSES).add("training", {
     key: "training",
@@ -171,11 +257,12 @@ registry.category(INSIGHTS_LENSES).add("training", {
 palette.add("training_claims", {
     id: "training_claims",
     label: _t("Training claims"),
-    sublabel: _t("Training"),
+    sublabel: _t("Learning"),
     icon: "receipt",
     groups: TRAINING_GATE,
     requires: "pb_training_board",
-    action: { xmlid: "pb_training.action_pb_training_claims" },
+    action: { xmlid: HUB_XMLID, lens: "claims" },
+    keywords: ["training", "talent"],
 }, { sequence: 3960 });
 
 // The presence probe is the LENS's own action tag and not the board's: a

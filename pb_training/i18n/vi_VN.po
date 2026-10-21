@@ -243,3 +243,630 @@ msgstr "Số liệu đào tạo"
 #: code:addons/pb_training/static/src/js/training_palette.js:0
 msgid "Talent"
 msgstr "Nhân tài"
+
+# ===================================================================
+#  LEARNING L0 (2026-10-21): the Learning rail, Overview, My learning,
+#  Tests and the one-tap Remind.
+# ===================================================================
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "Claims to agree"
+msgstr "Yêu cầu hoàn tiền chờ duyệt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "More time requests"
+msgstr "Yêu cầu thêm thời gian"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "Past their date"
+msgstr "Đã quá hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "Nobody is on a course yet."
+msgstr "Chưa có ai tham gia khóa học nào."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "Nobody is on a course right now."
+msgstr "Hiện không có ai đang học khóa nào."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "1 person is on 1 course."
+msgstr "1 người đang học 1 khóa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "1 person is on %(courses)s courses."
+msgstr "1 người đang học %(courses)s khóa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "%(people)s people are on 1 course."
+msgstr "%(people)s người đang học 1 khóa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "%(people)s people are on %(courses)s courses."
+msgstr "%(people)s người đang học %(courses)s khóa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "1 is past their date."
+msgstr "1 người đã quá hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "%(late)s are past their date."
+msgstr "%(late)s người đã quá hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "1 finished this month."
+msgstr "1 người đã hoàn thành trong tháng này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "%(done)s finished this month."
+msgstr "%(done)s người đã hoàn thành trong tháng này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "That course is not on anybody's list any more."
+msgstr "Khóa học này không còn trong danh sách của ai nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "You can only remind people who report to you."
+msgstr "Bạn chỉ có thể nhắc những người báo cáo trực tiếp cho bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "%(who)s has already finished this course."
+msgstr "%(who)s đã hoàn thành khóa học này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "A reminder already went today."
+msgstr "Hôm nay đã gửi lời nhắc rồi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "%(who)s has no email address, so a reminder cannot be sent. Add one to their employee record first."
+msgstr "%(who)s chưa có địa chỉ email nên không gửi được lời nhắc. Hãy thêm email vào hồ sơ nhân viên trước."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "The reminder could not be sent. Try again in a minute."
+msgstr "Không gửi được lời nhắc. Hãy thử lại sau một phút."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_due.py:0
+msgid "%(who)s has been sent a reminder."
+msgstr "Đã gửi lời nhắc cho %(who)s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Overview"
+msgstr "Tổng quan"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Training at a glance"
+msgstr "Tổng quan đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "My learning"
+msgstr "Của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Every course"
+msgstr "Mọi khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Assigned"
+msgstr "Đã giao"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Who is on what, and more time"
+msgstr "Ai đang học gì và xin thêm thời gian"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Required"
+msgstr "Bắt buộc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Day one and courses that come round again"
+msgstr "Khóa ngày đầu và khóa học lặp lại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Tests"
+msgstr "Kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Claims"
+msgstr "Hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Numbers"
+msgstr "Số liệu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Learning"
+msgstr "Học tập"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Insights"
+msgstr "Phân tích"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 due this month"
+msgstr "1 khóa đến hạn trong tháng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s due this month"
+msgstr "%s khóa đến hạn trong tháng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 past their date"
+msgstr "1 người quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s past their date"
+msgstr "%s người quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "1 finished"
+msgstr "1 đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s finished"
+msgstr "%s đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "The overview could not be read just now"
+msgstr "Chưa đọc được trang tổng quan lúc này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Nothing was changed. Try again in a moment; if it keeps happening, the Courses and Assigned tabs still work on their own."
+msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát; nếu vẫn lỗi, các thẻ Khóa học và Đã giao vẫn dùng được bình thường."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Learning numbers are for the training team"
+msgstr "Số liệu học tập dành cho nhóm đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Your own courses, what is next and how far you have got are on My learning."
+msgstr "Khóa học của bạn, việc cần làm tiếp theo và tiến độ nằm ở mục Của tôi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Open My learning"
+msgstr "Mở mục Của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Departments"
+msgstr "Phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "The last 90 days, biggest first"
+msgstr "90 ngày qua, phòng ban đông người nhất trước"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "No department has had a course set in the last 90 days. Put people on a course from Assigned and the figures start here."
+msgstr "Trong 90 ngày qua chưa phòng ban nào được giao khóa học. Hãy giao khóa học ở mục Đã giao, số liệu sẽ bắt đầu từ đây."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Who is on what"
+msgstr "Ai đang học gì"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "The test at the end"
+msgstr "Bài kiểm tra cuối khóa"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Take the test"
+msgstr "Làm bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "In progress"
+msgstr "Đang học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Done"
+msgstr "Đã xong"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "No lessons yet"
+msgstr "Chưa có bài học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s of 1 lesson"
+msgstr "%s trên 1 bài học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s of %s lessons"
+msgstr "%s trên %s bài học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Test locked"
+msgstr "Bài kiểm tra chưa mở"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Passed"
+msgstr "Đã đạt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Not passed yet"
+msgstr "Chưa đạt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Under way"
+msgstr "Đang học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Overdue"
+msgstr "Quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "More time agreed"
+msgstr "Đã được thêm thời gian"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Finished"
+msgstr "Đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "1 overdue"
+msgstr "1 quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s overdue"
+msgstr "%s quá hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "1 still to do"
+msgstr "1 còn phải học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "%s still to do"
+msgstr "%s còn phải học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Reminder sent."
+msgstr "Đã gửi lời nhắc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "The reminder could not be sent."
+msgstr "Không gửi được lời nhắc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Your learning could not be read just now"
+msgstr "Chưa đọc được việc học của bạn lúc này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Nothing was changed. Try again in a moment, or open your training page directly."
+msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát, hoặc mở thẳng trang đào tạo của bạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My training page"
+msgstr "Trang đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Next up"
+msgstr "Việc tiếp theo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Nothing to do right now."
+msgstr "Hiện chưa có việc gì cần làm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Every course you are on is finished. When the training team puts you on a new one, it appears here."
+msgstr "Bạn đã hoàn thành mọi khóa học đang tham gia. Khi nhóm đào tạo giao khóa mới, khóa đó sẽ hiện ở đây."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "You are not on any course yet. When the training team puts you on one, it appears here."
+msgstr "Bạn chưa tham gia khóa học nào. Khi nhóm đào tạo giao khóa học cho bạn, khóa đó sẽ hiện ở đây."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My courses"
+msgstr "Khóa học của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Nothing here. Press the filter again to see every course."
+msgstr "Không có khóa nào. Bấm lại bộ lọc để xem mọi khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My team"
+msgstr "Đội của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Nobody who reports to you has a course to do."
+msgstr "Không ai trong số người báo cáo cho bạn có khóa học cần làm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Remind"
+msgstr "Nhắc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Send them the reminder email now (one a day)"
+msgstr "Gửi email nhắc ngay bây giờ (mỗi ngày một lần)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Send them the reminder email now"
+msgstr "Gửi email nhắc ngay bây giờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My training allowance"
+msgstr "Ngân sách đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Allowance"
+msgstr "Ngân sách"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Left"
+msgstr "Còn lại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "No training allowance has been set for you this year. Ask the training team if you expected one."
+msgstr "Năm nay bạn chưa được đặt ngân sách đào tạo. Hãy hỏi nhóm đào tạo nếu bạn nghĩ mình có."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Claim a course back"
+msgstr "Xin hoàn tiền khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My claims"
+msgstr "Yêu cầu hoàn tiền của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Open my whole training page"
+msgstr "Mở toàn bộ trang đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "Test"
+msgstr "Bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "That could not be opened."
+msgstr "Không mở được mục này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item."
+msgstr "Bài kiểm tra là một bộ câu hỏi có điểm đạt và số lần làm giới hạn. Hãy thêm nó làm mục cuối cùng của khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Question bank"
+msgstr "Ngân hàng câu hỏi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Every question you have written, whichever test it was written for"
+msgstr "Mọi câu hỏi bạn đã viết, cho bất kỳ bài kiểm tra nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "New test"
+msgstr "Bài kiểm tra mới"

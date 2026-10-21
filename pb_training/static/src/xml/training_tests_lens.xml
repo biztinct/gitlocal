@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Tests (LEARNING L0). The stock list inside a definite-height
+       flex column so it scrolls inside itself (W20), under a small header
+       row. A deliberate L0 shortcut: phase L5 redesigns this tab.
+       ==================================================================== -->
+  <t t-name="pb_training.PbTrainingTestsLens">
+    <div class="pbtt o_action">
+      <div class="pbtt-head">
+        <div class="pbtt-say">
+          <b>Tests</b>
+          <span>A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item.</span>
+        </div>
+        <div class="pbtt-act">
+          <button class="pbim-btn ghost" t-on-click="openQuestions"
+                  title="Every question you have written, whichever test it was written for">
+            <t t-out="ic('list',15)"/> Question bank
+          </button>
+          <button class="pbim-btn primary" t-on-click="newTest">
+            <t t-out="ic('plus',15)"/> New test
+          </button>
+        </div>
+      </div>
+      <View t-props="viewProps"/>
+    </div>
+  </t>
+
+</templates>

@@ -33,3 +33,7 @@ from . import analytics
 from . import pack
 from . import pb_training_claims
 from . import pb_my_training_claims
+
+# ---------------------------------------------------------------- LEARNING L0
+# The Overview reads helpers the two extensions above add, so it comes last.
+from . import pb_training_overview

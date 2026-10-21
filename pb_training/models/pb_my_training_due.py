@@ -14,8 +14,10 @@ system, and shows nothing at all to somebody who manages nobody.
 """
 
 import logging
+from datetime import timedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 from .training_common import (
     ASSIGN_OPEN, ASSIGN_REASON_LABEL, ASSIGN_STATE_LABEL, DELAY_KINDS,
@@ -23,6 +25,9 @@ from .training_common import (
 )
 
 _logger = logging.getLogger(__name__)
+
+#: The `reminder_log` key a one-tap Remind writes: `manual:<UTC datetime>`.
+MANUAL_PREFIX = 'manual:'
 
 
 class PbMyTrainingDue(models.AbstractModel):
@@ -247,3 +252,63 @@ class PbMyTrainingDue(models.AbstractModel):
     def team_overdue_count(self):
         """The number on the portal home card for a manager. Never raises."""
         return self.env['pb.training.automation'].team_overdue_count()
+
+    # =====================================================================
+    #  LEARNING L0 — one-tap Remind
+    # =====================================================================
+    @api.model
+    def remind(self, assignment_id):
+        """Send one person the reminder for one course, now.
+
+        WHO MAY PRESS IT: their own manager (the employee's `parent_id` is my
+        employee record's user), or anybody in the training team. Everybody
+        else is refused in words.
+
+        WHAT GOES: exactly what the morning job would send — the "overdue"
+        email if the date has passed, the "due" email otherwise — through
+        the assignment's own `_mail`, and the stamp is written by its own
+        `_mark_sent`, so the ledger (`reminder_log`) reads the same whichever
+        door sent it. The stamp key is `manual:<when>` (no new field).
+
+        ONE A DAY: a second press within 24 hours is refused, so a nervous
+        manager cannot mail somebody five times in a morning.
+        """
+        row = self.env['pb.training.assignment'].sudo().browse(
+            as_id(assignment_id)).exists()
+        if not row:
+            raise UserError(_("That course is not on anybody's list any "
+                              "more."))
+        user = self.env.user
+        is_trainer = self.env['pb.training']._can_read()
+        is_manager = row.employee_id.sudo().parent_id.user_id == user
+        if not (is_trainer or is_manager):
+            raise AccessError(_("You can only remind people who report to "
+                                "you."))
+        who = row.employee_id.sudo().name or ''
+        if row.state == 'done':
+            raise UserError(_("%(who)s has already finished this course.",
+                              who=who))
+        now = fields.Datetime.now()
+        for key in row._sent():
+            if not key.startswith(MANUAL_PREFIX):
+                continue
+            try:
+                when = fields.Datetime.to_datetime(key[len(MANUAL_PREFIX):])
+            except (TypeError, ValueError):
+                continue
+            if when and now - when < timedelta(hours=24):
+                raise UserError(_("A reminder already went today."))
+        email = row._their_email()
+        if not email:
+            raise UserError(_(
+                "%(who)s has no email address, so a reminder cannot be sent. "
+                "Add one to their employee record first.", who=who))
+        today = fields.Date.today()
+        late = bool(days_over(row.due_date, today))
+        template = 'pb_training.mail_template_assignment_overdue' if late \
+            else 'pb_training.mail_template_assignment_due'
+        if not row._mail(template, email):
+            raise UserError(_("The reminder could not be sent. Try again in a "
+                              "minute."))
+        row._mark_sent(MANUAL_PREFIX + fields.Datetime.to_string(now), today)
+        return {'message': _("%(who)s has been sent a reminder.", who=who)}

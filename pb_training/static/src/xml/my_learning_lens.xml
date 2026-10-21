@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › My learning (LEARNING L0). Section comments use `=` rules
+       and never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1): `crs`, `flt`, `row`, `bit`.
+       ==================================================================== -->
+  <t t-name="pb_training.PbMyLearningLens">
+    <div class="pbml" t-att-class="{ 'pbml--embedded': props.embedded }">
+      <div class="pbml-wrap">
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pbml-hero pbml-skel" aria-busy="true">
+            <div class="pbml-skel-line pbml-skel-line--s"/>
+            <div class="pbml-skel-line"/>
+            <div class="pbml-skel-line pbml-skel-line--m"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pbml-panel pbml-empty">
+          <div class="pbml-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>Your learning could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment, or open your training page directly.</p>
+          <div class="pbml-row-act">
+            <button class="pbim-btn primary" t-on-click="retry">
+              <t t-out="ic('refresh',15)"/> Try again
+            </button>
+            <button class="pbim-btn ghost" t-on-click="() => this.go('/my/training')">
+              <t t-out="ic('external',15)"/> My training page
+            </button>
+          </div>
+        </div>
+
+        <t t-else="">
+          <!-- ============ the hero: next up ============ -->
+          <t t-set="nxt" t-value="nextCourse"/>
+          <section t-if="nxt" class="pbml-hero">
+            <t t-set="step" t-value="nextStep(nxt)"/>
+            <div class="pbml-eyebrow">
+              <t t-out="ic('play',13)"/> Next up
+            </div>
+            <div class="pbml-hero-body">
+              <div class="pbml-hero-text">
+                <h2 class="pbml-next" t-esc="step.title"/>
+                <div class="pbml-hero-meta">
+                  <span><t t-out="ic('bookOpen',13)"/> <t t-esc="nxt.name"/></span>
+                  <span t-if="nxt.duration"><t t-out="ic('clock',13)"/> <t t-esc="nxt.duration"/></span>
+                  <span t-if="nxt.assignment and nxt.assignment.due_words"
+                        class="pbml-due" t-att-class="dueClass(nxt.assignment)">
+                    <t t-out="ic('calendar',13)"/> <t t-esc="nxt.assignment.due_words"/>
+                  </span>
+                </div>
+                <div class="pbml-hero-bar">
+                  <span class="pbml-bar"><span class="pbml-bar-fill"
+                        t-attf-style="width: {{ nxt.percent }}%;"/></span>
+                  <span class="pbml-dim" t-esc="lessonWords(nxt)"/>
+                </div>
+              </div>
+              <button class="pbim-btn primary pbml-go" t-on-click="() => this.go(step.url)">
+                <t t-esc="step.label"/> <t t-out="ic('arrow',15)"/>
+              </button>
+            </div>
+          </section>
+          <section t-else="" class="pbml-hero is-calm">
+            <div class="pbml-calm-tick"><t t-out="ic('checkCircle',26)"/></div>
+            <div>
+              <h2 class="pbml-next">Nothing to do right now.</h2>
+              <p t-if="courses.length" class="pbml-dim">Every course you are on is finished. When the training team puts you on a new one, it appears here.</p>
+              <p t-else="" class="pbml-dim">You are not on any course yet. When the training team puts you on one, it appears here.</p>
+            </div>
+          </section>
+
+          <!-- ============ my courses ============ -->
+          <section t-if="courses.length" class="pbml-panel">
+            <div class="pbml-sec-h">
+              <h3>My courses</h3>
+              <div class="pbml-filters" role="group">
+                <button t-foreach="filters" t-as="flt" t-key="flt.key"
+                        class="pbml-filter"
+                        t-att-class="{ 'is-on': state.filter === flt.key, 'is-zero': !flt.n }"
+                        t-att-aria-pressed="state.filter === flt.key ? 'true' : 'false'"
+                        t-on-click="() => this.setFilter(flt.key)">
+                  <t t-esc="flt.label"/> <b t-esc="flt.n"/>
+                </button>
+              </div>
+            </div>
+            <p t-if="!shownCourses.length" class="pbml-calm">
+              Nothing here. Press the filter again to see every course.
+            </p>
+            <div t-else="" class="pbml-grid">
+              <div t-foreach="shownCourses" t-as="crs" t-key="crs.id" class="pbml-card">
+                <div class="pbml-card-top">
+                  <b class="pbml-card-name" t-esc="crs.name"/>
+                  <span t-if="crs.assignment and crs.assignment.reason_word"
+                        class="pbml-chip" t-esc="crs.assignment.reason_word"/>
+                </div>
+                <div class="pbml-hero-bar">
+                  <span class="pbml-bar"><span class="pbml-bar-fill"
+                        t-att-class="{ 'is-done': crs.finished }"
+                        t-attf-style="width: {{ crs.percent }}%;"/></span>
+                  <span class="pbml-dim" t-esc="lessonWords(crs)"/>
+                </div>
+                <div class="pbml-card-chips">
+                  <span t-if="crs.assignment and crs.assignment.due_words and !crs.finished"
+                        class="pbml-chip" t-att-class="dueClass(crs.assignment)">
+                    <t t-out="ic('calendar',12)"/> <t t-esc="crs.assignment.due_words"/>
+                  </span>
+                  <t t-set="tc" t-value="testChip(crs)"/>
+                  <span t-if="tc" class="pbml-chip" t-att-class="tc.cls">
+                    <t t-out="ic(tc.icon,12)"/> <t t-esc="tc.text"/>
+                  </span>
+                </div>
+                <div class="pbml-card-act">
+                  <button class="pbim-btn ghost" t-on-click="() => this.go('/my/training/' + crs.id)">
+                    Open <t t-out="ic('chevron',13)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ my team (managers only) ============ -->
+          <section t-if="team and team.manages" class="pbml-panel">
+            <div class="pbml-sec-h">
+              <h3>My team</h3>
+              <div class="pbml-bits">
+                <span t-foreach="teamBits()" t-as="bit" t-key="bit.key" class="pbml-bit"
+                      t-att-class="{ 'is-warn': bit.warn and bit.n, 'is-good': bit.good and bit.n, 'is-zero': !bit.n }"
+                      t-esc="bit.text"/>
+              </div>
+            </div>
+            <p t-if="!team.rows.length" class="pbml-calm">
+              <t t-out="ic('info',14)"/>
+              Nobody who reports to you has a course to do.
+            </p>
+            <div t-else="" class="pbml-team">
+              <div t-foreach="team.rows" t-as="row" t-key="row.id" class="pbml-trow"
+                   t-att-class="{ 'is-late': row.state === 'overdue' }">
+                <div class="pbml-trow-who">
+                  <b t-esc="row.who"/>
+                  <span class="pbml-dim" t-esc="row.course"/>
+                </div>
+                <span class="pbml-dim pbml-trow-due" t-esc="row.due_words"/>
+                <span class="pbml-chip" t-att-class="stateClass(row.state)"
+                      t-esc="stateWord(row.state)"/>
+                <button t-if="row.state !== 'done'" class="pbim-btn ghost pbml-remind"
+                        t-att-disabled="state.reminding === row.id"
+                        t-on-click="() => this.remind(row)"
+                        title="Send them the reminder email now (one a day)">
+                  <t t-out="ic('bell',14)"/> Remind
+                </button>
+                <span t-else="" class="pbml-remind-gap"/>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ my allowance ============ -->
+          <section t-if="allowance" class="pbml-panel pbml-money">
+            <div class="pbml-sec-h">
+              <h3>My training allowance</h3>
+              <span class="pbml-dim" t-esc="allowance.year"/>
+            </div>
+            <t t-if="allowance.set">
+              <div class="pbml-money-line">
+                <div><span class="pbml-dim">Allowance</span><b t-esc="allowance.allowance_words"/></div>
+                <div><span class="pbml-dim">Agreed</span><b t-esc="allowance.agreed_words"/></div>
+                <div><span class="pbml-dim">Left</span><b class="pbml-left" t-esc="allowance.left_words"/></div>
+              </div>
+              <span class="pbml-bar"><span class="pbml-bar-fill"
+                    t-attf-style="width: {{ allowance.percent }}%;"/></span>
+            </t>
+            <p t-else="" class="pbml-calm">
+              <t t-out="ic('info',14)"/>
+              No training allowance has been set for you this year. Ask the training team if you expected one.
+            </p>
+            <div class="pbml-row-act">
+              <button t-if="allowance.set" class="pbim-btn primary"
+                      t-on-click="() => this.go('/my/training/claims/new')">
+                <t t-out="ic('receipt',15)"/> Claim a course back
+              </button>
+              <button class="pbim-btn ghost" t-on-click="() => this.go('/my/training/claims')">
+                My claims<t t-if="allowance.waiting"> · <t t-esc="allowance.waiting"/></t>
+              </button>
+            </div>
+          </section>
+
+          <p class="pbml-foot">
+            <button class="pbml-link" t-on-click="() => this.go('/my/training')">
+              <t t-out="ic('external',13)"/> Open my whole training page
+            </button>
+          </p>
+        </t>
+
+      </div>
+    </div>
+  </t>
+
+</templates>
