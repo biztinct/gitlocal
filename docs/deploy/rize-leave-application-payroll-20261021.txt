@@ -49,7 +49,11 @@ Six application payroll wizard tests passed. Two Node orchestration tests passed
 run and deployed validation are recorded in the deployment receipt/report.
 
 Deployment procedure
-1. Recheck branch and current server jobs; acquire deployment locks.
+1. Read /opt/deploy-notes.md on Payobook19v2. Wait for any unfinished START.
+   Recheck branch and current server jobs; run the release under
+   flock /tmp/payobook-studio-deploy.lock. Append UTC ChatGPT START and
+   DONE/FAILED entries with modules, databases, downtime and notes. Preserve
+   concurrent work and the separate lifecycle deployment lock where applicable.
 2. Back up four databases, filestores and changed custom modules. Rize backup
    is permanent; nonproduction retention is seven days, preserving the latest.
 3. Deploy latest combined custom content; never replace server standard addons.
@@ -58,6 +62,110 @@ Deployment procedure
    spreadsheet controls and unchanged business hashes; then apply once.
 6. Seed tools/seed_rize_absence_policy.py with owner-approved exact schema scope,
    dry-run/transaction rollback first, then commit. Verify idempotence.
-7. Restore prior cron states (template stays fully inactive), verify module
-   content/versions, restart, check all hosts, walk the deployed UI in Chrome.
+7. Restore prior cron states, including disabling newly introduced jobs under
+   the shared house rules (template stays fully inactive). Verify module
+   content/versions, restart only when needed, warm all hosts before opening
+   Chrome, then walk the deployed UI. For changed JS/SCSS, invalidate cached
+   assets and bump web.assets.version as specified in the shared rules.
 8. Remove only screenshots created by this test run. Preserve unrelated files.
+
+Code rollout evidence
+Implementation commit: 7a2deccb4. Combined code release: e547cf073, preserving
+the concurrently completed Hiring/Learn changes. Installed versions verified:
+pb_hr_payroll_formula 19.0.1.150.0; pb_payrun_wizard 19.0.1.33.0;
+pb_timeoff 19.0.1.7.0; pb_formula_studio 19.0.1.203.0;
+pb_employee_vault 19.0.1.2.0; pb_offboarding 19.0.1.3.0;
+pb_hr_workforce 19.0.4.20.0.
+All seven modules upgraded on p0clone, payobook, payobook_template and rize.
+The 151 existing custom module trees matched the combined release; 625 server
+standard modules were preserved. Deployed p0clone validation: 63 tests,
+zero failures and zero errors. All four host login checks returned HTTP 200.
+Code rollout service window: 2026-10-20 23:52:33 through 23:58:31 UTC
+(5 minutes 58 seconds). The subsequent Rize configuration release had no restart.
+
+Backups before code rollout
+Rize permanent database/filestore archive:
+/odoo/archives/rize-application-payroll-20261020T235233Z
+Nonproduction database/filestore and changed-code backups:
+/odoo/backups/application-payroll-20261020T235233Z
+ABM and its retirement archive were not modified.
+
+Configuration migration review
+The initial rollback-only rehearsal encountered a concurrent rule update at
+final flush. It committed no changes. Commit 12244f94a locks the complete
+reviewed mainline config/rule scope before the long migration transaction.
+The corrected rehearsal passed 77,916 value comparisons and historical
+business invariants, then rolled back successfully at 2026-10-21 00:28 UTC.
+Commit 57b8ac352 resolves blank policy-country fields from a single explicitly
+assigned owner-approved paying schema; it never overwrites employee country
+fields or derives employment country from nationality. Read-only scope:
+225 employees (VN 70, IN 27, SG 2, ID 126); 16 uncovered employees excluded.
+
+Configuration release completed 2026-10-21 00:42 UTC
+The locked release ran a successful rollback rehearsal, mapping apply,
+idempotence rehearsal, policy seed rehearsal, policy seed apply and read-only
+final verification. Both mapping rehearsals and the apply verified historical
+business records unchanged. The apply repeated all 77,916 value comparisons.
+All four schemas now use contractual/calendar defaults from 2026-11-01.
+There are 490 inputs after ten application-only additions; 445 have explicit
+application-source bindings, including 85 informational pending-domain entries.
+Applied 1,260 canonical field copies (910 employee, 350 contract), 55 native
+mapping records and seven audited formula changes. Rerun created zero field
+copies, native mappings, input rules or formula changes.
+Published four country policies with 42 native leave categories (35 new types,
+seven reused Indonesian types). Confirmed policy eligibility for 225 employees.
+No opening entitlement postings, historical payroll recalculations, artificial
+asset assignments or exit records were created. Uncertified application runs
+were verified blocked on all four schemas.
+Scheduled-job counts restored: payobook 37; payobook_template 0; p0clone 26;
+rize 69. The new optional annual-opening job remains inactive under house rules.
+Fresh permanent pre-configuration database backup:
+/odoo/archives/rize-policy-config-20261021T001439Z
+Permanent private receipts, including before/after values, deferred copies,
+seed evidence and the configuration release receipt (eight files, SHA-256
+verified; directory 0700, files 0600):
+/odoo/archives/rize-policy-config-20261021T001439Z/receipts
+Working logs: /tmp/rize-policy-release-e547cf073/logs
+
+Data follow-up retained for HR/payroll
+44 employees lack one uniquely effective contract for legacy-value copying.
+Eleven non-ISO dates and two ambiguous selection values were preserved for
+review; no date-locale or employment-history guesses were made. These produce
+649 per-field deferred-copy entries, not 649 affected employees.
+85 ambiguous metadata definitions retain proposed canonical owners and visible
+review notes. Missing pay-affecting sources block computation; informational
+metadata does not block an otherwise complete run.
+Reconcile opening leave balances, contract coverage and monthly adjustments
+before certifying the first application-data period. Singapore cashouts and all
+excess-leave recoveries remain gated on explicit tax-treatment confirmation.
+
+Shared deployment coordination
+Read /opt/deploy-notes.md and held /tmp/payobook-studio-deploy.lock throughout
+the configuration release. Recorded the failed rollback-only attempt and the
+successful retry using START/FAILED/DONE. Released the lock at 00:42 UTC.
+Claude NAV P3b then recorded START at 00:43 UTC and DONE at 00:47 UTC for
+pb_payruns/pb_learn, commit 713c833df. Following that rollout, all 151 existing
+custom module trees matched the latest combined branch and every installed
+custom-module version matched its manifest across all four active databases.
+No pending module state or upgrade job remained. All four login hosts returned
+HTTP 200 with valid login forms after warming; scheduled-job counts remained
+37/0/26/69 for payobook/template/p0clone/rize respectively.
+
+Deployed Chrome validation on the final combined release
+PASS: all four policy editions listed as Published, effective 2026-11-01.
+PASS: Vietnam policy shows 20 annual days, carry cap 8, exit divisor 30,
+cashout cap 60, original email/form workflow and 40/200 overtime limits.
+PASS: November application payroll panel shows enabled contractual/calendar
+settings, period-completeness controls, source review and optional spreadsheet.
+PASS: Run without a spreadsheet, with no workbook or certification, reaches
+Review required with actionable missing-source and completeness blockers.
+The real-data preview included 47 eligible employees; it was intentionally not
+certified or computed. Before/after database counts remained 2 payroll runs
+(max id 2092) and 65 payslips (max id 4184). No test payroll was created.
+PASS: Source settings link opens the saved configuration and mapped input list;
+approved-timesheet/attendance mode and fixed standard days are available.
+PASS: desktop visual inspection and no Chrome JavaScript errors on these paths.
+Successful computation and approval safeguards were exercised with controlled
+fixtures in the 63 deployed backend tests, not by attesting to live HR records.
+No PNG or screenshot files were retained from this test run. Earlier policy
+render PNGs were removed; unrelated product assets and user files were preserved.
