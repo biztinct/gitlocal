@@ -357,7 +357,7 @@
                            t-attf-aria-label="Filter {{ empMenuLabel }} fields"
                            t-att-value="state.empMenuFilter" t-on-input="onEmpMenuFilter"/>
                   </div>
-                  <div class="pbms-empmenu__l">
+                  <label style="display:block;padding:8px 12px"><input type="checkbox" t-model="state.empAdvanced"/> Show other application fields</label><div class="pbms-empmenu__l">
                     <button t-foreach="empMenuFields" t-as="f" t-key="f.id" type="button"
                             t-attf-class="pbms-empmenu__opt {{ isFieldAdded(f.id) ? 'added' : '' }} {{ isFieldMapped(f.id) ? 'locked' : '' }}"
                             t-att-disabled="isFieldMapped(f.id) ? 'disabled' : false"

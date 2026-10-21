@@ -2901,6 +2901,7 @@
             <button class="hs-x" t-on-click="closeConfigSwitcher" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
+          <div class="cs-sort" style="padding:12px 24px"><button t-att-class="!state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=false; this.csClearFilters(); }">Operational schemas</button><button t-att-class="state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=true; this.csClearFilters(); }">Historical branches (<t t-esc="csHistoryCount"/>)</button></div><p t-if="state.csHistory" style="padding:0 24px">Completed review branches. Operational mappings use their main schema.</p>
           <div class="cs-filters">
             <div class="cs-search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -2961,7 +2962,7 @@
                       <span t-if="c.division" class="cs-chip div" t-esc="c.division"/>
                       <span t-if="c.country" class="cs-chip" t-esc="c.country"/>
                       <span t-if="c.currency" class="cs-chip cur" t-esc="c.currency"/>
-                      <span t-attf-class="cs-state {{ c.state }}" t-esc="csStateLabel(c.state)"/>
+                      <span t-attf-class="cs-state {{ c.state }}" t-esc="c.branch_state === 'merged' ? 'Merged · historical' : c.branch_state === 'discarded' ? 'Discarded · historical' : csStateLabel(c.state)"/>
                       <span class="cs-chip cyc" t-esc="csCycleLabel(c.cycle_type)"/>
                     </div>
                     <div class="cs-card-mid">
@@ -2987,7 +2988,7 @@
                       </div>
                     </div>
                     <div class="cs-resume" t-if="bpSetup(c)">Still being set up — step <t t-esc="bpSetup(c).step_no"/> of <t t-esc="bpSetup(c).total"/></div>
-                    <div class="cs-flags">
+                    <p t-if="state.csHistory">Main schema: <t t-esc="c.parent_name"/></p><div class="cs-flags" t-if="!state.csHistory">
                       <span t-if="(c.problem_counts.error || 0)" class="cs-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
                       <span t-if="(c.problem_counts.warning || 0)" class="cs-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
                       <span t-if="(c.problem_counts.hint || 0)" class="cs-flag hint"><t t-esc="c.problem_counts.hint"/> hint<t t-if="c.problem_counts.hint !== 1">s</t></span>
@@ -2999,7 +3000,7 @@
                       <span t-if="c.is_branch" class="cs-tag branch">Branch</span>
                     </div>
                   </button>
-                  <div class="cs-card-actions">
+                  <div class="cs-card-actions"><button t-if="state.csHistory and c.parent_id" class="pbfs-btn soft sm" t-on-click="() => this.chooseConfig(c.parent_id)">Open main schema</button>
                     <button t-if="bpSetup(c)" class="pbfs-btn soft sm cs-resume-b"
                             t-on-click="(ev) => this.bpResume(c, ev)"
                             t-att-title="'Carry on setting up ' + c.name">

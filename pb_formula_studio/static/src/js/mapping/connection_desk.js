@@ -17,7 +17,7 @@ export class ConnectionDesk extends Component {
     setup() {
         this.modals = [useRef("traceModal"),useRef("priorityModal"),useRef("draftModal")];
         this.orm = useService("orm"); this.notif = useService("notification");
-        this.state = useState({q:"", filter:"all", selected:this.props.componentId || 0, tab:"sources",
+        this.state = useState({q:"", filter:"all", showContext:false, selected:this.props.componentId || 0, tab:"sources",
             busy:false, error:"", trace:null, priority:null, draft:null, kind:"", role:"", storage:"", storageEditing:false});
         // OWL t-set scopes can inherit the component. Keep all mutations on it.
         for (const name of Object.getOwnPropertyNames(ConnectionDesk.prototype)) {
@@ -37,7 +37,7 @@ export class ConnectionDesk extends Component {
             if (next.configId !== this.props.configId) {
                 this.state.selected = 0; this.state.q = ""; this.state.priority = null; this.state.trace = null;
             }
-            const inputs = next.data.components.filter(r => r.type === "input");
+            const inputs = next.data.components.filter(r => r.type === "input" && (this.state.showContext || r.payroll_relevant !== false || r.id === next.componentId));
             const row = inputs.find(r => r.id === this.state.selected) || inputs[0];
             if (row) { this.state.selected = row.id; this.state.kind = row.value_kind; this.state.role = row.net_role || ""; }
             else { this.state.selected=0; this.state.kind=""; this.state.role=""; }
@@ -46,14 +46,17 @@ export class ConnectionDesk extends Component {
     }
     // Mapping operates on inputs; keep calculated/constant components in Journey.
     get rows() { return (this.props.data.components || []).filter(r => r.type === "input"); }
-    get selected() { return this.rows.find(r => r.id === this.state.selected) || this.rows[0] || null; }
+    get visibleRows() { return this.rows.filter(r => this.state.showContext || r.payroll_relevant !== false || r.id === this.props.componentId); }
+    toggleContext(ev) { this.state.showContext=ev.target.checked; this.select(this.selected); }
+    get contextCount() { return this.rows.filter(r => r.payroll_relevant === false).length; }
+    get selected() { return this.visibleRows.find(r => r.id === this.state.selected) || this.visibleRows[0] || null; }
     get filtered() {
         const q = this.state.q.trim().toLocaleLowerCase();
-        return this.rows.filter(r => (!q || `${r.name} ${r.code} ${r.col}`.toLocaleLowerCase().includes(q)) &&
+        return this.visibleRows.filter(r => (!q || `${r.name} ${r.code} ${r.col} ${r.owner_summary || ""}`.toLocaleLowerCase().includes(q)) &&
             (this.state.filter === "all" || (this.state.filter === "missing" ? this.isMissing(r) : r.sources.length > 1)));
     }
-    get missingCount() { return this.rows.filter(r => this.isMissing(r)).length; }
-    get multipleCount() { return this.rows.filter(r => r.sources.length > 1).length; }
+    get missingCount() { return this.visibleRows.filter(r => this.isMissing(r)).length; }
+    get multipleCount() { return this.visibleRows.filter(r => r.sources.length > 1).length; }
     get sampleName() { const p=this.props.data; return (p.samples.find(s => s.id === p.preview.sample_id) || {}).name || ""; }
     icon(name) { return ic(name); }
     get savedStorage() { return this.selected?.is_contract_component ? (this.selected.is_text_component ? "text" : "amount") : ""; }

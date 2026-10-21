@@ -56,3 +56,10 @@
 
 .pbim.pbms .pbms-wrap .pbms-top:has(.pbms-compact-scheme) .pbms-brand {margin-left:0;}
 .pbms-compact-scheme {min-width:0;white-space:nowrap;}
+
+.pbcdesk-scope { display:flex; gap:20px; align-items:center; padding:12px 18px; background:#f5f4fb; border-bottom:1px solid #e2dfed; font-size:12px; flex-wrap:wrap; label {font-weight:600;white-space:nowrap;} span {color:#626079;} }
+.pbcdesk-owner {display:block;margin:7px 0 5px 34px;color:#5c537e;white-space:normal;}
+.pbcdesk-bindings {article {padding:12px;margin:10px 0;border:1px solid #dedbe9;border-radius:9px;background:#faf9fd;} strong,code,small {display:block;overflow-wrap:anywhere;} code {margin-top:5px;} p {margin:7px 0;} small {color:#68627d;} .pbcdesk-direction {font-weight:600;color:#514483;}}
+
+.pbcdesk .pbcdesk-scope label {display:flex;align-items:center;gap:8px;margin:0;}
+.pbcdesk .pbcdesk-scope input[type="checkbox"] {display:inline-block;width:auto;margin:0;padding:0;}

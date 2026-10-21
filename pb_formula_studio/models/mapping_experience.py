@@ -57,15 +57,100 @@ class MappingExperience(models.AbstractModel):
         records, wires = self._source_record_dests(config), self._source_wire_dests(config)
         application = config._application_mapping_descriptors() if config.application_data_enabled else {}
         rules = {r.id: r for r in config.rule_ids}
+        used = set(','.join(v or '' for v in config.rule_ids.mapped('formula_dependencies')).split(','))
         for row in data['components']:
             row['sources'] = self._declared_sources(rules[row['id']], records, wires)
             row['storage'] = records.get(row['id']) or None
             row['application_source'] = application.get(row['id'])
+            rule = rules[row['id']]
+            # Conservative visibility only; never change engine input selection.
+            identity = rule.application_source_key in ('employee.employee_id', 'employee.name')
+            row['payroll_relevant'] = bool(identity or rule.code in used or rule.column_letter in used
+                or rule.value_kind in ('money', 'quantity', 'percentage')
+                or rule.net_role not in (False, '', 'info', 'information', 'ignore'))
+            row['mapping_details'] = self._desk_mapping_details(rule, row, config)
+            row['owner_summary'] = ' · '.join(dict.fromkeys(x['owner'] for x in row['mapping_details']))
         data.update(ok=True, can_edit=self._desk_can_edit(), priority=self._desk_priority(config),
                     kinds=config._value_kind_options(),
                     pay_roles=[{'key': k or '', 'label': label} for k, label in
                                self.env['hr.formula.rule']._fields['net_role'].selection])
         return data
+
+    def _desk_mapping_details(self, rule, row, config):
+        """Metadata only. Availability is never inferred from a sample value."""
+        details = []
+        app = row.get('application_source')
+        if app:
+            key = app['key']
+            owner = app['model'] or 'Payroll period calculation'
+            calculation = app['label']
+            field_path = {
+                'assets.physical_types': 'asset_id.category_id.name (all active physical assignments)',
+                'assets.physical_codes': 'asset_id.code (all active physical assignments)',
+                'assets.physical_serials': 'asset_id.serial (all active physical assignments)',
+                'assets.digital_names': 'asset_id.name (all active digital assignments)',
+                'exit.reason': 'reason_text (unique approved resignation)',
+                'exit.interview_status': 'pb_interview_status (unique approved resignation)',
+                'exit.submitted_on': 'submit_date (unique approved resignation)',
+                'exit.notice_days': 'notice_days (unique approved resignation)',
+                'exit.approved_lwd': 'approved_lwd (unique approved resignation)',
+                'exit.contractual_lwd': 'pb_contractual_lwd (unique approved resignation)',
+                'exit.unserved_notice_days': 'pb_unserved_notice_days (unique approved resignation)',
+            }.get(key)
+            if field_path:
+                calculation += '; ' + field_path
+            names = {'pb.asset.assignment': 'Assets', 'pb.resignation': 'Offboarding',
+                     'pb.exit.clearance': 'Exit clearance', 'pb.probation.review': 'Probation',
+                     'hr.leave.allocation': 'Leave allocation', 'hr.payroll.period.input': 'Monthly inputs',
+                     'hr.employee': 'Employee', 'hr.contract': 'Contract', 'res.partner.bank': 'Bank account'}
+            if owner in names:
+                owner = names[owner] + ' · ' + owner
+            if key.startswith('period.') and not key.startswith('period.input.'):
+                if '.ot.' in key or key.endswith('bonus_hours'):
+                    owner = 'Overtime · hr.overtime.request'
+                    if config.payroll_basis == 'timesheet':
+                        owner += ' · pb.timesheet.packet'
+                elif key == 'period.standard_days':
+                    owner = 'Work calendar · resource.calendar / Payroll settings'
+                elif 'leave' in key or 'unpaid' in key:
+                    owner = 'Time off · hr.leave / Leave policy'
+                else:
+                    owner = 'Work calendar · Time off'
+                    if config.payroll_basis == 'timesheet':
+                        owner += ' · Timesheets · Attendance'
+                    calculation += ('; approved pb.timesheet.packet reconciled with hr.attendance'
+                                    if config.payroll_basis == 'timesheet' else
+                                    '; contractual calendar/divisor adjusted for eligible service and leave')
+            state = ('Mapping needs review' if app['pending'] else
+                     'Excluded from payroll' if app['payroll_excluded'] else
+                     'Owning application unavailable' if not app['available'] else
+                     'Configured; employee and period data not checked')
+            details.append({'owner': owner, 'field': key, 'calculation': calculation,
+                'direction': 'Application → payroll (read only)', 'availability': state})
+        storage = row.get('storage')
+        if storage:
+            kind = storage['kind']
+            owner = {'employee_field': 'Employee · hr.employee', 'contract_field': 'Contract · hr.contract',
+                     'bank_account': 'Bank account · res.partner.bank'}.get(kind, 'Contract component')
+            details.append({'owner': owner, 'field': storage['key'],
+                'calculation': storage.get('label') or storage['key'],
+                'direction': 'Reviewed import → record' if kind == 'bank_account' else
+                             'Import → record; record → payroll fallback',
+                'availability': 'Mapping configured; employee values not checked'})
+        if rule.is_contract_component:
+            details.append({'owner': 'Contract component · hr.contract.advantage', 'field': rule.code,
+                'calculation': 'Text component' if rule.is_text_component else 'Amount component',
+                'direction': 'Import → contract; contract → payroll fallback',
+                'availability': 'Storage configured; employee values not checked'})
+        for source in row['sources']:
+            if source['kind'] in ('employee_field', 'contract_field', 'contract_component', 'bank_account', 'none'):
+                continue
+            details.append({'owner': {'excel': 'Spreadsheet', 'feed': 'Connected system',
+                'rule': 'Transformation', 'period': 'Pay-period input'}.get(source['kind'], source['kind']),
+                'field': source.get('key') or '', 'calculation': source.get('label') or source.get('key') or '',
+                'direction': 'Source → payroll', 'availability': 'Binding configured; period values not checked'})
+        return details or [{'owner': 'Unmapped', 'field': '', 'calculation': 'Choose a source',
+            'direction': 'Not configured', 'availability': 'No source configured'}]
 
     def _desk_check_order(self, order):
         if not isinstance(order, list) or len(order) != 3 or set(order) != {'api', 'excel', 'records'}:

@@ -391,7 +391,7 @@ export class PbFormulaStudio extends Component {
             csCloningId: null,
             csQuery: "",
             csCountry: "",
-            csState: "",
+            csState: "", csHistory: false,
             csCycle: "",
             csDivision: "",
             csSort: "attention",   // attention | recent | name | health
@@ -4398,7 +4398,9 @@ export class PbFormulaStudio extends Component {
     csSetSort(v) { this.state.csSort = v; }
     csClearFilters() { this.state.csQuery = ""; this.state.csCountry = ""; this.state.csState = ""; this.state.csCycle = ""; this.state.csDivision = ""; }
     get csHasFilters() { return !!(this.state.csQuery || this.state.csCountry || this.state.csState || this.state.csCycle || this.state.csDivision); }
-    get csCards() { return (this.state.csBoard && this.state.csBoard.cards) || []; }
+    get csAllCards() { return (this.state.csBoard && this.state.csBoard.cards) || []; }
+    get csHistoryCount() { return this.csAllCards.filter(c => ["merged", "discarded"].includes(c.branch_state)).length; }
+    get csCards() { return this.csAllCards.filter(c => !!this.state.csHistory === ["merged", "discarded"].includes(c.branch_state)); }
     get csCanEdit() { return !!(this.state.csBoard && this.state.csBoard.can_edit); }
     csCountryLabel(cc) {
         return { VN: _t("Vietnam"), ID: _t("Indonesia"), IN: _t("India"), SG: _t("Singapore"),

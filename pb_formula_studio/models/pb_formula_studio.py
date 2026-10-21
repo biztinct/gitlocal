@@ -177,7 +177,8 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def get_config_list(self):
-        configs = self.env['hr.formula.config'].search([], order='sequence, id desc')
+        configs = self.env['hr.formula.config'].search(['|', ('parent_branch_id', '=', False),
+            ('branch_state', '=', 'open')], order='sequence, id desc')
         out = []
         for c in configs:
             out.append({
@@ -195,6 +196,9 @@ class PbFormulaStudio(models.AbstractModel):
                 'score': self._config_score(c),
                 'sample_count': len(c.sample_data_ids),
                 'is_branch': bool(c.parent_branch_id),
+                'branch_state': c.branch_state if c.parent_branch_id else '',
+                'parent_id': c.parent_branch_id.id or False,
+                'parent_name': c.parent_branch_id.name or '',
                 'is_variant': bool(c.master_config_id),
                 'is_master': bool(c.variant_ids),
                 'updated': fields.Date.to_string(c.write_date) if c.write_date else '',
@@ -3743,6 +3747,9 @@ class PbFormulaStudio(models.AbstractModel):
                 'active': bool(c.active),
                 'sample_count': len(c.sample_data_ids),
                 'is_branch': bool(c.parent_branch_id),
+                'branch_state': c.branch_state if c.parent_branch_id else '',
+                'parent_id': c.parent_branch_id.id or False,
+                'parent_name': c.parent_branch_id.name or '',
                 'is_variant': bool(c.master_config_id),
                 'is_master': bool(c.variant_ids),
                 # --- delete vs archive eligibility (see _delete_eligibility) ---
@@ -10739,7 +10746,8 @@ class PbFormulaStudio(models.AbstractModel):
                 lane = self._EC_FALLBACK_LANE.get(fld.model, 'other_employee')
                 lane_order = order_of.get(lane, 99)
         meta = {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype,
-                'lane': lane, 'lane_order': lane_order}
+                'lane': lane, 'lane_order': lane_order,
+                'recommended': (fld.model, fld.name) in self._ec_lane_index()[0]}
         if not self._ec_is_mappable(fld.model, fld.name):
             meta['note'] = self._ec_unmappable_note(fld)
             meta['mappable'] = False
@@ -10984,6 +10992,11 @@ class PbFormulaStudio(models.AbstractModel):
         q = context_id.strip().lower() if isinstance(context_id, str) else ''
         left = self._ec_left_items(config, include_payroll=include_payroll)
         right = self._ec_right_column(q, config)
+        # The normal board offers curated destinations. Existing wires are
+        # always restored below; advanced search still exposes the full catalogue.
+        curated, _order = self._ec_lane_index()
+        right = [i for i in right if not i['id'].startswith('f:') or
+                 (i.get('meta', {}).get('model'), i.get('meta', {}).get('field')) in curated]
         present = {i['id'] for i in right}
         Mapping = self.env['hr.payslip.import.mapping'].sudo()
         by_left = {i['id']: i for i in left}

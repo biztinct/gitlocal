@@ -72,3 +72,17 @@ test("correcting a value type need not recreate existing text storage", () => {
     expect(component.state.storage).toBe("");
     expect(component.setupDirty).toBe(true);
 });
+
+
+test("HR context is hidden by default and revealing it does not change data", () => {
+    const component = desk({payroll_relevant: true});
+    component.props.data.components.push({id: 9, type: "input", payroll_relevant: false, value_kind: "text"});
+    expect(component.visibleRows.map(r => r.id)).toEqual([7]);
+    component.state.showContext = true;
+    component.select(component.props.data.components[1]);
+    expect(component.visibleRows.map(r => r.id)).toEqual([7, 9]);
+    component.toggleContext({target: {checked: false}});
+    expect(component.selected.id).toBe(7);
+    expect(component.state.kind).toBe("money");
+    expect(component.props.data.components.length).toBe(2);
+});

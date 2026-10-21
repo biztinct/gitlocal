@@ -72,6 +72,49 @@ class TestMappingExperience(TransactionCase):
         self.assertEqual(data['defaults']['config_id'], self.config.id)
         self.assertIn('config', data['defaults']['fell_back'])
 
+    def test_unified_mapping_keeps_hr_context_and_period_sources_honest(self):
+        self.config.write({'application_data_enabled': True, 'application_effective_from': '2026-11-01'})
+        self.rule.application_source_key = 'period.paid_day_equivalents'
+        context = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'code': 'DESKASSET', 'name': 'IT Asset number', 'column_type': 'input',
+            'value_kind': 'text', 'net_role': 'info', 'application_source_key': 'assets.physical_codes'})
+        rows = {r['id']: r for r in self.studio.mapping_workspace_data(self.config.id)['components']}
+        self.assertFalse(rows[context.id]['payroll_relevant'])
+        self.assertIn('pb.asset.assignment', rows[context.id]['mapping_details'][0]['owner'])
+        self.assertIn('read only', rows[context.id]['mapping_details'][0]['direction'])
+        self.assertTrue(rows[self.rule.id]['payroll_relevant'])
+        self.assertIn('contractual', rows[self.rule.id]['mapping_details'][0]['calculation'])
+        self.assertIn('not checked', rows[self.rule.id]['mapping_details'][0]['availability'])
+        self.config.payroll_basis = 'timesheet'
+        row = next(r for r in self.studio.mapping_workspace_data(self.config.id)['components'] if r['id'] == self.rule.id)
+        self.assertIn('hr.attendance', row['mapping_details'][0]['calculation'])
+        self.assertIn('Attendance', row['mapping_details'][0]['owner'])
+
+    def test_formula_consumed_text_stays_in_payroll_view(self):
+        self.rule.write({'value_kind': 'text', 'net_role': 'info'})
+        self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Conditional pay',
+            'code': 'DESKRESULT', 'column_type': 'formula', 'excel_formula': '=IF(DESKHOURS="Yes",1,0)'})
+        row = next(r for r in self.studio.mapping_workspace_data(self.config.id)['components'] if r['id'] == self.rule.id)
+        self.assertTrue(row['payroll_relevant'])
+
+    def test_closed_branches_are_history_not_operational_configs(self):
+        branch = self.config.copy({'name': 'Historic desk', 'code': 'DESKHISTORY',
+            'parent_branch_id': self.config.id, 'branch_state': 'merged'})
+        self.assertNotIn(branch.id, [c['id'] for c in self.studio.get_config_list()])
+        with patch.object(type(self.studio), 'get_problems', return_value={'counts': {}}):
+            card = next(c for c in self.studio.bureau_board()['cards'] if c['id'] == branch.id)
+        self.assertEqual(card['branch_state'], 'merged')
+        self.assertEqual(card['parent_id'], self.config.id)
+
+    def test_default_employee_catalogue_preserves_wires_not_unrelated_fields(self):
+        data = self.studio.employee_mapping_data(self.config.id, False, True)
+        curated, _ = self.studio._ec_lane_index()
+        wired = {w['rightId'] for w in data['wires']}
+        for item in data['right']:
+            if item['id'].startswith('f:') and item['id'] not in wired:
+                self.assertIn((item['meta']['model'], item['meta']['field']), curated)
+        self.assertNotIn('f:hr.employee:sunday_location_id', [i['id'] for i in data['right']])
+
     def test_preview_is_read_only_and_save_matches_engine_order(self):
         order = ['excel', 'records', 'api']
         before = self.config.source_priority

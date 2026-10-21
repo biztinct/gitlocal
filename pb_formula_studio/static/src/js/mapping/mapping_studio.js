@@ -240,7 +240,7 @@ export class MappingStudio extends Component {
             empHiddenLanes: [],     // category labels hidden in this view
             empQuery: "", empResults: [],       // "Add a field to map…"
             empExtras: [], empHidden: [],       // session-scoped right-column edits
-            empMenu: null, empMenuFilter: "", empMenuAll: {},   // Employee ▾ / Contract ▾
+            empAdvanced:false, empMenu: null, empMenuFilter: "", empMenuAll: {},   // Employee ▾ / Contract ▾
             // ---- J2: the Excel on-ramp (the `import` board only)
             rampBusy: "",       // "read" | "template" | "handoff" while one runs
             rampOver: false,    // a file is being dragged over the dropzone
@@ -1063,7 +1063,7 @@ export class MappingStudio extends Component {
     _resetEmpToolkit() {
         Object.assign(this.state, {
             empQuery: "", empResults: [], empExtras: [], empHidden: [],
-            empMenu: null, empMenuFilter: "", empMenuAll: {},
+            empAdvanced:false, empMenu: null, empMenuFilter: "", empMenuAll: {},
             empPayroll: false, empLane: null, empHiddenLanes: [],
         });
     }
@@ -1747,7 +1747,7 @@ export class MappingStudio extends Component {
     get empMenuFields() {
         const model = this.state.empMenu;
         if (!model) { return []; }
-        const all = this.state.empMenuAll[model] || [];
+        const all = (this.state.empMenuAll[model] || []).filter(f => this.state.empAdvanced || f.meta?.recommended || this.isFieldMapped(f.id));
         const q = (this.state.empMenuFilter || "").trim().toLowerCase();
         if (!q) { return all; }
         return all.filter((f) =>
