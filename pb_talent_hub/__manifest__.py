@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Talent',
-    'summary': 'Goals, growth plans, training and praise in one place on '
-               'the left menu',
+    'summary': 'Goals, growth plans and praise in one place on the left menu',
     'description': """
 Talent — one place for how people grow.
 
-Goals, growth plans, training and praise used to live in three places (People,
-the Lifecycle hub and Learn). The revised menu puts them side by side under
-GROW, above Learn:
+Goals, growth plans and praise used to live in three places (People and the
+Lifecycle hub). The revised menu puts them side by side under GROW, above
+Learning:
 
-    goals · growth · training · praise
+    goals · growth · praise
+
+Training was a fourth tab until LEARNING L0 (2026-10-21) gave it its own
+entry, GROW › Learning; an old link that still asks Talent for the training
+tab is sent there.
 
 This module is only the shell. Each tab is the existing board, added by the
 module that owns it, so a company without one of them simply has one tab
 fewer. Nothing here stores data or decides who may see what: every board keeps
 its own access rules.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

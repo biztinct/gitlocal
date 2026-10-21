@@ -4,10 +4,13 @@
  *
  * How people grow, in one place:
  *
- *     goals · growth · training · praise
+ *     goals · growth · praise
  *
- * Before NAV P2 these four boards lived on three hubs (People had Goals and
- * Praise, the Lifecycle hub had Growth plans, Learn had Training). This hub
+ * Before NAV P2 these boards lived on two hubs (People had Goals and Praise,
+ * the Lifecycle hub had Growth plans). Training was a fourth tab until
+ * LEARNING L0 (2026-10-21) gave it its own entry, GROW › Learning; an old
+ * link that asks this hub for `pb_lens: "training"` is sent there, to
+ * Learning › Courses, without drawing Talent first (R10). This hub
  * ships NO lens of its own: each tab is registered by the module that owns
  * the board (`TALENT_LENSES`), so a company without one of them simply has a
  * tab fewer, and the dependency runs one way only. With nothing registered
@@ -18,7 +21,7 @@
  *
  * `config` is built ONCE per instance, never in a getter (W21).
  */
-import { Component } from "@odoo/owl";
+import { Component, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -34,9 +37,20 @@ import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
  *         propsFromContext(ctx) { return { ... }; },   // optional
  *     }, { sequence: 10 });
  *
- * Goals 10, Growth 20, Training 30, Praise 40.
+ * Goals 10, Growth 20, Praise 40 (30 was Training until LEARNING L0).
  */
 export const TALENT_LENSES = "pb_talent_hub_lens";
+
+/** Where an old "Talent › Training" link lands since LEARNING L0. */
+export const TRAINING_REDIRECT = {
+    xmlid: "pb_learning_hub.action_pb_learning_hub",
+    lens: "courses",
+};
+
+/** True when the arrival asks for the Training tab Talent no longer has. */
+export function asksForTraining(ctx) {
+    return !!ctx && ctx.pb_lens === "training";
+}
 
 export class PbTalentHub extends Component {
     static template = "pb_talent_hub.PbTalentHub";
@@ -45,9 +59,22 @@ export class PbTalentHub extends Component {
 
     setup() {
         this.actionService = useService("action");
+        const ctx = (this.props.action && this.props.action.context) || {};
+        // R10: Training moved to GROW › Learning. Draw nothing and hand the
+        // reader over once mounted (a redirect from inside a mounting
+        // action is not safe before mount). Named by xmlid string: this
+        // module does not depend on the Learning hub.
+        this.redirecting = asksForTraining(ctx);
+        if (this.redirecting) {
+            onMounted(() => openHub(this.actionService, {
+                ...TRAINING_REDIRECT,
+                focus: ctx.pb_focus || "",
+                back: ctx.pb_back || null,
+            }));
+        }
         this.config = {
             key: "talent",                   // -> pbhub.talent.lens.v1
-            brand: { label: _t("Talent"), icon: "graduationCap" },
+            brand: { label: _t("Talent"), icon: "target" },
             defaultLens: "goals",
             cog: () => this.openSettings(),
             lenses: this.extraLenses(),

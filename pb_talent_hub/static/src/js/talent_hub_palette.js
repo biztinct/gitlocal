@@ -12,9 +12,11 @@ import { _t } from "@web/core/l10n/translation";
 registry.category("pb_hub_palette").add("talenthub", {
     id: "talenthub",
     label: _t("Talent"),
-    sublabel: _t("Goals, growth, training and praise"),
-    icon: "graduationCap",
+    sublabel: _t("Goals, growth and praise"),
+    icon: "target",
     // Mirrors the menu entry's permission lane (rule 1 of the palette seeds).
+    // "training" / "đào tạo" stay as words people type (R10): since
+    // LEARNING L0 they also list the Learning row, which is where it went.
     groups: ["hr.group_hr_user", "base.group_system"],
     requires: "pb_talent_hub",
     action: { xmlid: "pb_talent_hub.action_pb_talent_hub" },

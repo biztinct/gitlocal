@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-"""pb_talent_hub (NAV P2) — the GROW › Talent entry and its four tabs.
+"""pb_talent_hub (NAV P2) — the GROW › Talent entry and its three tabs.
 
-The hub ships no lens of its own; the four boards register themselves from
-their modules. So most of what can go wrong is a board still registering
-into the hub it LEFT (People, the Lifecycle hub, Learn), or the entry not
-being where the revised menu puts it — both checked here.
+The hub ships no lens of its own; the boards register themselves from their
+modules. So most of what can go wrong is a board still registering into the
+hub it LEFT (People, the Lifecycle hub, Learn — and since LEARNING L0,
+Training registering here after it moved to GROW › Learning), or the entry
+not being where the revised menu puts it — all checked here.
 """
 import ast
 import os
@@ -16,11 +17,11 @@ from odoo.tests.common import TransactionCase, tagged
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# (module, palette file, lens key, sequence) — the four tabs, in rail order.
+# (module, palette file, lens key, sequence) — the three tabs, in rail order.
+# LEARNING L0: Training (30) left for GROW › Learning.
 TABS = [
     ('pb_goals', 'goals_palette.js', 'goals', 10),
     ('pb_pip', 'pip_palette.js', 'pip', 20),
-    ('pb_training', 'training_palette.js', 'training', 30),
     ('pb_rnr', 'rnr_palette.js', 'praise', 40),
 ]
 _RE_ADJACENT_STRINGS = re.compile(r"""["']\s*\n\s*["']""")
@@ -39,7 +40,12 @@ class TestTalentHub(TransactionCase):
         self.assertTrue(item.active)
         self.assertEqual(item.section_id, self.env.ref('pb_learn.sec_learn'))
         self.assertEqual(item.sequence, 5)
-        self.assertEqual(item.icon, 'graduation-cap')
+        # LEARNING L0: Learning took the cap; Talent is the target.
+        self.assertEqual(item.icon, 'target')
+        self.assertNotIn('pb_training_board',
+                         (item.match_action_tags or '').split(','))
+        for model in ('pb.training', 'pb.training.assignment'):
+            self.assertNotIn(model, (item.match_models or '').split(','))
         self.assertEqual(item.action_tag, 'pb_talent_hub')
         learn = self.env.ref('pb_learn.item_learn_journey')
         self.assertLess(item.sequence, learn.sequence)
@@ -53,7 +59,7 @@ class TestTalentHub(TransactionCase):
     def test_the_icon_is_in_the_closed_rail_set(self):
         js = _read(os.path.join(get_module_path('pb_sidebar'), 'static', 'src',
                                 'js', 'pb_sidebar.js'))
-        self.assertIn('"graduation-cap":', js)
+        self.assertRegex(js, r'\n\s+"?target"?:\s*\'<')
 
     def test_every_tab_registers_into_talent_and_not_its_old_hub(self):
         installed = set(self.env['ir.module.module'].sudo().search(
@@ -105,3 +111,39 @@ class TestTalentHub(TransactionCase):
                 src = _read(os.path.join(d, f))
                 for s in re.findall(r'_t\("([^"]*)"\)', src):
                     self.assertNotIn('odoo', s.lower(), f)
+
+    # ---------------------------------------------------- LEARNING L0 (T9)
+    def test_training_is_not_a_talent_tab_any_more(self):
+        installed = set(self.env['ir.module.module'].sudo().search(
+            [('state', '=', 'installed')]).mapped('name'))
+        if 'pb_training' not in installed:
+            return
+        src = _read(os.path.join(get_module_path('pb_training'), 'static',
+                                 'src', 'js', 'training_palette.js'))
+        self.assertNotIn('TALENT_LENSES', src)
+        self.assertNotIn('pb_talent_hub', ast.literal_eval(_read(os.path.join(
+            get_module_path('pb_training'), '__manifest__.py')))['depends'])
+
+    def test_an_old_training_link_is_sent_to_learning_courses(self):
+        src = _read(os.path.join(HERE, 'static', 'src', 'js',
+                                 'talent_hub.js'))
+        self.assertIn('xmlid: "pb_learning_hub.action_pb_learning_hub"', src)
+        self.assertIn('lens: "courses"', src)
+        self.assertIn('ctx.pb_lens === "training"', src)
+        self.assertRegex(src, r'onMounted\(\(\) => openHub\(this\.actionService, \{\s+'
+                              r'\.\.\.TRAINING_REDIRECT')
+        self.assertIn('brand: { label: _t("Talent"), icon: "target" }', src)
+        xml = _read(os.path.join(HERE, 'static', 'src', 'xml',
+                                 'talent_hub.xml'))
+        self.assertIn('t-if="redirecting"', xml)
+
+    def test_the_blurb_no_longer_says_training(self):
+        src = _read(os.path.join(HERE, 'static', 'src', 'js',
+                                 'talent_hub_palette.js'))
+        self.assertIn('sublabel: _t("Goals, growth and praise")', src)
+        # R10: the old word still finds a door (it lists Learning too).
+        self.assertIn('"training"', src)
+        po = _read(os.path.join(HERE, 'i18n', 'vi_VN.po'))
+        self.assertIn('msgid "Goals, growth and praise"\n'
+                      'msgstr "Mục tiêu, phát triển và khen ngợi"', po)
+        self.assertNotIn('Goals, growth, training and praise', po)

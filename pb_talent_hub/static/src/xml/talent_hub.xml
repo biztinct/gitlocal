@@ -5,7 +5,10 @@
        NAV P2. The whole surface is the kit's shell. Section comments use `=`
        rules and never a doubled hyphen (W22/W72). -->
   <t t-name="pb_talent_hub.PbTalentHub">
-    <HubShell config="config" action="props.action or {}"/>
+    <!-- LEARNING L0: an old link to Talent with the training tab is handed
+         to GROW › Learning on mount; nothing is drawn in between. -->
+    <div t-if="redirecting" class="o_action"/>
+    <HubShell t-else="" config="config" action="props.action or {}"/>
   </t>
 
 </templates>

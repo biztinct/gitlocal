@@ -23,5 +23,5 @@ msgstr "Nhân tài"
 #. module: pb_talent_hub
 #. odoo-javascript
 #: code:addons/pb_talent_hub/static/src/js/talent_hub_palette.js:0
-msgid "Goals, growth, training and praise"
-msgstr "Mục tiêu, phát triển, đào tạo và khen ngợi"
+msgid "Goals, growth and praise"
+msgstr "Mục tiêu, phát triển và khen ngợi"
