@@ -29,7 +29,7 @@ class ApplicationSourceSettings(models.Model):
         model = spec.get('model', '')
         if not model:
             if key == 'application.mode': model = 'hr.formula.config'
-            elif key == 'period.standard_days': model = 'resource.calendar'
+            elif key in ('period.standard_days', 'period.public_holiday_days'): model = 'resource.calendar'
             elif '.ot.' in key or key.endswith('bonus_hours'): model = 'hr.overtime.request'
             elif 'regular_work' in key: model = 'pb.timesheet.packet'
             elif key.startswith('period.'): model = 'hr.leave'

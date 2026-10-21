@@ -25,7 +25,13 @@ class ApplicationSourceTrace(models.Model):
         if key in ('period.paid_day_equivalents', 'period.nonpayable_day_equivalents'):
             result = ['hr.contract', 'resource.calendar', 'hr.leave']
             if self.payroll_basis == 'timesheet': result += ['pb.timesheet.packet', 'hr.attendance']
-        elif key == 'period.standard_days': result = ['hr.contract', 'resource.calendar']
+        elif key in ('period.standard_days', 'period.public_holiday_days'): result = ['hr.contract', 'resource.calendar']
+        elif key in ('period.paid_leave_days', 'period.partially_paid_leave_days', 'period.unpaid_day_equivalents'):
+            result = ['hr.leave', 'resource.calendar']
+        elif key in ('period.regular_work_days', 'period.regular_work_hours'):
+            result = ['pb.timesheet.packet', 'hr.attendance', 'resource.calendar']
+        elif model == 'hr.overtime.request' and self.payroll_basis == 'timesheet':
+            result = ['hr.overtime.request', 'pb.timesheet.packet', 'hr.attendance']
         elif model == 'hr.contract.advantage': result = ['hr.contract']
         else: result = [model] if model in OWNER_NAMES else []
         return [m for m in result if m in self.env and m != 'hr.formula.config']
@@ -45,6 +51,8 @@ class ApplicationSourceTrace(models.Model):
             explanation = ('Scheduled working days in the selected month, using the contract work calendar or the employee calendar when no contract calendar is set.' if self.standard_day_basis == 'calendar' else 'Fixed monthly divisor: %s days. The payable share still follows the employee’s work calendar.' % self.fixed_standard_days)
         elif key == 'period.unpaid_day_equivalents':
             explanation = 'Approved leave on scheduled days × its unpaid fraction. A half-paid day contributes 0.5 unpaid days; overlapping leave needs review.'
+        elif key == 'period.public_holiday_days':
+            explanation = 'Public holiday hours from the work calendar converted to scheduled day equivalents, within the employee’s employment dates. Paid holiday credit is included once.'
         elif key.startswith('period.input.'):
             explanation = 'The approved monthly adjustment for this employee, payroll item and exact pay period. Missing, pending or conflicting amounts need review; missing does not automatically mean zero.'
         elif '.ot.' in key:
@@ -72,7 +80,7 @@ class ApplicationSourceTrace(models.Model):
         people = self.env['hr.employee'].sudo(False).search([('company_id', '=', self.company_id.id)], order='name')
         return dict(row, explanation=explanation, actions=actions, consumers=consumers,
             normalization=('Fixed divisor %s scales the payable share of scheduled days.' % self.fixed_standard_days
-                if key.startswith('period.') and self.standard_day_basis == 'fixed' else ''),
+                if key.startswith('period.') and ('days' in key or 'day_equivalents' in key) and self.standard_day_basis == 'fixed' else ''),
             employees=[{'id': e.id, 'name': e.name} for e in people], company=self.company_id.name,
             direction='Application records → Payroll input',
             spreadsheet='A mapped monthly spreadsheet can supply this input instead. Moving a column between worksheets does not change its application source.')

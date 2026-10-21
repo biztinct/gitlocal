@@ -449,3 +449,11 @@ class TestApplicationPayrollSource(TransactionCase):
             'code': 'TRACEMODE', 'column_type': 'input', 'application_source_key': 'application.mode'})
         with self.assertRaises(UserError):
             self.config.application_source_detail(mode.id)
+
+    def test_source_trace_holidays_and_regular_time_open_the_actual_owners(self):
+        self.paid.application_source_key = 'period.public_holiday_days'
+        detail = self.config.application_source_detail(self.paid.id)
+        self.assertEqual(detail['owner'], 'Work calendar')
+        self.assertEqual({a['model'] for a in detail['actions']}, {'hr.contract', 'resource.calendar'})
+        self.paid.application_source_key = 'period.regular_work_days'
+        self.assertIn('hr.attendance', self.config._source_trace_models(self.paid))
