@@ -121,6 +121,8 @@ export const MODES = [
     // JOURNEY J3 S1 / J-D4 — the ⇆ is the point. These rows have ALWAYS run both
     // ways (import writes the record, the resolver reads it back when the file or
     // feed is empty) and the tab has always described only the first half.
+    { id: "sources", icon: "database", label: _t("Payroll sources → Scheme"),
+      hint: _t("Trace calculated inputs to their records and the formulas that use them.") },
     { id: "employee", icon: "users", label: _t("Employee & contract ⇆"),
       hint: _t("Copy what a scheme computes onto employee and contract records — "
                + "and read them back when a pay run finds nothing in the file or feed.") },
@@ -164,9 +166,10 @@ export class MappingStudio extends Component {
                           RuleComposer, HubBackChip };
     static props = ["*"];
 
-    async openApplicationSources() {
+    async openApplicationSources(componentId = 0) {
         if (!this.state.configId) { return; }
         const action = await this.orm.call("hr.formula.config", "action_application_source_settings", [[this.state.configId]]);
+        action.params = {...action.params, tab: "sources", component_id: Number(componentId) || 0, from_mapping: true};
         return this.action.doAction(action);
     }
 
@@ -950,6 +953,7 @@ export class MappingStudio extends Component {
 
     // =================================================================== acts
     async setMode(id) {
+        if (id === "sources") return this.openApplicationSources();
         if (this.state.mode === id) { return; }
         this.state.mode = id;
         this._publishPlace();
@@ -982,6 +986,7 @@ export class MappingStudio extends Component {
      * is pointed at; the RPC it ends in is the destination tab's own read.
      */
     async openDoor(door) {
+        if (door?.mode === "sources") return this.openApplicationSources(door.componentId);
         if (!door || !MODES.some((m) => m.id === door.mode)) { return; }
         if (door.connector) {
             this.state.connectorId = Number(door.connector) || 0;

@@ -65,3 +65,10 @@ assert.equal(board.matches, null);
 assert.equal(board.cardsFor('feeds').length, 2);
 assert.equal(board.rowsOf(board.cardsFor('scheme')[0]).length, 2);
 console.log('19 component-mapping focus regression checks passed');
+
+const { journeyLinkDoor } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+const traceIndex = {rows:new Map(), cardOf:new Map([['p:app:period.paid_day_equivalents','source'],['p:emp:name','source']]), byCard:new Map([['source',{door:{mode:'sources'}}]])};
+assert.deepEqual(journeyLinkDoor(traceIndex,{a:'p:app:period.paid_day_equivalents',b:'s:42'}),{mode:'sources',componentId:42});
+assert.equal(journeyLinkDoor(traceIndex,{a:'p:emp:name',b:'s:42',applicationSource:true}).mode,'sources');
+assert.equal(journeyLinkDoor(traceIndex,{a:'s:42',b:'p:emp:name',kind:'record'}).mode,'employee');
+console.log('3 application-source versus stored-record navigation checks passed');

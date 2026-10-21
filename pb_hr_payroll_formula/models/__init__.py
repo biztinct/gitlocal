@@ -124,3 +124,5 @@ from . import application_domain_sources
 from . import application_source_ui
 
 from . import payroll_period_input
+
+from . import application_source_trace

@@ -7810,7 +7810,7 @@ class PbFormulaStudio(models.AbstractModel):
         def source_card():
             if 'source' not in cards:
                 node = card('source', 'source', 'source', _("Payobook Source"),
-                            door={'mode': 'employee'})
+                            door={'mode': 'sources'})
                 # RECORDS R3 — a door OUT of Mapping, probed client-side so a
                 # database without `pb_records` renders no button at all.
                 node['actions'] = [{
@@ -8023,6 +8023,7 @@ class PbFormulaStudio(models.AbstractModel):
                     record_link['dir'] = 'both'
                 elif not record_link:
                     join(prid, srid, 'record', 'back', dimmed=pending or app['payroll_excluded'])
+                    links[-1]['applicationSource'] = True
                 srow['sub'] = detail
                 if not pending and not app['payroll_excluded']:
                     fed = True

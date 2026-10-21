@@ -403,6 +403,7 @@ export class JourneyBoard extends Component {
             transform: _t("the Transformations tab"),
             import: _t("the Spreadsheet tab"),
             employee: _t("the Employee & contract tab"),
+            sources: _t("Payroll sources"),
         }[((c && c.door) || {}).mode || ""] || "";
         return where ? _t("Opens %s, already on this.", where) : "";
     }

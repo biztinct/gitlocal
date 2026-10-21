@@ -38,6 +38,9 @@ export function journeyLinkDoor(index, link) {
     if (!card?.door) return null;
     if (!scheme) return { ...card.door, focus: index.rows.get(other)?.label || "" };
     const componentId = Number(scheme.slice(2));
+    if (link.applicationSource || other.startsWith("p:app:")) {
+        return { mode: "sources", componentId };
+    }
     const connection = { componentId, side: "right" };
     let mode = card.door.mode;
     if (other.startsWith("f:")) {

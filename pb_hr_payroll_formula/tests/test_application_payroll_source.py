@@ -398,3 +398,48 @@ class TestApplicationPayrollSource(TransactionCase):
         self.assertEqual(facts['period.paid_day_equivalents']['status'], 'conflict')
         self.assertEqual(before, self.config._application_settings_stamp())
         self.assertFalse(self.config.application_preflight(self.employee.ids, self.start, self.end)['ok'])
+
+    def test_source_trace_explains_paid_days_and_formula_consumers(self):
+        self.paid.column_letter = 'A'
+        direct = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Prorated salary', 'code': 'TRACESALARY', 'column_type': 'formula',
+            'column_letter': 'B', 'excel_formula': '=A2*100'})
+        downstream = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Net pay', 'code': 'TRACENET', 'column_type': 'formula',
+            'column_letter': 'C', 'excel_formula': '=B2-10'})
+        detail = self.config.application_source_detail(self.paid.id)
+        self.assertIn('unpaid portions', detail['explanation'])
+        self.assertEqual({a['model'] for a in detail['actions']}, {'hr.contract', 'resource.calendar', 'hr.leave'})
+        uses = {c['id']: c['direct'] for c in detail['consumers']}
+        self.assertTrue(uses[direct.id])
+        self.assertFalse(uses[downstream.id])
+        self.config.payroll_basis = 'timesheet'
+        detail = self.config.application_source_detail(self.paid.id)
+        self.assertIn('reconcile with attendance', detail['explanation'])
+        self.assertIn('hr.attendance', {a['model'] for a in detail['actions']})
+
+    def test_source_trace_actions_are_employee_period_and_model_scoped(self):
+        action = self.config.application_source_record_action(self.paid.id, 'resource.calendar', self.employee.id, self.start, self.end)
+        self.assertEqual(action['res_id'], self.calendar.id)
+        self.assertEqual(action['target'], 'new')
+        action = self.config.application_source_record_action(self.paid.id, 'hr.leave', self.employee.id, self.start, self.end)
+        self.assertIn(('employee_id', 'in', self.employee.ids), action['domain'])
+        self.assertIn(('request_date_from', '<=', self.end), action['domain'])
+        with self.assertRaises(AccessError):
+            self.config.application_source_record_action(self.paid.id, 'res.users')
+        other_company = self.env['res.company'].create({'name': 'Source trace other company'})
+        other_person = self.env['hr.employee'].create({'name': 'Outside trace scope', 'company_id': other_company.id})
+        with self.assertRaises(AccessError):
+            self.config.application_source_record_action(self.paid.id, 'hr.leave', other_person.id)
+        other = self.config.copy({'code': 'TRACESOURCEOTHER'})
+        with self.assertRaises(UserError):
+            self.config.application_source_detail(other.rule_ids[0].id)
+        with self.assertRaises(UserError):
+            self.config.application_source_record_action(self.paid.id, 'hr.leave', self.employee.id, self.end, self.start)
+
+    def test_source_trace_adjustments_retain_component_and_period(self):
+        rule = self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Trace bonus',
+            'code': 'TRACEBONUS', 'column_type': 'input', 'application_source_key': 'period.input.TRACEBONUS'})
+        action = self.config.application_source_record_action(rule.id, 'hr.payroll.period.input', self.employee.id, self.start, self.end)
+        for term in [('component_id', '=', rule.id), ('config_id', '=', self.config.id), ('date_from', '=', self.start), ('date_to', '=', self.end)]:
+            self.assertIn(term, action['domain'])
