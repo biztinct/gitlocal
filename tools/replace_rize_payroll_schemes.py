@@ -23,11 +23,29 @@ Config = env['hr.formula.config'].with_context(tracking_disable=True, mail_notra
 Mapping = env['hr.payslip.import.mapping']
 
 
+
+def focus_layout(cfg):
+    # The data-source mode is supplied by Pay Run, not entered each month.
+    # Preserve the engine component but leave it off ordinary input worksheets.
+    api = env['pb.payroll.templates']
+    catalog = api._catalog(cfg)
+    layout = api._layout(cfg, catalog)
+    controls = {'rule:%s' % r.id for r in cfg.rule_ids
+                if r.application_source_key == 'application.mode'}
+    controls &= {c['id'] for c in catalog}
+    if any(fid in layout[lane] for fid in controls for lane in ('time', 'adjustments', 'records')):
+        for lane in layout:
+            layout[lane] = [fid for fid in layout[lane] if fid not in controls]
+        layout['available'].extend(sorted(controls))
+        api.save_layout(cfg.id, layout)
+
+
 def replace_one(old, spec, seal=True):
     code = 'RIZE_%s_FOCUSED_2026' % spec['country']
     existing = Config.search([('code', '=', code), ('company_id', '=', old.company_id.id)])
     if existing:
         assert existing.focused_payroll_inputs and old.state == 'archived', 'Partial migration found'
+        focus_layout(existing)
         return {'old_id': old.id, 'new_id': existing.id, 'idempotent': True}
     keep = {r['code'] for r in spec['rules'] if r['keep']}
     assert set(old.rule_ids.mapped('code')) == {r['code'] for r in spec['rules']}, 'Schema changed since audit'
@@ -145,6 +163,7 @@ def replace_one(old, spec, seal=True):
         release = {'ok': True, 'release_id': released.id}
     assert release.get('ok'), ('Release could not be sealed', release)
     old.write({'state': 'archived', 'name': old.name + ' — archived master-data scheme'})
+    focus_layout(new)
     catalog = env['pb.payroll.templates']._catalog(new)
     assert all(c['id'].startswith('rule:') for c in catalog)
     assert not any(r.code not in keep for r in new.rule_ids)
