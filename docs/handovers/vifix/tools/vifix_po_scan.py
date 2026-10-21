@@ -85,6 +85,8 @@ SUSPICIOUS = [
     ("tán thành", "'to agree with'; approved = 'đã phê duyệt'"),
     ("rời đi", "'to walk away' (from 'leave'); time off = 'nghỉ phép'"),
     ("kiếm tiền", "'to make money' (from 'earning'); an earning line = 'khoản thu nhập'"),
+    ("nhận phòng", "a hotel check-in; clocking in = 'chấm công vào' / 'giờ vào'"),
+    ("trả phòng", "a hotel check-out; clocking out = 'chấm công ra' / 'giờ ra'"),
     ("odoo", "white-label rule: never 'Odoo' on screen"),
 ]
 SUSPICIOUS_RES = [(re.compile(r"(?<![\wÀ-ỹ])" + re.escape(s) + r"(?![\wÀ-ỹ])", re.I), s, why)
