@@ -21,6 +21,7 @@ Every NAV phase handover references this file. Add a row whenever a phase hits a
 | R10 | **Old words keep working**: "Pay Run", "Lifecycle", "Trips", "Praise", "Announce", "Ask HR" stay as search aliases; old deep links land on the new item selected. (P2.) | §12.5 F13 |
 | R11 | **Design bar (owner, verbatim):** "extreme WOW, intuitive, out-of-this-world experience, best in class." Hero moment named; zero dead-ends; plain language; motion with purpose; keyboard ergonomics; measured against the best SaaS tool, not stock Odoo. Lucide icons, never emoji. | memory design-mandate |
 | R12 | **Deploy tier is chosen and named** before deploying (looks-only / normal / risky). Every active DB: `payobook`, `payobook_template`, `p0clone`, `rize`. Never `abm`. One browser walk on payobook.com with the QA login; the other DBs get the automated checks (hash identical, served CSS contains the change). | memory tiered-deploy-rule, CLAUDE.md |
+| R14 | **Shared deploy notes with non-Claude deployers (ChatGPT).** Before any deploy read `/opt/deploy-notes.md` on the server; append a START line before and a DONE/FAILED line after (format in the file). If a START line from someone else has no DONE, wait and ask the owner. The flock and cross-session messages stay in use as well. Owner instruction 2026-10-21. | owner 2026-10-21 |
 | R13 | **Commit per feature, explicit paths, no secrets**, push `19.1`. Another session may be mid-flight: never `git add .`. | memory commit-per-feature |
 
 ## Verified plumbing (do not re-derive)
