@@ -48,7 +48,7 @@ baseline DB `am_nav_p3b_base` (same copy, HEAD code for both modules).
 
 | Run | Result |
 |---|---|
-| `test_readiness_p3b` (15) | **15 passed**: period keys with no row; future dates and days ahead; company row beats shared, past dates negative; every card carries checks/ready/close_weeks; sent back owned by the preparer (given name in the card text, full name in the quick look); sent back + no source data + open week in spec order with owners; owner fallback Payroll manager → "Payroll team"; balance gap text; "me" flag; pb_close week rule (a week counts only its days in the period); max two week lines then "+2 more weeks", gone when locked, count kept; a reopened day reopens its week; ready only for a clean draft (Done → no checklist); Submit still offered with an open week; Learn's own ready rule unchanged. |
+| `test_readiness_p3b` (17) | **17 passed** (after the started-weeks change; `/pb_payruns` + `/pb_payhub` rerun: only the 3 baseline names fail): period keys with no row; future dates and days ahead; company row beats shared, past dates negative; every card carries checks/ready/close_weeks; sent back owned by the preparer (given name in the card text, full name in the quick look); sent back + no source data + open week in spec order with owners; owner fallback Payroll manager → "Payroll team"; balance gap text; "me" flag; pb_close week rule (a week counts only its days in the period); max two week lines then "+2 more weeks", gone when locked, count kept; a reopened day reopens its week; ready only for a clean draft (Done → no checklist); Submit still offered with an open week; Learn's own ready rule unchanged. |
 | `/pb_payruns` + `/pb_payhub` (152 tests) | 3 failed — **the same 3 names fail on the baseline** (`TestRevivedRunsCockpit.test_the_division_filter…` literal check, `TestStandaloneUnchanged.test_every_embedded_guard…`, `TestInLensLedger.test_get_detail…`). `test_board_redesign`, `test_board_currency`, `test_approval_engine`, `test_payhub` otherwise pass. |
 | Final run, `-u pb_payruns,pb_learn --test-tags /pb_payruns,/pb_payhub,/pb_learn` (567 tests) | 7 failed / 8 errors; after the guide-truth exemption fix, the focused rerun (`TestGuideTruth`, `TestLearnrevP4`, `TestAnchorRegistry`, `TestReadinessP3b`, `TestBoardRedesign`, 51 tests) leaves **only `TestGuideTruth.test_01`, which fails on the baseline too**. Everything else in the full list is a baseline name (TestStatutoryRightNow ×7, TestLearnrevP5.test_f2, the 3 payhub names). Nothing fails only with P3b. |
 | Learn JS `library` / `guide_panel` / `lesson_panel` | **111 / 117 / 113 passed, 0 failed** |
@@ -101,8 +101,10 @@ none).
    Close lens (attendance manager / payroll manager groups, as pb_mission gates it).
 6. **Owner of the attendance line** = the attendance manager most of the run's people have (ties to the lowest id),
    one grouped query — per run rather than per company (same cost, closer to "the run's employees").
-7. **Week lines count every week of the period** (pb_close's wizard rule), including weeks that have not started.
-   Kept as specified; raised as an owner question in the ledger.
+7. **Week lines count only weeks that have started** (coordinator decision after the first report): a week whose
+   Monday is after today is not listed, and the quick look says "Weeks closed: N of the M weeks so far" over the
+   started weeks. Tests 12b (a period spanning a future week) and 12c (a period wholly ahead). The run wizard's
+   own advice (pb_close) still counts every week.
 8. **No dependency added**: `pb_comp_ben`, `pb_close` and `pb_mission` are read softly; a database without any of them
    gets no deadline line / no week lines / no door, and nothing breaks.
 9. **Commit trailer**: the session's attribution rule (`Co-Authored-By: Claude Opus 5.5`) was used, as in P3a, instead
@@ -124,8 +126,8 @@ Not done. Waiting for the coordinator's go (§6 of the spec: normal tier, p0clon
    "Changes close in 3 days", owner "you" — EN and VI, dates as the reader says them.
 4. Motion with purpose: one short fade as a line appears; amber only in the last day before the cut-off with drafts
    left, green only when paid or ready.
-5. Keyboard: doors are real buttons (focus ring, Enter), the quick look keeps its keys; weakest point — the week lines
-   repeat on every open card all month (§5.7), and phone width was not walked.
+5. Keyboard: doors are real buttons (focus ring, Enter), the quick look keeps its keys; weakest point — phone width
+   was not walked, and the lane titles stay English in Vietnamese (pre-existing).
 
 ## 8. Commits (not pushed)
 

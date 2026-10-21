@@ -281,6 +281,41 @@ class TestReadinessP3b(TransactionCase):
         self.assertTrue([c for c in self._checks(run)[0]
                          if c['key'] == 'close_week'])
 
+    def test_12b_a_week_that_has_not_started_is_not_listed(self):
+        """A week that is not here yet is not "not closed" (coordinator
+        decision 2026-10-21): only weeks whose Monday is today or earlier are
+        listed, and the quick look's count is over those weeks only."""
+        if 'pb.wf.lock' not in self.env:
+            self.skipTest('pb_close is not installed')
+        monday = self.today - timedelta(days=self.today.weekday())
+        ds, de = monday - timedelta(days=7), monday + timedelta(days=13)
+        run = self._run('P3b Future', ds, de)
+        checks, _r, weeks = self._checks(run)
+        listed = [c['week'] for c in checks if c['key'] == 'close_week']
+        self.assertEqual(listed, [(monday - timedelta(days=7)).isoformat(),
+                                  monday.isoformat()],
+                         'next week is not here yet and must not be listed')
+        self.assertEqual(weeks, {'closed': 0, 'total': 2},
+                         'the count is over the weeks so far')
+        self.assertEqual(checks[-1]['more'], '')
+        # close last week: one line left, count 1 of 2
+        self._lock([ds + timedelta(days=i) for i in range(7)])
+        checks, _r, weeks = self._checks(run)
+        self.assertEqual([c['week'] for c in checks if c['key'] == 'close_week'],
+                         [monday.isoformat()])
+        self.assertEqual(weeks, {'closed': 1, 'total': 2})
+
+    def test_12c_a_period_wholly_in_the_future_has_no_close_line(self):
+        if 'pb.wf.lock' not in self.env:
+            self.skipTest('pb_close is not installed')
+        monday = self.today - timedelta(days=self.today.weekday())
+        run = self._run('P3b Ahead', monday + timedelta(days=7),
+                        monday + timedelta(days=20))
+        checks, ready, weeks = self._checks(run)
+        self.assertFalse([c for c in checks if c['key'] == 'close_week'])
+        self.assertIsNone(weeks)
+        self.assertTrue(ready)
+
     # ------------------------------------------------------------ 4. ready
     def test_13_ready_only_for_a_clean_draft(self):
         run = self._run('P3b Ready', date(2026, 8, 3), date(2026, 8, 9))

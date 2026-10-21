@@ -617,12 +617,20 @@ class PbPayruns(models.AbstractModel):
         LOCKED for the run's company (`total == 0 or locked >= total`, the
         wizard's test). One `_locked_pairs` call covers every company and
         every day of every open run on the board.
+
+        Only weeks that have STARTED count (Monday <= today; coordinator
+        decision 2026-10-21): a week that is not here yet is not "not
+        closed", so a run prepared on the 21st does not list the week of the
+        26th, and `closed` / `total` are "of the weeks so far".
         """
         Lock = self.env['pb.wf.lock']
         default_cid = self.env.company.id
+        today = fields.Date.context_today(self)
         plan, companies, days = {}, set(), set()
         for run in open_runs:
-            weeks = self._close_weeks(run.date_start, run.date_end)
+            weeks = [(monday, ds) for monday, ds
+                     in self._close_weeks(run.date_start, run.date_end)
+                     if monday <= today]
             if not weeks:
                 continue
             cid = owner.get(run.id, default_cid)
@@ -723,7 +731,8 @@ class PbPayruns(models.AbstractModel):
                      rose line and nothing sent back to fix. Advice (the
                      attendance line) does not make a run unready.
         close_weeks  {'closed', 'total'} when the close line is in play, for
-                     the quick look's "Weeks closed 3 of 4"; else None.
+                     the quick look's "Weeks closed: 3 of the 4 weeks so
+                     far" (started weeks only); else None.
         """
         if state not in _OPEN_STATES:
             return [], False, None

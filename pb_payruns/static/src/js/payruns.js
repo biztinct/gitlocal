@@ -574,11 +574,12 @@ export class PbPayruns extends Component {
     /** The owner chip: initials and given name, "you" lit for the reader. */
     ownerLabel(o) { return o ? (o.me ? _t("you") : (o.short || o.name)) : ""; }
     ownerTitle(o) { return o ? (o.me ? _t("%s (you)", o.name) : o.name) : ""; }
-    /** "Weeks closed 3 of 4" on the quick look, when the close line exists. */
+    /** "Weeks closed: 3 of the 4 weeks so far" on the quick look, when the
+     *  close line exists. Only weeks that have started are counted. */
     weeksClosed(b) {
         const w = b.close_weeks;
         if (!w || !w.total || !(b.checks || []).some(c => c.key === "close_week")) return "";
-        return _t("Weeks closed %(n)s of %(total)s", { n: w.closed, total: w.total });
+        return _t("Weeks closed: %(n)s of the %(total)s weeks so far", { n: w.closed, total: w.total });
     }
     /** A checklist line's one door. `run` opens the run (its payslips and
      *  components are there); `close` opens Workforce › Close with a back

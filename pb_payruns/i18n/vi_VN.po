@@ -2308,8 +2308,8 @@ msgstr "%s (bạn)"
 #. module: pb_payruns
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
-msgid "Weeks closed %(n)s of %(total)s"
-msgstr "Tuần đã khóa %(n)s/%(total)s"
+msgid "Weeks closed: %(n)s of the %(total)s weeks so far"
+msgstr "Tuần đã khóa: %(n)s trên %(total)s tuần tính đến nay"
 
 #. module: pb_payruns
 #. odoo-javascript
