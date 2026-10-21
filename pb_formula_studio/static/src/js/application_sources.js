@@ -70,7 +70,7 @@ export class ApplicationSources extends Component {
         try{action=await this.orm.call('hr.formula.config','application_source_record_action',[[this.configId],this.state.detail.id,model,Number(this.state.employeeId)||false,this.state.dateFrom||false,this.state.dateTo||false]);}
         catch(e){this.fail(e);return;}
         // Let Odoo's error service preserve the cause of a destination-view error.
-        return this.action.doAction(action);
+        return this.action.doAction({...action,useSampleModel:false});
     }
     pick(row){this.state.picker=row.id;this.state.sourceQuery='';this.state.showAllSources=false;}
 }
