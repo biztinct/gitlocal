@@ -102,7 +102,8 @@ async function expandSidebar(page) {
     for (let i = 0; i < 3; i++) {
         await page.eval(`(() => {
           document.querySelectorAll('.pb-sidebar .pb-sec-toggle:not(.pb-sec-locked)').forEach(b => {
-            if (!b.querySelector('.pb-sec-caret.open')) b.click();
+            const next = b.nextElementSibling;   // an open section renders its .pb-nav-group right after
+            if (!next || !next.matches('.pb-nav-group')) b.click();
           });
         })()`).catch(() => {});
         await sleep(300);
@@ -129,12 +130,16 @@ async function clickSidebar(page, title, sub) {
     })()`);
 }
 
+// Tab rails: the hub shell (.pbhub-rail__b), the Workforce mission shell (.pbms-rail__b) and the
+// Settings navigation (.pbst-nav__b). The label is the button's own text as written (textContent;
+// the screen shows it in capitals through CSS), not its tooltip.
+const TAB_SEL = ".pbhub-rail__b, .pbms-rail__b, .pbst-nav__b";
 async function hubTabs(page) {
-    return page.eval(`[...document.querySelectorAll('.pbhub-rail__b')].filter(b => b.getClientRects().length).map(b => (b.getAttribute('title') || b.getAttribute('aria-label') || b.innerText || '').replace(/\\s+/g,' ').trim())`).catch(() => []);
+    return page.eval(`[...document.querySelectorAll(${JSON.stringify(TAB_SEL)})].filter(b => b.getClientRects().length).map(b => (b.textContent || b.getAttribute('aria-label') || b.title || '').replace(/\\s+/g,' ').trim())`).catch(() => []);
 }
 
 async function clickHubTab(page, i) {
-    return page.eval(`(() => { const b = [...document.querySelectorAll('.pbhub-rail__b')].filter(b => b.getClientRects().length)[${i}]; if (!b) return false; b.click(); return true; })()`);
+    return page.eval(`(() => { const b = [...document.querySelectorAll(${JSON.stringify(TAB_SEL)})].filter(b => b.getClientRects().length)[${i}]; if (!b) return false; b.click(); return true; })()`);
 }
 
 // Detail drawers / forms: first row or card on the current screen.
@@ -160,11 +165,18 @@ async function closeDetail(page) {
     await sleep(500);
 }
 
-// Screens whose first row is opened (the handover's main detail drawers), matched on path.
+// The handover's main detail drawers: on these screens the first record is opened.
+// [path regex, row selector, optional JS to run first (e.g. pick a step so the list shows)]
 const DETAILS = [
-    /›\s*(Nhân viên|Employees)\b/i, /›\s*(Hợp đồng|Contracts)\b/i, /›\s*(Đợt lương|Runs|Các đợt)\b/i,
-    /›\s*(Phiếu lương|Payslips)\b/i, /›\s*(Hộp thư|Inbox)\b/i, /›\s*(Yêu cầu|Requests)\b/i,
+    [/Con người › Nhân viên$/, ".ppl-card"],
+    [/Con người › Hợp đồng$/, ".ctl-card-top"],
+    [/Lương › Các đợt lương$/, ".pbr-card-main"],
+    [/Lương › Phiếu lương$/, ".psr-card", "document.querySelector('.pbim-st') && document.querySelector('.pbim-st').click()"],
+    [/Trang chủ › Hộp thư/, ".pbam-row, .pbam-card, [class^=pbam-item], [class*=pbam-req]"],
+    [/Chi phí › Hoàn chi phí$/, ".o_data_row td.o_data_cell"],
+    [/Chi phí › Công tác$/, ".o_data_row td.o_data_cell, [class*=trip-card], [class*=-card-main]"],
 ];
+const detailFor = (p) => DETAILS.find(([rx]) => rx.test(p));
 
 async function main() {
     const page = await openPage(Number(args.port || 9577));
@@ -206,13 +218,13 @@ async function main() {
         const tabs = await hubTabs(page);
         const first = tabs.length ? `${label} › ${tabs[0] || "tab 1"}` : label;
         await record(page, first, tabs.length ? "hubtab" : "screen", { locked: e.locked, tabs });
-        if (DETAILS.some((rx) => rx.test(first))) await detail(page, first);
+        await extras(page, first);
         for (let i = 1; i < tabs.length; i++) {
             const p = `${label} › ${tabs[i] || "tab " + (i + 1)}`;
             if (!(await clickHubTab(page, i))) { skipped.push({ path: p, why: "tab not clickable" }); continue; }
             await settle(page, 2500);
             await record(page, p, "hubtab");
-            if (DETAILS.some((rx) => rx.test(p))) await detail(page, p);
+            await extras(page, p, i);
         }
     }
     fs.writeFileSync(path.join(OUT, "sweep.json"), JSON.stringify({ base: BASE, entries, skipped, records }, null, 1));
@@ -220,12 +232,50 @@ async function main() {
     page.close();
 }
 
-async function detail(page, p) {
-    const hit = await openFirstRow(page);
+async function extras(page, p, tabIndex = 0) {
+    const d = detailFor(p);
+    if (d) await detail(page, p, d[1], d[2]);
+    if (/Trang chủ › Hộp thư/.test(p)) {
+        // the inbox's own tabs (My turn, Waiting, Done...)
+        const n = await page.eval(`document.querySelectorAll('.pbam-tab').length`).catch(() => 0);
+        for (let i = 1; i < n; i++) {
+            const name = await page.eval(`(() => { const b = document.querySelectorAll('.pbam-tab')[${i}]; b.click(); return b.textContent.replace(/\\s+/g,' ').replace(/\\d+$/,'').trim(); })()`);
+            await settle(page, 2000);
+            await record(page, `${p} › ${name}`, "subtab");
+            await detail(page, `${p} › ${name}`, d[1]);
+        }
+    }
+    if (/Cài đặt › /.test(p)) {
+        // every card of this Settings section: open, record, come back
+        const cards = await page.eval(`[...document.querySelectorAll('.o_action_manager .pbim-btn')].filter(b => b.getClientRects().length).map(b => (b.closest('[class*=card]')?.querySelector('h3,h4,[class*=title],[class*=__t]')?.textContent || b.textContent).replace(/\\s+/g,' ').trim())`).catch(() => []);
+        for (let c = 0; c < cards.length; c++) {
+            const ok = await page.eval(`(() => { const b = [...document.querySelectorAll('.o_action_manager .pbim-btn')].filter(b => b.getClientRects().length)[${c}]; if (!b) return false; b.click(); return true; })()`);
+            if (!ok) continue;
+            await settle(page, 3000);
+            await record(page, `${p} › ${cards[c] || "card " + (c + 1)}`, "card");
+            await page.goto(BASE + (args.home || "/bizapp/action-1156"));
+            await settle(page, 1500);
+            await clickSidebar(page, "Cài đặt", false);
+            await settle(page, 2500);
+            await clickHubTab(page, tabIndex);
+            await settle(page, 2000);
+        }
+    }
+}
+
+async function detail(page, p, selector, pre) {
+    if (pre) { await page.eval(pre).catch(() => {}); await settle(page, 2500); }
+    const before = await page.eval("location.pathname + location.hash").catch(() => "");
+    const hit = selector ? await page.eval(`(() => {
+        const el = [...document.querySelectorAll(${JSON.stringify(selector)})].find(e => e.getClientRects().length && e.innerText.trim());
+        if (!el) return ''; el.scrollIntoView({block:'center'}); el.click(); return el.innerText.replace(/\\s+/g,' ').trim().slice(0, 50);
+    })()`).catch(() => "") : await openFirstRow(page);
     if (!hit) { records.push({ path: p + " › (detail)", kind: "detail", missing: "no row/card found", texts: [], attrs: [] }); return; }
     await settle(page, 2500);
     await record(page, p + " › (detail)", "detail", { opened: hit });
     await closeDetail(page);
+    const after = await page.eval("location.pathname + location.hash").catch(() => "");
+    if (after !== before) { await page.eval("history.back()").catch(() => {}); await settle(page, 2000); }
 }
 
 main().catch((e) => { console.error(e); try { fs.writeFileSync(path.join(OUT, "sweep.partial.json"), JSON.stringify({ records }, null, 1)); } catch (x) {} process.exit(1); });
