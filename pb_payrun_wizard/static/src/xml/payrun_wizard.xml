@@ -193,7 +193,6 @@
                         <div class="pw-appdata-head">
                             <div><h3>Ready from your records</h3>
                                 <p class="pw-muted">Use employee records, approved time off, overtime and monthly adjustments for the selected period.</p></div>
-                            <button class="pw-btn ghost pw-btn--sm" t-on-click="openApplicationSettings">Payroll sources</button>
                         </div>
                         <t t-if="applicationEnabled and !state.sheet.file_name">
                             <div class="pw-appdata-basis">

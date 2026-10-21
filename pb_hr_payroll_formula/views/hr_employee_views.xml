@@ -6,11 +6,14 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='tz']" position="before">
-                <field name="payroll_country" help="Defaults the employee’s work timezone unless a work-location timezone is explicitly set. This is not nationality."/>
+            <xpath expr="//group[@name='user']" position="after">
+                <group string="Work timezone" name="payroll_work_timezone">
+                    <field name="payroll_country" help="Defaults the employee’s work timezone unless a work-location timezone is explicitly set. This is not nationality."/>
+                    <field name="pb_work_timezone_note" readonly="1"/>
+                </group>
             </xpath>
-            <xpath expr="//field[@name='tz']" position="after">
-                <field name="pb_work_timezone_note" readonly="1"/>
+            <xpath expr="//group[@name='payroll_work_timezone']/field[@name='pb_work_timezone_note']" position="before">
+                <xpath expr="//field[@name='tz']" position="move"/>
             </xpath>
             <!-- All custom fields moved to Others page for Odoo 19 compatibility -->
             <xpath expr="//notebook" position="inside">
