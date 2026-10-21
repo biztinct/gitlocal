@@ -240,8 +240,10 @@
   <!-- ================================================================= -->
   <!--  /my/training                                                     -->
   <!-- ================================================================= -->
-  <template id="portal_my_training" name="My training (ESS)">
+  <template id="portal_my_training" name="My training">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title">My training</t>
       <div class="pbme pbtr">
 
         <t t-call="pb_training.tr_notices"/>
@@ -438,8 +440,10 @@
   <!-- ================================================================= -->
   <!--  /my/training/&lt;course&gt;                                      -->
   <!-- ================================================================= -->
-  <template id="portal_training_course" name="A course (ESS)">
+  <template id="portal_training_course" name="A course">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title" t-value="course['name']"/>
       <div class="pbme pbtr">
 
         <t t-call="pb_training.tr_notices"/>
@@ -617,8 +621,10 @@
   <!-- ================================================================= -->
   <!--  /my/training/&lt;course&gt;/&lt;lesson&gt;                        -->
   <!-- ================================================================= -->
-  <template id="portal_training_lesson" name="A lesson (ESS)">
+  <template id="portal_training_lesson" name="A lesson">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title" t-value="lesson['name']"/>
       <div class="pbme pbtr pbtr-lessonpage">
 
         <!-- `result` and `chosen` are set on BOTH paths through the
@@ -788,8 +794,10 @@
   <!--  nobody is TOLD SO rather than shown an empty table they would     -->
   <!--  read as a fault.                                                  -->
   <!-- ================================================================= -->
-  <template id="portal_training_team" name="My team's training (ESS)">
+  <template id="portal_training_team" name="My team's training">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title">My team's training</t>
       <div class="pbme pbtr">
 
         <t t-call="pb_training.tr_notices"/>
@@ -904,8 +912,10 @@
   <!--  server-side template (R5) except inside a `t-foreach`, where it   -->
   <!--  is the loop's own key and QWeb wants it.                          -->
   <!-- ================================================================= -->
-  <template id="portal_training_claims" name="My training allowance (ESS)">
+  <template id="portal_training_claims" name="My training allowance">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title">My training allowance</t>
       <div class="pbme pbtr">
 
         <t t-call="pb_training.tr_notices"/>
@@ -1153,8 +1163,10 @@
   <!--  "Start renewal" when the refresher course is on their page. Every -->
   <!--  card says what happens next. Text nodes on one line (LN13).       -->
   <!-- ================================================================= -->
-  <template id="portal_training_certificates" name="My certificates (ESS)">
+  <template id="portal_training_certificates" name="My certificates">
     <t t-call="portal.portal_layout">
+      <!-- The browser tab title (the layout falls back to this view's name). -->
+      <t t-set="additional_title">My certificates</t>
       <div class="pbme pbtr">
 
         <t t-call="pb_training.tr_notices"/>

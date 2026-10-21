@@ -1641,6 +1641,7 @@ msgstr "Giấy phép"
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training_certificates
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
 msgid "My certificates"
 msgstr "Chứng chỉ của tôi"
 
