@@ -28,6 +28,8 @@ Commits:
 - `19c61fdfd` (d) chore(sidebar): target and life-buoy icons, GROW rail Talent · Learning · Help
 - `77c780413` (e) feat(learn): Help rename + Learning hub screen
 - `0f44540dd` fix(training): walk fixes — Tests empty state, due words in Vietnamese, team chip width
+- `a03bfacdc` chore(training): 19.0.1.4.1 (so the walk fix is visible to the version gate)
+- `f8b0c00fa` docs: handover, ledger LN8–LN15, this report at the gate
 - (f) this report + ledger rows (after the deploy)
 
 `git pull --rebase`: origin/19.1 had nothing newer than our base (behind 0); no rebase was needed. ChatGPT's
@@ -159,10 +161,27 @@ Added to `LEARNING_LEDGER.md` as LN8–LN15.
 
 ## 8. Deploy plan (as at the gate)
 
-**Situation:** ChatGPT's combined deploy (START 07:50 UTC, commit `7db810a1e`) already includes L0 commits (a)–(e)
-and is in progress (p0clone shows pb_learning_hub 19.0.1.0.0, pb_training 19.0.1.4.0, pb_learn 19.0.20.6.0,
-pb_sidebar 19.0.3.2.5, pb_talent_hub 19.0.1.1.0, pb_hub 19.0.1.12.1; the other three DBs not yet). I will not start
-while that START has no DONE.
+**Situation (re-checked 07:58 UTC, read-only):** ChatGPT's combined deploy (START 07:50, commit `7db810a1e`) logged
+**FAILED at 07:53**. Its receipt: backups taken for all four DBs (`/odoo/backups/record-move-20261021T075010Z/`, rize
+also `/odoo/archives/rize-record-move-20261021T075010Z`); **only p0clone was upgraded** (pb_hub, pb_learn,
+pb_payroll_templates, pb_sidebar, pb_talent_hub, pb_training + pb_learning_hub installed); it then ran tests on
+p0clone (`/pb_payroll_templates,/pb_training,/pb_learning_hub,/pb_talent_hub,/pb_sidebar`, 375 tests) and stopped
+because **2 failed — both pre-existing, both also fail on my local baseline before L0**:
+`TestIaCycle5Rail.test_every_retired_item_still_points_at_something_that_resolves` (workforce-planning actions not on
+this box) and `TestReminders.test_t4_the_manager_at_two_days_late_and_hr_at_five`. payobook, payobook_template and
+rize are untouched (old versions); the service is up (`/web/health` 200). Its START/FAILED pair is closed, so the
+notes file has no open START. Their deploy is all-or-nothing on test results, so it will fail again on these two
+until they are fixed or excluded — a decision for the coordinator / ChatGPT, not this phase.
+
+**Recommended L0 deploy (risky tier, because pb_learning_hub is a new install on three DBs):** the plan in the
+handover §8.2, with HEAD (which now also contains ChatGPT's pb_payroll_templates commits `7db810a1e`, `fd437e6f5`):
+1. Coordinate with ChatGPT first (it intends a combined release); read the notes file; flock; START line.
+2. p0clone is already on the L0 versions except the walk fix: only `-u pb_training` there.
+3. payobook, payobook_template, rize one at a time: `-i pb_learning_hub -u pb_training,pb_talent_hub,pb_sidebar,
+   pb_learn,pb_hub` (plus `pb_payroll_templates` if the release is combined), detached unit + sentinel, stop at the
+   first failure; asset ritual; start; warm; crons back to 37 / 0 / 69 (p0clone 26); versions; LN7 name check
+   (`item_learn_journey` and `action_learn_hub` = Help / Trợ giúp); DONE line.
+4. Do not gate on the two pre-existing test failures above (they fail before L0 too); gate on "no new failure".
 
 **What remains after ChatGPT's DONE — normal tier, one module:** the walk fix `0f44540dd` (pb_training JS/XML/SCSS/.po
 only, no Python, no data). Plan:
@@ -172,7 +191,7 @@ only, no Python, no data). Plan:
    (LN7); `pb_learning_hub.item_learning` active; cron counts 37 / 0 / 26 / 69.
 3. Clean `/tmp/deployL0`, `git archive HEAD pb_training`, scoped `rsync -a --delete` into
    `/odoo/odoo-server/addons/pb_training/`, tree hash = local. PO gate on the box.
-4. Bump pb_training to 19.0.1.4.1 first (so the version gate sees it), stop, `-u pb_training` p0clone first then the
+4. pb_training is already bumped to 19.0.1.4.1 (`a03bfacdc`); stop, `-u pb_training` p0clone first then the
    other three (detached unit + sentinel), asset ritual per DB, start, warm each site with one curl, crons back to
    the snapshot, versions, DONE line.
 5. Live Chrome walk on payobook.com (T12) — note NAV ledger P1: an agent may not type the QA password on a
