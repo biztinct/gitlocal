@@ -55,10 +55,12 @@ class MappingExperience(models.AbstractModel):
         config = self._desk_config(config_id)
         data = self.get_studio_data(config.id)
         records, wires = self._source_record_dests(config), self._source_wire_dests(config)
+        application = config._application_mapping_descriptors() if config.application_data_enabled else {}
         rules = {r.id: r for r in config.rule_ids}
         for row in data['components']:
             row['sources'] = self._declared_sources(rules[row['id']], records, wires)
             row['storage'] = records.get(row['id']) or None
+            row['application_source'] = application.get(row['id'])
         data.update(ok=True, can_edit=self._desk_can_edit(), priority=self._desk_priority(config),
                     kinds=config._value_kind_options(),
                     pay_roles=[{'key': k or '', 'label': label} for k, label in

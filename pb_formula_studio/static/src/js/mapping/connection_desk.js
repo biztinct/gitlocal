@@ -62,7 +62,8 @@ export class ConnectionDesk extends Component {
         const storage=this.state.storage || this.savedStorage;
         return !!storage && (storage === "text") !== ["text","identifier","date","boolean"].includes(this.state.kind);
     }
-    isMissing(row) { return row.type === "input" && row.sources[0].kind === "none"; }
+    hasApplicationSource(row) { return !!(row.application_source?.available && !row.application_source?.payroll_excluded); }
+    isMissing(row) { return row.type === "input" && row.sources[0].kind === "none" && !this.hasApplicationSource(row); }
     label(kind) { return srcLabel(kind); }
     kindLabel(kind) { return (this.props.data.kinds.find(k => k.value === kind) || {}).label || kind; }
     laneLabel(k) { return {api:_t("Connected systems"),excel:_t("Spreadsheets"),records:_t("Employee & contract records")}[k]; }

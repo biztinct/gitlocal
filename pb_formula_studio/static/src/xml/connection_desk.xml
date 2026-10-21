@@ -11,7 +11,7 @@
     <div class="pbcdesk-rows">
      <button t-foreach="filtered" t-as="r" t-key="r.id" t-attf-class="pbcdesk-row {{selected and selected.id===r.id ? 'on' : ''}}" t-on-click="() => this.select(r)" t-att-aria-pressed="selected and selected.id===r.id">
       <div class="pbcdesk-rowmain"><span class="pbcdesk-letter" t-esc="r.col"/><div><strong t-esc="r.name"/><small><t t-esc="r.code"/> · <t t-esc="kindLabel(r.value_kind)"/></small></div><span class="pbcdesk-value" t-esc="value(r)"/></div>
-      <div class="pbcdesk-chips"><span t-foreach="r.sources" t-as="s" t-key="s_index" t-attf-class="pbcdesk-chip {{s.kind==='none' ? 'missing' : ''}}"><b t-if="r.type==='input' and s.kind!=='none'" t-esc="s_index+1"/><t t-esc="label(s.kind)"/></span></div>
+      <div class="pbcdesk-chips"><t t-foreach="r.sources" t-as="s" t-key="s_index"><span t-if="s.kind!=='none' or !hasApplicationSource(r)" t-attf-class="pbcdesk-chip {{s.kind==='none' ? 'missing' : ''}}"><b t-if="r.type==='input' and s.kind!=='none'" t-esc="s_index+1"/><t t-esc="label(s.kind)"/></span></t><span t-if="r.application_source" t-attf-class="pbcdesk-chip {{r.application_source.pending ? 'missing' : ''}}"><t t-esc="r.application_source.pending ? 'Application mapping needs review' : r.application_source.payroll_excluded ? 'Restricted HR field' : r.application_source.available ? 'Application source' : 'Application model unavailable'"/></span></div>
      </button>
      <div t-if="!filtered.length" class="pbcdesk-blank">No components match. Try another search or filter.</div>
     </div>
@@ -22,6 +22,7 @@
     <div class="pbcdesk-tabs" role="tablist"><button t-foreach="['sources','storage','payroll']" t-as="tab" t-key="tab" t-att-class="state.tab===tab ? 'on' : ''" role="tab" t-att-aria-selected="state.tab===tab" t-on-click="() => this.state.tab=tab"><t t-if="tab==='sources'">Sources</t><t t-elif="tab==='storage'">Storage</t><t t-else="">Use in payroll</t></button></div>
     <div class="pbcdesk-detailbody">
      <t t-if="state.tab==='sources'">
+      <div t-if="selected.application_source" class="pbcdesk-evidence"><h4>Run without a spreadsheet</h4><strong t-esc="selected.application_source.label"/><p t-esc="selected.application_source.model"/><code t-esc="selected.application_source.key"/><p t-if="selected.application_source.pending">This application mapping still needs review.</p><p t-elif="selected.application_source.payroll_excluded">Restricted HR information is excluded from payroll snapshots.</p><p t-elif="!selected.application_source.available">The owning application is not installed.</p><p t-else="">This source is configured. Employee values, approvals and period readiness are checked when payroll runs.</p></div>
       <h4>Configured read order</h4><p t-if="selected.type==='input'">The first supplied value is used. Zero and No count as supplied; blank values fall through.</p>
       <ol class="pbcdesk-sourceorder"><li t-foreach="selected.sources" t-as="s" t-key="s_index"><b t-esc="label(s.kind)"/><small t-esc="s.label || s.key"/></li></ol>
       <div class="pbcdesk-evidence"><h4>Latest recorded run source</h4><t t-if="selected.source.actual"><strong t-esc="label(selected.source.actual.kind)"/><p><t t-esc="selected.source.actual.key"/> · <t t-esc="selected.source.actual.run"/></p><small>A historical run record; it may be for a different employee from this sample.</small></t><p t-else="">No recorded run source for this component.</p></div>
@@ -29,14 +30,15 @@
       <t t-if="selected.type==='input'"><h4>Manage connections</h4><div class="pbcdesk-stack"><button t-if="props.data.priority.enabled.api" class="pbim-btn" t-on-click="() => this.open('api')">System fields &amp; suggestions →</button><button t-if="props.data.priority.enabled.excel" class="pbim-btn" t-on-click="() => this.open('import')">Spreadsheet columns →</button><button class="pbim-btn" t-on-click="() => this.props.onNewRule(selected.id)">Create a transformation →</button></div></t>
      </t>
      <t t-elif="state.tab==='storage'">
+      <div t-if="selected.application_source?.record" class="pbcdesk-evidence"><h4>Owning application record</h4><strong t-esc="selected.application_source.model"/><p t-esc="selected.application_source.label"/><small>Maintained in its owning HR module. Use Application sources to review the binding.</small></div>
       <div class="pbcdesk-sectiontitle"><h4>Contract storage</h4><button t-if="props.data.can_edit and savedStorage" class="pbcdesk-textbtn" t-att-aria-expanded="state.storageEditing ? 'true' : 'false'" t-att-disabled="state.busy" t-on-click="() => this.state.storageEditing=!this.state.storageEditing"><t t-esc="state.storageEditing ? 'Close choices' : 'Change'"/></button></div>
       <div t-if="savedStorage" class="pbcdesk-storagecard saved">
        <div class="pbcdesk-storageicon" aria-hidden="true" t-out="icon(savedStorage==='text' ? 'fileText' : 'banknote')"/>
        <div><span class="pbcdesk-status"><t t-out="icon('checkCircle')"/> Saved on contract</span><strong t-esc="savedStorage==='text' ? 'Text component' : 'Amount component'"/><small t-esc="savedStorage==='text' ? 'Keeps words, codes and other text.' : 'Keeps a number payroll can calculate with.'"/></div>
       </div>
       <p t-if="savedStorage" class="pbcdesk-storagehelp">Import writes this value to the contract. A later pay run can read it back.</p>
-      <p t-else="">No contract component storage selected. Choose how to keep this value for later pay runs.</p>
-      <div t-if="props.data.can_edit and (!savedStorage or state.storageEditing)" class="pbcdesk-storagechoices" role="group" aria-label="Contract storage choices">
+      <p t-elif="!selected.application_source?.record">No contract component storage selected. Choose how to keep this value for later pay runs.</p>
+      <div t-if="props.data.can_edit and !selected.application_source?.record and (!savedStorage or state.storageEditing)" class="pbcdesk-storagechoices" role="group" aria-label="Contract storage choices">
        <button t-foreach="['text','amount']" t-as="storageChoice" t-key="storageChoice" t-attf-class="pbcdesk-storagechoice {{savedStorage===storageChoice ? 'current' : ''}} {{state.storage===storageChoice ? 'draft' : ''}}" t-att-disabled="state.busy or savedStorage===storageChoice" t-att-aria-pressed="(state.storage || savedStorage)===storageChoice ? 'true' : 'false'" t-on-click="() => this.pickStorage(storageChoice)">
         <span class="pbcdesk-choiceicon" aria-hidden="true" t-out="icon(storageChoice==='text' ? 'fileText' : 'banknote')"/><span><strong t-esc="storageChoice==='text' ? 'Text component' : 'Amount component'"/><small t-esc="storageChoice==='text' ? 'Words, grades or reference codes' : 'Salary, allowances or other numbers'"/></span><span class="pbcdesk-choicebadge" t-if="savedStorage===storageChoice">Current</span><span class="pbcdesk-choicebadge" t-elif="state.storage===storageChoice">Draft</span>
        </button>

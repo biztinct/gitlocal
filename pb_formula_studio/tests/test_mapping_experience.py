@@ -59,6 +59,10 @@ class TestMappingExperience(TransactionCase):
         self.assertFalse(pending_row['fed'])
         self.assertIn('review', pending_row['sub'])
         self.assertTrue(any(r['group'] == 'application' for r in data['lanes']['source'][0]['rows']))
+        desk = self.studio.mapping_workspace_data(self.config.id)
+        descriptors = {r['id']: r['application_source'] for r in desk['components']}
+        self.assertTrue(descriptors[self.rule.id]['available'])
+        self.assertTrue(descriptors[pending.id]['pending'])
 
     def test_completed_branch_arrival_returns_mainline(self):
         branch = self.config.copy({'name': 'Merged migration branch', 'code': 'DESKMERGED',
