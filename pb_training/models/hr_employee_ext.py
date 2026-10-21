@@ -32,6 +32,22 @@ SAFETY_GROUPS = [
 ]
 SAFETY_GROUP_LABEL = dict(SAFETY_GROUPS)
 
+#: LEARNING L4 (owner decision LD11): in a company whose country is Vietnam
+#: an employee with no safety group set counts as group 4 ("other workers")
+#: for the matrix and the yearly refresher; HR may set another group per
+#: person. Outside Vietnam an empty group stays empty.
+DEFAULT_GROUP_VN = '4'
+
+
+def effective_safety_group(group, company_country_code):
+    """(group, by_default) — the group a person counts in, and whether it
+    is the Vietnam default rather than one HR set."""
+    if group:
+        return group, False
+    if (company_country_code or '').upper() == 'VN':
+        return DEFAULT_GROUP_VN, True
+    return '', False
+
 
 class HrEmployeeTraining(models.Model):
     _inherit = 'hr.employee'

@@ -60,12 +60,16 @@ export class PbTrainingNumbers extends Component {
             byCourse: [],
             byReason: [],
             byCertificate: [],
+            // LEARNING L4: initial collections are collections, so a render
+            // during an interrupted read never loops over undefined.
+            byPath: [],
+            sessions: { has_sessions: false, by_kind: [], by_trainer: [], by_course: [] },
             required: { has_rules: false },
             countryReports: [],
             reporting: "",
             trend: [],
             claims: {},
-            lists: { courses: [], departments: [] },
+            lists: { courses: [], departments: [], paths: [] },
             reasons: [],
         });
 
@@ -155,6 +159,7 @@ export class PbTrainingNumbers extends Component {
                 byReason: d.by_reason || [],
                 byPath: d.by_path || [],
                 byCertificate: d.by_certificate || [],
+                sessions: d.sessions || { has_sessions: false },
                 required: d.required || { has_rules: false },
                 countryReports: d.country_reports || [],
                 trend: d.trend || [],
@@ -278,6 +283,17 @@ export class PbTrainingNumbers extends Component {
         } finally {
             this.state.busy = false;
         }
+    }
+
+    // ------------------------------------------------------------ LEARNING L4
+    /** "92%" or a dash when nothing could be counted yet. */
+    pct(v) { return v === null || v === undefined ? "—" : `${v}%`; }
+
+    sessionRowWords(row) {
+        const bits = [row.sessions === 1 ? _t("1 session") : _t("%s sessions", row.sessions)];
+        bits.push(row.attended === 1 ? _t("1 attended") : _t("%s attended", row.attended));
+        if (row.no_show) { bits.push(row.no_show === 1 ? _t("1 did not come") : _t("%s did not come", row.no_show)); }
+        return bits.join(" · ");
     }
 }
 

@@ -29,12 +29,14 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { PbToolboxDrawer } from "@pb_training/js/toolbox_drawer";
 
 const MODEL = "pb.my.training";
 const LATE_FIRST = { overdue: 0, assigned: 1, in_progress: 2, excused: 3 };
 
 export class PbMyLearningLens extends Component {
     static template = "pb_training.PbMyLearningLens";
+    static components = { PbToolboxDrawer };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {
@@ -50,6 +52,8 @@ export class PbMyLearningLens extends Component {
             required: null,
             filter: "",
             reminding: 0,
+            toolbox: false,
+            booking: 0,
         });
         onWillStart(() => this.load());
     }
@@ -135,7 +139,9 @@ export class PbMyLearningLens extends Component {
         if (viaPath) {
             return this.courses.find((c) => c.id === viaPath.next.channel_id);
         }
-        const open = this.courses.filter((c) => !c.finished);
+        // LEARNING L4: a course taught only in a room has nothing to do
+        // online, so it is never the "Next up" lesson.
+        const open = this.courses.filter((c) => !c.finished && c.delivery !== "session");
         if (!open.length) { return null; }
         const rank = (c) => {
             const a = c.assignment;
@@ -186,6 +192,10 @@ export class PbMyLearningLens extends Component {
     }
 
     lessonWords(c) {
+        if (c.delivery === "session") {
+            return c.session ? `${c.session.my_state_word} · ${c.session.when_words}`
+                : _t("In a room or on site — you are booked on a session by the training team");
+        }
         if (!c.total) { return _t("No lessons yet"); }
         return c.total === 1 ? _t("%s of 1 lesson", c.done) : _t("%s of %s lessons", c.done, c.total);
     }
@@ -313,4 +323,37 @@ export class PbMyLearningLens extends Component {
         const c = this.state.claims;
         return c && c.has_employee ? c : null;
     }
+
+    // ------------------------------------------------------------- my sessions (LEARNING L4)
+    get sessions() { return this.state.home.sessions || { next: null, rows: [], bookable: [] }; }
+
+    get otherSessions() {
+        const s = this.sessions;
+        return (s.rows || []).filter((r) => !s.next || r.id !== s.next.id);
+    }
+
+    sessionClass(row) {
+        return { attended: "is-ok", waitlisted: "is-warn", booked: "is-go" }[row.my_state] || "";
+    }
+
+    /** A CLICK handler: book a seat on a session I owe (self-booking). */
+    async bookSeat(row) {
+        if (this.state.booking) { return; }
+        this.state.booking = row.id;
+        try {
+            const res = await this.orm.call(MODEL, "book_my_seat", [row.id]);
+            this.notif.add((res && res.message) || _t("Booked."), { type: res && res.code === "waiting" ? "warning" : "success" });
+            await this.load();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || _t("That seat could not be booked."), { type: "danger" });
+        } finally {
+            this.state.booking = 0;
+        }
+    }
+
+    openLink(url) { window.open(url, "_blank", "noopener"); }
+
+    openToolbox() { this.state.toolbox = true; }
+
+    closeToolbox() { this.state.toolbox = false; }
 }

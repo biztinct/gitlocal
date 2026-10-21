@@ -266,5 +266,24 @@
         <field name="global" eval="True"/>
     </record>
 
+    <!-- ============ sessions and attendance (LEARNING L4) ============
+         Company rules. Nobody below a trainer holds an ACL on either: a
+         learner reads their own sessions only through the My learning
+         facade and the /my/training pages, a supervisor logs a toolbox talk
+         through the facade's own check. -->
+    <record id="rule_session_company" model="ir.rule">
+        <field name="name">Training session: my companies</field>
+        <field name="model_id" ref="model_pb_training_session"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_attendance_company" model="ir.rule">
+        <field name="name">Session attendance: my companies</field>
+        <field name="model_id" ref="model_pb_training_attendance"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
 </data>
 </odoo>

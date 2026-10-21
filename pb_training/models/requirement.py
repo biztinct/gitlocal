@@ -34,6 +34,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .hr_employee_ext import DEFAULT_GROUP_VN
 from .training_common import (
     ASSIGN_OPEN, P_RENEW_BEFORE, fold, number, tr,
 )
@@ -311,7 +312,12 @@ class PbTrainingRequirement(models.Model):
                            self.work_location_ids.ids))
         groups = _csv(self.safety_groups)
         if groups:
-            domain.append(('pb_safety_group', 'in', groups))
+            if DEFAULT_GROUP_VN in groups and self._company_is_vn():
+                # LD11: nobody's group set in a Vietnamese company = group 4.
+                domain += ['|', ('pb_safety_group', 'in', groups),
+                           ('pb_safety_group', '=', False)]
+            else:
+                domain.append(('pb_safety_group', 'in', groups))
         if self.audience_flag == 'posh_ic':
             domain.append(('pb_posh_ic_member', '=', True))
         if self.country_ids:
@@ -322,6 +328,13 @@ class PbTrainingRequirement(models.Model):
                        '&', ('address_id.country_id', '=', False),
                        ('company_id.partner_id.country_id', 'in', ids)]
         return domain
+
+    def _company_is_vn(self):
+        """Is the rule's company in Vietnam (its partner's country — the
+        company's own `country_id` is not stored, ledger LN26)?"""
+        self.ensure_one()
+        return (self.company_id.sudo().partner_id.country_id.code
+                or '').upper() == 'VN'
 
     def _people(self):
         """Everybody this rule is about (as the system, narrowly)."""

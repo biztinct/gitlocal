@@ -295,3 +295,18 @@
     .pbml-path-go { justify-content: center; }
     .pbml-dot-l, .pbml-dot-n { font-size: 10px; }
 }
+
+// ============================================================ LEARNING L4
+// My sessions: the next one in a light tint, the rest as lines.
+.pbml-ses {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid #EEF0F5;
+    &:last-child { border-bottom: 0; }
+    &.pbml-ses--next { background: #F6F4FD; border: 1px solid #E4DEF7; border-radius: 12px; padding: 12px 14px; margin-bottom: 6px; }
+}
+.pbml-ses-main { display: flex; flex-direction: column; gap: 2px; min-width: 0;
+                 .pbml-dim { display: inline-flex; align-items: center; gap: 5px; } }
+.pbml-ses-act { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+                .pbim-btn { display: inline-flex; align-items: center; gap: 5px; } }
+.pbml-ses-sub { margin: 12px 0 2px; }
+.pbml-toolbox { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; margin-right: 8px; }

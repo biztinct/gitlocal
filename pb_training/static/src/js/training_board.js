@@ -27,6 +27,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { PbSessionsLens } from "@pb_training/js/sessions_lens";
 
 /** Fold accents in the browser too, so the picker filters as you type. */
 function fold(text) {
@@ -36,6 +37,8 @@ function fold(text) {
 
 export class PbTrainingBoard extends Component {
     static template = "pb_training.PbTrainingBoard";
+    // LEARNING L4: the Sessions inner tab of Courses is its own component.
+    static components = { PbSessionsLens };
     /**
      * LEARNING L0. A Learning lens says which inner tab it opens on
      * (`startTab`) and which inner tabs it owns (`tabs`); the board draws
@@ -49,6 +52,10 @@ export class PbTrainingBoard extends Component {
         // LEARNING L3: the Assigned lens may arrive searched on a name (the
         // path page's "Open their courses").
         startTerm: { type: String, optional: true },
+        // LEARNING L4: Courses may arrive on Sessions, filtered on the
+        // sessions to close (Overview's chip) or on one session.
+        startSessionState: { type: String, optional: true },
+        startSession: { type: Number, optional: true },
         embedded: { type: Boolean, optional: true },
         "*": true,
     };
@@ -87,6 +94,10 @@ export class PbTrainingBoard extends Component {
             // tiles, so they are tabs rather than one list with a filter on
             // it.
             tab: "courses",
+            // LEARNING L4: which session the Sessions tab opens on (the
+            // course drawer's session rows), and a key to remount it.
+            sessionOpen: this.props.startSession || 0,
+            sessionKey: 1,
             aLoaded: false,
             aBusy: false,
             aRows: [],
@@ -289,6 +300,15 @@ export class PbTrainingBoard extends Component {
         }
     }
 
+    /** LEARNING L4: a session row in the course drawer opens it on the
+     *  Sessions tab. */
+    openSessionFromCourse(sessionId) {
+        this.closeDrawer();
+        this.state.sessionOpen = sessionId || 0;
+        this.state.sessionKey += 1;
+        this.setTab("sessions");
+    }
+
     closeDrawer() {
         this.state.open = null;
         this.state.openId = 0;
@@ -395,6 +415,7 @@ export class PbTrainingBoard extends Component {
             if (!this.state.cLoaded) { await this.loadClaims(); }
             return;
         }
+        if (tab === "sessions") { return; }
         if (tab !== "courses" && !this.state.aLoaded) {
             await this.loadAssignments();
         }

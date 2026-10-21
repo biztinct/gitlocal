@@ -7,3 +7,4 @@ from . import test_certificates
 from . import test_requirements
 from . import test_packs
 from . import test_paths
+from . import test_sessions

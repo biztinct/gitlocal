@@ -90,24 +90,24 @@
             <select class="pbtnm-in" t-model="state.filters.department_id"
                     t-on-change="() => this.load()" aria-label="Department">
               <option value="0">Every department</option>
-              <t t-foreach="state.lists.departments" t-as="dp" t-key="dp.id">
+              <t t-foreach="state.lists.departments || []" t-as="dp" t-key="dp.id">
                 <option t-att-value="dp.id" t-esc="dp.name"/>
               </t>
             </select>
             <select class="pbtnm-in" t-model="state.filters.channel_id"
                     t-on-change="() => this.load()" aria-label="Course">
               <option value="0">Every course</option>
-              <t t-foreach="state.lists.courses" t-as="cs" t-key="cs.id">
+              <t t-foreach="state.lists.courses || []" t-as="cs" t-key="cs.id">
                 <option t-att-value="cs.id" t-esc="cs.name"/>
               </t>
             </select>
             <select t-if="(state.lists.paths || []).length" class="pbtnm-in" t-model="state.filters.path_id" t-on-change="() => this.load()" aria-label="Learning path">
               <option value="0">Every learning path</option>
-              <t t-foreach="state.lists.paths" t-as="lp" t-key="lp.id">
+              <t t-foreach="state.lists.paths || []" t-as="lp" t-key="lp.id">
                 <option t-att-value="lp.id" t-esc="lp.name"/>
               </t>
             </select>
-            <t t-foreach="state.reasons" t-as="rs" t-key="rs.key">
+            <t t-foreach="state.reasons || []" t-as="rs" t-key="rs.key">
               <button class="pbtnm-chip"
                       t-att-class="{ on: state.filters.reason === rs.key }"
                       t-on-click="() => this.setFilter('reason', rs.key)">
@@ -144,7 +144,7 @@
 
             <!-- ==================== the numbers ==================== -->
             <div class="pbim-stats pbtnm-kpis">
-              <t t-foreach="state.tiles" t-as="tl" t-key="tl.key">
+              <t t-foreach="state.tiles || []" t-as="tl" t-key="tl.key">
                 <div class="pbim-stat pbtnm-stat">
                   <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
                   <div class="pbim-stat-tx">
@@ -169,7 +169,7 @@
                    match.</p>
               </div>
               <div class="pbtnm-bars">
-                <t t-foreach="state.trend" t-as="wk" t-key="wk.key">
+                <t t-foreach="state.trend || []" t-as="wk" t-key="wk.key">
                   <div class="pbtnm-week"
                        t-att-title="wk.label + ': ' + wk.set + ' set, ' + wk.done + ' finished'">
                     <div class="pbtnm-week-pair">
@@ -197,7 +197,7 @@
                   <p>Anybody with no department is counted under a row that
                      says so, so these add up to the figure above.</p>
                 </div>
-                <t t-foreach="state.byDepartment" t-as="dp" t-key="dp.name">
+                <t t-foreach="state.byDepartment || []" t-as="dp" t-key="dp.name">
                   <div class="pbtnm-row"
                        t-att-class="{ bad: dp.overdue > 0 }">
                     <div class="pbtnm-row-name" t-esc="dp.name"/>
@@ -219,7 +219,7 @@
                   <p>The course with the most people running late is at the
                      top, because that is the one to do something about.</p>
                 </div>
-                <t t-foreach="state.byCourse" t-as="cs" t-key="cs.name">
+                <t t-foreach="state.byCourse || []" t-as="cs" t-key="cs.name">
                   <div class="pbtnm-row"
                        t-att-class="{ bad: cs.overdue > 0 }">
                     <div class="pbtnm-row-name" t-esc="cs.name"/>
@@ -242,7 +242,7 @@
                   <p>Day one, a trial period, compliance, a one-off or a
                      leadership programme.</p>
                 </div>
-                <t t-foreach="state.byReason" t-as="rs" t-key="rs.name">
+                <t t-foreach="state.byReason || []" t-as="rs" t-key="rs.name">
                   <div class="pbtnm-row"
                        t-att-class="{ bad: rs.overdue > 0 }">
                     <div class="pbtnm-row-name" t-esc="rs.name"/>
@@ -262,17 +262,54 @@
             <!-- ==================== by path (LEARNING L3) ====================
                  Courses set through a learning path, per path, with a row for
                  everything set outside one so the rows add up. -->
-            <div t-if="state.byPath.length and (state.lists.paths || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
+            <div t-if="(state.byPath || []).length and (state.lists.paths || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
               <div class="pbtnm-table-head">
                 <h3><t t-out="ic('route',16)"/> By path</h3>
                 <p>Courses set through a learning path, and a row for everything set outside one, so these add up to the figure above.</p>
               </div>
-              <t t-foreach="state.byPath" t-as="bp" t-key="bp.name">
+              <t t-foreach="state.byPath || []" t-as="bp" t-key="bp.name">
                 <div class="pbtnm-row" t-att-class="{ bad: bp.overdue > 0 }">
                   <div class="pbtnm-row-name" t-esc="bp.name"/>
                   <div class="pbtnm-bar"><span t-attf-style="width: {{ share(state.byPath, bp.total) }}%;"/></div>
                   <div class="pbtnm-row-n" t-esc="bp.total"/>
                   <div class="pbtnm-row-sub"><t t-esc="finishedWord(bp)"/><t t-if="bp.overdue"> · </t><t t-if="bp.overdue" t-esc="lateWords(bp.overdue)"/></div>
+                </div>
+              </t>
+            </div>
+
+            <!-- ==================== sessions (LEARNING L4) ====================
+                 Closed sessions that started in the range: hours, who came,
+                 who did not, by kind, by trainer and by course. -->
+            <div t-if="state.sessions and state.sessions.has_sessions" class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('calendar',16)"/> Sessions</h3>
+                <p><t t-esc="state.sessions.sessions"/> closed · <t t-esc="state.sessions.hours"/> hours of training · attended <t t-esc="pct(state.sessions.attendance_rate)"/> · did not come <t t-esc="pct(state.sessions.no_show_rate)"/></p>
+              </div>
+              <h4 class="pbtnm-subh">By kind</h4>
+              <t t-foreach="state.sessions.by_kind || []" t-as="sk" t-key="sk.name">
+                <div class="pbtnm-row" t-att-class="{ bad: sk.no_show > 0 }">
+                  <div class="pbtnm-row-name" t-esc="sk.name"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sk.rate || 0 }}%;"/></div>
+                  <div class="pbtnm-row-n"><t t-esc="sk.hours"/> h</div>
+                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(sk)"/>
+                </div>
+              </t>
+              <h4 class="pbtnm-subh">By trainer</h4>
+              <t t-foreach="state.sessions.by_trainer || []" t-as="st" t-key="st.name">
+                <div class="pbtnm-row" t-att-class="{ bad: st.no_show > 0 }">
+                  <div class="pbtnm-row-name" t-esc="st.name"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ st.rate || 0 }}%;"/></div>
+                  <div class="pbtnm-row-n"><t t-esc="st.hours"/> h</div>
+                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(st)"/>
+                </div>
+              </t>
+              <h4 class="pbtnm-subh">By course</h4>
+              <t t-foreach="state.sessions.by_course || []" t-as="sc" t-key="sc.name">
+                <div class="pbtnm-row" t-att-class="{ bad: sc.no_show > 0 }">
+                  <div class="pbtnm-row-name" t-esc="sc.name"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sc.rate || 0 }}%;"/></div>
+                  <div class="pbtnm-row-n"><t t-esc="sc.hours"/> h</div>
+                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(sc)"/>
                 </div>
               </t>
             </div>
@@ -286,7 +323,7 @@
                 <h3><t t-out="ic('award',16)"/> Certificates</h3>
                 <p>The certificates the most people hold, and how many are about to run out or already have.</p>
               </div>
-              <t t-foreach="state.byCertificate" t-as="ct" t-key="ct.name">
+              <t t-foreach="state.byCertificate || []" t-as="ct" t-key="ct.name">
                 <div class="pbtnm-row" t-att-class="{ bad: ct.expired > 0 }">
                   <div class="pbtnm-row-name" t-esc="ct.name"/>
                   <div class="pbtnm-bar">
@@ -334,7 +371,7 @@
             <div class="pbtnm-grid">
               <div>
                 <h4 class="pbtnm-req-h">By rule</h4>
-                <t t-foreach="state.required.by_requirement" t-as="rq" t-key="rq.name">
+                <t t-foreach="state.required.by_requirement || []" t-as="rq" t-key="rq.name">
                   <div class="pbtnm-row" t-att-class="{ bad: rq.missing > 0 }">
                     <div class="pbtnm-row-name" t-esc="rq.name"/>
                     <div class="pbtnm-bar"><span t-attf-style="width: {{ rq.percent || 0 }}%;"/></div>
@@ -345,7 +382,7 @@
               </div>
               <div>
                 <h4 class="pbtnm-req-h">By department</h4>
-                <t t-foreach="state.required.by_department" t-as="rd" t-key="rd.name">
+                <t t-foreach="state.required.by_department || []" t-as="rd" t-key="rd.name">
                   <div class="pbtnm-row" t-att-class="{ bad: rd.missing > 0 }">
                     <div class="pbtnm-row-name" t-esc="rd.name"/>
                     <div class="pbtnm-bar"><span t-attf-style="width: {{ rd.percent || 0 }}%;"/></div>
@@ -356,7 +393,7 @@
               </div>
               <div>
                 <h4 class="pbtnm-req-h">By site</h4>
-                <t t-foreach="state.required.by_site" t-as="rsi" t-key="rsi.name">
+                <t t-foreach="state.required.by_site || []" t-as="rsi" t-key="rsi.name">
                   <div class="pbtnm-row" t-att-class="{ bad: rsi.missing > 0 }">
                     <div class="pbtnm-row-name" t-esc="rsi.name"/>
                     <div class="pbtnm-bar"><span t-attf-style="width: {{ rsi.percent || 0 }}%;"/></div>
@@ -375,7 +412,7 @@
               <p>The statutory lists for the country packs switched on for this company, as spreadsheets.</p>
             </div>
             <div class="pbtnm-report-row">
-              <button t-foreach="state.countryReports" t-as="rep" t-key="rep.cc" class="pbim-btn ghost"
+              <button t-foreach="state.countryReports || []" t-as="rep" t-key="rep.cc" class="pbim-btn ghost"
                       t-att-disabled="state.reporting === rep.cc" t-on-click="() => this.countryReport(rep)" t-att-title="rep.pack">
                 <t t-out="ic('fileSpreadsheet',15)"/> <t t-esc="rep.title"/>
               </button>

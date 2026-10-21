@@ -101,6 +101,49 @@
             </div>
           </section>
 
+          <!-- ============ my sessions (LEARNING L4) ============ -->
+          <section t-if="sessions.next or otherSessions.length or (sessions.bookable || []).length" class="pbml-panel pbml-sessions">
+            <div class="pbml-sec-h">
+              <h3>My sessions</h3>
+              <span class="pbml-dim">Training in a room or on site</span>
+            </div>
+            <div t-if="sessions.next" class="pbml-ses pbml-ses--next">
+              <div class="pbml-ses-main">
+                <span class="pbml-eyebrow"><t t-out="ic('calendar',12)"/> Next</span>
+                <b class="pbml-card-name" t-esc="sessions.next.course"/>
+                <span class="pbml-dim"><t t-out="ic('calendarClock',12)"/> <t t-esc="sessions.next.when_words"/></span>
+                <span class="pbml-dim"><t t-out="ic('mapPin',12)"/> <t t-esc="sessions.next.where_words"/></span>
+              </div>
+              <div class="pbml-ses-act">
+                <span class="pbml-chip" t-att-class="sessionClass(sessions.next)" t-esc="sessions.next.my_state_word"/>
+                <button class="pbim-btn ghost" t-on-click="() => this.go(sessions.next.ics_url)"><t t-out="ic('calendar',14)"/> Add to my calendar</button>
+                <button t-if="sessions.next.join_url" class="pbim-btn ghost" t-on-click="() => this.openLink(sessions.next.join_url)"><t t-out="ic('video',14)"/> Join link</button>
+              </div>
+            </div>
+            <div t-foreach="otherSessions" t-as="ses" t-key="ses.id" class="pbml-ses">
+              <div class="pbml-ses-main">
+                <b t-esc="ses.course"/>
+                <span class="pbml-dim"><t t-esc="ses.when_words"/> · <t t-esc="ses.where_words"/></span>
+              </div>
+              <div class="pbml-ses-act">
+                <span class="pbml-chip" t-att-class="sessionClass(ses)" t-esc="ses.my_state_word"/>
+                <button t-if="ses.my_state !== 'attended'" class="pbim-btn ghost" t-on-click="() => this.go(ses.ics_url)"><t t-out="ic('calendar',14)"/> Add to my calendar</button>
+              </div>
+            </div>
+            <t t-if="(sessions.bookable || []).length">
+              <p class="pbml-dim pbml-ses-sub">Sessions you can book yourself</p>
+              <div t-foreach="sessions.bookable" t-as="ses" t-key="ses.id" class="pbml-ses">
+                <div class="pbml-ses-main">
+                  <b t-esc="ses.course"/>
+                  <span class="pbml-dim"><t t-esc="ses.when_words"/> · <t t-esc="ses.where_words"/> · <t t-esc="ses.seats_words"/></span>
+                </div>
+                <div class="pbml-ses-act">
+                  <button class="pbim-btn primary" t-att-disabled="state.booking === ses.id" t-on-click="() => this.bookSeat(ses)"><t t-out="ic('check',14)"/> Book a seat</button>
+                </div>
+              </div>
+            </t>
+          </section>
+
           <!-- ============ my courses ============ -->
           <section t-if="courses.length" class="pbml-panel">
             <div class="pbml-sec-h">
@@ -215,6 +258,7 @@
           <section t-if="team and team.manages" class="pbml-panel">
             <div class="pbml-sec-h">
               <h3>My team</h3>
+              <button class="pbim-btn ghost pbml-toolbox" t-on-click="openToolbox" title="Log who was at a short safety talk, after it happened"><t t-out="ic('megaphone',14)"/> Log a toolbox talk</button>
               <div class="pbml-bits">
                 <span t-foreach="teamBits()" t-as="bit" t-key="bit.key" class="pbml-bit"
                       t-att-class="{ 'is-warn': bit.warn and bit.n, 'is-good': bit.good and bit.n, 'is-zero': !bit.n }"
@@ -284,6 +328,7 @@
         </t>
 
       </div>
+      <PbToolboxDrawer t-if="state.toolbox" onClose="() => this.closeToolbox()" onSaved="() => this.load()"/>
     </div>
   </t>
 

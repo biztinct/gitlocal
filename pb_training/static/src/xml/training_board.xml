@@ -93,6 +93,11 @@
                     t-on-click="() => this.setTab('courses')">
               <t t-out="ic('bookOpen',15)"/> Courses
             </button>
+            <button t-if="showTab('sessions')" class="pbtn-tab" role="tab"
+                    t-att-class="{ on: state.tab === 'sessions' }"
+                    t-on-click="() => this.setTab('sessions')">
+              <t t-out="ic('calendar',15)"/> Sessions
+            </button>
             <button t-if="showTab('assignments')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'assignments' }"
                     t-on-click="() => this.setTab('assignments')">
@@ -232,6 +237,13 @@
             administrator if you want one.
           </p>
 
+          </t>
+
+          <!-- LEARNING L4: SESSIONS — training in a room or on site. -->
+          <t t-elif="state.tab === 'sessions'">
+            <PbSessionsLens t-key="state.sessionKey" embedded="true"
+                            startState="props.startSessionState or ''"
+                            startSession="state.sessionOpen"/>
           </t>
 
           <!-- ================================================================
@@ -994,6 +1006,26 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- ============ sessions (LEARNING L4) ============ -->
+          <div t-if="state.open.delivery and state.open.delivery !== 'online'" class="pbtn-sec">
+            <h4 class="pbtn-sec-h">
+              Sessions
+              <span class="pbtn-sec-n"><t t-esc="(state.open.sessions || []).length"/></span>
+            </h4>
+            <div class="pbtn-line-meta"><t t-esc="state.open.delivery_word"/></div>
+            <div t-if="!(state.open.sessions || []).length" class="pbtn-sec-empty">No session planned yet. Plan one from Sessions.</div>
+            <div t-else="" class="pbtn-list">
+              <button t-foreach="state.open.sessions" t-as="ses" t-key="ses.id" type="button" class="pbtn-line pbtn-line--btn" t-on-click="() => this.openSessionFromCourse(ses.id)">
+                <span class="pbtn-line-ic"><t t-out="ic(ses.kind === 'toolbox' ? 'megaphone' : 'calendar',15)"/></span>
+                <span class="pbtn-line-main">
+                  <span class="pbtn-line-name"><t t-esc="ses.when_words"/></span>
+                  <span class="pbtn-line-meta"><t t-esc="ses.state_word"/> · <t t-esc="ses.where_words"/> · <t t-esc="ses.seats_words"/></span>
+                </span>
+              </button>
+            </div>
+            <button t-if="showTab('sessions')" class="pbim-btn ghost" t-on-click="() => this.openSessionFromCourse(0)"><t t-out="ic('calendar',15)"/> Open Sessions</button>
           </div>
 
           <!-- ====================== the people ====================== -->

@@ -52,8 +52,58 @@
       <t t-elif="icon == 'plus'"><path d="M5 12h14M12 5v14"/></t>
       <t t-elif="icon == 'shieldCheck'"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></t>
       <t t-elif="icon == 'printer'"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></t>
+      <t t-elif="icon == 'calendar'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></t>
+      <t t-elif="icon == 'mapPin'"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></t>
+      <t t-elif="icon == 'scan'"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  LEARNING L4 — one session line (my booking, or one I may book).  -->
+  <!--  Called with `ses` (a row) and `bookable` (bool) and `channel_id`. -->
+  <!-- ================================================================= -->
+  <template id="tr_session_line" name="Training session line">
+    <div class="pbtr-ses">
+      <div class="pbtr-ses-main">
+        <b class="pbtr-ses-name"><t t-esc="ses.get('course') or ''"/></b>
+        <span class="pbtr-ses-meta">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'calendar'"/>
+            <t t-set="isz" t-value="13"/>
+          </t>
+          <t t-esc="ses['when_words']"/>
+        </span>
+        <span class="pbtr-ses-meta">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'mapPin'"/>
+            <t t-set="isz" t-value="13"/>
+          </t>
+          <t t-esc="ses['where_words']"/>
+        </span>
+      </div>
+      <div class="pbtr-ses-act">
+        <t t-if="bookable">
+          <span class="pbtr-chip"><t t-esc="ses['seats_words']"/></span>
+          <form t-attf-action="/my/training/sessions/#{ses['id']}/book" method="post" class="pbtr-inline">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="channel_id" t-att-value="channel_id or 0"/>
+            <button type="submit" class="pbme-btn pbtr-btn--primary">Book a seat</button>
+          </form>
+        </t>
+        <t t-else="">
+          <span t-attf-class="pbtr-chip #{ses['my_state'] == 'attended' and 'pbtr-chip--ok' or (ses['my_state'] == 'waitlisted' and 'pbtr-chip--wait' or 'pbtr-chip--go')}"><t t-esc="ses['my_state_word']"/></span>
+          <a t-if="ses['my_state'] in ('booked', 'waitlisted')" t-att-href="ses['ics_url']" class="pbme-btn">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'calendar'"/>
+              <t t-set="isz" t-value="14"/>
+            </t>
+            Add to my calendar
+          </a>
+          <a t-if="ses.get('join_url') and ses['my_state'] == 'booked'" t-att-href="ses['join_url']" class="pbme-btn" target="_blank" rel="noopener">Join link</a>
+        </t>
+      </div>
+    </div>
   </template>
 
   <!-- ============================ breadcrumbs ============================ -->
@@ -346,6 +396,37 @@
           </div>
         </div>
 
+        <!-- ============== my sessions (LEARNING L4) ==============
+             The next session first, then the rest, then sessions of courses
+             I owe that I may book myself. -->
+        <t t-set="mses" t-value="me.get('sessions') or {}"/>
+        <div t-if="mses.get('rows') or mses.get('bookable')" class="pbme-card pbtr-sessions">
+          <h3 class="pbtr-course-name">My sessions</h3>
+          <div t-if="mses.get('next')" class="pbtr-ses-next">
+            <span class="pbtr-ses-eyebrow">Next</span>
+            <t t-call="pb_training.tr_session_line">
+              <t t-set="ses" t-value="mses['next']"/>
+              <t t-set="bookable" t-value="False"/>
+            </t>
+          </div>
+          <t t-foreach="mses.get('rows') or []" t-as="ses">
+            <t t-if="not mses.get('next') or ses['id'] != mses['next']['id']">
+              <t t-call="pb_training.tr_session_line">
+                <t t-set="bookable" t-value="False"/>
+              </t>
+            </t>
+          </t>
+          <t t-if="mses.get('bookable')">
+            <p class="pbtr-muted pbtr-ses-sub">Sessions you can book yourself</p>
+            <t t-foreach="mses['bookable']" t-as="ses">
+              <t t-call="pb_training.tr_session_line">
+                <t t-set="bookable" t-value="True"/>
+                <t t-set="channel_id" t-value="0"/>
+              </t>
+            </t>
+          </t>
+        </div>
+
         <!-- ==================== nothing yet ==================== -->
         <div t-if="not me['courses']" class="pbme-card pbme-empty">
           <div class="pbme-empty-ic">
@@ -383,11 +464,19 @@
               <t t-set="asg" t-value="crs.get('assignment')"/>
             </t>
 
-            <div class="pbtr-bar">
+            <p t-if="crs.get('delivery') == 'session'" class="pbtr-ses-meta">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'calendar'"/>
+                <t t-set="isz" t-value="13"/>
+              </t>
+              <t t-if="crs.get('session')"><t t-esc="crs['session']['my_state_word']"/> · <t t-esc="crs['session']['when_words']"/></t>
+              <t t-else="">In a room or on site — the training team books you on a session.</t>
+            </p>
+            <div t-if="crs.get('delivery') != 'session'" class="pbtr-bar">
               <div class="pbtr-bar-fill"
                    t-attf-style="width: #{crs['percent']}%;"/>
             </div>
-            <div class="pbtr-bar-say">
+            <div t-if="crs.get('delivery') != 'session'" class="pbtr-bar-say">
               <span><b t-esc="crs['done']"/> of <t t-esc="crs['total']"/> lessons done</span>
               <span t-if="crs['duration']" class="pbtr-muted">
                 <t t-call="pb_training.tr_icon">
@@ -505,8 +594,28 @@
           </t>
         </div>
 
+        <!-- ============== sessions of this course (LEARNING L4) ============== -->
+        <div t-if="course.get('delivery') in ('session', 'blended')" class="pbme-card pbtr-sessions">
+          <h3 class="pbtr-course-name">Sessions</h3>
+          <p t-if="not course.get('my_sessions') and not course.get('bookable')" class="pbtr-muted">This course is taught in a room or on site. The training team books you on a session and the invitation comes by email.</p>
+          <t t-foreach="course.get('my_sessions') or []" t-as="ses">
+            <t t-call="pb_training.tr_session_line">
+              <t t-set="bookable" t-value="False"/>
+            </t>
+          </t>
+          <t t-if="course.get('bookable')">
+            <p class="pbtr-muted pbtr-ses-sub">Sessions you can book yourself</p>
+            <t t-foreach="course['bookable']" t-as="ses">
+              <t t-call="pb_training.tr_session_line">
+                <t t-set="bookable" t-value="True"/>
+                <t t-set="channel_id" t-value="course['id']"/>
+              </t>
+            </t>
+          </t>
+        </div>
+
         <!-- ==================== where they are ==================== -->
-        <div class="pbme-card pbtr-progress">
+        <div t-if="course.get('delivery') != 'session'" class="pbme-card pbtr-progress">
           <div class="pbtr-progress-say">
             <div>
               <div class="pbtr-progress-n"><t t-esc="course['percent']"/>%</div>
@@ -531,7 +640,7 @@
         </div>
 
         <!-- ==================== the lessons ==================== -->
-        <div t-if="not course['groups']" class="pbme-card pbme-empty">
+        <div t-if="not course['groups'] and course.get('delivery') != 'session'" class="pbme-card pbme-empty">
           <div class="pbme-empty-ic">
             <t t-call="pb_training.tr_icon">
               <t t-set="icon" t-value="'bookOpen'"/>
@@ -1385,6 +1494,51 @@
           </div>
         </t>
 
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  LEARNING L4 — /my/training/attend/<code>: the QR scan.           -->
+  <!--  One card that says what happened, in the words for each answer.  -->
+  <!-- ================================================================= -->
+  <template id="portal_training_attend" name="Session attendance">
+    <t t-call="portal.portal_layout">
+      <t t-set="additional_title">Attendance</t>
+      <div class="pbme pbtr">
+        <div t-attf-class="pbme-card pbtr-attend pbtr-attend--#{code}">
+          <div class="pbtr-attend-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="code in ('ok', 'already') and 'checkCircle' or (code == 'ask' and 'scan' or 'alert')"/>
+              <t t-set="isz" t-value="40"/>
+            </t>
+          </div>
+          <h2 t-if="code == 'ok'">You are marked as here</h2>
+          <h2 t-elif="code == 'already'">You are already marked as here</h2>
+          <h2 t-elif="code == 'ask'">You are not booked on this session</h2>
+          <h2 t-elif="code == 'full'">This session is full</h2>
+          <h2 t-elif="code == 'closed'">This session is closed</h2>
+          <h2 t-elif="code == 'not_yet'">This session has not started yet</h2>
+          <h2 t-elif="code == 'no_employee'">You cannot be marked here</h2>
+          <h2 t-else="">That code is not a session</h2>
+          <div t-if="info" class="pbtr-attend-what">
+            <b><t t-esc="info.get('course')"/></b>
+            <span><t t-esc="info.get('when_words')"/></span>
+            <span><t t-esc="info.get('where_words')"/></span>
+          </div>
+          <p t-if="code == 'ok'" class="pbtr-muted">It counts on your training record when the trainer closes the session.</p>
+          <p t-elif="code == 'ask'" class="pbtr-muted">There are seats left (<t t-esc="seats_words"/>). Join it and you are marked as here.</p>
+          <p t-elif="code == 'full'" class="pbtr-muted">You are not booked on it and every seat is taken. Tell the trainer — they can add you by hand.</p>
+          <p t-elif="code == 'closed'" class="pbtr-muted">It cannot take a scan any more. Tell the trainer if you were there.</p>
+          <p t-elif="code == 'not_yet'" class="pbtr-muted">Scan the code again when the trainer starts the session.</p>
+          <p t-elif="code == 'no_employee'" class="pbtr-muted">You do not have an employee record in this company. Tell the trainer — they can tick you by hand.</p>
+          <p t-elif="code == 'invalid'" class="pbtr-muted">Scan the code on the trainer's screen again.</p>
+          <form t-if="code == 'ask'" t-attf-action="/my/training/attend/#{token}/join" method="post" class="pbtr-attend-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <button type="submit" class="pbme-btn pbtr-btn--primary">Ask to join</button>
+          </form>
+          <a href="/my/training" class="pbme-btn">My training</a>
+        </div>
       </div>
     </t>
   </template>

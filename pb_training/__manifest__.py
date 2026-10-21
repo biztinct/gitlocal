@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.8.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -107,6 +107,10 @@ public.
         # months`) live here, and so does the other `_mark_done` override
         # (the résumé line); naming it fixes the order the two run in.
         'hr_skills_survey',
+        # LEARNING L4. A session's quiet diary entry is a `calendar.event`
+        # (ruling D12: our own mail carries the calendar file, the diary
+        # entry never mails anybody). Installed on every live database.
+        'calendar',
     ],
     'data': [
         'security/pb_training_security.xml',
@@ -131,6 +135,9 @@ public.
         'report/learning_record.xml',
         'views/requirement_views.xml',
         'report/required_matrix.xml',
+        'data/mail_template_sessions.xml',
+        'views/session_views.xml',
+        'report/session_sheet.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -141,6 +148,7 @@ public.
             'pb_training/static/src/scss/certificates_lens.scss',
             'pb_training/static/src/scss/required_lens.scss',
             'pb_training/static/src/scss/paths_lens.scss',
+            'pb_training/static/src/scss/sessions_lens.scss',
             'pb_training/static/src/js/training_board.js',
             'pb_training/static/src/js/training_numbers.js',
             'pb_training/static/src/js/learning_overview.js',
@@ -151,6 +159,8 @@ public.
             'pb_training/static/src/js/required_settings.js',
             'pb_training/static/src/js/safety_group_chip.js',
             'pb_training/static/src/js/paths_lens.js',
+            'pb_training/static/src/js/toolbox_drawer.js',
+            'pb_training/static/src/js/sessions_lens.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
             'pb_training/static/src/xml/training_numbers.xml',
@@ -162,6 +172,8 @@ public.
             'pb_training/static/src/xml/required_settings.xml',
             'pb_training/static/src/xml/safety_group_chip.xml',
             'pb_training/static/src/xml/paths_lens.xml',
+            'pb_training/static/src/xml/toolbox_drawer.xml',
+            'pb_training/static/src/xml/sessions_lens.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

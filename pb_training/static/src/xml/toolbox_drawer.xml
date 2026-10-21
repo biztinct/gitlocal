@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       "Log a toolbox talk" (LEARNING L4). One drawer, two doors (Sessions
+       and My learning's team block). Every translatable text node is on one
+       line (ledger LN13). Loop variables avoid OWL's reserved words (R1).
+       ==================================================================== -->
+  <t t-name="pb_training.PbToolboxDrawer">
+    <div class="pbim pbim-modal-scrim pbss-scrim pbss-vars" t-on-click="() => props.onClose()">
+      <div class="pbss-drawer" t-on-click.stop="() => {}">
+        <div class="pbss-drawer-head">
+          <div>
+            <div class="pbss-eyebrow"><t t-out="ic('megaphone',13)"/> Toolbox talk</div>
+            <h2 class="pbss-drawer-title">Who was there, in a minute</h2>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="() => props.onClose()" title="Close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div t-if="!state.loaded" class="pbss-drawer-body"><p class="pbss-note">Reading…</p></div>
+        <div t-elif="!state.allowed" class="pbss-drawer-body">
+          <p class="pbss-calm pbss-f--wide"><t t-out="ic('lock',14)"/> A toolbox talk is logged by the training team or by somebody who manages people.</p>
+        </div>
+        <div t-else="" class="pbss-drawer-body">
+          <div class="pbss-f pbss-f--wide">
+            <span class="pbss-f-l">Topic</span>
+            <div class="pbss-modes" role="group">
+              <button t-if="state.courses.length" class="pbss-filter" t-att-class="{ 'is-on': state.mode === 'course' }" t-on-click="() => this.setMode('course')">A classroom course</button>
+              <button class="pbss-filter" t-att-class="{ 'is-on': state.mode === 'new' }" t-on-click="() => this.setMode('new')">A new topic</button>
+            </div>
+            <select t-if="state.mode === 'course'" class="pbss-in" t-on-change="(ev) => this.setField('channel_id', ev, 'int')">
+              <option value="0">Pick the topic</option>
+              <t t-foreach="state.courses" t-as="crs" t-key="crs.id"><option t-att-value="crs.id" t-att-selected="state.form.channel_id === crs.id" t-esc="crs.name"/></t>
+            </select>
+            <input t-else="" class="pbss-in" type="text" placeholder="For example: Lifting safely" t-att-value="state.form.new_course" t-on-input="(ev) => this.setField('new_course', ev)"/>
+          </div>
+          <label class="pbss-f">
+            <span class="pbss-f-l">When</span>
+            <input class="pbss-in" type="datetime-local" t-att-value="state.form.start" t-on-change="(ev) => this.setField('start', ev)"/>
+          </label>
+          <label class="pbss-f">
+            <span class="pbss-f-l">Minutes</span>
+            <input class="pbss-in pbss-in--s" type="number" min="1" t-att-value="state.form.minutes" t-on-change="(ev) => this.setField('minutes', ev, 'int')"/>
+          </label>
+          <label class="pbss-f pbss-f--wide">
+            <span class="pbss-f-l">Where</span>
+            <input class="pbss-in" type="text" placeholder="For example: Warehouse B, loading bay" t-att-value="state.form.place" t-on-input="(ev) => this.setField('place', ev)"/>
+          </label>
+          <div class="pbss-f pbss-f--wide">
+            <span class="pbss-f-l">Who was there <span class="pbss-dim-i" t-esc="pickedWords"/></span>
+            <p t-if="state.isTeam" class="pbss-note">You can tick the people who report to you.</p>
+            <div class="pbss-pickbar">
+              <input class="pbss-in" type="search" placeholder="Type a name — accents do not matter" t-att-value="state.term" t-on-input="onTerm"/>
+              <button class="pbim-btn ghost" t-att-disabled="!state.people.length" t-on-click="pickAllShown">Tick all shown</button>
+            </div>
+            <div t-if="state.picked.length" class="pbss-chips">
+              <span t-foreach="state.picked" t-as="emp" t-key="emp.id" class="pbss-chip is-go"><t t-esc="emp.name"/> <button class="pbss-x" t-on-click="() => this.toggle(emp)" title="Remove"><t t-out="ic('x',11)"/></button></span>
+            </div>
+            <div class="pbss-picklist">
+              <button t-foreach="state.people" t-as="emp" t-key="emp.id" class="pbss-pick" t-att-class="{ 'is-on': isPicked(emp) }" t-on-click="() => this.toggle(emp)">
+                <span class="pbss-pick-box"><t t-if="isPicked(emp)"><t t-out="ic('check',12)"/></t></span>
+                <b t-esc="emp.name"/>
+                <span class="pbss-dim-i" t-esc="emp.department"/>
+              </button>
+              <p t-if="!state.people.length" class="pbss-note">Nobody matches that.</p>
+            </div>
+          </div>
+          <div class="pbss-f pbss-f--wide">
+            <span class="pbss-f-l">Photo of the paper sign-in sheet (if there is one)</span>
+            <div t-if="state.form.photo_name" class="pbss-chips">
+              <span class="pbss-chip"><t t-out="ic('camera',12)"/> <t t-esc="state.form.photo_name"/> <button class="pbss-x" t-on-click="clearPhoto" title="Remove"><t t-out="ic('x',11)"/></button></span>
+            </div>
+            <input t-else="" class="pbss-in" type="file" accept="image/*,application/pdf" capture="environment" t-on-change="onPhoto"/>
+          </div>
+          <label class="pbss-f pbss-f--wide">
+            <span class="pbss-f-l">Notes</span>
+            <textarea class="pbss-in" rows="2" placeholder="Optional: what was covered" t-on-input="(ev) => this.setField('notes', ev)"><t t-esc="state.form.notes"/></textarea>
+          </label>
+          <p class="pbss-note pbss-f--wide">Everybody ticked is marked as attended, the hours go on their record and the course counts as done for them.</p>
+        </div>
+
+        <div class="pbss-drawer-foot">
+          <span t-if="state.allowed and hint" class="pbss-hint" t-esc="hint"/>
+          <button class="pbim-btn ghost" t-on-click="() => props.onClose()">Cancel</button>
+          <button t-if="state.allowed" class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="save"><t t-out="ic('check',15)"/> Log the talk</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

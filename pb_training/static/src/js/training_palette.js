@@ -12,6 +12,10 @@
  *          10 overview · 20 mine · 30 courses · 35 paths · 40 assigned ·
  *          50 required · 60 tests · 65 certificates · 70 claims · 80 numbers
  *
+ *      LEARNING L4 gave Courses a second inner tab, SESSIONS (sessions,
+ *      attendance, toolbox talks); Overview's "Sessions to close" and the
+ *      command bar arrive on it (`pb_training_tab` = "sessions").
+ *
  *      LEARNING L3 added PATHS (35): learning paths with their station
  *      lines; Overview's "Late on a path" arrives on the late filter
  *      (`pb_training_path_state`). Ten items — the rail target (ledger L2).
@@ -59,6 +63,7 @@ import { PbTrainingTestsLens } from "@pb_training/js/training_tests_lens";
 import { PbRequiredLens } from "@pb_training/js/required_lens";
 import { REQ_TAB_KEY, REQ_STATE_KEY, REQ_PACK_KEY } from "@pb_training/js/required_settings";
 import { PbPathsLens, PATH_STATE_KEY, TRAINING_TERM_KEY } from "@pb_training/js/paths_lens";
+import { SESSION_STATE_KEY, SESSION_OPEN_KEY } from "@pb_training/js/sessions_lens";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -87,6 +92,10 @@ lenses.add("mine", {
     groups: ["base.group_user"],
 }, { sequence: 20 });
 
+// LEARNING L4: Courses owns two inner tabs — Courses and Sessions. The
+// arrival may ask for Sessions (Overview's "Sessions to close", the command
+// bar), filtered on the sessions to close or opened on one session.
+const COURSE_TABS = ["courses", "sessions"];
 lenses.add("courses", {
     key: "courses",
     icon: "bookOpen",
@@ -94,7 +103,16 @@ lenses.add("courses", {
     title: _t("Every course"),
     Component: PbTrainingBoard,
     groups: TRAINING_GATE,
-    props: { startTab: "courses", tabs: ["courses"] },
+    propsFromContext(ctx) {
+        const c = ctx || {};
+        const asked = c[TRAINING_TAB_KEY] || (c.pb_focus === "sessions" ? "sessions" : "");
+        return {
+            startTab: COURSE_TABS.includes(asked) ? asked : "courses",
+            tabs: COURSE_TABS,
+            startSessionState: c[SESSION_STATE_KEY] === "to_close" ? "to_close" : "",
+            startSession: Number(c[SESSION_OPEN_KEY]) || 0,
+        };
+    },
 }, { sequence: 30 });
 
 // LEARNING L3: learning paths. Overview's "Late on a path" arrives filtered.
@@ -283,6 +301,19 @@ palette.add("training_paths", {
     action: { xmlid: HUB_XMLID, lens: "paths" },
     keywords: ["path", "career", "programme", "lộ trình", "training", "talent"],
 }, { sequence: 3935 });
+
+// LEARNING L4: sessions and toolbox talks, from the command bar.
+palette.add("training_sessions", {
+    id: "training_sessions",
+    label: _t("Training sessions"),
+    sublabel: _t("Learning"),
+    icon: "calendar",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    // The palette carries `focus` (never a context): Courses reads it.
+    action: { xmlid: HUB_XMLID, lens: "courses", focus: "sessions" },
+    keywords: ["session", "classroom", "toolbox", "attendance", "buổi học", "điểm danh", "training"],
+}, { sequence: 3915 });
 
 // LEARNING L1: the register, from the command bar.
 palette.add("training_certificates", {

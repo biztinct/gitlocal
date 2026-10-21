@@ -854,3 +854,14 @@
         .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
     }
 }
+
+// LEARNING L4: a session row in the course drawer is a button.
+.pbtn-line.pbtn-line--btn {
+    width: 100%; text-align: left; font: inherit; background: transparent; border: 0;
+    cursor: pointer;
+    & + & { border-top: 1px solid var(--pbim-line, #F1F5F9); }
+    &:hover, &:focus-visible { background: var(--pbim-soft, #EDEAF8); outline: 0; }
+}
+
+// LEARNING L4: the Numbers' sessions section sub-headings.
+.pbtnm-subh { margin: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--pbim-muted, #64748B); }

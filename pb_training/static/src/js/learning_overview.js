@@ -26,7 +26,9 @@ export const TRAINING_TAB_KEY = "pb_training_tab";
 /** The context key the Certificates lens reads its first filter from (LEARNING L1). */
 export const CERT_FILTER_KEY = "pb_training_cert_filter";
 
-const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks", paths: "route" };
+const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks", paths: "route", sessions: "calendar" };
+/** The context key Courses reads its Sessions filter from (LEARNING L4). */
+const SESSION_STATE_KEY = "pb_training_session_state";
 
 /** The context key the Paths lens reads its arrival filter from (LEARNING L3). */
 const PATH_STATE_KEY = "pb_training_path_state";
@@ -122,6 +124,7 @@ export class PbLearningOverview extends Component {
         if (row.filter) { return this.openCerts(row.filter); }
         if (row.lens === "required") { return this.openRequired(row.state || ""); }
         if (row.lens === "paths") { return this.openPaths(row.count ? row.path_state : ""); }
+        if (row.key === "sessions") { return this.openSessions(row.count ? "to_close" : ""); }
         openHub(this.action, {
             xmlid: LEARNING_HUB_XMLID,
             lens: row.lens,
@@ -179,6 +182,29 @@ export class PbLearningOverview extends Component {
             lens: "paths",
             context: state ? { [PATH_STATE_KEY]: state } : {},
         });
+    }
+
+    /** LEARNING L4: the sessions block. */
+    get sessions() { return this.data.sessions || {}; }
+
+    get sessionBits() {
+        const x = this.sessions;
+        return [
+            { key: "week", n: x.this_week || 0,
+              text: (x.this_week || 0) === 1 ? _t("1 session this week") : _t("%s sessions this week", x.this_week || 0) },
+            { key: "seats", n: x.seats_booked || 0,
+              text: (x.seats_booked || 0) === 1 ? _t("1 seat booked") : _t("%s seats booked", x.seats_booked || 0) },
+            { key: "waiting", n: x.waiting || 0, warn: true,
+              text: (x.waiting || 0) === 1 ? _t("1 waiting for a seat") : _t("%s waiting for a seat", x.waiting || 0) },
+            { key: "to_close", n: x.to_close || 0, warn: true,
+              text: (x.to_close || 0) === 1 ? _t("1 session to close") : _t("%s sessions to close", x.to_close || 0) },
+        ];
+    }
+
+    openSessions(state) {
+        const context = { [TRAINING_TAB_KEY]: "sessions" };
+        if (state) { context[SESSION_STATE_KEY] = state; }
+        openHub(this.action, { xmlid: LEARNING_HUB_XMLID, lens: "courses", context });
     }
 
     openLens(lens) {

@@ -45,6 +45,10 @@ TRAINING_SOURCES = [
     ('claim', 'Outside course, from a claim'),
     ('upload', 'Uploaded'),
     ('statutory', 'Statutory card or licence'),
+    # LEARNING L4: attended a session of a course that files a certificate.
+    # (`signoff` — a practical sign-off — is reserved for a later phase,
+    # owner decision LD5, and deliberately not offered yet.)
+    ('session', 'Attended a session'),
 ]
 TRAINING_SOURCE_LABEL = dict(TRAINING_SOURCES)
 

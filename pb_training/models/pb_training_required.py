@@ -28,7 +28,9 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
-from .hr_employee_ext import SAFETY_GROUP_LABEL, SAFETY_GROUPS
+from .hr_employee_ext import (
+    SAFETY_GROUP_LABEL, SAFETY_GROUPS, effective_safety_group,
+)
 from .pb_training_certificates import PbTrainingCertificates
 from .requirement import PACKS, PACK_BY_CC, PACK_BY_KEY, _csv
 from .training_common import (
@@ -204,7 +206,7 @@ class PbTrainingRequired(models.AbstractModel):
             for p in self.env['res.partner'].sudo().browse(
                     sorted(partner_ids)).read(['country_id']):
                 p_country[p['id']] = p['country_id']
-        companies = {c.id: c.country_id for c in
+        companies = {c.id: c.partner_id.country_id for c in
                      self.env['res.company'].sudo().browse(sorted(
                          {r['company_id'][0] for r in rows
                           if r['company_id']}))}
@@ -215,6 +217,11 @@ class PbTrainingRequired(models.AbstractModel):
                      .sudo().browse(sorted(country_ids)).read(['code'])}
         out = {}
         for r in rows:
+            comp_code = companies[r['company_id'][0]].code \
+                if r['company_id'] and companies.get(r['company_id'][0]) \
+                else ''
+            group, by_default = effective_safety_group(
+                r['pb_safety_group'] or '', comp_code)
             country = p_country.get(r['address_id'][0]) \
                 if r['address_id'] else False
             if country:
@@ -239,7 +246,8 @@ class PbTrainingRequired(models.AbstractModel):
                 if r['work_location_id'] else '',
                 'country_code': code or '',
                 'country': cname or '',
-                'safety_group': r['pb_safety_group'] or '',
+                'safety_group': group,
+                'safety_group_default': by_default,
                 'has_login': bool(r['user_id']),
             }
         return out
@@ -301,12 +309,13 @@ class PbTrainingRequired(models.AbstractModel):
             states = {c['state'] for c in row_cells.values()}
             if state and state not in states:
                 continue
+            word = tr(self.env, SAFETY_GROUP_LABEL.get(
+                f.get('safety_group'), '')) if f.get('safety_group') else ''
+            if word and f.get('safety_group_default'):
+                # LD11: say it is the Vietnam default, not a group HR set.
+                word = _("%s (by default)", word)
             rows.append(dict(f, employee_id=emp_id, cells=row_cells,
-                             rank=worst,
-                             safety_group_word=tr(
-                                 self.env, SAFETY_GROUP_LABEL.get(
-                                     f.get('safety_group'), ''))
-                             if f.get('safety_group') else ''))
+                             rank=worst, safety_group_word=word))
         rows.sort(key=lambda r: (r['rank'], fold(r['name'])))
         summary = self._matrix_summary(rows)
         total = len(rows)
@@ -918,7 +927,10 @@ class PbTrainingRequired(models.AbstractModel):
                 'note': _("Skills Development Levy (0.25% of monthly wages, "
                           "at least S$2 and at most S$11.25 a month) is "
                           "already worked out by payroll.")
-                if pack['cc'] == 'sg' else '',
+                if pack['cc'] == 'sg' else (
+                    _("Anyone with no safety group set counts as group 4. "
+                      "Set another group on the person's record.")
+                    if pack['cc'] == 'vn' else ''),
             })
         return {
             'allowed': True,
@@ -976,14 +988,21 @@ class PbTrainingRequired(models.AbstractModel):
             as_id(employee_id)).exists()
         if not emp or emp.company_id.id not in self.env.companies.ids:
             return {'found': False}
-        group = emp.pb_safety_group or ''
+        group, by_default = effective_safety_group(
+            emp.pb_safety_group or '',
+            emp.company_id.partner_id.country_id.code or '')
         site = emp.work_location_id.name or ''
         if not group and not site:
             return {'found': False}
+        label = ''
+        if group:
+            label = _("Safety group %s (by default)", group) if by_default \
+                else _("Safety group %s", group)
         return {
             'found': True,
             'group': group,
-            'label': _("Safety group %s", group) if group else '',
+            'by_default': by_default,
+            'label': label,
             'tooltip': tr(self.env, SAFETY_GROUP_LABEL.get(group, ''))
             if group else '',
             'site': site,

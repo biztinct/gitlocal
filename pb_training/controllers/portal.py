@@ -68,6 +68,11 @@ _PROBLEMS = {
     'record': _("Your learning record could not be printed just now. Try "
                 "again in a minute."),
     'record_denied': _("You can only print your own learning record."),
+    # LEARNING L4
+    'book': _("That seat could not be booked. The session may be full or "
+              "closed to booking — ask the training team."),
+    'calendar': _("That session is not one of yours, so there is no "
+                  "calendar file for it."),
 }
 
 
@@ -138,6 +143,10 @@ class PbTrainingPortal(CustomerPortal):
             # LEARNING L1
             'cert_added': _("Added to your certificates. HR checks it and "
                             "marks it checked."),
+            # LEARNING L4
+            'booked': _("You have a seat. The invitation comes by email."),
+            'waiting': _("The session is full, so you are waiting for a "
+                         "seat. You get an email if one comes free."),
         }.get(key or '', '')
 
     # =================================================================
@@ -519,3 +528,69 @@ class PbTrainingPortal(CustomerPortal):
             ('Content-Length', len(pdf)),
             ('Content-Disposition', content_disposition(filename)),
         ])
+
+    # =================================================================
+    #  LEARNING L4 — sessions: the QR scan, the calendar file, a seat
+    # =================================================================
+    @http.route(['/my/training/attend/<string:token>'], type='http',
+                auth='user', website=True)
+    def portal_training_attend(self, token, **kw):
+        """The code on the trainer's screen. The person is the session user;
+        the token only names the session (handover F2/F3)."""
+        try:
+            answer = self._tr_facade().attend_by_token(token)
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: an attendance scan failed',
+                            exc_info=True)
+            answer = {'code': 'invalid', 'session': None}
+        return self._tr_attend_page(token, answer)
+
+    @http.route(['/my/training/attend/<string:token>/join'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_training_attend_join(self, token, **post):
+        try:
+            answer = self._tr_facade().attend_by_token(token, join=True)
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: joining a session from a scan '
+                            'failed', exc_info=True)
+            answer = {'code': 'invalid', 'session': None}
+        return self._tr_attend_page(token, answer)
+
+    def _tr_attend_page(self, token, answer):
+        return request.render('pb_training.portal_training_attend', {
+            'page_name': 'training',
+            'code': answer.get('code') or 'invalid',
+            'info': answer.get('session') or {},
+            'seats_words': answer.get('seats_words') or '',
+            'token': token,
+        })
+
+    @http.route(['/my/training/sessions/<int:session_id>/calendar.ics'],
+                type='http', auth='user', website=True)
+    def portal_training_session_ics(self, session_id, **kw):
+        data = self._tr_facade().session_ics(session_id)
+        if not data:
+            return request.redirect('/my/training?problem=calendar')
+        return request.make_response(data, headers=[
+            ('Content-Type', 'text/calendar; charset=utf-8'),
+            ('Content-Length', len(data)),
+            ('Content-Disposition', content_disposition('session.ics')),
+        ])
+
+    @http.route(['/my/training/sessions/<int:session_id>/book'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_training_session_book(self, session_id, **post):
+        back = '/my/training'
+        channel_id = self._tr_int(post.get('channel_id'))
+        if channel_id:
+            back = '/my/training/%s' % channel_id
+        try:
+            res = self._tr_facade().book_my_seat(session_id)
+        except (AccessError, UserError):
+            return request.redirect('%s?problem=book' % back)
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a seat could not be booked',
+                            exc_info=True)
+            return request.redirect('%s?problem=book' % back)
+        code = 'waiting' if res.get('code') == 'waiting' else 'booked'
+        return request.redirect('%s?ok=%s' % (back, code))

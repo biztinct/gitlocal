@@ -66,3 +66,11 @@ from . import required_reports
 # facade's verb tuple and the Overview chain, so it comes last.
 from . import path
 from . import pb_training_paths
+
+# ---------------------------------------------------------------- LEARNING L4
+# Sessions, attendance and toolbox talks: the two tables, the course's
+# delivery and the assignment / certificate links (`session`), then the
+# SESSIONS board / Overview / Numbers / My learning facade, which extends the
+# paths facade's verb tuple and the Overview chain, so it comes last.
+from . import session
+from . import pb_training_sessions

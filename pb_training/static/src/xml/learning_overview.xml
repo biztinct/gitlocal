@@ -111,6 +111,24 @@
             </div>
           </section>
 
+          <!-- ============ sessions (LEARNING L4) ============ -->
+          <section t-if="sessions.has_sessions" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Sessions</h3>
+              <span class="pblo-dim">Training in a room or on site</span>
+            </div>
+            <div class="pblo-certbits">
+              <button t-foreach="sessionBits" t-as="sb" t-key="sb.key" class="pblo-certbit" t-att-class="{ 'is-warn': sb.warn and sb.n, 'is-zero': !sb.n }" t-on-click="() => this.openSessions(sb.key === 'to_close' and sb.n ? 'to_close' : '')">
+                <t t-esc="sb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openSessions('')">
+                <t t-out="ic('calendar',14)"/> Open the sessions
+              </button>
+            </div>
+          </section>
+
           <!-- ============ certificates (LEARNING L1) ============ -->
           <section class="pblo-panel pblo-certs">
             <div class="pblo-sec-h">

@@ -27,7 +27,7 @@ from datetime import timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .hr_employee_ext import SAFETY_GROUP_LABEL
+from .hr_employee_ext import SAFETY_GROUP_LABEL, effective_safety_group
 from .pb_training_required import EMPLOYEE_TYPES, _date_words, _num
 from .requirement import PACK_BY_CC, PACKS
 from .training_common import fold, tr
@@ -214,7 +214,17 @@ class PbTrainingAnalyticsRequired(models.AbstractModel):
                     as_ids).read(['hours']):
                 rows_by_id[a['id']] = a
         emps = self.env['hr.employee'].sudo().browse(
-            sorted({e for _r, e in cells})).read(['name', 'pb_safety_group'])
+            sorted({e for _r, e in cells})).read(
+                ['name', 'pb_safety_group', 'company_id'])
+        # LD11: an empty group in a Vietnamese company is group 4.
+        vn = {c.id for c in self.env['res.company'].sudo().browse(sorted(
+            {e['company_id'][0] for e in emps if e['company_id']}))
+            if (c.partner_id.country_id.code or '').upper() == 'VN'}
+        for e in emps:
+            e['pb_safety_group'] = effective_safety_group(
+                e['pb_safety_group'] or '',
+                'VN' if e['company_id'] and e['company_id'][0] in vn
+                else '')[0]
         emp_by = {e['id']: e for e in emps}
         out = []
         for rule in rules:

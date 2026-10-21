@@ -34,3 +34,9 @@ access_pb_training_path_step_admin,Learning path step — head of training,model
 access_pb_training_path_enrolment_user,Person on a learning path — trainer,model_pb_training_path_enrolment,pb_training.group_training_user,1,1,1,0
 access_pb_training_path_enrolment_manager,Person on a learning path — training manager,model_pb_training_path_enrolment,pb_training.group_training_manager,1,1,1,1
 access_pb_training_path_enrolment_admin,Person on a learning path — head of training,model_pb_training_path_enrolment,pb_training.group_training_admin,1,1,1,1
+access_pb_training_session_user,Training session — trainer,model_pb_training_session,pb_training.group_training_user,1,1,1,0
+access_pb_training_session_manager,Training session — training manager,model_pb_training_session,pb_training.group_training_manager,1,1,1,1
+access_pb_training_session_admin,Training session — head of training,model_pb_training_session,pb_training.group_training_admin,1,1,1,1
+access_pb_training_attendance_user,Session attendance — trainer,model_pb_training_attendance,pb_training.group_training_user,1,1,1,0
+access_pb_training_attendance_manager,Session attendance — training manager,model_pb_training_attendance,pb_training.group_training_manager,1,1,1,1
+access_pb_training_attendance_admin,Session attendance — head of training,model_pb_training_attendance,pb_training.group_training_admin,1,1,1,1
