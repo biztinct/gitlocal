@@ -4,7 +4,7 @@
   <!-- ====================================================================
        Learning › Overview (LEARNING L0). Section comments use `=` rules and
        never a doubled hyphen (R35). Loop variables avoid OWL's reserved
-       words (R1): `que`, `bit`, `dep`.
+       words (R1): `que`, `bit`, `dep`, `cb`.
        ==================================================================== -->
   <t t-name="pb_training.PbLearningOverview">
     <div class="pblo" t-att-class="{ 'pblo--embedded': props.embedded }">
@@ -69,6 +69,30 @@
                     t-esc="bit.text"/>
             </t>
           </div>
+
+          <!-- ============ certificates (LEARNING L1) ============ -->
+          <section class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Certificates</h3>
+              <span class="pblo-dim">Who is about to lapse</span>
+            </div>
+            <p t-if="!certificates.total" class="pblo-calm">
+              <t t-out="ic('info',14)"/>
+              No certificates yet. A passed test files one by itself; add outside ones from Certificates.
+            </p>
+            <div t-else="" class="pblo-certbits">
+              <button t-foreach="certBits" t-as="cb" t-key="cb.key" class="pblo-certbit"
+                      t-att-class="{ 'is-warn': cb.warn and cb.n, 'is-bad': cb.bad and cb.n, 'is-good': cb.good and cb.n, 'is-zero': !cb.n }"
+                      t-on-click="() => this.openCerts(cb.key)">
+                <t t-esc="cb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openCerts('')">
+                <t t-out="ic('award',14)"/> Open the register
+              </button>
+            </div>
+          </section>
 
           <!-- ============ departments ============ -->
           <section class="pblo-panel">

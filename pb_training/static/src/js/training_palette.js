@@ -10,7 +10,11 @@
  *      decision LD3): nothing here registers into Talent's registry any more.
  *
  *          10 overview · 20 mine · 30 courses · 40 assigned · 50 required ·
- *          60 tests · 70 claims · 80 numbers
+ *          60 tests · 65 certificates · 70 claims · 80 numbers
+ *
+ *      LEARNING L1 added CERTIFICATES (65): the register of every
+ *      certificate and licence, arriving on a filter when Overview or a
+ *      Numbers link asks for one (`pb_training_cert_filter`).
  *
  *      Courses, Assigned, Required and Claims are the SAME board with
  *      `startTab` / `tabs` props (the Hiring precedent); Assigned reads its
@@ -44,7 +48,8 @@ import { LEARNING_LENSES, LEARNING_HUB_XMLID } from "@pb_learning_hub/js/learnin
 import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
 import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
-import { PbLearningOverview, TRAINING_TAB_KEY } from "@pb_training/js/learning_overview";
+import { PbLearningOverview, TRAINING_TAB_KEY, CERT_FILTER_KEY } from "@pb_training/js/learning_overview";
+import { PbCertificatesLens } from "@pb_training/js/certificates_lens";
 import { PbMyLearningLens } from "@pb_training/js/my_learning_lens";
 import { PbTrainingTestsLens } from "@pb_training/js/training_tests_lens";
 
@@ -122,6 +127,21 @@ lenses.add("tests", {
     groups: TRAINING_GATE,
 }, { sequence: 60 });
 
+// LEARNING L1: the certificate register. Overview's chips arrive on a filter.
+const CERT_FILTERS = ["expiring_30", "expiring_60", "expiring_90", "expired", "valid", "no_expiry", "renewed"];
+lenses.add("certificates", {
+    key: "certificates",
+    icon: "award",
+    label: _t("Certificates"),
+    title: _t("Certificates and licences"),
+    Component: PbCertificatesLens,
+    groups: TRAINING_GATE,
+    propsFromContext(ctx) {
+        const asked = ctx && ctx[CERT_FILTER_KEY];
+        return { startFilter: CERT_FILTERS.includes(asked) ? asked : "" };
+    },
+}, { sequence: 65 });
+
 lenses.add("claims", {
     key: "claims",
     icon: "receipt",
@@ -193,6 +213,18 @@ palette.add("training_my", {
     action: { xmlid: HUB_XMLID, lens: "mine" },
     keywords: ["my training", "training", "talent", "đào tạo của tôi"],
 }, { sequence: 3930 });
+
+// LEARNING L1: the register, from the command bar.
+palette.add("training_certificates", {
+    id: "training_certificates",
+    label: _t("Certificates and licences"),
+    sublabel: _t("Learning"),
+    icon: "award",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: HUB_XMLID, lens: "certificates" },
+    keywords: ["certificate", "licence", "license", "expiry", "chứng chỉ", "giấy phép", "training", "talent"],
+}, { sequence: 3925 });
 
 /* -------------------------------------------------------------- E2 rows ---
  * Still inside E's 3900 block; B1 starts at 3600 per the wave plan. Both are

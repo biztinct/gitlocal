@@ -139,9 +139,11 @@
                     <t t-out="board['claims'].get('total_words') or ''"/> in all.
                 </p>
             </t>
+            <p t-if="board.get('cert_expiring')" style="font-size:15px;"><t t-if="board['cert_expiring'] == 1">1 certificate expires within 30 days.</t><t t-else=""><t t-out="board['cert_expiring']"/> certificates expire within 30 days.</t> The Certificates register in Learning says whose.</p>
             <p style="color:#6B6785; font-size:13px;">
                 The spreadsheet attached has the same figures broken down by
-                department, by course and week by week.
+                department, by course and week by week, and a sheet of
+                certificates.
             </p>
             <br/>
             The training team

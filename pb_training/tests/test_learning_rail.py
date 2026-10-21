@@ -30,6 +30,8 @@ RAIL = [
     ('assigned', 40, 'Assigned', 'userCheck', 'PbTrainingBoard'),
     ('required', 50, 'Required', 'listChecks', 'PbTrainingBoard'),
     ('tests', 60, 'Tests', 'fileCheck', 'PbTrainingTestsLens'),
+    # LEARNING L1
+    ('certificates', 65, 'Certificates', 'award', 'PbCertificatesLens'),
     ('claims', 70, 'Claims', 'receipt', 'PbTrainingBoard'),
     ('numbers', 80, 'Numbers', 'barChart', 'PbTrainingNumbers'),
 ]
@@ -68,7 +70,7 @@ class TestT4TheRail(TransactionCase):
         blocks = _lens_blocks(_src('static', 'src', 'js', 'training_palette.js'))
         self.assertIn('groups: ["base.group_user"]', blocks['mine'][0])
         for key in ('overview', 'courses', 'assigned', 'required', 'tests',
-                    'claims'):
+                    'certificates', 'claims'):
             self.assertIn('groups: TRAINING_GATE,', blocks[key][0], key)
         self.assertIn('groups: TRAINING_GATE.concat(["base.group_system"])',
                       blocks['numbers'][0])
@@ -121,7 +123,7 @@ class TestT4TheRail(TransactionCase):
         from xml.etree import ElementTree
         reserved = {'lt', 'gt', 'lte', 'gte', 'and', 'or', 'not', 'in'}
         for f in ('learning_overview.xml', 'my_learning_lens.xml',
-                  'training_tests_lens.xml'):
+                  'training_tests_lens.xml', 'certificates_lens.xml'):
             body = _src('static', 'src', 'xml', f)
             ElementTree.fromstring(body)
             for comment in re.findall(r'<!--(.*?)-->', body, flags=re.S):
@@ -129,19 +131,20 @@ class TestT4TheRail(TransactionCase):
             for name in re.findall(r't-as="(\w+)"', body):
                 self.assertNotIn(name, reserved, f)
         for f in ('learning_overview.js', 'my_learning_lens.js',
-                  'training_tests_lens.js'):
+                  'training_tests_lens.js', 'certificates_lens.js'):
             self.assertFalse(re.search(r"""["']\s*\n\s*["']""",
                                        _src('static', 'src', 'js', f)), f)
 
     def test_t4_no_vendor_name_or_emoji_in_what_a_reader_sees(self):
         emoji = re.compile('[\U0001F300-\U0001FAFF☀-➿]')
         for f in ('learning_overview.js', 'my_learning_lens.js',
-                  'training_tests_lens.js', 'training_palette.js'):
+                  'training_tests_lens.js', 'training_palette.js',
+                  'certificates_lens.js'):
             for s in re.findall(r'_t\("([^"]*)"', _src('static', 'src', 'js', f)):
                 self.assertNotIn('odoo', s.lower(), f)
                 self.assertFalse(emoji.search(s), f)
         for f in ('learning_overview.xml', 'my_learning_lens.xml',
-                  'training_tests_lens.xml'):
+                  'training_tests_lens.xml', 'certificates_lens.xml'):
             body = re.sub(r'<!--.*?-->', '', _src('static', 'src', 'xml', f),
                           flags=re.S)
             self.assertNotIn('Odoo', body, f)
@@ -289,7 +292,7 @@ class TestT7Overview(AssignmentCase):
         self.assertTrue(data['allowed'])
         self.assertEqual(data['headline'], 'Nobody is on a course yet.')
         self.assertTrue(data['calm'])
-        self.assertEqual([q['count'] for q in data['queue']], [0, 0, 0])
+        self.assertEqual([q['count'] for q in data['queue']], [0, 0, 0, 0])
 
     def test_t7_the_headline_counts_people_and_courses(self):
         for emp in (self.e_one, self.e_two):

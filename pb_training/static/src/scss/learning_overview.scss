@@ -182,3 +182,19 @@
     .pblo-dep-bar { grid-column: 1 / -1; grid-row: 2; }
     .pblo-dep-late { display: none; }
 }
+
+// ------------------------------------------------- certificates (LEARNING L1)
+// Quiet board: grey at zero, amber for "expires within 30 days", rose for
+// expired, green for in date. Each count is a door into the register.
+.pblo-certbits { display: flex; gap: 8px; flex-wrap: wrap; }
+.pblo-certbit {
+    border: 1px solid #E2E8F0; background: #F8FAFC; border-radius: 999px;
+    padding: 5px 12px; font: inherit; font-size: 12.5px; font-weight: 650;
+    color: #1B1733; cursor: pointer;
+    &:hover { border-color: #5A4BB0; }
+    &:focus-visible { outline: 3px solid rgba(90, 75, 176, .25); outline-offset: 1px; }
+    &.is-zero { color: #64748B; font-weight: 500; }
+    &.is-warn { color: #B45309; background: #FFFBEB; border-color: #FDE68A; }
+    &.is-bad { color: #B91C1C; background: #FEF2F2; border-color: #FECACA; }
+    &.is-good { color: #2E7D4F; background: #ECFDF5; border-color: #A7F3D0; }
+}

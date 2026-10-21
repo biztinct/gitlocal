@@ -38,8 +38,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .training_common import (
-    ASSIGN_REASON_LABEL, GROUP_ADMIN, GROUP_MANAGER, GROUP_USER, as_id,
-    counted, fold, money_words,
+    GROUP_ADMIN, GROUP_MANAGER, GROUP_USER, as_id, counted, fold,
+    money_words, reason_choices, reason_word,
 )
 
 _logger = logging.getLogger(__name__)
@@ -148,11 +148,14 @@ class PbTrainingAnalytics(models.AbstractModel):
             'by_department': [],
             'by_course': [],
             'by_reason': [],
+            'by_certificate': self._safe(self._by_certificate, default=[]),
+            'cert_expiring': self._safe(
+                lambda: self.env['pb.training']._cert_counts().get(
+                    'expiring_30', 0), default=0),
             'trend': [],
             'claims': {},
             'lists': self._safe(lambda: self._lists(), default={}),
-            'reasons': [{'key': k, 'label': v}
-                        for k, v in ASSIGN_REASON_LABEL.items()],
+            'reasons': reason_choices(self.env),
         }
         if not rows:
             payload['headline'] = _(
@@ -165,7 +168,8 @@ class PbTrainingAnalytics(models.AbstractModel):
             return payload
         core = self._safe(lambda: self._core(rows), default={})
         payload.update({
-            'tiles': self._tiles(core),
+            'tiles': self._tiles(core) + self._safe(self._cert_tiles,
+                                                    default=[]),
             'core': core,
             'headline': self._headline(core),
             'by_department': self._safe(
@@ -258,6 +262,55 @@ class PbTrainingAnalytics(models.AbstractModel):
              'sub': _('left out of the finished figure')},
         ]
 
+    # ------------------------------------------------- LEARNING L1 certificates
+    def _cert_tiles(self):
+        """Four certificate numbers, from the register's own counts (R80).
+        Today's position, not the date range: a certificate's state is a
+        fact about today."""
+        board = self.env['pb.training']
+        counts = board._cert_counts()
+        return [
+            {'key': 'expiring_30', 'label': _('Expire within 30 days'),
+             'value': counts.get('expiring_30', 0), 'icon': 'hourglass',
+             'sub': _('certificates and licences, as of today')},
+            {'key': 'expiring_90', 'label': _('Expire within 90 days'),
+             'value': counts.get('expiring_90', 0), 'icon': 'calendarClock',
+             'sub': _('including the 30-day ones')},
+            {'key': 'expired', 'label': _('Expired'),
+             'value': counts.get('expired', 0), 'icon': 'triangleAlert',
+             'sub': _('with no newer one on file')},
+            {'key': 'renewals_open', 'label': _('Renewals under way'),
+             'value': board._renewals_open(), 'icon': 'repeat',
+             'sub': _('refresher courses not finished yet')},
+        ]
+
+    def _by_certificate(self):
+        """The ten certificates the most people hold, each with how many
+        expire within 30 days and how many have expired. A test certificate
+        is counted under its course, so this year's and last year's are one
+        row."""
+        today = fields.Date.today()
+        docs = self.env['pb.training']._cert_docs().filtered(
+            lambda d: not d.renewed_by_id)
+        groups = {}
+        for doc in docs:
+            name = doc.channel_id.sudo().name or doc.name or _('Not named')
+            row = groups.setdefault(name, {'name': name, 'holders': set(),
+                                           'expiring': 0, 'expired': 0})
+            row['holders'].add(doc.employee_id.id)
+            if doc.expiry_date:
+                left = (doc.expiry_date - today).days
+                if left < 0:
+                    row['expired'] += 1
+                elif left <= 30:
+                    row['expiring'] += 1
+        out = [{'name': r['name'], 'holders': len(r['holders']),
+                'expiring': r['expiring'], 'expired': r['expired']}
+               for r in groups.values()]
+        out.sort(key=lambda r: (-r['holders'], -r['expired'],
+                                -r['expiring'], fold(r['name'])))
+        return out[:10]
+
     def _headline(self, core):
         """One sentence, first, so nobody has to do the arithmetic (R113)."""
         bits = [_("%(n)s %(word)s set", n=core.get('total', 0),
@@ -289,7 +342,7 @@ class PbTrainingAnalytics(models.AbstractModel):
             elif key == 'course':
                 name = row.channel_id.sudo().name or _('A course that is gone')
             else:
-                name = ASSIGN_REASON_LABEL.get(row.reason, _('Not said'))
+                name = reason_word(self.env, row.reason) or _('Not said')
             buckets.setdefault(name, self.env['pb.training.assignment'])
             buckets[name] |= row
         out = []
@@ -484,6 +537,17 @@ class PbTrainingAnalytics(models.AbstractModel):
                          '—' if line['performance'] is None
                          else line['performance']], start=1):
                     tab.cell(row=row, column=col, value=value)
+
+        # ---- certificates (LEARNING L1) ----------------------------------
+        tab = sheet(wb.create_sheet(), _('Certificates'),
+                    [_('Certificate'), _('Holders'),
+                     _('Expire within 30 days'), _('Expired')])
+        for row, line in enumerate(board.get('by_certificate') or [],
+                                   start=2):
+            tab.cell(row=row, column=1, value=line['name'])
+            tab.cell(row=row, column=2, value=line['holders'])
+            tab.cell(row=row, column=3, value=line['expiring'])
+            tab.cell(row=row, column=4, value=line['expired'])
 
         # ---- week by week -------------------------------------------------
         tab = sheet(wb.create_sheet(), _('Week by week'),

@@ -47,14 +47,24 @@ class PbTrainingOverview(models.AbstractModel):
                            default={'due': 0, 'past': 0, 'finished': 0})
         people = len({r['employee_id'] for r in rows})
         courses = len({r['channel_id'] for r in rows})
+        # LEARNING L1: certification status, from the register's own counts.
+        certs = self._safe(self._cert_overview,
+                           default={'expiring_30': 0, 'expired': 0,
+                                    'valid': 0, 'no_expiry': 0, 'total': 0})
+        headline = self._overview_headline(people, courses,
+                                           kpis.get('overdue', 0),
+                                           month.get('finished', 0))
+        fragment = self._cert_fragment(certs.get('expiring_30', 0))
+        if fragment:
+            headline = '%s %s' % (headline, fragment)
         return {
             'allowed': True,
             'people': people,
             'courses': courses,
-            'headline': self._overview_headline(people, courses,
-                                                kpis.get('overdue', 0),
-                                                month.get('finished', 0)),
-            'calm': not rows and not month.get('finished'),
+            'headline': headline,
+            'certificates': certs,
+            'calm': not rows and not month.get('finished')
+            and not certs.get('expiring_30') and not certs.get('expired'),
             'queue': [
                 {'key': 'claims', 'label': _("Claims to agree"),
                  'count': claim_kpis.get('waiting', 0),
@@ -65,6 +75,10 @@ class PbTrainingOverview(models.AbstractModel):
                 {'key': 'late', 'label': _("Past their date"),
                  'count': kpis.get('overdue', 0),
                  'lens': 'assigned', 'tab': 'assignments'},
+                {'key': 'certs', 'label': _("Certificates expiring"),
+                 'count': certs.get('expiring_30', 0),
+                 'lens': 'certificates', 'tab': '',
+                 'filter': 'expiring_30'},
             ],
             'month': month,
             'departments': self._safe(self._overview_departments, default=[]),
@@ -98,6 +112,15 @@ class PbTrainingOverview(models.AbstractModel):
         elif finished:
             bits.append(_("%(done)s finished this month.", done=finished))
         return ' '.join(str(b) for b in bits)
+
+    @api.model
+    def _cert_fragment(self, soon):
+        """'12 certificates expire within 30 days.' — omitted at zero."""
+        if not soon:
+            return ''
+        if soon == 1:
+            return _("1 certificate expires within 30 days.")
+        return _("%s certificates expire within 30 days.", soon)
 
     # ------------------------------------------------------------ this month
     @api.model

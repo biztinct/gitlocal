@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Certificates (LEARNING L1). Section comments use `=` rules
+       and never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1): `tl`, `dp`, `jb`, `row`, `emp`. Every translatable text
+       node is on one line (ledger LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbCertificatesLens">
+    <div class="pbcl" t-att-class="{ 'pbcl--embedded': props.embedded }">
+      <div class="pbcl-wrap">
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pbcl-hero pbcl-skel" aria-busy="true">
+            <div class="pbcl-skel-line pbcl-skel-line--s"/>
+            <div class="pbcl-skel-line"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pbcl-panel pbcl-empty">
+          <div class="pbcl-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The certificates could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry">
+            <t t-out="ic('refresh',15)"/> Try again
+          </button>
+        </div>
+
+        <!-- ============ not for this reader ============ -->
+        <div t-elif="!allowed" class="pbcl-panel pbcl-empty">
+          <div class="pbcl-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>The certificate register is for the training team</h2>
+          <p>Your own certificates are on your certificates page.</p>
+          <button class="pbim-btn primary" t-on-click="goMine">
+            <t t-out="ic('award',15)"/> My certificates
+          </button>
+        </div>
+
+        <t t-else="">
+          <!-- ============ the hero: one sentence, six tiles ============ -->
+          <section class="pbcl-hero">
+            <div class="pbcl-hero-top">
+              <div>
+                <div class="pbcl-eyebrow"><t t-out="ic('award',14)"/> Certificates and licences</div>
+                <p class="pbcl-headline" t-esc="data.headline"/>
+              </div>
+              <button t-if="data.can_write" class="pbim-btn primary pbcl-add" t-on-click="openDrawer">
+                <t t-out="ic('plus',15)"/> Add a certificate
+              </button>
+            </div>
+            <div class="pbcl-tiles" role="group">
+              <button t-foreach="tiles" t-as="tl" t-key="tl.key" class="pbcl-tile"
+                      t-att-class="tileClass(tl)"
+                      t-att-aria-pressed="state.filter === tl.key ? 'true' : 'false'"
+                      t-on-click="() => this.setFilter(tl.key)">
+                <span class="pbcl-tile-ic"><t t-out="ic(tileIcon(tl.key),15)"/></span>
+                <b class="pbcl-tile-n" t-esc="tl.count"/>
+                <span class="pbcl-tile-l" t-esc="tileLabel(tl.key)"/>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ search and filters ============ -->
+          <div class="pbcl-bar">
+            <label class="pbcl-search">
+              <t t-out="ic('search',14)"/>
+              <input type="search" placeholder="Search a name or a certificate" t-att-value="state.q" t-on-input="onSearch"/>
+            </label>
+            <select class="pbcl-in" aria-label="Department" t-on-change="(ev) => this.onSelect('department_id', ev)">
+              <option value="0" t-att-selected="!state.department_id">Every department</option>
+              <t t-foreach="data.departments || []" t-as="dp" t-key="dp.id">
+                <option t-att-value="dp.id" t-att-selected="state.department_id === dp.id" t-esc="dp.name"/>
+              </t>
+            </select>
+            <select class="pbcl-in" aria-label="Job" t-on-change="(ev) => this.onSelect('job_id', ev)">
+              <option value="0" t-att-selected="!state.job_id">Every job</option>
+              <t t-foreach="data.jobs || []" t-as="jb" t-key="jb.id">
+                <option t-att-value="jb.id" t-att-selected="state.job_id === jb.id" t-esc="jb.name"/>
+              </t>
+            </select>
+            <button class="pbcl-chip" t-att-class="{ 'is-on': state.filter === 'renewed', 'is-zero': !data.renewed }" t-on-click="() => this.setFilter('renewed')">
+              Renewed <b t-esc="data.renewed || 0"/>
+            </button>
+            <button t-if="anyFilter" class="pbim-btn ghost" t-on-click="clearFilters">
+              <t t-out="ic('x',14)"/> Show everything
+            </button>
+          </div>
+
+          <!-- ============ nothing at all ============ -->
+          <div t-if="!(data.counts and (data.counts.total or data.counts.renewed))" class="pbcl-panel pbcl-empty">
+            <div class="pbcl-empty-ic"><t t-out="ic('award',26)"/></div>
+            <h2>No certificates yet</h2>
+            <p>A passed test files one here by itself; uploads go through Add a certificate.</p>
+          </div>
+
+          <!-- ============ nothing matches ============ -->
+          <p t-elif="!rows.length" class="pbcl-calm">
+            <t t-out="ic('info',14)"/>
+            Nothing matches. Press the filter again, or Show everything.
+          </p>
+
+          <!-- ============ the table ============ -->
+          <section t-else="" class="pbcl-panel pbcl-table-wrap">
+            <div class="pbcl-scroll">
+              <table class="pbcl-table">
+                <thead>
+                  <tr>
+                    <th>Person</th>
+                    <th>Certificate</th>
+                    <th>Issued</th>
+                    <th>Where it stands</th>
+                    <th class="pbcl-th-act"><span class="visually-hidden">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="rows" t-as="row" t-key="row.id" t-att-class="{ 'is-old': row.state === 'renewed' }">
+                    <td>
+                      <b class="pbcl-who" t-esc="row.employee"/>
+                      <span class="pbcl-dim"><t t-esc="row.department"/><t t-if="row.department and row.job"> · </t><t t-esc="row.job"/></span>
+                    </td>
+                    <td>
+                      <b class="pbcl-name" t-esc="row.name"/>
+                      <span class="pbcl-dim"><t t-esc="row.kind_words"/> · <t t-esc="row.source_words"/><t t-if="row.issuer"> · <t t-esc="row.issuer"/></t></span>
+                    </td>
+                    <td class="pbcl-nowrap" t-esc="row.issued_words"/>
+                    <td>
+                      <span class="pbcl-state" t-att-class="stateClass(row)" t-esc="row.valid_words"/>
+                      <span t-if="row.verified" class="pbcl-checked" title="Checked by HR"><t t-out="ic('shieldCheck',13)"/></span>
+                      <span t-if="row.next_words" class="pbcl-next" t-esc="row.next_words"/>
+                    </td>
+                    <td class="pbcl-act">
+                      <button t-if="canRefresh(row)" class="pbim-btn ghost" t-att-disabled="state.acting === row.id" t-on-click="() => this.refresher(row)" title="Put them on the course again now">
+                        <t t-out="ic('repeat',14)"/> Assign the refresher
+                      </button>
+                      <button t-if="data.can_write and !row.verified and row.state !== 'renewed'" class="pbim-btn ghost" t-att-disabled="state.acting === row.id" t-on-click="() => this.verify(row)" title="You have seen the original">
+                        <t t-out="ic('shieldCheck',14)"/> Verify
+                      </button>
+                      <button t-if="row.download_url" class="pbim-btn ghost pbcl-ic-btn" t-on-click="() => this.download(row)" title="Download">
+                        <t t-out="ic('download',14)"/>
+                      </button>
+                      <button class="pbim-btn ghost pbcl-ic-btn" t-on-click="() => this.record(row)" title="Learning record (PDF)">
+                        <t t-out="ic('printer',14)"/>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pbcl-foot">
+              <span class="pbcl-dim" t-esc="shownWords"/>
+              <div t-if="(data.pages || 1) > 1" class="pbcl-pager">
+                <button class="pbim-btn ghost" t-att-disabled="(data.page || 1) &lt;= 1" t-on-click="() => this.goPage(-1)"><t t-out="ic('chevronLeft',14)"/></button>
+                <span class="pbcl-dim" t-esc="pageWords"/>
+                <button class="pbim-btn ghost" t-att-disabled="(data.page || 1) >= (data.pages || 1)" t-on-click="() => this.goPage(1)"><t t-out="ic('chevron',14)"/></button>
+              </div>
+            </div>
+          </section>
+        </t>
+
+      </div>
+
+      <!-- ================================================================
+           THE DRAWER. A direct child of the root (R114).
+           ================================================================ -->
+      <div t-if="state.drawer" class="pbim-modal-scrim pbcl-scrim" t-on-click="closeDrawer">
+        <div class="pbcl-drawer" t-on-click.stop="() => {}">
+          <div class="pbcl-drawer-head">
+            <div>
+              <div class="pbcl-eyebrow">Add a certificate</div>
+              <h2 class="pbcl-drawer-title">File a certificate or licence for somebody</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+
+          <div class="pbcl-drawer-body">
+            <div class="pbcl-f pbcl-f--wide">
+              <span class="pbcl-f-l">Whose it is</span>
+              <div t-if="state.person" class="pbcl-picked">
+                <b t-esc="state.person.name"/>
+                <span class="pbcl-dim" t-esc="state.person.department"/>
+                <button class="pbim-btn ghost" t-on-click="clearPerson">Change</button>
+              </div>
+              <t t-else="">
+                <input class="pbcl-in" type="search" placeholder="Type a name — accents do not matter" t-att-value="state.peopleTerm" t-on-input="onPeopleTerm"/>
+                <div class="pbcl-people">
+                  <button t-foreach="state.people" t-as="emp" t-key="emp.id" class="pbcl-person" t-on-click="() => this.pickPerson(emp)">
+                    <b t-esc="emp.name"/>
+                    <span class="pbcl-dim" t-esc="emp.department"/>
+                  </button>
+                  <p t-if="!state.people.length" class="pbcl-dim">Nobody in your company matches that.</p>
+                </div>
+              </t>
+            </div>
+            <label class="pbcl-f pbcl-f--wide">
+              <span class="pbcl-f-l">What it is called</span>
+              <input class="pbcl-in" type="text" maxlength="200" placeholder="Forklift operator licence" t-att-value="state.form.name" t-on-input="(ev) => this.setField('name', ev)"/>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Kind</span>
+              <select class="pbcl-in" t-on-change="(ev) => this.setField('kind', ev)">
+                <option value="CERT" t-att-selected="state.form.kind === 'CERT'">Certificate</option>
+                <option value="LIC" t-att-selected="state.form.kind === 'LIC'">Licence or permit</option>
+              </select>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Where it came from</span>
+              <select class="pbcl-in" t-on-change="(ev) => this.setField('source', ev)">
+                <option value="upload" t-att-selected="state.form.source === 'upload'">Uploaded</option>
+                <option value="statutory" t-att-selected="state.form.source === 'statutory'">Statutory card or licence</option>
+              </select>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Issued by</span>
+              <input class="pbcl-in" type="text" maxlength="200" t-att-value="state.form.issuer" t-on-input="(ev) => this.setField('issuer', ev)"/>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Certificate number</span>
+              <input class="pbcl-in" type="text" maxlength="100" t-att-value="state.form.reference" t-on-input="(ev) => this.setField('reference', ev)"/>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Issued on</span>
+              <input class="pbcl-in" type="date" t-att-value="state.form.issue_date" t-on-change="(ev) => this.setField('issue_date', ev)"/>
+            </label>
+            <label class="pbcl-f">
+              <span class="pbcl-f-l">Valid until</span>
+              <input class="pbcl-in" type="date" t-att-value="state.form.expiry_date" t-on-change="(ev) => this.setField('expiry_date', ev)"/>
+            </label>
+            <label class="pbcl-f pbcl-f--wide">
+              <span class="pbcl-f-l">The file</span>
+              <input class="pbcl-in" type="file" accept="image/png,image/jpeg,application/pdf" t-on-change="onFile"/>
+            </label>
+            <p class="pbcl-note pbcl-f--wide">A PDF, JPG or PNG of up to 10 MB. A licence always needs a valid-until date. What you add here is marked as checked, because you are the one looking at it.</p>
+          </div>
+
+          <div class="pbcl-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="save">
+              <t t-out="ic('check',15)"/> Add it to their record
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

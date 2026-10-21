@@ -797,16 +797,65 @@ SCREEN_GATES = {
         'budget-holder', 'budget-finance', 'budget-team'),
     'pb_expenses_hub.item_expenses': (
         'budget-holder', 'budget-finance', 'budget-team'),
+    # LEARNING L1 (ledger LN11): the three training roles left Talent with
+    # Training itself (LD3) — Learning is everybody's entry and its tabs gate
+    # themselves. Gates are additive, so migration 19.0.1.15.0 takes them off
+    # the existing rows.
     'pb_talent_hub.item_talent': (
         'recognition', 'recognition-lead', 'growth-plans-hr',
-        'growth-plans-head', 'goals-team', 'goals-hr-lead', 'goals-head',
-        'training-trainer', 'training-manager', 'training-head'),
+        'growth-plans-head', 'goals-team', 'goals-hr-lead', 'goals-head'),
     'pb_insights_hub.item_insights': (
         'pay-reporting-read', 'payroll-manager', 'payroll-administrator'),
     'pb_compliance_hub.item_compliance': (
         'payroll-manager', 'payroll-administrator'),
     'pb_settings.item_settings': ('access-team',),
 }
+
+
+#: Roles that once gated an entry and no longer do (LEARNING L1). Read by the
+#: migration that takes them off; kept here so the two lists sit together.
+SCREEN_GATES_RETIRED = {
+    'pb_talent_hub.item_talent': (
+        'training-trainer', 'training-manager', 'training-head'),
+}
+
+
+def retire_screen_gates(env):
+    """Take retired roles off the left menu. Safe to run again.
+
+    A role comes off an entry only when NONE of its abilities is still in that
+    entry's gate — a "Tenant administrator" that holds Head of training AND
+    Head of goals keeps Talent through its goals ability.
+
+    THE "KEPT ACROSS UPGRADES" STAMP IS NOT A REASON TO SKIP HERE, unlike
+    `ensure_screen_gates`. `biz_access` 19.0.1.5.0 stamped EVERY entry
+    `access_customized` in bulk, so the stamp no longer tells a human edit
+    from a shipped default (all four live Talent rows carry it, 2026-10-21).
+    And removing a retired role can take nothing away from anybody: Training
+    left Talent (LD3), so a training role opens an EMPTY Talent entry. The
+    stamp itself is left as it is.
+    """
+    if 'pb.sidebar.item' not in env:
+        return {'entries': 0, 'removed': 0}
+    env.flush_all()
+    Item = env['pb.sidebar.item'].sudo().with_context(active_test=False)
+    entries = removed = 0
+    for xmlid, keys in SCREEN_GATES_RETIRED.items():
+        item = env.ref(xmlid, raise_if_not_found=False)
+        if not item or item._name != 'pb.sidebar.item':
+            continue
+        keep = _profiles_for_keys(env, SCREEN_GATES.get(xmlid, ()))
+        drop = (_profiles_for_keys(env, keys) - keep) \
+            & Item.browse(item.id).role_ids
+        if drop:
+            Item.browse(item.id).write(
+                {'role_ids': [(3, pid) for pid in drop.ids]})
+            removed += len(drop)
+        entries += 1
+    _logger.info('pb_vendor_access: retired left-menu role gates — %s '
+                 'entr(y/ies) checked, %s role link(s) taken off',
+                 entries, removed)
+    return {'entries': entries, 'removed': removed}
 
 
 def ensure_screen_gates(env):

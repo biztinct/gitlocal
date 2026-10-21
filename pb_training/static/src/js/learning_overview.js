@@ -23,7 +23,10 @@ import { LEARNING_HUB_XMLID } from "@pb_learning_hub/js/learning_hub";
 /** The context key a Learning lens reads its inner tab from (`propsFromContext`). */
 export const TRAINING_TAB_KEY = "pb_training_tab";
 
-const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert" };
+/** The context key the Certificates lens reads its first filter from (LEARNING L1). */
+export const CERT_FILTER_KEY = "pb_training_cert_filter";
+
+const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award" };
 
 export class PbLearningOverview extends Component {
     static template = "pb_training.PbLearningOverview";
@@ -60,6 +63,31 @@ export class PbLearningOverview extends Component {
     get queue() { return this.data.queue || []; }
     get month() { return this.data.month || { due: 0, past: 0, finished: 0 }; }
     get departments() { return this.data.departments || []; }
+    get certificates() { return this.data.certificates || {}; }
+
+    /** The certificate line under the departments: four counts, as words. */
+    get certBits() {
+        const c = this.certificates;
+        return [
+            { key: "expiring_30", n: c.expiring_30 || 0, warn: true,
+              text: (c.expiring_30 || 0) === 1 ? _t("1 expires within 30 days") : _t("%s expire within 30 days", c.expiring_30 || 0) },
+            { key: "expired", n: c.expired || 0, bad: true,
+              text: (c.expired || 0) === 1 ? _t("1 has expired") : _t("%s have expired", c.expired || 0) },
+            { key: "valid", n: c.valid || 0, good: true,
+              text: (c.valid || 0) === 1 ? _t("1 in date") : _t("%s in date", c.valid || 0) },
+            { key: "no_expiry", n: c.no_expiry || 0,
+              text: (c.no_expiry || 0) === 1 ? _t("1 never expires") : _t("%s never expire", c.no_expiry || 0) },
+        ];
+    }
+
+    /** A CLICK handler: the Certificates register on one filter. */
+    openCerts(filter) {
+        openHub(this.action, {
+            xmlid: LEARNING_HUB_XMLID,
+            lens: "certificates",
+            context: filter ? { [CERT_FILTER_KEY]: filter } : {},
+        });
+    }
 
     queueIcon(row) { return QUEUE_ICON[row.key] || "info"; }
 
@@ -84,6 +112,7 @@ export class PbLearningOverview extends Component {
 
     /** A CLICK handler: the lens that holds this queue, on its own tab. */
     openQueue(row) {
+        if (row.filter) { return this.openCerts(row.filter); }
         openHub(this.action, {
             xmlid: LEARNING_HUB_XMLID,
             lens: row.lens,

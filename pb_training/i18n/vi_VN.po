@@ -107,8 +107,10 @@ msgid "Not sent yet"
 msgstr "Chưa gửi"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Not started"
 msgstr "Chưa bắt đầu"
 
@@ -649,26 +651,34 @@ msgid "Not passed yet"
 msgstr "Chưa đạt"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Under way"
 msgstr "Đang học"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Overdue"
 msgstr "Quá hạn"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "More time agreed"
 msgstr "Đã được thêm thời gian"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Finished"
 msgstr "Đã hoàn thành"
 
@@ -884,62 +894,1341 @@ msgid "A test is a set of questions with a pass mark and a limited number of goe
 msgstr "Bài kiểm tra là một bộ câu hỏi có điểm đạt và số lần làm giới hạn. Hãy thêm nó làm mục cuối cùng của khóa học; chưa học xong mọi bài thì chưa ai làm được."
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Due today"
 msgstr "Đến hạn hôm nay"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "1 day left"
 msgstr "Còn 1 ngày"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "%s days left"
 msgstr "Còn %s ngày"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "1 day overdue"
 msgstr "Quá hạn 1 ngày"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "%s days overdue"
 msgstr "Quá hạn %s ngày"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Day one"
 msgstr "Ngày đầu"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Trial period"
 msgstr "Thử việc"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Compliance"
 msgstr "Tuân thủ"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "One-off"
 msgstr "Một lần"
 
 #. module: pb_training
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Leadership programme"
 msgstr "Chương trình lãnh đạo"
+
+# ===================================================================
+#  LEARNING L1 (2026-10-21): certificates and expiry — the register,
+#  the wallet, the learning record, the Overview and Numbers words,
+#  and the server words (due words, reasons, states, durations).
+# ===================================================================
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%(name)s is on %(who)s's record."
+msgstr "%(name)s đã có trong hồ sơ của %(who)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%(soon)s expire within 30 days, %(gone)s have expired."
+msgstr "%(soon)s chứng chỉ hết hạn trong 30 ngày tới, %(gone)s đã hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "%(who)s is already doing %(course)s — it is due on %(when)s."
+msgstr "%(who)s đang học %(course)s — hạn hoàn thành là %(when)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "%(who)s is on %(course)s again, to be finished by %(when)s."
+msgstr "%(who)s được giao lại %(course)s, cần hoàn thành trước %(when)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "%s certificates expire within 30 days."
+msgstr "%s chứng chỉ hết hạn trong 30 ngày tới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "%s certificates shown"
+msgstr "Đang hiển thị %s chứng chỉ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%s certificates."
+msgstr "%s chứng chỉ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s expire within 30 days"
+msgstr "%s hết hạn trong 30 ngày tới"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%s expire within 30 days, 1 has expired."
+msgstr "%s hết hạn trong 30 ngày tới, 1 đã hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%s expire within 30 days."
+msgstr "%s chứng chỉ hết hạn trong 30 ngày tới."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "%s expired"
+msgstr "%s đã hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "%s has no login yet, so there is nowhere for the course to appear."
+msgstr "%s chưa có tài khoản đăng nhập nên khóa học không có chỗ để hiện."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s have expired"
+msgstr "%s đã hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%s have expired."
+msgstr "%s chứng chỉ đã hết hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s hold it"
+msgstr "%s người có"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s in date"
+msgstr "%s còn hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "%s is archived, so it cannot be assigned."
+msgstr "%s đã được lưu trữ nên không thể giao."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "%s is marked as checked."
+msgstr "Đã đánh dấu %s là đã kiểm tra."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s never expire"
+msgstr "%s không hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.mail_pack
+msgid "1 certificate expires within 30 days."
+msgstr "1 chứng chỉ hết hạn trong 30 ngày tới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "1 certificate shown"
+msgstr "Đang hiển thị 1 chứng chỉ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "1 certificate."
+msgstr "1 chứng chỉ."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "1 expired"
+msgstr "1 đã hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 expires within 30 days"
+msgstr "1 hết hạn trong 30 ngày tới"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "1 expires within 30 days, %s have expired."
+msgstr "1 hết hạn trong 30 ngày tới, %s đã hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "1 expires within 30 days, 1 has expired."
+msgstr "1 hết hạn trong 30 ngày tới, 1 đã hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "1 expires within 30 days."
+msgstr "1 chứng chỉ hết hạn trong 30 ngày tới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 has expired"
+msgstr "1 đã hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "1 has expired."
+msgstr "1 chứng chỉ đã hết hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 holds it"
+msgstr "1 người có"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 in date"
+msgstr "1 còn hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 never expires"
+msgstr "1 không hết hạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Add a certificate</span>"
+msgstr "<span>Thêm chứng chỉ</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Add the new one</span>"
+msgstr "<span>Thêm chứng chỉ mới</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_ask
+msgid "<span>Anything you want to add</span>"
+msgstr "<span>Bạn muốn ghi thêm gì</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "<span>As at</span>"
+msgstr "<span>Tính đến</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Certificate number</span>"
+msgstr "<span>Số chứng chỉ</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Download</span>"
+msgstr "<span>Tải xuống</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Issued by</span>"
+msgstr "<span>Nơi cấp</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Issued on</span>"
+msgstr "<span>Ngày cấp</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Issued</span>"
+msgstr "<span>Cấp ngày</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Kind</span>"
+msgstr "<span>Loại</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>My learning record (PDF)</span>"
+msgstr "<span>Hồ sơ học tập của tôi (PDF)</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>My own training</span>"
+msgstr "<span>Đào tạo của tôi</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Start renewal</span>"
+msgstr "<span>Bắt đầu gia hạn</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+msgid "<span>The certificate</span>"
+msgstr "<span>Chứng chỉ</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>Valid until</span>"
+msgstr "<span>Hiệu lực đến</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "<span>What it is called</span>"
+msgstr "<span>Tên chứng chỉ</span>"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "A PDF, JPG or PNG of up to 10 MB. A licence always needs a valid-until date. What you add here is marked as checked, because you are the one looking at it."
+msgstr "Tệp PDF, JPG hoặc PNG tối đa 10 MB. Giấy phép luôn cần ngày hết hiệu lực. Chứng chỉ bạn thêm ở đây được đánh dấu là đã kiểm tra, vì chính bạn là người xem bản gốc."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "A PDF, JPG or PNG of up to 10 MB. Leave Valid until empty if it never runs out — a licence always needs one. HR checks it and marks it checked."
+msgstr "Tệp PDF, JPG hoặc PNG tối đa 10 MB. Để trống Hiệu lực đến nếu chứng chỉ không bao giờ hết hạn — giấy phép thì luôn cần. Bộ phận nhân sự sẽ kiểm tra và đánh dấu đã kiểm tra."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "A licence needs a valid-until date."
+msgstr "Giấy phép cần có ngày hết hiệu lực."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "A passed test files one here by itself; uploads go through Add a certificate."
+msgstr "Mỗi bài kiểm tra đạt sẽ tự lưu một chứng chỉ ở đây; chứng chỉ tải lên thì dùng Thêm chứng chỉ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Actions"
+msgstr "Thao tác"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Add a certificate"
+msgstr "Thêm chứng chỉ"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Add it to my record"
+msgstr "Thêm vào hồ sơ của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Add it to their record"
+msgstr "Thêm vào hồ sơ của họ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "Added to your certificates. HR checks it and marks it checked."
+msgstr "Đã thêm vào chứng chỉ của bạn. Bộ phận nhân sự sẽ kiểm tra và đánh dấu đã kiểm tra."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Added."
+msgstr "Đã thêm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "All my certificates"
+msgstr "Tất cả chứng chỉ của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Assign the refresher"
+msgstr "Giao khóa ôn lại"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "Attach the certificate — a PDF, JPG or PNG."
+msgstr "Hãy đính kèm chứng chỉ — tệp PDF, JPG hoặc PNG."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/claim.py:0
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__certificate_file
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Certificate"
+msgstr "Chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__reference
+msgid "Certificate number"
+msgstr "Số chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Certificates"
+msgstr "Chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Certificates and licences"
+msgstr "Chứng chỉ và giấy phép"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Certificates are kept on your employee record. Tell your HR team and this page fills in by itself."
+msgstr "Chứng chỉ được lưu trong hồ sơ nhân viên của bạn. Hãy báo bộ phận nhân sự, trang này sẽ tự cập nhật."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "Certificates cannot be filed on this system yet. Tell your HR team."
+msgstr "Hệ thống chưa thể lưu chứng chỉ. Hãy báo bộ phận nhân sự."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_overview.py:0
+msgid "Certificates expiring"
+msgstr "Chứng chỉ sắp hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Change"
+msgstr "Đổi"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Checked"
+msgstr "Đã kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Checked by HR"
+msgstr "Nhân sự đã kiểm tra"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Checked means the HR team has seen the original. A certificate that a newer one replaced is shown in grey."
+msgstr "Đã kiểm tra nghĩa là bộ phận nhân sự đã xem bản gốc. Chứng chỉ đã được thay bằng chứng chỉ mới hơn hiển thị màu xám."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/assignment.py:0
+#: code:addons/pb_training/models/certificate.py:0
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/delay_approval.py:0
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.model,name:pb_training.model_slide_channel
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_schedule__channel_id
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+msgid "Course"
+msgstr "Khóa học"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Courses finished"
+msgstr "Khóa học đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Every certificate and licence on your record, and when each one runs out."
+msgstr "Mọi chứng chỉ và giấy phép trong hồ sơ của bạn, và khi nào từng cái hết hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Every department"
+msgstr "Mọi phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Every job"
+msgstr "Mọi vị trí"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Everything is in date."
+msgstr "Mọi chứng chỉ đều còn hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Expire within 30 days"
+msgstr "Hết hạn trong 30 ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Expire within 60 days"
+msgstr "Hết hạn trong 60 ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Expire within 90 days"
+msgstr "Hết hạn trong 90 ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_state__expired
+msgid "Expired"
+msgstr "Đã hết hạn"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_state__soon
+msgid "Expiring soon"
+msgstr "Sắp hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "File a certificate or licence for somebody"
+msgstr "Lưu chứng chỉ hoặc giấy phép cho một người"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__completed_on
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Finished on"
+msgstr "Hoàn thành ngày"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "First aid at work"
+msgstr "Sơ cứu tại nơi làm việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Forklift operator licence"
+msgstr "Giấy phép vận hành xe nâng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "Give the certificate a name — what it says on it."
+msgstr "Hãy đặt tên cho chứng chỉ — đúng như ghi trên đó."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "Holders"
+msgstr "Số người có"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "In date"
+msgstr "Còn hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Issued"
+msgstr "Cấp ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__issuer
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Issued by"
+msgstr "Nơi cấp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Issued on"
+msgstr "Ngày cấp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Job"
+msgstr "Vị trí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_incentive__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_training
+#: model:ir.actions.report,name:pb_training.action_report_learning_record
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Learning record"
+msgstr "Hồ sơ học tập"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Learning record (PDF)"
+msgstr "Hồ sơ học tập (PDF)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+msgid "Learning record — %s.pdf"
+msgstr "Hồ sơ học tập — %s.pdf"
+
+#. module: pb_training
+#: model:pb.employee.document.category,name:pb_training.cat_licence
+msgid "Licence / permit"
+msgstr "Giấy phép"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Licence or permit"
+msgstr "Giấy phép"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training_certificates
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+msgid "My certificates"
+msgstr "Chứng chỉ của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "My learning record (PDF)"
+msgstr "Hồ sơ học tập của tôi (PDF)"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Needs you first"
+msgstr "Cần bạn xử lý trước"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Never expire"
+msgstr "Không hết hạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "No certificates on record yet."
+msgstr "Chưa có chứng chỉ nào trong hồ sơ."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "No certificates on your record yet"
+msgstr "Hồ sơ của bạn chưa có chứng chỉ nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "No certificates on your record yet. Pass a test and its certificate is filed here by itself."
+msgstr "Hồ sơ của bạn chưa có chứng chỉ nào. Khi bạn đạt một bài kiểm tra, chứng chỉ sẽ tự được lưu ở đây."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "No certificates yet"
+msgstr "Chưa có chứng chỉ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "No certificates yet."
+msgstr "Chưa có chứng chỉ nào."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "No certificates yet. A passed test files one by itself; add outside ones from Certificates."
+msgstr "Chưa có chứng chỉ nào. Bài kiểm tra đạt sẽ tự lưu chứng chỉ; chứng chỉ bên ngoài thêm ở mục Chứng chỉ."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "No course finished yet."
+msgstr "Chưa hoàn thành khóa học nào."
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_state__none
+msgid "No expiry"
+msgstr "Không hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Nobody in your company matches that."
+msgstr "Không ai trong công ty khớp với tên này."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Not checked by HR yet"
+msgstr "Nhân sự chưa kiểm tra"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "Not named"
+msgstr "Chưa đặt tên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "Nothing expires within 30 days."
+msgstr "Không có chứng chỉ nào hết hạn trong 30 ngày tới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Nothing matches. Press the filter again, or Show everything."
+msgstr "Không có kết quả. Bấm lại bộ lọc, hoặc chọn Hiện tất cả."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Nothing was changed. Try again in a moment."
+msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "Only PDF, JPG or PNG files."
+msgstr "Chỉ nhận tệp PDF, JPG hoặc PNG."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+msgid "Only employees can add certificates."
+msgstr "Chỉ nhân viên mới có thể thêm chứng chỉ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+msgid "Only employees have a learning record."
+msgstr "Chỉ nhân viên mới có hồ sơ học tập."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Open the register"
+msgstr "Mở sổ chứng chỉ"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_source__claim
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Outside course, from a claim"
+msgstr "Khóa học bên ngoài, từ yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "Page %s of %s"
+msgstr "Trang %s / %s"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Pass a test on one of your courses and its certificate is filed here by itself. A certificate or licence from somewhere else goes in with Add a certificate."
+msgstr "Khi bạn đạt bài kiểm tra của một khóa học, chứng chỉ sẽ tự được lưu ở đây. Chứng chỉ hoặc giấy phép từ nơi khác thì thêm bằng Thêm chứng chỉ."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_source__test
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Passed a test here"
+msgstr "Đạt bài kiểm tra tại đây"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "Pick the person the certificate belongs to."
+msgstr "Hãy chọn người sở hữu chứng chỉ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Put them on the course again now"
+msgstr "Giao lại khóa học cho họ ngay bây giờ"
+
+#. module: pb_training
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__renewal
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Renewal"
+msgstr "Gia hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "Renewals under way"
+msgstr "Đang gia hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_state__renewed
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Renewed"
+msgstr "Đã gia hạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Score"
+msgstr "Điểm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Search a name or a certificate"
+msgstr "Tìm tên người hoặc chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Show everything"
+msgstr "Hiện tất cả"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Start renewal"
+msgstr "Bắt đầu gia hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_source__statutory
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Statutory card or licence"
+msgstr "Thẻ hoặc giấy phép theo luật định"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "That certificate could not be added. Try again, and tell the training team if it keeps happening."
+msgstr "Không thêm được chứng chỉ. Hãy thử lại và báo nhóm đào tạo nếu vẫn lỗi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "That certificate is not here any more."
+msgstr "Chứng chỉ này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "That date is not a date. Pick it from the calendar."
+msgstr "Ngày này không hợp lệ. Hãy chọn trên lịch."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_certificates.py:0
+msgid "That file could not be read. Try attaching it again."
+msgstr "Không đọc được tệp. Hãy đính kèm lại."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+msgid "That person is not in your company."
+msgstr "Người này không thuộc công ty của bạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "The certificate register is for the training team"
+msgstr "Sổ chứng chỉ dành cho nhóm đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "The certificates could not be read just now"
+msgstr "Chưa đọc được danh sách chứng chỉ lúc này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "The certificates the most people hold, and how many are about to run out or already have."
+msgstr "Những chứng chỉ nhiều người có nhất, và bao nhiêu chứng chỉ sắp hoặc đã hết hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "The file"
+msgstr "Tệp"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+msgid "The file is bigger than 10 MB."
+msgstr "Tệp lớn hơn 10 MB."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "The renewal course is already assigned — due %s."
+msgstr "Khóa gia hạn đã được giao — hạn %s."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "The school, body or authority"
+msgstr "Trường, tổ chức hoặc cơ quan cấp"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/certificate.py:0
+msgid "The valid-until date is before the issued-on date."
+msgstr "Ngày hết hiệu lực trước ngày cấp."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+msgid "There is no employee record against your login yet"
+msgstr "Tài khoản của bạn chưa gắn với hồ sơ nhân viên nào"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/automation.py:0
+msgid "This certificate is not tied to a course here, so there is no refresher to assign."
+msgstr "Chứng chỉ này không gắn với khóa học nào ở đây, nên không có khóa ôn lại để giao."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Type a name — accents do not matter"
+msgstr "Nhập tên — không cần gõ dấu"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_source__upload
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Uploaded"
+msgstr "Tải lên"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_state__valid
+msgid "Valid"
+msgstr "Còn hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "Valid until"
+msgstr "Hiệu lực đến"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Verify"
+msgstr "Xác nhận"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "What it is called"
+msgstr "Tên chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__training_source
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_form
+msgid "Where it came from"
+msgstr "Nguồn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Where it stands"
+msgstr "Tình trạng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Who is about to lapse"
+msgstr "Ai sắp hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Whose it is"
+msgstr "Của ai"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+#: code:addons/pb_training/models/pb_my_training_certificates.py:0
+msgid "You can only print your own learning record."
+msgstr "Bạn chỉ có thể in hồ sơ học tập của chính mình."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "You have seen the original"
+msgstr "Bạn đã xem bản gốc"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "You will get an email well before anything runs out."
+msgstr "Bạn sẽ nhận email từ sớm trước khi có chứng chỉ nào hết hạn."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "Your certificates"
+msgstr "Chứng chỉ của bạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training_certificates
+msgid "Your certificates and licences, when each one runs out, and your learning record"
+msgstr "Chứng chỉ và giấy phép của bạn, khi nào từng cái hết hạn, và hồ sơ học tập"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "Your learning record could not be printed just now. Try again in a minute."
+msgstr "Chưa in được hồ sơ học tập lúc này. Hãy thử lại sau một phút."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Your own certificates are on your certificates page."
+msgstr "Chứng chỉ của bạn nằm ở trang chứng chỉ của bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "certificates and licences, as of today"
+msgstr "chứng chỉ và giấy phép, tính đến hôm nay"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "including the 30-day ones"
+msgstr "gồm cả loại hết hạn trong 30 ngày"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "refresher courses not finished yet"
+msgstr "khóa ôn lại chưa hoàn thành"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "with no newer one on file"
+msgstr "chưa có chứng chỉ mới hơn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+msgid "· <span>No.</span>"
+msgstr "· <span>Số</span>"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "%s min"
+msgstr "%s phút"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "%s hr"
+msgstr "%s giờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "%s hr %s min"
+msgstr "%s giờ %s phút"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Never expires"
+msgstr "Không hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Expired yesterday"
+msgstr "Hết hạn hôm qua"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Expired %s days ago"
+msgstr "Hết hạn %s ngày trước"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Expires today"
+msgstr "Hết hạn hôm nay"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Expires tomorrow"
+msgstr "Hết hạn ngày mai"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Expires in %s days"
+msgstr "Hết hạn sau %s ngày"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Valid until %s"
+msgstr "Hiệu lực đến %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Renewal course assigned, due %s"
+msgstr "Đã giao khóa gia hạn, hạn %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Renewal course finished"
+msgstr "Đã hoàn thành khóa gia hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "A newer certificate replaced this one."
+msgstr "Đã có chứng chỉ mới hơn thay thế."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "The refresher course is put on by itself."
+msgstr "Khóa ôn lại sẽ được tự động giao."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Not renewed yet."
+msgstr "Chưa gia hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Add the new one when it is issued."
+msgstr "Hãy thêm chứng chỉ mới khi được cấp."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/document_ext.py:0
+msgid "Licence"
+msgstr "Giấy phép"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "1 course finished"
+msgstr "1 khóa học đã hoàn thành"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "%s courses finished"
+msgstr "%s khóa học đã hoàn thành"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "1 certificate in date"
+msgstr "1 chứng chỉ còn hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "%s certificates in date"
+msgstr "%s chứng chỉ còn hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "1 due for renewal"
+msgstr "1 cần gia hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learning_record.py:0
+msgid "%s due for renewal"
+msgstr "%s cần gia hạn"

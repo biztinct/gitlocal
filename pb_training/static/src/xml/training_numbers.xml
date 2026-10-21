@@ -11,7 +11,7 @@
        Loop variables are never named lt / gt / lte / gte / and / or / not /
        in: OWL reserves those as operators and the loop compiles into a bare
        `<` that kills the whole template (R1). The loops here are `tl`, `rg`,
-       `dp`, `cs`, `rs` and `wk`.
+       `dp`, `cs`, `rs`, `wk` and `ct`.
 
        `t-att-class` with a DICT is correct HERE and only here — this is an
        OWL template, where the dict form MERGES with the static class. On a
@@ -251,6 +251,27 @@
                 </t>
               </div>
 
+            </div>
+
+            <!-- ==================== by certificate (LEARNING L1) ====================
+                 Cloned from By course. Today's position, the ten certificates
+                 the most people hold; a test certificate counts under its
+                 course, so this year's and last year's are one row. -->
+            <div t-if="state.byCertificate.length" class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('award',16)"/> Certificates</h3>
+                <p>The certificates the most people hold, and how many are about to run out or already have.</p>
+              </div>
+              <t t-foreach="state.byCertificate" t-as="ct" t-key="ct.name">
+                <div class="pbtnm-row" t-att-class="{ bad: ct.expired > 0 }">
+                  <div class="pbtnm-row-name" t-esc="ct.name"/>
+                  <div class="pbtnm-bar">
+                    <span t-attf-style="width: {{ share(state.byCertificate, ct.holders, 'holders') }}%;"/>
+                  </div>
+                  <div class="pbtnm-row-n" t-esc="ct.holders"/>
+                  <div class="pbtnm-row-sub" t-esc="certWords(ct)"/>
+                </div>
+              </t>
             </div>
 
             <!-- ==================== what it cost ====================

@@ -59,6 +59,7 @@ export class PbTrainingNumbers extends Component {
             byDepartment: [],
             byCourse: [],
             byReason: [],
+            byCertificate: [],
             trend: [],
             claims: {},
             lists: { courses: [], departments: [] },
@@ -147,6 +148,7 @@ export class PbTrainingNumbers extends Component {
                 byDepartment: d.by_department || [],
                 byCourse: d.by_course || [],
                 byReason: d.by_reason || [],
+                byCertificate: d.by_certificate || [],
                 trend: d.trend || [],
                 claims: d.claims || {},
                 lists: d.lists || { courses: [], departments: [] },
@@ -188,6 +190,18 @@ export class PbTrainingNumbers extends Component {
             return _t("nothing to measure yet");
         }
         return _t("%s%% finished", row.completion);
+    }
+
+    /** "3 hold it · 1 expires within 30 days · 1 expired" (LEARNING L1). */
+    certWords(row) {
+        const bits = [row.holders === 1 ? _t("1 holds it") : _t("%s hold it", row.holders)];
+        if (row.expiring) {
+            bits.push(row.expiring === 1 ? _t("1 expires within 30 days") : _t("%s expire within 30 days", row.expiring));
+        }
+        if (row.expired) {
+            bits.push(row.expired === 1 ? _t("1 expired") : _t("%s expired", row.expired));
+        }
+        return bits.join(" · ");
     }
 
     /** The tallest week in the trend is the full height of the chart. */
