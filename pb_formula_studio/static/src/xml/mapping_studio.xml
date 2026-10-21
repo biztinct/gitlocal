@@ -558,12 +558,12 @@
               <t t-if="unresolvedCount">
                 <span class="pbms-foot__say">
                   <t t-out="ic('alert', 15)"/>
-                  <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t> land nowhere — imported, read once and dropped.
+                  <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t> have no employee or contract writeback destination. Application payroll sources are shown in Connections.
                 </span>
                 <button class="pbim-btn primary pbim-btn-sm"
                         t-att-disabled="!canEdit or state.busy ? 'disabled' : false"
                         t-on-click="openReconcile">
-                  Resolve remaining <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t>
+                  Review writeback for <t t-esc="unresolvedCount"/> column<t t-if="unresolvedCount !== 1">s</t>
                 </button>
               </t>
               <span t-else="" class="pbms-foot__say ok">

@@ -4480,6 +4480,7 @@ export class PbFormulaStudio extends Component {
     /** The gallery's figures as one quiet line (quiet board). */
     get csGlance() {
         const m = this.csSummary;
+        if (this.state.csHistory) return [{key: "history", n: m.total, label: _t("historical branches"), tone: "", run: null}];
         return [
             { key: "total", n: m.total, label: _t("configs"), tone: "", run: null },
             { key: "active", n: m.active, label: _t("active"), tone: "", run: () => this.csSetState("active") },

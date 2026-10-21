@@ -3006,7 +3006,7 @@
                             t-att-title="'Carry on setting up ' + c.name">
                       Resume setup
                     </button>
-                    <button t-attf-class="pbfs-btn {{ bpSetup(c) ? 'ghost' : 'soft' }} sm" t-on-click="() => this.chooseConfig(c.id)">Open</button>
+                    <button t-attf-class="pbfs-btn {{ bpSetup(c) ? 'ghost' : 'soft' }} sm" t-on-click="() => this.chooseConfig(c.id)"><t t-esc="state.csHistory ? 'View branch' : 'Open'"/></button>
                     <button t-if="csCanEdit" class="pbfs-btn ghost sm" t-att-disabled="state.csCloningId === c.id" t-on-click="(ev) => this.csClone(c, ev)">
                       <t t-if="state.csCloningId === c.id">Cloning…</t><t t-else="">Clone</t>
                     </button>

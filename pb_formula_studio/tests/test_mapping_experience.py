@@ -90,6 +90,12 @@ class TestMappingExperience(TransactionCase):
         self.assertIn('hr.attendance', row['mapping_details'][0]['calculation'])
         self.assertIn('Attendance', row['mapping_details'][0]['owner'])
 
+    def test_employee_code_stays_visible_without_formula_dependency(self):
+        self.rule.write({'value_kind': 'identifier', 'net_role': 'info',
+                         'application_source_key': 'employee.barcode'})
+        row = next(r for r in self.studio.mapping_workspace_data(self.config.id)['components'] if r['id'] == self.rule.id)
+        self.assertTrue(row['payroll_relevant'])
+
     def test_formula_consumed_text_stays_in_payroll_view(self):
         self.rule.write({'value_kind': 'text', 'net_role': 'info'})
         self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Conditional pay',

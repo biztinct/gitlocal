@@ -64,7 +64,9 @@ class MappingExperience(models.AbstractModel):
             row['application_source'] = application.get(row['id'])
             rule = rules[row['id']]
             # Conservative visibility only; never change engine input selection.
-            identity = rule.application_source_key in ('employee.employee_id', 'employee.name')
+            identity = (rule.application_source_key in ('employee.employee_id', 'employee.barcode', 'employee.name')
+                        or (records.get(rule.id, {}).get('kind') == 'employee_field'
+                            and records[rule.id]['key'] in ('employee_id', 'barcode', 'name')))
             row['payroll_relevant'] = bool(identity or rule.code in used or rule.column_letter in used
                 or rule.value_kind in ('money', 'quantity', 'percentage')
                 or rule.net_role not in (False, '', 'info', 'information', 'ignore'))
