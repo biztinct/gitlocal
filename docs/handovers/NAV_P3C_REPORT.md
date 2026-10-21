@@ -1,7 +1,8 @@
 # NAV P3c — Home › Team for people who manage others — report
 
 Implementer: Opus, 2026-10-21. Spec: `docs/handovers/NAV_P3C_HOME_TEAM.md` §1–5. Ledger: five new P3c rows in
-`docs/handovers/NAV_LEDGER.md`. **Built, tested and walked locally. NOT deployed — stopped at the deploy gate.**
+`docs/handovers/NAV_LEDGER.md`. **Deployed 2026-10-21 02:17–02:21 UTC on all four databases, normal tier, under the
+shared deploy lock — see §9.**
 
 ## 0. Exact deploy lists
 
@@ -16,7 +17,7 @@ PO gate files: `pb_home_hub/i18n/vi_VN.po` (changed: 71 entries); the other four
 (pb_learn byte-identical to HEAD). JS/SCSS changed → asset purge + `web.assets.version` bump + warm-up per DB.
 Served-asset checks after deploy: JS contains `pb.home.team` and `area:`; CSS contains `.pbtm-hero`.
 
-Stage from the **commits** `fcabc8977` + `e40b45577` (`git archive <commit> <modules>`). HEAD also carries other
+Staged from `git archive HEAD` at `34e3565d2` (the two feature commits plus the request-focus fix, §9.1). HEAD also carries other
 sessions' commits; none of them touch these five modules.
 
 ## 1. What changed, per file
@@ -104,9 +105,9 @@ truth test.
    for non-payroll managers itself). Nothing from it enters the Team payload.
 10. Commit trailer: the session's attribution rule (`Co-Authored-By: Claude Opus 5.5`), as P3a/P3b.
 
-## 6. Deploy — NOT DONE (gate)
+## 6. Deploy plan (as written at the gate; carried out in §9)
 
-Normal tier. Ready for: R14 START line in `/opt/deploy-notes.md` + lock, cron snapshot, clean `/tmp/deployP3C` from
+Normal tier: R14 START line in `/opt/deploy-notes.md` + lock, cron snapshot, clean `/tmp/deployP3C` from
 `git archive` of the two commits, per-module scoped rsync, tree hashes, PO gate on the box, `-u` list above on
 payobook / payobook_template / p0clone / rize (never abm), asset purge + version bump + `orm_signaling_assets`, start,
 warm each bundle with one login curl per DB, crons back to the snapshot, versions, DONE line. Live checks: served JS has
@@ -124,8 +125,51 @@ agent may not type the QA password).
 5. Keyboard: faces arrow/Home/End/Enter, every door a button with a focus ring. Weakest: phone width not walked, and
    `get_team` costs ~170 ms because the inbox builds full cards to be counted.
 
-## 8. Commits (not pushed)
+## 8. Commits (pushed to origin/19.1)
 
 `fcabc8977` feat(nav-p3c): Home › Team for people who manage others ·
 `e40b45577` feat(nav-p3c): Learn knows Home › Team (also carries the Learn session's LR80 tag and "Figures do not add
-up" hunks) · (this report + five ledger rows).
+up" hunks) · `d7aa9ba2f` docs(nav-p3c): report and five ledger rows · `34e3565d2` fix(nav-p3c): a request focus always
+wins over an inbox area · (this deploy record). The push also carried ChatGPT's four commits above them
+(`97ba269df`, `c338cb081`, `ca14c26c1`, `f1b13ddff`) as they were, owner-approved; none of them is in this deploy.
+
+## 9. Deploy record (normal tier, 2026-10-21 02:17–02:21 UTC, Payobook19v2)
+
+### 9.1 Before the stop: PayAI's request focus (coordinator's check)
+
+PayAI opens ONE request from Home › Inbox with `pb_focus: "request:<id>"` (hub `arrival.focus`, falling back to
+`action.context.pb_focus`). The two arrivals were already exclusive (one `pb_focus` string; `focusArea` matches only
+`^area:[a-z]+$`, `focusRequest` only `^request:…`), and the area starts empty, so a focused request is never filtered
+out. Made explicit anyway in `34e3565d2`: `const area = focus ? "" : focusArea(arrival);` — the area is read only when
+there is no request focus. Checks: `test_team_p3c.test_15` pins the guard and both parsers (pb_home_hub 55 tests,
+0 failures, rerun locally); and a node check that evaluates the three real functions out of `inbox.js`:
+`arrival request:42` → request 42, no area · `context request:42:team` → request 42 scope team, no area ·
+`arrival area:time` → area time · `area:bogus` → nothing · empty arrival + `context request:7` → request 7, no area —
+**5/5**. The served bundle contains the guard (`const area=focus?"":focusArea(arrival)`).
+
+### 9.2 Lock and notes
+
+`/opt/deploy-notes.md` at 01:41 had an open START from "Claude Opus (VIFIX P1 audit)" (a read-only clone with its own
+odoo-bin on 127.0.0.1:8077); the lock itself was free. Polled every 2 min; its DONE (clone dropped, process stopped)
+landed at 02:17 and no other START was open. ChatGPT was also waiting (01:49 coordination line). Ran at once as one
+detached unit under `flock /tmp/payobook-studio-deploy.lock` (script: START line → check no other `odoo-bin -c` →
+cron snapshot → checksum dry run → stop → copy → hash → PO gate → four upgrades, p0clone first → asset steps → start →
+warm-up → crons → versions → Learn content → DONE line). Service down **3 min 9 s** (stop 02:18:00, port 8069 back
+02:20:52). START 02:17 and DONE 02:21 lines in the notes file; lock free afterwards.
+
+| Step | Result |
+|---|---|
+| Staging | `git archive HEAD` of the five modules at `34e3565d2` (289 files) into a clean `/tmp/deployP3C`; tree hashes equal to the locally tested tree and to the local stage: pb_home_hub `355b1c89206a`, pb_approval_config `c272a3da38a0`, pb_probation `7d7380b3e407`, pb_goals `41c7fd0967b9`, pb_learn `9715bf5d5639`. |
+| PO gate on the staged files (local, Odoo `PoFileReader`) | 80 / 726 / 65 / 27 / 240 rows, 0 code rows without a value. |
+| Overwrite check | `rsync --dry-run --checksum`: content changes are exactly this phase's files (pb_home_hub: `__init__`, manifest, vi_VN.po, new models/, team_lens.js/.scss/.xml, tests; pb_approval_config: manifest, inbox.js; pb_probation: manifest, probation_board.js, probation_palette.js; pb_goals: manifest, goals_board.js, goals_palette.js; pb_learn: manifest, learn_content.json, anchors.json, fixture.js). No deletions. |
+| Crons before | p0clone 26, payobook 37, payobook_template 0, rize 69. |
+| Copy + hashes | Per-module scoped `rsync -a --delete`; live tree hash = staged for all five; owner as the other modules. |
+| PO gate (on the box) | pb_home_hub 80, pb_approval_config 726, pb_probation 65, pb_goals 27, pb_learn 240 rows — **0 failures**. |
+| Upgrades `-u pb_home_hub,pb_approval_config,pb_probation,pb_goals,pb_learn` | p0clone EXIT=0 43 s · payobook EXIT=0 46 s · payobook_template EXIT=0 39 s · rize EXIT=0 39 s; 0 CRITICAL, 0 ERROR, 0 tracebacks (only the docstring RST warning from another module, as in P3b). |
+| Assets | Per DB `INSERT INTO orm_signaling_assets`, `/web/assets/%` attachments deleted, `web.assets.version` = 1792549249917. |
+| Start | Port 8069 up, `/web/health` 200, "Registry loaded" ×3 in the log since the stop, **0 ERROR/CRITICAL since start**. |
+| Warm-up (one at a time) | payobook.com, rize.payobook.com, p0clone.payobook.com: login 200; `web.assets_web.min.css` 3.78 / 3.69 / 3.69 MB, `.min.js` 13.7 / 13.5 / 13.5 MB — none empty; served JS has the team lens key (`pb.home.team`) and the request-wins guard; served CSS has `.pbtm-hero`, on all three. payobook_template has no hostname (files identical, versions current). |
+| Crons after | The upgrade switched on 18 jobs in payobook_template (43, 44, 51, 54–58, 60, 62, 63, 67, 68, 71–75), as in P2/P3a/P3b; switched off again. **Final: p0clone 26, payobook 37, payobook_template 0, rize 69** (expected 26 / 37 / 0 / 69). |
+| Versions | pb_home_hub 19.0.1.4.0, pb_approval_config 19.0.1.6.6, pb_probation 19.0.1.4.1, pb_goals 19.0.1.2.1, pb_learn 19.0.20.5.15 on all four databases. |
+| Live Learn content | payobook.com `learn_content.json` (1.61 MB): "gõ DUYỆT" = **1**, "These figures" = 0, payruns `action_tags` = **pb_payruns**, Home's Team tab ("Đội của tôi") present. |
+| Not done | The payobook.com browser walk (coordinator's instruction; an agent may not type the QA password). |
