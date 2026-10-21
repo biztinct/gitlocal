@@ -9,9 +9,12 @@
  * "Nothing to do right now."
  *
  * Under it: My courses (filters Assigned · In progress · Done, counted over
- * the cards, press again to clear), My team for a manager (with a one-tap
- * Remind, one a day — the server says so in words on a second press), and
- * My allowance when the reader has an employee record.
+ * the cards, press again to clear), My certificates (LEARNING L1: a chip per
+ * certificate in its state colour, "Start renewal" when the refresher course
+ * is open, links to the wallet page and the learning record PDF), My team
+ * for a manager (with a one-tap Remind, one a day — the server says so in
+ * words on a second press), and My allowance when the reader has an
+ * employee record.
  *
  * Reads only `pb.my.training` — "me" is the session user and is never a
  * parameter, so nothing here can show somebody else's courses. The team
@@ -38,6 +41,7 @@ export class PbMyLearningLens extends Component {
             home: { courses: [] },
             team: null,
             claims: null,
+            certs: null,
             filter: "",
             reminding: 0,
         });
@@ -50,7 +54,7 @@ export class PbMyLearningLens extends Component {
     async load() {
         this.state.failed = false;
         try {
-            const [home, claims] = await Promise.all([
+            const [home, claims, certs] = await Promise.all([
                 this.orm.call(MODEL, "home", []),
                 this.orm.call(MODEL, "claims", []).catch((e) => {
                     // The allowance block is optional: a failure there must
@@ -58,9 +62,14 @@ export class PbMyLearningLens extends Component {
                     console.warn("pb_training: my allowance could not be read", e);
                     return null;
                 }),
+                this.orm.call(MODEL, "my_certificates", []).catch((e) => {
+                    console.warn("pb_training: my certificates could not be read", e);
+                    return null;
+                }),
             ]);
             this.state.home = home || { courses: [] };
             this.state.claims = claims;
+            this.state.certs = certs;
             this.state.team = home && home.manages
                 ? await this.orm.call(MODEL, "team", []) : null;
         } catch (e) {
@@ -173,7 +182,7 @@ export class PbMyLearningLens extends Component {
         return {
             day_one: _t("Day one"), probation: _t("Trial period"),
             compliance: _t("Compliance"), adhoc: _t("One-off"),
-            leadership: _t("Leadership programme"),
+            leadership: _t("Leadership programme"), renewal: _t("Renewal"),
         }[key] || fallback || "";
     }
 
@@ -224,6 +233,24 @@ export class PbMyLearningLens extends Component {
             this.state.reminding = 0;
         }
     }
+
+    // ------------------------------------------------------------- certificates
+    get certs() {
+        const c = this.state.certs;
+        return c && c.has_employee ? c : null;
+    }
+
+    /** The certificates worth a chip: everything not replaced by a newer one. */
+    get certRows() {
+        return ((this.certs && this.certs.rows) || []).filter((r) => r.state !== "renewed");
+    }
+
+    certClass(row) {
+        return { expired: "is-bad", soon: "is-warn", valid: "is-ok" }[row.state] || "";
+    }
+
+    /** The certificate on a course card, when that course has one. */
+    courseCertClass(c) { return c.certificate ? this.certClass(c.certificate) : ""; }
 
     // ------------------------------------------------------------- allowance
     get allowance() {

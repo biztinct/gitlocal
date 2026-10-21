@@ -169,6 +169,20 @@
     &.is-go { background: var(--pbml-soft); color: var(--pbml-primary); border-color: #CBC2EE; }
 }
 
+// ----------------------------------------------- certificates (LEARNING L1)
+.pbml-chip.is-warn { background: #FFFBEB; color: var(--pbml-amber); border-color: #FDE68A; }
+.pbml-certlist { display: flex; flex-direction: column; }
+.pbml-cert {
+    display: flex; align-items: center; gap: 12px; padding: 10px 4px;
+    border-top: 1px solid #F1F5F9;
+    &:first-child { border-top: 0; }
+}
+.pbml-cert-main {
+    flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
+    b { color: var(--pbml-ink); font-weight: 650; }
+}
+.pbml-renew { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; }
+
 // ------------------------------------------------------------- team
 .pbml-team { display: flex; flex-direction: column; }
 .pbml-trow {
@@ -230,4 +244,5 @@
     .pbml-trow { grid-template-columns: minmax(0, 1fr) auto; }
     .pbml-trow-due { grid-column: 1; }
     .pbml-money-line { grid-template-columns: 1fr; }
+    .pbml-cert { flex-wrap: wrap; }
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         LEARNING L1: the learning record. An explicit ir.actions.report
+         (Odoo 19 has no report shortcut tag). Deliberately NOT bound to the
+         employee form's Print menu: it is reached from the learner's own
+         pages and from the Certificates register, both of which check who
+         may print whose record first. Values come from
+         report.pb_training.report_learning_record, so the template only lays
+         out words that are already right. Every text node is on one line so
+         its translation term is exactly the words (ledger LN13).
+         ================================================================== -->
+    <record id="paperformat_learning_record" model="report.paperformat">
+        <field name="name">Learning record</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">32</field>
+        <field name="margin_bottom">18</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_spacing">26</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_learning_record" model="ir.actions.report">
+        <field name="name">Learning record</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_training.report_learning_record</field>
+        <field name="report_file">pb_training.report_learning_record</field>
+        <field name="print_report_name">'Learning record - %s' % (object.name or '')</field>
+        <field name="paperformat_id" ref="paperformat_learning_record"/>
+    </record>
+
+    <template id="report_learning_record">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="rec" t-value="records[o.id]"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 12.5px; line-height: 1.55; color: #1B1733;">
+
+                        <div style="border-bottom: 2px solid #5A4BB0; padding-bottom: 10px; margin-bottom: 16px;">
+                            <div style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #5A4BB0; font-weight: 700;">Learning record</div>
+                            <div style="font-size: 22px; font-weight: 700; margin-top: 2px;" t-esc="rec['name']"/>
+                            <div style="color: #64748B;">
+                                <span t-if="rec['job']" t-esc="rec['job']"/><span t-if="rec['job'] and rec['department']"> · </span><span t-if="rec['department']" t-esc="rec['department']"/>
+                            </div>
+                            <div style="color: #64748B; margin-top: 4px;"><span>As at</span> <span t-esc="rec['as_at']"/></div>
+                        </div>
+
+                        <p style="font-size: 14px; font-weight: 600; margin: 0 0 18px;" t-esc="rec['summary']"/>
+
+                        <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #1B1733;">Courses finished</h4>
+                        <p t-if="not rec['courses']" style="color: #64748B;">No course finished yet.</p>
+                        <table t-else="" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <thead>
+                                <tr style="background: #EDEAF8;">
+                                    <th style="text-align: left; padding: 6px 8px;">Course</th>
+                                    <th style="text-align: left; padding: 6px 8px; width: 28%;">Finished on</th>
+                                    <th style="text-align: right; padding: 6px 8px; width: 14%;">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="rec['courses']" t-as="crs" style="border-bottom: 1px solid #E2E8F0;">
+                                    <td style="padding: 6px 8px;" t-esc="crs['course']"/>
+                                    <td style="padding: 6px 8px;" t-esc="crs['finished']"/>
+                                    <td style="padding: 6px 8px; text-align: right;" t-esc="crs['score']"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #1B1733;">Certificates and licences</h4>
+                        <p t-if="not rec['certificates']" style="color: #64748B;">No certificates on record yet.</p>
+                        <table t-else="" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #EDEAF8;">
+                                    <th style="text-align: left; padding: 6px 8px;">Certificate</th>
+                                    <th style="text-align: left; padding: 6px 8px; width: 22%;">Issued by</th>
+                                    <th style="text-align: left; padding: 6px 8px; width: 16%;">Issued</th>
+                                    <th style="text-align: left; padding: 6px 8px; width: 22%;">Valid until</th>
+                                    <th style="text-align: left; padding: 6px 8px; width: 10%;">Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="rec['certificates']" t-as="crt" t-attf-style="border-bottom: 1px solid #E2E8F0; #{crt['state'] == 'renewed' and 'color: #94A3B8;' or ''}">
+                                    <td style="padding: 6px 8px;" t-esc="crt['name']"/>
+                                    <td style="padding: 6px 8px;" t-esc="crt['issuer']"/>
+                                    <td style="padding: 6px 8px;" t-esc="crt['issued']"/>
+                                    <td t-attf-style="padding: 6px 8px; #{crt['state'] == 'expired' and 'color: #B91C1C; font-weight: 600;' or (crt['state'] == 'soon' and 'color: #B45309; font-weight: 600;' or '')}" t-esc="crt['valid']"/>
+                                    <td style="padding: 6px 8px;" t-esc="crt['checked']"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p style="margin-top: 22px; font-size: 11px; color: #94A3B8;">Checked means the HR team has seen the original. A certificate that a newer one replaced is shown in grey.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -49,6 +49,9 @@
       <t t-elif="icon == 'receipt'"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></t>
       <t t-elif="icon == 'upload'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></t>
       <t t-elif="icon == 'sparkles'"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14M12 5v14"/></t>
+      <t t-elif="icon == 'shieldCheck'"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></t>
+      <t t-elif="icon == 'printer'"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
@@ -116,6 +119,23 @@
         <t t-set="url" t-value="'/my/training/claims'"/>
         <t t-set="config_card" t-value="True"/>
         <t t-set="placeholder_count" t-value="'training_claims_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============ LEARNING L1: the certificates card ============
+       A fourth card: "what am I qualified for, and when does it run out" is
+       its own question. Always drawn, lazily counted (R62). -->
+  <template id="portal_my_home_training_certificates" name="Certificates home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="47">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My certificates</t>
+        <t t-set="text">Your certificates and licences, when each one runs out, and your learning record</t>
+        <t t-set="url" t-value="'/my/training/certificates'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'training_certificates_count'"/>
       </t>
     </xpath>
   </template>
@@ -265,6 +285,13 @@
             </t>
             My training allowance
           </a>
+          <a href="/my/training/certificates" class="pbme-btn">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'award'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            My certificates
+          </a>
         </p>
 
         <!-- ==================== the three numbers ==================== -->
@@ -367,6 +394,14 @@
                 </t>
                 Not passed<t t-if="crs['score'] != None"> · <t t-esc="crs['score']"/>%</t>
               </span>
+              <a t-if="crs.get('certificate')" href="/my/training/certificates"
+                 t-attf-class="pbtr-chip #{crs['certificate']['state'] == 'expired' and 'pbtr-chip--bad' or (crs['certificate']['state'] == 'soon' and 'pbtr-chip--wait' or 'pbtr-chip--ok')}">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'shieldCheck'"/>
+                  <t t-set="isz" t-value="13"/>
+                </t>
+                <t t-esc="crs['certificate']['valid_words']"/>
+              </a>
             </div>
 
             <div class="pbtr-course-act">
@@ -1105,6 +1140,206 @@
             rather than as a separate transfer. Your certificate is filed on
             your employee record at the same time.
           </p>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  LEARNING L1 — /my/training/certificates (the wallet)              -->
+  <!--                                                                   -->
+  <!--  Hero moment: the next certificate to run out, with ONE button —   -->
+  <!--  "Start renewal" when the refresher course is on their page. Every -->
+  <!--  card says what happens next. Text nodes on one line (LN13).       -->
+  <!-- ================================================================= -->
+  <template id="portal_training_certificates" name="My certificates (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtr">
+
+        <t t-call="pb_training.tr_notices"/>
+
+        <a href="/my/training" class="pbtr-back">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowLeft'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          <span>My own training</span>
+        </a>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Your certificates</t>
+          <t t-set="hero_sub">Every certificate and licence on your record, and when each one runs out.</t>
+        </t>
+
+        <div t-if="not wallet['has_employee']" class="pbme-card pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'award'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>There is no employee record against your login yet</h3>
+          <p class="pbme-muted">Certificates are kept on your employee record. Tell your HR team and this page fills in by itself.</p>
+        </div>
+
+        <t t-else="">
+          <!-- ============ the hero: what needs you first ============ -->
+          <t t-set="nxt" t-value="wallet['next']"/>
+          <div t-if="nxt" t-attf-class="pbme-card pbtr-certnext #{nxt['state'] == 'expired' and 'pbtr-certnext--bad' or ''}">
+            <div class="pbtr-certnext-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'alert' if nxt['state'] == 'expired' else 'clock'"/>
+                <t t-set="isz" t-value="24"/>
+              </t>
+            </div>
+            <div class="pbtr-certnext-main">
+              <div class="pbtr-certnext-l">Needs you first</div>
+              <h3 class="pbtr-certnext-name" t-esc="nxt['name']"/>
+              <p class="pbtr-certnext-say"><b t-esc="nxt['valid_words']"/><t t-if="nxt['next_words']"> · <span t-esc="nxt['next_words']"/></t></p>
+            </div>
+            <div class="pbtr-certnext-act">
+              <a t-if="nxt['renewal'] and nxt['renewal']['open']" t-attf-href="/my/training/#{nxt['renewal']['channel_id']}" class="pbme-btn pbtr-btn--primary pbtr-btn--big">
+                <span>Start renewal</span>
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'arrowRight'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+              </a>
+              <a t-elif="nxt['source'] != 'test'" href="#pbtr-certadd" class="pbme-btn pbtr-btn--primary pbtr-btn--big">
+                <t t-call="pb_training.tr_icon">
+                  <t t-set="icon" t-value="'upload'"/>
+                  <t t-set="isz" t-value="15"/>
+                </t>
+                <span>Add the new one</span>
+              </a>
+            </div>
+          </div>
+          <div t-elif="wallet['rows']" class="pbme-card pbtr-certnext pbtr-certnext--calm">
+            <div class="pbtr-certnext-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'checkCircle'"/>
+                <t t-set="isz" t-value="24"/>
+              </t>
+            </div>
+            <div class="pbtr-certnext-main">
+              <h3 class="pbtr-certnext-name">Everything is in date.</h3>
+              <p class="pbtr-certnext-say">You will get an email well before anything runs out.</p>
+            </div>
+          </div>
+
+          <p class="pbtr-teamline">
+            <a t-att-href="wallet['record_url']" class="pbme-btn">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'printer'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+              <span>My learning record (PDF)</span>
+            </a>
+          </p>
+
+          <!-- ============ the form ============ -->
+          <details class="pbtr-ask pbtr-claim-form" id="pbtr-certadd">
+            <summary class="pbme-btn pbtr-btn--primary pbtr-ask-open">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'plus'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+              <span>Add a certificate</span>
+            </summary>
+            <form action="/my/training/certificates/new" method="post" enctype="multipart/form-data" class="pbtr-ask-form">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <label class="pbtr-f pbtr-f--wide">
+                <span>What it is called</span>
+                <input type="text" name="name" required="required" maxlength="200" placeholder="First aid at work"/>
+              </label>
+              <label class="pbtr-f">
+                <span>Kind</span>
+                <select name="kind">
+                  <option t-foreach="wallet['kinds']" t-as="knd" t-att-value="knd['key']" t-esc="knd['label']"/>
+                </select>
+              </label>
+              <label class="pbtr-f">
+                <span>Issued by</span>
+                <input type="text" name="issuer" maxlength="200" placeholder="The school, body or authority"/>
+              </label>
+              <label class="pbtr-f">
+                <span>Certificate number</span>
+                <input type="text" name="reference" maxlength="100"/>
+              </label>
+              <label class="pbtr-f">
+                <span>Issued on</span>
+                <input type="date" name="issue_date"/>
+              </label>
+              <label class="pbtr-f">
+                <span>Valid until</span>
+                <input type="date" name="expiry_date"/>
+              </label>
+              <label class="pbtr-f">
+                <span>The certificate</span>
+                <input type="file" name="file" required="required" accept="image/png,image/jpeg,application/pdf"/>
+              </label>
+              <label class="pbtr-f pbtr-f--wide">
+                <span>Anything you want to add</span>
+                <textarea name="note" rows="2"/>
+              </label>
+              <button type="submit" class="pbme-btn pbtr-btn--primary">Add it to my record</button>
+              <p class="pbtr-ask-note">A PDF, JPG or PNG of up to 10 MB. Leave Valid until empty if it never runs out — a licence always needs one. HR checks it and marks it checked.</p>
+            </form>
+          </details>
+
+          <!-- ============ nothing yet ============ -->
+          <div t-if="not wallet['rows']" class="pbme-card pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'award'"/>
+                <t t-set="isz" t-value="30"/>
+              </t>
+            </div>
+            <h3>No certificates on your record yet</h3>
+            <p class="pbme-muted">Pass a test on one of your courses and its certificate is filed here by itself. A certificate or licence from somewhere else goes in with Add a certificate.</p>
+          </div>
+
+          <!-- ============ the cards ============ -->
+          <div t-else="" class="pbtr-grid">
+            <div t-foreach="wallet['rows']" t-as="crt" t-attf-class="pbme-card pbtr-cert #{crt['state'] == 'renewed' and 'pbtr-cert--old' or ''}">
+              <div class="pbtr-course-top">
+                <div class="pbtr-course-id">
+                  <h3 class="pbtr-course-name" t-esc="crt['name']"/>
+                  <p class="pbtr-course-blurb"><span t-esc="crt['kind_words']"/><t t-if="crt['issuer']"> · <span t-esc="crt['issuer']"/></t></p>
+                </div>
+                <div t-if="crt['verified']" class="pbtr-done-seal" title="Checked by HR">
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'shieldCheck'"/>
+                    <t t-set="isz" t-value="22"/>
+                  </t>
+                </div>
+              </div>
+              <div class="pbtr-chips">
+                <span t-attf-class="pbtr-chip #{crt['state'] == 'expired' and 'pbtr-chip--bad' or (crt['state'] == 'soon' and 'pbtr-chip--wait' or (crt['state'] == 'renewed' and '' or 'pbtr-chip--ok'))}" t-esc="crt['valid_words']"/>
+                <span class="pbtr-chip" t-esc="crt['source_words']"/>
+                <span t-if="not crt['verified'] and crt['state'] != 'renewed'" class="pbtr-chip">Not checked by HR yet</span>
+              </div>
+              <p t-if="crt['next_words']" class="pbtr-nextline" t-esc="crt['next_words']"/>
+              <p class="pbtr-muted pbtr-cert-meta"><t t-if="crt['issued_words']"><span>Issued</span> <span t-esc="crt['issued_words']"/></t><t t-if="crt['reference']"> · <span>No.</span> <span t-esc="crt['reference']"/></t></p>
+              <div class="pbtr-course-act">
+                <a t-if="crt['renewal'] and crt['renewal']['open']" t-attf-href="/my/training/#{crt['renewal']['channel_id']}" class="pbme-btn pbtr-btn--primary">
+                  <span>Start renewal</span>
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'arrowRight'"/>
+                    <t t-set="isz" t-value="15"/>
+                  </t>
+                </a>
+                <a t-if="crt['download_url']" t-att-href="crt['download_url']" class="pbme-btn">
+                  <t t-call="pb_training.tr_icon">
+                    <t t-set="icon" t-value="'download'"/>
+                    <t t-set="isz" t-value="14"/>
+                  </t>
+                  <span>Download</span>
+                </a>
+              </div>
+            </div>
+          </div>
         </t>
 
       </div>

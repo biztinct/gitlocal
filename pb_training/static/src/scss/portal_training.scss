@@ -566,3 +566,54 @@ body:has(.o_survey_form) .modal-body {
         .pbtr-claim-amount { font-size: 20px; }
     }
 }
+
+// =====================================================================
+//  LEARNING L1 — the certificate wallet (/my/training/certificates).
+//  Hero: the next certificate to run out with ONE button. Amber for
+//  "inside the renewal window", rose for expired, grey when calm (quiet
+//  board). Brand purple #5A4BB0 for the one primary action.
+// =====================================================================
+.pbtr {
+    .pbtr-certnext {
+        display: flex; align-items: center; gap: 16px;
+        padding: 18px 20px; margin-bottom: 16px;
+        background: #FFFBEB; border: 1px solid #FDE68A;
+
+        &.pbtr-certnext--bad { background: #FEF2F2; border-color: #FECACA; }
+        &.pbtr-certnext--calm { background: #F8FAFC; border-color: #E2E8F0; }
+    }
+    .pbtr-certnext-ic {
+        flex: 0 0 auto; width: 48px; height: 48px; border-radius: 14px;
+        display: grid; place-items: center;
+        background: rgba(180, 83, 9, .1); color: #B45309;
+    }
+    .pbtr-certnext--bad .pbtr-certnext-ic { background: rgba(185, 28, 28, .1); color: #B91C1C; }
+    .pbtr-certnext--calm .pbtr-certnext-ic { background: #EEF2F6; color: #94A3B8; }
+    .pbtr-certnext-main { flex: 1 1 auto; min-width: 0; }
+    .pbtr-certnext-l {
+        font-size: 11px; font-weight: 700; letter-spacing: .05em;
+        text-transform: uppercase; color: #B45309;
+    }
+    .pbtr-certnext--bad .pbtr-certnext-l { color: #B91C1C; }
+    .pbtr-certnext-name { margin: 2px 0 4px; font-size: 19px; font-weight: 750; color: #1B1733; }
+    .pbtr-certnext-say { margin: 0; color: #475569; line-height: 1.5; }
+    .pbtr-certnext-act { flex: 0 0 auto; }
+    .pbtr-certnext-act .pbtr-btn--primary,
+    .pbtr-cert .pbtr-btn--primary {
+        background: #5A4BB0; border-color: #5A4BB0;
+        &:hover, &:focus { background: #4A3D96; border-color: #4A3D96; }
+    }
+
+    .pbtr-cert { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .pbtr-cert--old { opacity: .62; }
+    .pbtr-cert .pbtr-course-top { margin-bottom: 0; }
+    .pbtr-cert-meta { margin: 0; }
+    .pbtr-cert .pbtr-done-seal { color: #5A4BB0; }
+    .pbtr-cert .pbtr-nextline { margin: 0; }
+    a.pbtr-chip { text-decoration: none; }
+
+    @media (max-width: 560px) {
+        .pbtr-certnext { flex-direction: column; align-items: flex-start; }
+        .pbtr-certnext-act, .pbtr-certnext-act .pbme-btn { width: 100%; justify-content: center; }
+    }
+}

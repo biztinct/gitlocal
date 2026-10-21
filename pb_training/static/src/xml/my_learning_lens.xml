@@ -4,7 +4,7 @@
   <!-- ====================================================================
        Learning › My learning (LEARNING L0). Section comments use `=` rules
        and never a doubled hyphen (R35). Loop variables avoid OWL's reserved
-       words (R1): `crs`, `flt`, `row`, `bit`.
+       words (R1): `crs`, `flt`, `row`, `bit`, `crt`.
        ==================================================================== -->
   <t t-name="pb_training.PbMyLearningLens">
     <div class="pbml" t-att-class="{ 'pbml--embedded': props.embedded }">
@@ -112,6 +112,9 @@
                   <span t-if="tc" class="pbml-chip" t-att-class="tc.cls">
                     <t t-out="ic(tc.icon,12)"/> <t t-esc="tc.text"/>
                   </span>
+                  <span t-if="crs.certificate" class="pbml-chip" t-att-class="courseCertClass(crs)">
+                    <t t-out="ic('shieldCheck',12)"/> <t t-esc="crs.certificate.valid_words"/>
+                  </span>
                 </div>
                 <div class="pbml-card-act">
                   <button class="pbim-btn ghost" t-on-click="() => this.go('/my/training/' + crs.id)">
@@ -119,6 +122,43 @@
                   </button>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <!-- ============ my certificates (LEARNING L1) ============ -->
+          <section t-if="certs" class="pbml-panel pbml-certs">
+            <div class="pbml-sec-h">
+              <h3>My certificates</h3>
+              <span t-if="certs.next" class="pbml-chip" t-att-class="certClass(certs.next)">
+                <t t-out="ic('clock',12)"/> <t t-esc="certs.next.name"/> · <t t-esc="certs.next.valid_words"/>
+              </span>
+            </div>
+            <p t-if="!certRows.length" class="pbml-calm">
+              <t t-out="ic('info',14)"/>
+              No certificates on your record yet. Pass a test and its certificate is filed here by itself.
+            </p>
+            <div t-else="" class="pbml-certlist">
+              <div t-foreach="certRows" t-as="crt" t-key="crt.id" class="pbml-cert">
+                <div class="pbml-cert-main">
+                  <b t-esc="crt.name"/>
+                  <span class="pbml-dim" t-if="crt.next_words" t-esc="crt.next_words"/>
+                </div>
+                <span class="pbml-chip" t-att-class="certClass(crt)">
+                  <t t-out="ic('shieldCheck',12)"/> <t t-esc="crt.valid_words"/>
+                </span>
+                <button t-if="crt.renewal and crt.renewal.open" class="pbim-btn primary pbml-renew"
+                        t-on-click="() => this.go('/my/training/' + crt.renewal.channel_id)">
+                  Start renewal <t t-out="ic('arrow',14)"/>
+                </button>
+              </div>
+            </div>
+            <div class="pbml-row-act">
+              <button class="pbim-btn ghost" t-on-click="() => this.go('/my/training/certificates')">
+                <t t-out="ic('award',15)"/> All my certificates
+              </button>
+              <button class="pbim-btn ghost" t-on-click="() => this.go(certs.record_url)">
+                <t t-out="ic('printer',15)"/> My learning record (PDF)
+              </button>
             </div>
           </section>
 

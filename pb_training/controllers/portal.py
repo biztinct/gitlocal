@@ -22,7 +22,7 @@ import logging
 
 from odoo import _, http
 from odoo.exceptions import AccessError, UserError
-from odoo.http import request
+from odoo.http import content_disposition, request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 _logger = logging.getLogger(__name__)
@@ -62,6 +62,12 @@ _PROBLEMS = {
                      "nowhere to pay a claim into. Tell your HR team."),
     'claim': _("That claim could not be sent. Try again, and tell the "
                "training team if it keeps happening."),
+    # LEARNING L1
+    'certificate': _("That certificate could not be added. Try again, and "
+                     "tell the training team if it keeps happening."),
+    'record': _("Your learning record could not be printed just now. Try "
+                "again in a minute."),
+    'record_denied': _("You can only print your own learning record."),
 }
 
 
@@ -101,6 +107,9 @@ class PbTrainingPortal(CustomerPortal):
                 self._tr_facade().team_overdue_count()
         if 'training_claims_count' in counters:
             values['training_claims_count'] = self._tr_facade().claims_count()
+        if 'training_certificates_count' in counters:
+            values['training_certificates_count'] = \
+                self._tr_facade().certificates_count()
         return values
 
     # =================================================================
@@ -113,7 +122,7 @@ class PbTrainingPortal(CustomerPortal):
             'page_name': 'training',
             'me': data,
             'notice': self._tr_notice(kw.get('ok')),
-            'problem': _PROBLEMS.get(kw.get('problem') or '', ''),
+            'problem': self._tr_words(_PROBLEMS.get(kw.get('problem') or '', '')),
         })
 
     def _tr_notice(self, key):
@@ -126,6 +135,9 @@ class PbTrainingPortal(CustomerPortal):
             # E3
             'claimed': _("Sent in. The HR lead sees it now, and you will get "
                          "an email either way."),
+            # LEARNING L1
+            'cert_added': _("Added to your certificates. HR checks it and "
+                            "marks it checked."),
         }.get(key or '', '')
 
     # =================================================================
@@ -155,7 +167,22 @@ class PbTrainingPortal(CustomerPortal):
         code = kw.get('problem') or ''
         if code == 'locked':
             return _locked_sentence(self._tr_int(kw.get('left')))
-        return _PROBLEMS.get(code, '')
+        return self._tr_words(_PROBLEMS.get(code, ''))
+
+    @staticmethod
+    def _tr_words(text):
+        """A refusal in the reader's language (LEARNING L1).
+
+        `_PROBLEMS` is built at import, when there is no reader, so every
+        sentence in it is the English source; it is translated here, when the
+        page is drawn. A sentence with no Vietnamese stays English.
+        """
+        if not text:
+            return ''
+        try:
+            return request.env._(text)
+        except Exception:               # noqa: BLE001 — a word is not fatal
+            return text
 
     @staticmethod
     def _tr_int(value):
@@ -176,7 +203,7 @@ class PbTrainingPortal(CustomerPortal):
         return request.render('pb_training.portal_training_lesson', {
             'page_name': 'training',
             'lesson': lesson,
-            'problem': _PROBLEMS.get(kw.get('problem') or '', ''),
+            'problem': self._tr_words(_PROBLEMS.get(kw.get('problem') or '', '')),
             # The quiz result, when they have just answered one. Carried in
             # the render values and never in the URL: a wrong answer is
             # nobody's business but theirs, and a URL is copied, logged and
@@ -422,3 +449,73 @@ class PbTrainingPortal(CustomerPortal):
             return request.redirect('/my/training?problem=mine')
         return request.redirect('/my/training/%s?problem=%s'
                                 % (channel_id, answer.get('code') or 'denied'))
+
+    # =================================================================
+    #  LEARNING L1 — my certificates, and my learning record
+    # =================================================================
+    @http.route(['/my/training/certificates'], type='http', auth='user',
+                website=True)
+    def portal_training_certificates(self, **kw):
+        return self._tr_certificates_page(notice=self._tr_notice(kw.get('ok')),
+                                          problem=self._tr_problem(kw))
+
+    def _tr_certificates_page(self, notice='', problem=''):
+        """The wallet, from one read. A refusal RE-RENDERS with the model's
+        own sentence (the claims page's rule: a sentence carried in a query
+        string is a sentence somebody else can write onto the page)."""
+        return request.render('pb_training.portal_training_certificates', {
+            'page_name': 'training',
+            'wallet': self._tr_facade().my_certificates(),
+            'notice': notice,
+            'problem': problem,
+        })
+
+    @http.route(['/my/training/certificates/new'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_training_certificate_new(self, **post):
+        """Add an outside certificate or licence. The file arrives as a real
+        upload, never an attachment id (an id in a form buys nothing)."""
+        try:
+            self._tr_facade().add_certificate(
+                {
+                    'name': (post.get('name') or '').strip()[:200],
+                    'kind': post.get('kind') or 'CERT',
+                    'issuer': (post.get('issuer') or '').strip()[:200],
+                    'reference': (post.get('reference') or '').strip()[:100],
+                    'issue_date': post.get('issue_date') or False,
+                    'expiry_date': post.get('expiry_date') or False,
+                    'note': (post.get('note') or '')[:2000],
+                },
+                self._tr_upload(post.get('file')))
+        except AccessError:
+            return request.redirect(
+                '/my/training/certificates?problem=no_employee')
+        except UserError as err:
+            return self._tr_certificates_page(problem=str(err))
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a certificate could not be added',
+                            exc_info=True)
+            return request.redirect(
+                '/my/training/certificates?problem=certificate')
+        return request.redirect('/my/training/certificates?ok=cert_added')
+
+    @http.route(['/my/training/record.pdf'], type='http', auth='user',
+                website=True)
+    def portal_training_record(self, employee_id=None, **kw):
+        """The learning record. Your own — or, for the training team,
+        anybody's in their companies (`?employee_id=`); the facade decides."""
+        try:
+            pdf, filename = self._tr_facade().record_pdf(
+                self._tr_int(employee_id))
+        except AccessError:
+            return request.redirect(
+                '/my/training/certificates?problem=record_denied')
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a learning record could not be '
+                            'printed', exc_info=True)
+            return request.redirect('/my/training/certificates?problem=record')
+        return request.make_response(pdf, headers=[
+            ('Content-Type', 'application/pdf'),
+            ('Content-Length', len(pdf)),
+            ('Content-Disposition', content_disposition(filename)),
+        ])
