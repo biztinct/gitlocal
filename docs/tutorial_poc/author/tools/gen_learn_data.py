@@ -133,6 +133,9 @@ SIDEBAR_KEYS = {
 # sidebar can never disagree about which screen is on display.
 SCREEN_ACTION_TAGS = {
     'importwizard': 'pb_import_wizard',
+    # The Runs board grounds by its place (Pay Run › Runs); the tag covers the
+    # standalone door /bizapp/action-pb_payruns, which showed no Guide (LR80).
+    'payruns': 'pb_payruns',
     # LEARN REFRESH step 3 — the setup cockpits a Settings card opens. None of
     # them has a sidebar leaf (they live behind Settings), so the action tag is
     # how the helper knows one is on screen. The Records Desk is also a tab

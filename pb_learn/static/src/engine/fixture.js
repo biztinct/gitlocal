@@ -2098,6 +2098,8 @@ const MENU = [
     lenses: [
       { key: "pulse", label: B("Pulse", "Tổng quan"), screen: "dashboard" },
       { key: "approvals", label: B("Inbox", "Hộp thư"), screen: "approvals" },
+      /* NAV P3c — Home › Team, only for people with direct reports. */
+      { key: "team", label: B("Team", "Đội của tôi") },
       { key: "askhr", label: B("Ask HR", "Hỏi Nhân sự") },
       { key: "wall", label: B("Wall", "Bảng vinh danh"), screen: "peoplemore" },
       { key: "coming_up", label: B("Announce", "Thông báo") },

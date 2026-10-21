@@ -16406,7 +16406,7 @@
         {
           "act": "observe",
           "affects": {
-            "en": "The These figures do not add up line goes away once the treatment is right.",
+            "en": "The \"Figures do not add up\" line goes away once the treatment is right.",
             "vi": "Dòng Số liệu không khớp sẽ biến mất khi cách xử lý đã đúng."
           },
           "anchor": "",
@@ -20133,7 +20133,7 @@
       ]
     },
     {
-      "action_tags": "",
+      "action_tags": "pb_payruns",
       "blurb": {
         "en": "Every pay run on one board: Draft, Waiting for approval and Done, and who each waiting run is with.",
         "vi": "Mọi đợt lương trên một bảng: Nháp, Chờ phê duyệt và Hoàn tất, và mỗi đợt đang chờ ở chỗ ai."
@@ -22880,6 +22880,16 @@
               "vi": "Tổng quan"
             }
           },
+          "team": {
+            "line": {
+              "en": "For people who manage others: who on your team is in today, what is waiting on you, the conversations that are due, overdue training and your hiring requests.",
+              "vi": "Dành cho người quản lý: ai trong đội của bạn có mặt hôm nay, việc gì đang chờ bạn, các cuộc trò chuyện đến hạn, đào tạo quá hạn và các yêu cầu tuyển dụng của bạn."
+            },
+            "name": {
+              "en": "Team",
+              "vi": "Đội của tôi"
+            }
+          },
           "wall": {
             "line": {
               "en": "The recognition wall: praise colleagues have given each other.",
@@ -22903,8 +22913,8 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Open Inbox first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Inbox is your starting point.",
-        "vi": "Hãy mở Hộp thư trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Hộp thư là điểm bắt đầu của bạn."
+        "en": "Open Inbox first if anything is waiting for you. Otherwise read Pulse, then go to the page the work is on. No Pulse tab on your Home? Then Inbox is your starting point. If people report to you, Team shows your day with them on one screen.",
+        "vi": "Hãy mở Hộp thư trước nếu có việc đang chờ bạn. Nếu không, hãy đọc Tổng quan, rồi đi tới trang có phần việc đó. Trang chủ của bạn không có tab Tổng quan? Vậy Hộp thư là điểm bắt đầu của bạn. Nếu có người báo cáo cho bạn, tab Đội của tôi cho thấy ngày làm việc của bạn với họ trên một màn hình."
       },
       "open": "",
       "places": [],
@@ -30969,7 +30979,7 @@
               "moment_which": "",
               "screen": "payruns",
               "tip": {
-                "en": "A run that says \"These figures do not add up\" has a component set to the wrong thing. Check Component treatment before you send it in.",
+                "en": "A run that says \"Figures do not add up\" has a component set to the wrong thing. Check Component treatment before you send it in.",
                 "vi": "Đợt lương báo \"Số liệu không khớp\" có một thành phần bị đặt sai. Hãy kiểm tra Xử lý thành phần trước khi gửi đi."
               },
               "title": {
@@ -38022,7 +38032,7 @@
             },
             {
               "affects": {
-                "en": "A run that said These figures do not add up stays wrong until you recompute it.",
+                "en": "A run that says \"Figures do not add up\" stays wrong until you recompute it.",
                 "vi": "Một đợt lương báo Số liệu không khớp vẫn sai cho tới khi bạn tính lại."
               },
               "anchor": "tr-save",
@@ -38092,7 +38102,7 @@
           "vi": "Ánh xạ › Xử lý thành phần. Mỗi thành phần một dòng, với vai trò trong lương, đã được tính trong một tổng khác hay chưa, và loại giá trị của nó."
         },
         "when": {
-          "en": "Before a scheme's first pay run, after a workbook import, and whenever a run says \"These figures do not add up\".",
+          "en": "Before a scheme's first pay run, after a workbook import, and whenever a run says \"Figures do not add up\".",
           "vi": "Trước đợt lương đầu tiên của một chương trình, sau khi nhập một sổ tính, và bất cứ khi nào một đợt lương báo \"Số liệu không khớp\"."
         },
         "why": {
@@ -40555,5 +40565,5 @@
       }
     }
   ],
-  "version": "e186eea07f2d"
+  "version": "1ab21c289e49"
 }

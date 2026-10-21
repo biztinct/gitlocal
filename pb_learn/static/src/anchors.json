@@ -209,6 +209,36 @@
       "desc": "The line under the month in the This month card: when changes close and when people are paid, from the Payroll calendar. Absent when the month has no calendar row.",
       "reserved": true
     },
+    "tm-hero": {
+      "screen": "team",
+      "file": "pb_home_hub/static/src/xml/team_lens.xml",
+      "desc": "Home › Team, top: \"Your team of 8 · 6 in today · 1 on leave · 1 not started yet · 3 things waiting on you\" and a face for every direct report with a dot (green in, amber late, grey not started yet, blue on leave). Each number lights the faces it counts.",
+      "reserved": true
+    },
+    "tm-waiting": {
+      "screen": "team",
+      "file": "pb_home_hub/static/src/xml/team_lens.xml",
+      "desc": "Home › Team, Waiting on you: what waits on your seat in the inbox, as Time off, Overtime and timesheets, Expenses and trips, People and Other. A figure opens the inbox on that area.",
+      "reserved": true
+    },
+    "tm-conversations": {
+      "screen": "team",
+      "file": "pb_home_hub/static/src/xml/team_lens.xml",
+      "desc": "Home › Team, Conversations due: the trial periods at your step (read what colleagues said, the 1:1, your recommendation) and the goal check-ins and reviews due, five each, then +N more.",
+      "reserved": true
+    },
+    "tm-learning": {
+      "screen": "team",
+      "file": "pb_home_hub/static/src/xml/team_lens.xml",
+      "desc": "Home › Team, Learning: how many of your people have required training past its date, their names, and the door to your team's training page.",
+      "reserved": true
+    },
+    "tm-hiring": {
+      "screen": "team",
+      "file": "pb_home_hub/static/src/xml/team_lens.xml",
+      "desc": "Home › Team, Hiring requests I own: the requests you asked for or were asked to write, still in flight, with Waiting on you on the ones you must write.",
+      "reserved": true
+    },
     "ps-runsel": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
@@ -2032,6 +2062,7 @@
       "pb_govt_reports/static/src/xml/govt_reports.xml",
       "pb_payruns/static/src/xml/payruns.xml",
       "pb_approval_config/static/src/xml/inbox.xml",
+      "pb_home_hub/static/src/xml/team_lens.xml",
       "pb_blueprint/static/src/xml/blueprint.xml",
       "pb_blueprint/static/src/xml/steps.xml",
       "pb_formula_studio/static/src/xml/mapping_studio.xml",
