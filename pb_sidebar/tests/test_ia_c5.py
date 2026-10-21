@@ -392,6 +392,12 @@ class TestIaCycle5Rail(TransactionCase):
             item = self._rec(xmlid)
             if not item or not item.action_xmlid:
                 continue
+            # Retired entries may belong to an optional module absent from this
+            # database. Validate its actions only when that owner is installed.
+            owner = item.action_xmlid.split('.', 1)[0]
+            if not self.env['ir.module.module'].search_count([
+                    ('name', '=', owner), ('state', '=', 'installed')]):
+                continue
             if not self.env.ref(item.action_xmlid, raise_if_not_found=False):
                 broken.append('%s -> %s' % (xmlid, item.action_xmlid))
         self.assertFalse(broken, 'retired items pointing at nothing: %s' % broken)

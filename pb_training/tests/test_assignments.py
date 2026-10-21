@@ -23,6 +23,7 @@ fixture copied into a live script keeps the name it was written with.
 
 import re
 from datetime import timedelta
+from unittest.mock import patch
 
 from odoo import fields
 from odoo.exceptions import UserError
@@ -326,6 +327,11 @@ class TestReminders(AssignmentCase):
         self.assertIn('d3', row._sent())
 
     def test_t4_the_manager_at_two_days_late_and_hr_at_five(self):
+        # This checks escalation timing, independent of tenant HR-seat setup.
+        hr_email = patch.object(type(self.Auto), '_hr_email',
+                                return_value='demo.training.hr@example.test')
+        hr_email.start()
+        self.addCleanup(hr_email.stop)
         row = self._row(0)
         due = row.due_date
         counts = self._chase(row, due + timedelta(days=1))
