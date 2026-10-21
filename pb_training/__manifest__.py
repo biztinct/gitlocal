@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.6.2',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -140,6 +140,7 @@ public.
             'pb_training/static/src/scss/training_tests_lens.scss',
             'pb_training/static/src/scss/certificates_lens.scss',
             'pb_training/static/src/scss/required_lens.scss',
+            'pb_training/static/src/scss/paths_lens.scss',
             'pb_training/static/src/js/training_board.js',
             'pb_training/static/src/js/training_numbers.js',
             'pb_training/static/src/js/learning_overview.js',
@@ -149,6 +150,7 @@ public.
             'pb_training/static/src/js/required_lens.js',
             'pb_training/static/src/js/required_settings.js',
             'pb_training/static/src/js/safety_group_chip.js',
+            'pb_training/static/src/js/paths_lens.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
             'pb_training/static/src/xml/training_numbers.xml',
@@ -159,6 +161,7 @@ public.
             'pb_training/static/src/xml/required_lens.xml',
             'pb_training/static/src/xml/required_settings.xml',
             'pb_training/static/src/xml/safety_group_chip.xml',
+            'pb_training/static/src/xml/paths_lens.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

@@ -118,6 +118,10 @@ class PbTrainingRequired(models.AbstractModel):
     def _target_words(self, req):
         if req.target == 'hours':
             return _("%s hours of training", _num(req.hours_required))
+        if req.target == 'path':
+            if not req.path_id:
+                return _("No path linked yet")
+            return _("Path: %s", req.path_id.sudo().name or '')
         if req.target in ('certificate', 'licence'):
             what = req.name_pattern or req.name
             if req.target == 'licence':
@@ -172,13 +176,15 @@ class PbTrainingRequired(models.AbstractModel):
             'target': req.target,
             'target_words': self._target_words(req),
             'timing_words': self._timing_words(req),
-            'no_course': req.target == 'course' and not req.channel_id,
+            'no_course': (req.target == 'course' and not req.channel_id)
+            or (req.target == 'path' and not req.path_id),
             'no_audience': bool(req.needs_audience
                                 and not req._has_audience()),
             'note': req.note or '',
             'auto': bool(req.auto_assign),
             'unverified': bool(req.unverified),
-            'can_assign': bool(req.channel_id),
+            'can_assign': bool(req.path_id) if req.target == 'path'
+            else bool(req.channel_id),
         }
 
     # =====================================================================
@@ -422,6 +428,11 @@ class PbTrainingRequired(models.AbstractModel):
                               for k, v in SAFETY_GROUPS],
             'employee_types': [{'key': k, 'label': tr(self.env, v)}
                                for k, v in EMPLOYEE_TYPES],
+            # LEARNING L3: a rule may require a learning path.
+            'paths': sorted([{'id': p.id, 'name': p.name or ''}
+                             for p in self.env['pb.training.path'].sudo()
+                             .search([('company_id', 'in', comps)])],
+                            key=lambda r: fold(r['name'])),
         }
 
     # =====================================================================
@@ -442,6 +453,7 @@ class PbTrainingRequired(models.AbstractModel):
                 'refresher_channel_id': req.refresher_channel_id.id or 0,
                 'name_pattern': req.name_pattern or '',
                 'hours_required': req.hours_required or 0,
+                'path_id': req.path_id.id or 0,
                 'validity_months': req.validity_months,
                 'due_days': req.due_days,
                 'every_months': req.every_months,
@@ -512,7 +524,8 @@ class PbTrainingRequired(models.AbstractModel):
         target = payload.get('target') or 'course'
         if kind not in ('always', 'day_one', 'recurring', 'statutory'):
             kind = 'always'
-        if target not in ('course', 'certificate', 'licence', 'hours'):
+        if target not in ('course', 'certificate', 'licence', 'hours',
+                          'path'):
             target = 'course'
 
         def ids(key, model):
@@ -528,6 +541,14 @@ class PbTrainingRequired(models.AbstractModel):
         channel = as_id(payload.get('channel_id'))
         if target == 'course' and not channel:
             raise UserError(_("Pick the course people must do."))
+        path = as_id(payload.get('path_id')) if target == 'path' else 0
+        if target == 'path':
+            channel = 0
+            if not self.env['pb.training.path'].sudo().search_count(
+                    [('id', '=', path),
+                     ('company_id', 'in', self.env.companies.ids)]):
+                raise UserError(_("Pick the learning path people must "
+                                  "finish."))
         pattern = (payload.get('name_pattern') or '').strip()[:200]
         if target in ('certificate', 'licence') and not pattern and \
                 not channel:
@@ -544,6 +565,7 @@ class PbTrainingRequired(models.AbstractModel):
             'kind': kind,
             'target': target,
             'channel_id': channel or False,
+            'path_id': path or False,
             'refresher_channel_id':
                 as_id(payload.get('refresher_channel_id')) or False,
             'name_pattern': pattern,
@@ -615,6 +637,8 @@ class PbTrainingRequired(models.AbstractModel):
     @api.model
     def _assign_one(self, req, emp, cell, today):
         """(assignment, reason-word-if-not)."""
+        if req.target == 'path':
+            return self._enrol_one(req, emp, cell, today)
         channel = req.refresher_channel_id \
             if cell['state'] == 'expiring' and req.refresher_channel_id \
             else req.channel_id
@@ -641,6 +665,25 @@ class PbTrainingRequired(models.AbstractModel):
         return row, ''
 
     @api.model
+    def _enrol_one(self, req, emp, cell, today):
+        """LEARNING L3: a learning-path rule's "Assign now" puts the person on
+        the path (reason Required). (enrolment, reason-word-if-not)."""
+        if not req.path_id:
+            return None, 'no_course'
+        if not emp.user_id:
+            return None, 'no_login'
+        if cell.get('enrolment_id'):
+            return None, 'already'
+        res = self.env['pb.training.path.enrolment'].sudo()._enrol_people(
+            req.path_id.id, [emp.id], reason='required')
+        if res.get('made'):
+            return self.env['pb.training.path.enrolment'].sudo().browse(
+                res['made'][0]), ''
+        if res.get('no_login'):
+            return None, 'no_login'
+        return None, 'already'
+
+    @api.model
     def assign_from_cell(self, requirement_id, employee_id):
         self._require_write()
         req = self._requirement(requirement_id)
@@ -664,6 +707,12 @@ class PbTrainingRequired(models.AbstractModel):
                               "the course to appear.", emp.name))
         if why == 'already':
             raise UserError(_("%s is already on the course.", emp.name))
+        if req.target == 'path':
+            return {'enrolment_id': row.id,
+                    'message': _("%(who)s is on the path %(path)s, due "
+                                 "%(when)s.", who=emp.name,
+                                 path=row.path_id.name,
+                                 when=_date_words(self.env, row.due_date))}
         return {'assignment_id': row.id,
                 'message': _("%(who)s is on %(course)s, due %(when)s.",
                              who=emp.name, course=row.channel_id.name,

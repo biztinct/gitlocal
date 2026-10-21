@@ -52,7 +52,10 @@ class PbJourneyTask(models.Model):
             return False
         Rule = self.env['pb.training.rule']
         rules = Rule._for_employee(emp)
-        if not rules:
+        # LEARNING L3: day-one learning paths for this joiner's department or
+        # job, under the same switch (no new journey step — R31).
+        paths = self.env['pb.training.path']._for_employee(emp)
+        if not rules and not paths:
             # NOT A FAILURE. A company that has not set up an induction has
             # not got one; saying so and settling the step is the honest
             # outcome, and leaving it open for ever would be a checklist item
@@ -62,13 +65,60 @@ class PbJourneyTask(models.Model):
 
         courses = rules.mapped('channel_ids')
         if not flag(self.env, P_DAY1_AUTO):
-            names = ', '.join(courses.sudo().mapped('name')[:6])
+            names = ', '.join((courses.sudo().mapped('name')
+                               + paths.sudo().mapped('name'))[:6])
             _logger.info(
                 'pb_training: day-one assignment is switched off — %s would '
                 'have been put on %s', emp.name, names)
             return _("Day-one courses are switched off, so nothing was "
                      "assigned. With them on, %(who)s would have been put on "
                      "%(what)s.", who=emp.name or '', what=names)
+        path_note = self._day1_paths(emp, paths)
+        if path_note is False:
+            return False
+        if not rules:
+            return path_note
+        note = self._day1_courses(emp, rules)
+        if note is False:
+            return False
+        return ' '.join(b for b in (note, path_note) if b)
+
+    def _day1_paths(self, emp, paths):
+        """Enrol the joiner on each day-one path (reason Day one). Returns a
+        note ('' when there are none), or False to leave the step open."""
+        if not paths:
+            return ''
+        Enrol = self.env['pb.training.path.enrolment'].sudo()
+        made, already = [], []
+        for path in paths:
+            try:
+                res = Enrol._enrol_people(path.id, [emp.id], reason='day_one')
+            except Exception:           # noqa: BLE001 — rule 3
+                _logger.exception('pb_training: %s could not be put on path '
+                                  '%s on their first day', emp.id, path.id)
+                self.sudo().write({'auto_error': _(
+                    "%s could not be given — try the step again.",
+                    path.name or '')[:250]})
+                return False
+            if res.get('made'):
+                made.append(path.name or '')
+            elif res.get('already'):
+                already.append(path.name or '')
+            elif res.get('failed'):
+                self.sudo().write({'auto_error': _(
+                    "%s could not be given — try the step again.",
+                    path.name or '')[:250]})
+                return False
+        if made:
+            return _("Put on the learning path %s.", ', '.join(made[:6])) \
+                if len(made) == 1 else _("Put on the learning paths %s.",
+                                         ', '.join(made[:6]))
+        if already:
+            return _("Already on %s.", ', '.join(already[:6]))
+        return ''
+
+    def _day1_courses(self, emp, rules):
+        """The day-one rule courses (E2). Returns a note, or False."""
 
         Assignment = self.env['pb.training.assignment'].sudo()
         today = fields.Date.today()

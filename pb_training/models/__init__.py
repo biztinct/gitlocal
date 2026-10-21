@@ -59,3 +59,10 @@ from . import hours
 from . import requirement
 from . import pb_training_required
 from . import required_reports
+
+# ---------------------------------------------------------------- LEARNING L3
+# Learning paths: the three tables and the assignment links (`path`), then the
+# PATHS board / Overview / My learning facade, which extends the Required
+# facade's verb tuple and the Overview chain, so it comes last.
+from . import path
+from . import pb_training_paths

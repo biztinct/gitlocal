@@ -586,13 +586,16 @@ class PbTrainingAssignment(models.Model):
     # ----------------------------------------------------------------- bulk
     @api.model
     def assign_many(self, channel_id, employee_ids, reason='adhoc',
-                    due_date=None, counts_for_probation=None):
+                    due_date=None, counts_for_probation=None, extra=None):
         """Put a group of people on one course, and say what really happened.
 
         FOUR OUTCOMES AND THEY ARE ALL REPORTED: put on, already doing it,
         no login to put it on, and could not be done. A bulk action that
         answers "12 people added" over eight is how a training record ends up
         being wrong in a way nobody notices.
+
+        LEARNING L3: `extra` is merged into every create — the learning path
+        links (`path_enrolment_id`, `path_step_id`) ride in through it.
         """
         channel = self.env['slide.channel'].sudo().browse(
             as_id(channel_id)).exists()
@@ -627,6 +630,8 @@ class PbTrainingAssignment(models.Model):
                 vals['due_date'] = due_date
             if counts_for_probation is not None:
                 vals['counts_for_probation'] = bool(counts_for_probation)
+            if extra:
+                vals.update(extra)
             try:
                 with self.env.cr.savepoint():
                     made.append(self.create(vals).id)

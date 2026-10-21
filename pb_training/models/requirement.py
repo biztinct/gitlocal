@@ -51,6 +51,8 @@ REQ_TARGETS = [
     ('certificate', 'A certificate'),
     ('licence', 'A licence or permit'),
     ('hours', 'Hours of training'),
+    # LEARNING L3: the person must have finished a learning path.
+    ('path', 'A learning path'),
 ]
 AUDIENCE_FLAGS = [
     ('posh_ic', 'Internal Committee members'),
@@ -184,6 +186,11 @@ class PbTrainingRequirement(models.Model):
         help='A certificate or licence counts when its name contains these '
              'words (accents do not matter). Separate alternatives with |.')
     hours_required = fields.Float(string='Hours', digits=(6, 2))
+    path_id = fields.Many2one(
+        'pb.training.path', string='Learning path', ondelete='set null',
+        index=True,
+        help='A learning path rule counts as held once the person has '
+             'finished the path, for as long as it stays valid.')
     same_company_only = fields.Boolean(
         string='Only while with the company that applied',
         help='A licence issued while the person worked for another company '
@@ -464,6 +471,22 @@ class PbTrainingRequirement(models.Model):
         joins = self._join_dates(employees) \
             if any(r.kind == 'day_one' for r in reqs) else {}
 
+        # ---- ONE read of the learning-path enrolments (LEARNING L3) -------
+        enrol_by_pair = {}
+        path_ids = reqs.filtered(lambda r: r.target == 'path').mapped(
+            'path_id').ids
+        if path_ids:
+            for row in self.env['pb.training.path.enrolment'].sudo() \
+                    .search_read([('employee_id', 'in', emp_ids),
+                                  ('path_id', 'in', path_ids),
+                                  ('state', '!=', 'cancelled')],
+                                 ['path_id', 'employee_id', 'state',
+                                  'completed_on', 'percent',
+                                  'current_step_id'],
+                                 order='completed_on desc, id desc'):
+                key = (row['path_id'][0], row['employee_id'][0])
+                enrol_by_pair.setdefault(key, []).append(row)
+
         out = {}
         for req in reqs:
             members = audience[req.id]
@@ -477,6 +500,11 @@ class PbTrainingRequirement(models.Model):
                         'evidence': None, 'open_id': 0}
                     continue
                 info = emp_info.get(emp_id, {})
+                if req.target == 'path':
+                    out[(req.id, emp_id)] = req._path_cell(
+                        today, info, enrol_by_pair.get(
+                            (req.path_id.id, emp_id), []))
+                    continue
                 out[(req.id, emp_id)] = req._cell(
                     today, emp_id, info,
                     docs_by_emp.get(emp_id, []),
@@ -581,6 +609,54 @@ class PbTrainingRequirement(models.Model):
         else:
             words = tr(env, 'Missing')
         return {'state': 'missing', 'valid_until': None, 'words': words,
+                'evidence': None, 'open_id': 0}
+
+    def _path_cell(self, today, info, enrolments):
+        """One person against a learning-path rule (handover §3.6): valid
+        while a finished enrolment is inside `validity_months`; an open one is
+        under way; otherwise missing (not due yet for a day-one rule inside
+        its days is not offered here — a path is given, not waited for)."""
+        self.ensure_one()
+        env = self.env
+        if not self.path_id:
+            return {'state': 'unlinked', 'valid_until': None,
+                    'words': tr(env, 'No path linked yet'),
+                    'evidence': None, 'open_id': 0}
+        experienced = bool(info.get('pb_sg_experienced'))
+        months = self._months(experienced)
+        grace = max(self.grace_days or 0, 0)
+        done = [e for e in enrolments
+                if e['state'] == 'done' and e['completed_on']]
+        open_row = next((e for e in enrolments
+                         if e['state'] in ('not_started', 'in_progress',
+                                           'overdue')), None)
+        for row in done:
+            until = row['completed_on'] + relativedelta(months=months) \
+                if months else None
+            if until is not None and until < today:
+                continue
+            evidence = {'kind': 'path', 'id': row['id']}
+            if until is not None and (until - today).days <= grace:
+                days = (until - today).days
+                words = tr(env, 'Expires today') if days == 0 else (
+                    tr(env, 'Expires tomorrow') if days == 1
+                    else tr(env, 'Expires in %s days', days))
+                return {'state': 'expiring', 'valid_until': until,
+                        'words': words, 'evidence': evidence,
+                        'open_id': 0, 'enrolment_id': open_row['id']
+                        if open_row else 0}
+            words = tr(env, 'Valid until %s', _date(env, until)) \
+                if until else tr(env, 'Done, never expires')
+            return {'state': 'valid', 'valid_until': until, 'words': words,
+                    'evidence': evidence, 'open_id': 0}
+        if open_row:
+            return {'state': 'in_progress', 'valid_until': None,
+                    'words': tr(env, 'On the path, %s%% done',
+                                open_row['percent'] or 0),
+                    'evidence': {'kind': 'path', 'id': open_row['id']},
+                    'open_id': 0, 'enrolment_id': open_row['id']}
+        return {'state': 'missing', 'valid_until': None,
+                'words': tr(env, 'Not on the path'),
                 'evidence': None, 'open_id': 0}
 
     # =====================================================================

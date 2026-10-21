@@ -72,6 +72,12 @@ class PbTrainingAutomation(models.AbstractModel):
                              lambda: self._enforce_requirements(today),
                              default={})
         counts['required'] = (required or {}).get('made', 0)
+        # LEARNING L3: every open learning-path enrolment is brought up to
+        # date, which opens the next step for anybody whose gate finished.
+        # After the assignments (it reads their states), before the chasing
+        # (a step it opens is chased from tomorrow like any other).
+        counts['paths'] = self._leg('bring learning paths up to date',
+                                    lambda: self._refresh_paths(today))
         if not flag(self.env, P_REMINDERS):
             _logger.info(
                 'pb_training: %s assignment(s) brought up to date, %s new '
@@ -149,6 +155,23 @@ class PbTrainingAutomation(models.AbstractModel):
                 done += 1
             except Exception:           # noqa: BLE001 — one row, one grave
                 _logger.warning('pb_training: assignment %s could not be '
+                                'brought up to date', row.id, exc_info=True)
+        return done
+
+    @api.model
+    def _refresh_paths(self, today):
+        """LEARNING L3 leg: every open path enrolment, one savepoint each,
+        so one bad row never stops the rest (T7)."""
+        rows = self.env['pb.training.path.enrolment'].sudo().search(
+            [('state', 'in', ('not_started', 'in_progress', 'overdue'))])
+        done = 0
+        for row in rows:
+            try:
+                with self.env.cr.savepoint():
+                    row._refresh_one(today)
+                done += 1
+            except Exception:           # noqa: BLE001 — one row, one grave
+                _logger.warning('pb_training: path enrolment %s could not be '
                                 'brought up to date', row.id, exc_info=True)
         return done
 
