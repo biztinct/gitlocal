@@ -1,13 +1,13 @@
 # LEARNING L2 — Required training and country packs — report
 
 Implementer: Opus, 2026-10-21/22. Spec: `L2_REQUIRED_TRAINING.md`. Ledger: `LEARNING_LEDGER.md` (candidate rows LN26+ in §5).
-Status: **AT DEPLOY GATE** — built, committed, tested locally (suites + Chrome walk). Not deployed. Not pushed.
+Status: **COMPLETE** — LIVE ×4 DBs: 19.0.1.6.0 at 2026-10-22 04:22 AEDT (17:22 UTC), fixes 19.0.1.6.1 / 19.0.1.6.2 at 04:34 / 05:20 AEDT. Live walk by Fable passed after the two fixes (§9). Not pushed.
 
 ## 1. What shipped (committed on 19.1, not pushed)
 
 | Module | Live now | After L2 |
 |---|---|---|
-| pb_training | 19.0.1.5.0 | **19.0.1.6.0** (+ migration `19.0.1.6.0/post-requirements.py`). Also carries L1's unreleased 19.0.1.5.1 (portal `/my/training` page titles without "(ESS)", commit `f7182ccde`). |
+| pb_training | 19.0.1.5.0 | **19.0.1.6.2** (19.0.1.6.0 + two live fixes; migration `19.0.1.6.0/post-requirements.py`). Also carries L1's unreleased 19.0.1.5.1 (portal `/my/training` page titles without "(ESS)", commit `f7182ccde`). |
 | every other module | — | **unchanged**. The Settings card names its own group (`group: "hr"`), so pb_settings is not touched; no module depends on pb_training, so `-u pb_training` reloads only it. |
 
 Commits (on top of L1's `100bf2990`):
@@ -19,7 +19,10 @@ Commits (on top of L1's `100bf2990`):
 - `43405737c` fix — requirement country falls back to the company's partner country.
 - `710282f6d` i18n — Vietnamese for L2 (pure additions).
 - `1247fdbc1` test — T1–T15.
-- (f) walk fixes + this report + ledger rows + demo seed `docs/handovers/learning/l2_demo_seed.py` (see §9).
+- `ddd2e48b5` fix — local walk fixes + isolated L2 tests. `68536e8f4` docs — report at the gate + demo seed.
+- `5e9948e54` fix (19.0.1.6.1) — auditor PDF as one document; one Required-for-you line per course (both found in the live walk).
+- `8b7e5a1c8` fix (19.0.1.6.2) — the print-out takes up to 200 people at a time (found verifying the PDF live).
+- closing commit — seed fixes, this report, ledger rows LN26–LN35.
 
 The planned five commits (a)–(e) became the WIP commit plus feature commits on top, because the owner's usage limit paused the
 build mid-way (coordinator's instruction: one WIP commit). Every commit after `a0069d5d0` installs.
@@ -239,3 +242,57 @@ clean.
 - **Final `/pb_training` suite on HEAD's code:** `-u pb_training --test-tags /pb_training` → **297 tests, 2 failed, 0 errors** —
   only `TestTheAssignmentsTab` ×2 (pre-existing, see §2). PO gate 890 rows, 0 code rows without a value. Tree on the local
   overlay = repo tree.
+
+## 9b. Live walk and the two fixes (2026-10-22)
+
+**Fable's live walk on payobook.com (HR lead):** the Required lens works — "0% in date across 4547 people · 1 expiring · 12066
+missing · 64 under way", the five state tiles, filters; Day one shows the 3 "Converted" rows; portal titles fixed ("My training |
+Payobook", "My certificates | Payobook"); no console errors. **Two bugs:**
+
+1. **"Print for an auditor" failed live:** "Tried to convert multiple documents in wkhtmltopdf using unpatched QT". The template
+   called `web.external_layout` once per 40-row block, i.e. one document per page; the live wkhtmltopdf (unpatched QT) cannot merge
+   documents. **Fix (19.0.1.6.1):** `external_layout` called once, each block ends with `page-break-after: always` inside the single
+   document; one record id to `_render_qweb_pdf` (it always was). Test: `_render_qweb_pdf` mocked → exactly one id; the HTML render
+   has exactly one `class="article"` and two page breaks for 85 people (ledger LN33).
+2. **My learning listed "DEMO Induction — On the course, due 26 Oct 2026 — Start" twice:** the converted day-one rule and a schedule
+   both point at that course. **Fix (19.0.1.6.1):** "Required for you" merges lines by course (most urgent state, then the earliest
+   due); the matrix keeps a column per rule. Test added; live check: the HR lead now has one line.
+
+**Found while verifying the PDF live (my RPC-equivalent check, see below):** the one-document PDF works but a printed page of 40
+people is ~3.7 MB from the live engine — the whole demo company (4,547 people) came to **428 MB**, one department (1,002 people) to
+96 MB: no browser takes that as one answer. **Fix (19.0.1.6.2):** the print-out takes up to 200 people (5 pages); above that it says
+"That is N people. The print-out takes up to 200 at a time — narrow it by department, site, job or rule. The spreadsheet has
+everybody." (EN + VI). Test updated (250 people → the sentence; one person → a PDF).
+
+**PDF verification on payobook (19.0.1.6.2):** run on the server as the HR lead (`demo.hr@example.com`, uid 6678, training manager),
+`allowed_company_ids [5]`, through `odoo-bin shell` with the user set on the environment and the transaction rolled back — I may not
+type a production password (ledger LN16), so this is the server-side equivalent of the RPC call: filter "expiring" (1 person) →
+`%PDF-`, 424,305 bytes; one person → 426,690 bytes; everybody / a rule covering 4,547 → the refusal sentence. 0 ERROR lines.
+
+**Local suite on the final code:** `/pb_training` 299 tests, 2 failed — the same two pre-existing `TestTheAssignmentsTab` tests.
+
+**Fix deploys** (normal tier, own START 17:32 / DONE 18:21 UTC, lock `l2b-lock`; no backups needed — no data change, the 17:15
+backups stand): 19.0.1.6.1 at 17:33 and 19.0.1.6.2 at 18:19 UTC — EXIT=0 ×4 each time, 0 tracebacks, tree hash = commit, PO gate
+891 / 0, service down ~80 s and ~70 s, crons 26 / 37 / 0 / 69 (payobook_template 72/73 switched back off after each `-u`), all
+three sites 200.
+
+**Note for the owner (demo only):** the demo "DEMO Induction" rule points at the two L1 demo joiners' departments, and they have none
+— so on payobook it covers everybody in company 5 (that is why it appears for the HR lead). Harmless on demo data; say if you want it
+narrowed.
+
+## 10. Deploy record (GO DEPLOY 2026-10-21 17:14 UTC / 04:14 AEDT)
+
+| Step | Result |
+|---|---|
+| Notes / lock | no open START; lock held by detached unit `l2-lock` from 17:14 to the DONE line; START 17:14, DONE 17:22 UTC (DONE carries "LEARNING L2 DONE", clearing the HOLD note on 5746c6516) |
+| Versions before | pb_training 19.0.1.5.0 on all four (nobody had shipped L2) |
+| Backups | `/odoo/backups/learning-l2-20261022/` p0clone 25.0 MB, payobook 77.8 MB, payobook_template 24.8 MB, rize 33.2 MB (each `pg_restore -l` ok) |
+| Files | `git archive 68536e8f4 pb_training` → clean `/tmp/deployL2` → scoped `rsync --delete`; tree hash equal (c2942e18…); PO gate on the box 890 rows / 0 empty code rows |
+| Upgrade | detached unit `l2-upgrade`, p0clone → payobook → payobook_template → rize: **EXIT=0 ×4**, 0 tracebacks / ERROR lines |
+| Migration | "legacy rows converted": payobook **1 from day-one rules, 3 from schedules**; p0clone, payobook_template, rize 0 / 0 |
+| Assets / start | signal + `web.assets.version=learning-l2-20261022` + `/web/assets/%` deleted on all four; service down 17:16:35–17:18:28 (the old process took a few seconds to exit after `systemctl stop`; checked by PID, never pkill); health 200 |
+| Warm | payobook.com 200, rize.payobook.com 200, p0clone.payobook.com 200 |
+| Crons | 26 / 37 / 0 / 69 = snapshot. payobook_template: `-u pb_training` re-activated 72/73 (training jobs) — switched back off (LN18) |
+| After | 19.0.1.6.0 ×4; 26 templates per DB (VN 11, IN 4, ID 8, SG 3), none active; 3 employee columns, 4 hours / link columns; enforce cap 500; day-one switch unchanged (0); no pack on anywhere except payobook company 5 (demo); 0 ERROR lines since restart |
+| Demo seed (payobook) | 3 short stops (~15 s each, 17:19–17:22): run 1 made DEMO Field safety basics (31), DEMO Forklift licence (32), DEMO Induction (33), Vietnam pack on for company 5 (11 copies, g4 linked to course 27), 14 rules registered; run 2 fixed worker safety groups (demo names carry no DEMO prefix → 20 workers in groups 3/4); run 3 filed one DEMO forklift licence with 20 days left on a plant worker (document 165) for an expiring cell. Matrix on company 5: "0% in date across 4547 people · 1 expiring · 12066 missing · 64 under way" — valid 5, expiring 1, missing 12066, under way 64, not due 5 (all five states). Morning job test run rolled back: 0 required courses put on. Seed fixes are in `l2_demo_seed.py` (uncommitted until the closing commit). |
+| Live walk | pending (Fable, LN16) |
