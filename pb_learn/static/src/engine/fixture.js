@@ -540,7 +540,17 @@ const PRACTICE = {
       col: "draft", cur: true, division: B("F&B", "F&B"),
       sentBack: { by: "Đặng Thu Hà",
                   note: B("NV0203 — overtime reads 46 hours for the week; the timesheet says 4.6. Please correct and send it in again.",
-                          "NV0203 — tăng ca ghi 46 giờ trong tuần; bảng chấm công ghi 4,6. Vui lòng sửa rồi gửi lại.") } },
+                          "NV0203 — tăng ca ghi 46 giờ trong tuần; bảng chấm công ghi 4,6. Vui lòng sửa rồi gửi lại.") },
+      /* NAV P3b — the card's checklist (pb.payruns `_run_checks`), each line
+         with the person who must act: the sent-back note is the preparer's
+         to fix; the last July week (27 Jul, the week Workforce › Today's
+         exceptions sit in) is not closed yet — advice, never a block — and
+         it is the attendance manager's. Sent back, so not "Ready to send in". */
+      checks: [
+        { key: "sent_back", tone: "amber", owner: ROUTE.preparer },
+        { key: "close_week", tone: "amber", advisory: true, owner: "Lê Thu Trang",
+          text: B("Attendance week of 27 Jul not closed", "Tuần chấm công 27 thg 7 chưa khóa") },
+      ] },
     { name: B("Retail — June 2026", "Bán lẻ — Tháng 6/2026"), employees: 47, gross: 672500000,
       net: 596110000, col: "done", division: RUN.division },
     { name: B("Retail — May 2026", "Bán lẻ — Tháng 5/2026"), employees: 47, gross: 666300000,
@@ -553,6 +563,12 @@ const PRACTICE = {
       reason: B("Made by mistake — a second copy of the July run.",
                 "Tạo nhầm — bản thứ hai của đợt tháng 7.") },
   ],
+  /* NAV P3b — the line under the month on the hero, from the Payroll
+     calendar (pb.payroll.calendar). July's changes closed on the 28th (the
+     tenant default cut-off) and people are paid on the 5th; the July runs
+     are in approval, so the cut-off is behind them. */
+  boardDeadline: B("Changes closed Tue 28 Jul · People are paid on Wed 5 Aug",
+                   "Đã chốt thay đổi Th 3 28 thg 7 · Ngày trả lương Th 4 5 thg 8"),
   /* Every count here is DERIVED from `board` above, the way the board's own
      numbers row counts them (pb_payruns/models/pb_payruns.py:172-179). */
   get boardKpis() {

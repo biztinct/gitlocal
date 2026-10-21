@@ -169,10 +169,29 @@ function runCard(row) {
                 ? `<b class="lrn-kyou">${esc(tx(B("Waiting on you", "Đang chờ bạn")))}</b>`
                 : `${esc(tx(B("With", "Đang ở")))}${SP}<b>${esc(step.who)}</b>`}</span></div>`
         : "";
-    const back = row.sentBack
-        ? `<div class="lrn-kback">${ic("undo")}<span><b>${esc(tx(B("Sent back by", "Trả lại bởi")))}${
-            SP}${esc(row.sentBack.by)}</b>${SP}— ${esc(tx(row.sentBack.note))}</span></div>`
-        : "";
+    /* NAV P3b — the checklist (pb_payruns `pk-checks`): one line per open
+       thing, each with its owner chip (`pk-owner`); "Ready to send in" on a
+       draft with nothing in its way. The attendance line is advice only. */
+    const owner = (who) => `<span class="lrn-tabn" data-coach="pk-owner" title="${esc(who)}">${esc(who)}</span>`;
+    const lines = (row.checks || []).map((c) => {
+        if (c.key === "sent_back" && row.sentBack) {
+            return `<div class="lrn-kback">${ic("undo")}<span><b>${esc(tx(B("Sent back by", "Trả lại bởi")))}${
+                SP}${esc(row.sentBack.by)}</b>${SP}— ${esc(tx(row.sentBack.note))}${SP}${owner(c.owner)}</span></div>`;
+        }
+        const tip = c.advisory ? ` title="${esc(tx(B("Advice only. It does not stop the run from being sent in.",
+            "Chỉ là lời khuyên. Không chặn việc gửi đợt lương.")))}"` : "";
+        return `<div class="lrn-kback"${tip}>${ic(c.key === "close_week" ? "lock" : "alert-triangle")}<span>${
+            esc(tx(c.text))}${SP}${owner(c.owner)}</span></div>`;
+    });
+    if (row.ready) {
+        lines.push(`<div class="lrn-kroute">${ic("check-circle")}<b>${esc(tx(B("Ready to send in", "Sẵn sàng gửi duyệt")))}</b></div>`);
+    }
+    const back = lines.length
+        ? `<div data-coach="pk-checks">${lines.join("")}</div>`
+        : row.sentBack
+            ? `<div class="lrn-kback">${ic("undo")}<span><b>${esc(tx(B("Sent back by", "Trả lại bởi")))}${
+                SP}${esc(row.sentBack.by)}</b>${SP}— ${esc(tx(row.sentBack.note))}</span></div>`
+            : "";
     let deliv = "";
     if (row.col === "done") {
         const steps = [[B("Approved", "Đã duyệt"), true], [B("Bank file", "Tệp ngân hàng"), !!row.paid],
@@ -1071,7 +1090,8 @@ export const SCREENS = {
        The board as the Pay Run hub draws it after the PAYRUN BOARD redesign
        (PbPayruns, payruns.xml): the "This month" hero, the toolbar, three
        lanes whose header IS the numbered step, the cards, and the collapsed
-       Rejected list. */
+       Rejected list. NAV P3b: the hero's cut-off / pay-day line and each
+       open card's checklist with its owners. */
     payruns() {
         const b = PRACTICE.board;
         const live = b.filter((r) => r.col !== "cancel");
@@ -1103,6 +1123,7 @@ export const SCREENS = {
                     <div class="lrn-heye">${ic("calendar")}${SP}${esc(tx(B("This month", "Tháng này")))}</div>
                     <div class="lrn-hmonth">${esc(tx(RUN.period))}</div>
                     <div class="lrn-kper">${esc(RUN.from)}${SP}–${SP}${esc(RUN.to)}</div>
+                    ${PRACTICE.boardDeadline ? `<div class="lrn-kper" data-coach="pk-deadline">${ic("clock")}${SP}<b>${esc(tx(PRACTICE.boardDeadline))}</b></div>` : ""}
                     <div class="lrn-journey">${journey}</div>
                     <div class="lrn-kper"><b>${esc(tx(B("Stage", "Giai đoạn")))}${SP}${stage}${SP}${esc(tx(B("of 5", "/ 5")))}${SP}·${SP}${esc(tx(stages[stage - 1]))}</b>${SP}${
                         esc(tx(B("The month moves when its slowest run does.", "Tháng chỉ tiến lên khi đợt lương chậm nhất tiến lên.")))}</div>

@@ -31263,8 +31263,8 @@
           "vi": "Một đợt đã tính xong. Muốn quyết định về một đợt thì bạn phải là người có tên trên lộ trình phê duyệt của nó."
         },
         "what": {
-          "en": "Payroll › Runs. A board with three columns — Draft, Waiting for approval and Done — and a folded list of rejected runs. A card shows who the run is with, and offers only what its state allows.",
-          "vi": "Lương › Các đợt lương. Một bảng ba cột — Nháp, Chờ phê duyệt và Hoàn tất — cùng một danh sách thu gọn các đợt bị từ chối. Mỗi thẻ cho biết đợt đang ở chỗ ai, và chỉ mở ra những thao tác trạng thái của nó cho phép."
+          "en": "Payroll › Runs. A board with three columns — Draft, Waiting for approval and Done — and a folded list of rejected runs. A card shows who the run is with, and offers only what its state allows. An open card lists what is still in its way, each line with the person who must act on it. A draft with nothing in its way says Ready to send in. An attendance week that is not closed is only advice: it never stops Submit. The line under the month says when changes close and when people are paid.",
+          "vi": "Lương › Các đợt lương. Một bảng ba cột — Nháp, Chờ phê duyệt và Hoàn tất — cùng một danh sách thu gọn các đợt bị từ chối. Mỗi thẻ cho biết đợt đang ở chỗ ai, và chỉ mở ra những thao tác trạng thái của nó cho phép. Thẻ của một đợt còn mở liệt kê những gì còn cản nó, mỗi dòng kèm người phụ trách. Bản nháp không còn gì cản sẽ ghi Sẵn sàng gửi duyệt. Một tuần chấm công chưa khóa chỉ là lời khuyên: nó không bao giờ chặn nút Gửi. Dòng dưới tên tháng cho biết khi nào chốt thay đổi và ngày trả lương."
         },
         "when": {
           "en": "Every day of payroll week. And any time you need to know how far a month has got.",
@@ -40555,5 +40555,5 @@
       }
     }
   ],
-  "version": "eea2d91ac261"
+  "version": "e186eea07f2d"
 }

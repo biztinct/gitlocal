@@ -423,8 +423,9 @@ REPLICA_ABSENT = {
     'payruns': {
         'Where it is': "the board's card view has no header for it; the copy "
                        "shows the state on each card",
-        "Figures don't add up": "drawn only on a run that does not balance; "
-                                "every practice run balances",
+        # NAV P3b: the card's checklist line says "Figures do not add up (gap …)".
+        "Figures do not add up": "drawn only on a run that does not balance; "
+                                 "every practice run balances",
         'payslips have no source data': "drawn only on a run with unsourced "
                                         "payslips; every practice payslip has its source",
     },

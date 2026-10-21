@@ -189,6 +189,26 @@
       "desc": "The bar that appears when cards are ticked: submit or export several pay runs at once.",
       "reserved": true
     },
+    "pk-checks": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "repeats": true,
+      "desc": "An open run card's checklist: sent back, no source data, figures that do not add up, attendance weeks not closed (advice only), each line with the person who must act; one green Ready to send in on a draft with nothing in its way.",
+      "reserved": true
+    },
+    "pk-owner": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "repeats": true,
+      "desc": "The owner chip on a checklist line: initials and given name, \"you\" lit when it is the reader, or the team when nobody is named.",
+      "reserved": true
+    },
+    "pk-deadline": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns.xml",
+      "desc": "The line under the month in the This month card: when changes close and when people are paid, from the Payroll calendar. Absent when the month has no calendar row.",
+      "reserved": true
+    },
     "ps-runsel": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
