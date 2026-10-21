@@ -160,7 +160,7 @@ class PbMyTraining(models.AbstractModel):
             'score': score,
             'next_id': nxt.id if nxt else 0,
             'next_name': nxt.name if nxt else '',
-            'duration': duration_words(minutes(channel.total_time)),
+            'duration': duration_words(minutes(channel.total_time), self.env),
         }
 
     @api.model
@@ -318,7 +318,7 @@ class PbMyTraining(models.AbstractModel):
             'left': left,
             'percent': int(round(100.0 * (len(lessons) - left) / len(lessons)))
             if lessons else 0,
-            'duration': duration_words(minutes(channel.total_time)),
+            'duration': duration_words(minutes(channel.total_time), self.env),
             'next_id': next((s.id for s in lessons
                              if s.id not in done_ids), 0),
             'test': test,
@@ -334,7 +334,7 @@ class PbMyTraining(models.AbstractModel):
             'kind_word': Slide._pb_kind_word(slide.slide_category),
             'icon': Slide._pb_kind_icon(slide.slide_category),
             'done': done,
-            'duration': duration_words(minutes(slide.completion_time)),
+            'duration': duration_words(minutes(slide.completion_time), self.env),
             'quiz': bool(slide.sudo().question_ids),
         }
 
@@ -372,7 +372,7 @@ class PbMyTraining(models.AbstractModel):
             'kind': slide.slide_category,
             'kind_word': Slide._pb_kind_word(slide.slide_category),
             'icon': Slide._pb_kind_icon(slide.slide_category),
-            'duration': duration_words(minutes(slide.completion_time)),
+            'duration': duration_words(minutes(slide.completion_time), self.env),
             'done': slide.id in done_ids,
             'position': idx + 1,
             'total': len(order),

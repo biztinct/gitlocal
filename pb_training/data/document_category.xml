@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- LEARNING L1: licences and permits sit beside "Degree / Certificate"
+         (CERT) in the document vault. A licence always runs out, so this
+         category requires a valid-until date (the vault's own constraint
+         enforces it). noupdate="1": a company that renames it keeps its
+         name. Matched by CODE everywhere, never by name. -->
+    <record id="cat_licence" model="pb.employee.document.category">
+        <field name="name">Licence / permit</field>
+        <field name="code">LIC</field>
+        <field name="requires_expiry" eval="True"/>
+        <field name="sequence">31</field>
+    </record>
+</data>
+</odoo>

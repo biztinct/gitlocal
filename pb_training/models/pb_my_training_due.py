@@ -20,8 +20,9 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
 from .training_common import (
-    ASSIGN_OPEN, ASSIGN_REASON_LABEL, ASSIGN_STATE_LABEL, DELAY_KINDS,
+    ASSIGN_OPEN, DELAY_KINDS,
     DELAY_KIND_LABEL, DELAY_STATE_LABEL, as_id, counted, days_over, due_words,
+    reason_word, state_word,
 )
 
 _logger = logging.getLogger(__name__)
@@ -84,14 +85,14 @@ class PbMyTrainingDue(models.AbstractModel):
         return {
             'id': assignment.id,
             'due': fields.Date.to_string(assignment.due_date) or '',
-            'due_words': due_words(assignment.due_date, today),
+            'due_words': due_words(assignment.due_date, today, self.env),
             'late': bool(days_over(assignment.due_date, today))
             and assignment.state != 'done',
             'days_over': days_over(assignment.due_date, today),
             'reason': assignment.reason,
-            'reason_word': ASSIGN_REASON_LABEL.get(assignment.reason, ''),
+            'reason_word': reason_word(self.env, assignment.reason),
             'state': assignment.state or 'assigned',
-            'state_word': ASSIGN_STATE_LABEL.get(assignment.state or '', ''),
+            'state_word': state_word(self.env, assignment.state),
             'probation': bool(assignment.counts_for_probation),
             'can_ask': assignment.state in ASSIGN_OPEN and not waiting,
             'delay': {

@@ -41,7 +41,7 @@ from odoo.exceptions import UserError
 from .training_common import (
     ASSIGN_OPEN, ASSIGN_REASON_LABEL, ASSIGN_REASONS, ASSIGN_STATES,
     P_DEFAULT_DUE, TEST_NONE, TEST_PASSED, as_id, days_over, due_words, leg,
-    number,
+    number, reason_word,
 )
 
 _logger = logging.getLogger(__name__)
@@ -539,9 +539,11 @@ class PbTrainingAssignment(models.Model):
             'who': self.employee_id.sudo().name or '',
             'department': self.employee_id.sudo().department_id.name or '',
             'reason': self.reason,
-            'reason_word': ASSIGN_REASON_LABEL.get(self.reason, ''),
+            # LEARNING L1 (ledger LN10): the board's words in the reader's
+            # language; the mail computes above keep their English body.
+            'reason_word': reason_word(self.env, self.reason),
             'due': fields.Date.to_string(self.due_date) or '',
-            'due_words': due_words(self.due_date, today),
+            'due_words': due_words(self.due_date, today, self.env),
             'days_over': days_over(self.due_date, today),
             'state': self.state or 'assigned',
             'percent': facts['percent'],

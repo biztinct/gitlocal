@@ -169,7 +169,7 @@ class PbTraining(models.AbstractModel):
             if test_slide else 0,
             'passed': passed,
             'failed': failed,
-            'duration': duration_words(minutes(channel.total_time)),
+            'duration': duration_words(minutes(channel.total_time), self.env),
             'rank': rank,
         }
 
@@ -204,7 +204,7 @@ class PbTraining(models.AbstractModel):
             'name': s.name,
             'kind_word': Slide._pb_kind_word(s.slide_category),
             'icon': Slide._pb_kind_icon(s.slide_category),
-            'duration': duration_words(minutes(s.completion_time)),
+            'duration': duration_words(minutes(s.completion_time), self.env),
             'quiz': bool(s.question_ids),
             'section': s.category_id.name if s.category_id else '',
         } for s in sudo._pb_lessons()]

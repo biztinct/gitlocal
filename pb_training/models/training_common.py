@@ -57,6 +57,11 @@ P_PACK_PERIOD = 'pb_training.report_pack_period'
 P_PACK_EMAIL = 'pb_training.report_pack_email'
 P_PACK_STAMP = 'pb_training.report_pack_last'
 
+# ------------------------------------------------------- LEARNING L1 dials
+P_RENEW_BEFORE = 'pb_training.renew_before_days'
+P_CERT_REMINDERS = 'pb_training.cert_reminders'
+P_CERT_MANAGER_DAYS = 'pb_training.cert_manager_days'
+
 DEFAULTS = {
     # ON. The pages that came with the content engine are a PUBLIC WEB SITE
     # with a course catalogue, a member leaderboard and a public profile per
@@ -124,6 +129,17 @@ DEFAULTS = {
     # `weekly` or `monthly`. Monthly, because training is a slow number: a
     # week of it is mostly noise and a month of it is a picture.
     P_PACK_PERIOD: 'monthly',
+    # LEARNING L1. How long before a certificate runs out the refresher course
+    # is put on the person by itself, and the window a certificate counts as
+    # "about to run out" in. Sixty days is two monthly cycles: long enough to
+    # do a course, short enough that nobody forgets why they were put on it.
+    P_RENEW_BEFORE: '60',
+    # ON. The certificate ladder (60 / 30 / 7 days and the day itself to the
+    # person, 14 days to their manager, the HR lead on the day). It still
+    # only runs while `pb_training.reminders` is on — one master switch.
+    P_CERT_REMINDERS: '1',
+    # When the manager hears about a certificate running out.
+    P_CERT_MANAGER_DAYS: '14',
 }
 
 # =========================================================================
@@ -138,6 +154,8 @@ ASSIGN_REASONS = [
     ('compliance', 'Compliance'),
     ('adhoc', 'One-off'),
     ('leadership', 'Leadership programme'),
+    # LEARNING L1: put on by itself because a certificate is running out.
+    ('renewal', 'Renewal'),
 ]
 ASSIGN_REASON_LABEL = dict(ASSIGN_REASONS)
 
@@ -380,19 +398,60 @@ def minutes(hours):
     return max(mins, 0)
 
 
-def duration_words(mins):
+def tr(env, source, *args):
+    """A constant sentence in the reader's language (LEARNING L1, ledger LN10).
+
+    The words below used to be English constants. `env._()` reads the
+    language off the environment it is given and the module off the caller,
+    so the board, the portal pages and My learning say them in Vietnamese to
+    a Vietnamese reader. With no environment — the mail templates' own
+    computes, which render one whole English body — the English stands, so an
+    email is never half one language and half the other.
+
+    The `.po` carries every source below as an `odoo-python` entry against
+    this file; a word that is not there simply stays English.
+    """
+    if env is None:
+        return source % args if args else source
+    try:
+        return env._(source, *args)
+    except Exception:                       # noqa: BLE001 — a word is not fatal
+        return source % args if args else source
+
+
+def reason_word(env, key):
+    """Why somebody was put on a course, in the reader's language."""
+    label = ASSIGN_REASON_LABEL.get(key or '', '')
+    return tr(env, label) if label else ''
+
+
+def state_word(env, key):
+    """How far an assignment has got, in the reader's language."""
+    label = ASSIGN_STATE_LABEL.get(key or '', '')
+    return tr(env, label) if label else ''
+
+
+def reason_choices(env):
+    return [{'key': k, 'label': tr(env, v)} for k, v in ASSIGN_REASONS]
+
+
+def state_choices(env):
+    return [{'key': k, 'label': tr(env, v)} for k, v in ASSIGN_STATES]
+
+
+def duration_words(mins, env=None):
     """"12 min", "1 hr", "1 hr 20 min" — and '' for a lesson nobody timed."""
     if not mins:
         return ''
     if mins < 60:
-        return '%s min' % mins
+        return tr(env, '%s min', mins)
     hrs, rest = divmod(mins, 60)
     if not rest:
-        return '%s hr' % hrs
-    return '%s hr %s min' % (hrs, rest)
+        return tr(env, '%s hr', hrs)
+    return tr(env, '%s hr %s min', hrs, rest)
 
 
-def due_words(due, today):
+def due_words(due, today, env=None):
     """"Due today", "3 days left", "8 days overdue" — the sentence, whole.
 
     THE WHOLE SENTENCE AND NEVER A FRAME WITH A NUMBER IN IT (R117): "%s days
@@ -404,14 +463,14 @@ def due_words(due, today):
         return ''
     days = (due - today).days
     if days == 0:
-        return 'Due today'
+        return tr(env, 'Due today')
     if days == 1:
-        return '1 day left'
+        return tr(env, '1 day left')
     if days > 1:
-        return '%s days left' % days
+        return tr(env, '%s days left', days)
     if days == -1:
-        return '1 day overdue'
-    return '%s days overdue' % (-days)
+        return tr(env, '1 day overdue')
+    return tr(env, '%s days overdue', -days)
 
 
 def days_over(due, today):

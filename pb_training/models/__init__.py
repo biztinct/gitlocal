@@ -37,3 +37,13 @@ from . import pb_my_training_claims
 # ---------------------------------------------------------------- LEARNING L0
 # The Overview reads helpers the two extensions above add, so it comes last.
 from . import pb_training_overview
+
+# ---------------------------------------------------------------- LEARNING L1
+# The certificate record is the vault document with training fields
+# (`document_ext`); the register, the wallet and the record PDF read it
+# through the facades below, which extend the ones declared above.
+from . import document_ext
+from . import pb_training_certificates
+from . import pb_my_training_certificates
+from . import learning_record
+from . import me_home_tile

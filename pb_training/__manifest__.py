@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.4.1',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -103,6 +103,10 @@ public.
         'pb_comp_ben',
         'pb_employee_vault',
         'pb_insights_hub',
+        # LEARNING L1. A test's validity months (`certification_validity_
+        # months`) live here, and so does the other `_mark_done` override
+        # (the résumé line); naming it fixes the order the two run in.
+        'hr_skills_survey',
     ],
     'data': [
         'security/pb_training_security.xml',
@@ -112,12 +116,15 @@ public.
         'data/approval_process.xml',
         'data/mail_template_assignments.xml',
         'data/mail_template_claims.xml',
+        'data/mail_template_certificates.xml',
+        'data/document_category.xml',
         'data/journey_step.xml',
         'views/assignment_views.xml',
         'views/claim_views.xml',
         'views/training_views.xml',
         'views/portal_templates.xml',
         'views/survey_skin.xml',
+        'report/learning_record.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -125,17 +132,20 @@ public.
             'pb_training/static/src/scss/learning_overview.scss',
             'pb_training/static/src/scss/my_learning_lens.scss',
             'pb_training/static/src/scss/training_tests_lens.scss',
+            'pb_training/static/src/scss/certificates_lens.scss',
             'pb_training/static/src/js/training_board.js',
             'pb_training/static/src/js/training_numbers.js',
             'pb_training/static/src/js/learning_overview.js',
             'pb_training/static/src/js/my_learning_lens.js',
             'pb_training/static/src/js/training_tests_lens.js',
+            'pb_training/static/src/js/certificates_lens.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
             'pb_training/static/src/xml/training_numbers.xml',
             'pb_training/static/src/xml/learning_overview.xml',
             'pb_training/static/src/xml/my_learning_lens.xml',
             'pb_training/static/src/xml/training_tests_lens.xml',
+            'pb_training/static/src/xml/certificates_lens.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

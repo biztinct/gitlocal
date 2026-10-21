@@ -25,10 +25,10 @@ from odoo.exceptions import UserError
 
 from .pb_training import PbTraining
 from .training_common import (
-    ASSIGN_OPEN, ASSIGN_REASONS, ASSIGN_STATES, DELAY_KIND_LABEL,
+    ASSIGN_OPEN, DELAY_KIND_LABEL,
     DELAY_STATE_LABEL, P_ASSIGN_LIMIT, P_BULK_CAP, P_DAY1_AUTO,
     P_DEFAULT_DUE, P_HR_DAYS, P_MANAGER_DAYS, P_REMINDERS, as_id, counted,
-    flag, fold, number,
+    flag, fold, number, reason_choices, state_choices, state_word,
 )
 
 _logger = logging.getLogger(__name__)
@@ -74,8 +74,8 @@ class PbTrainingAssignments(models.AbstractModel):
             'schedules': self._safe(lambda: self._schedule_rows(today),
                                     default=[]),
             'rules': self._safe(lambda: self._rule_rows(), default=[]),
-            'reasons': [{'key': k, 'label': v} for k, v in ASSIGN_REASONS],
-            'states': [{'key': k, 'label': v} for k, v in ASSIGN_STATES],
+            'reasons': reason_choices(self.env),
+            'states': state_choices(self.env),
             'switches': {
                 'reminders': flag(self.env, P_REMINDERS),
                 'day1': flag(self.env, P_DAY1_AUTO),
@@ -154,7 +154,7 @@ class PbTrainingAssignments(models.AbstractModel):
         return {
             'reason': tally('reason', lambda r: r['reason_word']),
             'state': tally('state',
-                           lambda r: dict(ASSIGN_STATES).get(r['state'], '')),
+                           lambda r: state_word(self.env, r['state'])),
             'department': tally('department'),
             'course': tally('course'),
         }
