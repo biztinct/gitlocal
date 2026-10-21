@@ -1,7 +1,7 @@
 # NAV P3d — Home › Ask HR as a Payobook board — report
 
 Implementer: Opus, 2026-10-21. Spec: `docs/handovers/NAV_P3D_ASK_HR_BOARD.md` §1–6. Ledger: seven new P3d rows in
-`docs/handovers/NAV_LEDGER.md`. **Stopped at the deploy gate — nothing deployed, nothing pushed.**
+`docs/handovers/NAV_LEDGER.md`. **Deployed 2026-10-21 03:43–03:47 UTC on all four databases, normal tier, under the shared lock — see §9.**
 
 ## 0. Exact deploy lists
 
@@ -18,7 +18,7 @@ overwrite reload (coordinator stop, LEARNREV LR20/LR29 — see §5.4). Log line 
 byte-identical to HEAD. JS/SCSS changed → asset purge + `web.assets.version` bump + `orm_signaling_assets` + warm-up
 per DB. Served-asset checks after deploy: JS contains `"pb.ask.hr","get_board"` (or `pbhub.askhr.filters.v1`), CSS
 contains `.pbah-board`. Tree hashes of the committed modules (`git archive HEAD`, same script as P3c), equal to the
-locally tested tree: **pb_ask_hr `2db6bf0b8fe2`, pb_learn `64194a1bc11f`**.
+locally tested tree: **pb_ask_hr `7ff132218b68` (after the targeted-migration fix; `2db6bf0b8fe2` before it), pb_learn `64194a1bc11f`**.
 
 Staging note (ledger P3b): the local tree was P3c's (HEAD at `34e3565d2` with the seven `7a2deccb4` modules pinned to
 `3f4ff7be4`) with my two modules + `docs/tutorial_poc` over it. Commits since then on HEAD (ChatGPT's mapping fixes,
@@ -112,12 +112,12 @@ added, moved or renamed — nothing new for the Screens lens.
    question and no reason; "Keep it inside HR" is one click.
 9. Commit trailer: the session's attribution rule (`Co-Authored-By: Claude Opus 5.5`), as P3a–P3c.
 
-## 6. Commits (local, NOT pushed)
+## 6. Commits (pushed to origin/19.1)
 
 `52d9041db` feat(nav-p3d): Home › Ask HR as a Payobook board · `455ad535a` feat(nav-p3d): Learn knows the Ask HR board
-(also carries the one-line VIFIX drift-tool mapping) · `6ed7a5b12` docs(nav-p3d): report and seven ledger rows.
+(also carries the one-line VIFIX drift-tool mapping) · `6ed7a5b12` docs(nav-p3d): report and seven ledger rows · `e90a318a6` docs · `a3b9ccecc` fix(nav-p3d): targeted Vietnamese word update instead of an overwrite reload (coordinator stop before any upgrade) · (this deploy record). The push also carried `ea7344ee1` (ChatGPT, docs) as it was.
 
-## 7. Deploy plan (for the coordinator's go — normal tier)
+## 7. Deploy plan (as written at the gate; carried out in §9)
 
 R14 START line in `/opt/deploy-notes.md` + `flock /tmp/payobook-studio-deploy.lock`, no other `odoo-bin -c` running,
 cron snapshot, clean `/tmp/deployP3D` from `git archive HEAD pb_ask_hr pb_learn`, checksum dry run (expect only this
@@ -139,3 +139,57 @@ walk with an HR login is an owner step (an agent may not type the QA password).
 4. Motion with purpose: 120 ms slide on a step change, the bulk bar rises once, nothing else; off under reduced motion.
 5. Keyboard: arrows, Enter, Space, T, H, /, Esc, arrow keys in the picker, focus lands in each sheet. Weakest: phone
    width not walked, and the Back button from a person's portal page lands on Home's first tab (full-page navigation).
+
+## 9. Deploy record (normal tier, 2026-10-21 03:43–03:47 UTC, Payobook19v2)
+
+### 9.1 Before the go: the migration was changed (coordinator's stop)
+
+The coordinator stopped the deploy before any upgrade: the first migration called `_update_translations(overwrite=True)`,
+which also rewrites shared records other modules translated better (LEARNREV LR20/LR29). Nothing had been stopped or
+upgraded. The migration became a targeted in-place update of the two words, only where the stored vi_VN is still the
+old word (`a3b9ccecc`, test_17, ledger row rewritten). Checked first on a fresh copy of `am_nav_p3c`: 1 status choice +
+4 views updated, every pre-existing field label/help and model name md5-identical, display_name labels unchanged. Then
+re-staged from `git archive HEAD pb_ask_hr pb_learn` (149 files).
+
+Staged `learn_content.json` before copying (coordinator's four facts): payruns `action_tags` = **"pb_payruns"**,
+**0** "These figures do not add up", **1** "gõ DUYỆT", **297** lesson steps. The same four facts were read again from
+the live payobook.com file after the deploy (§9.3).
+
+### 9.2 Lock and notes
+
+`/opt/deploy-notes.md` at 03:43: last lines ChatGPT START 02:25 / DONE 02:32, no open START; lock free (`flock -n`
+succeeded on the first poll). Ran as one systemd unit `navp3d-deploy` under `flock -n
+/tmp/payobook-studio-deploy.lock` (script: START line → no other `odoo-bin -c` → cron snapshot → checksum dry run →
+p0clone label snapshot → stop → copy → hash → PO gate → four upgrades, p0clone first, each checked for EXIT, CRITICAL,
+traceback and the migration line; p0clone labels compared right after its upgrade → asset steps → start → warm-up →
+crons → versions, stored words, Learn content → DONE line). Service down **2 min 52 s** (stop 03:43:30, port 8069 back
+03:46:16). START 03:43 and DONE 03:47 lines in the notes file; lock free afterwards; `odoo-server` active.
+
+| Step | Result |
+|---|---|
+| Staging | `/tmp/deployP3D` from `git archive HEAD` at `a3b9ccecc`; tree hashes on the box = local stage = locally tested tree: pb_ask_hr `7ff132218b68`, pb_learn `64194a1bc11f`. |
+| PO gate on the staged files (box, Odoo `PoFileReader`) | pb_ask_hr 317 rows, pb_learn 240 rows — 0 code rows without a value or marker. |
+| Overwrite check | `rsync --dry-run --checksum`: exactly this phase's files (pb_ask_hr: manifest, portal.py, vi_VN.po, new migration, models/__init__, new askhr_board.py, ticket.py, askhr_lens.js/.xml, ask_hr_backend.scss, new askhr_lens.scss, tests; pb_learn: manifest, learn_content.json, anchors.json, fixture.js, screens.js). No deletions. |
+| Crons before | p0clone 26, payobook 37, payobook_template 0, rize 69. |
+| p0clone labels before | 20-field snapshot (18 rows match the query), all 22,308 field labels + help md5 `22ddac42…`, model names md5, display_name: "Tên hiển thị" 798, "Hiển thị Tên" 84, "Bảng điều khiển Tên" 1, none 258. |
+| Copy + hashes + PO gate after copy | Per-module scoped `rsync -a --delete`; live hash = staged for both; PO gate 0 failures. |
+| Upgrades `-u pb_ask_hr,pb_learn` | p0clone EXIT=0 42 s · payobook EXIT=0 44 s · payobook_template EXIT=0 39 s · rize EXIT=0 38 s; 0 CRITICAL, 0 ERROR, 0 tracebacks (only the docstring RST warning from another module, as in P3b/P3c). Migration line on every DB: "updated in place (NAV P3d): 1 status choice(s), 4 view(s)". |
+| p0clone labels after | **Identical**: the 20-field snapshot, all pre-existing field labels + help (md5 `22ddac42…`), model names, display_name counts (798 / 84 / 1 / 258). |
+| Assets | Per DB `INSERT INTO orm_signaling_assets`, `/web/assets/%` attachments deleted, `web.assets.version` = 1792554373935. |
+| Start | Port 8069 up, `/web/health` 200, "Registry loaded" ×3 since the stop, **0 ERROR/CRITICAL since start**. |
+| Warm-up (one at a time) | payobook.com, rize.payobook.com, p0clone.payobook.com: login 200; CSS 3.79 / 3.70 / 3.70 MB, JS 13.75 / 13.51 / 13.50 MB — none empty; served JS has `pbhub.askhr.filters.v1`, served CSS has `.pbah-board`, on all three. payobook_template has no hostname (files identical, versions current). |
+| `/my/ask-hr/new` without a cookie | **303 → `/web/login?redirect=/my/ask-hr/new`** on all three hosts (a redirect to sign-in, not a 403). A signed-in check needs a session; the fix itself is covered by test_15 and the local walk (§3 #9). |
+| Crons after | The upgrade switched on 18 jobs in payobook_template (43, 44, 51, 54–58, 60, 62, 63, 67, 68, 71–75), as in P2–P3c; switched off again. **Final: payobook 37, rize 69, p0clone 26, payobook_template 0** (expected 37 / 69 / 26 / 0). |
+| Versions | pb_ask_hr 19.0.1.2.0, pb_learn 19.0.20.5.16 on all four databases. |
+| Stored Vietnamese words | Every DB: `with_hr` status = "Nhân sự đang xử lý"; views still holding an old word = 0; the Ask HR search view holds both new words ("Nhân sự đang xử lý", "Chưa ai nhận"). |
+
+### 9.3 Live Learn content (payobook.com)
+
+`learn_content.json` 1.61 MB: "gõ DUYỆT" = **1**, "These figures do not add up" = **0**, payruns `action_tags` =
+**pb_payruns**, lesson steps = **297**, Home's Ask HR line ("Close with a note") present.
+
+### 9.4 Not done
+
+The payobook.com browser walk (coordinator's instruction; an agent may not type the QA password). Owner step: sign in
+as an HR officer → Home › Ask HR (numbers, steps, Take it with T); as an employee → My Payobook › Ask HR › "Ask a new
+question" opens the form (it answered 403 before this deploy wherever Expenses is installed).
