@@ -21,6 +21,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import vifix_common as C  # noqa: E402
 
 import polib  # noqa: E402
+import vifix_po_scan as PS  # noqa: E402
+
+
+def wrong_vietnamese(text):
+    """Seed-list hits (vifix_po_scan.SUSPICIOUS) in visible Vietnamese, e.g. 'SÂN KHẤU 2 / 5'."""
+    if not C.has_vietnamese(text):
+        return []
+    hits = []
+    for rx, seed, why in PS.SUSPICIOUS_RES:
+        if seed != "odoo" and rx.search(text) and not any(seed in h for h in hits):
+            hits.append(seed)
+    return hits
 
 # Demo-world proper names and data-ish tokens that are not product strings.
 IGNORE_RE = re.compile(
@@ -96,7 +108,10 @@ def build(sweep):
     blob = source_blob()
     rows = []
     for r in sweep["records"]:
-        found, data_found = [], []
+        found, data_found, wrong = [], [], []
+        for item in r.get("texts", []) + [{"t": x["t"]} for x in r.get("attrs", [])]:
+            for seed in wrong_vietnamese(item["t"]):
+                wrong.append({"t": item["t"], "seed": seed})
         for item in r.get("texts", []):
             c = classify(item["t"])
             if not c:
@@ -112,7 +127,7 @@ def build(sweep):
                               "po": sorted(idx.get(C.norm(item["t"]), []))})
         found.sort(key=lambda x: (x["t"], x["how"]))
         rows.append({"path": r["path"], "kind": r["kind"], "shot": r.get("shot", ""), "url": r.get("url", ""),
-                     "count": len(found), "strings": found, "data_strings": sorted(data_found, key=lambda x: x["t"]),
+                     "count": len(found), "strings": found, "wrong": wrong, "data_strings": sorted(data_found, key=lambda x: x["t"]),
                      "missing": r.get("missing", ""), "console": r.get("console", []), "opened": r.get("opened", "")})
     return rows
 
@@ -136,8 +151,8 @@ def to_md(rows, sweep, per_row=25):
         "; ".join("`%s`" % esc(t) for t in sorted(common)) or "none"))
     out.append("Strings not found in our source (records such as names, departments, pay-run names, "
                "or text built at runtime) are counted in the Data column and listed in the JSON only.")
-    out += ["", "| Screen (as the menu shows it) | Count | Data | Strings still English / mixed (first %d) | Screenshot |" % per_row,
-            "|---|---|---|---|---|"]
+    out += ["", "| Screen (as the menu shows it) | Count | Data | Strings still English / mixed (first %d) | Reads wrong (seed) | Screenshot |" % per_row,
+            "|---|---|---|---|---|---|"]
     for r in rows:
         strs = [s for s in r["strings"] if s["t"] not in common]
         if r["missing"]:
@@ -145,7 +160,8 @@ def to_md(rows, sweep, per_row=25):
         else:
             cell = "; ".join("`%s`%s" % (esc(s["t"][:80]), " (po: %s)" % ",".join(s["po"][:2]) if s["po"] else "")
                              for s in strs[:per_row]) or "—"
-        out.append("| %s | %d | %d | %s | %s |" % (esc(r["path"]), len(strs), len(r["data_strings"]), cell, r["shot"]))
+        wrong = "; ".join(sorted({"`%s` (%s)" % (esc(w["t"][:60]), w["seed"]) for w in r["wrong"]})) or "—"
+        out.append("| %s | %d | %d | %s | %s | %s |" % (esc(r["path"]), len(strs), len(r["data_strings"]), cell, wrong, r["shot"]))
     if sweep.get("skipped"):
         out += ["", "## Not opened", ""] + ["- %s: %s" % (s["path"], s["why"]) for s in sweep["skipped"]]
     cons = [(r["path"], c) for r in rows for c in r["console"]]

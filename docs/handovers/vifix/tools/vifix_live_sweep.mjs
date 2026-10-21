@@ -168,7 +168,7 @@ async function closeDetail(page) {
 // The handover's main detail drawers: on these screens the first record is opened.
 // [path regex, row selector, optional JS to run first (e.g. pick a step so the list shows)]
 const DETAILS = [
-    [/Con người › Nhân viên$/, ".ppl-card"],
+    [/Con người › Nhân viên$/, ".ppl-card, .ppl-card *, [class*=ppl-row]", "new Promise(r => setTimeout(r, 3000))"],
     [/Con người › Hợp đồng$/, ".ctl-card-top"],
     [/Lương › Các đợt lương$/, ".pbr-card-main"],
     [/Lương › Phiếu lương$/, ".psr-card", "document.querySelector('.pbim-st') && document.querySelector('.pbim-st').click()"],
@@ -216,6 +216,8 @@ async function main() {
         if (!ok) { skipped.push({ path: label, why: "sidebar button not found" }); continue; }
         await settle(page, 3000);
         const tabs = await hubTabs(page);
+        // a hub reopens on the tab used last (pbhub.<hub>.lens.v1 in localStorage): select the first
+        if (tabs.length) { await clickHubTab(page, 0); await settle(page, 2500); }
         const first = tabs.length ? `${label} › ${tabs[0] || "tab 1"}` : label;
         await record(page, first, tabs.length ? "hubtab" : "screen", { locked: e.locked, tabs });
         await extras(page, first);
