@@ -4,6 +4,8 @@ stage=Path(os.environ['FOCUSED_STAGE'])
 FOCUSED_LIBRARY_ONLY=True
 os.environ['RIZE_FOCUSED_PLAN']=str(stage/'rize_focused_payroll_plan.json')
 exec(compile((stage/'replace_rize_payroll_schemes.py').read_text(),str(stage/'replace_rize_payroll_schemes.py'),'exec'))
+# Test-only approval setup is rolled back with every fixture below.
+env['biz.approval.seed'].sudo().set_no_approval_needed(env.company, 'scheme')
 metadata=json.loads((stage/'schema-audit.json').read_text())
 results=[]
 for spec,meta in zip(plan,metadata):
@@ -21,7 +23,7 @@ for spec,meta in zip(plan,metadata):
    r.set_source_binding('excel','Payroll|'+r.code)
    inputs[r.code]='Synthetic' if r.value_kind in ('text','identifier') else ('2026-01-01' if r.value_kind=='date' else 20)
  env['hr.formula.sample.data'].create({'config_id':cfg.id,'name':'Synthetic calculation fixture','source_type':'manual','input_values_json':json.dumps(inputs)})
- results.append(replace_one(cfg,spec,seal=False))
+ results.append(replace_one(cfg,spec))
 env.flush_all()
 env.cr.rollback()
 print('REHEARSAL_RESULT',json.dumps(results))

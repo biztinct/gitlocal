@@ -131,6 +131,18 @@ def replace_one(old, spec, seal=True):
     new.state = 'active'
     release = env['pb.formula.studio'].release_approve(new.id,
         narrative='Owner-approved focused payroll: preserve calculations and payslip contributions; maintain unrelated HR data independently in Records Desk.') if seal else {'ok': True, 'rehearsal_only': True}
+    if seal and release.get('reason') == 'no_changes':
+        # A new copy has no outgoing edit versions. release_approve has already
+        # checked the normal release gate; seal an honest initial snapshot,
+        # rather than manufacturing an edit to an unchanged formula.
+        studio = env['pb.formula.studio']
+        milestone = studio._seal_milestone(new, 'Initial focused payroll release')
+        released = env['hr.formula.release'].create({
+            'name': 'Release v1', 'config_id': new.id,
+            'to_milestone_id': milestone.id, 'change_count': len(new.rule_ids),
+            'narrative': 'Initial owner-approved focused scheme copied from %s (%s). Calculations and payslip contributions preserved; unrelated HR fields maintained in Master records.' % (old.name, old.code),
+        })
+        release = {'ok': True, 'release_id': released.id}
     assert release.get('ok'), ('Release could not be sealed', release)
     old.write({'state': 'archived', 'name': old.name + ' — archived master-data scheme'})
     catalog = env['pb.payroll.templates']._catalog(new)
