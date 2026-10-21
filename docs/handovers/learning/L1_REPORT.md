@@ -1,8 +1,8 @@
 # LEARNING L1 — Certificates and expiry — report
 
-Implementer: Opus, 2026-10-21. Spec: `L1_CERTIFICATES.md`. Ledger: `LEARNING_LEDGER.md` (rows LN16+ are
-written after the deploy; the candidates are in §5).
-Status: **AT DEPLOY GATE** — built, committed, tested locally (suites + Chrome walk). Not deployed.
+Implementer: Opus, 2026-10-21. Spec: `L1_CERTIFICATES.md`. Ledger: `LEARNING_LEDGER.md` (rows LN17–LN25
+written after the deploy).
+Status: **COMPLETE — LIVE ×4 DBs 2026-10-21 10:17 UTC (21:17 AEDT); live walk by Fable passed 21:25 AEDT.** Rulings on §7 in ledger LD10. One follow-up committed but not deployed: the tab-title fix `f7182ccde` (pb_training 19.0.1.5.1, §10).
 
 ## 1. What shipped (committed on 19.1, not pushed)
 
@@ -120,7 +120,7 @@ sentences, selection labels, Licence / permit). 15 existing entries (the reasons
 views and JS were taken from Odoo's own export of the module, so they match exactly. Older untranslated portal/Numbers text
 (pre-L1) is untouched.
 
-## 5. Ledger rows to add after the deploy (candidates)
+## 5. Ledger rows (written as LN17–LN25; the list below is what was found during the build)
 
 - LN16: `biz_access` 19.0.1.5.0 stamped every left-menu entry `access_customized`, so the stamp no longer marks a human edit
   (all four live Talent rows carry it). A gate retirement that honours it is a no-op.
@@ -142,7 +142,7 @@ views and JS were taken from Odoo's own export of the module, so they match exac
 4. **Motion:** rise-in, drawer slide, all off under reduced motion.
 5. **Weakest:** the PDF was not produced locally (live item); phone width not walked.
 
-## 7. Owner items (plain English)
+## 7. Owner items (plain English) — ruled in ledger LD10: (1) mails stay English for now, (2) no automatic refresher for certificates that ran out before go-live, (3) both expiry reminders stay on
 
 1. **Reminder emails are in English** for everybody, including the new certificate emails. Making them Vietnamese for Vietnamese
    staff means translating the email texts themselves — a later phase, unless you want it sooner.
@@ -189,3 +189,41 @@ existing vault rows. Live facts (read-only): `hr_skills_survey` installed on all
    that are already signed in as the QA admin, the HR lead and the learner (the owner signs in, I walk), or it becomes an owner
    step; everything server-side (versions, migration logs, register counts through the shell) I verify myself.
 10. DONE line, release the lock, ledger rows LN16+, final report.
+
+## 9. Deploy record (GO DEPLOY 10:12 UTC)
+
+| Step | Result |
+|---|---|
+| Notes / lock | ChatGPT DONE 10:11; my START 10:12 written before any change; lock held by a detached `flock` unit until the DONE line |
+| Versions before | pb_training 19.0.1.4.1, pb_vendor_access 19.0.1.14.0 on all four (nobody had shipped L1) |
+| Backups | `/odoo/backups/learning-l1-20261021/` p0clone 24.9 MB, payobook 76.5 MB, payobook_template 24.7 MB, rize 32.9 MB (each `pg_restore -l` ok) |
+| Files | `git archive HEAD` (741728d68) → clean `/tmp/deployL1` → per-module `rsync --delete`; tree hashes equal; PO gate 390 rows / 0 empty code rows |
+| Upgrade | detached unit, p0clone → payobook → payobook_template → rize: **EXIT=0 ×4**, 0 tracebacks; registry 17–23 s each |
+| Migrations | Talent: "1 entry checked, 3 role links taken off" on every DB. Back-fill: payobook 2 test + 3 claim rows, 5 linked, 0 stamped; others 0 |
+| Demo seed (payobook) | survey 17 validity 12 → 2 test certificates stamped (doc 145 valid until 16 Sep 2027); docs 162 (forklift licence, 20 days, Joiner Mai 20208), 163 (first aid, 75 days, Joiner Khanh 20209), 164 (pesticide permit, expired 10 days ago) registered on the demo register; morning job test run (rolled back): 0 renewal courses (doc 145 is not inside 60 days), 1 certificate reminder would have gone; 0 mails / 0 assignments left behind |
+| Assets / start | signal + `/web/assets/%` deleted + version bump on all four; one odoo-bin; service down ~140 s (10:13:55–10:16:10) |
+| Warm | payobook.com 200, rize 200, p0clone 200 (template has no public host) |
+| Crons | 26 / 37 / 0 / 69 = snapshot. On payobook_template the dependent-module reload re-activated 5 shipped crons (pb_vendor_access vendor alerts 51, hiring 67/68, training 72/73) — switched back off |
+| After | versions 19.0.1.5.0 / 19.0.1.15.0 ×4; three switches present ×4; LIC category ×4; register rows payobook 8; no training-only role on Talent ×4; 0 ERROR lines since restart; `/web/health` 200 |
+| DONE | 10:17 UTC; lock released |
+
+### Live walk (Fable, payobook.com, HR lead, 21:25 AEDT) — PASSED
+Learning rail nine items incl. CERTIFICATES; register "8 certificates. 1 expires within 30 days, 1 has expired." with the six
+tiles (1 / 1 / 2 / 1 / 4 / 3), department and job filters and the table; Numbers shows the four new tiles;
+`/my/training/record.pdf` returns a real PDF (200, application/pdf, 149,583 bytes, `%PDF-1.4`) — the first one produced, closing
+§2's local gap; `/my/training/certificates` renders with the upload form; no console errors.
+
+One nit found: the wallet's browser-tab title read "My certificates (ESS)" (internal jargon) — fixed in §10.
+
+## 10. Follow-up after the walk
+
+- **Tab titles** (`f7182ccde`): the website layout uses the QWeb view's name as the tab title unless the page sets one, so all six
+  `/my/training` pages showed "… (ESS)". Each page now sets its own title — My training, the course name, the lesson name, My
+  team's training, My training allowance, My certificates (Vietnamese "Chứng chỉ của tôi") — and the view names lose the suffix.
+  Checked locally: "Chứng chỉ của tôi | BizApp", "DEMO Forklift refresher | BizApp", "Forklift refresher — lesson 1 | BizApp".
+  pb_training suite unchanged (only the two known old failures). Bumped to 19.0.1.5.1. **Not deployed** — the coordinator scoped
+  this turn to commit only; it rides the next pb_training upgrade (likely L2's deploy, which must therefore carry 19.0.1.5.1+).
+- The same "(ESS)" tab title appears on portal pages in about ten other modules (employee home and payslips, expenses, trips,
+  project time, goals, hiring, equipment, pay and awards, leaving, improvement plans) — ledger LN23; not Learning's to change.
+- Ledger rows LN17–LN25 written (bulk access stamp, the dependent-module cron re-activation, vault verify, home-card registry,
+  OrderedSet in search methods, `env._`, tab titles, import-time refusal words, ops notes).
