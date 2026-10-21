@@ -362,6 +362,7 @@ msgstr "Tính lương được gửi để xem xét."
 
 #. module: pb_payruns
 #. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 #: code:addons/pb_payruns/static/src/xml/payruns_kanban.xml:0
 msgid "Pay runs"
@@ -517,6 +518,9 @@ msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
 msgid "Submit for approval"
 msgstr "Gửi để phê duyệt"
@@ -1186,6 +1190,8 @@ msgstr "%s đã hoàn tất."
 
 #. module: pb_payruns
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "%s is unaccounted for between gross, deductions and net."
 msgstr "%s chưa được giải thích giữa tổng thu nhập, khấu trừ và thực nhận."
@@ -1228,6 +1234,8 @@ msgstr "%s đợt lương bị trả lại để sửa."
 
 #. module: pb_payruns
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "%s payslips have no source data"
 msgstr "%s phiếu lương không có dữ liệu nguồn"
@@ -1348,6 +1356,8 @@ msgstr "1 đợt lương bị trả lại để sửa."
 
 #. module: pb_payruns
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "1 payslip has no source data"
 msgstr "1 phiếu lương không có dữ liệu nguồn"
@@ -1606,6 +1616,8 @@ msgstr "Đang trong tuyến ký duyệt"
 
 #. module: pb_payruns
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "Open the run to see which component"
 msgstr "Mở đợt lương để xem thành phần nào"
@@ -1798,6 +1810,8 @@ msgstr "Tháng chỉ tiến lên khi đợt lương chậm nhất tiến lên."
 
 #. module: pb_payruns
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "Their figures are scheme defaults, not real pay."
 msgstr "Số liệu của họ là giá trị mặc định của gói lương, không phải lương thật."
@@ -2140,3 +2154,183 @@ msgstr "Tổng thu nhập trừ khấu trừ trừ thực nhận có bằng khô
 #: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_unsourced_count
 msgid "Payslips With No Source Data"
 msgstr "Phiếu lương không có dữ liệu nguồn"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Payroll team"
+msgstr "Nhóm tính lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Attendance team"
+msgstr "Nhóm chấm công"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent back by %(who)s: “%(note)s”"
+msgstr "Bị %(who)s trả lại: “%(note)s”"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent back: “%s”"
+msgstr "Bị trả lại: “%s”"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent back on %s. Fix what it says, then send it in again."
+msgstr "Bị trả lại ngày %s. Sửa đúng điều được ghi, rồi gửi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Fix what it says, then send it in again."
+msgstr "Sửa đúng điều được ghi, rồi gửi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Open the payslips"
+msgstr "Mở các phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Figures do not add up (gap %s)"
+msgstr "Số liệu không khớp (lệch %s)"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Open Workforce › Close"
+msgstr "Mở Lực lượng lao động › Chốt kỳ"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "+1 more week"
+msgstr "+1 tuần nữa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "+%s more weeks"
+msgstr "+%s tuần nữa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Attendance week of %s not closed"
+msgstr "Tuần chấm công %s chưa khóa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Advice only: the run can still be sent in. Closing the week locks the attendance behind these payslips."
+msgstr "Chỉ là lời khuyên: đợt lương vẫn có thể được gửi đi. Khóa tuần sẽ khóa dữ liệu chấm công phía sau các phiếu lương này."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Paid on %s"
+msgstr "Đã trả lương ngày %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Pay day was %s"
+msgstr "Đã qua ngày trả lương %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Changes closed %s"
+msgstr "Đã chốt thay đổi %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Changes close today (%s)"
+msgstr "Chốt thay đổi hôm nay (%s)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Changes close tomorrow (%s)"
+msgstr "Chốt thay đổi ngày mai (%s)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Changes close in %(n)s days (%(date)s)"
+msgstr "Chốt thay đổi sau %(n)s ngày (%(date)s)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "People are paid today (%s)"
+msgstr "Ngày trả lương hôm nay (%s)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "People are paid on %s"
+msgstr "Ngày trả lương %s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Advice only. It does not stop the run from being sent in."
+msgstr "Chỉ là lời khuyên. Không chặn việc gửi đợt lương."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Ready to send in"
+msgstr "Sẵn sàng gửi duyệt"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "you"
+msgstr "bạn"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "%s (you)"
+msgstr "%s (bạn)"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Weeks closed %(n)s of %(total)s"
+msgstr "Tuần đã khóa %(n)s/%(total)s"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payruns.js:0
+msgid "Workforce is not available on this server."
+msgstr "Lực lượng lao động không có trên máy chủ này."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Before this run can move"
+msgstr "Trước khi đợt lương được chuyển tiếp"
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Owner"
+msgstr "Người phụ trách"

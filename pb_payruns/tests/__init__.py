@@ -27,3 +27,8 @@ from . import test_board_currency
 # delivery / health / story every card now carries.
 from . import test_board_redesign
 from . import test_batch_print
+
+# NAV P3b: readiness on the run cards — the checklist with an owner on each
+# line, the month's two dates from the Payroll calendar, the attendance-close
+# advice that never blocks.
+from . import test_readiness_p3b

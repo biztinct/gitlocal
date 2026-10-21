@@ -10,7 +10,10 @@
     # 2.3.0: the board prices each run in its SCHEME's money (SCHEMECTX P1).
     # Python, JS and QWeb all change, so the version has to move for the
     # deploy-time version-diff gate to see it.
-    'version': '19.0.3.0.8',
+    # 3.1.0: NAV P3b — readiness checklist with owners on every open card, the
+    # month's cut-off and pay day on the hero (Payroll calendar, read softly:
+    # pb_comp_ben and pb_close stay OUT of depends).
+    'version': '19.0.3.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

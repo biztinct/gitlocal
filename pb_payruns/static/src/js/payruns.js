@@ -395,6 +395,7 @@ export class PbPayruns extends Component {
         const net = rs.reduce((s, b) => s + (b.net || 0), 0);
         const people = rs.reduce((s, b) => s + (b.employees || 0), 0);
         return {
+            deadline: this.deadline(p, rs),
             label: p.label, range: p.range, stage, total: p.total || 5,
             stageLabel: MONTH_STAGES[stage - 1] || "", journey, lead, phrases, ask, tone, next, why,
             stageLine: _t("Stage %(i)s of %(n)s · %(label)s", { i: stage, n: p.total || 5, label: MONTH_STAGES[stage - 1] || "" }),
@@ -404,6 +405,43 @@ export class PbPayruns extends Component {
             meta: rs.length ? _t("%(people)s · %(runs)s", { people: this._people(people), runs: this._runs(rs.length) }) : _t("Nothing computed yet"),
             moving: stage < 5 && rs.length > 0,
         };
+    }
+    /**
+     * NAV P3b — the month's two dates, from the Payroll calendar (owner
+     * decision 2026-10-21, reversing the 11 Oct "no pay-day words" ruling
+     * that was made only because no pay-day setting existed yet).
+     *   before the cut-off   "Changes close in 4 days (Fri 24 Oct) · People are paid on Fri 31 Oct"
+     *   after it             "Changes closed Fri 24 Oct · People are paid on Fri 31 Oct"
+     *   after pay day        green "Paid on Fri 31 Oct" once every run of the month is paid,
+     *                        else amber "Pay day was Fri 31 Oct"
+     * No calendar row: null, and the line is simply absent.
+     * The dates arrive formatted by the server from the DATE (no JS Date).
+     */
+    deadline(p, rs) {
+        if (!p || (!p.cutoff && !p.pay_date)) return null;
+        const c = p.cutoff_in_days, pd = p.pay_in_days;
+        if (p.pay_date && pd !== null && pd < 0) {
+            const allPaid = rs.length > 0 && rs.every(b => this.isPaid(b));
+            return allPaid
+                ? { tone: "green", icon: "checkCircle", text: _t("Paid on %s", p.pay_label) }
+                : { tone: "amber", icon: "alert", text: _t("Pay day was %s", p.pay_label) };
+        }
+        const parts = [];
+        let tone = "";
+        if (p.cutoff && c !== null) {
+            if (c < 0) parts.push(_t("Changes closed %s", p.cutoff_label));
+            else if (c === 0) parts.push(_t("Changes close today (%s)", p.cutoff_label));
+            else if (c === 1) parts.push(_t("Changes close tomorrow (%s)", p.cutoff_label));
+            else parts.push(_t("Changes close in %(n)s days (%(date)s)", { n: c, date: p.cutoff_label }));
+            // Colour only to act (quiet board): the last two days before the
+            // cut-off, while a run of the month is still a draft.
+            if (c >= 0 && c <= 1 && rs.some(b => b.state === "draft")) tone = "amber";
+        }
+        if (p.pay_date && pd !== null) {
+            parts.push(pd === 0 ? _t("People are paid today (%s)", p.pay_label)
+                                : _t("People are paid on %s", p.pay_label));
+        }
+        return parts.length ? { tone, icon: "calendarClock", text: parts.join(" · ") } : null;
     }
     heroNext() {
         const n = this.hero && this.hero.next;
@@ -515,16 +553,54 @@ export class PbPayruns extends Component {
         }
         return { steps, status, ok, paid: !!d.paid };
     }
-    notes(b) {
-        const out = [];
-        if (b.return_note) out.push({ tone: "amber", icon: "rotate", head: b.return_by ? _t("Sent back by %s", b.return_by) : _t("Sent back"), text: b.return_note, next: "" });
-        if (b.unsourced) out.push({ tone: "rose", icon: "alert",
-            head: b.unsourced === 1 ? _t("1 payslip has no source data") : _t("%s payslips have no source data", b.unsourced),
-            text: _t("Their figures are scheme defaults, not real pay."), next: _t("Check the import before you submit") });
-        if (b.balance_ok === false) out.push({ tone: "rose", icon: "alert", head: _t("Figures don’t add up"),
-            text: _t("%s is unaccounted for between gross, deductions and net.", this.money(b.balance_gap, b.currency)),
-            next: _t("Open the run to see which component") });
+    /**
+     * NAV P3b — the card's checklist: can this run move, and who must act.
+     * The lines come from the server (`b.checks`, in the spec's order, each
+     * with its owner); a draft with nothing in its way ends on one green
+     * "Ready to send in". Done and Rejected cards draw no checklist. The
+     * waiting-for-a-person line stays the route block's job (not repeated).
+     */
+    checks(b) {
+        if (b.state !== "draft" && b.state !== "approval_pending") return [];
+        const out = (b.checks || []).map((c, i) => Object.assign({ i }, c, {
+            tip: c.advisory ? _t("Advice only. It does not stop the run from being sent in.") : "",
+        }));
+        if (b.ready) {
+            out.push({ i: out.length, key: "ready", tone: "green", icon: "checkCircle",
+                       text: _t("Ready to send in"), detail: "", owner: null, next: null, advisory: false, more: "" });
+        }
         return out;
+    }
+    /** The owner chip: initials and given name, "you" lit for the reader. */
+    ownerLabel(o) { return o ? (o.me ? _t("you") : (o.short || o.name)) : ""; }
+    ownerTitle(o) { return o ? (o.me ? _t("%s (you)", o.name) : o.name) : ""; }
+    /** "Weeks closed 3 of 4" on the quick look, when the close line exists. */
+    weeksClosed(b) {
+        const w = b.close_weeks;
+        if (!w || !w.total || !(b.checks || []).some(c => c.key === "close_week")) return "";
+        return _t("Weeks closed %(n)s of %(total)s", { n: w.closed, total: w.total });
+    }
+    /** A checklist line's one door. `run` opens the run (its payslips and
+     *  components are there); `close` opens Workforce › Close with a back
+     *  chip to where the reader was. Named by xmlid string: this board never
+     *  depends on the module that owns the destination. */
+    async openCheck(b, c) {
+        const key = c && c.next && c.next.key;
+        if (key === "run") return this.openBatch(b.id);
+        if (key !== "close") return;
+        this.state.peek = 0;
+        this.state.menu = 0;
+        const back = this.embedded
+            ? { label: String(_t("Payroll")), tag: "", xmlid: "pb_payhub.action_pb_pay_hub", lens: "runs", lensKey: "pb_lens", context: {} }
+            : { label: String(_t("Pay runs")), tag: "pb_payruns", xmlid: "", lens: "", lensKey: "pb_lens", context: {} };
+        try {
+            await this.action.doAction("pb_mission.action_pb_workforce", {
+                additionalContext: { pb_shell_lens: "close", pb_back: back },
+                clearBreadcrumbs: true,
+            });
+        } catch {
+            this.notification.add(_t("Workforce is not available on this server."), { type: "warning" });
+        }
     }
 
     // ================================================================ selection

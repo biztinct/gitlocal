@@ -12,6 +12,9 @@ sentence in English and Vietnamese. "Right now" is
 
 _BOARD = 'pb_payruns/static/src/xml/payruns.xml'
 _BOARD_JS = 'pb_payruns/static/src/js/payruns.js'
+# NAV P3b: the card's checklist sentences are built on the server (whole
+# sentences for the translator), so the board's words live here too.
+_BOARD_PY = 'pb_payruns/models/pb_payruns.py'
 
 _RECOMPUTE = {
     'en': "Read-only. It changes when the payslips change: recompute the run "
@@ -23,7 +26,7 @@ _RECOMPUTE = {
 MANIFESTS = {
     'payruns': {
         'model': 'hr.payslip.run',
-        'templates': [_BOARD, _BOARD_JS],
+        'templates': [_BOARD, _BOARD_JS, _BOARD_PY],
         'purpose': {
             'en': "Every pay run on one board, from draft to done, and who each "
                   "waiting run is with.",
@@ -122,7 +125,7 @@ MANIFESTS = {
                           "tính một khoản tổng một lần chứ không tính các phần của nó.",
                 },
                 'used_by': [
-                    {'label': {'en': "The \"Figures don't add up\" check",
+                    {'label': {'en': "The \"Figures do not add up\" check",
                                'vi': "Kiểm tra \"Số liệu không khớp\""},
                      'ref': 'pb_payruns/models/hr_payslip_run.py:_pb_set_balance'},
                     {'label': {'en': "Insights", 'vi': "Phân tích"},
@@ -151,7 +154,7 @@ MANIFESTS = {
             },
             {
                 'key': 'balance', 'field': 'pb_balance_ok',
-                'column': {'en': "Figures don't add up", 'vi': "Số liệu không khớp"},
+                'column': {'en': "Figures do not add up", 'vi': "Số liệu không khớp"},
                 'filled_by': {
                     'en': "Checked every time the totals are added up: gross minus "
                           "deductions minus net pay should come to nothing, allowing "

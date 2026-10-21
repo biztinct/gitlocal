@@ -71,6 +71,10 @@
     .pbr-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--i); display: flex; align-items: center; gap: 7px; }
     .pbr-month { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 4px 0 2px; color: var(--i-deep); }
     .pbr-range { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+    .pbr-deadline { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--ink2); line-height: 1.4; }
+    .pbr-deadline .ic { margin-top: 2px; color: var(--i); }
+    .pbr-deadline.amber, .pbr-deadline.amber .ic { color: var(--amber); }
+    .pbr-deadline.green, .pbr-deadline.green .ic { color: var(--green); }
     .pbr-journey { display: flex; align-items: flex-start; margin-top: 16px; position: relative; }
     .pbr-jn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; position: relative; min-width: 0; }
     .pbr-jn::before { content: ""; position: absolute; top: 10px; left: 50%; right: -50%; height: 2px; background: var(--i-soft2); }
@@ -203,12 +207,29 @@
     .pbr-money .v.cn { color: var(--rose); }
     .pbr-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 5px; }
     .pbr-sub b { color: var(--ink2); font-weight: 700; }
-    .pbr-note { margin-top: 10px; border-radius: 9px; padding: 8px 10px; display: flex; gap: 8px; align-items: flex-start; font-size: 12px; line-height: 1.4; color: var(--ink); }
-    .pbr-note .ic { margin-top: 1px; }
-    .pbr-note .hd { font-weight: 800; font-size: 10.5px; letter-spacing: .03em; text-transform: uppercase; display: block; margin-bottom: 1px; }
-    .pbr-note .nx { display: block; font-weight: 700; margin-top: 2px; }
-    .pbr-note.amber { background: var(--amber-soft); } .pbr-note.amber .hd, .pbr-note.amber .ic, .pbr-note.amber .nx { color: var(--amber); }
-    .pbr-note.rose { background: var(--rose-soft); } .pbr-note.rose .hd, .pbr-note.rose .ic, .pbr-note.rose .nx { color: var(--rose); }
+    /* NAV P3b — the checklist: one line per open thing, owner on the right.
+       Tone lives in the icon and a soft wash; the advice line (attendance)
+       is amber but dashed, so it reads as a note, not a stop. */
+    .pbr-checks { list-style: none; margin: 10px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+    .pbr-chl { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 7px 9px; font-size: 12px; line-height: 1.4; color: var(--ink); animation: pbr-rise .3s cubic-bezier(.2,.8,.2,1) both; }
+    .pbr-chl + .pbr-chl { border-top: 1px solid var(--line); }
+    .pbr-chl .ci { margin-top: 2px; }
+    .pbr-chl .ct { min-width: 0; }
+    .pbr-chl .tx { font-weight: 650; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+    .pbr-chl .mo { display: inline-block; margin-top: 1px; font-size: 11px; font-weight: 700; color: var(--muted); }
+    .pbr-chl .nx { all: unset; display: block; margin-top: 2px; font-size: 11.5px; font-weight: 700; cursor: pointer; border-radius: 4px; }
+    .pbr-chl .nx:hover { text-decoration: underline; }
+    .pbr-chl .nx:focus-visible { outline: 2px solid var(--i); outline-offset: 2px; }
+    .pbr-chl.amber { background: #FFFBEB; } .pbr-chl.amber .ci, .pbr-chl.amber .nx { color: var(--amber); }
+    .pbr-chl.amber.adv { background: #fff; box-shadow: inset 3px 0 0 var(--amber-line); }
+    .pbr-chl.rose { background: #FFF5F7; } .pbr-chl.rose .ci, .pbr-chl.rose .nx { color: var(--rose); }
+    .pbr-chl.green { background: #F2FBF6; color: var(--green); } .pbr-chl.green .tx { font-weight: 800; }
+    .pbr-owner { display: inline-flex; align-items: center; gap: 5px; max-width: 120px; height: 20px; padding: 0 8px 0 2px; border-radius: 999px; background: #fff; border: 1px solid var(--line2); font-size: 11px; font-weight: 700; color: var(--ink2); white-space: nowrap; }
+    .pbr-owner .oa { width: 16px; height: 16px; border-radius: 50%; background: var(--slate-soft); color: var(--slate); font-size: 7.5px; font-weight: 800; display: grid; place-items: center; flex: none; letter-spacing: 0; }
+    .pbr-owner .on { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .pbr-owner.is-me { background: var(--i-soft); border-color: var(--i-soft2); color: var(--i); }
+    .pbr-owner.is-me .oa { background: var(--i); color: #fff; }
+    .pbr-owner.is-team .oa { background: var(--bg); color: var(--muted); }
     .pbr-route { margin-top: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
     .pbr-route .r1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px; font-weight: 800; color: var(--ink2); }
     .pbr-route .r1 .st { color: var(--muted); font-weight: 700; white-space: nowrap; }
@@ -338,7 +359,7 @@
         .pbr-search { width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .pbr-hero, .pbr-jdot, .pbr-flag.me, .pbr-ask .pbr-pd, .pbr-menu { animation: none !important; }
+        .pbr-hero, .pbr-jdot, .pbr-flag.me, .pbr-ask .pbr-pd, .pbr-menu, .pbr-chl { animation: none !important; }
         .pbr-board, .pbr-card { transition: none !important; }
     }
 }
@@ -387,6 +408,27 @@
     .pbr-fig .f.net { grid-column: 1 / -1; background: var(--i-wash); border-color: var(--i-soft2); }
     .pbr-fig .f.net .v { font-size: 22px; color: var(--i-deep); }
     .pbr-fig .f.net .full { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+    /* NAV P3b — the checklist in the quick look: full sentences, full names */
+    .pbr-pchecks { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .pbr-pchecks .pc { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 9px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+    .pbr-pchecks .pc .ci { margin-top: 2px; }
+    .pbr-pchecks .pc .w { font-size: 12.5px; font-weight: 700; line-height: 1.4; color: var(--ink); overflow-wrap: anywhere; }
+    .pbr-pchecks .pc .m { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+    .pbr-pchecks .pc .o { display: flex; align-items: center; gap: 7px; margin-top: 7px; }
+    .pbr-pchecks .pc .o .k { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .pbr-pchecks .pc .o .pbr-owner { max-width: 260px; }
+    .pbr-pchecks .pc .nx { display: inline-block; margin: 8px 0 0; }
+    .pbr-pchecks .pc.amber { background: #FFFBEB; border-color: var(--amber-line); } .pbr-pchecks .pc.amber .ci { color: var(--amber); }
+    .pbr-pchecks .pc.rose { background: #FFF5F7; border-color: var(--rose-line); } .pbr-pchecks .pc.rose .ci { color: var(--rose); }
+    .pbr-pchecks .pc.green { background: var(--green-soft); border-color: var(--green-line); } .pbr-pchecks .pc.green .ci, .pbr-pchecks .pc.green .w { color: var(--green); }
+    .pbr-pchecks .wk { display: flex; align-items: center; gap: 6px; margin: 2px 0 0; font-weight: 700; }
+    .pbr-owner { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px 0 3px; border-radius: 999px; background: #fff; border: 1px solid var(--line2); font-size: 11.5px; font-weight: 700; color: var(--ink2); white-space: nowrap; }
+    .pbr-owner .oa { width: 16px; height: 16px; border-radius: 50%; background: var(--slate-soft); color: var(--slate); font-size: 7.5px; font-weight: 800; display: grid; place-items: center; flex: none; }
+    .pbr-owner .on { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .pbr-owner.is-me { background: var(--i-soft); border-color: var(--i-soft2); color: var(--i); }
+    .pbr-owner.is-me .oa { background: var(--i); color: #fff; }
+    .pbr-owner.is-team .oa { background: #fff; color: var(--muted); }
+    .pbr-lnk { all: unset; cursor: pointer; color: var(--i); font-weight: 700; font-size: 12px; border-bottom: 1px solid var(--i-soft2); }
     .pbr-chk { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; margin-top: 10px; color: var(--green); }
     .pbr-chk.bad { color: var(--rose); }
     .pbr-tl { display: flex; flex-direction: column; margin-top: 12px; }

@@ -6,7 +6,10 @@
        The data-coach anchors keep their names so Learn's lessons still land:
        pk-run, pk-kpis (now the hero), pk-divchips, pk-steps (now the lane
        headers), pk-tabs (the board), pk-card, pk-card-actions, pk-route,
-       pk-reject-why, pk-rejected. New: pk-hero-next, pk-peek, pk-bulk. -->
+       pk-reject-why, pk-rejected. New: pk-hero-next, pk-peek, pk-bulk.
+       NAV P3b: pk-checks (the card's checklist), pk-owner (an owner chip),
+       pk-deadline (the hero's cut-off / pay-day line). -->
+
   <t t-name="pb_payruns.PbPayruns">
     <div class="pbr" t-ref="root" t-att-class="{ 'pbr--embedded': props.embedded }">
       <div t-if="!state.loaded" class="pbr-loading"><div class="pbr-spinner"/><span>Loading pay runs…</span></div>
@@ -36,6 +39,11 @@
             <div class="pbr-eyebrow"><span class="ic" t-out="ic('calendar', 13)"/> This month</div>
             <div class="pbr-month" t-esc="hero.label"/>
             <div class="pbr-range" t-esc="hero.range"/>
+            <!-- NAV P3b: the month's two dates from the Payroll calendar;
+                 absent (not a dash) when the month has no calendar row. -->
+            <div t-if="hero.deadline" t-attf-class="pbr-deadline {{ hero.deadline.tone }}" data-coach="pk-deadline">
+              <span class="ic" t-out="ic(hero.deadline.icon, 13)"/><span t-esc="hero.deadline.text"/>
+            </div>
             <div class="pbr-journey">
               <div t-foreach="hero.journey" t-as="j" t-key="j.n"
                    t-attf-class="pbr-jn {{ j.done ? 'done' : '' }} {{ j.now ? 'now' : '' }}">
@@ -304,11 +312,25 @@
         <div class="pbr-money"><span class="l">Net pay</span><span class="v num" t-att-class="{ cn: b.credit_note }" t-esc="runMoney(b)"/></div>
         <div class="pbr-sub" t-esc="subLine(b)"/>
 
-        <!-- what is wrong, and what to do about it -->
-        <div t-foreach="notes(b)" t-as="n" t-key="n_index" t-attf-class="pbr-note {{ n.tone }}">
-          <span class="ic" t-out="ic(n.icon, 14)"/>
-          <div><span class="hd" t-esc="n.head"/><t t-esc="n.text"/><span t-if="n.next" class="nx"><t t-esc="n.next"/> →</span></div>
-        </div>
+        <!-- NAV P3b — can this run move, and who must act: one line per open
+             thing, each with its owner; "Ready to send in" when nothing is in
+             the way. The attendance line is advice and never blocks Submit. -->
+        <t t-set="cks" t-value="checks(b)"/>
+        <ul t-if="cks.length" class="pbr-checks" data-coach="pk-checks" aria-label="Before this run can move">
+          <li t-foreach="cks" t-as="c" t-key="c.i" t-attf-class="pbr-chl {{ c.tone }} {{ c.advisory ? 'adv' : '' }}"
+              t-att-title="c.tip or null">
+            <span class="ci ic" t-out="ic(c.icon, 13)"/>
+            <span class="ct">
+              <span class="tx" t-esc="c.text"/><span t-if="c.more" class="mo" t-esc="c.more"/>
+              <button t-if="c.next" type="button" class="nx" t-on-click.stop="() => this.openCheck(b, c)"><t t-esc="c.next.label"/> →</button>
+            </span>
+            <span t-if="c.owner" t-attf-class="pbr-owner {{ c.owner.me ? 'is-me' : '' }} {{ c.owner.team ? 'is-team' : '' }}"
+                  t-att-title="ownerTitle(c.owner)" data-coach="pk-owner">
+              <span class="oa"><t t-if="c.owner.team"><span class="ic" t-out="ic('users', 10)"/></t><t t-else="" t-esc="initials(c.owner.name)"/></span>
+              <span class="on" t-esc="ownerLabel(c.owner)"/>
+            </span>
+          </li>
+        </ul>
 
         <!-- which step a waiting run is on, and whose desk it is on -->
         <div t-if="rt" class="pbr-route" data-coach="pk-route">
@@ -416,8 +438,27 @@
             <div t-foreach="peekSteps(b)" t-as="s" t-key="s.key" t-attf-class="s {{ s.cls }}"><span class="k" t-esc="s.n"/><t t-esc="s.title"/></div>
           </div>
           <p t-if="b.state === 'cancel'" class="pbr-pline rose">Rejected<t t-if="b.reject_by"> by <t t-esc="b.reject_by"/></t>: <span t-esc="b.reject_note"/></p>
-          <p t-elif="b.state === 'draft' and b.return_note" class="pbr-pline amber">Sent back<t t-if="b.return_by"> by <t t-esc="b.return_by"/></t><t t-if="b.return_on"> on <t t-esc="b.return_on"/></t>: <span t-esc="b.return_note"/></p>
-          <p t-elif="b.state === 'draft'" class="pbr-pline">Still being prepared. When the figures are right, submit it and it goes to its sign-off route.</p>
+          <p t-elif="b.state === 'draft' and !b.return_note and !b.ready" class="pbr-pline">Still being prepared. When the figures are right, submit it and it goes to its sign-off route.</p>
+          <!-- NAV P3b: the card's checklist in full sentences, owners named in full. -->
+          <t t-set="pcks" t-value="checks(b)"/>
+          <div t-if="pcks.length" class="pbr-pchecks">
+            <div t-foreach="pcks" t-as="c" t-key="c.i" t-attf-class="pc {{ c.tone }}">
+              <span class="ci ic" t-out="ic(c.icon, 14)"/>
+              <div class="pt">
+                <div class="w"><t t-esc="c.full or c.text"/><t t-if="c.more"> · <t t-esc="c.more"/></t></div>
+                <div t-if="c.detail" class="m" t-esc="c.detail"/>
+                <div t-if="c.owner" class="o">
+                  <span class="k">Owner</span>
+                  <span t-attf-class="pbr-owner {{ c.owner.me ? 'is-me' : '' }} {{ c.owner.team ? 'is-team' : '' }}">
+                    <span class="oa"><t t-if="c.owner.team"><span class="ic" t-out="ic('users', 10)"/></t><t t-else="" t-esc="initials(c.owner.name)"/></span>
+                    <span class="on" t-esc="ownerTitle(c.owner)"/>
+                  </span>
+                </div>
+                <button t-if="c.next" type="button" class="pbr-lnk nx" t-on-click="() => this.openCheck(b, c)"><t t-esc="c.next.label"/> →</button>
+              </div>
+            </div>
+            <p t-if="weeksClosed(b)" class="pbr-pline wk"><span class="ic" t-out="ic('lock', 13)"/> <t t-esc="weeksClosed(b)"/></p>
+          </div>
           <div t-if="b.state === 'approval_pending'" class="pbr-tl">
             <div t-foreach="peekRoute(b)" t-as="e" t-key="e_index" t-attf-class="e {{ e.done ? 'd' : '' }} {{ e.now ? 'n' : '' }}">
               <div class="d"><span t-if="e.done" class="ic" t-out="ic('check', 11)"/></div>
@@ -442,7 +483,7 @@
             <span class="ic" t-out="ic(b.balance_ok === false ? 'alert' : 'checkCircle', 15)"/>
             <t t-esc="balanceLine(b)"/>
           </div>
-          <div t-if="b.unsourced" class="pbr-chk bad"><span class="ic" t-out="ic('alert', 15)"/> <t t-esc="unsourcedLine(b)"/></div>
+          <div t-if="b.unsourced and !checks(b).length" class="pbr-chk bad"><span class="ic" t-out="ic('alert', 15)"/> <t t-esc="unsourcedLine(b)"/></div>
         </section>
         <section t-if="b.history and b.history.length">
           <h3>What happened</h3>

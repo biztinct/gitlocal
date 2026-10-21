@@ -63,6 +63,10 @@ class TestBoardRedesign(TransactionCase):
         self.assertEqual(period['date_end'], self.last.isoformat())
         self.assertTrue(period['label'])
         self.assertTrue(period['next_label'])
+        # NAV P3b: the month's two dates from the Payroll calendar (None when
+        # the month has no calendar row; test_readiness_p3b covers the rest).
+        for key in ('cutoff', 'pay_date', 'cutoff_in_days', 'pay_in_days'):
+            self.assertIn(key, period)
 
     def test_a_draft_this_month_puts_the_month_at_drafting(self):
         run = self._run('BR Draft', self.first, self.last)
