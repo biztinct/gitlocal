@@ -49,12 +49,16 @@ msgstr "1 yêu cầu hoàn tiền"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
 msgid "Agreed"
 msgstr "Đã đồng ý"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
 msgid "Agreed, not paid yet"
 msgstr "Đã đồng ý, chưa trả"
 
@@ -67,6 +71,12 @@ msgstr "Tổng số yêu cầu hoàn tiền"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_courses
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_rule__channel_ids
 msgid "Courses"
 msgstr "Khóa học"
 
@@ -103,6 +113,8 @@ msgstr "Chưa có yêu cầu hoàn tiền nào"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__draft
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__state__draft
 msgid "Not sent yet"
 msgstr "Chưa gửi"
 
@@ -111,6 +123,8 @@ msgstr "Chưa gửi"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__assigned
 msgid "Not started"
 msgstr "Chưa bắt đầu"
 
@@ -123,6 +137,7 @@ msgstr "Tỷ lệ đạt"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
 msgid "Past its date"
 msgstr "Đã quá hạn"
 
@@ -159,6 +174,9 @@ msgstr "Đang hiển thị 1 yêu cầu hoàn tiền · bấm một bước ho�
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__refused
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__state__refused
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
 msgid "Turned down"
 msgstr "Bị từ chối"
 
@@ -171,6 +189,7 @@ msgstr "Đang chờ quản lý"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__submitted
 msgid "Waiting on the HR lead"
 msgstr "Đang chờ trưởng nhân sự"
 
@@ -201,6 +220,11 @@ msgstr "Hiện tất cả"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.actions.client,name:pb_training.action_pb_training_board
+#: model:ir.module.category,name:pb_training.module_category_training
+#: model:res.groups.privilege,name:pb_training.res_groups_privilege_training
 msgid "Training"
 msgstr "Đào tạo"
 
@@ -213,30 +237,49 @@ msgstr "Bài kiểm tra và ngân hàng câu hỏi"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#: model:ir.actions.act_url,name:pb_training.action_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_breadcrumbs_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 msgid "My training"
 msgstr "Đào tạo của tôi"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_assignments.py:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_assignments
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_list
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
 msgid "Training assignments"
 msgstr "Phân công đào tạo"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_assignments.py:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_schedules
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_schedule_list
 msgid "Compliance schedules"
 msgstr "Lịch đào tạo bắt buộc"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_claims.py:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_list
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
 msgid "Training claims"
 msgstr "Yêu cầu hoàn phí đào tạo"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#: model:ir.actions.client,name:pb_training.action_pb_training_numbers
 msgid "Training numbers"
 msgstr "Số liệu đào tạo"
 
@@ -266,12 +309,16 @@ msgstr "Yêu cầu thêm thời gian"
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_overview.py:0
+#: code:addons/pb_training/models/analytics.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_team
 msgid "Past their date"
 msgstr "Đã quá hạn"
 
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_overview.py:0
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/required_reports.py:0
 msgid "No department"
 msgstr "Chưa có phòng ban"
 
@@ -400,6 +447,7 @@ msgstr "Của tôi"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
 #: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
 msgid "Every course"
 msgstr "Mọi khóa học"
 
@@ -419,6 +467,9 @@ msgstr "Ai đang học gì và xin thêm thời gian"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__required
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Required"
 msgstr "Bắt buộc"
 
@@ -432,6 +483,7 @@ msgstr "Khóa ngày đầu và khóa học lặp lại"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_palette.js:0
 #: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_tests
 msgid "Tests"
 msgstr "Kiểm tra"
 
@@ -501,12 +553,14 @@ msgstr "%s đã hoàn thành"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
 msgid "1 person"
 msgstr "1 người"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
 msgid "%s people"
 msgstr "%s người"
 
@@ -526,6 +580,10 @@ msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát; nếu 
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/learning_overview.xml:0
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
 msgid "Try again"
 msgstr "Thử lại"
 
@@ -556,6 +614,7 @@ msgstr "Tháng này"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__department_ids
 msgid "Departments"
 msgstr "Phòng ban"
 
@@ -580,6 +639,7 @@ msgstr "Ai đang học gì"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 msgid "Continue"
 msgstr "Tiếp tục"
 
@@ -592,6 +652,7 @@ msgstr "Bài kiểm tra cuối khóa"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
 msgid "Take the test"
 msgstr "Làm bài kiểm tra"
 
@@ -611,6 +672,7 @@ msgstr "Đang học"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
 msgid "Done"
 msgstr "Đã xong"
 
@@ -635,12 +697,15 @@ msgstr "%s trên %s bài học"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 msgid "Test locked"
 msgstr "Bài kiểm tra chưa mở"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 msgid "Passed"
 msgstr "Đã đạt"
 
@@ -655,6 +720,10 @@ msgstr "Chưa đạt"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__in_progress
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 msgid "Under way"
 msgstr "Đang học"
 
@@ -663,6 +732,7 @@ msgstr "Đang học"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__overdue
 msgid "Overdue"
 msgstr "Quá hạn"
 
@@ -671,6 +741,10 @@ msgstr "Quá hạn"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/models/analytics.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__excused
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_due
 msgid "More time agreed"
 msgstr "Đã được thêm thời gian"
 
@@ -679,6 +753,13 @@ msgstr "Đã được thêm thời gian"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__state__done
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_team
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
 msgid "Finished"
 msgstr "Đã hoàn thành"
 
@@ -806,12 +887,17 @@ msgstr "Gửi email nhắc ngay bây giờ"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model:ir.actions.act_url,name:pb_training.action_my_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
 msgid "My training allowance"
 msgstr "Ngân sách đào tạo của tôi"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_allowance__amount
 msgid "Allowance"
 msgstr "Ngân sách"
 
@@ -830,6 +916,7 @@ msgstr "Năm nay bạn chưa được đặt ngân sách đào tạo. Hãy hỏi
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
 msgid "Claim a course back"
 msgstr "Xin hoàn tiền khóa học"
 
@@ -848,6 +935,10 @@ msgstr "Mở toàn bộ trang đào tạo của tôi"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__survey_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__survey_id
 msgid "Test"
 msgstr "Bài kiểm tra"
 
@@ -866,24 +957,31 @@ msgstr "Bài kiểm tra là một bộ câu hỏi có điểm đạt và số l�
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_questions
 msgid "Question bank"
 msgstr "Ngân hàng câu hỏi"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
 msgid "Every question you have written, whichever test it was written for"
 msgstr "Mọi câu hỏi bạn đã viết, cho bất kỳ bài kiểm tra nào"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
 msgid "New test"
 msgstr "Bài kiểm tra mới"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+#: model_terms:ir.actions.act_window,help:pb_training.action_pb_training_tests
 msgid "Write your first test"
 msgstr "Viết bài kiểm tra đầu tiên"
 
@@ -939,6 +1037,8 @@ msgstr "Quá hạn %s ngày"
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__day_one
 msgid "Day one"
 msgstr "Ngày đầu"
 
@@ -947,6 +1047,8 @@ msgstr "Ngày đầu"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/models/delay_approval.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__probation
 msgid "Trial period"
 msgstr "Thử việc"
 
@@ -955,6 +1057,7 @@ msgstr "Thử việc"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__compliance
 msgid "Compliance"
 msgstr "Tuân thủ"
 
@@ -963,6 +1066,7 @@ msgstr "Tuân thủ"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__adhoc
 msgid "One-off"
 msgstr "Một lần"
 
@@ -971,6 +1075,7 @@ msgstr "Một lần"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__leadership
 msgid "Leadership programme"
 msgstr "Chương trình lãnh đạo"
 
@@ -1052,6 +1157,7 @@ msgstr "%s đã hết hạn"
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/automation.py:0
+#: code:addons/pb_training/models/pb_training_required.py:0
 msgid "%s has no login yet, so there is nowhere for the course to appear."
 msgstr "%s chưa có tài khoản đăng nhập nên khóa học không có chỗ để hiện."
 
@@ -1342,6 +1448,7 @@ msgstr "Hãy đính kèm chứng chỉ — tệp PDF, JPG hoặc PNG."
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -1428,6 +1535,7 @@ msgstr "Đã kiểm tra nghĩa là bộ phận nhân sự đã xem bản gốc. 
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Close"
 msgstr "Đóng"
 
@@ -1449,6 +1557,8 @@ msgstr "Đóng"
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__channel_id
 msgid "Course"
 msgstr "Khóa học"
 
@@ -1461,6 +1571,10 @@ msgstr "Khóa học đã hoàn thành"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -1479,12 +1593,14 @@ msgstr "Mọi chứng chỉ và giấy phép trong hồ sơ của bạn, và khi
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Every department"
 msgstr "Mọi phòng ban"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Every job"
 msgstr "Mọi vị trí"
 
@@ -1538,6 +1654,8 @@ msgstr "Lưu chứng chỉ hoặc giấy phép cho một người"
 #. module: pb_training
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__completed_on
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Finished on"
 msgstr "Hoàn thành ngày"
 
@@ -1594,6 +1712,9 @@ msgstr "Ngày cấp"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Job"
 msgstr "Vị trí"
 
@@ -1601,6 +1722,8 @@ msgstr "Vị trí"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_incentive__kind
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__kind
 msgid "Kind"
 msgstr "Loại"
 
@@ -1738,6 +1861,8 @@ msgstr "Không có kết quả. Bấm lại bộ lọc, hoặc chọn Hiện t�
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
 msgid "Nothing was changed. Try again in a moment."
 msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát."
 
@@ -1793,6 +1918,10 @@ msgstr "Đạt bài kiểm tra tại đây"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
 msgid "Person"
 msgstr "Người"
 
@@ -1847,6 +1976,7 @@ msgstr "Tìm tên người hoặc chứng chỉ"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
 msgid "Show everything"
 msgstr "Hiện tất cả"
 
@@ -1892,6 +2022,7 @@ msgstr "Không đọc được tệp. Hãy đính kèm lại."
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_my_training_certificates.py:0
+#: code:addons/pb_training/models/pb_training_required.py:0
 msgid "That person is not in your company."
 msgstr "Người này không thuộc công ty của bạn."
 
@@ -1980,6 +2111,8 @@ msgstr "Còn hạn"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Valid until"
 msgstr "Hiệu lực đến"
 
@@ -1992,6 +2125,8 @@ msgstr "Xác nhận"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__name
 msgid "What it is called"
 msgstr "Tên chứng chỉ"
 
@@ -2006,6 +2141,8 @@ msgstr "Nguồn"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
 msgid "Where it stands"
 msgstr "Tình trạng"
 
@@ -2233,3 +2370,2266 @@ msgstr "1 cần gia hạn"
 #: code:addons/pb_training/models/learning_record.py:0
 msgid "%s due for renewal"
 msgstr "%s cần gia hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(n)s people are now in %(group)s."
+msgstr "%(n)s người giờ thuộc %(group)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(pack)s is off for %(company)s. Its rules are archived, not deleted."
+msgstr "%(pack)s đã tắt cho %(company)s. Các quy định được lưu trữ, không bị xóa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(pack)s is on for %(company)s. Review the rules and switch on Assign it by itself where you want it."
+msgstr "%(pack)s đã bật cho %(company)s. Hãy xem lại các quy định và bật Tự giao ở những chỗ bạn muốn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(pct)s%% in date across %(n)s people"
+msgstr "%(pct)s%% còn hiệu lực trên %(n)s người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(pct)s%% in date across 1 person"
+msgstr "%(pct)s%% còn hiệu lực trên 1 người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/requirement.py:0
+msgid "%(site)s needs %(need)s, has %(has)s (%(people)s people)."
+msgstr "%(site)s cần %(need)s, đang có %(has)s (%(people)s người)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(who)s is now in %(group)s."
+msgstr "%(who)s giờ thuộc %(group)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%(who)s is on %(course)s, due %(when)s."
+msgstr "%(who)s đã được giao %(course)s, hạn %(when)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s already holds it."
+msgstr "%s đã có rồi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s could not be put on — no login yet."
+msgstr "%s khóa không giao được — chưa có tài khoản đăng nhập."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s courses put on."
+msgstr "Đã giao %s khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s expiring"
+msgstr "%s sắp hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s have no course linked yet."
+msgstr "%s quy định chưa gắn khóa học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s hours of training"
+msgstr "%s giờ đào tạo"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s is already on the course."
+msgstr "%s đang học khóa này rồi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s is now a required-training rule."
+msgstr "%s giờ là quy định đào tạo bắt buộc."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s is saved."
+msgstr "Đã lưu %s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s is switched off. Nobody is measured against it until it is switched on again."
+msgstr "Đã tắt %s. Không ai bị đánh giá theo quy định này cho đến khi bật lại."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s is switched on."
+msgstr "Đã bật %s."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s missing"
+msgstr "%s còn thiếu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s no longer assigns itself."
+msgstr "%s không còn tự giao nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s now assigns itself every morning to whoever is missing it."
+msgstr "%s giờ tự giao mỗi sáng cho người còn thiếu."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s people are missing required training."
+msgstr "%s người còn thiếu đào tạo bắt buộc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "%s people picked"
+msgstr "Đã chọn %s người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "%s rules"
+msgstr "%s quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "%s switched on"
+msgstr "%s đang bật"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "%s to confirm before use"
+msgstr "%s quy định cần xác nhận trước khi dùng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s under way"
+msgstr "%s đang học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s were already under way."
+msgstr "%s khóa đã đang học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s%% in date"
+msgstr "%s%% còn hiệu lực"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__validity_months
+msgid "0 = never runs out. Overrides the test's own validity."
+msgstr "0 = không hết hạn. Thay thế hiệu lực của bài kiểm tra."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "0 means it never runs out."
+msgstr "0 nghĩa là không bao giờ hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "1 course put on."
+msgstr "Đã giao 1 khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 expiring"
+msgstr "1 sắp hết hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 missing"
+msgstr "1 còn thiếu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "1 person is missing required training."
+msgstr "1 người còn thiếu đào tạo bắt buộc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "1 person picked"
+msgstr "Đã chọn 1 người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "1 rule"
+msgstr "1 quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "1 switched on"
+msgstr "1 đang bật"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "1 to confirm before use"
+msgstr "1 quy định cần xác nhận trước khi dùng"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "<span>Who:</span>"
+msgstr "<span>Áp dụng cho:</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+msgid "<span>hours of training</span>"
+msgstr "<span>giờ đào tạo</span>"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__certificate
+msgid "A certificate"
+msgstr "Một chứng chỉ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "A certificate counts when its name contains these words. Separate alternatives with |."
+msgstr "Chứng chỉ được tính khi tên có chứa các từ này. Ngăn cách các lựa chọn bằng dấu |."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__name_pattern
+msgid "A certificate or licence counts when its name contains these words (accents do not matter). Separate alternatives with |."
+msgstr "Chứng chỉ hoặc giấy phép được tính khi tên có chứa các từ này (không phân biệt dấu). Ngăn cách các lựa chọn bằng dấu |."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__unverified
+msgid "A country-pack rule whose detail is not settled yet. It arrives switched off; read the note, then switch it on."
+msgstr "Quy định của gói quốc gia chưa được xác nhận chi tiết. Quy định đến ở trạng thái tắt; hãy đọc ghi chú rồi bật."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__course
+msgid "A course"
+msgstr "Một khóa học"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__same_company_only
+msgid "A licence issued while the person worked for another company does not count."
+msgstr "Giấy phép cấp khi người đó làm cho công ty khác thì không được tính."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__licence
+msgid "A licence or permit"
+msgstr "Một giấy phép"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "A new rule"
+msgstr "Quy định mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "A pack writes the legal training rules for one country into this company. Its rules arrive with Assign it by itself switched off, so nothing reaches anybody until you have read them."
+msgstr "Mỗi gói viết các quy định đào tạo theo luật của một quốc gia vào công ty này. Các quy định đến với Tự giao đang tắt, nên chưa ai nhận được gì cho đến khi bạn đọc xong."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "A rule says who must hold which course, certificate or licence, and for how long. Write one, or switch on a country pack in Settings."
+msgstr "Quy định cho biết ai phải có khóa học, chứng chỉ hay giấy phép nào, và trong bao lâu. Hãy viết một quy định, hoặc bật gói quốc gia trong Cài đặt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "A safety rail: the morning job stops here and carries on the next day."
+msgstr "Giới hạn an toàn: tác vụ buổi sáng dừng ở đây và tiếp tục vào hôm sau."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__code
+msgid "A short code, unique per company. Country-pack rows carry the pack's own code."
+msgstr "Mã ngắn, không trùng trong một công ty. Quy định của gói quốc gia mang mã của gói."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Add a country"
+msgstr "Thêm quốc gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Add a department"
+msgstr "Thêm phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Add a job"
+msgstr "Thêm chức danh"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Add a site"
+msgstr "Thêm địa điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/requirement.py:0
+msgid "Another rule in this company already uses the code %s."
+msgstr "Một quy định khác trong công ty đã dùng mã %s."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_requirement_form
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__pack_paused
+msgid "Archived because its country pack was switched off; switching the pack on again brings it back."
+msgstr "Được lưu trữ vì gói quốc gia đã tắt; bật lại gói sẽ khôi phục."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__ship_inactive
+msgid "Arrives switched off"
+msgstr "Đến ở trạng thái tắt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Ask your HR administrator to add you to it."
+msgstr "Hãy nhờ quản trị viên nhân sự thêm bạn vào nhóm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Assign by hand"
+msgstr "Giao thủ công"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__auto_assign
+msgid "Assign it by itself"
+msgstr "Tự giao"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Assign it by itself — the morning job puts the course on whoever is missing it"
+msgstr "Tự giao — tác vụ buổi sáng giao khóa học cho người còn thiếu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Assign now"
+msgstr "Giao ngay"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Assigns itself"
+msgstr "Tự giao"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By department"
+msgstr "Theo phòng ban"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By rule"
+msgstr "Theo quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By site"
+msgstr "Theo địa điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Certificate: %s"
+msgstr "Chứng chỉ: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Change this rule"
+msgstr "Sửa quy định này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Clear"
+msgstr "Bỏ chọn"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__kind__recurring
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Comes round again"
+msgstr "Lặp lại định kỳ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__every_months
+msgid "Comes round every (months)"
+msgstr "Lặp lại mỗi (tháng)"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__safety_groups
+msgid "Comma-separated Vietnam safety groups (1 to 6)."
+msgstr "Các nhóm an toàn Việt Nam, ngăn cách bằng dấu phẩy (1 đến 6)."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__employee_types
+msgid "Comma-separated employee types (employee, worker, student, trainee, contractor, freelance, intern). Empty = every kind."
+msgstr "Các loại nhân viên, ngăn cách bằng dấu phẩy (employee, worker, student, trainee, contractor, freelance, intern). Để trống = mọi loại."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_first_aid
+msgid "Confirm before switching on. Circular 19/2016 Art 7 (secondary sources): at least one trained first-aider per 150 workers (per 100 on strict-safety sites), 16 hours, retrained yearly; every worker gets 4 hours. Confirm the ratio and the yearly hours."
+msgstr "Xác nhận trước khi bật. Thông tư 19/2016 Điều 7 (nguồn thứ cấp): ít nhất một người sơ cứu đã được huấn luyện cho mỗi 150 người lao động (mỗi 100 người ở nơi yêu cầu nghiêm ngặt), 16 giờ, huấn luyện lại hằng năm; mọi người lao động học 4 giờ. Xác nhận tỷ lệ và số giờ hằng năm."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_p2k3_report
+msgid "Confirm before switching on. Companies with 100 or more workers or high risk keep a safety committee that reports every 3 months (Permenaker 4/1987 Art 12), every 6 months under 13/2025 from 19 Nov 2025 (secondary sources). A reminder rather than training: pick the committee secretary and upload each report."
+msgstr "Xác nhận trước khi bật. Công ty từ 100 người lao động hoặc rủi ro cao có ủy ban an toàn báo cáo 3 tháng một lần (Permenaker 4/1987 Điều 12), 6 tháng một lần theo 13/2025 từ 19/11/2025 (nguồn thứ cấp). Đây là lời nhắc chứ không phải đào tạo: chọn thư ký ủy ban và tải lên từng báo cáo."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_fire_g1
+msgid "Confirm before switching on. Decree 105/2025 (secondary sources): facility heads, people in fire or explosion-risk areas and vehicle operators; 8 to 12 hours, a five-year cycle with a yearly refresher of 4 to 8 hours. Certificate from the fire police."
+msgstr "Xác nhận trước khi bật. Nghị định 105/2025 (nguồn thứ cấp): người đứng đầu cơ sở, người làm việc ở khu vực nguy cơ cháy nổ và người điều khiển phương tiện; 8 đến 12 giờ, chu kỳ năm năm với bồi dưỡng hằng năm 4 đến 8 giờ. Chứng nhận do cảnh sát PCCC cấp."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_fire_g3
+msgid "Confirm before switching on. Decree 105/2025 (secondary sources): fire inspectors and specialised brigades; 24 to 32 hours, five-year cycle, 8 to 12 hours yearly. Confirm which fire group each site has and whether Decree 347/2026 applies."
+msgstr "Xác nhận trước khi bật. Nghị định 105/2025 (nguồn thứ cấp): cán bộ kiểm tra và đội PCCC chuyên ngành; 24 đến 32 giờ, chu kỳ năm năm, 8 đến 12 giờ mỗi năm. Xác nhận nhóm PCCC của từng địa điểm và việc áp dụng Nghị định 347/2026."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_fire_g2
+msgid "Confirm before switching on. Decree 105/2025 (secondary sources): the facility's own fire brigade; 16 to 24 hours, five-year cycle, 4 to 8 hours yearly."
+msgstr "Xác nhận trước khi bật. Nghị định 105/2025 (nguồn thứ cấp): đội PCCC cơ sở; 16 đến 24 giờ, chu kỳ năm năm, 4 đến 8 giờ mỗi năm."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_retrain
+msgid "Confirm before switching on. Decree 44/2016 Art 21.3: retrain before a new job, equipment or technology (unless trained in the last 12 months), and at half the hours after more than six months away. The system does not spot a job change or a long absence by itself yet: pick the people this applies to."
+msgstr "Xác nhận trước khi bật. Nghị định 44/2016 Điều 21.3: huấn luyện lại trước khi làm việc, thiết bị hoặc công nghệ mới (trừ khi đã huấn luyện trong 12 tháng qua), và với một nửa số giờ sau khi nghỉ quá sáu tháng. Hệ thống chưa tự nhận biết việc đổi việc hay nghỉ dài: hãy chọn người áp dụng."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_in_mock_drill
+msgid "Confirm before switching on. Maharashtra factories rules, 2025 amendment (secondary sources): a mock drill every six months. Confirm which sites are factories under state rules."
+msgstr "Xác nhận trước khi bật. Quy tắc nhà máy Maharashtra, sửa đổi 2025 (nguồn thứ cấp): diễn tập sáu tháng một lần. Xác nhận địa điểm nào là nhà máy theo quy định của bang."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_smk3_audit
+msgid "Confirm before switching on. PP 50/2012 Art 5(2): companies with 100 or more workers or high hazard. Three years assumed; confirm the re-audit interval."
+msgstr "Xác nhận trước khi bật. PP 50/2012 Điều 5(2): công ty từ 100 người lao động hoặc nguy hiểm cao. Giả định ba năm; xác nhận chu kỳ đánh giá lại."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_lic_production
+msgid "Confirm before switching on. Permenaker 38/2016 (scanned text, partly revoked by 11/2026): five years assumed. Confirm the effect of Permenaker 11/2026 on operator licences."
+msgstr "Xác nhận trước khi bật. Permenaker 38/2016 (bản quét, bị bãi bỏ một phần bởi 11/2026): giả định năm năm. Xác nhận ảnh hưởng của Permenaker 11/2026 đến giấy phép vận hành."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Contractors among them"
+msgstr "Trong đó là nhà thầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__include_contractors
+msgid "Contractors too"
+msgstr "Gồm cả nhà thầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Converted"
+msgstr "Đã chuyển đổi"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__template_id
+msgid "Copied from"
+msgstr "Sao chép từ"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__country_ids
+msgid "Countries"
+msgstr "Quốc gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Countries they work in"
+msgstr "Quốc gia nơi làm việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__pack_key
+msgid "Country pack"
+msgstr "Gói quốc gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Country packs and switches"
+msgstr "Gói quốc gia và công tắc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Country packs for"
+msgstr "Gói quốc gia cho"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Country packs for Vietnam, India, Indonesia and Singapore."
+msgstr "Gói quốc gia cho Việt Nam, Ấn Độ, Indonesia và Singapore."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Country packs, the renewal window and how many courses the morning job may put on."
+msgstr "Gói quốc gia, khoảng gia hạn và số khóa học tác vụ buổi sáng được giao."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Country reports"
+msgstr "Báo cáo theo quốc gia"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__ship_inactive
+msgid "Country-pack template only: the copy starts archived."
+msgstr "Chỉ cho mẫu của gói quốc gia: bản sao bắt đầu ở trạng thái lưu trữ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Day-one courses from the joining checklist"
+msgstr "Khóa ngày đầu từ danh sách việc khi nhận việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Day-one rules from before"
+msgstr "Quy định ngày đầu trước đây"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__due_days
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_rule__due_days
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_schedule__due_days
+msgid "Days they get"
+msgstr "Số ngày được cho"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g5
+msgid "Decree 140/2018: occupational-health staff, 16 hours, renewed every two years at half the hours."
+msgstr "Nghị định 140/2018: người làm công tác y tế, 16 giờ, huấn luyện lại mỗi hai năm với một nửa số giờ."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g4
+msgid "Decree 44/2016 Art 17-19: 16 hours to start (apprentices and people on probation included), 8 hours every year. The employer's own training record counts — link your course here."
+msgstr "Nghị định 44/2016 Điều 17-19: 16 giờ lần đầu (kể cả người học nghề và người thử việc), 8 giờ mỗi năm. Sổ theo dõi huấn luyện của doanh nghiệp được tính — hãy gắn khóa học của bạn ở đây."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g1
+msgid "Decree 44/2016 Art 17-19: 16 hours to start, a refresher of 8 hours every two years. Certificate from a licensed training provider."
+msgstr "Nghị định 44/2016 Điều 17-19: 16 giờ lần đầu, huấn luyện định kỳ 8 giờ mỗi hai năm. Chứng chỉ do tổ chức huấn luyện được cấp phép cấp."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g3
+msgid "Decree 44/2016 Art 17-19: 24 hours to start, 12 hours every two years. The employer issues the safety card after a pass (jobs on the strict-safety list, Circular 06/2020). Confirm the card form number before printing."
+msgstr "Nghị định 44/2016 Điều 17-19: 24 giờ lần đầu, 12 giờ mỗi hai năm. Người sử dụng lao động cấp thẻ an toàn khi đạt (công việc thuộc danh mục yêu cầu nghiêm ngặt, Thông tư 06/2020). Xác nhận số mẫu thẻ trước khi in."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g2
+msgid "Decree 44/2016 Art 17-19: 48 hours to start, a refresher of 24 hours every two years. Certificate from a licensed training provider."
+msgstr "Nghị định 44/2016 Điều 17-19: 48 giờ lần đầu, huấn luyện định kỳ 24 giờ mỗi hai năm. Chứng chỉ do tổ chức huấn luyện được cấp phép cấp."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_vn_osh_g6
+msgid "Decree 44/2016: 4 hours on top of the person's own group, renewed every two years."
+msgstr "Nghị định 44/2016: thêm 4 giờ ngoài nhóm của người đó, huấn luyện lại mỗi hai năm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Departments (and the ones under them)"
+msgstr "Phòng ban (và các phòng ban trực thuộc)"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__document_category_id
+msgid "Document kind"
+msgstr "Loại giấy tờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Download the spreadsheet"
+msgstr "Tải bảng tính"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model,name:pb_training.model_hr_employee
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__company_id
+msgid "Empty only on a country-pack template, which nobody is ever measured against until a company switches the pack on."
+msgstr "Chỉ để trống ở mẫu của gói quốc gia; không ai bị đánh giá theo mẫu cho đến khi công ty bật gói."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Every %s months"
+msgstr "Mỗi %s tháng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Every %s years"
+msgstr "Mỗi %s năm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Every country"
+msgstr "Mọi quốc gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Every rule"
+msgstr "Mọi quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Every safety group"
+msgstr "Mọi nhóm an toàn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Every site"
+msgstr "Mọi địa điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Every year"
+msgstr "Mỗi năm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_list
+msgid "Everybody"
+msgstr "Mọi người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_form
+msgid "Everybody in the company"
+msgstr "Mọi người trong công ty"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Expiring"
+msgstr "Sắp hết hạn"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__grace_days
+msgid "Expiring window (days)"
+msgstr "Khoảng sắp hết hạn (ngày)"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_in_hazardous_medical
+msgid "Factories Act 1948 s.41C: a medical examination before the job and at least every 12 months for workers in hazardous processes. Arrives switched off: pick the jobs, then switch it on."
+msgstr "Luật Nhà máy 1948 Điều 41C: khám sức khỏe trước khi làm việc và ít nhất 12 tháng một lần cho người làm công đoạn nguy hiểm. Đến ở trạng thái tắt: chọn chức danh rồi bật."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Finished %s"
+msgstr "Đã hoàn thành %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_schedule_form
+msgid "Fire safety, every year"
+msgstr "An toàn phòng cháy, mỗi năm"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_fire_g1
+msgid "Fire training — group 1"
+msgstr "Huấn luyện PCCC — nhóm 1"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_fire_g2
+msgid "Fire training — group 2 (facility fire brigade)"
+msgstr "Huấn luyện PCCC — nhóm 2 (đội PCCC cơ sở)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_fire_g3
+msgid "Fire training — group 3 (fire inspectors)"
+msgstr "Huấn luyện PCCC — nhóm 3 (cán bộ kiểm tra PCCC)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_fire_warden
+msgid "Fire wardens per site"
+msgstr "Nhân viên PCCC tại từng địa điểm"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_first_aid
+msgid "First-aiders on site"
+msgstr "Người sơ cứu tại địa điểm"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_sg_first_aider
+msgid "First-aiders per site"
+msgstr "Người sơ cứu tại từng địa điểm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Forklift"
+msgstr "Xe nâng"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__requirement_id
+msgid "From the required-training rule"
+msgstr "Từ quy định đào tạo bắt buộc"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Gaps"
+msgstr "Còn thiếu"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_ak3u_skp
+msgid "General safety expert appointment (SKP)"
+msgstr "Bổ nhiệm chuyên gia an toàn chung (SKP)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Give the rule a name people will recognise."
+msgstr "Hãy đặt cho quy định một cái tên dễ nhận ra."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "Green: in date. Amber: runs out soon. Red: missing. Grey: not due yet, or not for them."
+msgstr "Xanh lá: còn hiệu lực. Vàng: sắp hết hạn. Đỏ: còn thiếu. Xám: chưa đến hạn, hoặc không áp dụng."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__1
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 1 — Managers"
+msgstr "Nhóm 1 — Người quản lý"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__2
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 2 — Safety officers"
+msgstr "Nhóm 2 — Cán bộ an toàn"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__3
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 3 — Strict-safety jobs"
+msgstr "Nhóm 3 — Công việc yêu cầu nghiêm ngặt về an toàn"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__4
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 4 — Other workers"
+msgstr "Nhóm 4 — Người lao động khác"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__5
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 5 — Health staff"
+msgstr "Nhóm 5 — Người làm công tác y tế"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__hr_employee__pb_safety_group__6
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Group 6 — Safety-hygiene officers"
+msgstr "Nhóm 6 — An toàn vệ sinh viên"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_in_posh_all
+msgid "Harassment-awareness session (everybody)"
+msgstr "Buổi nâng cao nhận thức về quấy rối (mọi người)"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__ratio_people
+msgid "Headcount rule: for every this many people at a site …"
+msgstr "Quy định theo số người: cứ mỗi số người này tại một địa điểm …"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__kind__always
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Hold it at all times"
+msgstr "Luôn phải có"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__hours
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__hours_required
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_hours
+#: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Hours"
+msgstr "Số giờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__target__hours
+msgid "Hours of training"
+msgstr "Số giờ đào tạo"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+msgid "Hours of training finished"
+msgstr "Số giờ đào tạo đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "How many days before a certificate runs out it counts as expiring, and its refresher course is put on."
+msgstr "Bao nhiêu ngày trước khi chứng chỉ hết hạn thì được coi là sắp hết hạn và khóa bồi dưỡng được giao."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_employee_document__hours
+msgid "How many hours of training this certificate stands for."
+msgstr "Chứng chỉ này tương ứng với bao nhiêu giờ đào tạo."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__pb_hours
+msgid "How many hours this course counts for. Leave it empty and the lessons' own durations are added up instead."
+msgstr "Khóa học này được tính bao nhiêu giờ. Để trống thì cộng thời lượng của các bài học."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_hr_employee__pb_posh_ic_member
+msgid "India only. Sits on the committee that hears harassment complaints, so they need the committee orientation course."
+msgstr "Chỉ áp dụng tại Ấn Độ. Là thành viên ủy ban xử lý khiếu nại quấy rối nên cần khóa định hướng của ủy ban."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__grace_days
+msgid "Inside this many days before it runs out, the matrix shows it as expiring."
+msgstr "Trong số ngày này trước khi hết hạn, bảng theo dõi hiển thị là sắp hết hạn."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_hr_employee__pb_posh_ic_member
+msgid "Internal Committee member"
+msgstr "Thành viên Ủy ban nội bộ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__audience_flag__posh_ic
+msgid "Internal Committee members"
+msgstr "Thành viên Ủy ban nội bộ"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_in_posh_ic
+msgid "Internal Committee orientation"
+msgstr "Định hướng cho Ủy ban nội bộ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__job_ids
+msgid "Jobs"
+msgstr "Chức danh"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_k3_induction
+msgid "K3 induction (every new worker)"
+msgstr "Hướng dẫn K3 (mọi người mới)"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_fire_warden
+msgid "Kepmenaker 186/1999 Art 6(1): at least two fire wardens for every 25 workers; a fire team and specialist from 300 workers or on higher-risk sites (Art 6(2)); a coordinator per 100 workers (Art 6(3)). No expiry stated."
+msgstr "Kepmenaker 186/1999 Điều 6(1): ít nhất hai nhân viên PCCC cho mỗi 25 người lao động; đội PCCC và chuyên gia từ 300 người hoặc ở nơi rủi ro cao hơn (Điều 6(2)); một điều phối viên cho mỗi 100 người (Điều 6(3)). Không quy định thời hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__employee_types
+msgid "Kinds of contract"
+msgstr "Loại hợp đồng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Leave everything empty and it is for everybody in the company."
+msgstr "Để trống tất cả thì áp dụng cho mọi người trong công ty."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Licence: %s"
+msgstr "Giấy phép: %s"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_ak3_lifting_skp
+msgid "Lifting-equipment safety expert appointment (SKP)"
+msgstr "Bổ nhiệm chuyên gia an toàn thiết bị nâng (SKP)"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_sg_soc
+msgid "MOM: valid two years, four once the person has more than six years in the sector (tick it on their record). A work-permit renewal needs it valid for at least another month. Pick the jobs (construction, shipyard, metalworking, process)."
+msgstr "MOM: hiệu lực hai năm, bốn năm khi người đó có trên sáu năm trong ngành (đánh dấu trên hồ sơ). Gia hạn giấy phép lao động cần còn hiệu lực ít nhất một tháng nữa. Chọn chức danh (xây dựng, đóng tàu, gia công kim loại, chế biến)."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Matrix"
+msgstr "Bảng theo dõi"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_in_hazardous_medical
+msgid "Medical fitness — hazardous processes"
+msgstr "Sức khỏe — công đoạn nguy hiểm"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Missing"
+msgstr "Còn thiếu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Missing required training"
+msgstr "Còn thiếu đào tạo bắt buộc"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_in_mock_drill
+msgid "Mock drill (Maharashtra factories)"
+msgstr "Diễn tập (nhà máy tại Maharashtra)"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_hr_employee__pb_sg_experienced
+msgid "More than six years in the sector"
+msgstr "Trên sáu năm trong ngành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Most required courses in one morning"
+msgstr "Số khóa bắt buộc tối đa trong một buổi sáng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__name_pattern
+msgid "Name on the paper"
+msgstr "Tên trên giấy tờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "New rule"
+msgstr "Quy định mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "No course"
+msgstr "Không có khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "No course is linked to this rule yet — link one in Rules."
+msgstr "Quy định này chưa gắn khóa học — hãy gắn một khóa ở mục Quy định."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "No course linked yet"
+msgstr "Chưa gắn khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "No course linked — link one"
+msgstr "Chưa gắn khóa học — hãy gắn một khóa"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "No required training yet"
+msgstr "Chưa có đào tạo bắt buộc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "No rules yet"
+msgstr "Chưa có quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "No safety group"
+msgstr "Không có nhóm an toàn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "No site"
+msgstr "Chưa có địa điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "Nobody is covered by a required-training rule yet."
+msgstr "Chưa ai thuộc quy định đào tạo bắt buộc nào."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__needs_audience
+msgid "Nobody is measured until at least one department, job, site, kind of contract or safety group is picked."
+msgstr "Chưa ai bị đánh giá cho đến khi chọn ít nhất một phòng ban, chức danh, địa điểm, loại hợp đồng hoặc nhóm an toàn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Nobody matches. Press the filter again, or Show everything."
+msgstr "Không ai khớp. Bấm lại bộ lọc, hoặc chọn Hiện tất cả."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Not due yet"
+msgstr "Chưa đến hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Not for them"
+msgstr "Không áp dụng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Nothing comes round again yet"
+msgstr "Chưa có khóa nào lặp lại"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Nothing is due yet for the %s people covered."
+msgstr "Chưa có gì đến hạn với %s người thuộc phạm vi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Nothing is due yet for the 1 person covered."
+msgstr "Chưa có gì đến hạn với 1 người thuộc phạm vi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "Nothing is due yet."
+msgstr "Chưa có gì đến hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Once, never runs out"
+msgstr "Một lần, không hết hạn"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__ratio_people
+msgid "One group of"
+msgstr "Mỗi nhóm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Only a training manager can change the required-training rules."
+msgstr "Chỉ quản lý đào tạo mới được thay đổi quy định đào tạo bắt buộc."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__ratio_min_people
+msgid "Only from this headcount"
+msgstr "Chỉ từ số người này"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__audience_flag
+msgid "Only people marked as"
+msgstr "Chỉ những người được đánh dấu là"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__same_company_only
+msgid "Only while with the company that applied"
+msgstr "Chỉ khi còn làm cho công ty đã nộp hồ sơ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Open the matrix"
+msgstr "Mở bảng theo dõi"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_lic_lifting
+msgid "Operator licence — lifting and transport equipment"
+msgstr "Giấy phép vận hành — thiết bị nâng và vận chuyển"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_lic_production
+msgid "Operator licence — power and production machines"
+msgstr "Giấy phép vận hành — máy động lực và sản xuất"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__survey_id
+msgid "Optional: the test whose certificate counts."
+msgstr "Không bắt buộc: bài kiểm tra có chứng chỉ được tính."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_in_posh_all
+msgid "POSH Act 2013 s.19(c): regular awareness sessions for every worker, contractors, interns and consultants included. The law sets no frequency; once a year is the pack's default. Attendance is the finished course. Link your session course here."
+msgstr "Luật POSH 2013 Điều 19(c): tổ chức nâng cao nhận thức định kỳ cho mọi người lao động, kể cả nhà thầu, thực tập sinh và tư vấn. Luật không quy định tần suất; gói mặc định mỗi năm một lần. Điểm danh là khóa học đã hoàn thành. Hãy gắn khóa học của bạn ở đây."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_in_posh_ic
+msgid "POSH Rules 2013 r.13: orientation and skill-building for the Internal Committee. Mark the members on their employee record (Internal Committee member)."
+msgstr "Quy tắc POSH 2013 Điều 13: định hướng và bồi dưỡng kỹ năng cho Ủy ban nội bộ. Đánh dấu thành viên trên hồ sơ nhân viên (Thành viên Ủy ban nội bộ)."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__pack_paused
+msgid "Paused with its pack"
+msgstr "Tạm dừng cùng gói"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "People who attended"
+msgstr "Số người tham dự"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_ak3u_skp
+msgid "Permenaker 4/1987 Art 11(1): the appointment of a general safety expert (Ahli K3 Umum) runs three years; lapsed more than a year means the full course again. Pick the job (Safety Officer) or the people."
+msgstr "Permenaker 4/1987 Điều 11(1): quyết định bổ nhiệm chuyên gia an toàn chung (Ahli K3 Umum) có hiệu lực ba năm; hết hạn quá một năm phải học lại toàn bộ. Chọn chức danh (Cán bộ an toàn) hoặc người."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_ak3_lifting_skp
+msgid "Permenaker 8/2020 Art 162(1): the company's lifting-equipment expert, three years."
+msgstr "Permenaker 8/2020 Điều 162(1): chuyên gia thiết bị nâng của công ty, ba năm."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_lic_lifting
+msgid "Permenaker 8/2020 Art 162-163: valid five years, renewal applied for at least 30 days before it runs out, and only valid while employed by the company that applied. Pick the jobs (forklift, crane and hoist operators, riggers)."
+msgstr "Permenaker 8/2020 Điều 162-163: hiệu lực năm năm, xin gia hạn ít nhất 30 ngày trước khi hết hạn, và chỉ có hiệu lực khi còn làm cho công ty đã nộp hồ sơ. Chọn chức danh (lái xe nâng, cần cẩu, tời, người móc cáp)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/assignment.py:0
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Pick at least one person."
+msgstr "Hãy chọn ít nhất một người."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Pick everybody on this page"
+msgstr "Chọn mọi người trên trang này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Pick the course people must do."
+msgstr "Hãy chọn khóa học mọi người phải học."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Pick who this is for"
+msgstr "Chọn đối tượng áp dụng"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__note
+msgid "Plain words for the matrix: the law it comes from, or what to confirm before switching it on."
+msgstr "Lời giải thích cho bảng theo dõi: căn cứ pháp luật, hoặc điều cần xác nhận trước khi bật."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Print for an auditor"
+msgstr "In cho kiểm toán"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Puts them on the course with the rule's own due date."
+msgstr "Giao khóa học với hạn chót theo quy định."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__refresher_channel_id
+msgid "Refresher course"
+msgstr "Khóa bồi dưỡng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Refresher course (optional)"
+msgstr "Khóa bồi dưỡng (không bắt buộc)"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__refresher_hours
+msgid "Refresher hours"
+msgstr "Số giờ bồi dưỡng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Renewal window"
+msgstr "Khoảng gia hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__kind__statutory
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Required by law"
+msgstr "Pháp luật yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Required for you"
+msgstr "Bắt buộc với bạn"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_requirements
+#: model:ir.actions.client,name:pb_training.action_pb_training_required_settings
+#: model:ir.model,name:pb_training.model_pb_training_requirement
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "Required training"
+msgstr "Đào tạo bắt buộc"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Required training %s.pdf"
+msgstr "Đào tạo bắt buộc %s.pdf"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Required training %s.xlsx"
+msgstr "Đào tạo bắt buộc %s.xlsx"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Required training in date"
+msgstr "Đào tạo bắt buộc còn hiệu lực"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Required training is looked after by the training team"
+msgstr "Đào tạo bắt buộc do nhóm đào tạo quản lý"
+
+#. module: pb_training
+#: model:ir.actions.report,name:pb_training.action_report_required_matrix
+msgid "Required training matrix"
+msgstr "Bảng theo dõi đào tạo bắt buộc"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_matrix_export
+msgid "Required training matrix export"
+msgstr "Xuất bảng theo dõi đào tạo bắt buộc"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Required, expiring"
+msgstr "Bắt buộc, sắp hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Required, missing"
+msgstr "Bắt buộc, còn thiếu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Review the rules"
+msgstr "Xem lại quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Rules"
+msgstr "Quy định"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_sg_soc
+msgid "Safety Orientation Course"
+msgstr "Khóa định hướng an toàn"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g3
+msgid "Safety card — group 3 (strict-safety jobs)"
+msgstr "Thẻ an toàn — nhóm 3 (công việc yêu cầu nghiêm ngặt)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_p2k3_report
+msgid "Safety committee (P2K3) report"
+msgstr "Báo cáo ủy ban an toàn (P2K3)"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Safety group"
+msgstr "Nhóm an toàn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Safety group %s"
+msgstr "Nhóm an toàn %s"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__safety_groups
+msgid "Safety groups"
+msgstr "Nhóm an toàn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Safety groups (Vietnam)"
+msgstr "Nhóm an toàn (Việt Nam)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_id_smk3_audit
+msgid "Safety management system (SMK3) certificate"
+msgstr "Chứng nhận hệ thống quản lý an toàn (SMK3)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_retrain
+msgid "Safety retraining after a job change or a long absence"
+msgstr "Huấn luyện lại sau khi đổi việc hoặc nghỉ dài ngày"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_hr_employee__pb_safety_group
+msgid "Safety training group"
+msgstr "Nhóm huấn luyện an toàn"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g1
+msgid "Safety training — group 1 (managers)"
+msgstr "Huấn luyện an toàn — nhóm 1 (người quản lý)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g2
+msgid "Safety training — group 2 (safety officers)"
+msgstr "Huấn luyện an toàn — nhóm 2 (cán bộ an toàn)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g4
+msgid "Safety training — group 4 (other workers)"
+msgstr "Huấn luyện an toàn — nhóm 4 (người lao động khác)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g5
+msgid "Safety training — group 5 (health staff)"
+msgstr "Huấn luyện an toàn — nhóm 5 (người làm công tác y tế)"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_vn_osh_g6
+msgid "Safety training — group 6 (safety-hygiene officers)"
+msgstr "Huấn luyện an toàn — nhóm 6 (an toàn vệ sinh viên)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Save the rule"
+msgstr "Lưu quy định"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Say how many hours."
+msgstr "Hãy cho biết số giờ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/models/requirement.py:0
+msgid "Say how often it comes round — one month or more."
+msgstr "Hãy cho biết bao lâu lặp lại một lần — từ một tháng trở lên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Say what a new joiner must do first"
+msgstr "Cho biết người mới phải làm gì trước tiên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Say what the paper is called — the words on it — or link the course that issues it."
+msgstr "Hãy cho biết tên giấy tờ — các từ ghi trên đó — hoặc gắn khóa học cấp giấy tờ đó."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Say who must hold which course, certificate or licence, and the matrix shows who is missing it. A country pack writes the legal rules for you."
+msgstr "Hãy cho biết ai phải có khóa học, chứng chỉ hay giấy phép nào, bảng theo dõi sẽ chỉ ra ai còn thiếu. Gói quốc gia sẽ viết sẵn các quy định pháp luật cho bạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Schedules from before"
+msgstr "Lịch trước đây"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Search a name"
+msgstr "Tìm theo tên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Sessions held"
+msgstr "Số buổi đã tổ chức"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__pack_key
+msgid "Set on rows that came from a country pack."
+msgstr "Đặt cho các quy định đến từ gói quốc gia."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Set safety group"
+msgstr "Đặt nhóm an toàn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "Showing %s of %s people — narrow it by department or site."
+msgstr "Đang hiện %s trên %s người — hãy thu hẹp theo phòng ban hoặc địa điểm."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Singapore national"
+msgstr "Công dân Singapore"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_hr_employee__pb_sg_experienced
+msgid "Singapore only. Their Safety Orientation Course stays valid for four years instead of two."
+msgstr "Chỉ áp dụng tại Singapore. Khóa định hướng an toàn của họ có hiệu lực bốn năm thay vì hai năm."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/safety_group_chip.xml:0
+msgid "Site"
+msgstr "Địa điểm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__work_location_ids
+msgid "Sites"
+msgstr "Địa điểm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "Sites short of trained people"
+msgstr "Địa điểm thiếu người đã được đào tạo"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Skills Development Levy (0.25% of monthly wages, at least S$2 and at most S$11.25 a month) is already worked out by payroll."
+msgstr "Phí phát triển kỹ năng (0,25% lương tháng, tối thiểu 2 S$ và tối đa 11,25 S$ mỗi tháng) đã được bộ phận lương tính sẵn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+#: model_terms:ir.ui.view,arch_db:pb_training.survey_start_words
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Switch off"
+msgstr "Tắt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Switch on"
+msgstr "Bật"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Switch on a country pack"
+msgstr "Bật một gói quốc gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_rule_form
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_schedule_form
+msgid "Switched off"
+msgstr "Đã tắt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "Switches"
+msgstr "Công tắc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Take it off"
+msgstr "Bỏ ra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/certificates_lens.js:0
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+#: code:addons/pb_training/static/src/js/required_settings.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "That did not work."
+msgstr "Không thực hiện được."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "That is %(n)s people at once. The most this screen will do in one press is %(cap)s."
+msgstr "Đó là %(n)s người cùng lúc. Màn hình này chỉ làm tối đa %(cap)s người mỗi lần bấm."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "That rule is not here any more."
+msgstr "Quy định này không còn nữa."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__country_ids
+msgid "The country people WORK in: their work address, else their company. Nationality is never used."
+msgstr "Quốc gia nơi người đó LÀM VIỆC: địa chỉ làm việc, nếu không có thì theo công ty. Không bao giờ dùng quốc tịch."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/required_lens.js:0
+msgid "The file is in your downloads."
+msgstr "Tệp đã nằm trong thư mục tải về."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "The matrix report is not installed on this system."
+msgstr "Báo cáo bảng theo dõi chưa được cài trên hệ thống này."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__auto_assign
+msgid "The morning job puts the course on everybody who is missing it. Country-pack rows arrive with this off."
+msgstr "Tác vụ buổi sáng giao khóa học cho mọi người còn thiếu. Quy định của gói quốc gia đến với tùy chọn này đang tắt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "The morning job puts the course on whoever is missing it"
+msgstr "Tác vụ buổi sáng giao khóa học cho người còn thiếu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "The old day-one rules are switched off, so their courses are not assigned on a joiner's first day. Rules written here are assigned by the morning job when Assign it by itself is on."
+msgstr "Các quy định ngày đầu cũ đang tắt nên khóa học không được giao vào ngày đầu của người mới. Quy định viết ở đây được tác vụ buổi sáng giao khi bật Tự giao."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "The older day-one rules put their courses on a new joiner when the checklist step runs."
+msgstr "Các quy định ngày đầu cũ giao khóa học cho người mới khi bước trong danh sách chạy."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "The required training could not be read just now"
+msgstr "Chưa đọc được đào tạo bắt buộc lúc này"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__ratio_min_people
+msgid "The rule applies only to sites with at least this many people."
+msgstr "Quy định chỉ áp dụng cho địa điểm có ít nhất số người này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "The safety group is cleared for %s people."
+msgstr "Đã xóa nhóm an toàn cho %s người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "The safety group is cleared for %s."
+msgstr "Đã xóa nhóm an toàn cho %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "The same course"
+msgstr "Cùng khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "The settings could not be read just now"
+msgstr "Chưa đọc được cài đặt lúc này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "The spreadsheet is in your downloads."
+msgstr "Bảng tính đã nằm trong thư mục tải về."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "The statutory lists for the country packs switched on for this company, as spreadsheets."
+msgstr "Các danh sách theo luật của gói quốc gia đang bật cho công ty này, dạng bảng tính."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__counts_for_probation
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__counts_for_probation
+msgid "Their trial period waits for it"
+msgstr "Thử việc chờ khóa học này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "There is no safety group %s."
+msgstr "Không có nhóm an toàn %s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/models/requirement.py:0
+msgid "There is no such country pack."
+msgstr "Không có gói quốc gia này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "There is no such country report."
+msgstr "Không có báo cáo quốc gia này."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__department_ids
+msgid "These departments and every department under them. Empty = every department."
+msgstr "Các phòng ban này và mọi phòng ban trực thuộc. Để trống = mọi phòng ban."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/requirement.py:0
+msgid "These numbers cannot be below zero."
+msgstr "Các số này không được nhỏ hơn 0."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_settings.xml:0
+msgid "These settings are for the training team"
+msgstr "Các cài đặt này dành cho nhóm đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "They still run every night. Each one now also has a rule above, marked Converted."
+msgstr "Các lịch này vẫn chạy mỗi đêm. Mỗi lịch giờ đã có thêm một quy định ở trên, gắn nhãn Đã chuyển đổi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "They still run from the joining checklist. Each one now also has a rule above, marked Converted."
+msgstr "Các quy định này vẫn chạy từ danh sách việc khi nhận việc. Mỗi quy định giờ đã có thêm một quy định ở trên, gắn nhãn Đã chuyển đổi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "This rule is not about %s."
+msgstr "Quy định này không áp dụng cho %s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "This system cannot build spreadsheets at the moment. Ask an administrator to look at it."
+msgstr "Hệ thống hiện chưa tạo được bảng tính. Hãy nhờ quản trị viên kiểm tra."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "To confirm"
+msgstr "Cần xác nhận"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__unverified
+msgid "To confirm before use"
+msgstr "Cần xác nhận trước khi dùng"
+
+#. module: pb_training
+#. odoo-python
+#: model:res.groups,name:pb_training.group_training_user
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Trainer"
+msgstr "Người huấn luyện"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__hours
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Training hours"
+msgstr "Giờ đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
+msgid "Training hours (optional)"
+msgstr "Số giờ đào tạo (không bắt buộc)"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_id_k3_induction
+msgid "UU 1/1970 Art 9: every new worker is told about the hazards and protection of the workplace before starting. No legal repeat; set one if the company wants it. Link your induction course here."
+msgstr "UU 1/1970 Điều 9: mọi người mới được hướng dẫn về mối nguy và biện pháp bảo vệ tại nơi làm việc trước khi bắt đầu. Luật không yêu cầu lặp lại; đặt lịch nếu công ty muốn. Hãy gắn khóa hướng dẫn của bạn ở đây."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_requirement__validity_months_experienced
+msgid "Used instead for people marked as having more than six years in the sector. 0 = the same as above."
+msgstr "Dùng thay thế cho người được đánh dấu có trên sáu năm trong ngành. 0 = giống như trên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__validity_months
+msgid "Valid for (months)"
+msgstr "Hiệu lực (tháng)"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__validity_months_experienced
+msgid "Valid for, experienced (months)"
+msgstr "Hiệu lực với người có kinh nghiệm (tháng)"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_hr_employee__pb_safety_group
+msgid "Vietnam only. The occupational-safety training group this person belongs to (Decree 44/2016, amended by Decree 140/2018). It decides how many hours of safety training they need and how often. Leave it empty outside Vietnam."
+msgstr "Chỉ áp dụng tại Việt Nam. Nhóm huấn luyện an toàn lao động của người này (Nghị định 44/2016, sửa đổi bởi Nghị định 140/2018). Nhóm quyết định số giờ huấn luyện an toàn và tần suất. Để trống nếu ngoài Việt Nam."
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_sg_first_aider
+msgid "WSH (First-Aid) Regulations reg 5: a workplace with more than 25 people needs one trained first-aider per 100 people or part of 100, per shift, and their names posted. Provider certificates run two years."
+msgstr "Quy định WSH (Sơ cứu) điều 5: nơi làm việc trên 25 người cần một người sơ cứu đã được huấn luyện cho mỗi 100 người hoặc phần lẻ của 100, theo từng ca, và niêm yết tên. Chứng chỉ của đơn vị đào tạo có hiệu lực hai năm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "What is required of you is on My learning."
+msgstr "Những gì bắt buộc với bạn nằm ở mục Của tôi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__target
+msgid "What they must hold"
+msgstr "Họ phải có gì"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Who is missing it"
+msgstr "Ai còn thiếu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Who it is for"
+msgstr "Áp dụng cho ai"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__needs_audience
+msgid "Who it is for must be picked"
+msgstr "Phải chọn đối tượng áp dụng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Who must hold what"
+msgstr "Ai phải có gì"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Who must hold what, and who is missing it"
+msgstr "Ai phải có gì, và ai còn thiếu"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__note
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_requirement_form
+msgid "Why it is required"
+msgstr "Lý do bắt buộc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+msgid "Why it is required (optional)"
+msgstr "Lý do bắt buộc (không bắt buộc)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Within %s days of joining"
+msgstr "Trong %s ngày đầu nhận việc"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_requirement__kind__day_one
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Within days of joining"
+msgstr "Trong vài ngày đầu nhận việc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Write the first rule"
+msgstr "Viết quy định đầu tiên"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_assignment__hours
+msgid "Written when the course is finished, from the course's hours at that moment."
+msgstr "Ghi lại khi hoàn thành khóa học, theo số giờ của khóa tại thời điểm đó."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_allowance__year
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_search
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "across %s people"
+msgstr "trên %s người"
+
+#. module: pb_training
+#: model:pb.training.requirement,name:pb_training.req_sg_bizsafe
+msgid "bizSAFE certificate"
+msgstr "Chứng nhận bizSAFE"
+
+#. module: pb_training
+#: model:pb.training.requirement,note:pb_training.req_sg_bizsafe
+msgid "bizSAFE: Level 1 (director, 3 hours) and Level 2 (risk-management champion, 2 days) are valid 6 months; Level 3 (audit) 36 months; renew 2 months before. A company-level certificate: pick the person who holds it. Arrives switched off."
+msgstr "bizSAFE: Cấp 1 (giám đốc, 3 giờ) và Cấp 2 (người phụ trách quản lý rủi ro, 2 ngày) có hiệu lực 6 tháng; Cấp 3 (đánh giá) 36 tháng; gia hạn trước 2 tháng. Chứng nhận cấp công ty: chọn người đứng tên. Đến ở trạng thái tắt."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "courses or papers nobody has yet"
+msgstr "khóa học hoặc giấy tờ chưa ai có"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/required_reports.py:0
+msgid "inside their renewal window"
+msgstr "trong khoảng gia hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "nothing due yet"
+msgstr "chưa có gì đến hạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "· <span>As at</span>"
+msgstr "· <span>Tính đến</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+msgid "· <span>Page</span>"
+msgstr "· <span>Trang</span>"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__ratio_holders
+msgid "… this many must hold it"
+msgstr "… số người phải có"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "%s of %s hours"
+msgstr "%s trên %s giờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Done, never expires"
+msgstr "Đã xong, không hết hạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "On the course, due %s"
+msgstr "Đang học, hạn %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Due by %s"
+msgstr "Hạn trước %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Not on file"
+msgstr "Chưa có trong hồ sơ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Worker"
+msgstr "Công nhân"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Student"
+msgstr "Sinh viên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Trainee"
+msgstr "Học viên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Contractor"
+msgstr "Nhà thầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Freelancer"
+msgstr "Cộng tác viên tự do"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Intern"
+msgstr "Thực tập sinh"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Vietnam — safety training groups"
+msgstr "Việt Nam — nhóm huấn luyện an toàn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "India — harassment-awareness sessions"
+msgstr "Ấn Độ — buổi nâng cao nhận thức về quấy rối"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Indonesia — licences and K3 induction"
+msgstr "Indonesia — giấy phép và hướng dẫn K3"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Singapore — training hours"
+msgstr "Singapore — giờ đào tạo"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Renewals due in 30 days"
+msgstr "Gia hạn đến hạn trong 30 ngày"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Awareness session register"
+msgstr "Sổ điểm danh buổi nâng cao nhận thức"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Licence register"
+msgstr "Sổ giấy phép"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Course or card"
+msgstr "Khóa học hoặc thẻ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Hours done"
+msgstr "Số giờ đã học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Card number"
+msgstr "Số thẻ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Session date"
+msgstr "Ngày học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Evidence"
+msgstr "Bằng chứng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Number"
+msgstr "Số"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Issuer"
+msgstr "Nơi cấp"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Residency"
+msgstr "Cư trú"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Occupational-safety training by safety group 1 to 6, with the hours each group needs and a renewal every two years (every year for group 4). Report: renewals due in 30 days."
+msgstr "Huấn luyện an toàn lao động theo nhóm 1 đến 6, với số giờ từng nhóm cần và gia hạn mỗi hai năm (nhóm 4 mỗi năm). Báo cáo: gia hạn đến hạn trong 30 ngày."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "A yearly awareness session for everybody, contractors and interns included, and an orientation for the Internal Committee. Report: the session attendance register."
+msgstr "Một buổi nâng cao nhận thức hằng năm cho mọi người, kể cả nhà thầu và thực tập sinh, và buổi định hướng cho Ủy ban nội bộ. Báo cáo: sổ điểm danh các buổi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Operator licences (five years), safety-expert appointments (three years), the K3 induction for every new worker and fire wardens per site. Report: the licence register."
+msgstr "Giấy phép vận hành (năm năm), quyết định bổ nhiệm chuyên gia an toàn (ba năm), hướng dẫn K3 cho mọi người mới và nhân viên phòng cháy tại từng địa điểm. Báo cáo: sổ giấy phép."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Safety Orientation Course validity, first-aiders per site and the training-hours return per person and course."
+msgstr "Hiệu lực khóa định hướng an toàn, người sơ cứu tại từng địa điểm và báo cáo giờ đào tạo theo người và khóa học."
