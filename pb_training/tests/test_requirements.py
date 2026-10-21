@@ -34,14 +34,25 @@ class RequirementCase(AssignmentCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, lang='en_US'))
+        # A COMPANY OF ITS OWN. Every read here is `company_id in
+        # env.companies`, and the database may already hold rules, packs,
+        # sites and certificates (a walked local copy, p0clone before a
+        # deploy): none of them may change a count asserted below.
+        cls.company = cls.env['res.company'].create({'name': 'DEMO L2 Co'})
+        cls.env = cls.env(context=dict(
+            cls.env.context, lang='en_US',
+            allowed_company_ids=[cls.company.id]))
+        (cls.boss | cls.e_one | cls.e_two | cls.e_three).write(
+            {'company_id': cls.company.id})
+        for user in (cls.boss_user, cls.u_one, cls.u_two, cls.u_three):
+            user.write({'company_ids': [(4, cls.company.id)],
+                        'company_id': cls.company.id})
         cls.Req = cls.env['pb.training.requirement'].sudo()
         cls.Board = cls.env['pb.training']
         cls.Doc = cls.env['pb.employee.document'].sudo()
         cls.Cert = cls.env['pb.training.certificate']
         cls.cat = cls.Cert._category()
         cls.lic = cls.Cert._licence_category()
-        cls.company = cls.env.company
         cls.dept = cls.env['hr.department'].create({'name': 'DEMO L2 Plant'})
         cls.sub = cls.env['hr.department'].create(
             {'name': 'DEMO L2 Line A', 'parent_id': cls.dept.id})
@@ -53,11 +64,15 @@ class RequirementCase(AssignmentCase):
         cls.trainer = Users.create({
             'name': 'DEMO Trainer L2', 'login': 'demo.trainer.l2@example.com',
             'email': 'demo.trainer.l2@example.com',
+            'company_id': cls.company.id,
+            'company_ids': [(6, 0, cls.company.ids)],
             'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
                                   cls.env.ref('pb_training.group_training_user').id])]})
         cls.manager = Users.create({
             'name': 'DEMO Manager L2', 'login': 'demo.manager.l2@example.com',
             'email': 'demo.manager.l2@example.com',
+            'company_id': cls.company.id,
+            'company_ids': [(6, 0, cls.company.ids)],
             'group_ids': [(6, 0, [cls.env.ref('base.group_user').id,
                                   cls.env.ref('pb_training.group_training_manager').id])]})
 
@@ -180,6 +195,19 @@ class TestT2Status(RequirementCase):
                          name_pattern='SIO', department_ids=[(6, 0, self.dept.ids)])
         self._doc(self.e_one, 'DEMO Pension letter', days=300)
         self.assertEqual(self._state(req2, self.e_one), 'missing')
+
+    def test_t2_a_course_rule_with_no_course_is_quiet_not_missing(self):
+        req = self._req(channel_id=False,
+                        department_ids=[(6, 0, self.dept.ids)])
+        cell = self._cells(req, self.e_one)[(req.id, self.e_one.id)]
+        self.assertEqual((cell['state'], cell['words']),
+                         ('unlinked', 'No course linked yet'))
+        s = self.Board.matrix({'requirement_id': req.id})['summary']
+        self.assertEqual((s['missing'], s['cells'], s['people_missing']),
+                         (0, 0, 0))
+        self.assertEqual(
+            self.Auto._enforce_requirements(fields.Date.today(), req)['made'],
+            0)
 
     def test_t2_the_rules_validity_beats_the_tests(self):
         req = self._req(target='course', validity_months=12,
@@ -334,7 +362,7 @@ class TestT5T7Enforcement(RequirementCase):
             {'name': 'DEMO L2 No login', 'department_id': self.dept.id})
         req = self._req(auto_assign=True, due_days=20,
                         department_ids=[(6, 0, self.dept.ids)])
-        counts = self.Auto._enforce_requirements(fields.Date.today())
+        counts = self.Auto._enforce_requirements(fields.Date.today(), req)
         self.assertEqual(counts['made'], 2)
         self.assertEqual(counts['no_login'], 1)
         rows = self.Assignment.sudo().search([('requirement_id', '=', req.id)])
@@ -344,7 +372,7 @@ class TestT5T7Enforcement(RequirementCase):
         self.assertEqual(rows[0].due_date,
                          fields.Date.today() + timedelta(days=20))
         self.assertNotIn(no_login, rows.mapped('employee_id'))
-        again = self.Auto._enforce_requirements(fields.Date.today())
+        again = self.Auto._enforce_requirements(fields.Date.today(), req)
         self.assertEqual(again['made'], 0, 'never a second open one')
 
     def test_t5_cap_auto_off_and_legacy_rows(self):
@@ -352,34 +380,39 @@ class TestT5T7Enforcement(RequirementCase):
             'pb_training.enforce_cap', '1')
         req = self._req(auto_assign=True,
                         department_ids=[(6, 0, self.dept.ids)])
-        counts = self.Auto._enforce_requirements(fields.Date.today())
+        counts = self.Auto._enforce_requirements(fields.Date.today(), req)
         self.assertEqual((counts['made'], counts['capped']), (1, 1))
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_training.enforce_cap', '500')
         req.auto_assign = False
         self.assertEqual(
-            self.Auto._enforce_requirements(fields.Date.today())['made'], 0)
+            self.Auto._enforce_requirements(fields.Date.today(), req)['made'],
+            0)
         rule = self.env['pb.training.rule'].create(
             {'name': 'DEMO legacy', 'channel_ids': [(6, 0, self.simple.ids)]})
         req.write({'auto_assign': True, 'rule_id': rule.id})
         self.assertEqual(
-            self.Auto._enforce_requirements(fields.Date.today())['made'], 0,
+            self.Auto._enforce_requirements(fields.Date.today(), req)['made'],
+            0,
             'a converted day-one rule assigns through its own mechanism')
 
     def test_t6_renewal_and_enforcement_one_assignment(self):
-        self._req(auto_assign=True, department_ids=[(6, 0, self.dept.ids)],
-                  grace_days=60)
+        rule = self._req(auto_assign=True,
+                         department_ids=[(6, 0, self.dept.ids)],
+                         grace_days=60)
         doc = self._doc(self.e_one, 'DEMO Walking the rows — certificate '
                         '(2025)', days=20, training_source='test',
                         channel_id=self.simple.id)
         today = fields.Date.today()
         self.assertNotIn(doc, self.Auto._renewal_candidates(today),
                          'the rule owns this course')
-        self.assertEqual(self.Auto._renewals(today), 0)
-        self.Auto._enforce_requirements(today)
+        self.Auto._renewals(today)
+        self.assertFalse(doc.renewal_assignment_id,
+                         'the renewal leg left it to the rule')
+        self.Auto._enforce_requirements(today, rule)
         self.assertEqual(len(self._open(self.e_one)), 1)
         self.Auto._renewals(today)
-        self.Auto._enforce_requirements(today)
+        self.Auto._enforce_requirements(today, rule)
         self.assertEqual(len(self._open(self.e_one)), 1)
         # The renewal is due the day the old one runs out.
         self.assertEqual(self._open(self.e_one).due_date,
@@ -395,7 +428,7 @@ class TestT5T7Enforcement(RequirementCase):
             {'contract_date_start': today - timedelta(days=400)})
         self.assertEqual(self._state(req, self.e_one), 'not_due')
         self.assertEqual(self._state(req, self.e_two), 'missing')
-        self.Auto._enforce_requirements(today)
+        self.Auto._enforce_requirements(today, req)
         self.assertFalse(self._open(self.e_one),
                          'not due yet: nothing is assigned')
         self.assertEqual(self._open(self.e_two).due_date,

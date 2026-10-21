@@ -61,7 +61,8 @@ AUDIENCE_FLAGS = [
 CONTRACTOR_TYPES = ('contractor', 'freelance')
 
 #: The cell states, in the order a reader acts on them.
-STATES = ('missing', 'expiring', 'in_progress', 'not_due', 'valid', 'exempt')
+STATES = ('missing', 'expiring', 'in_progress', 'not_due', 'valid',
+          'unlinked', 'exempt')
 
 #: The country packs. `key` is the stored `pack_key`; `cc` the switch suffix.
 PACKS = [
@@ -520,6 +521,15 @@ class PbTrainingRequirement(models.Model):
             return {'state': state, 'valid_until': None,
                     'words': tr(env, '%s of %s hours', _num(total),
                                 _num(need)),
+                    'evidence': None, 'open_id': 0}
+
+        # A course rule with no course linked yet cannot be met by anybody:
+        # it is QUIET (grey, counted nowhere, never assigned) until HR links
+        # one (handover §3.6), rather than a column of red.
+        if self.target == 'course' and not self.channel_id \
+                and not self.survey_id and not self.name_pattern:
+            return {'state': 'unlinked', 'valid_until': None,
+                    'words': tr(env, 'No course linked yet'),
                     'evidence': None, 'open_id': 0}
 
         for doc in docs:

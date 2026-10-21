@@ -222,7 +222,7 @@ export class PbRequiredLens extends Component {
     cellIcon(row, col) {
         const c = this.cell(row, col);
         return { valid: "checkCircle", expiring: "hourglass", missing: "triangleAlert",
-                 in_progress: "clock", not_due: "circle" }[c ? c.state : ""] || "";
+                 in_progress: "clock", not_due: "circle", unlinked: "link" }[c ? c.state : ""] || "";
     }
 
     onCell(row, col) {
@@ -299,7 +299,7 @@ export class PbRequiredLens extends Component {
         this.state.acting = key;
         try {
             const res = await this.orm.call("pb.training", "act", [verb, payload]);
-            if (res && res.message) { this.notif.add(res.message, { type: "success" }); }
+            if (res && res.message) { this.notif.add(res.message, { type: res.type || "success" }); }
             await this.load();
             return res;
         } catch (e) {

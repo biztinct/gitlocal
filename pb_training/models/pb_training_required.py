@@ -330,7 +330,7 @@ class PbTrainingRequired(models.AbstractModel):
             any_missing = False
             for cell in row['cells'].values():
                 key = cell['state']
-                if key == 'exempt':
+                if key in ('exempt', 'unlinked'):
                     continue
                 cells += 1
                 counts[key] = counts.get(key, 0) + 1
@@ -705,8 +705,12 @@ class PbTrainingRequired(models.AbstractModel):
                     no_course += 1
                 else:
                     already += 1
-        bits = [_("1 course put on.") if made == 1
-                else _("%s courses put on.", made)]
+        if not made:
+            bits = [_("No course was put on.")]
+        elif made == 1:
+            bits = [_("1 course put on.")]
+        else:
+            bits = [_("%s courses put on.", made)]
         if already:
             bits.append(_("%s were already under way.", already))
         if no_login:
@@ -714,7 +718,8 @@ class PbTrainingRequired(models.AbstractModel):
                           no_login))
         if no_course:
             bits.append(_("%s have no course linked yet.", no_course))
-        return {'made': made, 'message': ' '.join(bits)}
+        return {'made': made, 'message': ' '.join(bits),
+                'type': 'success' if made else 'warning'}
 
     @api.model
     def set_safety_group(self, employee_ids, group):

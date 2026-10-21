@@ -134,7 +134,11 @@
 
 // ------------------------------------------------------------- bars
 .pbrq-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
-    .pbim-btn { display: inline-flex; align-items: center; gap: 6px; } }
+    .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    // A global `select { width: 100% }` would stack every filter on its own
+    // line; in the bar each one is as wide as its words.
+    select.pbrq-in { width: auto; flex: 0 1 auto; max-width: 240px; } }
+.pbrq-bulk select.pbrq-in { width: auto; max-width: 240px; }
 .pbrq-push { margin-left: auto; }
 .pbrq-search {
     flex: 1 1 220px; display: flex; align-items: center; gap: 6px; margin: 0;
@@ -215,7 +219,8 @@
     &.is-missing { background: #FEF2F2; border-color: #FECACA; color: var(--pbrq-red); }
     &.is-in_progress { background: var(--pbrq-surface); border-color: #A5B4FC;
                        box-shadow: inset 0 0 0 1px #A5B4FC; color: var(--pbrq-indigo); }
-    &.is-not_due { color: #94A3B8; }
+    &.is-not_due, &.is-unlinked { color: #94A3B8; }
+    &.is-unlinked { border-style: dashed; }
     &.is-act { cursor: pointer; &:hover { filter: brightness(.97); } }
     &.is-open { box-shadow: 0 0 0 2px var(--pbrq-primary); }
     &:focus-visible { outline: 3px solid rgba(90, 75, 176, .25); outline-offset: 1px; }

@@ -384,7 +384,7 @@ class PbTrainingAutomation(models.AbstractModel):
         return out
 
     @api.model
-    def _enforce_requirements(self, today):
+    def _enforce_requirements(self, today, rules=None):
         """For every missing cell (or expiring one) of every rule above,
         the course — reason `required`, `requirement_id` set, due per
         `_required_due`. Never a second open one (`_guard_one_open`), each in
@@ -392,7 +392,10 @@ class PbTrainingAutomation(models.AbstractModel):
         from .training_common import P_ENFORCE_CAP
         cap = max(number(self.env, P_ENFORCE_CAP, 500), 0)
         counts = {'made': 0, 'capped': 0, 'no_login': 0, 'failed': 0}
-        rules = self._enforce_rules()
+        # `rules` narrows the run (tests, a future "run this rule now");
+        # the morning job passes nothing and gets every rule it owns.
+        rules = self._enforce_rules() if rules is None \
+            else rules & self._enforce_rules()
         if not rules:
             return counts
         Req = self.env['pb.training.requirement']

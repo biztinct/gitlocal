@@ -7,7 +7,7 @@
        `pk` (R1); translatable text nodes on one line (LN13).
        ==================================================================== -->
   <t t-name="pb_training.PbRequiredSettings">
-    <div class="pbrq pbrqs">
+    <div class="pbim pbrq pbrqs">
       <div class="pbrq-wrap">
 
         <t t-if="!state.loaded">

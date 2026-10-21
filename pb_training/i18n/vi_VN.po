@@ -4633,3 +4633,9 @@ msgstr "Giấy phép vận hành (năm năm), quyết định bổ nhiệm chuy�
 #: code:addons/pb_training/models/training_common.py:0
 msgid "Safety Orientation Course validity, first-aiders per site and the training-hours return per person and course."
 msgstr "Hiệu lực khóa định hướng an toàn, người sơ cứu tại từng địa điểm và báo cáo giờ đào tạo theo người và khóa học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "No course was put on."
+msgstr "Chưa giao được khóa học nào."

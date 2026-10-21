@@ -427,7 +427,7 @@ class PbMyTrainingRequired(models.AbstractModel):
         rows = []
         for req in reqs:
             cell = cells.get((req.id, emp.id))
-            if not cell or cell['state'] == 'exempt':
+            if not cell or cell['state'] in ('exempt', 'unlinked'):
                 continue
             rows.append({
                 'id': req.id,
