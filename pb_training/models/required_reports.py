@@ -416,25 +416,40 @@ class PbMyTrainingRequired(models.AbstractModel):
             lambda r: not r._is_headcount())
         cells = Req.evaluate(reqs, employees=emp) if reqs else {}
         open_ids = [c['open_id'] for c in cells.values() if c.get('open_id')]
-        channel_of = {}
+        open_rows = {}
         if open_ids:
             for a in self.env['pb.training.assignment'].sudo().browse(
-                    open_ids).read(['channel_id']):
-                channel_of[a['id']] = a['channel_id'][0] \
-                    if a['channel_id'] else 0
+                    open_ids).read(['channel_id', 'due_date']):
+                open_rows[a['id']] = a
         rank = {'missing': 0, 'expiring': 1, 'in_progress': 2, 'not_due': 3,
                 'valid': 4}
-        rows = []
+        far = fields.Date.to_date('9999-12-31')
+        # ONE LINE PER COURSE (found live): two rules can point at the same
+        # course — a converted day-one rule and a schedule — and the learner
+        # has one thing to do, not two. The matrix keeps a column per rule;
+        # here the most urgent line wins (state first, then the earliest due).
+        best = {}
         for req in reqs:
             cell = cells.get((req.id, emp.id))
             if not cell or cell['state'] in ('exempt', 'unlinked'):
                 continue
-            rows.append({
+            row_open = open_rows.get(cell.get('open_id') or 0) or {}
+            channel = row_open.get('channel_id') and row_open['channel_id'][0] \
+                or req.channel_id.id or 0
+            key = ('course', channel) if channel else ('rule', req.id)
+            due = row_open.get('due_date') or far
+            line = {
                 'id': req.id,
                 'name': req.name,
                 'state': cell['state'],
                 'words': cell['words'],
-                'channel_id': channel_of.get(cell.get('open_id'), 0),
-            })
-        rows.sort(key=lambda r: (rank.get(r['state'], 5), fold(r['name'])))
+                'channel_id': channel if row_open else 0,
+                '_sort': (rank.get(cell['state'], 5), due),
+            }
+            if key not in best or line['_sort'] < best[key]['_sort']:
+                best[key] = line
+        rows = sorted(best.values(),
+                      key=lambda r: (r['_sort'], fold(r['name'])))
+        for line in rows:
+            line.pop('_sort', None)
         return {'has_employee': True, 'rows': rows}

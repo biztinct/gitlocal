@@ -17,6 +17,8 @@ import io
 import re
 from datetime import timedelta
 
+from unittest.mock import patch
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields
@@ -527,6 +529,32 @@ class TestT9Access(RequirementCase):
 
 
 # =========================================================================
+#  My learning — one line per course (found live)
+# =========================================================================
+@tagged('post_install', '-at_install')
+class TestRequiredForMe(RequirementCase):
+
+    def test_two_rules_on_one_course_are_one_line_for_the_learner(self):
+        first = self._req(name='DEMO Induction', kind='day_one',
+                          department_ids=[(6, 0, self.dept.ids)])
+        second = self._req(name='DEMO Induction yearly', kind='recurring',
+                           every_months=12, validity_months=12,
+                           department_ids=[(6, 0, self.dept.ids)])
+        self.Assignment.create({
+            'channel_id': self.simple.id, 'employee_id': self.e_one.id,
+            'due_date': fields.Date.today() + timedelta(days=5)})
+        mine = self.env['pb.my.training'].with_user(self.u_one) \
+            .required_for_me()
+        lines = [r for r in mine['rows'] if r['id'] in (first.id, second.id)]
+        self.assertEqual(len(lines), 1, 'one course, one line')
+        self.assertEqual(lines[0]['channel_id'], self.simple.id)
+        self.assertEqual(lines[0]['state'], 'in_progress')
+        # The matrix keeps one column per rule.
+        cols = {c['id'] for c in self.Board.matrix({})['columns']}
+        self.assertTrue({first.id, second.id} <= cols)
+
+
+# =========================================================================
 #  T13 — Overview and Numbers agree with the matrix
 # =========================================================================
 @tagged('post_install', '-at_install')
@@ -595,6 +623,36 @@ class TestT14Exports(RequirementCase):
         export = self.env['pb.training.matrix.export'].create(
             {'filters_json': '{"requirement_id": %s}' % many.id})
         self.assertEqual(len(export.data()['pages_rows']), 7, '40 a page')
+
+    def test_t14_the_pdf_is_one_document_paginated_by_css(self):
+        """FOUND LIVE: the server's wkhtmltopdf is the unpatched-QT build
+        and refuses several documents in one PDF. One record id, one
+        `article`, and a CSS page break after every block but the last."""
+        dept = self.env['hr.department'].create({'name': 'DEMO L2 Pages'})
+        self.env['hr.employee'].create([
+            {'name': 'DEMO L2 P %03d' % i, 'department_id': dept.id}
+            for i in range(85)])
+        req = self._req(department_ids=[(6, 0, dept.ids)])
+        seen = []
+
+        def fake(report_self, report_ref, res_ids=None, data=None):
+            seen.append(list(res_ids or []))
+            return b'%PDF-1.4 DEMO', 'pdf'
+
+        with patch.object(type(self.env['ir.actions.report']),
+                          '_render_qweb_pdf', fake):
+            res = self.Board.matrix_pdf({'requirement_id': req.id})
+        self.assertEqual([len(ids) for ids in seen], [1])
+        self.assertTrue(base64.b64decode(res['file_b64']).startswith(b'%PDF'))
+        export = self.env['pb.training.matrix.export'].create(
+            {'filters_json': '{"requirement_id": %s}' % req.id})
+        html, _kind = self.env['ir.actions.report']._render_qweb_html(
+            'pb_training.report_required_matrix', export.ids)
+        html = html if isinstance(html, bytes) else str(html).encode()
+        self.assertEqual(html.count(b'class="article'), 1,
+                         'one document, never one per page')
+        self.assertEqual(html.count(b'page-break-after: always'), 2,
+                         '85 people = 3 blocks of up to 40 = 2 breaks')
 
     def test_t14_the_pdf_reads_as_the_reader_no_company_mixing(self):
         other = self.env['res.company'].create({'name': 'DEMO L2 Other Co'})
