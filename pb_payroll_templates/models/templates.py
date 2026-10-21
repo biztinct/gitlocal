@@ -294,9 +294,9 @@ class PayrollTemplates(models.AbstractModel):
                 if fid not in known or any(fid in ids for ids in result.values()):
                     continue
                 record = known[fid]['record_eligible']
-                target = ('records' if record and (lane != 'available' or 'records' not in saved)
+                target = ('records' if record and (lane not in ('available', 'adjustments') or 'records' not in saved)
                           else 'available' if not record and lane == 'records' else lane)
-                if record and target in TABS:
+                if record and target == 'time':
                     target = 'records'
                 result[target].append(fid)
         used = {i for a in result.values() for i in a}
@@ -304,6 +304,11 @@ class PayrollTemplates(models.AbstractModel):
             if c['id'] not in used:
                 result[c['default']].append(c['id'])
         return result
+
+    def _record_layout_fields(self, layout, catalog):
+        records = {c['id'] for c in catalog if c['record_eligible']}
+        return [fid for lane in ('records', 'adjustments')
+                for fid in layout[lane] if fid in records]
 
     def _fingerprint(self, layout, catalog):
         return hashlib.sha256(json.dumps([layout, catalog], sort_keys=True).encode()).hexdigest()
@@ -334,7 +339,7 @@ class PayrollTemplates(models.AbstractModel):
                 'selection_notice': _('The migration branch is closed. Showing its main payroll configuration.') if closed_branch else '',
                 'currency': cfg.currency_id.name, 'period': period, 'people': len(people),
                 'roster_note': (_('Draft review roster: %s existing Employee records out of %s source people. Payroll assignments are unchanged.') % (len(people), expected)) if expected else '',
-                'record_columns': len(self._layout(cfg, catalog)['records']) + int('f:hr.employee:name' in cards), 'fields': catalog,
+                'record_columns': len(self._record_layout_fields(self._layout(cfg, catalog), catalog)) + int('f:hr.employee:name' in cards), 'fields': catalog,
                 'identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg)},
                 'record_identity_labels': {c['kind']: c['label'] for c in self._identity_columns(cfg, 'records')},
                 'calculated_fields': [{'id': r.id, 'label': r.name or r.code,
@@ -359,8 +364,8 @@ class PayrollTemplates(models.AbstractModel):
         by_id = {c['id']: c for c in catalog}
         for lane in ('time', 'adjustments', 'records'):
             for fid in layout.get(lane, []):
-                if bool(by_id[fid]['record_eligible']) != (lane == 'records'):
-                    raise UserError(_('Employee records accepts only saved employee, contract, contract component and bank fields. Monthly inputs belong on Time or Monthly adjustments.'))
+                if lane != 'adjustments' and bool(by_id[fid]['record_eligible']) != (lane == 'records'):
+                    raise UserError(_('Employee records accepts only saved employee, contract, contract component and bank fields. Saved records can also be placed in Monthly adjustments; Time accepts monthly inputs.'))
         row = self.env['pb.payroll.template.layout'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
         vals = {'payload': dict(row.payload or {} if row else {}, **{k: layout[k] for k in LAYOUT_LANES})}
@@ -468,7 +473,7 @@ class PayrollTemplates(models.AbstractModel):
         layout = self._layout(cfg, catalog)
         monthly = {e.id: {} for e in people} if reusable else self._current(cfg, period, people)
         by_id = {c['id']: c for c in catalog}
-        selected_cards = [(by_id[fid]['record_id'], dict(cards[by_id[fid]['record_id']], label=by_id[fid]['label'])) for fid in layout['records']]
+        selected_cards = [(by_id[fid]['record_id'], dict(cards[by_id[fid]['record_id']], label=by_id[fid]['label'])) for fid in self._record_layout_fields(layout, catalog)]
         if 'f:hr.employee:name' in cards:
             selected_cards.insert(0, ('f:hr.employee:name', cards['f:hr.employee:name']))
         if mode == 'records':

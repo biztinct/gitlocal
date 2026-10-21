@@ -116,10 +116,10 @@ export class PayrollTemplates extends Component {
         try{await this.orm.call('pb.payroll.templates','save_layout',[this.state.configId,this.state.layout]);this.state.dirty=false;this.notif.add('Monthly layout saved for this configuration.',{type:'success'});return true;}
         catch(e){this.state.error=message(e);return false;}finally{this.state.busy=false;}
     }
-    canPlace(id,lane){const f=this.fields[id];return !!f && (lane==='available'||(lane==='records')===!!f.record_eligible);}
+    canPlace(id,lane){const f=this.fields[id];return !!f && (lane==='available'||lane==='adjustments'||(lane==='records')===!!f.record_eligible);}
     move(id,lane,before=''){
         if(!this.state.data.can_layout)return;
-        if(!this.canPlace(id,lane)){this.notif.add('Saved employee, contract and bank fields belong in Employee records. Monthly inputs belong in Time or Monthly adjustments.',{type:'warning'});return;}
+        if(!this.canPlace(id,lane)){this.notif.add('Saved records can be placed in Employee records or Monthly adjustments. Time accepts monthly inputs.',{type:'warning'});return;}
         this.state.layout=moveField(this.state.layout,id,lane,before);this.state.dirty=true;this.state.menu='';
     }
     earlier(id,lane){const a=this.state.layout[lane],i=a.indexOf(id);if(i>0)this.move(id,lane,a[i-1]);}

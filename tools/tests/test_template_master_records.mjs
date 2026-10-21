@@ -12,3 +12,11 @@ ui.move('salary','available');assert.deepEqual(ui.state.layout.available,['salar
 ui.move('salary','records');assert.deepEqual(ui.state.layout.records,['salary']);
 assert.deepEqual(moveField(ui.state.layout,'days','adjustments').adjustments,['days']);
 console.log('Master-record lane restrictions, valid moves and monthly-input placement passed');
+ui.move('salary','adjustments');assert.deepEqual(ui.state.layout.adjustments,['salary']);assert.deepEqual(ui.state.layout.records,[]);
+ui.move('salary','records');assert.deepEqual(ui.state.layout.records,['salary']);
+const transfer={setData(){},getData(){return 'salary';}};
+ui.startDrag({dataTransfer:transfer},'salary');
+ui.drop({preventDefault(){},stopPropagation(){},dataTransfer:transfer},'adjustments');
+assert.deepEqual(ui.state.layout.adjustments,['salary']);assert.equal(ui.state.dirty,true);
+assert.equal(ui.state.data.fields[0].record_eligible,true);
+console.log('Record menu moves and drag/drop into adjustments preserve field metadata');

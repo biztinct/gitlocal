@@ -1054,3 +1054,42 @@ class TestPayrollTemplates(TransactionCase):
         self.api.confirm_monthly_review(self.cfg.id, review['token'], [], True)
         self.assertEqual(self.emp.identification_id, 'TAX-TEST')
         self.assertEqual(self.emp.barcode, '000001')
+
+    def test_moved_record_persists_exports_and_keeps_reviewed_updates(self):
+        self.cfg.focused_payroll_inputs = True
+        fid = 'rule:%s' % self.salary.id
+        layout = self.api.workspace(self.cfg.id, '2026-10')['layout']
+        layout['records'].remove(fid)
+        layout['adjustments'].insert(0, fid)
+        self.api.save_layout(self.cfg.id, layout)
+        self.assertEqual(self.api.workspace(self.cfg.id, '2026-10')['layout'], layout)
+        wb = self.export()
+        self.assertIn('Salary', [c.value for c in wb['Monthly adjustments'][1]])
+        self.assertNotIn('Salary', [c.value for c in wb['Employee records'][1]])
+        self.assertIn('Salary', [c.value for c in self.export('records')['Employee records'][1]])
+        self.set_value(wb, 'Monthly adjustments', 'Salary', 1200)
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        self.assertFalse(review['issues'])
+        self.api.confirm_monthly_review(self.cfg.id, review['token'])
+        self.assertEqual(self.contract.wage, 1000)
+        reviewed = self.api.reopen_monthly_review(self.cfg.id, review['token'])
+        self.api.confirm_monthly_review(self.cfg.id, reviewed['token'], [], True)
+        self.assertEqual(self.contract.wage, 1200)
+        layout['adjustments'].remove(fid)
+        layout['records'].append(fid)
+        self.api.save_layout(self.cfg.id, layout)
+        self.assertIn(fid, self.api.workspace(self.cfg.id, '2026-10')['layout']['records'])
+
+    def test_moved_legacy_record_remains_readonly(self):
+        fid = 'rule:%s' % self.salary.id
+        layout = self.api.workspace(self.cfg.id, '2026-10')['layout']
+        layout['records'].remove(fid)
+        layout['adjustments'].append(fid)
+        self.api.save_layout(self.cfg.id, layout)
+        wb = self.export()
+        self.set_value(wb, 'Monthly adjustments', 'Salary', 9999)
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        self.assertEqual(self.cell(review, self.salary)['value'], 1000)
+        self.assertEqual(self.contract.wage, 1000)
