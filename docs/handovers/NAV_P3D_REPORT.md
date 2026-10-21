@@ -111,7 +111,7 @@ added, moved or renamed — nothing new for the Screens lens.
 ## 6. Commits (local, NOT pushed)
 
 `52d9041db` feat(nav-p3d): Home › Ask HR as a Payobook board · `455ad535a` feat(nav-p3d): Learn knows the Ask HR board
-(also carries the one-line VIFIX drift-tool mapping) · (this report + seven ledger rows, docs commit).
+(also carries the one-line VIFIX drift-tool mapping) · `6ed7a5b12` docs(nav-p3d): report and seven ledger rows.
 
 ## 7. Deploy plan (for the coordinator's go — normal tier)
 
