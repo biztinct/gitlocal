@@ -15,7 +15,10 @@ new gotcha, ruling or convention is hit. Rows are `LN` (ledger) and `LD` (owner 
 | LD2 | 2026-10-21 | New root is **Learning** (VI **Học tập**). The `pb_learn` product-guide entry is renamed **Help** (VI **Trợ giúp**) — "Guide" was first chosen (14:15) then dropped (14:40) because the in-screen help panel is already called "Guide" ("Guide · Runs"; lessons say "press Understand in the Guide"). The panel keeps "Guide". xml id `pb_learn.item_learn_journey` unchanged. |
 | LD3 | 2026-10-21 | Training leaves Talent completely. Talent keeps GOALS · GROWTH · PRAISE. A growth plan may link to a learning path (L3). |
 | LD4 | 2026-10-21 15:40 | Country packs: **all four in L2** (Vietnam safety-training groups, India annual awareness session, Indonesia licence register, Singapore training hours) — not one at a time. |
-| LD5–LD9 | open | Practical sign-off (L4), outside catalogue (L5), offline (L7), badges (L7), PayAI drafting (L7) — ask when the phase comes up (page §8). |
+| LD5 | 2026-10-22 06:58 | **Practical sign-off on a phone: NOT NOW.** L4 ships sessions, QR attendance and toolbox talks only; the sign-off (L4 handover §3.4/§4.3) waits for a later phase. |
+| LD11 | 2026-10-22 06:58 | **Vietnam group 4 by default:** in a company whose country is Vietnam, an employee with no safety group set counts as group 4 for the matrix and the yearly refresher; HR may set another group per person. Build in L4 (carried from L2 report §7 item 3). |
+| LD12 | 2026-10-22 06:58 | Country-pack rules marked "to confirm" stay switched off; the owner asks Rize and HR switches each on in Settings › Required training when confirmed. Nothing more to build. |
+| LD6–LD9 | open | Outside catalogue (L5), offline (L7), badges (L7), PayAI drafting (L7) — ask when the phase comes up. |
 
 ## Standing rules carried in (do not restate per phase; cite the row)
 

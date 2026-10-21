@@ -6,8 +6,16 @@ Ledger `docs/handovers/learning/LEARNING_LEDGER.md` is binding. Predecessors: L0
 take the Learning hub registry, the assignment engine (incl. `extra=` and path links from L3),
 the certificate record (L1), hours (L2) and the paths (L3) from the reports.
 
-**Owner decision LD5 (practical sign-off on a phone) is asked when this phase launches.** If
-the answer is "not now", skip §3.4 and §4.3 and say so; everything else stands.
+**Owner decision LD5 (2026-10-22): practical sign-off on a phone is NOT in this phase.** Skip
+§3.4, §4.3, the checklist/sign-off models in §3.1, tests T10–T11 and the sign-off demo data;
+keep the `signoff` kind reserved on steps/attendance. Everything else stands.
+
+**Carried in from L2 (owner decision LD11, 2026-10-22):** in a company whose country is
+Vietnam, an employee with no `pb_safety_group` counts as **group 4** for requirement
+audiences, the matrix and the yearly refresher (HR may set another group per person). Add
+the rule in `pb.training.requirement._people()` / `_status_for` (audience `safety_groups`
+containing "4" also matches empty when the work country is VN), a one-line note on the
+Vietnam pack card, and a test. Ship it in this phase.
 
 Report back to `docs/handovers/learning/L4_REPORT.md`.
 
