@@ -17,7 +17,7 @@ from odoo.exceptions import UserError
 
 def seed_rize_absence_policy(env, activation_date, full_time_reviews=None,
                             country_type_mappings=None, apply=False, create_missing_types=False,
-                            employee_ids=None):
+                            employee_ids=None, employee_country_reviews=None):
     if env.cr.dbname != 'rize':
         raise UserError('This activation is restricted to the rize database.')
     activation = fields.Date.to_date(activation_date)
@@ -29,10 +29,21 @@ def seed_rize_absence_policy(env, activation_date, full_time_reviews=None,
     if employee_ids is not None:
         domain.append(('id', 'in', employee_ids))
     employees = env['hr.employee'].search(domain)
+    country_reviews = {int(key): value for key, value in (employee_country_reviews or {}).items()}
+    if set(country_reviews) - set(employees.ids):
+        raise UserError('Country evidence refers to an employee outside the reviewed scope.')
     groups = defaultdict(list)
     skipped = []
     for employee in employees:
         country = employee.payroll_country if 'payroll_country' in employee._fields else False
+        evidence = country_reviews.get(employee.id)
+        if evidence:
+            selected = evidence.get('country')
+            if selected not in ('VN', 'IN', 'SG', 'ID') or not str(evidence.get('reference', '')).strip():
+                raise UserError('Country selection needs a supported payroll country and explicit evidence.')
+            if country and country != selected:
+                raise UserError('Country evidence conflicts with the employee payroll country.')
+            country = selected
         if country not in ('VN', 'IN', 'SG', 'ID'):
             skipped.append({'employee_id': employee.id, 'reason': 'No supported explicit payroll country'})
             continue
@@ -49,7 +60,8 @@ def seed_rize_absence_policy(env, activation_date, full_time_reviews=None,
         if not isinstance(review.get('confirmed'), bool) or not str(review.get('reference', '')).strip():
             raise UserError('Each full-time decision needs an explicit boolean and an evidence reference.')
     result = {'activation': str(activation), 'apply': bool(apply), 'groups': [], 'skipped': skipped,
-              'no_balance_changes': True, 'no_historical_request_changes': True}
+              'no_balance_changes': True, 'no_historical_request_changes': True,
+              'employee_country_evidence': country_reviews}
     for (company_id, country), employee_ids in sorted(groups.items()):
         type_map = dict(mappings.get(company_id, {}).get(country, {}))
         categories = ['annual', 'wellness', 'maternity', 'paternity', 'miscarriage', 'bereavement', 'marriage', 'unpaid']
@@ -141,10 +153,23 @@ def seed_owner_approved_rize_scope(env, activation_date, apply=False):
     covered = employees.filtered(lambda employee: bool(Config.schemes_for_employee(employee) & schemes))
     if not covered:
         raise UserError('No active employees resolve to the four approved payroll schemes; review their scheme assignments.')
+    country_reviews = {}
     for employee in covered:
         matching = Config.schemes_for_employee(employee) & schemes
-        if employee.payroll_country not in matching.mapped('country_code'):
+        countries = set(matching.mapped('country_code'))
+        if employee.payroll_country and employee.payroll_country not in countries:
             raise UserError('A covered employee payroll country conflicts with the paying scheme; review before activation.')
+        if not employee.payroll_country:
+            if len(countries) != 1:
+                raise UserError('A missing payroll country cannot be resolved across multiple country schemes.')
+            # The owner approved the employees covered by these exact schemes.
+            # Use that recorded relationship, never nationality or a company
+            # default, and do not silently rewrite the employee payroll record.
+            country_reviews[employee.id] = {
+                'country': next(iter(countries)),
+                'reference': 'Owner-approved Rize paying schema assignment: %s; employee payroll country blank'
+                             % ','.join(str(i) for i in sorted(matching.ids)),
+            }
     evidence = 'Owner confirmed full-time policy eligibility on 2026-10-21 for current employees covered by four Rize payroll schemas'
     reviews = {employee.id: {'confirmed': True, 'reference': evidence} for employee in covered}
     type_maps = {}
@@ -168,7 +193,8 @@ def seed_owner_approved_rize_scope(env, activation_date, apply=False):
             reviewed_map[category] = type_id
         type_maps[id_companies.id]['ID'] = reviewed_map
     result = seed_rize_absence_policy(env, activation_date, full_time_reviews=reviews,
-        country_type_mappings=type_maps, apply=apply, create_missing_types=True, employee_ids=covered.ids)
+        country_type_mappings=type_maps, apply=apply, create_missing_types=True, employee_ids=covered.ids,
+        employee_country_reviews=country_reviews)
     result['covered_schema_ids'] = schemes.ids
     result['owner_full_time_review_reference'] = evidence
     result['uncovered_active_employee_ids'] = (employees - covered).ids
