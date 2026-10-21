@@ -1,77 +1,79 @@
 Rize mapping follow-up — 2026-10-21
-STATUS: implementation committed and locally tested; NOT DEPLOYED.
+STATUS: DEPLOYED AND VERIFIED.
 
-User-reported findings verified against production:
-- Mainline schemes retain spreadsheet bindings: Vietnam 135, India 114,
-  Singapore 101, Indonesia 130.
-- The screenshot selected merged migration branch 7113, not mainline 4760.
-  All four migration branches have no copied spreadsheet source rows.
-- Journey, Connections and Templates omitted application provider bindings.
-- Probation start was actually deferred; probation end already mapped to
-  hr.contract.trial_date_end on the mainline.
-- Pre-deployment Chrome check on the actual Vietnam mainline showed the stored
-  workbook's 118 relevant inputs fed, zero unfed in that file-specific view.
-  This is not a claim that all application-data inputs are ready.
+Release: combined branch 19.1, b515849a6ffb307df5b7afc55e47982dcf5ec705.
+Implementation commits: 97ba269df, c338cb081, ca14c26c1.
+Targets: Payobook19v2; p0clone, payobook, payobook_template, rize.
+ABM excluded. Other sessions' committed NAV changes preserved.
+Shared deploy log START 02:25 UTC; DONE after successful release.
+Runner: /tmp/rize-mapping-release-b515849a6/deploy.py, under
+flock /tmp/payobook-studio-deploy.lock, detached systemd unit.
+Service downtime: 424 seconds (7m04s).
 
-Implementation commits:
-97ba269df — domain mapping descriptors, Journey/template classification,
-             completed-branch picker filtering, explicit probation start field,
-             revised four-country mapping plan and searchable 480-input audit.
-c338cb081 — preserve the existing payroll adapter extension signature.
-ca14c26c1 — expose application providers in Connections and stop suggesting
-             contract-component storage for domain-owned records.
-
-Module versions prepared:
+Modules upgraded wherever installed (all four databases):
 pb_hr_payroll_formula 19.0.1.151.0
 pb_formula_studio 19.0.1.204.0
 pb_employee_vault 19.0.1.3.0
 pb_payroll_templates 19.0.1.2.18
+All 151 existing custom module trees match the combined committed release;
+installed versions verified across all four databases. Standard addons preserved.
+Final service active; no upgrade/test jobs running.
+Cron IDs restored exactly: payobook 37, template 0, p0clone 26, rize 69.
+Assets signalled, purged and version bumped. All three public login sites warmed
+and returned HTTP 200 before Chrome verification.
 
-Tests:
-- Sequential local release suite: 140 tests, zero failures/errors.
-- Subsequent Connections projection change: 14 targeted tests, zero failures/errors.
-- Python AST / module XML parsing and JavaScript syntax checks passed.
-- Final source adapter regression includes application payroll and approved
-  period-input ledger behavior; no source-order or financial formula changes.
-- Live Chrome validation of the NEW release is outstanding until deployment.
-- No test screenshots/PNGs were saved. Temporary archive source copies removed.
+Backups and evidence:
+Rize permanent: /odoo/archives/rize-mapping-repair-20261021T022503Z
+Other three: /odoo/backups/mapping-repair-20261021T022503Z
+Nonproduction retention: seven days, preserve latest usable.
+Rize never auto-delete. Private migration receipts archived under the permanent
+Rize backup's receipts directory. No sensitive employee values in this report.
 
-Remaining genuine review entries:
-The original 480-input plan now has 354 provider bindings, 20 recurring contract
+Migration results:
+- Four native probation-start mappings created on the mainline schemas.
+- 122 unambiguous historical probation dates copied to hr.contract.pb_trial_date_start.
+- No joining date substitution; existing conflict/uniqueness safeguards retained.
+- Rollback rehearsal passed before application; apply committed.
+- Idempotence rerun: zero native mappings created, zero field changes.
+- Business transaction invariants unchanged; no formulas or new rules changed.
+- Existing probation-end mapping remains hr.contract.trial_date_end.
+
+Production mapping verification:
+Country     Spreadsheet bindings   App mapped   App review   Restricted excluded
+Vietnam     135                    99           16           2
+India       114                    89           18           2
+Singapore   101                    74           22           2
+Indonesia   130                    94           25           2
+Application effective date remains 2026-11-01.
+Journey's overall fed count may use an Excel source even when the separate
+application mapping needs review; it does not certify employee data readiness.
+Vietnam's workbook-specific Journey displays 125 relevant inputs, all fed;
+this is distinct from its 139 total inputs and 135 saved spreadsheet bindings.
+
+Tests and Chrome verification:
+- Local release suite: 140 tests, zero failures/errors.
+- Subsequent Connections suite: 14 tests, zero failures/errors.
+- DEPLOYED p0clone suite: 140 tests, zero failures/errors, before other upgrades.
+- Live ORM checks: all four spreadsheet counts preserved, picker excludes merged
+  migration branches, probation start/end bindings and domain records correct.
+- Chrome Journey: all four mainline coverage headers show Excel and application
+  counts separately, pending/restricted counts, readiness/effective-date note.
+- Chrome Connections: application source chips visible; Vietnam probation start
+  explicitly resolves to contract.pb_trial_date_start in the no-spreadsheet panel.
+- Chrome Templates: all four probation start/end cards under saved Contract
+  records, outcome under pb.probation.review; not suggested monthly inputs.
+- Opening Vietnam Templates from its merged migration branch redirects to the
+  mainline with an explicit explanation; only four operational schemas offered.
+- Visual layout inspected in memory. No test screenshot or PNG files retained.
+- No payroll computed or paid during UI verification; no template layout saved.
+
+Remaining review scope, not claimed complete:
+The original 480-input plan has 354 provider bindings, 20 recurring contract
 terms, 21 reviewed payroll controls, 4 legacy spreadsheet inputs and 81 explicitly
-pending metadata mappings (formerly 85). Ten additional application-mode inputs
-are separate. Pending definitions and missing employee values are distinct.
-The four probation-start definitions are ready for migration to
-hr.contract.pb_trial_date_start. No joining date is substituted. Historical date
-copies require a unique effective contract, a single ISO date and no conflict.
-A code deployment alone does not apply these four client-specific mappings.
+pending metadata mappings. Ten additional application-mode inputs are separate.
+These pending entries and missing employee values are distinct.
+Searchable field-by-field audit: docs/design/rize-payroll-source-audit-20261021.html.
 
-Deployment blocker / scope:
-Payobook19v2 /opt/deploy-notes.md has an open START at 2026-10-21 01:31 UTC for
-Claude Opus (VIFIX P1 audit). User rule requires waiting for DONE/FAILED.
-A coordination comment was appended at 01:49 UTC under the shared lock.
-No deployment START, code copy, production database mutation or restart occurred.
-Required targets remain p0clone, payobook, payobook_template and rize.
-ABM is retired and excluded.
-
-Prepared local release artifacts (must refresh branch/server checks before use):
-/tmp/rize-mapping-followup-20261021/
-  release.json, addons.tar.gz, deploy.py, verify_live.py,
-  migrate_rize_application_sources.py, rize_application_source_plan.json
-The archive includes all nine currently changed custom module trees from the
-combined committed branch; all 151 existing custom trees have expected hashes.
-Other included modules are pb_approval_config, pb_goals, pb_home_hub, pb_learn,
-pb_probation. Preserve later concurrent commits and rebuild as required.
-
-Remaining steps, already authorized:
-1. Wait for shared activity entry to close; reread notes and latest branch.
-2. Refresh server inventory and rebuild against latest combined committed source.
-3. Stage and run detached under flock /tmp/payobook-studio-deploy.lock.
-4. Back up all four (Rize permanent), rehearse upgrade/tests on p0clone, upgrade
-   installed modules on remaining DBs, dry-run then apply Rize mapping changes.
-5. Verify idempotence, unchanged payroll/leave/asset/exit transaction hashes,
-   source counts and probation mappings; restore cron IDs (template zero).
-6. Invalidate/warm assets, verify all custom hashes and installed versions.
-7. Chrome E2E check Journey, Connections and Templates on four mainlines, and
-   mainline redirect from a completed migration branch; remove test captures.
-8. Update this report with actual deployment receipt and verification results.
+Concurrent work:
+Post-deployment d37e3f512 is documentation only, with no custom-module difference.
+Uncommitted pb_ask_hr changes belong to another session and were not included.
