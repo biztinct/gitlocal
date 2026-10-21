@@ -349,3 +349,14 @@ class TestAskHrBoardP3d(TransactionCase):
         self.assertEqual(board.with_context(lang='en_US')._median_words(3 * 3600), '3 hours')
         if self.env['res.lang']._get_data(code='vi_VN'):
             self.assertEqual(board.with_context(lang='vi_VN')._median_words(1.5 * 86400), '1,5 ngày')
+
+    def test_17_the_word_migration_is_targeted(self):
+        """LEARNREV LR20/LR29: a module-wide overwrite load rewrites shared
+        records other modules translated better (the display_name label).
+        The 19.0.1.2.0 migration changes only the old stored words."""
+        src = _read('migrations', '19.0.1.2.0', 'post-nav_p3d_reload_terms.py')
+        code = re.sub(r'""".*?"""', '', src, count=1, flags=re.S)   # the docstring only
+        for forbidden in ('_update_translations', '_load_module_terms', 'overwrite=True'):
+            self.assertNotIn(forbidden, code)
+        self.assertIn("d.module = 'pb_ask_hr'", code)
+        self.assertIn("s.name->>'vi_VN' = %s", code)
