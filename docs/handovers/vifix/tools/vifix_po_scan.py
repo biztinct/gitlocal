@@ -16,6 +16,8 @@ Checks (one finding list each):
   pot_dropped    .po entries obsoleted by the .pot merge (translated but never loaded)
   drift          one English msgid translated several ways across modules (top 100 by use)
   suspicious     seed list of literal machine translations + any "odoo" (msgid or msgstr)
+  word_order     Vietnamese that keeps the English Title Case word by word ("Cá nhân Thu nhập
+                 Thuế", "Hiệu lực Ngày"): the sign of word-for-word machine output
   mixed          English word (>= 4 letters) inside a Vietnamese msgstr
   no_diacritics  msgstr that is Latin-only, differs from the English and reads as
                  Vietnamese typed without tone marks
@@ -68,6 +70,21 @@ SUSPICIOUS = [
     ("con chip", "microchip; a UI chip = 'nhãn'"),
     ("viên thuốc", "pill literal; a UI pill = 'nhãn'"),
     ("sân khấu", "theatre stage; a step of a process = 'bước'/'giai đoạn' (seen live: 'SÂN KHẤU 2 / 5')"),
+    ("thợ mộc", "a carpenter (from 'joiner'); a new joiner = 'người mới vào'"),
+    ("phòng cấm", "a forbidden room; department = 'phòng ban'"),
+    ("mạng lưới", "a network (from 'net'); net pay = 'thực nhận'"),
+    ("cai trị", "to rule a country; a rule = 'quy tắc'"),
+    ("tiến lên", "move forward (from 'advance'); a pay advance = 'tạm ứng'"),
+    ("tiền tính bằng", "garbled 'money in'; money in = 'tiền vào'"),
+    ("xuất khẩu", "trade export; export a file = 'xuất'"),
+    ("lập bản đồ", "cartography; column mapping = 'ánh xạ'"),
+    ("thuật sĩ", "a sorcerer (from 'wizard'); a step-by-step dialog = 'trình hướng dẫn'"),
+    ("buồng lái", "an aircraft cockpit; a screen = 'màn hình'"),
+    ("phông chữ tuyệt vời", "'Font Awesome' translated; an icon set name stays as is or is hidden"),
+    ("song song bóng", "word-for-word 'shadow run'; a trial run = 'chạy thử song song'"),
+    ("tán thành", "'to agree with'; approved = 'đã phê duyệt'"),
+    ("rời đi", "'to walk away' (from 'leave'); time off = 'nghỉ phép'"),
+    ("kiếm tiền", "'to make money' (from 'earning'); an earning line = 'khoản thu nhập'"),
     ("odoo", "white-label rule: never 'Odoo' on screen"),
 ]
 SUSPICIOUS_RES = [(re.compile(r"(?<![\wÀ-ỹ])" + re.escape(s) + r"(?![\wÀ-ỹ])", re.I), s, why)
@@ -174,6 +191,8 @@ def scan(repo=C.REPO):
                     add("suspicious", e, seed=seed, where="msgstr", why=why)
                 elif seed == "odoo" and rx.search(msgid):
                     add("suspicious", e, seed=seed, where="msgid", why=why)
+            if C.has_vietnamese(msgstr) and C.title_case_order(msgstr, msgid):
+                add("word_order", e)
             if C.has_vietnamese(msgstr):
                 en = C.english_words(msgstr)
                 if en:
@@ -243,7 +262,7 @@ def scan(repo=C.REPO):
                                           if os.path.exists(os.path.join(repo, m, "i18n", "vi_VN.po"))]}
 
 
-CHECKS = ["same_text", "empty", "pot_dropped", "suspicious", "mixed", "no_diacritics",
+CHECKS = ["same_text", "empty", "pot_dropped", "suspicious", "word_order", "mixed", "no_diacritics",
           "loanwords", "markers", "placeholders"]
 
 

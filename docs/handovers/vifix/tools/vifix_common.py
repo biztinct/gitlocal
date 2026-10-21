@@ -202,3 +202,27 @@ def norm(s):
 
 def rel(path, repo=REPO):
     return os.path.relpath(path, repo)
+
+
+VI_PROPER_RE = re.compile(
+    r"Việt Nam|Ấn Độ|Thái Lan|Trung Quốc|Hàn Quốc|Nhật Bản|Hoa Kỳ|Vương quốc Anh|Đông Nam Á|"
+    r"Bộ luật Lao động|Luật [A-ZĐ]\w*(?: [a-zà-ỹđ]\w*)*|Nghị định|Thông tư|Bộ Tài chính|Bộ Lao động[^,.;]*|"
+    r"Hồ Chí Minh|Hà Nội|Đà Nẵng|Tết|Ngân hàng [A-ZĐ]\w*|Chủ nhật|Thứ [A-ZĐ]\w+|Tháng [A-ZĐ]\w+")
+
+
+def title_case_order(msgstr, msgid=""):
+    """Vietnamese in sentence case capitalises only the first word (and names). A short label
+    whose English is Title Case and whose Vietnamese capitalises two or more later syllables
+    ("Cá nhân Thu nhập Thuế", "Basic Lương", "Nhóm Bởi") was translated word by word."""
+    t = clean_text(msgstr).strip()
+    if len(t) > 70 or not (2 <= len(WORD_RE.findall(t)) <= 8):
+        return False
+    t = VI_PROPER_RE.sub(" ", t)
+    later = []
+    for seg in re.split(r"[›/·:|—–()\[\]«»\"“”]|\s-\s", t):
+        words = WORD_RE.findall(seg)
+        later += [w for w in words[1:] if w[:1].isupper() and not w.isupper()
+                  and classify_word(w) not in ("allow", "code", "en")]
+    en_words = WORD_RE.findall(clean_text(msgid))
+    en_title = len(en_words) >= 2 and sum(1 for w in en_words if w[:1].isupper()) >= 2
+    return en_title and len(later) >= 2
