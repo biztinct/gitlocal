@@ -27,14 +27,21 @@ one (R56/R104).
 """
 
 import logging
+from datetime import timedelta
 
-from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo import SUPERUSER_ID, _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 from .training_common import (
-    ASSIGN_OPEN, GROUP_MANAGER, P_HR_DAYS, P_MANAGER_DAYS, P_REMINDER_CAP,
-    P_REMINDERS, counted, days_over, flag, number,
+    ASSIGN_OPEN, GROUP_MANAGER, P_CERT_MANAGER_DAYS, P_CERT_REMINDERS,
+    P_HR_DAYS, P_MANAGER_DAYS, P_RENEW_BEFORE, P_REMINDER_CAP, P_REMINDERS,
+    counted, days_over, flag, number,
 )
+
+#: LEARNING L1 — the certificate ladder, to the person. Each band fires once
+#: (the first morning the certificate is inside it), so a certificate added
+#: with twenty days left gets the 30-day mail and not a late 60-day one.
+CERT_BANDS = (('x60', 60, 31), ('x30', 30, 8), ('x7', 7, 1), ('x0', 0, 0))
 
 _logger = logging.getLogger(__name__)
 
@@ -51,7 +58,8 @@ class PbTrainingAutomation(models.AbstractModel):
     def _cron_daily(self):
         today = fields.Date.today()
         counts = {'refreshed': 0, 'scheduled': 0, 'employee': 0,
-                  'manager': 0, 'hr': 0, 'capped': 0}
+                  'manager': 0, 'hr': 0, 'capped': 0, 'renewals': 0,
+                  'certificates': 0}
         counts['refreshed'] = self._leg('bring assignments up to date',
                                         lambda: self._refresh_all(today))
         counts['scheduled'] = self._leg('run the compliance schedules',
@@ -66,12 +74,22 @@ class PbTrainingAutomation(models.AbstractModel):
         chased = self._leg('chase what is due and what is late',
                            lambda: self._chase(today), default={})
         counts.update(chased or {})
+        # LEARNING L1, leg 3b: a certificate inside its renewal window puts
+        # the refresher course on the person by itself.
+        counts['renewals'] = self._leg(
+            'put renewal courses on people', lambda: self._renewals(today))
+        # Leg 4: the certificate ladder, under the same send cap.
+        if flag(self.env, P_CERT_REMINDERS):
+            self._leg('chase certificates that are running out',
+                      lambda: self._chase_certificates(today, counts),
+                      default=None)
         _logger.info(
             'pb_training: %s assignment(s) brought up to date, %s new from a '
             'schedule, %s nudge(s) to people, %s to managers, %s to the HR '
-            'lead%s',
+            'lead, %s renewal course(s) put on, %s certificate reminder(s)%s',
             counts['refreshed'], counts['scheduled'], counts['employee'],
-            counts['manager'], counts['hr'],
+            counts['manager'], counts['hr'], counts['renewals'],
+            counts['certificates'],
             ' — the send cap was reached, the rest go out tomorrow'
             if counts.get('capped') else '')
         return counts
@@ -224,6 +242,172 @@ class PbTrainingAutomation(models.AbstractModel):
                              self._hr_email(row.company_id)):
                     row._mark_sent(key, today)
                     counts['hr'] += 1
+
+    # =====================================================================
+    #  LEARNING L1 — renewal courses
+    # =====================================================================
+    @api.model
+    def _renewal_candidates(self, today):
+        window = max(number(self.env, P_RENEW_BEFORE, 60), 0)
+        if 'pb.employee.document' not in self.env:
+            return self.env['res.partner'].browse()
+        # NOT YET EXPIRED, ON PURPOSE. A certificate that ran out before this
+        # system ever saw it (a back-filled row from years ago) must not wake
+        # up as a renewal course that is overdue the moment it is made — and
+        # mails its manager and the HR lead the same morning. The window is
+        # sixty days, so a certificate this job is watching is caught long
+        # before its day; anything older is a person for HR to decide on
+        # (the register's "Assign the refresher").
+        return self.env['pb.employee.document'].sudo().search([
+            ('training_source', '=', 'test'),
+            ('renewed_by_id', '=', False),
+            ('renewal_assignment_id', '=', False),
+            ('channel_id', '!=', False),
+            ('expiry_date', '>=', today),
+            ('expiry_date', '<=', today + timedelta(days=window)),
+            ('employee_id.active', '=', True),
+        ])
+
+    @api.model
+    def _renewals(self, today):
+        made = 0
+        for doc in self._renewal_candidates(today):
+            try:
+                with self.env.cr.savepoint():
+                    if self._assign_renewal(doc, today=today):
+                        made += 1
+            except Exception:           # noqa: BLE001 — one row, one grave
+                _logger.warning('pb_training: no renewal course could be put '
+                                'on for certificate %s', doc.id, exc_info=True)
+        return made
+
+    @api.model
+    def _assign_renewal(self, doc, today=None, raise_on_clash=False):
+        """The refresher course for one certificate. ONE per certificate,
+        ever: `renewal_assignment_id` is the guard, and an assignment already
+        open on that course is left alone (`_guard_one_open` would refuse a
+        second one anyway).
+
+        From the morning job (`raise_on_clash=False`) a reason not to is a
+        quiet `False`; from the register's button it is a sentence.
+        """
+        today = today or fields.Date.today()
+
+        def refuse(message):
+            if raise_on_clash:
+                raise UserError(message)
+            return False
+
+        doc = doc.sudo()
+        emp = doc.employee_id.sudo()
+        channel = doc.channel_id.sudo()
+        if not channel:
+            return refuse(_("This certificate is not tied to a course here, "
+                            "so there is no refresher to assign."))
+        if not channel.active:
+            return refuse(_("%s is archived, so it cannot be assigned.",
+                            channel.name))
+        renewal = doc.renewal_assignment_id
+        if renewal and renewal.state in ASSIGN_OPEN:
+            return refuse(_("The renewal course is already assigned — due "
+                            "%s.", renewal.due_date or ''))
+        if not emp.user_id:
+            return refuse(_("%s has no login yet, so there is nowhere for the "
+                            "course to appear.", emp.name or ''))
+        Assignment = self.env['pb.training.assignment'].sudo()
+        clash = Assignment.search([('channel_id', '=', channel.id),
+                                   ('employee_id', '=', emp.id),
+                                   ('state', 'in', ASSIGN_OPEN)], limit=1)
+        if clash:
+            return refuse(_("%(who)s is already doing %(course)s — it is due "
+                            "on %(when)s.", who=emp.name or '',
+                            course=channel.name or '',
+                            when=clash.due_date or ''))
+        due = doc.expiry_date if doc.expiry_date and doc.expiry_date >= today \
+            else Assignment._default_due(today)
+        # The morning job puts it on as the system; the register's button as
+        # the person who pressed it (sudo keeps their uid).
+        maker = Assignment if raise_on_clash \
+            else Assignment.with_user(SUPERUSER_ID).sudo()
+        row = maker.create({
+            'channel_id': channel.id,
+            'employee_id': emp.id,
+            'reason': 'renewal',
+            'due_date': due,
+            'counts_for_probation': False,
+            'company_id': (emp.company_id or self.env.company).id,
+        })
+        doc.write({'renewal_assignment_id': row.id})
+        return {'assignment_id': row.id,
+                'message': _("%(who)s is on %(course)s again, to be finished "
+                             "by %(when)s.", who=emp.name or '',
+                             course=channel.name or '', when=due)}
+
+    # =====================================================================
+    #  LEARNING L1 — the certificate ladder
+    # =====================================================================
+    @api.model
+    def _chase_certificates(self, today, counts):
+        cap = number(self.env, P_REMINDER_CAP, 400)
+        mgr_days = max(number(self.env, P_CERT_MANAGER_DAYS, 14), 0)
+        if 'pb.employee.document' not in self.env:
+            return counts
+        docs = self.env['pb.employee.document'].sudo().search([
+            ('training_source', '!=', False),
+            ('renewed_by_id', '=', False),
+            ('expiry_date', '>=', today),
+            ('expiry_date', '<=', today + timedelta(days=60)),
+            ('employee_id.active', '=', True),
+        ])
+        for doc in docs:
+            sent = (counts.get('employee', 0) + counts.get('manager', 0)
+                    + counts.get('hr', 0) + counts.get('certificates', 0))
+            if sent >= cap:
+                counts['capped'] = counts.get('capped', 0) + 1
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    self._chase_cert_one(doc, today, mgr_days, counts)
+            except Exception:           # noqa: BLE001 — one row, one grave
+                _logger.warning('pb_training: certificate %s could not be '
+                                'chased', doc.id, exc_info=True)
+        return counts
+
+    @api.model
+    def _chase_cert_one(self, doc, today, mgr_days, counts):
+        """Every reminder one certificate owes today, and no more. Nothing
+        after its day (the renewal course's own chase takes over) and
+        nothing for a certificate a newer one has replaced."""
+        if doc.renewed_by_id or not doc.expiry_date:
+            return
+        left = (doc.expiry_date - today).days
+        if left < 0:
+            return
+        sent = doc._pb_sent()
+        counts.setdefault('certificates', 0)
+        # ---- the person: one band at a time --------------------------------
+        for key, top, bottom in CERT_BANDS:
+            if bottom <= left <= top:
+                if key not in sent and doc._pb_training_mail(
+                        'pb_training.mail_template_certificate_expiring',
+                        doc._pb_their_email()):
+                    doc._pb_mark_sent(key, today)
+                    counts['certificates'] += 1
+                break
+        # ---- their manager ---------------------------------------------------
+        if left <= mgr_days and 'xm14' not in sent:
+            if doc._pb_training_mail(
+                    'pb_training.mail_template_certificate_expiring_manager',
+                    doc._pb_manager_email()):
+                doc._pb_mark_sent('xm14', today)
+                counts['certificates'] += 1
+        # ---- the HR lead, on the day -----------------------------------------
+        if left == 0 and 'xh0' not in sent:
+            if doc._pb_training_mail(
+                    'pb_training.mail_template_certificate_expired_hr',
+                    self._hr_email(doc.company_id or doc.employee_id.company_id)):
+                doc._pb_mark_sent('xh0', today)
+                counts['certificates'] += 1
 
     # =====================================================================
     #  who the HR lead is
