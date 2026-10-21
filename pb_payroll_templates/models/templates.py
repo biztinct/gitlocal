@@ -427,7 +427,7 @@ class PayrollTemplates(models.AbstractModel):
         for employee in people:
             contract = contracts.get(employee.id) or self.env['hr.contract']
             values = {}
-            domains = cfg._application_domain_values(employee, contract, start, end,
+            domains = cfg._application_record_context_values(employee, contract, start, end,
                 source_keys=context_keys) if context_keys else {}
             for fid, card in cards.items():
                 if card.get('application'):

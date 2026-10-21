@@ -189,7 +189,10 @@ class HrFormulaConfigApplicationDomains(models.Model):
                 }
         return result
 
-    def _application_domain_values(self, employee, contract, date_from, date_to, source_keys=None):
+    def _application_domain_values(self, employee, contract, date_from, date_to):
+        return self._application_record_context_values(employee, contract, date_from, date_to)
+
+    def _application_record_context_values(self, employee, contract, date_from, date_to, source_keys=None):
         self.ensure_one()
         parent = getattr(super(), '_application_domain_values', None)
         result = dict(parent(employee, contract, date_from, date_to) if parent else {})
