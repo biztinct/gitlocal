@@ -9,8 +9,12 @@
  *      cannot import this one back). Training left Talent completely (owner
  *      decision LD3): nothing here registers into Talent's registry any more.
  *
- *          10 overview · 20 mine · 30 courses · 40 assigned · 50 required ·
- *          60 tests · 65 certificates · 70 claims · 80 numbers
+ *          10 overview · 20 mine · 30 courses · 35 paths · 40 assigned ·
+ *          50 required · 60 tests · 65 certificates · 70 claims · 80 numbers
+ *
+ *      LEARNING L3 added PATHS (35): learning paths with their station
+ *      lines; Overview's "Late on a path" arrives on the late filter
+ *      (`pb_training_path_state`). Ten items — the rail target (ledger L2).
  *
  *      LEARNING L1 added CERTIFICATES (65): the register of every
  *      certificate and licence, arriving on a filter when Overview or a
@@ -54,6 +58,7 @@ import { PbMyLearningLens } from "@pb_training/js/my_learning_lens";
 import { PbTrainingTestsLens } from "@pb_training/js/training_tests_lens";
 import { PbRequiredLens } from "@pb_training/js/required_lens";
 import { REQ_TAB_KEY, REQ_STATE_KEY, REQ_PACK_KEY } from "@pb_training/js/required_settings";
+import { PbPathsLens, PATH_STATE_KEY, TRAINING_TERM_KEY } from "@pb_training/js/paths_lens";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -92,6 +97,20 @@ lenses.add("courses", {
     props: { startTab: "courses", tabs: ["courses"] },
 }, { sequence: 30 });
 
+// LEARNING L3: learning paths. Overview's "Late on a path" arrives filtered.
+lenses.add("paths", {
+    key: "paths",
+    icon: "route",
+    label: _t("Paths"),
+    title: _t("Learning paths"),
+    Component: PbPathsLens,
+    groups: TRAINING_GATE,
+    propsFromContext(ctx) {
+        const asked = ctx && ctx[PATH_STATE_KEY];
+        return { startState: asked === "overdue" ? "overdue" : "" };
+    },
+}, { sequence: 35 });
+
 // The arrival may ask for the "More time" tab (Overview's queue chip).
 const ASSIGNED_TABS = ["assignments", "requests"];
 lenses.add("assigned", {
@@ -106,6 +125,8 @@ lenses.add("assigned", {
         return {
             startTab: ASSIGNED_TABS.includes(asked) ? asked : "assignments",
             tabs: ASSIGNED_TABS,
+            // LEARNING L3: the path page's "Open their courses" searches a name.
+            startTerm: (ctx && ctx[TRAINING_TERM_KEY]) || "",
         };
     },
 }, { sequence: 40 });
@@ -250,6 +271,18 @@ palette.add("training_my", {
     action: { xmlid: HUB_XMLID, lens: "mine" },
     keywords: ["my training", "training", "talent", "đào tạo của tôi"],
 }, { sequence: 3930 });
+
+// LEARNING L3: learning paths, from the command bar.
+palette.add("training_paths", {
+    id: "training_paths",
+    label: _t("Learning paths"),
+    sublabel: _t("Learning"),
+    icon: "route",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: HUB_XMLID, lens: "paths" },
+    keywords: ["path", "career", "programme", "lộ trình", "training", "talent"],
+}, { sequence: 3935 });
 
 // LEARNING L1: the register, from the command bar.
 palette.add("training_certificates", {

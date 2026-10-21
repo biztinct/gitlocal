@@ -27,6 +27,8 @@ RAIL = [
     ('overview', 10, 'Overview', 'layoutGrid', 'PbLearningOverview'),
     ('mine', 20, 'My learning', 'user', 'PbMyLearningLens'),
     ('courses', 30, 'Courses', 'bookOpen', 'PbTrainingBoard'),
+    # LEARNING L3
+    ('paths', 35, 'Paths', 'route', 'PbPathsLens'),
     ('assigned', 40, 'Assigned', 'userCheck', 'PbTrainingBoard'),
     # LEARNING L2: its own screen (Matrix · Rules · Day one · Comes round again)
     ('required', 50, 'Required', 'listChecks', 'PbRequiredLens'),
@@ -70,8 +72,8 @@ class TestT4TheRail(TransactionCase):
     def test_t4_the_gates_are_the_handover_gates(self):
         blocks = _lens_blocks(_src('static', 'src', 'js', 'training_palette.js'))
         self.assertIn('groups: ["base.group_user"]', blocks['mine'][0])
-        for key in ('overview', 'courses', 'assigned', 'required', 'tests',
-                    'certificates', 'claims'):
+        for key in ('overview', 'courses', 'paths', 'assigned', 'required',
+                    'tests', 'certificates', 'claims'):
             self.assertIn('groups: TRAINING_GATE,', blocks[key][0], key)
         self.assertIn('groups: TRAINING_GATE.concat(["base.group_system"])',
                       blocks['numbers'][0])

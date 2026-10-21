@@ -32,7 +32,7 @@ const SETTINGS_XMLID = "pb_training.action_pb_training_required_settings";
 function blankForm(kind = "always") {
     return {
         id: 0, name: "", kind, target: "course", channel_id: 0,
-        refresher_channel_id: 0, name_pattern: "", hours_required: 0,
+        refresher_channel_id: 0, name_pattern: "", hours_required: 0, path_id: 0,
         validity_months: kind === "recurring" ? 12 : 0, due_days: kind === "day_one" ? 14 : 30,
         every_months: kind === "recurring" ? 12 : 0,
         department_ids: [], job_ids: [], work_location_ids: [], country_ids: [],
@@ -395,6 +395,7 @@ export class PbRequiredLens extends Component {
         if (f.target === "course" && !f.channel_id) { return false; }
         if ((f.target === "certificate" || f.target === "licence") && !f.name_pattern.trim() && !f.channel_id) { return false; }
         if (f.target === "hours" && !Number(f.hours_required)) { return false; }
+        if (f.target === "path" && !f.path_id) { return false; }
         return true;
     }
 

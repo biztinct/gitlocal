@@ -324,6 +324,7 @@
                   </div>
                   <div class="pbtn-td pbtn-td--course">
                     <span t-esc="asg.course"/>
+                    <span t-if="asg.step_words" class="pbtn-dim" t-esc="asg.step_words"/>
                     <span t-if="asg.probation" class="pbim-badge warn">
                       Trial period waits for it
                     </span>

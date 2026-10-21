@@ -379,9 +379,20 @@
                 <option value="certificate" t-att-selected="state.form.target === 'certificate'">A certificate</option>
                 <option value="licence" t-att-selected="state.form.target === 'licence'">A licence or permit</option>
                 <option value="hours" t-att-selected="state.form.target === 'hours'">Hours of training</option>
+                <option value="path" t-att-selected="state.form.target === 'path'">A learning path</option>
               </select>
             </label>
-            <label class="pbrq-f pbrq-f--wide">
+            <label t-if="state.form.target === 'path'" class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Learning path</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('path_id', ev, 'int')">
+                <option value="0" t-att-selected="!state.form.path_id">Pick a path</option>
+                <t t-foreach="lists.paths || []" t-as="lpth" t-key="lpth.id">
+                  <option t-att-value="lpth.id" t-att-selected="state.form.path_id === lpth.id" t-esc="lpth.name"/>
+                </t>
+              </select>
+              <span class="pbrq-hint">Held once the person has finished every step of the path. Assign now puts them on it.</span>
+            </label>
+            <label t-if="state.form.target !== 'path'" class="pbrq-f pbrq-f--wide">
               <span class="pbrq-f-l">Course</span>
               <select class="pbrq-in" t-on-change="(ev) => this.setField('channel_id', ev, 'int')">
                 <option value="0" t-att-selected="!state.form.channel_id">No course</option>

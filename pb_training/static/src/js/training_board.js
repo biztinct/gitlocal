@@ -46,6 +46,9 @@ export class PbTrainingBoard extends Component {
     static props = {
         startTab: { type: String, optional: true },
         tabs: { type: Array, optional: true },
+        // LEARNING L3: the Assigned lens may arrive searched on a name (the
+        // path page's "Open their courses").
+        startTerm: { type: String, optional: true },
         embedded: { type: Boolean, optional: true },
         "*": true,
     };
@@ -95,8 +98,8 @@ export class PbTrainingBoard extends Component {
             aReasons: [],
             aStates: [],
             aSwitches: {},
-            aFilters: { reason: "", state: "", department_id: 0, term: "",
-                        include_done: false },
+            aFilters: { reason: "", state: "", department_id: 0,
+                        term: this.props.startTerm || "", include_done: false },
 
             // the "Assign a course" dialog
             assign: false,
