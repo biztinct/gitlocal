@@ -947,31 +947,6 @@ export class PayrunWizard extends Component {
         ev.target.value = ''; // Let the same filename be selected again after an error.
         this._takeFile(f);
     }
-    // RD56 — one button, and it does exactly what it says: writes the
-    // connected system's values onto the matching employee and contract
-    // records. It creates NO payslips; the run is computed afterwards exactly
-    // as it always was.
-    async updateRecordsFromFeed() {
-        this.state.sheet.recordsBusy = true;
-        this.state.sheet.recordsMsg = "";
-        this.state.sheet.error = "";
-        try {
-            const r = await this.orm.call(
-                "pb.payrun.wizard", "update_records_from_feed",
-                [{ ...this.state.form }]);
-            if (r && r.ok) {
-                this.state.sheet.recordsMsg = r.msg || "";
-            } else {
-                this.state.sheet.error = (r && r.msg) || "";
-            }
-        } catch (e) {
-            console.warn("pb_payrun_wizard: record update failed", e);
-            this.state.sheet.error = "The records could not be updated.";
-        } finally {
-            this.state.sheet.recordsBusy = false;
-        }
-    }
-
     clearSheetFile() {
         Object.assign(this.state.sheet, {
             file_b64: "", file_name: "", preflight: null, error: "",
