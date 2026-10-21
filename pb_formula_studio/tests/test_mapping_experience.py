@@ -58,7 +58,7 @@ class TestMappingExperience(TransactionCase):
         pending_row = next(r for r in data['lanes']['scheme'][0]['rows'] if r['id'] == 's:%s' % pending.id)
         self.assertFalse(pending_row['fed'])
         self.assertIn('review', pending_row['sub'])
-        self.assertTrue(any(r['group'] == 'application' for r in data['lanes']['source'][0]['rows']))
+        self.assertTrue(any(r['group'] == 'app:Calendar & time off' for r in data['lanes']['source'][0]['rows']))
         desk = self.studio.mapping_workspace_data(self.config.id)
         descriptors = {r['id']: r['application_source'] for r in desk['components']}
         self.assertTrue(descriptors[self.rule.id]['available'])

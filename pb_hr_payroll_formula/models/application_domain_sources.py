@@ -130,6 +130,7 @@ class HrFormulaConfigApplicationDomains(models.Model):
             result[rule.id] = {
                 'key': key, 'label': spec.get('label') or key,
                 'model': spec.get('model') or rule.application_source_owner_model or '',
+                'owner_label': self._application_source_display(key, spec)['owner'],
                 'record': key.startswith(record_prefixes),
                 'pending': pending,
                 'available': not pending and spec.get('available', True),

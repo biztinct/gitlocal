@@ -472,6 +472,19 @@ class PayrollTemplates(models.AbstractModel):
         catalog = self._catalog(cfg)
         layout = self._layout(cfg, catalog)
         monthly = {e.id: {} for e in people} if reusable else self._current(cfg, period, people)
+        saved_monthly = {eid: dict(values) for eid, values in monthly.items()}
+        source_keys = {'rule:%s' % rule.id: rule.application_source_key for rule in cfg.rule_ids}
+        suggestions = {}
+        if not reusable and mode == 'monthly' and cfg.application_data_enabled:
+            start, end = self._period(period)
+            for employee in people:
+                facts = cfg._application_workbook_suggestions(employee, start, end)
+                suggestions[employee.id] = facts
+                for column in catalog:
+                    key = source_keys.get(column['id'], '')
+                    fact = facts.get(key, {})
+                    if not column.get('readonly') and column['id'] not in monthly[employee.id] and fact.get('status') == 'resolved':
+                        monthly[employee.id][column['id']] = plain(fact.get('value'))
         by_id = {c['id']: c for c in catalog}
         selected_cards = [(by_id[fid]['record_id'], dict(cards[by_id[fid]['record_id']], label=by_id[fid]['label'])) for fid in self._record_layout_fields(layout, catalog)]
         if 'f:hr.employee:name' in cards:
@@ -491,8 +504,8 @@ class PayrollTemplates(models.AbstractModel):
         else:
             columns = {**{TABS[k]: [by_id[i] for i in layout[k]] for k in TABS},
                        RECORD_TAB: [by_id[i] for i in layout['records']]}
-        snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
-        snapshot['readonly_sheets'] = [] if mode == 'records' or cfg.focused_payroll_inputs else [RECORD_TAB]
+        snapshot = {'mode': 'monthly' if reusable else mode, 'period': '' if reusable else period, 'reusable': reusable, 'application_prefill': bool(suggestions), 'layout': self._fingerprint(layout, catalog), 'columns': columns, 'identity_columns': identity_columns, 'employees': {}}
+        snapshot['readonly_sheets'] = [] if mode == 'records' else [RECORD_TAB]
         import openpyxl
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
@@ -503,7 +516,7 @@ class PayrollTemplates(models.AbstractModel):
                          'component': ('70538A', 'F3ECFA'), 'bank': ('916326', 'FFF3DD')}
         for sheet_name, cols in columns.items():
             ws = wb.create_sheet(sheet_name)
-            master_snapshot = mode != 'records' and sheet_name == RECORD_TAB and not cfg.focused_payroll_inputs
+            master_snapshot = mode != 'records' and sheet_name == RECORD_TAB
             identity = [c['label'] for c in identity_columns]
             headers = identity + [c['label'] for c in cols] + ['_row']
             # Record columns are keyed by their saved field IDs in comments.
@@ -525,7 +538,7 @@ class PayrollTemplates(models.AbstractModel):
                              for part in str(label).split('\n')) for label in headers), default=1)
             ws.row_dimensions[1].height = max(32, lines * 15 + 8)
             for ci, c in enumerate(cols, len(identity) + 1):
-                ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'May be submitted for a reviewed master-record update.' if c.get('record_editable') else ('Read-only context.' if c.get('readonly') else '')), 'Payobook')
+                ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'Locked reference. Changes on this sheet are ignored during monthly upload.' if master_snapshot else 'May be submitted for a reviewed master-record update.' if c.get('record_editable') else ('Read-only context.' if c.get('readonly') else '')), 'Payobook')
                 if master_snapshot:
                     color = record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[0]
                     ws.cell(1, ci).fill = PatternFill('solid', fgColor=color)
@@ -534,13 +547,13 @@ class PayrollTemplates(models.AbstractModel):
                 if key not in snapshot['employees']:
                     snapshot['employees'][key] = {'code': self._code(e), 'email': e.work_email or '', 'name': e.name,
                                                  'identity_values': {c['kind']: self._identity_value(e, c) for c in identity_columns},
-                                                 'records': records[e.id], 'monthly': monthly[e.id], 'row': uuid.uuid4().hex}
+                                                 'records': records[e.id], 'monthly': monthly[e.id], 'saved_monthly': saved_monthly[e.id], 'row': uuid.uuid4().hex}
                 person = snapshot['employees'][key]
                 values = records[e.id] if mode == 'records' else monthly[e.id]
                 vals = []
                 for c in cols:
                     value = records[e.id].get(c.get('record_id')) if c.get('readonly') and mode != 'records' else values.get(c.get('record_id') or c['id'])
-                    if mode == 'monthly' and value is None and not c.get('readonly') and re.search(r'standard.*days|standard working days', c['label'], re.I):
+                    if mode == 'monthly' and value is None and not c.get('readonly') and not source_keys.get(c['id']) and re.search(r'standard.*days|standard working days', c['label'], re.I):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
                     vals.append(value)

@@ -336,7 +336,7 @@ class PayrollPeriodInputConfig(models.Model):
         for config in self:
             for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
                 result['period.input.' + rule.code] = {
-                    'label': 'Approved period input: ' + rule.name,
+                    'label': rule.name,
                     'unit': rule.value_kind, 'model': 'hr.payroll.period.input',
                     'component_code': rule.code, 'writable': False,
                     'certification_zero_allowed': bool(rule.application_zero_allowed),
@@ -367,7 +367,7 @@ class PayrollPeriodInputConfig(models.Model):
                 continue
             if len(rows) != 1:
                 fact.update(status='conflict' if rows else 'missing',
-                            reason='Exactly one approved period input is required.')
+                            reason='Exactly one approved monthly adjustment is required.')
                 continue
             row = rows[0]
             if ((row.consumed_payslip_id and row.consumed_payslip_id.id != slip_id)

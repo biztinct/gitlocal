@@ -7993,7 +7993,7 @@ class PbFormulaStudio(models.AbstractModel):
             if app:
                 pending = app['pending'] or not app['available']
                 prid = 'p:app:%s' % app['key']
-                group = 'pending' if pending else 'application'
+                group = 'pending' if pending else {'hr.employee': 'emp', 'hr.contract': 'con', 'res.partner.bank': 'bank'}.get(app['model'], 'app:' + app['owner_label'])
                 # A direct application read and an import/read-back mapping
                 # can name the SAME record field. Give that field one row,
                 # regardless of which component reaches it first. Labels are
@@ -8013,7 +8013,7 @@ class PbFormulaStudio(models.AbstractModel):
                           _('Excluded from payroll snapshots') if app['payroll_excluded'] else
                           _('Application mapping · values checked at run time'))
                 app_row = source_row(prid, app['label'], group)
-                app_row['sub'] = '%s · %s' % (app['model'], detail)
+                app_row['sub'] = '%s · %s' % (app['owner_label'], detail)
                 # Reuse a native record edge, preserving its import direction.
                 # Bank writeback alone is one-way; only an active application
                 # read makes that particular component's relationship two-way.
@@ -8135,6 +8135,9 @@ class PbFormulaStudio(models.AbstractModel):
             present = {r['group'] for r in rows_of['source'].values()}
             groups = [{'id': g, 'label': labels[g]}
                       for g in self._JOURNEY_SOURCE_GROUPS if g in present]
+            groups = [g for g in groups if g['id'] != 'pending'] + [
+                {'id': g, 'label': g[4:]} for g in sorted(present) if g.startswith('app:')
+            ] + [g for g in groups if g['id'] == 'pending']
             cards['source']['groups'] = groups
             n_src = len(rows_of['source'])
             cards['source']['sub'] = (

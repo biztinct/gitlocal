@@ -292,7 +292,7 @@ export class PayrunWizard extends Component {
                 open: false,        // the "just a few people" panel
             },
             application: {
-                loading: false, preview: null, error: "", reason: "", zeroKeys: [],
+                loading: false, preview: null, error: "", reason: "", zeroKeys: [], issueQuery: "", issueFilter: "all",
                 channels: { leave: false, overtime: false, adjustments: false, timesheets: false },
             },
             sheet: {
@@ -310,7 +310,7 @@ export class PayrunWizard extends Component {
             },
         });
         if (!this.state.application) {
-            this.state.application = { loading: false, preview: null, error: "", reason: "", zeroKeys: [],
+            this.state.application = { loading: false, preview: null, error: "", reason: "", zeroKeys: [], issueQuery: "", issueFilter: "all",
                 channels: { leave: false, overtime: false, adjustments: false, timesheets: false } };
         }
         // Breadcrumb navigation remounts client actions. Keep the selected
@@ -423,8 +423,18 @@ export class PayrunWizard extends Component {
     get applicationSettings() { return this.state.sheet.gate?.application || {}; }
     get applicationEnabled() { return !!this.applicationSettings.enabled; }
     get wantsPayData() { return this.wantsSheet || this.applicationEnabled; }
-    get applicationBlockers() { return (this.state.application.preview?.blockers || []).slice(0, 80); }
+    get applicationIssueGroups() {
+        const q=(this.state.application.issueQuery||'').toLowerCase(), filter=this.state.application.issueFilter||'all';
+        return (this.state.application.preview?.issue_groups||[]).filter(g=>(filter==='all'||g.kind===filter||(filter==='source'&&g.kind==='contract'))&&(!q||`${g.title} ${g.owner||''} ${g.message}`.toLowerCase().includes(q)||g.items.some(i=>i.employee.toLowerCase().includes(q))));
+    }
+    issuePeople(group) { const q=(this.state.application.issueQuery||'').toLowerCase();return group.items.filter(i=>!q||i.employee.toLowerCase().includes(q)||group.title.toLowerCase().includes(q)); }
     get applicationZeroOptions() { return this.state.application.preview?.zero_options || []; }
+    async openApplicationIssue(group, employeeId=false) {
+        if(group.kind==='setup')return this.openApplicationSettings();
+        try { const action=await this.orm.call('pb.payrun.wizard','application_issue_action',[this.applicationPayload(),group.kind==='review'?group.channel:group.kind,group.code||'',employeeId]);
+            return this.action.doAction(action, {onClose:()=>this.previewApplicationData()});
+        } catch(e) {this.state.application.error=e?.data?.message||e.message;}
+    }
     applicationPayload() {
         const payload = { ...this.state.form, spreadsheet_skipped: true,
             application_certifications: { channels: { ...this.state.application.channels },

@@ -1014,8 +1014,9 @@ class TestPayrollTemplates(TransactionCase):
     def test_focused_template_edits_record_only_when_explicitly_selected(self):
         self.cfg.focused_payroll_inputs = True
         self.assertTrue(all(c['id'].startswith('rule:') for c in self.api._catalog(self.cfg)))
+        self.move_to_adjustments(self.salary)
         wb = self.export()
-        self.set_value(wb, 'Employee records', 'Salary', 1200)
+        self.set_value(wb, 'Monthly adjustments', 'Salary', 1200)
         self.set_value(wb, 'Time', 'Paid days', 21)
         review = self.review(wb)
         self.assertTrue(review['allow_record_updates'])
@@ -1047,8 +1048,9 @@ class TestPayrollTemplates(TransactionCase):
         self.map_field(tax, 'hr.employee', 'identification_id')
         card = next(c for c in self.api._catalog(self.cfg) if c['code'] == tax.code)
         self.assertTrue(card['record_editable'])
+        self.move_to_adjustments(tax)
         wb = self.export()
-        self.set_value(wb, 'Employee records', 'Tax identity', 'TAX-TEST')
+        self.set_value(wb, 'Monthly adjustments', 'Tax identity', 'TAX-TEST')
         self.set_value(wb, 'Time', 'Paid days', 21)
         review = self.review(wb)
         self.api.confirm_monthly_review(self.cfg.id, review['token'], [], True)
@@ -1093,3 +1095,66 @@ class TestPayrollTemplates(TransactionCase):
         review = self.review(wb)
         self.assertEqual(self.cell(review, self.salary)['value'], 1000)
         self.assertEqual(self.contract.wage, 1000)
+
+    def move_to_adjustments(self, rule):
+        layout = self.api.workspace(self.cfg.id, '2026-10')['layout']
+        fid = 'rule:%s' % rule.id
+        for values in layout.values():
+            if isinstance(values, list) and fid in values: values.remove(fid)
+        layout['adjustments'].append(fid)
+        self.api.save_layout(self.cfg.id, layout)
+
+    def test_focused_employee_reference_is_locked_and_tampering_is_ignored(self):
+        self.cfg.focused_payroll_inputs = True
+        wb = self.export()
+        ws = wb['Employee records']
+        self.assertTrue(ws.protection.sheet)
+        self.assertTrue(ws.protection.password)
+        self.assertTrue(all(cell.protection.locked for row in ws for cell in row))
+        ws.protection.sheet = False
+        self.set_value(wb, 'Employee records', 'Salary', 9999)
+        self.set_value(wb, 'Time', 'Paid days', 21)
+        review = self.review(wb)
+        self.assertEqual(self.cell(review, self.salary)['value'], 1000)
+        self.api.confirm_monthly_review(self.cfg.id, review['token'], [], True)
+        self.assertEqual(self.contract.wage, 1000)
+
+    def test_monthly_workbook_prefills_approved_sources_without_false_stale_warning(self):
+        self.cfg.write({'application_data_enabled': True, 'application_effective_from': '2026-10-01'})
+        self.paid.application_source_key = 'period.paid_day_equivalents'
+        self.bonus.application_source_key = 'period.input.' + self.bonus.code
+        row = self.env['hr.payroll.period.input'].create({
+            'config_id': self.cfg.id, 'component_id': self.bonus.id, 'employee_id': self.emp.id,
+            'company_id': self.env.company.id, 'date_from': '2026-10-01', 'date_to': '2026-10-31',
+            'unit': 'money', 'value_decimal': '123.45', 'reason': 'Workbook source test',
+            'evidence_reference': 'Approved fixture'})
+        row.action_approve()
+        stamp = (row.state, row.write_date, row.reserved_run_id.id)
+        wb = self.export()
+        def value(sheet, label):
+            ws = wb[sheet]
+            return ws.cell(2, [c.value for c in ws[1]].index(label) + 1).value
+        self.assertEqual(value('Monthly adjustments', 'Monthly bonus'), 123.45)
+        self.assertGreater(value('Time', 'Paid days'), 0)
+        self.assertEqual(stamp, (row.state, row.write_date, row.reserved_run_id.id))
+        review = self.review(wb)
+        self.assertFalse(any('changed since download' in w for w in review['warnings']))
+        self.assertEqual(self.cell(review, self.bonus)['value'], 123.45)
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 150)
+        self.api.confirm_monthly_review(self.cfg.id, self.review(wb)['token'])
+        wb = self.export()
+        self.assertEqual(value('Monthly adjustments', 'Monthly bonus'), 150)
+        november = self.export(period='2026-11')
+        ws = november['Monthly adjustments']
+        self.assertIsNone(ws.cell(2, [c.value for c in ws[1]].index('Monthly bonus') + 1).value)
+        self.assertEqual(stamp, (row.state, row.write_date, row.reserved_run_id.id))
+
+    def test_missing_or_conflicting_application_values_stay_blank(self):
+        self.cfg.write({'application_data_enabled': True, 'application_effective_from': '2026-10-01'})
+        self.paid.name = 'Standard working days'
+        self.paid.application_source_key = 'period.standard_days'
+        with patch.object(type(self.cfg), '_application_workbook_suggestions', return_value={
+                'period.standard_days': {'status': 'conflict', 'value': None}}):
+            wb = self.export()
+        ws = wb['Time']
+        self.assertIsNone(ws.cell(2, [c.value for c in ws[1]].index(self.paid.name) + 1).value)

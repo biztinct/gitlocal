@@ -297,7 +297,7 @@ class PayrollInputReview(models.AbstractModel):
                         if plain(value) != resolved[eid][c['id']]['value']:
                             warnings.append(_('%s · %s: saved records refreshed; workbook context was ignored.') % (people.browse(eid).name, c['label']))
                         continue
-                    old_value = old['monthly'].get(c['id'])
+                    old_value = old.get('saved_monthly', old['monthly']).get(c['id'])
                     current = resolved[eid][c['id']]['stored']
                     if not snapshot.get('reusable') and current != old_value and plain(value) != current:
                         warnings.append(_('%s · %s: this month’s saved input changed since download. Your uploaded value is shown for review; confirming replaces only this month’s input.') % (people.browse(eid).name, c['label']))

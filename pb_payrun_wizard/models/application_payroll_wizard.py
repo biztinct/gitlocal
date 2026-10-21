@@ -64,10 +64,22 @@ class ApplicationPayrunWizard(models.AbstractModel):
             if not (vals.get('application_certification_reason') or '').strip():
                 raise UserError(_('Add the review reference or reason before certifying period coverage.'))
         answer = config.application_preflight(employee_ids, vals['date_start'], vals['date_end'], cert)
-        answer['zero_options'] = [dict(v, key=k) for k, v in config._application_source_catalogue().items()
-                                  if v.get('certification_zero_allowed') and
-                                  k in set(config.rule_ids.mapped('application_source_key'))]
+        # Only offer missing/explicit-zero monthly items. Existing approved
+        # amounts stay authoritative; conflicts are never waived by zero.
+        missing = {}
+        for person in answer['employees']:
+            for item in person['inputs']:
+                if item.get('key', '').startswith('period.input.') and item['status'] in ('missing', 'zero_confirmed'):
+                    missing[item['key']] = missing.get(item['key'], 0) + 1
+        answer['zero_options'] = [dict(v, key=k, owner='Monthly adjustments', missing_count=missing[k])
+            for k, v in config._application_source_catalogue().items()
+            if v.get('certification_zero_allowed') and k in missing]
         return answer
+
+    @api.model
+    def application_issue_action(self, vals, kind, code='', employee_id=False):
+        config, employee_ids = self._application_scope(vals)
+        return config.application_issue_action(employee_ids, vals['date_start'], vals['date_end'], kind, code, employee_id)
 
     @api.model
     def sync_plan(self, vals=None):

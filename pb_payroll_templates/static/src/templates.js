@@ -94,11 +94,12 @@ export class PayrollTemplates extends Component {
         if(/days?|ngày/i.test(f.label))return 'Days';
         return {money:this.state.data.currency,quantity:'Quantity',integer:'Whole number',decimal:'Number',rate:'%',text:'Text',identifier:'Reference',date:'Date',boolean:'Yes / No'}[f.kind]||'';
     }
+    async changeMonth(ev){this.state.period=ev.target.value;await this.load();}
     async changeConfig(ev){this.state.configId=Number(ev.target.value);await this.load();}
     show(screen){this.state.screen=screen;this.state.menu='';}
     async download(mode){
         if(this.state.busy)return;this.state.busy=true;this.state.error='';
-        try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.state.configId,mode==='template'?'':this.state.period,mode]));this.notif.add(mode==='template'?'Reusable template downloaded. Choose its pay month when uploading in Pay Run.':'Workbook downloaded with the latest saved records.',{type:'success'});}
+        try{saveFile(await this.orm.call('pb.payroll.templates','download',[this.state.configId,this.state.period,mode==='template'?'monthly':mode]));this.notif.add(mode==='template'?'Monthly template downloaded with connected values. Review blanks and edit the two input tabs as needed.':'Workbook downloaded with the latest saved records.',{type:'success'});}
         catch(e){this.state.error=message(e);}finally{this.state.busy=false;}
     }
     choose(mode){this.importMode=mode;this.fileRef.el.click();}

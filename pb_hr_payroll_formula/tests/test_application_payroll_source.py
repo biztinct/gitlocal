@@ -346,3 +346,55 @@ class TestApplicationPayrollSource(TransactionCase):
         self.assertEqual(slip.application_snapshot_id, snapshot)
         with self.assertRaises(UserError):
             slip.write({'formula_input_values': '{}'})
+
+    def test_readiness_groups_repeated_confirmations_without_weakening_gate(self):
+        result = self.config.application_preflight(self.employee.ids, self.start, self.end)
+        self.assertFalse(result['ok'])
+        reviews = [g for g in result['issue_groups'] if g['kind'] == 'review']
+        self.assertEqual({g['channel'] for g in reviews}, {'leave', 'overtime', 'adjustments'})
+        self.assertEqual(len(reviews), 3)
+        self.assertTrue(all(g['count'] == 1 for g in reviews))
+        self.assertTrue(result['blockers'])
+        self.config.application_effective_from = '2026-11-01'
+        result = self.config.application_preflight(self.employee.ids, self.start, self.end)
+        self.assertEqual(len(result['issue_groups']), 1)
+        self.assertEqual(result['issue_groups'][0]['kind'], 'setup')
+        self.assertIn('2026-11-01', result['issue_groups'][0]['message'])
+        self.assertFalse(result['ok'])
+
+    def test_source_workspace_business_names_and_stale_protection(self):
+        workspace = self.config.application_source_workspace()
+        row = next(r for r in workspace['rows'] if r['id'] == self.paid.id)
+        self.assertEqual(row['owner'], 'Calendar & time off')
+        self.assertEqual(row['status'], 'Connected')
+        self.assertEqual(self.config.action_application_source_settings()['tag'], 'pb_application_sources')
+        self.config.application_save_sources(workspace['stamp'], {'standard_day_basis': 'fixed', 'fixed_standard_days': 26}, [])
+        self.assertEqual(self.config.fixed_standard_days, 26)
+        with self.assertRaisesRegex(UserError, 'another session'):
+            self.config.application_save_sources(workspace['stamp'], {}, [])
+        other = self.config.copy({'code': 'APPOTHERTEST'})
+        with self.assertRaises(UserError):
+            self.config.application_save_sources(self.config._application_settings_stamp(), {},
+                [{'id': other.rule_ids[0].id, 'key': 'employee.name'}])
+
+    def test_issue_links_stay_in_selected_employees_and_period(self):
+        action = self.config.application_issue_action(self.employee.ids, self.start, self.end, 'contract', employee_id=self.employee.id)
+        self.assertEqual(action['res_model'], 'hr.contract')
+        self.assertEqual(action['res_id'], self.contract.id)
+        other = self.env['hr.employee'].create({'name': 'Unselected payroll person'})
+        with self.assertRaises(AccessError):
+            self.config.application_issue_action(self.employee.ids, self.start, self.end, 'leave', employee_id=other.id)
+        action = self.config.application_issue_action(self.employee.ids, self.start, self.end, 'adjustments', self.paid.code)
+        self.assertEqual(action['res_model'], 'hr.payroll.period.input')
+        self.assertIn(('employee_id', 'in', self.employee.ids), action['domain'])
+        self.assertIn(('date_from', '=', self.start), action['domain'])
+        self.assertIn(('date_to', '=', self.end), action['domain'])
+        self.assertIn(('component_id', '=', self.paid.id), action['domain'])
+
+    def test_workbook_suggestions_do_not_certify_or_hide_pending_leave(self):
+        before = self.config._application_settings_stamp()
+        with patch.object(type(self.env['hr.leave']), 'search', return_value=[self._leave(state='confirm')]):
+            facts = self.config._application_workbook_suggestions(self.employee, self.start, self.end)
+        self.assertEqual(facts['period.paid_day_equivalents']['status'], 'conflict')
+        self.assertEqual(before, self.config._application_settings_stamp())
+        self.assertFalse(self.config.application_preflight(self.employee.ids, self.start, self.end)['ok'])

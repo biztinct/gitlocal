@@ -524,14 +524,15 @@ class ApplicationFormulaConfig(models.Model):
             if fact.get('evidence', {}).get('consumption_required'):
                 fact.update(status='missing', reason='This event needs a paid-once reservation before payroll can consume it.')
             row = dict(fact, code=rule.code, label=rule.name, key=key,
-                       unit=catalogue.get(key, {}).get('unit', ''), required=required)
+                       unit=catalogue.get(key, {}).get('unit', ''), required=required,
+                       source_owner=self._application_source_display(key, catalogue.get(key, {}))['owner'] if key else 'Employee or contract record')
             if fact.get('status') in _READY and fact.get('value') is not None:
                 values[rule.code] = fact['value']
                 if key:
                     provenance[rule.code] = {'src': 'employee_field', 'via': 'application_snapshot',
                                             'key': key, 'status': fact['status'], 'evidence': fact['evidence']}
             elif required:
-                blockers.append({'code': rule.code, 'key': key, 'reason': fact['reason'] or 'Mapped value is missing or conflicting.'})
+                blockers.append({'code': rule.code, 'key': key, 'status': fact['status'], 'reason': fact['reason'] or 'Mapped value is missing or conflicting.'})
             inputs.append(row)
         return {'employee_id': employee.id, 'name': employee.name, 'ok': not blockers,
                 'contract_id': contract.id, 'inputs': inputs, 'blockers': blockers,
@@ -559,12 +560,15 @@ class ApplicationFormulaConfig(models.Model):
         rows = [self._application_employee_inputs(e, start, end, certifications or {}) for e in employees]
         blockers = [dict(b, employee_id=r['employee_id'], employee=r['name']) for r in rows for b in r['blockers']]
         all_inputs = [v for r in rows for v in r['inputs']]
-        return {'ok': not blockers, 'employees': rows, 'blockers': blockers,
+        answer = {'ok': not blockers, 'employees': rows, 'blockers': blockers,
                 'certifications': certifications or {},
                 'summary': {'employees': len(rows), 'inputs': len(all_inputs),
                     'resolved': sum(v['status'] in _READY for v in all_inputs),
                     'missing': sum(v['status'] == 'missing' for v in all_inputs),
                     'conflicts': sum(v['status'] == 'conflict' for v in all_inputs)}}
+        answer['issue_groups'] = self._application_readiness_groups(answer, start, end)
+        answer['summary']['issue_groups'] = len(answer['issue_groups'])
+        return answer
 
 
 class ApplicationFormulaRule(models.Model):

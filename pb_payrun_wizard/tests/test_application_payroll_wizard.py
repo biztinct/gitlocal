@@ -88,3 +88,25 @@ class TestApplicationPayrunWizard(TransactionCase):
             with self.assertRaisesRegex(UserError, 'unassigned payslips'):
                 self.Wizard.prepare_run(self._vals())
         self.assertFalse(slip.payslip_run_id)
+
+    def test_officer_cannot_edit_sources_even_with_sudo_metadata(self):
+        with self.assertRaises(AccessError):
+            self.config.with_user(self.officer).sudo().application_save_sources(
+                self.config._application_settings_stamp(), {'fixed_standard_days': 99}, [])
+
+    def test_zero_choices_only_show_missing_monthly_items(self):
+        rules = self.env['hr.formula.rule'].create([
+            {'config_id': self.config.id, 'name': 'Missing bonus', 'code': 'MISSINGBONUS', 'column_type': 'input', 'value_kind': 'money', 'application_source_key': 'period.input.MISSINGBONUS', 'application_zero_allowed': True},
+            {'config_id': self.config.id, 'name': 'Existing bonus', 'code': 'EXISTINGBONUS', 'column_type': 'input', 'value_kind': 'money', 'application_source_key': 'period.input.EXISTINGBONUS', 'application_zero_allowed': True}])
+        row = self.env['hr.payroll.period.input'].create({'config_id': self.config.id,
+            'component_id': rules[1].id, 'employee_id': self.employee.id, 'company_id': self.env.company.id,
+            'date_from': '2026-10-01', 'date_to': '2026-10-31', 'unit': 'money', 'value_decimal': '20',
+            'reason': 'Approved bonus', 'evidence_reference': 'Fixture'})
+        row.action_approve()
+        with patch.object(type(self.Wizard), '_require_scheme', return_value=self.config), \
+             patch.object(type(self.Wizard), '_eligible_employees', return_value=self.employee.ids):
+            answer = self.Wizard.application_data_preview(self._vals())
+        self.assertEqual([r['key'] for r in answer['zero_options']], ['period.input.MISSINGBONUS'])
+        self.assertEqual(answer['zero_options'][0]['missing_count'], 1)
+        self.assertEqual(row.state, 'approved')
+        self.assertFalse(row.reserved_run_id)
