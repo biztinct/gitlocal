@@ -655,3 +655,15 @@ msgstr "Hộp thư"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 msgid "Expenses"
 msgstr "Chi phí"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Help"
+msgstr "Trợ giúp"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
+msgid "Lessons and tours"
+msgstr "Bài học và hướng dẫn tham quan"

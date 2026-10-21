@@ -74,7 +74,7 @@ export function registerLessonRows(content) {
             RT.lang = prev;
         }
     };
-    const group = _t("Learn");
+    const group = _t("Help");
     const howTo = _t("how to");
     let i = 0;
     for (const s of (content.stations || []).slice().sort((a, b) => a.sequence - b.sequence)) {
@@ -129,7 +129,7 @@ export function registerLessonRows(content) {
  *  are NOT handed to PayAI as screens it may open (the PayAI door list is
  *  "the screens", and a field is not one), so PayAI's answers do not move. */
 export function registerFieldRows(rows, open, content) {
-    const group = _t("Learn");
+    const group = _t("Help");
     let i = 0;
     for (const r of homeFirst(rows, content)) {
         if (!r || !r.screen || !r.key) {

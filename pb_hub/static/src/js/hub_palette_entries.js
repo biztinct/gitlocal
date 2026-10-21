@@ -215,10 +215,12 @@ const ENTRIES = [
       groups: [INTEGRATION, MANAGER, SUPER] },
 
     // --------------------------------------------------------------- learn
-    // A MISSION too: GROW > Learn, whose rail item is generated data owned by
-    // pb_learn.
-    { id: "learn", label: _t("Learn"), sublabel: _t("Guides"), icon: "bookOpen",
-      seq: 170, action: { tag: "learn_journey" } },
+    // A MISSION too: GROW > Help (was "Learn" until LEARNING L0), whose rail
+    // item is generated data owned by pb_learn. GROW > Learning's own row
+    // (seq 168) ships from pb_learning_hub, so it is not repeated here.
+    { id: "learn", label: _t("Help"), sublabel: _t("Lessons and tours"),
+      icon: "helpCircle", seq: 170, action: { tag: "learn_journey" },
+      keywords: ["learn", "guide", "lessons", "học cùng payobook"] },
 
     // --------------------------------------------------------------- admin
     { id: "audit", label: _t("Audit Trail"), sublabel: _t("Admin"), icon: "scrollText",

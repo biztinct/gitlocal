@@ -2221,17 +2221,32 @@ const MENU = [
     ],
   },
   {
-    key: "talent", icon: "grad-cap", label: B("Talent", "Nhân tài"),
+    key: "talent", icon: "target", label: B("Talent", "Nhân tài"),
     section: B("Grow", "Phát triển"),
     lenses: [
       { key: "goals", label: B("Goals", "Mục tiêu") },
       { key: "pip", label: B("Growth", "Phát triển"), screen: "growth" },
-      { key: "training", label: B("Training", "Đào tạo") },
       { key: "praise", label: B("Praise", "Khen ngợi") },
     ],
   },
+  /* LEARNING L0 — Training left Talent for its own page, between Talent and
+     Help. A plain employee sees only "My learning"; the rest is the training
+     team's. */
   {
-    key: "learn", icon: "book-open", label: B("Learn", "Học cùng Payobook"), section: null,
+    key: "learning", icon: "grad-cap", label: B("Learning", "Học tập"), section: null,
+    lenses: [
+      { key: "overview", label: B("Overview", "Tổng quan") },
+      { key: "mine", label: B("My learning", "Của tôi") },
+      { key: "courses", label: B("Courses", "Khóa học") },
+      { key: "assigned", label: B("Assigned", "Đã giao") },
+      { key: "required", label: B("Required", "Bắt buộc") },
+      { key: "tests", label: B("Tests", "Kiểm tra") },
+      { key: "claims", label: B("Claims", "Hoàn tiền") },
+      { key: "numbers", label: B("Numbers", "Số liệu") },
+    ],
+  },
+  {
+    key: "learn", icon: "help-circle", label: B("Help", "Trợ giúp"), section: null,
     lenses: [
       { key: "lessons", label: B("Lessons", "Bài học") },
       { key: "team", label: B("Team", "Nhóm") },

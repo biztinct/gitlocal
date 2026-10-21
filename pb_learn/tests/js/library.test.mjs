@@ -4,7 +4,7 @@
  *   T1  the Library from a fixture bootstrap: the real 42 stations of the
  *       content plane, 3 role paths, progress for 5 — the Continue card's
  *       words, the path strip (= the required stations), the menu groups in
- *       MENU_ORDER (NAV P2: eleven, empty ones not drawn), every station exactly once, no row with more than three
+ *       MENU_ORDER (LEARNING L0: twelve, empty ones not drawn), every station exactly once, no row with more than three
  *       doors, none of the retired page words; the one search ("pay role"
  *       lands on the field card first, Vietnamese finds "vai trò", an empty
  *       search offers Ask PayAI); the real journey.js renders it; the drawer:
@@ -109,7 +109,7 @@ function librarySuite() {
     const groups = Array.from(html.matchAll(/class="lrn-lib-group[^"]*" data-group="([a-z]+)"/g), (m) => m[1]);
     // NAV P2: eleven menu groups; a group with no station (Expenses, Learn)
     // is not drawn, and the rest keep MENU_ORDER's order.
-    check(lib.MENU_ORDER.length === 11, "MENU_ORDER lists the eleven menu pages", String(lib.MENU_ORDER.length));
+    check(lib.MENU_ORDER.length === 12, "MENU_ORDER lists the twelve menu pages", String(lib.MENU_ORDER.length));
     check(JSON.stringify(groups) === JSON.stringify(["home", "payrun", "people", "hiring", "workforce",
                                                      "insights", "compliance", "talent", "settings"]),
           "9 drawn groups, in MENU_ORDER (Home, Payroll, People, Hiring, Workforce, Insights, Compliance, Talent, Settings)",

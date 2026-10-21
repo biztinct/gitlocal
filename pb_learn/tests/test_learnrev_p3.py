@@ -168,7 +168,7 @@ class TestLearnrevP3(TransactionCase):
     # ------------------------------------------------------------- (b)
     def test_b_every_station_lands_in_one_menu_group(self):
         order = menu_order()
-        self.assertEqual(len(order), 11, order)   # NAV P2: eleven menu pages
+        self.assertEqual(len(order), 12, order)   # LEARNING L0: twelve menu pages
         tag_group = {t: g for g, _item, tags in order for t in tags}
         lines = line_groups()
         groups = {g for g, _i, _t in order}

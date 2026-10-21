@@ -324,9 +324,11 @@ msgstr "Cập nhật lần cuối vào"
 #. module: pb_learn
 #. odoo-javascript
 #: model:pb.sidebar.item,name:pb_learn.item_learn_journey
+#: model:ir.actions.client,name:pb_learn.action_learn_hub
 #: code:addons/pb_learn/static/src/hub/learn_hub.js:0
-msgid "Learn"
-msgstr "Học cùng Payobook"
+#: code:addons/pb_learn/static/src/hub/learn_palette.js:0
+msgid "Help"
+msgstr "Trợ giúp"
 
 #. module: pb_learn
 #: model:ir.model,name:pb_learn.model_learn_question

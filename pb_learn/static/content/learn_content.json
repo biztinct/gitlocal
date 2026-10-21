@@ -522,8 +522,8 @@
       "vi": "Nếu bạn thay đổi"
     },
     "gLessonMap": {
-      "en": "Open Learn",
-      "vi": "Mở trang Học tập"
+      "en": "Open Help",
+      "vi": "Mở trang Trợ giúp"
     },
     "gLoading": {
       "en": "Loading the board…",
@@ -550,8 +550,8 @@
       "vi": "Màn hình này chưa có thẻ trường."
     },
     "gNoLessonMap": {
-      "en": "No lesson for this screen yet. Learn lists every screen.",
-      "vi": "Chưa có bài học cho màn hình này. Trang Học tập liệt kê mọi màn hình."
+      "en": "No lesson for this screen yet. Help lists every screen.",
+      "vi": "Chưa có bài học cho màn hình này. Trang Trợ giúp liệt kê mọi màn hình."
     },
     "gNoScheme": {
       "en": "No scheme selected: pick one above.",
@@ -750,8 +750,8 @@
       "vi": "Các tab trên trang này"
     },
     "hubTitle": {
-      "en": "Learn",
-      "vi": "Học tập"
+      "en": "Help",
+      "vi": "Trợ giúp"
     },
     "journals": {
       "en": "Journals",
@@ -762,8 +762,8 @@
       "vi": "Tới tin mới nhất"
     },
     "learn": {
-      "en": "Learning",
-      "vi": "Học tập"
+      "en": "Help",
+      "vi": "Trợ giúp"
     },
     "less": {
       "en": "Say it the full way",
@@ -1158,8 +1158,8 @@
       "vi": "Đã xong bài học"
     },
     "lpDoneBody": {
-      "en": "Your progress is saved in Learn.",
-      "vi": "Tiến độ của bạn đã được lưu trong Học tập."
+      "en": "Your progress is saved in Help.",
+      "vi": "Tiến độ của bạn đã được lưu trong Trợ giúp."
     },
     "lpLesson": {
       "en": "Lesson",
@@ -1914,8 +1914,8 @@
       "vi": "Chỉ lưu trên thiết bị này"
     },
     "swNextBody": {
-      "en": "The Continue card on Learn shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
-      "vi": "Thẻ Học tiếp trên trang Học tập gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook."
+      "en": "The Continue card on Help shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
+      "vi": "Thẻ Học tiếp trên trang Trợ giúp gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook."
     },
     "swNextTitle": {
       "en": "Suggest the next step",
@@ -1982,8 +1982,8 @@
       "vi": "lộ trình đoán theo quyền truy cập"
     },
     "teamLastSeen": {
-      "en": "Last in Learn:",
-      "vi": "Lần cuối vào Học tập:"
+      "en": "Last in Help:",
+      "vi": "Lần cuối vào Trợ giúp:"
     },
     "teamLead": {
       "en": "The required lessons on each person's path. Progress only. Nobody's questions are shown here.",
@@ -2142,8 +2142,8 @@
       "vi": "Bạn đang ở đây"
     },
     "yourJourney": {
-      "en": "Learn",
-      "vi": "Học tập"
+      "en": "Help",
+      "vi": "Trợ giúp"
     }
   },
   "columns": [
@@ -3776,8 +3776,8 @@
     },
     {
       "definition": {
-        "en": "The menu of eleven pages on the left — Home, Payroll, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
-        "vi": "Trình đơn mười một trang ở bên trái — Trang chủ, Lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."
+        "en": "The menu of twelve pages on the left — Home, Payroll, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
+        "vi": "Trình đơn mười hai trang ở bên trái — Trang chủ, Lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."
       },
       "key": "hub",
       "match": {
@@ -7817,8 +7817,8 @@
             {
               "anchor": "",
               "text": {
-                "en": "Open Learn › Lessons and take the first lesson. Nothing in it is real",
-                "vi": "Mở Học cùng Payobook › Bài học và làm bài đầu tiên. Không có gì trong đó là thật"
+                "en": "Open Help › Lessons and take the first lesson. Nothing in it is real",
+                "vi": "Mở Trợ giúp › Bài học và làm bài đầu tiên. Không có gì trong đó là thật"
               }
             }
           ]
@@ -7835,8 +7835,8 @@
         },
         {
           "body": {
-            "en": "The lessons in Learn, and the walkthroughs PayAI can start.",
-            "vi": "Các bài học trong Học cùng Payobook, và những lượt hướng dẫn mà PayAI mở được."
+            "en": "The lessons in Help, and the walkthroughs PayAI can start.",
+            "vi": "Các bài học trong Trợ giúp, và những lượt hướng dẫn mà PayAI mở được."
           },
           "capability": "any",
           "kind": "source",
@@ -9366,8 +9366,8 @@
         },
         {
           "body": {
-            "en": "The Practice company row at the end of Learn › Lessons.",
-            "vi": "Dòng Công ty thực hành ở cuối Học cùng Payobook › Bài học."
+            "en": "The Practice company row at the end of Help › Lessons.",
+            "vi": "Dòng Công ty thực hành ở cuối Trợ giúp › Bài học."
           },
           "capability": "any",
           "kind": "source",
@@ -10528,8 +10528,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Eleven pages on the left menu, each with its own tabs down its left side, a name under every icon. <b>Home</b> (Pulse, Inbox, Ask HR, Wall, Announce), <b>Payroll</b> (Run, Runs, Payslips, Inputs, Pay out, Adjust, Settle…), <b>People</b>, <b>Hiring</b>, <b>Workforce</b>, <b>Expenses</b>, <b>Insights</b>, <b>Compliance</b>, <b>Talent</b>, <b>Learn</b> and <b>Settings</b>.",
-            "vi": "Mười một trang trên trình đơn bên trái, mỗi trang có các tab riêng dọc bên trái, dưới mỗi biểu tượng có tên của nó. <b>Trang chủ</b> (Tổng quan, Hộp thư, Hỏi Nhân sự, Bảng vinh danh, Thông báo), <b>Lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Đầu vào, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Tuyển dụng</b>, <b>Lực lượng lao động</b>, <b>Chi phí</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Nhân tài</b>, <b>Học cùng Payobook</b> và <b>Cài đặt</b>."
+            "en": "Twelve pages on the left menu, each with its own tabs down its left side, a name under every icon. <b>Home</b> (Pulse, Inbox, Ask HR, Wall, Announce), <b>Payroll</b> (Run, Runs, Payslips, Inputs, Pay out, Adjust, Settle…), <b>People</b>, <b>Hiring</b>, <b>Workforce</b>, <b>Expenses</b>, <b>Insights</b>, <b>Compliance</b>, <b>Talent</b>, <b>Learning</b>, <b>Help</b> and <b>Settings</b>.",
+            "vi": "Mười hai trang trên trình đơn bên trái, mỗi trang có các tab riêng dọc bên trái, dưới mỗi biểu tượng có tên của nó. <b>Trang chủ</b> (Tổng quan, Hộp thư, Hỏi Nhân sự, Bảng vinh danh, Thông báo), <b>Lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Đầu vào, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Tuyển dụng</b>, <b>Lực lượng lao động</b>, <b>Chi phí</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Nhân tài</b>, <b>Học tập</b>, <b>Trợ giúp</b> và <b>Cài đặt</b>."
           },
           "capability": "any",
           "kind": "p",
@@ -23924,8 +23924,8 @@
     {
       "action_tags": "pb_talent_hub",
       "blurb": {
-        "en": "Growing your people: their goals, growth plans, training and the praise they give each other.",
-        "vi": "Phát triển con người: mục tiêu, kế hoạch phát triển, đào tạo và những lời khen họ dành cho nhau."
+        "en": "Growing your people: their goals, growth plans and the praise they give each other.",
+        "vi": "Phát triển con người: mục tiêu, kế hoạch phát triển và những lời khen họ dành cho nhau."
       },
       "hub": {
         "lens_key": "pb_lens",
@@ -23975,16 +23975,6 @@
               "en": "Praise",
               "vi": "Khen ngợi"
             }
-          },
-          "training": {
-            "line": {
-              "en": "Courses your company gives its people, with their tests.",
-              "vi": "Các khoá học công ty giao cho mọi người, kèm bài kiểm tra."
-            },
-            "name": {
-              "en": "Training",
-              "vi": "Đào tạo"
-            }
           }
         },
         "tag": "pb_talent_hub",
@@ -24005,6 +23995,148 @@
       "open": "",
       "places": [],
       "sequence": 630,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_learning_hub,pb_training_board",
+      "blurb": {
+        "en": "Everything your company teaches its people: courses, tests, who is on what, and your own learning.",
+        "vi": "Mọi thứ công ty dạy cho nhân viên: khóa học, bài kiểm tra, ai đang học gì, và việc học của chính bạn."
+      },
+      "hub": {
+        "lens_key": "pb_lens",
+        "often": [
+          {
+            "lens": "mine",
+            "text": {
+              "en": "Carry on with my next lesson",
+              "vi": "Học tiếp bài tiếp theo của tôi"
+            }
+          },
+          {
+            "lens": "assigned",
+            "text": {
+              "en": "See who is late on a course",
+              "vi": "Xem ai đang trễ hạn khóa học"
+            }
+          }
+        ],
+        "tabs": {
+          "assigned": {
+            "line": {
+              "en": "Who has to finish what by when, and the requests for more time.",
+              "vi": "Ai phải hoàn thành khóa nào trước ngày nào, và các yêu cầu thêm thời gian."
+            },
+            "name": {
+              "en": "Assigned",
+              "vi": "Đã giao"
+            }
+          },
+          "claims": {
+            "line": {
+              "en": "People asking for an outside course back, against the yearly allowance.",
+              "vi": "Yêu cầu hoàn tiền khóa học bên ngoài, tính vào ngân sách đào tạo hằng năm."
+            },
+            "name": {
+              "en": "Claims",
+              "vi": "Hoàn tiền"
+            }
+          },
+          "courses": {
+            "line": {
+              "en": "Every course, who is on it and how far they have got.",
+              "vi": "Mọi khóa học, ai đang học và đã học tới đâu."
+            },
+            "name": {
+              "en": "Courses",
+              "vi": "Khóa học"
+            }
+          },
+          "mine": {
+            "line": {
+              "en": "Your own courses: the next lesson, how far you have got, and your team if people report to you.",
+              "vi": "Khóa học của chính bạn: bài tiếp theo, tiến độ, và đội của bạn nếu có người báo cáo cho bạn."
+            },
+            "name": {
+              "en": "My learning",
+              "vi": "Của tôi"
+            }
+          },
+          "numbers": {
+            "line": {
+              "en": "How much of what was set is finished, by department, course and reason.",
+              "vi": "Bao nhiêu phần việc được giao đã hoàn thành, theo phòng ban, khóa học và lý do."
+            },
+            "name": {
+              "en": "Numbers",
+              "vi": "Số liệu"
+            }
+          },
+          "overview": {
+            "line": {
+              "en": "One sentence on who is on what, and the three things waiting for the training team.",
+              "vi": "Một câu về ai đang học gì, và ba việc đang chờ nhóm đào tạo."
+            },
+            "name": {
+              "en": "Overview",
+              "vi": "Tổng quan"
+            }
+          },
+          "required": {
+            "line": {
+              "en": "Courses every new joiner gets on day one, and courses that come round again.",
+              "vi": "Khóa học mọi người mới nhận vào ngày đầu, và các khóa học lặp lại định kỳ."
+            },
+            "name": {
+              "en": "Required",
+              "vi": "Bắt buộc"
+            }
+          },
+          "tests": {
+            "line": {
+              "en": "The tests at the end of courses, and the bank of questions.",
+              "vi": "Các bài kiểm tra cuối khóa, và ngân hàng câu hỏi."
+            },
+            "name": {
+              "en": "Tests",
+              "vi": "Kiểm tra"
+            }
+          }
+        },
+        "tag": "pb_learning_hub",
+        "xmlid": "pb_learning_hub.action_pb_learning_hub"
+      },
+      "key": "hub_learning",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Learning",
+        "vi": "Học tập"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Open My learning and press Continue. It drops you into your next lesson.",
+        "vi": "Hãy mở mục Của tôi và bấm Tiếp tục. Nút này đưa bạn vào bài học tiếp theo."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24060,7 +24192,7 @@
           },
           "settings": {
             "line": {
-              "en": "Learn settings: every learning switch for your company, on one card.",
+              "en": "Help settings: every learning switch for your company, on one card.",
               "vi": "Mọi công tắc về học tập của công ty, trên một thẻ."
             },
             "name": {
@@ -24086,8 +24218,8 @@
       "live_fallback": "",
       "models": [],
       "name": {
-        "en": "Learn",
-        "vi": "Học cùng Payobook"
+        "en": "Help",
+        "vi": "Trợ giúp"
       },
       "navs": [],
       "next_step": {
@@ -24096,7 +24228,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24372,7 +24504,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 650,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24531,7 +24663,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 660,
+      "sequence": 670,
       "sidebar_key": "",
       "suggest": [
         {
@@ -29627,8 +29759,8 @@
                 "vi": "Trình đơn dọc bên trái, và các tab trên mỗi trang."
               },
               "means": {
-                "en": "Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learn and Settings.",
-                "vi": "Trang chủ, Lương, Con người, Tuyển dụng, Lực lượng lao động, Chi phí, Phân tích, Tuân thủ, Nhân tài, Học cùng Payobook và Cài đặt."
+                "en": "Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learning, Help and Settings.",
+                "vi": "Trang chủ, Lương, Con người, Tuyển dụng, Lực lượng lao động, Chi phí, Phân tích, Tuân thủ, Nhân tài, Học tập, Trợ giúp và Cài đặt."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -29637,8 +29769,8 @@
               "screen": "dashboard",
               "tip": "",
               "title": {
-                "en": "Eleven pages on the menu, each with tabs",
-                "vi": "Mười một trang trên menu, trang nào cũng có tab"
+                "en": "Twelve pages on the menu, each with tabs",
+                "vi": "Mười hai trang trên menu, trang nào cũng có tab"
               },
               "visual": "none"
             },
@@ -40565,5 +40697,5 @@
       }
     }
   ],
-  "version": "f416a6a69338"
+  "version": "1a161675b986"
 }

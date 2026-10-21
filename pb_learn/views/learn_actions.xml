@@ -18,7 +18,7 @@
          on purpose: the Coach, the first-login greeting, the scenario runner,
          PayAI and a command-bar row all name it by its xml-id. -->
     <record id="action_learn_hub" model="ir.actions.client">
-        <field name="name">Learn</field>
+        <field name="name">Help</field>
         <field name="tag">learn_hub</field>
         <field name="target">current</field>
     </record>

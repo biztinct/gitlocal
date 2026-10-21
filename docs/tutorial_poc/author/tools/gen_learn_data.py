@@ -197,6 +197,10 @@ SCREEN_ACTION_TAGS = {
     'adjust': 'pb_retro,pb_proration',
     'afterrun': 'pb_payrun_results,pb_pay_delivery,pb_comp_ben_paycal,pb_comp_ben_incentives',
     'reports': 'payroll_report_dashboard,pb_budget_board',
+    # LEARNING L0 — the Learning page. Its tabs ground by their place; the
+    # board's own standalone door (`pb_training_board`, every inner tab) is
+    # the same screen, so the Guide knows it too (LR80).
+    'hub_learning': 'pb_learning_hub,pb_training_board',
 }
 
 

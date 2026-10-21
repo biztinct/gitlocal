@@ -67,7 +67,9 @@ export class LearnHub extends Component {
     setup() {
         this.config = {
             key: "learn",                     // -> pbhub.learn.lens.v1
-            brand: { label: _t("Learn"), icon: "bookOpen" },
+            // LEARNING L0: the guide is "Help" (VI "Trợ giúp"); "Learning" is
+            // the courses entry above it now. The in-screen panel keeps "Guide".
+            brand: { label: _t("Help"), icon: "helpCircle" },
             defaultLens: "lessons",
             lenses: [
                 // UNGATED, and that is the Journey's own answer. A gated leaf

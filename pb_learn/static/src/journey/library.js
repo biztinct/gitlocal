@@ -23,12 +23,12 @@ import { RT, T, tx, esc, ic, SP } from "../engine/runtime";
 import { hubScreenOf, parsePlace } from "../engine/places";
 
 /* THE LEFT MENU, IN ITS ORDER. Mirrors the `pb.sidebar.item` records the rail
-   draws (section sequence, then item sequence) since NAV P2: Home · Payroll ·
-   People · Hiring · Workforce · Expenses · Insights · Compliance · Talent ·
-   Learn · Settings. `item` is the record's xml-id and `tags` the hub actions
+   draws (section sequence, then item sequence) since NAV P2 and LEARNING L0:
+   Home · Payroll · People · Hiring · Workforce · Expenses · Insights ·
+   Compliance · Talent · Learning · Help · Settings. `item` is the record's xml-id and `tags` the hub actions
    whose tabs belong to it — Mapping (`pb_mapping_studio`) is opened from
    Settings › Integrations, so its screens are Settings screens. A group with
-   no station (Expenses, Learn today) is simply not drawn. The Lifecycle page
+   no station (Expenses, Learning, Help today) is simply not drawn. The Lifecycle page
    left the menu in NAV P2; its boards are People, Hiring and Talent tabs.
    `tests/test_learnrev_p3.py` compares this list with the database's rail
    (and, for an item whose module is not installed yet, with its data file),
@@ -42,8 +42,11 @@ export const MENU_ORDER = [
     { key: "expenses", item: "pb_expenses_hub.item_expenses", tags: ["pb_expenses_hub"], icon: "banknote" },
     { key: "insights", item: "pb_insights_hub.item_insights", tags: ["pb_insights_hub"], icon: "trending-up" },
     { key: "compliance", item: "pb_compliance_hub.item_compliance", tags: ["pb_compliance_hub"], icon: "shield-check" },
-    { key: "talent", item: "pb_talent_hub.item_talent", tags: ["pb_talent_hub"], icon: "grad-cap" },
-    { key: "learn", item: "pb_learn.item_learn_journey", tags: ["learn_hub"], icon: "book-open" },
+    { key: "talent", item: "pb_talent_hub.item_talent", tags: ["pb_talent_hub"], icon: "target" },
+    // LEARNING L0: Training left Talent for its own page (the replica sprite
+    // has no life-buoy, so Help draws help-circle here; the rail draws life-buoy).
+    { key: "learning", item: "pb_learning_hub.item_learning", tags: ["pb_learning_hub"], icon: "grad-cap" },
+    { key: "learn", item: "pb_learn.item_learn_journey", tags: ["learn_hub"], icon: "help-circle" },
     { key: "settings", item: "pb_settings.item_settings", tags: ["pb_settings_hub", "pb_mapping_studio"], icon: "sliders" },
 ];
 

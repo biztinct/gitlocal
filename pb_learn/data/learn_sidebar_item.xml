@@ -14,10 +14,10 @@
     </record>
 
     <record id="item_learn_journey" model="pb.sidebar.item">
-        <field name="name">Learn</field>
+        <field name="name">Help</field>
         <field name="section_id" ref="sec_learn"/>
         <field name="sequence">10</field>
-        <field name="icon">book-open</field>
+        <field name="icon">life-buoy</field>
         <field name="action_xmlid">pb_learn.action_learn_hub</field>
         <field name="action_tag">learn_hub</field>
         <field name="match_action_tags">learn_hub,learn_journey</field>

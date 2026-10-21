@@ -366,7 +366,7 @@
       "why": "RETARGETED in LEARNOS Phase 1a. Three of the four msgids this pinned (\"Stuck?\", \"Run Payroll\", \"Payslips\") are content and no longer travel the .po at all — they ship bilingual in learn_content.json, and vietnamese-content-spot-checks below pins them there. What is left in the .po is what is still a RECORD: the sidebar leaf's name, the front door. The generator refuses to write a translatable with no Vietnamese, so what is being caught here is a translation silently REPLACED.",
       "expect": {
         "pb_learn/i18n/vi_VN.po": {
-          "Learn": "Học cùng Payobook"
+          "Help": "Trợ giúp"
         }
       },
       "fixture": [],

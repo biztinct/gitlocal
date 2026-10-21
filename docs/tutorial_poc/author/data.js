@@ -67,14 +67,15 @@ const I18N = {
   en: {
     /* -- brand + journey map ------------------------------------------- */
     brand: "Payobook",
-    // NOT "Learn". That is the sidebar leaf's name, and gettext allows one
-    // msgstr per msgid — the two would have to share a Vietnamese translation,
-    // and "Học cùng Payobook" is wrong as a topbar suffix. The generator's
-    // conflict guard caught this; it is not a stylistic choice.
-    learn: "Learning",
-    hubTitle: "Learn",
+    // LEARNING L0 (2026-10-21): the guide is called "Help" (VI "Trợ giúp")
+    // everywhere — the sidebar leaf, the top bar, the hub title — because
+    // "Learning" is now the name of a different menu entry (courses and
+    // training, GROW › Learning). One English word, one Vietnamese, so the
+    // generator's one-msgstr-per-msgid guard is satisfied by construction.
+    learn: "Help",
+    hubTitle: "Help",
     hubLead: "Learn payroll one screen at a time. You start from zero. Nothing you do here touches your company's data.",
-    yourJourney: "Learn",
+    yourJourney: "Help",
     overall: "Overall",
     badge: "Pay Run badge",
     badgeGot: "Pay Run badge earned",
@@ -521,7 +522,7 @@ const I18N = {
     teamReminded: "Reminder sent",
     teamNext: "Next:",
     teamLeft: "min left",
-    teamLastSeen: "Last in Learn:",
+    teamLastSeen: "Last in Help:",
     teamNever: "never",
     teamGuessed: "path guessed from access",
     teamEmpty: "Nobody in this company works on payroll yet.",
@@ -544,7 +545,7 @@ const I18N = {
     swOff: "Off",
     swStays: "Stays inside Payobook",
     swNextTitle: "Suggest the next step",
-    swNextBody: "The Continue card on Learn shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
+    swNextBody: "The Continue card on Help shows one next lesson, with the reason it was picked. Chosen by fixed rules inside Payobook.",
     swSkillTitle: "Streaks and badge levels",
     swSkillBody: "Shows days in a row, and bronze, silver or gold on each finished lesson. Gold means the quiz was right the first time.",
     swComposeTitle: "Written answers from the guide",
@@ -612,8 +613,8 @@ const I18N = {
     gNoFieldMatch: "No field matches that.",
     gNoFields: "No field cards for this screen yet.",
     gNoTask: "No walkthrough for this screen yet.",
-    gLessonMap: "Open Learn",
-    gNoLessonMap: "No lesson for this screen yet. Learn lists every screen.",
+    gLessonMap: "Open Help",
+    gNoLessonMap: "No lesson for this screen yet. Help lists every screen.",
     gMistakes: "Mistakes this prevents",
     gTerms: "Words on this screen",
     gDock: "Dock to the side",
@@ -700,7 +701,7 @@ const I18N = {
     lpNotHere: "That control is not on this screen right now. The lines above say what it does.",
     lpBackReal: "Back to the real screen",
     lpDone: "Lesson done",
-    lpDoneBody: "Your progress is saved in Learn.",
+    lpDoneBody: "Your progress is saved in Help.",
     lpClose: "Close",
     /* -- LEARNREV P4: walkthroughs beside the Guide, checked Try ------ */
     gPlaying: "Playing · step {n} of {m}",
@@ -747,10 +748,10 @@ const I18N = {
   vi: {
     /* -- brand + journey map ------------------------------------------- */
     brand: "Payobook",
-    learn: "Học tập",
-    hubTitle: "Học tập",
+    learn: "Trợ giúp",
+    hubTitle: "Trợ giúp",
     hubLead: "Học tính lương từng màn hình một. Bạn bắt đầu từ con số không. Không thao tác nào ở đây chạm tới dữ liệu công ty bạn.",
-    yourJourney: "Học tập",
+    yourJourney: "Trợ giúp",
     overall: "Tiến độ chung",
     badge: "Huy hiệu Chạy lương",
     badgeGot: "Đã đạt huy hiệu Chạy lương",
@@ -1097,7 +1098,7 @@ const I18N = {
     teamReminded: "Đã gửi lời nhắc",
     teamNext: "Tiếp theo:",
     teamLeft: "phút còn lại",
-    teamLastSeen: "Lần cuối vào Học tập:",
+    teamLastSeen: "Lần cuối vào Trợ giúp:",
     teamNever: "chưa bao giờ",
     teamGuessed: "lộ trình đoán theo quyền truy cập",
     teamEmpty: "Công ty chưa có ai làm việc với bảng lương.",
@@ -1117,7 +1118,7 @@ const I18N = {
     swOff: "Tắt",
     swStays: "Không rời khỏi Payobook",
     swNextTitle: "Gợi ý bước tiếp theo",
-    swNextBody: "Thẻ Học tiếp trên trang Học tập gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook.",
+    swNextBody: "Thẻ Học tiếp trên trang Trợ giúp gợi ý một bài học tiếp theo, kèm lý do chọn bài đó. Lựa chọn dựa trên quy tắc cố định trong Payobook.",
     swSkillTitle: "Chuỗi ngày học và cấp huy hiệu",
     swSkillBody: "Hiện số ngày học liên tiếp, và mức đồng, bạc hoặc vàng trên mỗi bài đã học xong. Vàng nghĩa là trả lời đúng phần kiểm tra ngay lần đầu.",
     swComposeTitle: "Câu trả lời soạn từ tài liệu hướng dẫn",
@@ -1179,8 +1180,8 @@ const I18N = {
     gNoFieldMatch: "Không có trường nào khớp.",
     gNoFields: "Màn hình này chưa có thẻ trường.",
     gNoTask: "Màn hình này chưa có hướng dẫn từng bước.",
-    gLessonMap: "Mở trang Học tập",
-    gNoLessonMap: "Chưa có bài học cho màn hình này. Trang Học tập liệt kê mọi màn hình.",
+    gLessonMap: "Mở trang Trợ giúp",
+    gNoLessonMap: "Chưa có bài học cho màn hình này. Trang Trợ giúp liệt kê mọi màn hình.",
     gMistakes: "Những lỗi cần tránh",
     gTerms: "Thuật ngữ trên màn hình này",
     gDock: "Ghim vào cạnh màn hình",
@@ -1267,7 +1268,7 @@ const I18N = {
     lpNotHere: "Nút đó hiện không có trên màn hình này. Các dòng ở trên cho biết nó làm gì.",
     lpBackReal: "Quay lại màn hình thật",
     lpDone: "Đã xong bài học",
-    lpDoneBody: "Tiến độ của bạn đã được lưu trong Học tập.",
+    lpDoneBody: "Tiến độ của bạn đã được lưu trong Trợ giúp.",
     lpClose: "Đóng",
     /* -- LEARNREV P4: hướng dẫn cạnh bảng Hướng dẫn, Thử có kiểm tra -- */
     gPlaying: "Đang chạy · bước {n} / {m}",
@@ -1497,8 +1498,8 @@ const GLOSSARY = {
   hub: {
     term: B("Rail", "Thanh bên"),
     aliases: { en: ["left rail", "the rail"], vi: ["thanh bên trái"] },
-    def: B("The menu of eleven pages on the left — Home, Payroll, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
-           "Trình đơn mười một trang ở bên trái — Trang chủ, Lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."),
+    def: B("The menu of twelve pages on the left — Home, Payroll, People and so on. On most screens it shows icons only: point at it to read the names. Each page holds its screens as tabs.",
+           "Trình đơn mười hai trang ở bên trái — Trang chủ, Lương, Con người và các mục khác. Trên hầu hết màn hình, nó chỉ hiện biểu tượng: trỏ vào để đọc tên. Mỗi trang chứa các màn hình của nó dưới dạng tab."),
   },
   tab: {
     term: B("Tab", "Tab màn hình"),
@@ -4353,10 +4354,10 @@ const LESSONS = {
       {
         screen: "dashboard", anchor: "rep-nav",
         kicker: B("Where everything lives", "Mọi thứ nằm ở đâu"),
-        title: B("Eleven pages on the menu, each with tabs", "Mười một trang trên menu, trang nào cũng có tab"),
+        title: B("Twelve pages on the menu, each with tabs", "Mười hai trang trên menu, trang nào cũng có tab"),
         look: B("The menu down the left, and the tabs on each page.", "Trình đơn dọc bên trái, và các tab trên mỗi trang."),
-        means: B("Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learn and Settings.",
-                 "Trang chủ, Lương, Con người, Tuyển dụng, Lực lượng lao động, Chi phí, Phân tích, Tuân thủ, Nhân tài, Học cùng Payobook và Cài đặt."),
+        means: B("Home, Payroll, People, Hiring, Workforce, Expenses, Insights, Compliance, Talent, Learning, Help and Settings.",
+                 "Trang chủ, Lương, Con người, Tuyển dụng, Lực lượng lao động, Chi phí, Phân tích, Tuân thủ, Nhân tài, Học tập, Trợ giúp và Cài đặt."),
         affects: B("A tab you cannot see is one your access does not open. Its lesson still explains it.",
                    "Tab bạn không thấy là tab mà quyền của bạn không mở được. Bài học của nó vẫn giải thích nó."),
       },
@@ -10047,8 +10048,9 @@ const SCREEN_CTX = {
             "Hãy chắc chắn mọi đợt lương của tháng đã hoàn tất trước khi chuẩn bị báo cáo. Báo cáo chỉ tính những gì đã được tính lương."),
     chips: ["whatpage", "whatnext"],
   },
-  /* NAV P2 — the new Talent page (Grow, above Learn): Goals and Praise from
-     People, Growth plans from Lifecycle, Training from Learn. */
+  /* NAV P2 — the new Talent page (Grow): Goals and Praise from People,
+     Growth plans from Lifecycle. LEARNING L0 moved its Training tab to the
+     new Learning page below. */
   hub_talent: {
     name: B("Talent", "Nhân tài"),
     hub: {
@@ -10060,9 +10062,6 @@ const SCREEN_CTX = {
         pip: [B("Growth", "Phát triển"),
               B("Growth plans: coaching first, then a written plan with dates on it.",
                 "Kế hoạch phát triển: kèm cặp trước, rồi một kế hoạch bằng văn bản có mốc thời gian.")],
-        training: [B("Training", "Đào tạo"),
-                   B("Courses your company gives its people, with their tests.",
-                     "Các khoá học công ty giao cho mọi người, kèm bài kiểm tra.")],
         praise: [B("Praise", "Khen ngợi"),
                  B("Company values and the praise people give each other.",
                    "Giá trị của công ty và những lời khen mọi người dành cho nhau.")],
@@ -10072,14 +10071,58 @@ const SCREEN_CTX = {
         ["pip", B("Help someone who is struggling", "Hỗ trợ một người đang gặp khó khăn")],
       ],
     },
-    blurb: B("Growing your people: their goals, growth plans, training and the praise they give each other.",
-             "Phát triển con người: mục tiêu, kế hoạch phát triển, đào tạo và những lời khen họ dành cho nhau."),
+    blurb: B("Growing your people: their goals, growth plans and the praise they give each other.",
+             "Phát triển con người: mục tiêu, kế hoạch phát triển và những lời khen họ dành cho nhau."),
     next: B("Open the tab for what you came to do. A growth plan starts with a conversation, not a form.",
             "Hãy mở tab cho việc bạn cần làm. Một kế hoạch phát triển bắt đầu bằng một cuộc trao đổi, không phải một biểu mẫu."),
     chips: ["whatpage", "whatnext"],
   },
+  /* LEARNING L0 — the Learning page (Grow, between Talent and Help): the
+     courses a company puts its own people through, with a tab for everyone
+     ("My learning") and seven for the training team. */
+  hub_learning: {
+    name: B("Learning", "Học tập"),
+    hub: {
+      tag: "pb_learning_hub", xmlid: "pb_learning_hub.action_pb_learning_hub",
+      tabs: {
+        overview: [B("Overview", "Tổng quan"),
+                   B("One sentence on who is on what, and the three things waiting for the training team.",
+                     "Một câu về ai đang học gì, và ba việc đang chờ nhóm đào tạo.")],
+        mine: [B("My learning", "Của tôi"),
+               B("Your own courses: the next lesson, how far you have got, and your team if people report to you.",
+                 "Khóa học của chính bạn: bài tiếp theo, tiến độ, và đội của bạn nếu có người báo cáo cho bạn.")],
+        courses: [B("Courses", "Khóa học"),
+                  B("Every course, who is on it and how far they have got.",
+                    "Mọi khóa học, ai đang học và đã học tới đâu.")],
+        assigned: [B("Assigned", "Đã giao"),
+                   B("Who has to finish what by when, and the requests for more time.",
+                     "Ai phải hoàn thành khóa nào trước ngày nào, và các yêu cầu thêm thời gian.")],
+        required: [B("Required", "Bắt buộc"),
+                   B("Courses every new joiner gets on day one, and courses that come round again.",
+                     "Khóa học mọi người mới nhận vào ngày đầu, và các khóa học lặp lại định kỳ.")],
+        tests: [B("Tests", "Kiểm tra"),
+                B("The tests at the end of courses, and the bank of questions.",
+                  "Các bài kiểm tra cuối khóa, và ngân hàng câu hỏi.")],
+        claims: [B("Claims", "Hoàn tiền"),
+                 B("People asking for an outside course back, against the yearly allowance.",
+                   "Yêu cầu hoàn tiền khóa học bên ngoài, tính vào ngân sách đào tạo hằng năm.")],
+        numbers: [B("Numbers", "Số liệu"),
+                  B("How much of what was set is finished, by department, course and reason.",
+                    "Bao nhiêu phần việc được giao đã hoàn thành, theo phòng ban, khóa học và lý do.")],
+      },
+      often: [
+        ["mine", B("Carry on with my next lesson", "Học tiếp bài tiếp theo của tôi")],
+        ["assigned", B("See who is late on a course", "Xem ai đang trễ hạn khóa học")],
+      ],
+    },
+    blurb: B("Everything your company teaches its people: courses, tests, who is on what, and your own learning.",
+             "Mọi thứ công ty dạy cho nhân viên: khóa học, bài kiểm tra, ai đang học gì, và việc học của chính bạn."),
+    next: B("Open My learning and press Continue. It drops you into your next lesson.",
+            "Hãy mở mục Của tôi và bấm Tiếp tục. Nút này đưa bạn vào bài học tiếp theo."),
+    chips: ["whatpage", "whatnext"],
+  },
   hub_learn: {
-    name: B("Learn", "Học cùng Payobook"),
+    name: B("Help", "Trợ giúp"),
     hub: {
       tag: "learn_hub", xmlid: "pb_learn.action_learn_hub",
       tabs: {
@@ -10090,7 +10133,7 @@ const SCREEN_CTX = {
                B("Who on your team is ready for month-end.",
                  "Ai trong nhóm của bạn đã sẵn sàng cho kỳ chốt lương cuối tháng.")],
         settings: [B("Setup", "Thiết lập"),
-                   B("Learn settings: every learning switch for your company, on one card.",
+                   B("Help settings: every learning switch for your company, on one card.",
                      "Mọi công tắc về học tập của công ty, trên một thẻ.")],
       },
       often: [
@@ -10584,8 +10627,8 @@ const QA = [
                      "Bản năng tốt. Phần thực hành có hướng dẫn chạy trên một công ty giả lập, không phải {{companyDisplayName}}. Phía sau nó không có máy chủ nào, nên mọi thao tác đều không chạm tới nhân viên, phiếu lương hay đợt lương thật. Ba nhiệm vụ chơi được: chạy một đợt lương, sửa một đợt bị trả lại, và áp dụng một thay đổi tỷ lệ luật định.") },
       { k: "ok", v: B("You can fail safely there. Getting it wrong costs a recovery message rather than a salary.",
                       "Bạn được phép sai ở đó. Làm sai chỉ tốn một lời gợi ý quay lại, chứ không tốn một khoản lương.") },
-      { k: "src", v: B("The Practice company row at the end of Learn › Lessons.",
-                       "Dòng Công ty thực hành ở cuối Học cùng Payobook › Bài học.") },
+      { k: "src", v: B("The Practice company row at the end of Help › Lessons.",
+                       "Dòng Công ty thực hành ở cuối Trợ giúp › Bài học.") },
     ],
   },
 
@@ -10823,8 +10866,8 @@ const QA = [
     showMe: ["scenario:sc_welcome", "rep-nav"],
     watch: "sc_welcome",
     blocks: [
-      { k: "p", v: B("Eleven pages on the left menu, each with its own tabs down its left side, a name under every icon. <b>Home</b> (Pulse, Inbox, Ask HR, Wall, Announce), <b>Payroll</b> (Run, Runs, Payslips, Inputs, Pay out, Adjust, Settle…), <b>People</b>, <b>Hiring</b>, <b>Workforce</b>, <b>Expenses</b>, <b>Insights</b>, <b>Compliance</b>, <b>Talent</b>, <b>Learn</b> and <b>Settings</b>.",
-                     "Mười một trang trên trình đơn bên trái, mỗi trang có các tab riêng dọc bên trái, dưới mỗi biểu tượng có tên của nó. <b>Trang chủ</b> (Tổng quan, Hộp thư, Hỏi Nhân sự, Bảng vinh danh, Thông báo), <b>Lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Đầu vào, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Tuyển dụng</b>, <b>Lực lượng lao động</b>, <b>Chi phí</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Nhân tài</b>, <b>Học cùng Payobook</b> và <b>Cài đặt</b>.") },
+      { k: "p", v: B("Twelve pages on the left menu, each with its own tabs down its left side, a name under every icon. <b>Home</b> (Pulse, Inbox, Ask HR, Wall, Announce), <b>Payroll</b> (Run, Runs, Payslips, Inputs, Pay out, Adjust, Settle…), <b>People</b>, <b>Hiring</b>, <b>Workforce</b>, <b>Expenses</b>, <b>Insights</b>, <b>Compliance</b>, <b>Talent</b>, <b>Learning</b>, <b>Help</b> and <b>Settings</b>.",
+                     "Mười hai trang trên trình đơn bên trái, mỗi trang có các tab riêng dọc bên trái, dưới mỗi biểu tượng có tên của nó. <b>Trang chủ</b> (Tổng quan, Hộp thư, Hỏi Nhân sự, Bảng vinh danh, Thông báo), <b>Lương</b> (Chạy lương, Các đợt lương, Phiếu lương, Đầu vào, Chi trả, Điều chỉnh, Quyết toán…), <b>Con người</b>, <b>Tuyển dụng</b>, <b>Lực lượng lao động</b>, <b>Chi phí</b>, <b>Phân tích</b>, <b>Tuân thủ</b>, <b>Nhân tài</b>, <b>Học tập</b>, <b>Trợ giúp</b> và <b>Cài đặt</b>.") },
       { k: "steps", v: [
         { t: B("Home › Pulse — where payroll people land; Home › Inbox — what waits for you", "Trang chủ › Tổng quan — nơi người làm lương vào; Trang chủ › Hộp thư — việc đang chờ bạn"), a: "dash-hero" },
         { t: B("Payroll › Run — start a month; Runs — every run and who it is with", "Lương › Chạy lương — bắt đầu một tháng; Các đợt lương — mọi đợt và đang ở chỗ ai"), a: "pw-rail" },
@@ -11131,12 +11174,12 @@ const QA = [
       { k: "steps", v: [
         { t: B("Watch the tour — it starts on Home › Pulse", "Bấm Đi một vòng Payobook — lượt đi bắt đầu ở Trang chủ › Tổng quan"), a: "dash-hero" },
         { t: B("Read the headline: days to payday and what needs you", "Đọc dòng tiêu đề: còn bao nhiêu ngày tới ngày trả lương và việc gì cần bạn"), a: "dash-hero" },
-        { t: B("Open Learn › Lessons and take the first lesson. Nothing in it is real", "Mở Học cùng Payobook › Bài học và làm bài đầu tiên. Không có gì trong đó là thật") },
+        { t: B("Open Help › Lessons and take the first lesson. Nothing in it is real", "Mở Trợ giúp › Bài học và làm bài đầu tiên. Không có gì trong đó là thật") },
       ] },
       { k: "ok", v: B("Nothing you read costs anything. The controls that write are the small number the lessons keep naming.",
                       "Đọc thì không mất gì cả. Những nút thực sự ghi dữ liệu chỉ là số ít mà các bài học liên tục gọi tên.") },
-      { k: "src", v: B("The lessons in Learn, and the walkthroughs PayAI can start.",
-                       "Các bài học trong Học cùng Payobook, và những lượt hướng dẫn mà PayAI mở được.") },
+      { k: "src", v: B("The lessons in Help, and the walkthroughs PayAI can start.",
+                       "Các bài học trong Trợ giúp, và những lượt hướng dẫn mà PayAI mở được.") },
     ],
   },
 
@@ -15122,7 +15165,10 @@ const SIDEBAR = {
   leaf: {
     xmlid: "item_learn_journey",
     sequence: 10,
-    icon: "book-open",
+    // LEARNING L0: the guide is "Help" and draws a life-buoy; the open book
+    // and the cap would read as the new Learning entry right above it.
+    // `life-buoy` was added to pb_sidebar's closed ICONS set in the same phase.
+    icon: "life-buoy",
     // RIZE W2 E1. The rail opens the Learn HUB, whose first lens is the
     // Journey. The leaf claims BOTH tags, so the entry stays lit whether
     // somebody arrived through the rail or through one of the many places
@@ -15130,6 +15176,6 @@ const SIDEBAR = {
     actionXmlid: "pb_learn.action_learn_hub",
     actionTag: "learn_hub",
     matchTags: "learn_hub,learn_journey",
-    name: B("Learn", "Học cùng Payobook"),
+    name: B("Help", "Trợ giúp"),
   },
 };
