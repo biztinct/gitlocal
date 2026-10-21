@@ -443,3 +443,9 @@ class TestApplicationPayrollSource(TransactionCase):
         action = self.config.application_source_record_action(rule.id, 'hr.payroll.period.input', self.employee.id, self.start, self.end)
         for term in [('component_id', '=', rule.id), ('config_id', '=', self.config.id), ('date_from', '=', self.start), ('date_to', '=', self.end)]:
             self.assertIn(term, action['domain'])
+
+    def test_source_trace_rejects_internal_mode_switch(self):
+        mode = self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Internal mode',
+            'code': 'TRACEMODE', 'column_type': 'input', 'application_source_key': 'application.mode'})
+        with self.assertRaises(UserError):
+            self.config.application_source_detail(mode.id)

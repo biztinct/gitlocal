@@ -12,7 +12,7 @@ class ApplicationSourceTrace(models.Model):
         self.ensure_one()
         self._application_require_access()
         self.check_access('read')
-        rule = self.rule_ids.filtered(lambda r: r.id == component_id and r.column_type == 'input')
+        rule = self.rule_ids.filtered(lambda r: r.id == component_id and r.column_type == 'input' and r.application_source_key != 'application.mode')
         if not rule:
             raise ValidationError(_('Choose an input from this payroll configuration.'))
         rule.check_access('read')
