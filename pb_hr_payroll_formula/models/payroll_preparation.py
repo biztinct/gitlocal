@@ -262,12 +262,14 @@ class PayrollPreparation(models.Model):
                 if cell['optional']:
                     preview_values[code] = 0
             calculated = {}
-            if not any(c['issue'] for c in row['cells'].values()):
-                probe = self.env['hr.payslip'].new({'employee_id':row['employee_id'],
-                    'contract_id':row['contract_id'],'formula_config_id':self.config_id.id,
-                    'date_from':self.date_from,'date_to':self.date_to})
-                calculated, log = probe._evaluate_rules_with_dependencies(self.config_id.rule_ids.sorted('sequence'), preview_values)
-                if any(line.startswith('[ERROR]') for line in log):
+            if results and not any(c['issue'] for c in row['cells'].values()):
+                # The payslip evaluator refreshes stored dependency diagnostics.
+                # A worksheet preview must never write rules or invalidate its
+                # own signed source fingerprint. Reuse the read-only evaluator.
+                probe = self.env['hr.formula.sample.data'].new({'config_id': self.config_id.id})
+                errors = {}
+                calculated = probe._evaluate_rules_with_dependencies(preview_values, readonly=True, errors=errors)
+                if errors:
                     calculated = {}
             for rule in results:
                 row['cells'][rule.code] = {'code':rule.code,'label':rule.name,'rule_id':rule.id,

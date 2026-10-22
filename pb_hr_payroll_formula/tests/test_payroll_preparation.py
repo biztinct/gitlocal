@@ -160,3 +160,18 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
         draft=self._draft()
         with self.assertRaises(AccessError): draft.with_user(user).workspace()
         with self.assertRaises(AccessError): draft.with_user(user).save_cells(draft.revision,'save-other-tab',[self._change()])
+
+    def test_preview_never_changes_rules_or_invalidates_review(self):
+        self.env['hr.formula.rule'].create({'config_id':self.config.id, 'name':'Preview bonus',
+            'code':'REVIEWRESULT', 'column_type':'formula', 'column_role':'payroll',
+            'value_kind':'money', 'excel_formula':'=REVIEWBONUS*2', 'appears_on_payslip':True})
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-preview-stable',[self._change()])
+        before=self.config._application_settings_stamp()
+        with patch.object(type(self.bonus), '_compute_dependencies', side_effect=AssertionError('Preview wrote dependencies')):
+            ws=draft.workspace()
+            self.assertEqual(ws['people'][0]['cells']['REVIEWRESULT']['value'],1000)
+            self.assertEqual(self.config._application_settings_stamp(),before)
+            self.assertTrue(draft.review(draft.revision,self._cert()['channels'],'Checked')['ready'])
+            self.assertTrue(draft.workspace()['ready'])
+            draft._assert_scope(self.config,self.employee.ids,self.start,self.end)
