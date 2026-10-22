@@ -173,13 +173,16 @@ class PbSchemeMap(models.AbstractModel):
 
     # ============================================================== the map
     @api.model
-    def _map_rows(self, company_ids):
+    def _map_rows(self, company_ids, on_date=None):
         """The active map, read once.
 
         A scheme with no company is shared, so its rows travel with it — the
         same reasoning `_find_formula_config` already applies to configs.
         """
-        domain = [('active', '=', True), ('config_id.state', '=', 'active')]
+        day = fields.Date.to_date(on_date) if on_date else fields.Date.context_today(self)
+        domain = [('active', '=', True), ('config_id.state', '=', 'active'),
+                  '|', ('date_from', '=', False), ('date_from', '<=', day),
+                  '|', ('date_to', '=', False), ('date_to', '>=', day)]
         if company_ids:
             domain += ['|', ('company_id', '=', False),
                        ('company_id', 'in', [int(c) for c in company_ids])]
@@ -343,7 +346,7 @@ class PbSchemeMap(models.AbstractModel):
             return {}
         company_ids = sorted({c for _d, c in roster.values() if c})
         chains, _meta = self._chains(company_ids)
-        rows = self._map_rows(company_ids)
+        rows = self._map_rows(company_ids, on_date)
         by_department = self._by_department(rows)
         by_division = self._by_division(rows)
         division_of = self._division_of_department(on_date)

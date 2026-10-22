@@ -93,6 +93,14 @@ class HrFormulaSchemeAssignment(models.Model):
         help="For a proposed line: the share of this team's people who were "
              "actually paid under this scheme.")
     note = fields.Char(string='Why')
+    date_from = fields.Date(string='Effective from', index=True)
+    date_to = fields.Date(string='Effective through', index=True)
+
+    @api.constrains('date_from', 'date_to')
+    def _check_effective_period(self):
+        for row in self:
+            if row.date_from and row.date_to and row.date_to < row.date_from:
+                raise ValidationError(_('The mapping end date must not precede its start date.'))
 
     # ------------------------------------------------------------ the sentence
     @api.depends('department_id', 'division_id', 'config_id', 'cycle_type')

@@ -134,6 +134,25 @@ class TestSchemeMap(TransactionCase):
     def _resolve(self, employee, cycle='any'):
         return self.Map.resolve(employee.id, cycle)
 
+    def test_historical_rule_mapping_does_not_expand_later_payrolls(self):
+        employee = self.people[0]
+        self._contract(employee, self.company)
+        self.Assign.create({'config_id': self.end.id, 'cycle_type': 'end_cycle',
+            'domain': repr([('id', '=', employee.id)]),
+            'date_from': '2026-08-01', 'date_to': '2026-08-31'})
+        for day in ('2026-08-01', '2026-08-31'):
+            self.assertEqual(self.Map.resolve_many(employee.ids, 'end_cycle', day)[employee.id]['config_id'], self.end.id)
+        for day in ('2026-07-31', '2026-09-01'):
+            self.assertNotEqual(self.Map.resolve_many(employee.ids, 'end_cycle', day)[employee.id]['config_id'], self.end.id)
+        if 'pb.payrun.wizard' in self.env:
+            wizard = self.env['pb.payrun.wizard'].with_company(self.company)
+            august = wizard._eligible_employees(employee_ids=employee.ids, formula_config_id=self.end.id,
+                                                date_start='2026-08-01', date_end='2026-08-31')
+            september = wizard._eligible_employees(employee_ids=employee.ids, formula_config_id=self.end.id,
+                                                   date_start='2026-09-01', date_end='2026-09-30')
+            self.assertIn(employee.id, august)
+            self.assertNotIn(employee.id, september)
+
     # =================================================================== T1
     def test_t1_the_ladder_climbs_in_order(self):
         """Every rung, tried in order, with a named kind of run beating "any"."""

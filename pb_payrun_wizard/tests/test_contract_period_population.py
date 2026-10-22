@@ -53,7 +53,7 @@ class TestContractPeriodPopulation(TransactionCase):
         values={'employee_ids':self.people.ids,'date_start':'2026-09-01','date_end':'2026-09-30'}
         expected={self.retained.id,self.last_day.id}
         with patch.object(type(self.wizard),'_segment_hosts',return_value=[]), \
-                patch.object(type(self.wizard),'_scheme_population',side_effect=lambda cfg,ids:(list(ids),[])):
+                patch.object(type(self.wizard),'_scheme_population',side_effect=lambda cfg,ids,**kw:(list(ids),[])):
             preview=self.wizard.eligible_preview(values)
             scheme=self.wizard.scheme_preview(values)
         self.assertEqual({p['id'] for p in preview['employees']},expected)

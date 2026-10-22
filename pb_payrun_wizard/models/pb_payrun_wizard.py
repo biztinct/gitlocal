@@ -318,7 +318,7 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     @api.model
-    def _scheme_population(self, config_id, base_ids):
+    def _scheme_population(self, config_id, base_ids, on_date=None):
         """`(covered_ids, not_covered)` for one scheme, over a starting list.
 
         The map decides. Where there is no map module at all — or the map has
@@ -332,7 +332,7 @@ class PbPayrunWizard(models.AbstractModel):
             int(config_id)).exists()
         cycle = config.cycle_type or 'any'
         try:
-            answers = Map.sudo().resolve_many(list(base_ids), cycle)
+            answers = Map.sudo().resolve_many(list(base_ids), cycle, on_date=on_date)
         except Exception:       # noqa: BLE001 — never block a pay run
             _logger.exception('The scheme map could not be read for the run')
             return list(base_ids), []
@@ -680,7 +680,7 @@ class PbPayrunWizard(models.AbstractModel):
         # GROUP P2 — the scheme, last, so it narrows what the status filter and
         # the shortlist already agreed on rather than re-admitting anybody.
         if formula_config_id:
-            base, _missed = self._scheme_population(formula_config_id, base)
+            base, _missed = self._scheme_population(formula_config_id, base, on_date=date_start)
 
         # GROUP P5 — host employments retain their separately validated periods.
         if date_start and date_end:
