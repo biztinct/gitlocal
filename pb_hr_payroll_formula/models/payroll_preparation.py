@@ -366,7 +366,7 @@ class PayrollPreparation(models.Model):
                     raise ValidationError(_('Enter a finite number using a decimal point, without thousands separators.'))
                 if rule.application_source_key == 'period.standard_days' and not 0 < number <= max(31, (self.date_to-self.date_from).days+1):
                     raise ValidationError(_('Standard days must be positive and fit this payroll period.'))
-                if rule.application_source_key.startswith('period.ot.') and not 0 <= number <= 24 * ((self.date_to-self.date_from).days+1):
+                if (rule.application_source_key or '').startswith('period.ot.') and not 0 <= number <= 24 * ((self.date_to-self.date_from).days+1):
                     raise ValidationError(_('Overtime hours must be nonnegative and fit this payroll period.'))
                 value = int(number) if rule.value_kind == 'integer' else float(number)
             edit = {'value': value, 'decimal': str(number) if number is not None else None, 'scope': scope, 'reason': reason,

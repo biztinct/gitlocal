@@ -173,6 +173,16 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
         self.assertEqual(draft._resolved(True)['employees'][0]['values'][flag.code], '')
         self.assertEqual(json.loads(draft.edits_json)[f'{self.employee.id}:{flag.code}']['scope'], 'run')
 
+    def test_numeric_contract_component_without_explicit_source_key(self):
+        salary = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Historical salary', 'code': 'REVIEWCOMPONENT', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'money', 'is_contract_component': True,
+            'is_required': True})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-contract-component', [dict(self._change('2500'), code=salary.code)])
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Historical client salary')['ready'])
+        self.assertEqual(draft._resolved(True)['employees'][0]['values'][salary.code], 2500)
+
     def test_overtime_total_correction_keeps_pending_approval_block(self):
         key = 'period.ot.weekend.approved_hours'
         overtime = self.env['hr.formula.rule'].create({'config_id': self.config.id,
