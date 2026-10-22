@@ -2,7 +2,7 @@
 
 Implementer: Opus, 2026-10-22. Spec: `L5_COURSES_REQUESTS_SKILLS.md` (LD6: outside catalogue = our own list). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN52 in §5).
-Status: **LIVE ×4 DBs 2026-10-22 20:27 AEDT** (DONE 09:27 UTC, EXIT=0 ×4); live walk pending (Fable). Not pushed.
+Status: **COMPLETE** — LIVE ×4 DBs 2026-10-22 20:27 AEDT (DONE 09:27 UTC, EXIT=0 ×4); live walk by Fable passed (§11). Not pushed.
 
 ## 1. What ships (committed on 19.1, not pushed)
 
@@ -150,6 +150,10 @@ set aside = **giữ chỗ**, skills = **kỹ năng**. Mail bodies and subjects s
   admins included — a board that shows Agree must check `_chain_my_seat()` for the reader.
 - LN56: **An engine-built chain title is frozen in the language of whoever sent the request** (the seed ran in English, so Vietnamese
   inboxes show "Course request · …").
+- LN57 (walk): the Courses lens shows the "looked after by the training team" refusal when its board read fails — L6 candidate.
+- LN58 (walk): ChatGPT started a payroll release two minutes after L5's DONE; read the deploy log before calling a live walk failure a
+  bug (LN41 again).
+- All written into the ledger as LN52–LN58.
 
 ## 6. Score against the design bar
 
@@ -177,7 +181,10 @@ set aside = **giữ chỗ**, skills = **kỹ năng**. Mail bodies and subjects s
 6. **Emails are English** like the other training emails (LD10).
 7. **Not Learning's:** the Help screen's description of Learning still lists only the first eight tabs (Certificates, Paths and now
    Skills are missing) — a job for whoever regenerates the Help lessons.
-8. **Demo:** the demo company's training allowance is 5,000,000 ₫ for 2026; the licence (3,000,000 ₫) put on a demo person leaves
+8. **When the Courses screen cannot reach the server** (for example while another release restarts it) it shows "Training is looked
+   after by the training team" instead of "could not load — try again". It is harmless and comes right on the next load; a plain retry
+   message is planned for L6.
+9. **Demo:** the demo company's training allowance is 5,000,000 ₫ for 2026; the licence (3,000,000 ₫) put on a demo person leaves
    2,000,000 ₫ for them.
 
 ## 8. Deploy plan (as at the gate) — risky tier
@@ -270,4 +277,31 @@ results drawer, New test drawer — do not save); Skills (gaps, Close it — do 
 | Crons | 26 / 37 / 0 / 69 = snapshot (exact id sets); payobook_template 72/73 re-activated by `-u`, switched back off (LN18) |
 | After | 19.0.1.9.0 **installed** ×4; the five tables ×4; `training_request` route active on every active company (payobook: companies 1, 2, 5, 6 — company 7 "SG Company" is archived and has no training routes at all, like the claim and delay routes); every course version 1 and open to requests; new columns ×4; switches feedback_on=1, followup_on=1, followup_days=30, reread_cap=500 ×4; five new mail templates ×4; 0 ERROR lines since the start |
 | Demo seed (payobook, 7892621aa) | one stop 09:26:33–09:26:59. Outside courses 1 DEMO Pesticide applicator licence (3,000,000 ₫), 2 DEMO Soil science online (free), 3 DEMO First aid at work (1,200,000 ₫); DEMO skill types, course 27 gives "DEMO Field safety · DEMO Basic", the licence "DEMO Spraying · DEMO Good"; DEMO Site Agronomist (147, 4 people) and a new DEMO Line leader (1016, 2 people) require two skills each → Skills board "On average a person has 0 of 2 required skills · 11 gaps across 6 people"; request 1 demo.field → Soil science, **waiting on Ngô Bảo Lâm**; request 2 Trần Minh Khôi → licence, **agreed by the training team**, 3,000,000 ₫ set aside; course **292 "DEMO Safe chemical storage"** (online, on no path) finished by Khôi, Lâm, Kiệt and published as **v2** → 3 re-reads (assignments 536–538); course 27 untouched (version 1); test 177 "DEMO Field safety quiz" draws 5 of 8; course 27 "4.2 · 6 ratings", 2 follow-ups answered (3.5/5); 36 records on the demo register; morning legs rolled back (0 / 0); **11 queued mails cancelled, 0 outgoing since**; 0 ERROR lines |
-| Live walk | pending (Fable, LN16) — the login table above is current |
+| Live walk | passed (Fable, §11) |
+
+## 11. Live walk (Fable, payobook.com, 2026-10-22 ~20:30 AEDT) — PASSED
+
+Admin tab (head of training, company 5) plus the §8 server-side calls as the named users (`tz` stripped, rolled back).
+
+- **Screens:** rail with 11 tabs incl. SKILLS; Overview chips "1 Course requests waiting", "0 Follow-ups waiting on managers"; Courses ›
+  Outside courses "3 outside courses · 1 request waiting · Agreed this year: 3,000,000 ₫", three cards (kind / cost / hours / certificate
+  chips, "1 waiting" on Soil science, Put someone on it), kind and job filters; Claims › Requests sentence "1 request is waiting for a
+  decision · 1 agreed and not taken yet · 3,000,000 ₫ set aside", four steps, kind filters, rows; Tests "4 tests · 8 people took one ·
+  50% passed", DEMO Field safety quiz "Each attempt draws 5 of 8 questions", Results buttons; Skills "On average a person has 0 of 2
+  required skills · 11 gaps across 6 people", numbers 6 / 11 / 9 / 2, People / By skill, "No course gives it yet"; Numbers sections
+  Ratings, Did it work?, Requests and spend, Skills.
+- **Console:** clean apart from two warnings at 20:29 AEDT when another release restarted the server (get_board 502 — not ours); during
+  that outage Courses showed the "looked after by the training team" panel and loaded normally afterwards (owner item 8, LN57).
+- **Server-side:** lam.ngo holds the seat on request 1 and `action_approve` → approved; the Inbox detail for the request = dict rows
+  (Đường dẫn) + chips Khóa học / Chi phí / Đơn vị tổ chức / Khi nào; **a claim's Inbox detail now has the Receipt and Certificate rows —
+  the live bug is fixed**; demo.field `my_requests` "Đang chờ quyết định", allowance words "Ngân sách đào tạo năm 2026 của bạn: còn
+  5.000.000 ₫."; khoi.tran `claim_prefill(2)` course / provider / 3,000,000 + sentence; re-reads on course 292 for 2324 / 2326 / 2327 =
+  "Khóa học đã thay đổi", 0 of 2, due in 14 days; lam `can_see_skills` True, `skills_board` team True (3 people, 6 gaps); khoi
+  `my_feedback` link present.
+
+## 12. Commits (on 19.1, not pushed)
+
+- `dc32e99a0` wip — server side (installs); `4b1fb816a` wip — screens, Vietnamese, demo seed (installs)
+- `9933ec554` fix — decide buttons only for the live seat; T9 reads where the page lands — **the deployed tree**
+- `71fe975cc` docs — report at the gate; `7892621aa` docs — seed versions its own DEMO course, not course 27; `c6180e7c8` docs — deploy record
+- closing commit — this walk section, ledger rows LN52–LN58, phase log
