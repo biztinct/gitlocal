@@ -505,7 +505,7 @@ class ApplicationFormulaConfig(models.Model):
             else:
                 source = provenance.get(rule.code) or {}
                 sourced = source.get('src') in ('employee_field', 'contract_component', 'period') and source.get('via') != 'contract_default'
-                fact = _fact(values.get(rule.code), 'resolved' if sourced else 'missing',
+                fact = _fact(values.get(rule.code) if sourced else None, 'resolved' if sourced else 'missing',
                     '' if sourced else 'No mapped application value; defaults and old spreadsheets are not coverage.',
                     sources=[['legacy_record', source]], provenance=source)
             fact.setdefault('reason', '')

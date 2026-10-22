@@ -36,6 +36,24 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
         self.assertIn([self.employee.id, self.bonus.code], result['review']['zero_cells'])
         self.assertEqual(self.env['hr.payroll.period.input'].search_count([('config_id','=',self.config.id)]), 0)
 
+    def test_absent_component_is_blank_but_saved_zero_is_ready(self):
+        rule = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Registered dependents',
+            'code': 'REVIEWDEPENDENTS', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'integer',
+            'is_contract_component': True, 'is_required': True})
+        draft = self._draft()
+        cell = draft.workspace()['people'][0]['cells'][rule.code]
+        self.assertTrue(cell['issue'])
+        self.assertIsNone(cell['value'])
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': 'Registered dependents', 'code': rule.code, 'value_type': 'amount'})
+        self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'amount': 0})
+        cell = draft.workspace()['people'][0]['cells'][rule.code]
+        self.assertEqual(cell['value'], 0)
+        self.assertFalse(cell['issue'])
+
     def test_correction_persists_idempotent_and_stale_rejected(self):
         draft = self._draft()
         before = draft.revision

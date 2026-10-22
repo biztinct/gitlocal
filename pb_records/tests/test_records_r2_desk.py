@@ -492,6 +492,22 @@ class TestRecordsR2Desk(TransactionCase):
         self.assertAlmostEqual(change.new_amount, 250000.0, places=2)
         self.assertIn('Records Desk apply', change.notes or '')
 
+    def test_explicit_zero_creates_a_source_once(self):
+        change = {'emp_id': self.e1.id, 'field_id': 'c:RDBONUS', 'value': 0}
+        preview = self.Desk.preview_changes(self.cfg.id, [change])
+        self.assertEqual(preview['items'][0]['status'], 'ok')
+        result = self.Desk.apply_changes(self.cfg.id, [change])
+        self.assertEqual(result['written'], 1)
+        probe = self.Desk._probe(self.cfg.id)
+        card = self.Desk._cards(self.cfg.id)['c:RDBONUS']
+        cell = self.Desk._read_cell(probe, card, self.e1, self.c1)
+        self.assertEqual(cell['v'], 0)
+        self.assertEqual(cell['label'], '0')
+        self.assertEqual(probe._contract_component_values(self.c1, self.cfg)['rdbonus'], 0)
+        self.assertEqual(self.Desk.preview_changes(self.cfg.id, [change])['items'][0]['status'], 'same')
+        self.Desk.undo_apply(result['apply_id'])
+        self.assertIsNone(self.Desk._read_cell(probe, card, self.e1, self.c1)['v'])
+
     def test_06b_an_existing_template_of_the_other_kind_is_never_flipped(self):
         # RD1: the template is created FIRST, so the contract created after it
         # already carries its (empty) line — creating one here as well would

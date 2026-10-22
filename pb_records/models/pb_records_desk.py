@@ -733,9 +733,12 @@ class PbRecordsDesk(models.AbstractModel):
             if card['ttype'] == 'text_component':
                 text = (line.text_value if line else '') or ''
                 return {'v': text, 'label': text}
-            amount = (line.amount if line else 0.0) or 0.0
-            return {'v': amount, 'label': ('' if not amount
-                                           else self._num(amount))}
+            # An absent line has never answered this input. Keep it distinct
+            # from an explicitly saved zero, including during import preview.
+            if not line:
+                return {'v': None, 'label': ''}
+            amount = line.amount or 0.0
+            return {'v': amount, 'label': self._num(amount)}
         return {'v': None, 'label': ''}
 
     @api.model
@@ -1096,6 +1099,8 @@ class PbRecordsDesk(models.AbstractModel):
         if isinstance(new, dict):          # a many2one that would be created
             return False
         if card['ttype'] in ('integer', 'float', 'monetary', 'amount'):
+            if old is None or new is None:
+                return old is new
             try:
                 return float_compare(float(old or 0.0), float(new or 0.0),
                                      precision_digits=6) == 0
@@ -1185,6 +1190,15 @@ class PbRecordsDesk(models.AbstractModel):
                         'kind': _("text") if template.value_type == 'text'
                         else _("an amount")}
             line = self._advantage_line(probe, contract, card['code'])
+            if wanted == 'amount' and value is None and apply_rec.source == 'undo':
+                # Undo a first explicit entry back to absence, not a saved zero.
+                if line:
+                    self._component_log(contract, template, apply_rec,
+                                        old_amount=line.amount, new_amount=0.0)
+                    line.sudo().unlink()
+                self._log(apply_rec, employee, 'hr.contract', contract.id, card,
+                          step['old'], None, step['old_label'], '')
+                return None, None
             if not line:
                 line = self.env['hr.contract.advantage'].sudo().create({
                     'contract_id': contract.id,
