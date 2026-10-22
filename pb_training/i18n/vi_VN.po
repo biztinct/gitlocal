@@ -7880,8 +7880,8 @@ msgstr " — đặt chúng vào phần đó, mỗi lượt sẽ rút %s câu"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
-msgid "%(attempts)s %(people)s · average score %(avg)s%%"
-msgstr "%(attempts)s %(people)s · điểm trung bình %(avg)s%%"
+msgid "%(attempts)s %(people)s · average score %(avg)s"
+msgstr "%(attempts)s %(people)s · điểm trung bình %(avg)s"
 
 #. module: pb_training
 #. odoo-javascript
@@ -7910,8 +7910,8 @@ msgstr "%(ok)s/%(n)s đạt mức yêu cầu"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
-msgid "%(pct)s%% wrong · %(wrong)s of %(asked)s asked"
-msgstr "%(pct)s%% sai · %(wrong)s trên %(asked)s lượt được hỏi"
+msgid "%(pct)s wrong · %(wrong)s of %(asked)s asked"
+msgstr "%(pct)s sai · %(wrong)s trên %(asked)s lượt được hỏi"
 
 #. module: pb_training
 #. odoo-javascript
@@ -7941,8 +7941,8 @@ msgstr "%(who)s đã xin học %(course)s và yêu cầu đó vẫn đang mở."
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/course_extras.js:0
 #: code:addons/pb_training/static/src/js/outside_lens.js:0
-msgid "%(words)s · %(pct)s%% would recommend it"
-msgstr "%(words)s · %(pct)s%% sẽ giới thiệu khóa học"
+msgid "%(words)s · %(pct)s would recommend it"
+msgstr "%(words)s · %(pct)s sẽ giới thiệu khóa học"
 
 #. module: pb_training
 #. odoo-python
@@ -9280,8 +9280,8 @@ msgstr "Quản lý đánh giá công việc thay đổi %s/5"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/course_extras.js:0
-msgid "Managers, a month on: their work changed %(n)s out of 5 · %(used)s%% used what they learned."
-msgstr "Quản lý, một tháng sau: công việc thay đổi %(n)s/5 · %(used)s%% đã áp dụng điều đã học."
+msgid "Managers, a month on: their work changed %(n)s out of 5 · %(used)s used what they learned."
+msgstr "Quản lý, một tháng sau: công việc thay đổi %(n)s/5 · %(used)s đã áp dụng điều đã học."
 
 #. module: pb_training
 #. odoo-javascript
@@ -9724,8 +9724,8 @@ msgstr "Điểm đạt"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
-msgid "Pass mark %(mark)s%% · %(goes)s · %(pool)s"
-msgstr "Điểm đạt %(mark)s%% · %(goes)s · %(pool)s"
+msgid "Pass mark %(mark)s · %(goes)s · %(pool)s"
+msgstr "Điểm đạt %(mark)s · %(goes)s · %(pool)s"
 
 #. module: pb_training
 #. odoo-javascript
@@ -11068,8 +11068,8 @@ msgstr "Đã chi %(total)s cho đào tạo · đã dùng %(pct)s%% ngân sách �
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_numbers.js:0
-msgid "%(used)s used of %(total)s in allowances for %(year)s (%(pct)s%%)."
-msgstr "Đã dùng %(used)s trên tổng ngân sách đào tạo %(total)s năm %(year)s (%(pct)s%%)."
+msgid "%(used)s used of %(total)s in allowances for %(year)s (%(pct)s)."
+msgstr "Đã dùng %(used)s trên tổng ngân sách đào tạo %(total)s năm %(year)s (%(pct)s)."
 
 #. module: pb_training
 #. odoo-javascript

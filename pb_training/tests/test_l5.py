@@ -677,6 +677,10 @@ class TestT10Feedback(L5Case):
 class TestT11Followup(L5Case):
 
     def test_t11_planned_sent_answered(self):
+        # LN32: the database's own planned follow-ups (a seeded demo) must
+        # not count here — put them aside for this transaction (L6 run).
+        self.env['pb.training.followup'].sudo().search(
+            [('state', '=', 'planned')]).write({'state': 'skipped'})
         row = self.env['pb.training.assignment'].sudo().create({
             'channel_id': self.simple.id, 'employee_id': self.e_one.id})
         self._finish(self.u_one, self.simple, [self.simple_lesson])

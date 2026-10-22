@@ -135,18 +135,18 @@ export class PbTrainingTestsLens extends Component {
         if (!r.attempts) { return _t("Nobody has taken it yet."); }
         const a = r.attempts === 1 ? _t("1 attempt") : _t("%s attempts", r.attempts);
         const p = r.people === 1 ? _t("by 1 person") : _t("by %s people", r.people);
-        return _t("%(attempts)s %(people)s · average score %(avg)s%%", { attempts: a, people: p, avg: r.avg });
+        return _t("%(attempts)s %(people)s · average score %(avg)s", { attempts: a, people: p, avg: `${r.avg}%` });
     }
 
     get atEndWords() { return _t("At the end of %s", this.state.results.course); }
 
     get rulesWords() {
         const r = this.state.results || {};
-        return _t("Pass mark %(mark)s%% · %(goes)s · %(pool)s", { mark: r.pass_mark, goes: r.retake_words, pool: r.pool_words });
+        return _t("Pass mark %(mark)s · %(goes)s · %(pool)s", { mark: `${r.pass_mark}%`, goes: r.retake_words, pool: r.pool_words });
     }
 
     hardWords(hq) {
-        return _t("%(pct)s%% wrong · %(wrong)s of %(asked)s asked", { pct: hq.pct, wrong: hq.wrong, asked: hq.asked });
+        return _t("%(pct)s wrong · %(wrong)s of %(asked)s asked", { pct: `${hq.pct}%`, wrong: hq.wrong, asked: hq.asked });
     }
 
     onDraw(ev) { this.state.draw = Number(ev.target.value) || 0; }

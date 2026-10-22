@@ -431,7 +431,9 @@ export class PbTrainingNumbers extends Component {
         if (c.allowance_used_pct === null || c.allowance_used_pct === undefined) {
             return _t("No training allowance is set for %s.", c.allowance_year || "");
         }
-        return _t("%(used)s used of %(total)s in allowances for %(year)s (%(pct)s%%).", { used: c.allowance_used_words, total: c.allowance_total_words, year: c.allowance_year, pct: c.allowance_used_pct });
+        // The percent sign rides the value: a named placeholder next to "%%"
+        // prints "%%" in the browser (found in the L6 walk).
+        return _t("%(used)s used of %(total)s in allowances for %(year)s (%(pct)s).", { used: c.allowance_used_words, total: c.allowance_total_words, year: c.allowance_year, pct: `${c.allowance_used_pct}%` });
     }
 
     get budgetWords() {

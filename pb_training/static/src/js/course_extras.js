@@ -87,13 +87,13 @@ export class PbCourseExtras extends Component {
         const r = this.ratings;
         return (r.used_pct === null || r.used_pct === undefined)
             ? _t("Managers, a month on: their work changed %s out of 5.", r.effect_avg)
-            : _t("Managers, a month on: their work changed %(n)s out of 5 · %(used)s%% used what they learned.", { n: r.effect_avg, used: r.used_pct });
+            : _t("Managers, a month on: their work changed %(n)s out of 5 · %(used)s used what they learned.", { n: r.effect_avg, used: `${r.used_pct}%` });
     }
 
     get scoreWords() {
         const r = this.ratings;
         return (r.recommend_pct === null || r.recommend_pct === undefined) ? this.d.rating_words
-            : _t("%(words)s · %(pct)s%% would recommend it", { words: this.d.rating_words, pct: r.recommend_pct });
+            : _t("%(words)s · %(pct)s would recommend it", { words: this.d.rating_words, pct: `${r.recommend_pct}%` });
     }
 
     get followupsWords() {

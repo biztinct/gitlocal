@@ -235,7 +235,7 @@ export class PbOutsideLens extends Component {
         const p = this.page || {};
         const r = p.ratings || {};
         return (r.recommend_pct === null || r.recommend_pct === undefined) ? p.rating_words
-            : _t("%(words)s · %(pct)s%% would recommend it", { words: p.rating_words, pct: r.recommend_pct });
+            : _t("%(words)s · %(pct)s would recommend it", { words: p.rating_words, pct: `${r.recommend_pct}%` });
     }
 
     get putNote() {

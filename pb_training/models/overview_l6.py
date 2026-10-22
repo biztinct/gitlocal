@@ -63,6 +63,9 @@ SETTINGS = {
     'followup_days': ('int', P_FOLLOWUP_DAYS, 1, 365),
     'day1': ('bool', P_DAY1_AUTO, None, None),
 }
+#: The order the Overview draws what waits in — the headline's order.
+WAITING_ORDER = ['late', 'paths', 'required', 'certs', 'sessions',
+                 'course_requests', 'claims', 'requests', 'followups']
 INT_DEFAULTS = {'manager_days': 2, 'hr_days': 5, 'renew_before': 60,
                 'enforce_cap': 500, 'followup_days': 30}
 
@@ -105,8 +108,11 @@ class PbTrainingOverviewL6(models.AbstractModel):
         data.setdefault('sessions', {'has_sessions': False})
         concerns = self._overview_concerns(data, queue)
         data['concerns'] = [c['key'] for c in concerns]
-        data['waiting'] = [row for row in data.get('queue') or []
-                           if row.get('count')]
+        # What waits, worst first (the headline's own order).
+        data['waiting'] = sorted(
+            [row for row in data.get('queue') or [] if row.get('count')],
+            key=lambda row: WAITING_ORDER.index(row['key'])
+            if row['key'] in WAITING_ORDER else len(WAITING_ORDER))
         data['calm'] = not concerns and not data['waiting']
         data['headline'] = self._overview_compose(data, concerns)
         data['in_date_people'] = self._in_date_people(data)
