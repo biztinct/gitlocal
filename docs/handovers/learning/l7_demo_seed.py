@@ -13,7 +13,8 @@ What it does:
   1. Makes ONE small course, "DEMO Three-minute safety tips", flagged
      "Short lessons", with three reading lessons of 3, 4 and 5 minutes —
      each written in English AND Vietnamese, so "Three minutes today" and
-     "Show both languages" have something to show. Unpublished lessons are
+     "Show both languages" have something to show — and a two-question
+     "DEMO Quick check" to answer with the signal gone. Unpublished lessons are
      never touched; nothing else is changed.
   2. Puts the HR lead (`demo.hr@example.com`, ledger LN40: the learner side
      is walked as the HR lead) on it as a member — no assignment, so no due
@@ -102,6 +103,44 @@ for seq, (en, vi, mins, html_en, html_vi) in enumerate(LESSONS, start=1):
         strip = lambda h: h.replace('<p>', '').replace('</p>', '')  # noqa: E731
         slide.update_field_translations(
             'html_content', {'vi_VN': {strip(html_en): strip(html_vi)}})
+
+# A two-question quick check, so a quiz can be answered on a phone with the
+# signal gone (the answers wait on the phone and are checked when it is back).
+quiz = Slide.search([('channel_id', '=', course.id),
+                     ('slide_category', '=', 'quiz')], limit=1)
+if not quiz:
+    quiz = Slide.with_context(lang='en_US').create({
+        'channel_id': course.id, 'name': 'DEMO Quick check', 'sequence': 9,
+        'slide_category': 'quiz', 'completion_time': 2 / 60.0,
+        'is_published': True,
+        'question_ids': [
+            (0, 0, {'question': 'Where do you wear your badge?', 'sequence': 1,
+                    'answer_ids': [
+                        (0, 0, {'text_value': 'Where people can see it',
+                                'is_correct': True, 'sequence': 1}),
+                        (0, 0, {'text_value': 'In my bag', 'sequence': 2})]}),
+            (0, 0, {'question': 'When do you report a near miss?', 'sequence': 2,
+                    'answer_ids': [
+                        (0, 0, {'text_value': 'The same day', 'is_correct': True,
+                                'sequence': 1}),
+                        (0, 0, {'text_value': 'Only if somebody was hurt',
+                                'sequence': 2})]})]})
+    say('quick check %s (2 questions)', quiz.id)
+    if vi_on:
+        quiz.with_context(lang='vi_VN').write({'name': 'DEMO Kiểm tra nhanh'})
+        words = {'Where do you wear your badge?': 'Bạn đeo thẻ ở đâu?',
+                 'When do you report a near miss?':
+                     'Khi nào bạn báo cáo sự cố suýt xảy ra?',
+                 'Where people can see it': 'Ở chỗ mọi người nhìn thấy',
+                 'In my bag': 'Trong túi xách',
+                 'The same day': 'Ngay trong ngày',
+                 'Only if somebody was hurt': 'Chỉ khi có người bị thương'}
+        for q in quiz.question_ids:
+            q.with_context(lang='vi_VN').write(
+                {'question': words.get(q.question, q.question)})
+            for a in q.answer_ids:
+                a.with_context(lang='vi_VN').write(
+                    {'text_value': words.get(a.text_value, a.text_value)})
 
 # ------------------------------------------------------------- 2. the learner
 learner = env['res.users'].sudo().search([('login', '=', LEARNER)], limit=1)

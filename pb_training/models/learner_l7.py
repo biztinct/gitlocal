@@ -609,6 +609,8 @@ class PbMyTrainingL7(models.AbstractModel):
                             'read for lesson %s', data.get('id'),
                             exc_info=True)
             data['both'] = None
+        # The kind of lesson in the reader's language ("Reading", "Video").
+        data['kind_word'] = tr(self.env, data.get('kind_word') or '')
         # A phone that blocks a document inside the page opens the file.
         data['file_url'] = data.get('pdf_url') or ''
         return data

@@ -12126,6 +12126,8 @@ msgid "Check my answers"
 msgstr "Kiểm tra câu trả lời"
 
 #. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
 msgid "Document"
 msgstr "Tài liệu"
@@ -12179,6 +12181,7 @@ msgstr "Việc nên làm tiếp"
 
 #. module: pb_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
 msgid "Next lesson"
 msgstr "Bài tiếp theo"
 
@@ -12393,3 +12396,33 @@ msgstr "chưa lưu được, mở bài và thử lại"
 #: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
 msgid "passed"
 msgstr "đạt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Video"
+msgstr "Video"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Reading"
+msgstr "Bài đọc"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Picture"
+msgstr "Hình ảnh"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Quick questions"
+msgstr "Câu hỏi nhanh"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Lesson"
+msgstr "Bài học"

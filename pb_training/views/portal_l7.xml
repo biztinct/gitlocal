@@ -28,9 +28,15 @@
 
   <template id="tr_phone_kit" name="Training phone words">
     <div class="pbtr-offline" role="status" aria-live="polite" hidden="hidden">
-      <span class="pbtr-offline-ic">
+      <span class="pbtr-offline-ic pbtr-offline-ic--wait">
         <t t-call="pb_training.tr_icon">
           <t t-set="icon" t-value="'wifiOff'"/>
+          <t t-set="isz" t-value="16"/>
+        </t>
+      </span>
+      <span class="pbtr-offline-ic pbtr-offline-ic--ok">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="'checkCircle'"/>
           <t t-set="isz" t-value="16"/>
         </t>
       </span>
@@ -48,6 +54,7 @@
       <div data-w="out_failed">not quite yet, open it to try again</div>
       <div data-w="out_refused">not saved, open it and try again</div>
       <div data-w="checking">Checking…</div>
+      <div data-w="next_lesson">Next lesson</div>
     </div>
   </template>
 

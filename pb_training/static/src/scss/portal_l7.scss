@@ -25,6 +25,9 @@
         &.is-wait { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
         &.is-ok   { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
         .pbtr-offline-ic { flex: 0 0 auto; display: inline-flex; }
+        .pbtr-offline-ic--ok { display: none; }
+        &.is-ok .pbtr-offline-ic--ok { display: inline-flex; }
+        &.is-ok .pbtr-offline-ic--wait { display: none; }
         .pbtr-offline-say { flex: 1 1 auto; }
         ul { margin: 6px 0 0; padding-left: 18px; font-weight: 550; }
         a { color: inherit; text-decoration: underline; }

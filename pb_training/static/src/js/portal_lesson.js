@@ -234,6 +234,7 @@
                 banner(word("saved"), "is-wait");
             }
             markSaved();
+            showSentHere(res.sent);
             return res;
         }, function () { replaying = false; return null; });
     }
@@ -285,6 +286,23 @@
             btn.classList.add("pbtr-btn--saved");
             btn.textContent = word("saved_button");
         }
+    }
+
+    /** This lesson's own press went through while the page was open: the
+     *  saved button becomes the way on (the server's next page). */
+    function showSentHere(sent) {
+        if (!page) { return; }
+        var mine = (sent || []).filter(function (e) {
+            return String(e.item.slide_id) === String(lessonId) && e.answer && e.answer.ok
+                && e.item.kind === "done";
+        });
+        var form = page.querySelector("form[data-pbtr-form='done']");
+        if (!mine.length || !form) { return; }
+        var link = doc.createElement("a");
+        link.className = "pbme-btn pbtr-btn--primary pbtr-btn--big";
+        link.href = mine[mine.length - 1].answer.next_url || ("/my/training/" + page.getAttribute("data-pbtr-channel"));
+        link.textContent = word("next_lesson");
+        form.parentNode.replaceChild(link, form);
     }
 
     function bodyItem(form, kind) {
