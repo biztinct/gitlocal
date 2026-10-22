@@ -57,11 +57,27 @@ class PbTrainingAnalyticsRequired(models.AbstractModel):
     #  the Numbers section
     # =====================================================================
     @api.model
-    def _required_numbers(self):
+    def _required_filters(self, filters=None):
+        """The Numbers filters the matrix understands (LEARNING L6): the
+        compliance block is the matrix's own summary for the same
+        department, site and country (T3)."""
+        filters = filters or {}
+        out = {}
+        if filters.get('department_id'):
+            out['department_id'] = filters['department_id']
+        if filters.get('work_location_id'):
+            out['work_location_id'] = filters['work_location_id']
+        if filters.get('country_code'):
+            out['country_code'] = filters['country_code']
+        return out
+
+    @api.model
+    def _required_numbers(self, filters=None):
         board = self.env['pb.training']
         if not board._live_requirements():
             return {'has_rules': False}
-        data = board._matrix_data({}, paged=False)
+        data = board._matrix_data(self._required_filters(filters),
+                                  paged=False)
         s = data['summary']
 
         def split(key_of):
@@ -112,6 +128,14 @@ class PbTrainingAnalyticsRequired(models.AbstractModel):
         by_req.sort(key=lambda g: (-g['missing'], fold(g['name'])))
         none = _('No department')
         no_site = _('No site')
+        no_country = _('No country')
+        no_group = _('No safety group')
+
+        def group_word(row):
+            # LEARNING L6: the matrix row already says the group in words,
+            # "(by default)" included (LD11).
+            return row.get('safety_group_word') or no_group
+
         return {
             'has_rules': True,
             'percent': s['percent'],
@@ -123,6 +147,9 @@ class PbTrainingAnalyticsRequired(models.AbstractModel):
             'by_department': split(lambda r: r['department'] or none),
             'by_requirement': by_req,
             'by_site': split(lambda r: r['site'] or no_site),
+            # LEARNING L6: by country and by safety group.
+            'by_country': split(lambda r: r['country'] or no_country),
+            'by_group': split(group_word),
         }
 
     @api.model
@@ -148,7 +175,8 @@ class PbTrainingAnalyticsRequired(models.AbstractModel):
         payload = super().get_numbers(date_from, date_to, filters)
         if not payload.get('allowed'):
             return payload
-        req = self._safe(self._required_numbers, default={'has_rules': False})
+        req = self._safe(lambda: self._required_numbers(filters),
+                         default={'has_rules': False})
         payload['required'] = req
         payload['country_reports'] = self._safe(self._country_reports,
                                                 default=[])

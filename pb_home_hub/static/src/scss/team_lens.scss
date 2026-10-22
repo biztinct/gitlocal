@@ -232,3 +232,16 @@
     .pbtm-row { grid-template-columns: minmax(60px, auto) 1fr 16px; }
     .pbtm-row__when, .pbtm-tag { grid-column: 2; }
 }
+
+// LEARNING L6: the Learning section's three quiet chips.
+.pbtm-tchips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pbtm-tchip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border-radius: 999px; border: 1px solid var(--pbtm-line); background: var(--pbtm-surface);
+    color: var(--pbtm-muted); font: inherit; font-size: 12px; cursor: pointer;
+    b { font-weight: 800; }
+    .pbtm-tchip__ic { display: inline-flex; }
+    &.is-amber { color: var(--pbtm-amber); border-color: #FDE68A; background: #FFFBEB; }
+    &:hover { border-color: var(--pbtm-ink); }
+    &:focus-visible { outline: 3px solid rgba(90, 75, 176, .25); outline-offset: 1px; }
+}

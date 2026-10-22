@@ -140,10 +140,25 @@
                 </p>
             </t>
             <p t-if="board.get('cert_expiring')" style="font-size:15px;"><t t-if="board['cert_expiring'] == 1">1 certificate expires within 30 days.</t><t t-else=""><t t-out="board['cert_expiring']"/> certificates expire within 30 days.</t> The Certificates register in Learning says whose.</p>
+            <!-- LEARNING L6: hours, cost against the allowance, required
+                 training and ratings, one plain sentence each. -->
+            <p t-foreach="lines or []" t-as="line" style="font-size:15px; margin:6px 0;" t-out="line"/>
+            <t t-if="top">
+                <p style="font-size:14px; font-weight:600; margin:16px 0 4px;">Most hours of training</p>
+                <table cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:0 0 16px;">
+                    <tr t-foreach="top" t-as="person">
+                        <td style="padding:4px 18px 4px 0;" t-out="person['employee']"/>
+                        <td style="padding:4px 18px 4px 0; color:#6B6785;" t-out="person['department']"/>
+                        <td style="padding:4px 0; font-weight:600;"><t t-out="person['hours']"/> h</td>
+                    </tr>
+                </table>
+            </t>
+            <p t-if="link" style="font-size:14px;"><a t-att-href="link" style="color:#5A4BB0; font-weight:600;">Open Learning</a> for the Numbers, with every figure by department, site and course.</p>
             <p style="color:#6B6785; font-size:13px;">
-                The spreadsheet attached has the same figures broken down by
-                department, by course and week by week, and a sheet of
-                certificates.
+                The spreadsheet attached has every figure: by department, by
+                course and week by week, hours per person, cost, required
+                training, ratings, certificates, and one row per course
+                somebody was put on.
             </p>
             <br/>
             The training team

@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.10.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -148,6 +148,7 @@ public.
         'data/mail_template_l5.xml',
         'views/l5_views.xml',
         'views/portal_l5.xml',
+        'views/learning_settings.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -160,6 +161,7 @@ public.
             'pb_training/static/src/scss/paths_lens.scss',
             'pb_training/static/src/scss/sessions_lens.scss',
             'pb_training/static/src/scss/catalogue_lens.scss',
+            'pb_training/static/src/scss/learning_settings.scss',
             'pb_training/static/src/js/training_board.js',
             'pb_training/static/src/js/training_numbers.js',
             'pb_training/static/src/js/learning_overview.js',
@@ -177,6 +179,7 @@ public.
             'pb_training/static/src/js/course_extras.js',
             'pb_training/static/src/js/skills_lens.js',
             'pb_training/static/src/js/my_requests_block.js',
+            'pb_training/static/src/js/learning_settings.js',
             'pb_training/static/src/js/training_palette.js',
             'pb_training/static/src/xml/training_board.xml',
             'pb_training/static/src/xml/training_numbers.xml',
@@ -195,6 +198,7 @@ public.
             'pb_training/static/src/xml/course_extras.xml',
             'pb_training/static/src/xml/skills_lens.xml',
             'pb_training/static/src/xml/my_requests_block.xml',
+            'pb_training/static/src/xml/learning_settings.xml',
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',

@@ -246,25 +246,33 @@ lenses.add("numbers", {
     groups: TRAINING_GATE.concat(["base.group_system"]),
 }, { sequence: 80 });
 
-/* ------------------------------------------- Settings › HR (LEARNING L2) ---
- * The category names its own group, so pb_settings needs no change. The
- * registry key is written out (not imported) so this module does not have to
- * depend on pb_settings: without it the entry is simply never read.
+/* ---------------------------------------- Settings › HR › Learning (L6) ---
+ * LEARNING L6 folded L2's "Required training" category into one "Learning"
+ * category with five cards, each opening the Learning settings screen on its
+ * own tab (Country packs is the L2 screen, embedded). The category names its
+ * own group, so pb_settings needs no change; the registry key is written out
+ * (not imported) so this module does not have to depend on pb_settings.
+ * Training managers read the screen; only the head of training writes.
  */
-registry.category("pb_settings_category").add("required_training", {
-    key: "required_training",
+registry.category("pb_settings_category").add("learning", {
+    key: "learning",
     group: "hr",
-    icon: "listChecks",
-    label: _t("Required training"),
-    blurb: _t("Country packs, the renewal window and how many courses the morning job may put on."),
+    icon: "graduationCap",
+    label: _t("Learning"),
+    blurb: _t("The training pack, reminders, course feedback, country packs and day one."),
     groups: ["pb_training.group_training_manager", "pb_training.group_training_admin", "base.group_system"],
-    cards: [{
-        id: "required_training",
-        xmlid: "pb_training.action_pb_training_required_settings",
-        icon: "listChecks",
-        label: _t("Required training"),
-        sub: _t("Country packs for Vietnam, India, Indonesia and Singapore."),
-    }],
+    cards: [
+        { id: "report_pack", xmlid: "pb_training.action_pb_training_settings_pack", icon: "mail",
+          label: _t("Report pack"), sub: _t("The training numbers by email, every week or month, and who gets them.") },
+        { id: "reminders", xmlid: "pb_training.action_pb_training_settings_reminders", icon: "bell",
+          label: _t("Reminders"), sub: _t("Who is reminded about a course or a certificate, and when.") },
+        { id: "feedback", xmlid: "pb_training.action_pb_training_settings_feedback", icon: "messageSquare",
+          label: _t("Feedback"), sub: _t("Asking people how a course was, and their manager whether it worked.") },
+        { id: "country_packs", xmlid: "pb_training.action_pb_training_settings_packs", icon: "globe",
+          label: _t("Country packs"), sub: _t("Country packs for Vietnam, India, Indonesia and Singapore.") },
+        { id: "day_one", xmlid: "pb_training.action_pb_training_settings_day_one", icon: "sunrise",
+          label: _t("Day one"), sub: _t("Courses and paths a new joiner gets on their first day.") },
+    ],
 }, { sequence: 47 });
 
 /* ---------------------------------------------------------- command bar --- */

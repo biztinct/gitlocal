@@ -44,7 +44,7 @@ export class PbLearningOverview extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ loaded: false, failed: false, data: {} });
+        this.state = useState({ loaded: false, failed: false, data: {}, depsOpen: false });
         onWillStart(() => this.load());
     }
 
@@ -70,6 +70,9 @@ export class PbLearningOverview extends Component {
     get data() { return this.state.data || {}; }
     get allowed() { return this.data.allowed !== false; }
     get queue() { return this.data.queue || []; }
+    /** LEARNING L6: what waits (count > 0), in colour; the rest is quiet. */
+    get waiting() { return this.data.waiting || this.queue.filter((q) => q.count > 0); }
+    get quiet() { return this.queue.filter((q) => !q.count); }
     get month() { return this.data.month || { due: 0, past: 0, finished: 0 }; }
     get departments() { return this.data.departments || []; }
     get certificates() { return this.data.certificates || {}; }
@@ -194,6 +197,8 @@ export class PbLearningOverview extends Component {
               text: (x.this_week || 0) === 1 ? _t("1 session this week") : _t("%s sessions this week", x.this_week || 0) },
             { key: "seats", n: x.seats_booked || 0,
               text: (x.seats_booked || 0) === 1 ? _t("1 seat booked") : _t("%s seats booked", x.seats_booked || 0) },
+            { key: "free", n: x.seats_free || 0,
+              text: (x.seats_free || 0) === 1 ? _t("1 seat free") : _t("%s seats free", x.seats_free || 0) },
             { key: "waiting", n: x.waiting || 0, warn: true,
               text: (x.waiting || 0) === 1 ? _t("1 waiting for a seat") : _t("%s waiting for a seat", x.waiting || 0) },
             { key: "to_close", n: x.to_close || 0, warn: true,

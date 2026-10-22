@@ -45,6 +45,7 @@
                     <span><t t-out="ic('mapPin',14)"/> <t t-esc="page.where_words"/></span>
                     <span t-if="page.trainer"><t t-out="ic('user',14)"/> <t t-esc="page.trainer"/></span>
                     <span><t t-out="ic('users',14)"/> <t t-esc="page.seats_words"/></span>
+                    <span t-if="page.cost_words" title="What it cost"><t t-out="ic('coins',14)"/> <t t-esc="page.cost_words"/></span>
                     <a t-if="page.join_url" t-att-href="page.join_url" target="_blank" rel="noopener"><t t-out="ic('video',14)"/> Join link</a>
                   </div>
                 </div>
@@ -229,6 +230,11 @@
               <span class="pbss-f-l">Hours it counts for</span>
               <input class="pbss-in pbss-in--s" type="number" min="0" step="0.25" t-att-value="state.form.hours" t-on-change="(ev) => this.setField('hours', ev, 'float')"/>
             </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">What it cost (optional)</span>
+              <input class="pbss-in pbss-in--s" type="number" min="0" step="1" t-att-value="state.form.cost" t-on-change="(ev) => this.setField('cost', ev, 'float')"/>
+            </label>
+            <p class="pbss-note pbss-f--wide">The cost of the trainer, the room and materials, in the company's money. It shows in Numbers › Cost.</p>
             <p class="pbss-note pbss-f--wide">Empty hours = the length of the session. Changing the time or the place of a session whose invitations are out sends everybody the new time.</p>
           </div>
           <div class="pbss-drawer-foot">

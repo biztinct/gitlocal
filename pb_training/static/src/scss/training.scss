@@ -865,3 +865,21 @@
 
 // LEARNING L4: the Numbers' sessions section sub-headings.
 .pbtnm-subh { margin: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--pbim-muted, #64748B); }
+
+// LEARNING L6: Numbers — hours, cost, quiet tiles, country reports switched off.
+.pbtnm {
+    .pbtnm-stat.is-zero { opacity: .62; .n { color: var(--pbim-muted, #64748B); } }
+    .pbtnm-row.is-zero .pbtnm-row-n { color: var(--pbim-muted, #94A3B8); font-weight: 600; }
+    .pbtnm-row-n--money { font-size: 13px; }
+    .pbtnm-dim { color: var(--pbim-muted, #64748B); font-size: 12.5px; }
+    .pbtnm-more { display: flex; align-items: center; gap: 10px; padding-top: 8px;
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; } }
+    .pbtnm-costline { display: flex; align-items: center; gap: 6px; margin: 10px 0 0;
+        color: var(--pbim-text, #334155); font-size: 13px; }
+    .pbtnm-report-off {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px;
+        border: 1px dashed var(--pbim-line, #E2E8F0); border-radius: 8px;
+        color: var(--pbim-muted, #94A3B8); font-size: 12.5px;
+    }
+    .pbtnm-table-head p + p { margin-top: 2px; }
+}

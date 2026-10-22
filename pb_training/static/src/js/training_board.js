@@ -73,6 +73,10 @@ export class PbTrainingBoard extends Component {
         this.state = useState({
             loaded: false,
             allowed: true,
+            // LEARNING L6: a read that FAILED (a restart, a 502) is not a
+            // refusal — it gets "That did not load. Try again", never the
+            // "looked after by the training team" panel (ledger LN57).
+            failed: false,
             canWrite: false,
             canAdmin: false,
             courses: [],
@@ -181,6 +185,7 @@ export class PbTrainingBoard extends Component {
     // ------------------------------------------------------------- reading
     async load() {
         this.state.busy = true;
+        this.state.failed = false;
         try {
             const d = await this.orm.call("pb.training", "get_board", []);
             Object.assign(this.state, {
@@ -194,11 +199,18 @@ export class PbTrainingBoard extends Component {
             });
         } catch (e) {
             this.state.loaded = true;
-            this.state.allowed = false;
+            this.state.failed = true;
             console.warn("pb_training: the training board could not be read", e);
         } finally {
             this.state.busy = false;
         }
+    }
+
+    /** LEARNING L6: "Try again" after a read that did not come back. */
+    async retry() {
+        this.state.loaded = false;
+        await this.load();
+        if (!this.state.failed) { await this.setTab(this.state.tab); }
     }
 
     get rows() {

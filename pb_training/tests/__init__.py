@@ -9,3 +9,4 @@ from . import test_packs
 from . import test_paths
 from . import test_sessions
 from . import test_l5
+from . import test_l6

@@ -73,6 +73,31 @@
                             </tbody>
                         </table>
 
+                        <!-- LEARNING L6: sessions attended (and missed). -->
+                        <t t-if="rec.get('sessions')">
+                            <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #1B1733;">Sessions</h4>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <thead>
+                                    <tr style="background: #EDEAF8;">
+                                        <th style="text-align: left; padding: 6px 8px;">Course</th>
+                                        <th style="text-align: left; padding: 6px 8px; width: 18%;">Kind</th>
+                                        <th style="text-align: left; padding: 6px 8px; width: 20%;">Held on</th>
+                                        <th style="text-align: left; padding: 6px 8px; width: 16%;">Attendance</th>
+                                        <th style="text-align: right; padding: 6px 8px; width: 10%;">Hours</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="rec['sessions']" t-as="ses" style="border-bottom: 1px solid #E2E8F0;">
+                                        <td style="padding: 6px 8px;" t-esc="ses['course']"/>
+                                        <td style="padding: 6px 8px;" t-esc="ses['kind']"/>
+                                        <td style="padding: 6px 8px;" t-esc="ses['when']"/>
+                                        <td style="padding: 6px 8px;" t-esc="ses['state']"/>
+                                        <td style="padding: 6px 8px; text-align: right;" t-esc="ses['hours']"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
                         <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 6px; color: #1B1733;">Certificates and licences</h4>
                         <p t-if="not rec['certificates']" style="color: #64748B;">No certificates on record yet.</p>
                         <table t-else="" style="width: 100%; border-collapse: collapse;">

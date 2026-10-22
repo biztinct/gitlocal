@@ -582,6 +582,11 @@ class PbHomeTeam(models.AbstractModel):
                 'course': r.get('course') or '',
                 'days_over': int(r.get('days_over') or 0),
             })
+        # LEARNING L6: two more quiet chips — certificates of my people that
+        # run out within 30 days, and course / more-time requests whose live
+        # step waits on me. Counts and names only (no amounts).
+        expiring = team.get('expiring_certs') or {}
+        waiting = team.get('waiting_on_me') or {}
         return {
             'overdue': int(team.get('overdue') or 0),
             'overdue_people': len(people),
@@ -589,6 +594,10 @@ class PbHomeTeam(models.AbstractModel):
             'done': int(team.get('done') or 0),
             'people': people[:ROW_CAP],
             'more': max(0, len(people) - ROW_CAP),
+            'expiring': int(expiring.get('count') or 0),
+            'expiring_names': [_short_name(n) for n in
+                               (expiring.get('names') or [])][:ROW_CAP],
+            'waiting': int(waiting.get('count') or 0),
         }
 
     # =============================================================== hiring

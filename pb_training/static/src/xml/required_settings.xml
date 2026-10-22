@@ -7,7 +7,7 @@
        `pk` (R1); translatable text nodes on one line (LN13).
        ==================================================================== -->
   <t t-name="pb_training.PbRequiredSettings">
-    <div class="pbim pbrq pbrqs">
+    <div class="pbim pbrq pbrqs" t-att-class="{ 'pbrqs--embedded': props.packsOnly }">
       <div class="pbrq-wrap">
 
         <t t-if="!state.loaded">
@@ -31,7 +31,7 @@
         </div>
 
         <t t-else="">
-          <section class="pbrq-hero">
+          <section t-if="!props.packsOnly" class="pbrq-hero">
             <div class="pbrq-eyebrow"><t t-out="ic('listChecks',14)"/> Required training</div>
             <p class="pbrq-headline">Country packs for <t t-esc="d.company"/></p>
             <p class="pbrqs-sub">A pack writes the legal training rules for one country into this company. Its rules arrive with Assign it by itself switched off, so nothing reaches anybody until you have read them.</p>
@@ -58,7 +58,9 @@
             </div>
           </section>
 
-          <section class="pbrq-panel pbrqs-dials">
+          <!-- LEARNING L6: inside Settings › Learning the three switches live
+               on the Reminders and Day one tabs; only the packs show here. -->
+          <section t-if="!props.packsOnly" class="pbrq-panel pbrqs-dials">
             <h3><t t-out="ic('sliders',15)"/> Switches</h3>
             <label class="pbrqs-dial">
               <span><b>Renewal window</b><span class="pbrq-dim">How many days before a certificate runs out it counts as expiring, and its refresher course is put on.</span></span>

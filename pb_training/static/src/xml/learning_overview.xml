@@ -41,21 +41,29 @@
 
         <t t-else="">
           <!-- ============ the hero: one sentence, three doors ============ -->
+          <!-- LEARNING L6: the headline is composed from the blocks (at most
+               three concerns, worst first); what waits is in colour, the rest
+               sits quiet in one grey line; nothing waiting is the calm hero. -->
           <section class="pblo-hero" t-att-class="{ 'is-calm': data.calm }">
             <div class="pblo-eyebrow">
-              <t t-out="ic('graduationCap',14)"/> Training at a glance
+              <t t-if="data.calm" t-out="ic('checkCircle',14)"/><t t-else="" t-out="ic('graduationCap',14)"/> Training at a glance
             </div>
             <p class="pblo-headline" t-esc="data.headline"/>
-            <div class="pblo-queue" role="list">
-              <button t-foreach="queue" t-as="que" t-key="que.key"
-                      role="listitem" class="pblo-chip"
-                      t-att-class="{ 'is-act': que.count > 0 }"
+            <div t-if="waiting.length" class="pblo-queue" role="list">
+              <button t-foreach="waiting" t-as="que" t-key="que.key"
+                      role="listitem" class="pblo-chip is-act"
                       t-on-click="() => this.openQueue(que)"
                       t-att-title="que.label">
                 <span class="pblo-chip-ic"><t t-out="ic(queueIcon(que),14)"/></span>
                 <b class="pblo-chip-n" t-esc="que.count"/>
                 <span t-esc="que.label"/>
                 <span class="pblo-chip-go"><t t-out="ic('chevron',13)"/></span>
+              </button>
+            </div>
+            <div t-if="quiet.length" class="pblo-quiet" role="list">
+              <span class="pblo-quiet-l"><t t-if="waiting.length">Nothing waiting on</t><t t-else="">Nothing is waiting for the training team</t></span>
+              <button t-foreach="quiet" t-as="qq" t-key="qq.key" role="listitem" class="pblo-quiet-chip" t-on-click="() => this.openQueue(qq)" t-att-title="qq.label">
+                <t t-out="ic(queueIcon(qq),12)"/> <span t-esc="qq.label"/>
               </button>
             </div>
           </section>
@@ -154,10 +162,11 @@
           </section>
 
           <!-- ============ departments ============ -->
-          <section class="pblo-panel">
+          <section class="pblo-panel pblo-depsec" t-att-class="{ 'is-open': state.depsOpen }">
             <div class="pblo-sec-h">
               <h3>Departments</h3>
               <span class="pblo-dim">The last 90 days, biggest first</span>
+              <button class="pblo-deptoggle" t-on-click="() => { this.state.depsOpen = !this.state.depsOpen; }" t-att-aria-expanded="state.depsOpen ? 'true' : 'false'"><t t-if="state.depsOpen">Hide</t><t t-else="">Show</t></button>
             </div>
             <p t-if="!departments.length" class="pblo-calm">
               <t t-out="ic('info',14)"/>

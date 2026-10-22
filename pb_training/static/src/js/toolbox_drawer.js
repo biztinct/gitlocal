@@ -52,6 +52,8 @@ export class PbToolboxDrawer extends Component {
         this.state = useState({
             loaded: false,
             allowed: true,
+            // LEARNING L6: a read that did not come back is not a refusal.
+            failed: false,
             isTeam: false,
             courses: [],
             mode: "course",
@@ -72,6 +74,7 @@ export class PbToolboxDrawer extends Component {
     ic(n, s = 16) { return ic(n, s); }
 
     async load() {
+        this.state.failed = false;
         try {
             const d = await this.orm.call("pb.training", "toolbox_lists", []);
             this.state.allowed = d.allowed !== false;
@@ -81,10 +84,15 @@ export class PbToolboxDrawer extends Component {
             if (this.state.allowed) { await this.search(); }
         } catch (e) {
             console.warn("pb_training: the toolbox talk lists could not be read", e);
-            this.state.allowed = false;
+            this.state.failed = true;
         } finally {
             this.state.loaded = true;
         }
+    }
+
+    async retry() {
+        this.state.loaded = false;
+        await this.load();
     }
 
     async search() {

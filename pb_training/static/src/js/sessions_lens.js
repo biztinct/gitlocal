@@ -42,7 +42,7 @@ function blankSession() {
     start.setHours(9, 0, 0, 0);
     return { id: 0, channel_id: 0, new_course: "", kind: "classroom",
              start: toLocalInput(start), minutes: 120, place: "", join_url: "",
-             trainer_id: 0, trainer_name: "", seats: 20, hours: 0 };
+             trainer_id: 0, trainer_name: "", seats: 20, hours: 0, cost: 0 };
 }
 
 function blankBook() {

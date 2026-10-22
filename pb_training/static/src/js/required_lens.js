@@ -27,7 +27,8 @@ import { ic } from "@pb_import_kit/js/import_icons";
 
 const TABS = ["matrix", "rules", "day_one", "recurring"];
 const STATE_KEYS = ["missing", "expiring", "in_progress", "not_due"];
-const SETTINGS_XMLID = "pb_training.action_pb_training_required_settings";
+// LEARNING L6: the country packs now live on Settings › Learning.
+const SETTINGS_XMLID = "pb_training.action_pb_training_settings_packs";
 
 function blankForm(kind = "always") {
     return {

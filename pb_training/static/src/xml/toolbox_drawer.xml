@@ -18,6 +18,10 @@
         </div>
 
         <div t-if="!state.loaded" class="pbss-drawer-body"><p class="pbss-note">Reading…</p></div>
+        <div t-elif="state.failed" class="pbss-drawer-body">
+          <p class="pbss-calm pbss-f--wide"><t t-out="ic('alert',14)"/> That did not load. Nothing was changed.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
         <div t-elif="!state.allowed" class="pbss-drawer-body">
           <p class="pbss-calm pbss-f--wide"><t t-out="ic('lock',14)"/> A toolbox talk is logged by the training team or by somebody who manages people.</p>
         </div>
@@ -80,9 +84,9 @@
         </div>
 
         <div class="pbss-drawer-foot">
-          <span t-if="state.allowed and hint" class="pbss-hint" t-esc="hint"/>
+          <span t-if="state.allowed and !state.failed and hint" class="pbss-hint" t-esc="hint"/>
           <button class="pbim-btn ghost" t-on-click="() => props.onClose()">Cancel</button>
-          <button t-if="state.allowed" class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="save"><t t-out="ic('check',15)"/> Log the talk</button>
+          <button t-if="state.allowed and !state.failed" class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="save"><t t-out="ic('check',15)"/> Log the talk</button>
         </div>
       </div>
     </div>

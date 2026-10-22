@@ -198,3 +198,30 @@
     &.is-bad { color: #B91C1C; background: #FEF2F2; border-color: #FECACA; }
     &.is-good { color: #2E7D4F; background: #ECFDF5; border-color: #A7F3D0; }
 }
+
+// ------------------------------------------- LEARNING L6: quiet line, phone
+.pblo-quiet {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px;
+    .pblo-quiet-l { color: var(--pblo-muted); font-size: 12px; margin-right: 2px; }
+}
+.pblo-hero.is-calm .pblo-quiet { margin-top: 0; }
+.pblo-quiet-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+    border-radius: 999px; border: 1px solid var(--pblo-line); background: transparent;
+    color: var(--pblo-muted); font: inherit; font-size: 12px; cursor: pointer;
+    &:hover { border-color: var(--pblo-primary); color: var(--pblo-primary); }
+    &:focus-visible { outline: 3px solid rgba(90, 75, 176, .25); outline-offset: 1px; }
+}
+.pblo-hero.is-calm .pblo-eyebrow { color: var(--pblo-green); }
+.pblo-deptoggle {
+    display: none; margin-left: auto; border: 1px solid var(--pblo-line); background: transparent;
+    border-radius: 999px; padding: 3px 10px; font: inherit; font-size: 12px; color: var(--pblo-primary); cursor: pointer;
+}
+// Phone: the hero and what waits come first; departments fold away.
+@media (max-width: 640px) {
+    .pblo-headline { font-size: 18px; }
+    .pblo-deptoggle { display: inline-flex; }
+    .pblo-depsec:not(.is-open) .pblo-deps,
+    .pblo-depsec:not(.is-open) .pblo-calm,
+    .pblo-depsec:not(.is-open) .pblo-foot { display: none; }
+}

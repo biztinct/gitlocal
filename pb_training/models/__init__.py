@@ -91,3 +91,12 @@ from . import feedback
 from . import skill_grant
 from . import pb_training_catalogue
 from . import pb_training_skills
+
+# ---------------------------------------------------------------- LEARNING L6
+# Numbers finished (hours, cost, compliance, effect, the flat Assignments
+# sheet, site / country / kind filters, a session's cost), then the Overview
+# composer, the Learning settings facade, the report pack, Home › TEAM's
+# training chips and the learning record's sessions — each extends the last
+# link of its chain, so they come last.
+from . import numbers_l6
+from . import overview_l6

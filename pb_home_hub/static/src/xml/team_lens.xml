@@ -183,6 +183,15 @@
                 Open team training <span t-out="ic('arrow', 13)"/>
               </button>
             </div>
+            <!-- LEARNING L6: three quiet chips, grey at zero, amber to act. -->
+            <div class="pbtm-tchips" role="list">
+              <button t-foreach="trainingChips" t-as="tc" t-key="tc.key" type="button" role="listitem"
+                      class="pbtm-tchip" t-att-class="tc.n ? 'is-amber' : ''" t-att-title="tc.title"
+                      t-on-click="() => tc.run()">
+                <span class="pbtm-tchip__ic" t-out="ic(tc.icon, 13)"/>
+                <b t-esc="tc.n"/> <span t-esc="tc.label"/>
+              </button>
+            </div>
           </section>
 
           <!-- ============================================== hiring -->

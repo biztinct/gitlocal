@@ -499,3 +499,51 @@ msgstr "Bạn không có yêu cầu tuyển dụng nào đang xử lý."
 #: code:addons/pb_home_hub/static/src/xml/team_lens.xml:0
 msgid "The HR team runs these reviews and will ask you for each step."
 msgstr "Bộ phận nhân sự điều phối các buổi đánh giá này và sẽ nhờ bạn ở từng bước."
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "course late"
+msgstr "khóa học trễ hạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "courses late"
+msgstr "khóa học trễ hạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Courses past their date today"
+msgstr "Các khóa học đã quá hạn tính đến hôm nay"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "certificate runs out within 30 days"
+msgstr "chứng chỉ hết hạn trong 30 ngày tới"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "certificates run out within 30 days"
+msgstr "chứng chỉ hết hạn trong 30 ngày tới"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "training request waits on you"
+msgstr "yêu cầu đào tạo đang chờ bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "training requests wait on you"
+msgstr "yêu cầu đào tạo đang chờ bạn"
+
+#. module: pb_home_hub
+#. odoo-javascript
+#: code:addons/pb_home_hub/static/src/js/team_lens.js:0
+msgid "Course and more-time requests where you decide next"
+msgstr "Yêu cầu khóa học và yêu cầu thêm thời gian mà bạn là người quyết định tiếp theo"

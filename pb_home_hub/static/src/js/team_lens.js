@@ -201,6 +201,24 @@ export class PbTeamLens extends Component {
                        : _t("%s people have required training past its date", n);
     }
 
+    /** LEARNING L6: late courses today · certificates running out within
+     *  30 days · course and more-time requests waiting on me. */
+    get trainingChips() {
+        const t = this.d.training || {};
+        const names = (t.expiring_names || []).join(", ");
+        return [
+            { key: "late", icon: "alert", n: t.overdue || 0,
+              label: (t.overdue || 0) === 1 ? _t("course late") : _t("courses late"),
+              title: _t("Courses past their date today"), run: () => this.openTraining() },
+            { key: "expiring", icon: "award", n: t.expiring || 0,
+              label: (t.expiring || 0) === 1 ? _t("certificate runs out within 30 days") : _t("certificates run out within 30 days"),
+              title: names, run: () => this.openTraining() },
+            { key: "waiting", icon: "inbox", n: t.waiting || 0,
+              label: (t.waiting || 0) === 1 ? _t("training request waits on you") : _t("training requests wait on you"),
+              title: _t("Course and more-time requests where you decide next"), run: () => this.openInbox("") },
+        ];
+    }
+
     daysOver(p) {
         return p.days_over === 1 ? _t("1 day late") : _t("%s days late", p.days_over);
     }

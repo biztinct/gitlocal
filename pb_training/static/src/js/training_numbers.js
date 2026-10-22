@@ -46,13 +46,15 @@ export class PbTrainingNumbers extends Component {
         this.state = useState({
             loaded: false,
             allowed: true,
+            // LEARNING L6: a read that did not come back is not a refusal.
+            failed: false,
             empty: true,
             busy: false,
             range: "90",
             from: "",
             to: "",
             custom: false,
-            filters: { department_id: 0, channel_id: 0, path_id: 0, reason: "" },
+            filters: { department_id: 0, channel_id: 0, path_id: 0, reason: "", work_location_id: 0, country_code: "", kind: "" },
             headline: "",
             total: 0,
             tiles: [],
@@ -74,8 +76,15 @@ export class PbTrainingNumbers extends Component {
             reporting: "",
             trend: [],
             claims: {},
-            lists: { courses: [], departments: [], paths: [] },
+            lists: { courses: [], departments: [], paths: [], sites: [], countries: [], kinds: [] },
             reasons: [],
+            // LEARNING L6
+            hours: { by_person_shown: [], by_department: [], by_course: [], kinds: [] },
+            cost: { empty: true, budget: null },
+            compliance: null,
+            effect: { by_course_top: [] },
+            countries: [],
+            showAllPeople: false,
         });
 
         onWillStart(async () => {
@@ -123,6 +132,9 @@ export class PbTrainingNumbers extends Component {
         if (f.channel_id) { out.channel_id = Number(f.channel_id); }
         if (f.path_id) { out.path_id = Number(f.path_id); }
         if (f.reason) { out.reason = f.reason; }
+        if (f.work_location_id) { out.work_location_id = Number(f.work_location_id); }
+        if (f.country_code) { out.country_code = f.country_code; }
+        if (f.kind) { out.kind = f.kind; }
         return out;
     }
 
@@ -131,7 +143,7 @@ export class PbTrainingNumbers extends Component {
         // only way back to everything is a page reload, which is a dead end.
         this.state.filters[key] =
             String(this.state.filters[key]) === String(value) ? (
-                key === "reason" ? "" : 0) : value;
+                ["reason", "kind", "country_code"].includes(key) ? "" : 0) : value;
         await this.load();
     }
 
@@ -144,11 +156,15 @@ export class PbTrainingNumbers extends Component {
         this.state.filters.channel_id = 0;
         this.state.filters.path_id = 0;
         this.state.filters.reason = "";
+        this.state.filters.work_location_id = 0;
+        this.state.filters.country_code = "";
+        this.state.filters.kind = "";
         await this.load();
     }
 
     async load() {
         this.state.busy = true;
+        this.state.failed = false;
         try {
             const d = await this.orm.call(
                 "pb.training.analytics", "get_numbers",
@@ -173,13 +189,18 @@ export class PbTrainingNumbers extends Component {
                 countryReports: d.country_reports || [],
                 trend: d.trend || [],
                 claims: d.claims || {},
-                lists: d.lists || { courses: [], departments: [], paths: [] },
+                lists: Object.assign({ courses: [], departments: [], paths: [], sites: [], countries: [], kinds: [] }, d.lists || {}),
                 reasons: d.reasons || [],
+                hours: d.hours || { by_person_shown: [], by_department: [], by_course: [], kinds: [] },
+                cost: d.cost || { empty: true, budget: null },
+                compliance: d.compliance || null,
+                effect: d.effect || { by_course_top: [] },
+                countries: d.countries || [],
                 loaded: true,
             });
         } catch (e) {
             this.state.loaded = true;
-            this.state.allowed = false;
+            this.state.failed = true;
             console.warn("pb_training: the training numbers could not be read",
                          e);
         } finally {
@@ -358,6 +379,87 @@ export class PbTrainingNumbers extends Component {
     }
 
     hoursWords(h) { return _t("%s h", h || 0); }
+
+    // ---------------------------------------------------- LEARNING L6
+    async retry() {
+        this.state.loaded = false;
+        await this.load();
+    }
+
+    /** "12 h" for an hours figure, a dash for nothing. */
+    hoursOf(h) { return h ? _t("%s h", h) : "—"; }
+
+    get peopleRows() {
+        const h = this.state.hours || {};
+        return this.state.showAllPeople ? (h.by_person_shown || []) : (h.by_person_shown || []).slice(0, 10);
+    }
+
+    get morePeople() {
+        const h = this.state.hours || {};
+        return Math.max((h.people || 0) - this.peopleRows.length, 0);
+    }
+
+    personWords(row) {
+        const bits = [];
+        if (row.department) { bits.push(row.department); }
+        if (row.courses) { bits.push(row.courses === 1 ? _t("1 course") : _t("%s courses", row.courses)); }
+        if (row.sessions) { bits.push(row.sessions === 1 ? _t("1 session") : _t("%s sessions", row.sessions)); }
+        return bits.join(" · ");
+    }
+
+    shareOf(rows, value, key = "hours") {
+        const top = Math.max(0, ...(rows || []).map((r) => Number(r[key] || 0)));
+        return top ? Math.round((Number(value || 0) / top) * 100) : 0;
+    }
+
+    /** The cost lines, one per kind of spend, in words. */
+    get costLines() {
+        const c = this.state.cost || {};
+        if (c.mixed || c.empty) { return []; }
+        return [
+            { key: "claims", label: _t("Claims agreed"), words: c.claims_agreed_words, n: c.claims_agreed,
+              sub: c.paid_count ? _t("%(n)s of %(all)s already paid · %(paid)s", { n: c.paid_count, all: c.claims_count, paid: c.claims_paid_words }) : (c.claims_count === 1 ? _t("1 claim") : _t("%s claims", c.claims_count || 0)) },
+            { key: "requests", label: _t("Outside courses agreed"), words: c.requests_approved_words, n: c.requests_approved,
+              sub: _t("set aside until the claim comes in") },
+            { key: "sessions", label: _t("Sessions"), words: c.sessions_words, n: c.sessions,
+              sub: c.sessions_count === 1 ? _t("1 session with a cost") : _t("%s sessions with a cost", c.sessions_count || 0) },
+        ];
+    }
+
+    get allowanceWords() {
+        const c = this.state.cost || {};
+        if (c.allowance_used_pct === null || c.allowance_used_pct === undefined) {
+            return _t("No training allowance is set for %s.", c.allowance_year || "");
+        }
+        return _t("%(used)s used of %(total)s in allowances for %(year)s (%(pct)s%%).", { used: c.allowance_used_words, total: c.allowance_total_words, year: c.allowance_year, pct: c.allowance_used_pct });
+    }
+
+    get budgetWords() {
+        const b = (this.state.cost || {}).budget;
+        if (!b) { return ""; }
+        return _t("%(line)s: %(spent)s spent of %(budget)s, %(left)s left.", { line: b.line, spent: b.spent_words, budget: b.budget_words, left: b.left_words });
+    }
+
+    /** "agreed across 2 of 3 claims · 1 still waiting · 1 already paid" —
+     * whole sentences, never a fragment around a number (LN13). */
+    get claimWords() {
+        const c = this.state.claims || {};
+        const bits = [_t("agreed across %(agreed)s of %(n)s claims", { agreed: c.agreed || 0, n: c.claims || 0 })];
+        if (c.waiting) { bits.push(c.waiting === 1 ? _t("1 still waiting") : _t("%s still waiting", c.waiting)); }
+        if (c.paid) { bits.push(c.paid === 1 ? _t("1 already paid") : _t("%s already paid", c.paid)); }
+        return bits.join(" · ");
+    }
+
+    /** Compliance splits as tabs inside the Required training section. */
+    complianceSplits() {
+        const c = this.state.compliance || {};
+        return [
+            { key: "by_site", label: _t("By site"), rows: c.by_site || [] },
+            { key: "by_department", label: _t("By department"), rows: c.by_department || [] },
+            { key: "by_country", label: _t("By country"), rows: c.by_country || [] },
+            { key: "by_group", label: _t("By safety group"), rows: c.by_group || [] },
+        ];
+    }
 
     sessionRowWords(row) {
         const bits = [row.sessions === 1 ? _t("1 session") : _t("%s sessions", row.sessions)];

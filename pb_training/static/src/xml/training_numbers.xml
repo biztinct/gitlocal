@@ -28,8 +28,17 @@
 
       <div t-else="" class="pbim-wrap">
 
+        <!-- ============ the read did not come back (LEARNING L6) ============
+             A failed read is not a refusal (ledger LN57). -->
+        <div t-if="state.failed" class="pbim-panel pbtnm-empty pbtnm-failed">
+          <div class="pbtnm-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h2>That did not load</h2>
+          <p>Nothing was changed. The server may be busy for a moment. Try again.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
         <!-- ============ the reader has no training access ============ -->
-        <div t-if="!state.allowed" class="pbim-panel pbtnm-empty">
+        <div t-elif="!state.allowed" class="pbim-panel pbtnm-empty">
           <div class="pbtnm-empty-ic"><t t-out="ic('lock',30)"/></div>
           <h2>The training numbers are for the training team</h2>
           <p>How much of what was set has been finished, who passed the test
@@ -107,6 +116,24 @@
                 <option t-att-value="lp.id" t-esc="lp.name"/>
               </t>
             </select>
+            <select t-if="(state.lists.sites || []).length" class="pbtnm-in" t-model="state.filters.work_location_id" t-on-change="() => this.load()" aria-label="Site">
+              <option value="0">Every site</option>
+              <t t-foreach="state.lists.sites || []" t-as="st" t-key="st.id">
+                <option t-att-value="st.id" t-esc="st.name"/>
+              </t>
+            </select>
+            <select t-if="(state.lists.countries || []).length > 1" class="pbtnm-in" t-model="state.filters.country_code" t-on-change="() => this.load()" aria-label="Country">
+              <option value="">Every country</option>
+              <t t-foreach="state.lists.countries || []" t-as="cn" t-key="cn.code">
+                <option t-att-value="cn.code" t-esc="cn.name"/>
+              </t>
+            </select>
+            <select t-if="(state.lists.kinds || []).length > 1" class="pbtnm-in" t-model="state.filters.kind" t-on-change="() => this.load()" aria-label="Kind">
+              <option value="">Every kind of training</option>
+              <t t-foreach="state.lists.kinds || []" t-as="kd" t-key="kd.key">
+                <option t-att-value="kd.key" t-esc="kd.label"/>
+              </t>
+            </select>
             <t t-foreach="state.reasons || []" t-as="rs" t-key="rs.key">
               <button class="pbtnm-chip"
                       t-att-class="{ on: state.filters.reason === rs.key }"
@@ -145,7 +172,7 @@
             <!-- ==================== the numbers ==================== -->
             <div class="pbim-stats pbtnm-kpis">
               <t t-foreach="state.tiles || []" t-as="tl" t-key="tl.key">
-                <div class="pbim-stat pbtnm-stat">
+                <div class="pbim-stat pbtnm-stat" t-att-class="{ 'is-zero': tl.zero }">
                   <div class="pbim-stat-ic"><t t-out="ic(tl.icon,21)"/></div>
                   <div class="pbim-stat-tx">
                     <div class="n" t-esc="tl.value"/>
@@ -277,197 +304,259 @@
               </t>
             </div>
 
-            <!-- ==================== sessions (LEARNING L4) ====================
-                 Closed sessions that started in the range: hours, who came,
-                 who did not, by kind, by trainer and by course. -->
-            <div t-if="state.sessions and state.sessions.has_sessions" class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('calendar',16)"/> Sessions</h3>
-                <p t-esc="sessionsWords"/>
-              </div>
-              <h4 class="pbtnm-subh">By kind</h4>
-              <t t-foreach="state.sessions.by_kind || []" t-as="sk" t-key="sk.name">
-                <div class="pbtnm-row" t-att-class="{ bad: sk.no_show > 0 }">
-                  <div class="pbtnm-row-name" t-esc="sk.name"/>
-                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sk.rate || 0 }}%;"/></div>
-                  <div class="pbtnm-row-n" t-esc="hoursWords(sk.hours)"/>
-                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(sk)"/>
-                </div>
-              </t>
-              <h4 class="pbtnm-subh">By trainer</h4>
-              <t t-foreach="state.sessions.by_trainer || []" t-as="st" t-key="st.name">
-                <div class="pbtnm-row" t-att-class="{ bad: st.no_show > 0 }">
-                  <div class="pbtnm-row-name" t-esc="st.name"/>
-                  <div class="pbtnm-bar"><span t-attf-style="width: {{ st.rate || 0 }}%;"/></div>
-                  <div class="pbtnm-row-n" t-esc="hoursWords(st.hours)"/>
-                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(st)"/>
-                </div>
-              </t>
-              <h4 class="pbtnm-subh">By course</h4>
-              <t t-foreach="state.sessions.by_course || []" t-as="sc" t-key="sc.name">
-                <div class="pbtnm-row" t-att-class="{ bad: sc.no_show > 0 }">
-                  <div class="pbtnm-row-name" t-esc="sc.name"/>
-                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sc.rate || 0 }}%;"/></div>
-                  <div class="pbtnm-row-n" t-esc="hoursWords(sc.hours)"/>
-                  <div class="pbtnm-row-sub" t-esc="sessionRowWords(sc)"/>
-                </div>
-              </t>
-            </div>
+          </t>
 
-            <!-- ==================== LEARNING L5: ratings, did it work, requests, skills ==================== -->
-            <div class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('star',16)"/> Ratings</h3>
-                <p t-esc="ratingsWords"/>
+          <!-- ==================== hours (LEARNING L6) ====================
+               Finished hours, by the day a course was finished or a session
+               held. A course finished by attending counts once, through the
+               attendance; so a person's hours are their courses plus their
+               sessions. -->
+          <div class="pbim-panel pbtnm-table pbtnm-certs pbtnm-hours">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('clock',16)"/> Hours</h3>
+              <p t-esc="state.hours.headline"/>
+            </div>
+            <t t-if="state.hours.total">
+              <div class="pbtnm-grid">
+                <div>
+                  <h4 class="pbtnm-req-h">By kind</h4>
+                  <t t-foreach="state.hours.kinds || []" t-as="hk" t-key="hk.key">
+                    <div class="pbtnm-row" t-att-class="{ 'is-zero': !hk.hours }">
+                      <div class="pbtnm-row-name" t-esc="hk.label"/>
+                      <div class="pbtnm-bar"><span t-attf-style="width: {{ shareOf(state.hours.kinds, hk.hours) }}%;"/></div>
+                      <div class="pbtnm-row-n" t-esc="hoursOf(hk.hours)"/>
+                    </div>
+                  </t>
+                </div>
+                <div>
+                  <h4 class="pbtnm-req-h">By department</h4>
+                  <t t-foreach="state.hours.by_department || []" t-as="hd" t-key="hd.name">
+                    <div class="pbtnm-row">
+                      <div class="pbtnm-row-name" t-esc="hd.name"/>
+                      <div class="pbtnm-bar"><span t-attf-style="width: {{ shareOf(state.hours.by_department, hd.hours) }}%;"/></div>
+                      <div class="pbtnm-row-n" t-esc="hoursOf(hd.hours)"/>
+                    </div>
+                  </t>
+                </div>
+                <div>
+                  <h4 class="pbtnm-req-h">By course</h4>
+                  <t t-foreach="state.hours.by_course || []" t-as="hc" t-key="hc.name">
+                    <div class="pbtnm-row">
+                      <div class="pbtnm-row-name" t-esc="hc.name"/>
+                      <div class="pbtnm-bar"><span t-attf-style="width: {{ shareOf(state.hours.by_course, hc.hours) }}%;"/></div>
+                      <div class="pbtnm-row-n" t-esc="hoursOf(hc.hours)"/>
+                    </div>
+                  </t>
+                </div>
               </div>
-              <t t-foreach="(state.ratings and state.ratings.rows) || []" t-as="rt" t-key="rt_index">
+              <h4 class="pbtnm-subh">By person</h4>
+              <t t-foreach="peopleRows" t-as="hp" t-key="hp.employee_id">
                 <div class="pbtnm-row">
-                  <div class="pbtnm-row-name"><t t-esc="rt.name"/><t t-if="rt.outside"> · <span class="pbtnm-dim">Outside</span></t></div>
-                  <div class="pbtnm-bar"><span t-attf-style="width: {{ (rt.avg || 0) * 20 }}%;"/></div>
-                  <div class="pbtnm-row-n" t-esc="rt.avg or '—'"/>
-                  <div class="pbtnm-row-sub" t-esc="ratingRowWords(rt)"/>
+                  <div class="pbtnm-row-name" t-esc="hp.employee"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ shareOf(state.hours.by_person_shown, hp.hours) }}%;"/></div>
+                  <div class="pbtnm-row-n" t-esc="hoursOf(hp.hours)"/>
+                  <div class="pbtnm-row-sub" t-esc="personWords(hp)"/>
                 </div>
               </t>
-            </div>
-
-            <div class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('trendingUp',16)"/> Did it work?</h3>
-                <p t-esc="workWords"/>
+              <div class="pbtnm-more">
+                <button t-if="!state.showAllPeople and (state.hours.by_person_shown || []).length > 10" class="pbim-btn ghost" t-on-click="() => { this.state.showAllPeople = true; }"><t t-out="ic('chevronDown',14)"/> Show more people</button>
+                <span t-if="morePeople" class="pbtnm-dim">The spreadsheet has everybody.</span>
               </div>
-            </div>
+            </t>
+          </div>
 
-            <div class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('send',16)"/> Requests and spend</h3>
-                <p t-esc="requestsWords"/>
+          <!-- ==================== sessions (LEARNING L4) ====================
+               Closed sessions that started in the range: hours, who came,
+               who did not, by kind, by trainer and by course. -->
+          <div t-if="state.sessions and state.sessions.has_sessions" class="pbim-panel pbtnm-table pbtnm-certs">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('calendar',16)"/> Sessions</h3>
+              <p t-esc="sessionsWords"/>
+            </div>
+            <h4 class="pbtnm-subh">By kind</h4>
+            <t t-foreach="state.sessions.by_kind || []" t-as="sk" t-key="sk.name">
+              <div class="pbtnm-row" t-att-class="{ bad: sk.no_show > 0 }">
+                <div class="pbtnm-row-name" t-esc="sk.name"/>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ sk.rate || 0 }}%;"/></div>
+                <div class="pbtnm-row-n" t-esc="hoursWords(sk.hours)"/>
+                <div class="pbtnm-row-sub" t-esc="sessionRowWords(sk)"/>
               </div>
-              <t t-foreach="(state.courseRequests and state.courseRequests.by_state) || []" t-as="rs" t-key="rs.key">
+            </t>
+            <h4 class="pbtnm-subh">By trainer</h4>
+            <t t-foreach="state.sessions.by_trainer || []" t-as="st" t-key="st.name">
+              <div class="pbtnm-row" t-att-class="{ bad: st.no_show > 0 }">
+                <div class="pbtnm-row-name" t-esc="st.name"/>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ st.rate || 0 }}%;"/></div>
+                <div class="pbtnm-row-n" t-esc="hoursWords(st.hours)"/>
+                <div class="pbtnm-row-sub" t-esc="sessionRowWords(st)"/>
+              </div>
+            </t>
+            <h4 class="pbtnm-subh">By course</h4>
+            <t t-foreach="state.sessions.by_course || []" t-as="sc" t-key="sc.name">
+              <div class="pbtnm-row" t-att-class="{ bad: sc.no_show > 0 }">
+                <div class="pbtnm-row-name" t-esc="sc.name"/>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ sc.rate || 0 }}%;"/></div>
+                <div class="pbtnm-row-n" t-esc="hoursWords(sc.hours)"/>
+                <div class="pbtnm-row-sub" t-esc="sessionRowWords(sc)"/>
+              </div>
+            </t>
+          </div>
+
+          <!-- ==================== cost (LEARNING L6) ====================
+               Claims agreed, outside courses agreed (money set aside) and
+               session costs, against the allowances and the HR-operations
+               budget. One currency per total, never two added up. Course
+               requests by state (L5's "Requests and spend") live here. -->
+          <div class="pbim-panel pbtnm-table pbtnm-certs pbtnm-cost">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('coins',16)"/> Cost</h3>
+              <p t-esc="state.cost.headline"/>
+            </div>
+            <t t-foreach="costLines" t-as="cl" t-key="cl.key">
+              <div class="pbtnm-row" t-att-class="{ 'is-zero': !cl.n }">
+                <div class="pbtnm-row-name" t-esc="cl.label"/>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ shareOf(costLines, cl.n, 'n') }}%;"/></div>
+                <div class="pbtnm-row-n pbtnm-row-n--money" t-esc="cl.words"/>
+                <div class="pbtnm-row-sub" t-esc="cl.sub"/>
+              </div>
+            </t>
+            <p t-if="!state.cost.mixed" class="pbtnm-costline"><t t-out="ic('wallet',14)"/> <t t-esc="allowanceWords"/></p>
+            <p t-if="budgetWords" class="pbtnm-costline"><t t-out="ic('landmark',14)"/> <t t-esc="budgetWords"/></p>
+            <t t-if="(state.courseRequests.by_state || []).length">
+              <h4 class="pbtnm-subh">Course requests</h4>
+              <p class="pbtnm-dim" t-esc="requestsWords"/>
+              <t t-foreach="state.courseRequests.by_state || []" t-as="rs" t-key="rs.key">
                 <div class="pbtnm-row">
                   <div class="pbtnm-row-name" t-esc="rs.label"/>
                   <div class="pbtnm-bar"><span t-attf-style="width: {{ share2(state.courseRequests.by_state, rs.n) }}%;"/></div>
                   <div class="pbtnm-row-n" t-esc="rs.n"/>
                 </div>
               </t>
-            </div>
+            </t>
+          </div>
 
-            <div t-if="state.skills and (state.skills.rows || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('sparkles',16)"/> Skills</h3>
-                <p t-esc="state.skills.headline"/>
-              </div>
-              <t t-foreach="state.skills.rows || []" t-as="sr" t-key="sr.skill_id">
-                <div class="pbtnm-row" t-att-class="{ bad: sr.coverage_pct &lt; 50 }">
-                  <div class="pbtnm-row-name" t-esc="sr.skill"/>
-                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sr.coverage_pct }}%;"/></div>
-                  <div class="pbtnm-row-n"><t t-esc="sr.coverage_pct"/>%</div>
-                  <div class="pbtnm-row-sub" t-esc="skillRowWords(sr)"/>
-                </div>
-              </t>
-            </div>
-
-            <!-- ==================== by certificate (LEARNING L1) ====================
-                 Cloned from By course. Today's position, the ten certificates
-                 the most people hold; a test certificate counts under its
-                 course, so this year's and last year's are one row. -->
-            <div t-if="state.byCertificate.length" class="pbim-panel pbtnm-table pbtnm-certs">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('award',16)"/> Certificates</h3>
-                <p>The certificates the most people hold, and how many are about to run out or already have.</p>
-              </div>
-              <t t-foreach="state.byCertificate || []" t-as="ct" t-key="ct.name">
-                <div class="pbtnm-row" t-att-class="{ bad: ct.expired > 0 }">
-                  <div class="pbtnm-row-name" t-esc="ct.name"/>
-                  <div class="pbtnm-bar">
-                    <span t-attf-style="width: {{ share(state.byCertificate, ct.holders, 'holders') }}%;"/>
-                  </div>
-                  <div class="pbtnm-row-n" t-esc="ct.holders"/>
-                  <div class="pbtnm-row-sub" t-esc="certWords(ct)"/>
-                </div>
-              </t>
-            </div>
-
-            <!-- ==================== what it cost ====================
-                 ONLY WHEN THERE IS SOMETHING TO SAY. A money panel reading
-                 zero over a company that has never run a claim is a panel
-                 that teaches people to stop reading the page. -->
-            <div t-if="state.claims.claims" class="pbim-panel pbtnm-money">
-              <div class="pbtnm-table-head">
-                <h3><t t-out="ic('receipt',16)"/> What people claimed back</h3>
-                <p>Courses people paid for themselves and asked to be paid back
-                   for, by the day they paid.</p>
-              </div>
-              <div class="pbtnm-money-row">
-                <div class="pbtnm-money-v" t-esc="state.claims.total_words"/>
-                <div class="pbtnm-money-l">
-                  agreed across <t t-esc="state.claims.agreed"/> of
-                  <t t-esc="state.claims.claims"/> claims<t
-                    t-if="state.claims.waiting">, <t
-                    t-esc="state.claims.waiting"/> still waiting</t><t
-                    t-if="state.claims.paid"> · <t t-esc="state.claims.paid"/>
-                    already paid</t>
-                </div>
-              </div>
-            </div>
-
-          </t>
-
-          <!-- ==================== required training (LEARNING L2) ====================
+          <!-- ==================== required training (LEARNING L2 + L6) ====================
                Today's position, not the date range: a rule is met or not met
-               today. The same cells as the matrix (R80). -->
-          <div t-if="state.required.has_rules" class="pbim-panel pbtnm-table pbtnm-req">
+               today. The same cells as the matrix (R80), for the same
+               department, site and country. -->
+          <div class="pbim-panel pbtnm-table pbtnm-req">
             <div class="pbtnm-table-head">
               <h3><t t-out="ic('listChecks',16)"/> Required training</h3>
-              <p t-esc="state.required.headline"/>
+              <p t-if="state.compliance" t-esc="state.compliance.headline"/>
+              <p t-else="">No required-training rules yet. Write one in Required, or switch on a country pack in Settings › Learning.</p>
             </div>
-            <div class="pbtnm-grid">
-              <div>
-                <h4 class="pbtnm-req-h">By rule</h4>
-                <t t-foreach="state.required.by_requirement || []" t-as="rq" t-key="rq.name">
-                  <div class="pbtnm-row" t-att-class="{ bad: rq.missing > 0 }">
-                    <div class="pbtnm-row-name" t-esc="rq.name"/>
-                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rq.percent || 0 }}%;"/></div>
-                    <div class="pbtnm-row-n" t-esc="rq.measured"/>
-                    <div class="pbtnm-row-sub" t-esc="requiredWords(rq)"/>
+            <t t-if="state.compliance">
+              <div class="pbtnm-grid">
+                <div>
+                  <h4 class="pbtnm-req-h">By rule</h4>
+                  <t t-foreach="state.compliance.by_requirement || []" t-as="rq" t-key="rq.name">
+                    <div class="pbtnm-row" t-att-class="{ bad: rq.missing > 0 }">
+                      <div class="pbtnm-row-name" t-esc="rq.name"/>
+                      <div class="pbtnm-bar"><span t-attf-style="width: {{ rq.percent || 0 }}%;"/></div>
+                      <div class="pbtnm-row-n" t-esc="rq.measured"/>
+                      <div class="pbtnm-row-sub" t-esc="requiredWords(rq)"/>
+                    </div>
+                  </t>
+                </div>
+                <t t-foreach="complianceSplits()" t-as="csp" t-key="csp.key">
+                  <div t-if="csp.rows.length">
+                    <h4 class="pbtnm-req-h" t-esc="csp.label"/>
+                    <t t-foreach="csp.rows" t-as="rd" t-key="rd.name">
+                      <div class="pbtnm-row" t-att-class="{ bad: rd.missing > 0 }">
+                        <div class="pbtnm-row-name" t-esc="rd.name"/>
+                        <div class="pbtnm-bar"><span t-attf-style="width: {{ rd.percent || 0 }}%;"/></div>
+                        <div class="pbtnm-row-n" t-esc="rd.measured"/>
+                        <div class="pbtnm-row-sub" t-esc="requiredWords(rd)"/>
+                      </div>
+                    </t>
                   </div>
                 </t>
               </div>
-              <div>
-                <h4 class="pbtnm-req-h">By department</h4>
-                <t t-foreach="state.required.by_department || []" t-as="rd" t-key="rd.name">
-                  <div class="pbtnm-row" t-att-class="{ bad: rd.missing > 0 }">
-                    <div class="pbtnm-row-name" t-esc="rd.name"/>
-                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rd.percent || 0 }}%;"/></div>
-                    <div class="pbtnm-row-n" t-esc="rd.measured"/>
-                    <div class="pbtnm-row-sub" t-esc="requiredWords(rd)"/>
-                  </div>
-                </t>
+            </t>
+          </div>
+
+          <!-- ==================== did it work? (LEARNING L5 + L6) ====================
+               Course ratings, who would recommend, and the managers'
+               follow-up answers, one section (it was two in L5). -->
+          <div class="pbim-panel pbtnm-table pbtnm-certs">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('trendingUp',16)"/> Did it work?</h3>
+              <p t-esc="ratingsWords"/>
+              <p t-esc="workWords"/>
+            </div>
+            <t t-foreach="(state.ratings and state.ratings.rows) || []" t-as="rt" t-key="rt_index">
+              <div class="pbtnm-row">
+                <div class="pbtnm-row-name"><t t-esc="rt.name"/><t t-if="rt.outside"> · <span class="pbtnm-dim">Outside</span></t></div>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ (rt.avg || 0) * 20 }}%;"/></div>
+                <div class="pbtnm-row-n" t-esc="rt.avg or '—'"/>
+                <div class="pbtnm-row-sub" t-esc="ratingRowWords(rt)"/>
               </div>
-              <div>
-                <h4 class="pbtnm-req-h">By site</h4>
-                <t t-foreach="state.required.by_site || []" t-as="rsi" t-key="rsi.name">
-                  <div class="pbtnm-row" t-att-class="{ bad: rsi.missing > 0 }">
-                    <div class="pbtnm-row-name" t-esc="rsi.name"/>
-                    <div class="pbtnm-bar"><span t-attf-style="width: {{ rsi.percent || 0 }}%;"/></div>
-                    <div class="pbtnm-row-n" t-esc="rsi.measured"/>
-                    <div class="pbtnm-row-sub" t-esc="requiredWords(rsi)"/>
-                  </div>
-                </t>
+            </t>
+          </div>
+
+          <div t-if="state.skills and (state.skills.rows || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('sparkles',16)"/> Skills</h3>
+              <p t-esc="state.skills.headline"/>
+            </div>
+            <t t-foreach="state.skills.rows || []" t-as="sr" t-key="sr.skill_id">
+              <div class="pbtnm-row" t-att-class="{ bad: sr.coverage_pct &lt; 50 }">
+                <div class="pbtnm-row-name" t-esc="sr.skill"/>
+                <div class="pbtnm-bar"><span t-attf-style="width: {{ sr.coverage_pct }}%;"/></div>
+                <div class="pbtnm-row-n"><t t-esc="sr.coverage_pct"/>%</div>
+                <div class="pbtnm-row-sub" t-esc="skillRowWords(sr)"/>
               </div>
+            </t>
+          </div>
+
+          <!-- ==================== country reports (LEARNING L2 + L6) ====================
+               The four statutory lists in one place: a pack switched on is a
+               download, a pack switched off says where to switch it on. -->
+          <div class="pbim-panel pbtnm-reports">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('globe',16)"/> Country reports</h3>
+              <p>The statutory lists for the country packs, as spreadsheets. A pack that is off is switched on in Settings › Learning › Country packs.</p>
+            </div>
+            <div class="pbtnm-report-row">
+              <t t-foreach="state.countries || []" t-as="rep" t-key="rep.key">
+                <button t-if="rep.on" class="pbim-btn ghost" t-att-disabled="state.reporting === rep.key" t-on-click="() => this.countryReport({ cc: rep.key })" t-att-title="rep.label">
+                  <t t-out="ic('fileSpreadsheet',15)"/> <t t-esc="rep.title"/>
+                </button>
+                <span t-else="" class="pbtnm-report-off" t-att-title="rep.label"><t t-out="ic('fileSpreadsheet',15)"/> <t t-esc="rep.title"/> · <span>off</span></span>
+              </t>
             </div>
           </div>
 
-          <!-- ==================== country reports (LEARNING L2) ==================== -->
-          <div t-if="state.countryReports.length" class="pbim-panel pbtnm-reports">
+          <!-- ==================== by certificate (LEARNING L1) ====================
+               Today's position, the ten certificates the most people hold; a
+               test certificate counts under its course. -->
+          <div t-if="state.byCertificate.length" class="pbim-panel pbtnm-table pbtnm-certs">
             <div class="pbtnm-table-head">
-              <h3><t t-out="ic('globe',16)"/> Country reports</h3>
-              <p>The statutory lists for the country packs switched on for this company, as spreadsheets.</p>
+              <h3><t t-out="ic('award',16)"/> Certificates</h3>
+              <p>The certificates the most people hold, and how many are about to run out or already have.</p>
             </div>
-            <div class="pbtnm-report-row">
-              <button t-foreach="state.countryReports || []" t-as="rep" t-key="rep.cc" class="pbim-btn ghost"
-                      t-att-disabled="state.reporting === rep.cc" t-on-click="() => this.countryReport(rep)" t-att-title="rep.pack">
-                <t t-out="ic('fileSpreadsheet',15)"/> <t t-esc="rep.title"/>
-              </button>
+            <t t-foreach="state.byCertificate || []" t-as="ct" t-key="ct.name">
+              <div class="pbtnm-row" t-att-class="{ bad: ct.expired > 0 }">
+                <div class="pbtnm-row-name" t-esc="ct.name"/>
+                <div class="pbtnm-bar">
+                  <span t-attf-style="width: {{ share(state.byCertificate, ct.holders, 'holders') }}%;"/>
+                </div>
+                <div class="pbtnm-row-n" t-esc="ct.holders"/>
+                <div class="pbtnm-row-sub" t-esc="certWords(ct)"/>
+              </div>
+            </t>
+          </div>
+
+          <!-- ==================== what people claimed back ====================
+               ONLY WHEN THERE IS SOMETHING TO SAY. -->
+          <div t-if="state.claims.claims" class="pbim-panel pbtnm-money">
+            <div class="pbtnm-table-head">
+              <h3><t t-out="ic('receipt',16)"/> What people claimed back</h3>
+              <p>Courses people paid for themselves and asked to be paid back for, by the day they paid.</p>
+            </div>
+            <div class="pbtnm-money-row">
+              <div class="pbtnm-money-v" t-esc="state.claims.total_words"/>
+              <div class="pbtnm-money-l" t-esc="claimWords"/>
             </div>
           </div>
         </t>

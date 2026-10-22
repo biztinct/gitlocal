@@ -42,7 +42,7 @@ from .session import (
 )
 from .training_common import (
     P_BULK_CAP, P_PEOPLE_LIMIT, P_REMINDER_CAP, P_REMINDERS, as_id, flag,
-    fold, number, tr,
+    fold, money_words, number, tr,
 )
 
 _logger = logging.getLogger(__name__)
@@ -319,6 +319,8 @@ class PbTrainingSessions(models.AbstractModel):
             'place': rec.place or '',
             'join_url': rec.join_url or '',
             'hours': rec.hours or 0.0,
+            'cost_words': money_words(self.env, rec.cost, rec.currency_id)
+            if rec.cost else '',
             'minutes': rec.minutes or 0,
             'notes': rec.notes or '',
             'roster': self._roster(rec),
@@ -346,6 +348,7 @@ class PbTrainingSessions(models.AbstractModel):
                 'trainer_name': rec.trainer_name or '',
                 'seats': rec.seats or 0,
                 'hours': rec.hours or 0.0,
+                'cost': rec.cost or 0.0,
             },
         })
 
@@ -475,8 +478,12 @@ class PbTrainingSessions(models.AbstractModel):
             mins = max(int(payload.get('minutes') or 60), 1)
             seats = max(int(payload.get('seats') or 0), 0)
             hours = max(float(payload.get('hours') or 0.0), 0.0)
+            # LEARNING L6: what the session cost (trainer, room, materials).
+            cost = float(payload.get('cost') or 0.0)
         except (TypeError, ValueError):
             raise UserError(_("These numbers cannot be read."))
+        if cost < 0:
+            raise UserError(_("A cost cannot be less than nothing."))
         kind = payload.get('kind') or 'classroom'
         if kind not in dict(SESSION_KINDS):
             kind = 'classroom'
@@ -502,6 +509,7 @@ class PbTrainingSessions(models.AbstractModel):
             if not trainer else '',
             'seats': seats,
             'hours': hours or round(mins / 60.0, 2),
+            'cost': cost,
         }
         sid = as_id(payload.get('id'))
         if sid:
@@ -906,8 +914,13 @@ class PbTrainingSessions(models.AbstractModel):
             'has_sessions': True,
             'this_week': len(week),
             'seats_booked': sum(week.mapped('booked_count')),
+            # LEARNING L6: seats still free this week (sessions with a seat
+            # limit only — "as many as come" has no free-seat number).
+            'seats_free': sum(s._free_seats() for s in week if s.seats),
             'waiting': sum(week.mapped('waiting_count')),
             'to_close': to_close,
+            # Practical sign-off is not built yet (LD5): always 0.
+            'signoffs': 0,
         }
 
     @api.model

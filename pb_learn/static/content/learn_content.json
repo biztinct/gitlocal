@@ -24048,10 +24048,20 @@
               "vi": "Đã giao"
             }
           },
+          "certificates": {
+            "line": {
+              "en": "Every certificate and licence, and which ones are about to run out.",
+              "vi": "Mọi chứng chỉ và giấy phép, và những cái sắp hết hạn."
+            },
+            "name": {
+              "en": "Certificates",
+              "vi": "Chứng chỉ"
+            }
+          },
           "claims": {
             "line": {
-              "en": "People asking for an outside course back, against the yearly allowance.",
-              "vi": "Yêu cầu hoàn tiền khóa học bên ngoài, tính vào ngân sách đào tạo hằng năm."
+              "en": "People asking for an outside course back, and requests to take a course, against the yearly allowance.",
+              "vi": "Yêu cầu hoàn tiền khóa học bên ngoài và yêu cầu tham gia khóa học, tính vào ngân sách đào tạo hằng năm."
             },
             "name": {
               "en": "Claims",
@@ -24060,8 +24070,8 @@
           },
           "courses": {
             "line": {
-              "en": "Every course, who is on it and how far they have got.",
-              "vi": "Mọi khóa học, ai đang học và đã học tới đâu."
+              "en": "Every course, the sessions in a room or on site, and the outside courses people can ask for.",
+              "vi": "Mọi khóa học, các buổi học tại lớp hoặc tại hiện trường, và các khóa học bên ngoài mọi người có thể yêu cầu."
             },
             "name": {
               "en": "Courses",
@@ -24080,8 +24090,8 @@
           },
           "numbers": {
             "line": {
-              "en": "How much of what was set is finished, by department, course and reason.",
-              "vi": "Bao nhiêu phần việc được giao đã hoàn thành, theo phòng ban, khóa học và lý do."
+              "en": "Hours, cost, required training and ratings, by department, site and course, with a spreadsheet.",
+              "vi": "Số giờ, chi phí, đào tạo bắt buộc và đánh giá, theo phòng ban, địa điểm và khóa học, kèm bảng tính."
             },
             "name": {
               "en": "Numbers",
@@ -24090,28 +24100,48 @@
           },
           "overview": {
             "line": {
-              "en": "One sentence on who is on what, and the three things waiting for the training team.",
-              "vi": "Một câu về ai đang học gì, và ba việc đang chờ nhóm đào tạo."
+              "en": "One sentence on how training stands, and the things waiting for the training team, worst first.",
+              "vi": "Một câu về tình hình đào tạo, và những việc đang chờ nhóm đào tạo, việc gấp nhất trước."
             },
             "name": {
               "en": "Overview",
               "vi": "Tổng quan"
             }
           },
+          "paths": {
+            "line": {
+              "en": "Courses in order for a role, a career move or a skill, and who is at which step.",
+              "vi": "Các khóa học theo thứ tự cho một vị trí, một bước thăng tiến hoặc một kỹ năng, và ai đang ở bước nào."
+            },
+            "name": {
+              "en": "Paths",
+              "vi": "Lộ trình"
+            }
+          },
           "required": {
             "line": {
-              "en": "Courses every new joiner gets on day one, and courses that come round again.",
-              "vi": "Khóa học mọi người mới nhận vào ngày đầu, và các khóa học lặp lại định kỳ."
+              "en": "Who must hold which course or licence, who is missing it, and the country packs.",
+              "vi": "Ai phải có khóa học hoặc giấy phép nào, ai còn thiếu, và các gói quy định theo quốc gia."
             },
             "name": {
               "en": "Required",
               "vi": "Bắt buộc"
             }
           },
+          "skills": {
+            "line": {
+              "en": "Each person against the skills their job needs, and the course that closes a gap.",
+              "vi": "Mỗi người so với các kỹ năng công việc cần, và khóa học giúp bù khoảng thiếu."
+            },
+            "name": {
+              "en": "Skills",
+              "vi": "Kỹ năng"
+            }
+          },
           "tests": {
             "line": {
-              "en": "The tests at the end of courses, and the bank of questions.",
-              "vi": "Các bài kiểm tra cuối khóa, và ngân hàng câu hỏi."
+              "en": "The tests at the end of courses, their results and the bank of questions.",
+              "vi": "Các bài kiểm tra cuối khóa, kết quả và ngân hàng câu hỏi."
             },
             "name": {
               "en": "Tests",
@@ -40697,5 +40727,5 @@
       }
     }
   ],
-  "version": "1a161675b986"
+  "version": "c4fc9e172c6d"
 }

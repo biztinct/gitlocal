@@ -31,8 +31,17 @@
 
       <div t-else="" class="pbim-wrap">
 
+        <!-- ============ the read did not come back (LEARNING L6) ============
+             A failed read is not a refusal (ledger LN57). -->
+        <div t-if="state.failed" class="pbim-panel pbtn-empty pbtn-failed">
+          <div class="pbtn-empty-ic"><t t-out="ic('alert',30)"/></div>
+          <h2>That did not load</h2>
+          <p>Nothing was changed. The server may be busy for a moment. Try again.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
         <!-- ============ the reader has no training access ============ -->
-        <div t-if="!state.allowed" class="pbim-panel pbtn-empty">
+        <div t-elif="!state.allowed" class="pbim-panel pbtn-empty">
           <div class="pbtn-empty-ic"><t t-out="ic('lock',30)"/></div>
           <h2>Training is looked after by the training team</h2>
           <p>This is where the courses live — what is in each one, who has been

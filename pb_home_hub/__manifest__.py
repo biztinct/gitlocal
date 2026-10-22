@@ -42,7 +42,7 @@ attendance, leave, probation, goals, training and hiring for the reader's
 direct reports, every one of them softly (`env.get`), so this module gains no
 dependency. No money is read or sent.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.4.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
