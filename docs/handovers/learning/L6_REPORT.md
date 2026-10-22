@@ -2,7 +2,7 @@
 
 Implementer: Opus, 2026-10-22. Spec: `L6_NUMBERS_OVERVIEW.md` (incl. the "Carried in from L3–L5 walks" block). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN59 in §5).
-Status: **AT DEPLOY GATE (second time)** — built, committed, tested locally (suites + Chrome walk) and on a copy of live p0clone. Not deployed by me. Not pushed.
+Status: **DEPLOYED ×4 DBs — live walk pending.** The upgrade itself was **ChatGPT's combined release 15:51–15:59 UTC** (`a07273276`, it carried this phase despite the HOLD); I verified it and seeded the demo under my own START/DONE (17:03–17:06 UTC, §10). Not pushed.
 
 > **2026-10-22 11:14–11:24 UTC:** ChatGPT's combined release `ed47fb8a0` carried committed L6, upgraded p0clone, failed three tests there and restored p0clone from its backup (live is back on L5 everywhere). The coordinator put L6 on HOLD. §3b says what each failure was and what changed; §8 is the refreshed plan.
 
@@ -305,3 +305,22 @@ link lands on Country packs; a session page shows its cost; Help › the Learnin
 - Tree under test = repo tree (overlay identical to the repo for the five Learning modules; the p0clone overlay = `f9d5eaca8` + those
   modules + the one manifest file).
 - Walk server on 8074 (`am_l6_walk`) still running; test DBs `am_l6_t1`, `am_l6_t2` kept.
+
+## 10. Deploy record (GO 2026-10-22 ~17:00 UTC — verification of ChatGPT's 15:51 release + demo seed)
+
+| Step | Result |
+|---|---|
+| Upgrade | **Not mine:** ChatGPT's combined release START 15:51 / DONE 15:59 UTC upgraded `pb_home_hub, pb_hr_payroll_formula, pb_learn, pb_payrun_wizard, pb_scheme_map, pb_training` from `a07273276` on all four DBs (their p0clone tests passed, crons restored; evidence `/tmp/rize-eight-scenarios-20261022/release3`). |
+| Lock / notes | detached unit `l6-lock` 17:03–17:06 UTC; START 17:03 "post-deploy verification + demo seed of ChatGPT's 15:51 release of L6"; DONE 17:06 carries **"LEARNING L6 DONE"** (HOLD cleared) and names the 15:51 release as the upgrade; lock released |
+| Tree hashes | pb_training `3d3c40c7…`, pb_home_hub `581ef3a2…`, pb_learn `20d02b2c…` — live = `git archive a07273276`, byte for byte (skipping `__pycache__`, `*.pyc`, `.DS_Store`) |
+| Versions | pb_training 19.0.1.10.0, pb_home_hub 19.0.1.4.1, pb_learn 19.0.20.6.1, pb_training_growth 19.0.1.0.0 **installed ×4**; pb_payrun_wizard 19.0.1.38.0 ×4 (so the Run payroll guide fix is live too) |
+| Data checks ×4 | `pb_training_session.cost` + currency columns present; the six `action_pb_training_settings*` records; `pb_training.report_pack` = 0; Help name `{"en_US": "Help", "vi_VN": "Trợ giúp"}` |
+| Results gate ×4 | `l6_results_gate_check.py` (read-only, rolled back): `/survey/results/<survey>` answered by `PbTrainingSurveyResultsGate.survey_report`; a survey user without a training group is not let through; no test user left behind |
+| Crons | active counts 26 / 37 / 0 / 69; every active id set = ChatGPT's before-snapshot (template 72/73 off) — nothing to switch off |
+| Assets | `web.assets.version` = `20261022T155135Z` ×4, `/web/assets/%` purged by that release, server (re)started 15:59:25 — fresh; no ritual needed |
+| Demo seed (payobook) | stop 17:05:43 (gone by PID 17:05:55), seed, start 17:06:15, health 17:06:17. Sessions 2 (closed) / 1 (open) on DEMO Site safety walk: cost 4,500,000 / 3,500,000 ₫; no setting changed; 0 mail queued. Read-out as demo.hr: Hours "22.05 hours of training, by 22 people · 1 hours each on average." (wording fixed, below); Cost "11,800,000 ₫ spent on training · 0% of this year's allowances used."; Required "0% in date across 4547 people · 1 expiring · 16561 missing · 92 under way"; Did it work 6 ratings, 4.2, 83% recommend, 3.5/5; Overview "35 people are on 7 courses. 5 are past their date. 3 people are late on a path. 4520 people are missing required training." waiting late 5 · paths 3 · required 4520 · certs 2 · course requests 1; settings readable by demo.hr, not writable (training manager, not head) |
+| Sites | payobook.com, rize.payobook.com, p0clone.payobook.com 200 after the restart; 0 ERROR lines since 15:59 |
+
+**Found in the seed read-out, fixed, not deployed:** the Hours sentence said "1 hours each on average" when the average is exactly
+one. Now "1 hour each on average" (EN + VI). pb_training **19.0.1.10.1**, committed — rides the next pb_training upgrade (whoever
+ships next from HEAD). L6 tests T1 / T10 rerun green.

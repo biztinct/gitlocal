@@ -12039,3 +12039,9 @@ msgstr "đã dự 1 buổi học"
 #: code:addons/pb_training/models/training_common.py:0
 msgid "%s sessions attended"
 msgstr "đã dự %s buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/numbers_l6.py:0
+msgid "%(hours)s hours of training, by %(n)s people · 1 hour each on average."
+msgstr "%(hours)s giờ đào tạo, của %(n)s người · trung bình 1 giờ mỗi người."

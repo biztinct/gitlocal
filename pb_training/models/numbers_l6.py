@@ -281,6 +281,11 @@ class PbTrainingAnalyticsL6(models.AbstractModel):
         elif len(rows) == 1:
             headline = _("%(hours)s hours of training, by 1 person.",
                          hours=_hours_num(total))
+        elif _hours_num(total / len(rows)) == 1:
+            # "1 hours each" read wrong (found in the live seed read-out).
+            headline = _("%(hours)s hours of training, by %(n)s people · "
+                         "1 hour each on average.",
+                         hours=_hours_num(total), n=len(rows))
         else:
             headline = _("%(hours)s hours of training, by %(n)s people · "
                          "%(avg)s hours each on average.",
