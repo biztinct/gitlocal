@@ -18,3 +18,12 @@
  @media(max-width:900px){.pr-inspector{width:245px;padding:15px;}.pr-summary{gap:15px;}.pr-summary p{display:none;}.pr-tools{flex-wrap:wrap;}.pr-footer{flex-wrap:wrap;}.pr-header{padding:16px;}}
 }
 .pr-dialog-footnote{font-size:10px;color:#928b9f;}
+// Keep the worksheet footer inside the viewport, including branded modal caps.
+.modal-dialog.modal-fullscreen:has(> .pr-review-dialog) {
+ height:100vh; margin:0!important;
+ .pr-review-dialog {
+  height:100vh; max-height:100vh!important; border-radius:0;
+  .modal-body {display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+  .pr-max {flex:1;height:auto;min-height:0;}
+ }
+}
