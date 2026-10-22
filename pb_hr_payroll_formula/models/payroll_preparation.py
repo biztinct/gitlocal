@@ -8,7 +8,7 @@ from decimal import Decimal, InvalidOperation
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
-from .application_payroll_source import _json, _stamp
+from .application_payroll_source import _json, _stamp, _optional_record_input
 
 _TOKEN = object()
 _CTX = 'payroll_preparation_token'
@@ -109,7 +109,7 @@ class PayrollPreparation(models.Model):
         return self.config_id.rule_ids.filtered(lambda r: r.column_type == 'input' and r.application_source_key != 'application.mode')
 
     def _optional(self, rule):
-        return (rule.application_source_key == 'period.input.' + rule.code
+        return _optional_record_input(rule) or (rule.application_source_key == 'period.input.' + rule.code
                 and rule.application_zero_allowed and rule.value_kind in _NUMERIC
                 and rule.application_settlement_kind == 'none' and not rule.is_contract_component)
 
@@ -272,7 +272,7 @@ class PayrollPreparation(models.Model):
             preview_values = dict(row['values'])
             for code, cell in row['cells'].items():
                 if cell['optional']:
-                    preview_values[code] = 0
+                    preview_values[code] = '' if by_code[code].value_kind == 'text' else 0
             calculated = {}
             if results and not any(c['issue'] for c in row['cells'].values()):
                 # The payslip evaluator refreshes stored dependency diagnostics.
@@ -351,6 +351,11 @@ class PayrollPreparation(models.Model):
             scope = change.get('scope', 'run')
             if not editable or scope not in ('run', 'future') or scope == 'future' and not future:
                 raise AccessError(_('This source must be corrected in its own record.'))
+            if (rule.value_kind in _NUMERIC and self._optional(rule)
+                    and (change.get('value') is None or str(change['value']).strip() == '')):
+                # Empty optional entries are omissions, never implicit zeroes
+                # or requests to clear an existing source/correction.
+                continue
             reason = (change.get('reason') or '').strip()
             if rule.value_kind == 'text':
                 value = change.get('value')
@@ -376,6 +381,8 @@ class PayrollPreparation(models.Model):
                     'field_id': cards[rule.id]['id'] if scope == 'future' else False}
             edits[key] = edit
             audit.append({'employee_id': pair[0], 'code': pair[1], 'before': old, 'after': edit})
+        if not audit:
+            return self.workspace()
         # Validate the final batch, so a pasted standard/paid-day pair is atomic
         # and independent of column order. Existing corrections count as well.
         for employee_id in {pair[0] for pair in seen}:
@@ -444,7 +451,7 @@ class PayrollPreparation(models.Model):
             if not edit['reason']:
                 edit['reason'] = reason.strip()
         self._store({'edits_json': _json(edits)})
-        zero_keys = [r.application_source_key for r in self._rules() if self._optional(r)] + settlement_keys
+        zero_keys = [r.application_source_key for r in self._rules() if self._optional(r) and r.application_source_key] + settlement_keys
         cert = {'channels': {k: bool(channels.get(k)) for k in required}, 'zero_keys': sorted(zero_keys),
                 'employee_ids': sorted(self.employee_ids.ids)}
         review = {'certification': cert, 'reason': reason.strip(), 'by': self.env.uid, 'at': str(fields.Datetime.now()),

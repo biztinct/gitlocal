@@ -22,6 +22,17 @@ _CHANNELS = frozenset(('leave', 'overtime', 'timesheets', 'adjustments'))
 _READY = ('resolved', 'zero_confirmed')
 
 
+def _optional_record_input(rule):
+    """Formula references do not make an optional saved-record input required.
+
+    Explicit providers retain their own coverage/approval rules. This only
+    omits absent ordinary record inputs; it never writes a source record.
+    """
+    return (rule.column_type == 'input' and not rule.application_source_key
+            and not rule.is_required and not rule.application_source_required
+            and rule.value_kind in ('money', 'quantity', 'integer', 'rate', 'text'))
+
+
 def _json(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, default=str)
 
@@ -484,7 +495,8 @@ class ApplicationFormulaConfig(models.Model):
                 blockers.append({'code': '', 'key': key, 'reason': 'Approved overtime has no pay-affecting mapping. Configure its payment component before running payroll.'})
         for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input'):
             key = (rule.application_source_key or '').strip()
-            required = bool(rule.application_source_required or
+            optional_record = _optional_record_input(rule)
+            required = not optional_record and bool(rule.application_source_required or
                             (rule.code.upper() not in inactive and
                              (rule.is_required or rule.code.upper() in dependencies or
                               (rule.column_role == 'payroll' and rule.net_role != 'info'))))
@@ -531,7 +543,14 @@ class ApplicationFormulaConfig(models.Model):
                 if key:
                     provenance[rule.code] = {'src': 'employee_field', 'via': 'application_snapshot',
                                             'key': key, 'status': fact['status'], 'evidence': fact['evidence']}
-            elif required:
+            elif optional_record and fact.get('status') == 'missing':
+                # The calculation receives a neutral operand, while the source
+                # cell and frozen evidence remain absent, not a saved zero.
+                values[rule.code] = '' if rule.value_kind == 'text' else 0
+                provenance[rule.code] = {'src': 'optional_blank', 'via': 'application_snapshot',
+                                         'status': 'missing', 'omitted': True}
+                row['reason'] = 'Optional input left blank; saved records are unchanged.'
+            elif required or fact.get('status') == 'conflict':
                 blockers.append({'code': rule.code, 'key': key, 'status': fact['status'], 'reason': fact['reason'] or 'Mapped value is missing or conflicting.'})
             inputs.append(row)
         return {'employee_id': employee.id, 'name': employee.name, 'ok': not blockers,

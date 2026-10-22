@@ -43,8 +43,8 @@ export class PayrollReviewDialog extends Component {
     get selected() {return this.state.selected;}
     get pendingFuture() { return (this.state.data?.people||[]).flatMap(p=>Object.values(p.cells)).filter(c=>c.edit?.scope==='future'&&!c.edit?.proposal_id).length; }
     get canReview() {return this.state.data&&!this.state.data.issues&&!this.state.data.global_issues.length&&!this.pendingFuture&&!this.state.saving&&!this.state.pending;}
-    display(cell) { return cell?.optional?'—':cell?.value===null||cell?.value===undefined?'':String(cell.value); }
-    status(cell) {return cell?.status==='preview'?'Calculation preview':cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.edit?'Edited for this run':cell?.optional?'No amount · uses zero':cell?.editable?'From records':'Read only';}
+    display(cell) { return cell?.optional?'':cell?.value===null||cell?.value===undefined?'':String(cell.value); }
+    status(cell) {return cell?.status==='preview'?'Calculation preview':cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.edit?'Edited for this run':cell?.optional?'Optional · left blank':cell?.editable?'From records':'Read only';}
     async select(person,col) {
         const cell=person.cells[col.code]; if(!cell)return;
         if(this.selected?.employee_id===person.employee_id && this.selected?.code===col.code)return;
@@ -91,9 +91,14 @@ export class PayrollReviewDialog extends Component {
         } catch(e){if(this.alive)this.state.error=e.data?.message||e.message;return null;}
         finally{if(this.alive)this.state.saving=false;}
     }
+    blankIgnored(cell, value) {
+        const col=this.state.data.columns.find(c=>c.code===cell.code);
+        return col?.optional && col.kind!=='text' && !String(value ?? '').trim();
+    }
     async saveSelected() {
         if(this.state.saving)return;
         const cell=this.selected;
+        if(this.blankIgnored(cell,this.state.value)){this.state.pending=false;this.state.value=this.display(cell);this.state.error='';return;}
         const data=await this.transact('save_cells',[crypto.randomUUID(),[{employee_id:cell.employee_id,code:cell.code,
             value:this.state.value,reason:this.state.reason,scope:this.state.scope}]]);
         if(data){this.state.pending=false;this.state.value=this.display(this.selected);}
@@ -114,11 +119,12 @@ export class PayrollReviewDialog extends Component {
         for(const [dy,line] of text.replace(/\r/g,'').replace(/\n$/,'').split('\n').entries()) {
             for(const [dx,value] of line.split('\t').entries()) {
                 const p=this.people[ri+dy],c=this.columns[ci+dx],cell=p?.cells[c?.code];
+                if(cell?.editable && this.blankIgnored(cell,value))continue;
                 if(!cell?.editable||!value.trim()) {this.state.error='Paste includes a blank, protected cell or a cell outside this view. Nothing was saved.';return;}
                 changes.push({employee_id:p.employee_id,code:c.code,value,scope:'run',reason:this.state.reason});
             }
         }
-        await this.transact('save_cells',[crypto.randomUUID(),changes]);
+        if(changes.length)await this.transact('save_cells',[crypto.randomUUID(),changes]);
     }
     nextIssue() {
         if(this.state.pending){this.state.error='Save or restore the current correction first.';return;}

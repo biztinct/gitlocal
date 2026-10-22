@@ -36,6 +36,84 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
         self.assertIn([self.employee.id, self.bonus.code], result['review']['zero_cells'])
         self.assertEqual(self.env['hr.payroll.period.input'].search_count([('config_id','=',self.config.id)]), 0)
 
+    def test_optional_record_blanks_remain_absent_through_frozen_calculation(self):
+        rules = self.env['hr.formula.rule']
+        for kind in ('money', 'quantity', 'integer', 'rate', 'text'):
+            rules |= self.env['hr.formula.rule'].create({
+                'config_id': self.config.id, 'name': 'Optional ' + kind,
+                'code': 'OPTIONAL' + kind.upper(), 'column_type': 'input',
+                'column_role': 'payroll', 'value_kind': kind,
+                'is_contract_component': True, 'is_required': False})
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Optional total', 'code': 'OPTIONALTOTAL',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=100+OPTIONALMONEY+OPTIONALQUANTITY+OPTIONALINTEGER+OPTIONALRATE'})
+        draft = self._draft()
+        components = self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)])
+        ws = draft.workspace()
+        for rule in rules:
+            cell = ws['people'][0]['cells'][rule.code]
+            self.assertIsNone(cell['value'])
+            self.assertTrue(cell['optional'])
+            self.assertFalse(cell['issue'])
+            self.assertFalse(cell['required'])
+        self.assertEqual(ws['people'][0]['cells']['OPTIONALTOTAL']['value'], 100)
+        reviewed = draft.review(draft.revision, self._cert()['channels'], 'Optional blanks left unchanged')
+        self.assertTrue(reviewed['ready'])
+        self.assertFalse(set(rules.mapped('code')) & {c[1] for c in reviewed['review']['zero_cells']})
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        frozen = json.loads(slip.application_snapshot_id.payload_json)
+        for rule in rules:
+            self.assertEqual(values[rule.code], '' if rule.value_kind == 'text' else 0)
+            self.assertTrue(sources[rule.code]['omitted'])
+            self.assertIsNone(next(c for c in frozen['inputs'] if c['code'] == rule.code)['value'])
+        self.assertEqual(self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)]), components)
+        self.assertFalse(self.env['hr.payroll.period.input'].search_count([('config_id', '=', self.config.id)]))
+
+    def test_optional_numeric_blank_is_noop_but_explicit_zero_is_saved(self):
+        draft = self._draft()
+        for kind in ('money', 'quantity', 'integer', 'rate'):
+            rule = self.env['hr.formula.rule'].create({
+                'config_id': self.config.id, 'name': 'Optional ' + kind,
+                'code': 'OPTIONAL' + kind.upper(), 'column_type': 'input',
+                'column_role': 'payroll', 'value_kind': kind,
+                'is_contract_component': True, 'is_required': False})
+            revision, events = draft.revision, len(draft.event_ids)
+            for index, blank in enumerate((None, '', '   ')):
+                draft.save_cells(revision, 'optional-blank-%s-%s' % (kind, index),
+                                 [dict(self._change(blank), code=rule.code)])
+            self.assertEqual(draft.revision, revision)
+            self.assertEqual(len(draft.event_ids), events)
+            draft.save_cells(revision, 'optional-zero-' + kind, [dict(self._change('0'), code=rule.code)])
+            cell = draft.workspace()['people'][0]['cells'][rule.code]
+            self.assertEqual(cell['value'], 0)
+            self.assertFalse(cell['optional'])
+            self.assertFalse(cell['issue'])
+            self.assertEqual(cell['edit']['scope'], 'run')
+            # A later blank is an omission, not an instruction to erase zero.
+            draft.save_cells(draft.revision, 'optional-blank-after-' + kind, [dict(self._change(''), code=rule.code)])
+            self.assertEqual(draft.workspace()['people'][0]['cells'][rule.code]['value'], 0)
+        self.assertFalse(self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)]))
+
+    def test_explicit_required_flags_override_optional_record_policy(self):
+        rule = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Required amount', 'code': 'REQUIREDAMOUNT',
+            'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'money',
+            'is_contract_component': True, 'is_required': True})
+        draft = self._draft()
+        for flags in ({'is_required': True, 'application_source_required': False},
+                      {'is_required': False, 'application_source_required': True}):
+            rule.write(flags)
+            cell = draft.workspace()['people'][0]['cells'][rule.code]
+            self.assertTrue(cell['issue'])
+            self.assertFalse(cell['optional'])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Cannot skip required amount')
+
     def test_absent_component_is_blank_but_saved_zero_is_ready(self):
         rule = self.env['hr.formula.rule'].create({
             'config_id': self.config.id, 'name': 'Registered dependents',
