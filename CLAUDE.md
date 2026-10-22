@@ -36,9 +36,11 @@ databases. The screens simply showed old behaviour.
    `git -C /odoo/odoo-server ls-files addons | cut -d/ -f2 | sort -u` — that is
    the standard set; everything else is ours.
 5. **Check every active database**, not just one: `payobook`, `payobook_template`,
-   `p0clone`, `rize`. Upgrade modules where already installed. ABM is retired:
-   do not deploy to or recreate it until the owner explicitly requests it.
-   Preserve `/odoo/archives/abm-20261020`. New files with an old
+   `p0clone`, `rize` — these four and no others. Upgrade modules where already
+   installed. **Never deploy to `abm` / abm.payobook.com (owner rule, 2026-10-22):
+   it is archived and its database is gone from the server.** Do not restore,
+   recreate or upgrade it unless the owner explicitly asks. Preserve
+   `/odoo/archives/abm-20261020`. New files with an old
    `ir_module_module.latest_version` means none of that module's views, data or
    assets have loaded.
 6. After JS/SCSS changes: `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'`
