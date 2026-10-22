@@ -2,8 +2,8 @@
 import hashlib,json,os
 from pathlib import Path
 assert env.cr.dbname=='rize'
-source=Path(os.environ['VN_ZERO_SOURCE_DATA'])
-assert hashlib.sha256(source.read_bytes()).hexdigest() == '530d646f34802027aef53434ba7f7e6e44640ac6fdd09fa7a4107495505f6749', 'Source data changed'
+source=Path('/tmp/rize-eight-scenarios-20261022/controls.json')
+assert hashlib.sha256(source.read_bytes()).hexdigest() == '9fb83f02d77922783142cb7140fae6f3776d9a04956cea83eeb2ac7c85e30f4e', 'Archived controls changed'
 data=json.loads(source.read_text())
 config=env['hr.formula.config'].browse(7118).exists()
 assert config and config.country_code=='VN' and config.company_id.name=='Rize Farms'
@@ -12,12 +12,13 @@ probe=desk._probe(config.id)
 card=desk._cards(config.id)['c:VNREGISTER']
 assert card['component']['code']=='VNREGISTER'
 changes=[];skipped={};eligible=0
-for row in data['records']:
-    payroll=row.get('payroll')
-    if not payroll or type(payroll['values'].get('VNREGISTER')) not in (int,float) or payroll['values']['VNREGISTER']!=0:continue
+for row in data['vn']:
+    if type(row['values'].get('VNREGISTER')) not in (int,float) or row['values']['VNREGISTER']!=0:continue
     eligible+=1
-    people=env['hr.employee'].with_context(active_test=False).search([('company_id','=',config.company_id.id),'|',('barcode','=',row['key']),('employee_id','=',row['key'])])
-    assert len(people)==1,'Ambiguous or missing source employee'
+    people=env['hr.employee'].with_context(active_test=False).search([('company_id','=',config.company_id.id),'|',('barcode','=',row['code']),('employee_id','=',row['code'])])
+    assert len(people)<=1,'Ambiguous source employee'
+    if not people:
+        skipped['outside_current_roster']=skipped.get('outside_current_roster',0)+1;continue
     contract=probe._get_latest_contract(people)
     assert contract
     if desk._advantage_line(probe,contract,'VNREGISTER'):
@@ -26,10 +27,11 @@ for row in data['records']:
     if history:
         skipped['later_history']=skipped.get('later_history',0)+1;continue
     # A correction must apply to a previously imported contract, not a new one.
-    imported=env['pb.records.change'].search([('employee_id','=',people.id),('model','=','hr.contract'),('res_id','=',contract.id)],limit=1)
-    assert imported,'No previous Records Desk contract evidence'
+    imported=env['pb.records.change'].search([('employee_id','=',people.id),('model','=','hr.contract'),('res_id','=',contract.id),('apply_id.applied','=',True),('apply_id.source','=','import')],limit=1)
+    if not imported:
+        skipped['no_import_evidence']=skipped.get('no_import_evidence',0)+1;continue
     changes.append({'emp_id':people.id,'field_id':'c:VNREGISTER','value':0})
-assert eligible==42,eligible
+assert eligible==48,eligible
 preview=desk.preview_changes(config.id,changes)
 assert not any(i['status']!='ok' for i in preview['items']),preview['counts']
 print('ZERO_REPAIR_PREVIEW',json.dumps({'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'eligible':eligible,'recoverable':len(changes),'skipped':skipped}))
