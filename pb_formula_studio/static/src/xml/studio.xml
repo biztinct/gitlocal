@@ -2901,7 +2901,7 @@
             <button class="hs-x" t-on-click="closeConfigSwitcher" aria-label="Close dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
-          <div class="cs-sort" style="padding:12px 24px"><button t-att-class="!state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=false; this.csClearFilters(); }">Operational schemas</button><button t-att-class="state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=true; this.csClearFilters(); }">Historical branches (<t t-esc="csHistoryCount"/>)</button></div><p t-if="state.csHistory" style="padding:0 24px">Completed review branches. Operational mappings use their main schema.</p>
+          <div class="cs-sort" style="padding:12px 24px"><button t-att-class="!state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=false; this.csClearFilters(); }">Operational schemas</button><button t-att-class="state.csHistory ? 'on' : ''" t-on-click="() => { this.state.csHistory=true; this.csClearFilters(); }">Archived &amp; historical (<t t-esc="csHistoryCount"/>)</button></div><p t-if="state.csHistory" style="padding:0 24px">Archived schemes and completed review branches, retained for reference.</p>
           <div class="cs-filters">
             <div class="cs-search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>

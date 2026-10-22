@@ -27,9 +27,9 @@ patch(PbFormulaStudio.prototype, {
         useEffect(() => {
             if (this.state.loaded && this.state.config.id) {
                 try { sessionStorage.setItem('pbfs-workspace:' + this.state.config.id,
-                    JSON.stringify({view: this.state.view, selected: this.state.selectedId})); } catch (_) {}
+                    JSON.stringify({selected: this.state.selectedId})); } catch (_) {}
             }
-        }, () => [this.state.loaded, this.state.config.id, this.state.view, this.state.selectedId]);
+        }, () => [this.state.loaded, this.state.config.id, this.state.selectedId]);
         useEffect(() => {
             if (!this.experience.draft && this.experience.typeReview === null) return;
             const opener = document.activeElement;
@@ -61,15 +61,16 @@ patch(PbFormulaStudio.prototype, {
             this.experience.whatifRun = '';
             let saved;
             try { saved = JSON.parse(sessionStorage.getItem('pbfs-workspace:' + this.state.config.id)); } catch (_) {}
-            this._restoredBuildView = saved && ['table', 'grid', 'cards'].includes(saved.view) ? saved.view : 'table';
-            this.state.view = this._restoredBuildView;
+            // Every newly opened scheme starts on Cards, including sessions
+            // with an older saved Table/Grid preference. In-place reloads keep
+            // the current view so saving a component does not move the reader.
+            this.state.view = 'cards';
             if (saved && this.state.components.some(c => c.id === saved.selected)) this.state.selectedId = saved.selected;
         }
     },
     async chooseConfig(id) {
-        const previous = this.state.config.id;
         await super.chooseConfig(...arguments);
-        if (previous !== id && this.state.config.id === id) this.state.view = this._restoredBuildView || 'table';
+        if (this.state.config.id === id) this.state.view = 'cards';
     },
     componentName(code) { return this.state.components.find(c=>c.code===code)?.name || code; },
     get commandLanes() { return commandLanesGetter.call(this._experienceHost || this); },
