@@ -2,7 +2,9 @@
 
 Implementer: Opus, 2026-10-22. Spec: `L6_NUMBERS_OVERVIEW.md` (incl. the "Carried in from L3–L5 walks" block). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN59 in §5).
-Status: **AT DEPLOY GATE** — built, committed (WIP + fixes), tested locally (suites + Chrome walk). Not deployed. Not pushed.
+Status: **AT DEPLOY GATE (second time)** — built, committed, tested locally (suites + Chrome walk) and on a copy of live p0clone. Not deployed by me. Not pushed.
+
+> **2026-10-22 11:14–11:24 UTC:** ChatGPT's combined release `ed47fb8a0` carried committed L6, upgraded p0clone, failed three tests there and restored p0clone from its backup (live is back on L5 everywhere). The coordinator put L6 on HOLD. §3b says what each failure was and what changed; §8 is the refreshed plan.
 
 ## 1. What ships (committed on 19.1, not pushed)
 
@@ -76,6 +78,7 @@ run exactly as the live upgrade: `-u pb_training,pb_home_hub,pb_learn`.
 | T9 | **Pass**: a certificate running out in 10 days counts (90 days does not), names the person; a course request waiting on the manager's live seat counts 1 for the manager and 0 for a report; Home › TEAM carries `expiring` 1 / `waiting` 1 and no amount-like key. pb_home_hub's own `test_team_p3c` (forbidden-key walk) in the suites below. |
 | T10 | **Pass** (5): no vendor word, no emoji in the six new files; Vietnamese present; **every Learning lens component (14) sets `failed` on a failed read, never `allowed = false` in a catch, and its template has the failed branch with a retry**; Help content's hub_learning has exactly the eleven tabs; the Settings category is "learning" with the five cards and no "required_training". |
 | Suites | `/pb_training,/pb_training_growth,/pb_learning_hub,/pb_home_hub` on a fresh copy with `-u pb_training,pb_home_hub,pb_learn`: **429 tests, 2 failed, 10 errors** — the 2 are `TestTheAssignmentsTab` ×2 (pre-existing since L0); the 10 errors were the claims test classes stopping in setUpClass because the seeded walk DB already holds a 2026 company allowance (a test-data clash, not L6) — fixed in the test (`22f74c1e8`) and those 10 classes rerun **61 tests, 0 failed** (§9). L5's follow-up test had the same kind of clash and is isolated too (`c71f23071`). |
+| **Live-data run** | **On a copy of live p0clone** (pg_dump of p0clone restored locally, no filestore; staging tree = live commit `f9d5eaca8` with the L6 modules and the guide fix laid over it; `-u pb_training,pb_home_hub,pb_learn --test-tags /pb_training,/pb_learn,/pb_home_hub,/pb_learning_hub,/pb_training_growth`, code `a07273276`): **912 tests, 0 failed, 0 errors** (1 h 40 min on this Mac). Before the fixes, the three tests from the 11:14 release run were run alone on the same copy: 29 / 0 with the fixes in. The p0clone dump and its local copy were deleted after the run. |
 | PO gate | pb_training 2,290 rows, 0 code rows without a value; pb_home_hub 88 / 0. `pb_learn/i18n/vi_VN.po` unchanged by the regeneration. |
 | Help checks | generator `--check` up to date (6 files); `check_contract` 73 passed; step shape 0 failed; scenario rules ok; jargon lint clean; "gõ DUYỆT" = 1; `pb_payruns` present; 0 "These figures do not add up"; JS library 111/0, guide_panel 117/0, lesson_panel 113/0. |
 
@@ -139,6 +142,28 @@ run exactly as the live upgrade: `-u pb_training,pb_home_hub,pb_learn`.
 14. **The "%%" fix** touched L5 strings in `course_extras.js`, `outside_lens.js`, `training_tests_lens.js` (and their `.po` entries:
     the msgid loses the `%%`, the percent rides the value).
 
+## 3b. The 11:14 release failure on p0clone — what each one was
+
+1. **pb_learn `TestGuideTruth.test_02` — real, and fixed.** The Run payroll screen guide (`pb_payrun_wizard/learn_manifest.py`) still
+   listed the "Update records" button, which ChatGPT removed from Pay Run (`163f75c60`, live since 09:22). The guide entry is gone
+   (rule L3: lessons follow screens). Nothing else in Help named it; the generator check stays "up to date" and `pb_learn`'s content
+   and `vi_VN.po` are unchanged (no further pb_learn bump). **The fix is in `pb_payrun_wizard`** (a payroll module, ChatGPT's):
+   it goes live with the next pb_payrun_wizard release built from HEAD — it does not need an upgrade (the file is read from disk),
+   and L6's own deploy does not ship pb_payrun_wizard (HEAD's pb_payrun_wizard is ahead of live with payroll work that is not mine).
+2. **pb_learn `TestQuestionMining.test_07b` — test only.** It asserted that this database's question-retention job is switched on;
+   p0clone (like payobook_template) keeps its jobs off by policy. The test now checks the job exists, points at the job, and that the
+   module SHIPS it switched on — not this database's switch.
+3. **pb_training `TestT9ResultsGate` — the test, not the gate.** The live run log shows, at the moment of the test, "Logged into
+   database 'p0clone', but dbfilter rejects it; logging session out" and then `GET /survey/results/122 → 404`: the live box's database
+   filter (biz_host_db host map) does not let the test's 127.0.0.1 host reach p0clone, so every HTTP test page there is a 404 and the
+   gate is never reached. **The gate works on live data:** (a) the same test PASSES on a local copy of p0clone (survey user sent to
+   `/my/training`, ordinary survey untouched, trainer let through); (b) a read-only shell check on live p0clone (rolled back,
+   `l6_results_gate_check.py`) shows `/survey/results/<survey>` is answered by `PbTrainingSurveyResultsGate.survey_report` and a survey
+   user without a training group is not let through. So the stock results page has NOT been open to survey users since L5. The test
+   now skips itself, with that reason, when the server's database filter logs the test session out.
+4. Also from this run: live-data test runs are slow (theirs was killed by its own timeout after ~8 minutes) — see §9 for the local
+   timing on the p0clone copy.
+
 ## 4. Vietnamese
 
 `pb_training/i18n/vi_VN.po`: **162 new entries** and 78 existing entries gained the marker or occurrence the new screens need (LN48);
@@ -159,6 +184,14 @@ pack stay English (LD10). "Report pack" = **Báo cáo định kỳ**, "Send me a
 - LN62: **In-browser failure drill for a lens:** Odoo 19's ORM calls go through `XMLHttpRequest`, not `fetch` — patch
   `XMLHttpRequest.prototype.send` (dispatch `error`/`load` with status 502) to see a lens's "could not load" state without stopping a
   server.
+
+- LN63: **HTTP tests cannot reach a database on the live box**: its database filter (biz_host_db host map) does not map the test's
+  127.0.0.1 host, so the test session is logged out ("dbfilter rejects it") and every page answers 404. An `HttpCase` that asserts a
+  redirect fails there for that reason alone; probe first and skip with the reason (L6 made the L5 results-gate test do so). Prove a
+  route's owner on live with a shell read of `ir.http.routing_map()` instead (`l6_results_gate_check.py`).
+- LN64: **A combined release may carry committed Learning work before its gate** (ChatGPT `ed47fb8a0`, 11:14 UTC, LN15 again) and its
+  test gate runs on p0clone data with the jobs off — so Learning tests must not depend on a job's switch, on seeded demo rows, or on
+  HTTP reaching the database. Run the suites on a copy of p0clone before calling a phase release-ready (912 tests, 1 h 40 min locally).
 
 ## 6. Score against the design bar
 
@@ -188,14 +221,14 @@ pack stay English (LD10). "Report pack" = **Báo cáo định kỳ**, "Send me a
    "sign-offs waiting".
 7. **A small display fault from L5 is fixed:** some percentages showed as "80%%" on the course drawer, outside courses and Tests.
 
-## 8. Deploy plan (at the gate) — normal tier
+## 8. Deploy plan (refreshed at the second gate) — normal tier
 
 **Why normal:** three modules, no new module, no migration, no new table, nothing existing rewritten; one new column with no default
 needed (`pb_training_session.cost`, plus a stored related currency column computed on upgrade). **I still recommend backups**
 (new columns; cheap). `-u pb_home_hub` and `-u pb_learn` reload the modules that depend on them (the hubs), so expect a longer `-u`
 log than L5 and **jobs re-activated by the reload** (LN18) — snapshot and restore the active job ids on every database.
 
-**Live facts (read-only, 2026-10-22 ~11:00 UTC):** pb_training 19.0.1.9.0, pb_training_growth 19.0.1.0.0, pb_home_hub 19.0.1.4.0,
+**Live facts (read-only, 2026-10-22 ~11:00 UTC, before the 11:14 release; re-check at step 0):** pb_training 19.0.1.9.0, pb_training_growth 19.0.1.0.0, pb_home_hub 19.0.1.4.0,
 pb_learn 19.0.20.6.0, pb_settings 19.0.1.10.0, pb_budget 19.0.2.3.4 installed on p0clone, payobook, payobook_template, rize; active
 jobs p0clone 26, payobook 37, payobook_template 0, rize 69 (72/73 active on p0clone and rize, off on payobook_template); the report pack
 is OFF on all four (`pb_training.report_pack = 0`; payobook carries a typed test address `training.pack@example.com`, last period
@@ -203,14 +236,18 @@ is OFF on all four (`pb_training.report_pack = 0`; payobook carries a typed test
 START. The pack job record (`cron_training_pack`) is **not changed** by L6: it stays active where it is active (p0clone, payobook,
 rize) and off on payobook_template; the feature switch stays off, so it only logs what it would send.
 
+0. **Precondition — the 11:14 FAILED release.** ChatGPT's `ed47fb8a0` run upgraded p0clone with L6, failed three tests and restored
+   p0clone from its backup. Before START confirm on all four databases: pb_training 19.0.1.9.0, pb_home_hub 19.0.1.4.0, pb_learn
+   19.0.20.6.0 (installed), and the addon trees on disk equal those versions (nothing half-copied from that run). The coordinator's
+   HOLD note (12:30 UTC) is cleared only by this deploy's DONE line.
 1. Read `/opt/deploy-notes.md` right before START (LN58) — no open START; HTTP pid up. Lock with a detached unit (LN25):
    `sudo systemd-run --collect --unit=l6-lock /usr/bin/flock /tmp/payobook-studio-deploy.lock /bin/sleep 10800`. START line
    `… | Claude (LEARNING L6) | START | pb_training,pb_home_hub,pb_learn | p0clone,payobook,payobook_template,rize | ~8 min, service stopped during -u | Numbers/Overview finished, Settings › Learning, TEAM chips, Help eleven tabs; git <head>; backups first; p0clone first`.
    Announce to peer sessions.
 2. Versions before = 19.0.1.9.0 / 19.0.1.4.0 / 19.0.20.6.0 ×4 (nobody shipped L6 — LN15).
 3. Backups (LN25): `sudo sh -c "sudo -u postgres pg_dump -Fc <db> > /odoo/backups/learning-l6-20261022/<db>.dump"` ×4, each `pg_restore -l`.
-4. Stage: `sudo rm -rf /tmp/deployL6 && mkdir -p /tmp/deployL6`; `git archive <L6 head> pb_training pb_home_hub pb_learn` (check
-   `git log <L6 head>..HEAD -- pb_training pb_home_hub pb_learn` is empty, LN44) → upload; per module
+4. Stage: `sudo rm -rf /tmp/deployL6 && mkdir -p /tmp/deployL6`; `git archive a07273276 pb_training pb_home_hub pb_learn` (check
+   `git log a07273276..HEAD -- pb_training pb_home_hub pb_learn` is empty, LN44; **do not ship pb_payrun_wizard** — §9) → upload; per module
    `sudo rsync -a --delete /tmp/deployL6/<m>/ /odoo/odoo-server/addons/<m>/` (never the addons root); tree hashes = local (skip
    `__pycache__`, `*.pyc`, `.DS_Store`); PO gate on the box (expect pb_training 2,290 / 0, pb_home_hub 88 / 0, pb_learn unchanged);
    one addons path.
@@ -224,7 +261,9 @@ rize) and off on payobook_template; the feature switch stays off, so it only log
 8. Verify per DB: pb_training 19.0.1.10.0, pb_home_hub 19.0.1.4.1, pb_learn 19.0.20.6.1 **installed**; column
    `pb_training_session.cost` (0 / empty everywhere except payobook after the seed); six records `pb_training.action_pb_training_settings*`;
    `pb_training.report_pack` still 0 ×4; stored Help names unchanged (`pb_learn.item_learn_journey` = Help / Trợ giúp, LN7);
-   0 ERROR lines since the start; `/web/health` 200.
+   0 ERROR lines since the start; `/web/health` 200; the results gate still answers its route on every database (read-only, rolled
+   back): `odoo-bin shell -d <db> --no-http < docs/handovers/learning/l6_results_gate_check.py` → "answered by:
+   PbTrainingSurveyResultsGate.survey_report" and "let through: False".
 9. Demo data, **payobook only**, service stopped:
    `sudo -u odoo /odoo/odoo-server/odoo-bin shell -c /etc/odoo-server.conf -d payobook --no-http < docs/handovers/learning/l6_demo_seed.py`
    (puts 3,500,000 / 4,500,000 on the two DEMO Site safety walk sessions where no cost is set; changes no setting; prints the Numbers
@@ -256,14 +295,13 @@ link lands on Country packs; a session page shows its cost; Help › the Learnin
 
 ## 9. Final local state
 
-- Commits on 19.1 (not pushed): `c52835660` (wip — everything, installs), `c71f23071` (fix — walk fixes: what waits worst first, the
-  "%%" percent display, L5 follow-up test isolation, screenshots), `22f74c1e8` (test — claims classes isolated), and the docs commit
-  with this report. **Deploy tree = `22f74c1e8`** for pb_training, pb_home_hub, pb_learn.
-- **Final suites** (fresh copy of `am_l5_walk` + filestore, `-u pb_training,pb_home_hub,pb_learn --test-tags
-  /pb_training,/pb_training_growth,/pb_learning_hub,/pb_home_hub`, run on `c71f23071`): 429 tests, 2 failed (`TestTheAssignmentsTab`
-  ×2, pre-existing) and 10 setUpClass errors in `test_claims` (seeded allowance clash) → fixed in `22f74c1e8`, the ten classes rerun:
-  **61 tests, 0 failed, 0 errors**. pb_home_hub alone (with the sibling modules visible to its source scans): **45 tests, 0 failed**.
-  L6 classes: **28 / 28**. The `ir_attachment` foreign-key line in the log is pre-existing (L2–L5 logs).
-- Tree under test = repo tree (`diff -rq` of the overlay against the repo: identical for all four modules).
-- Walk server on **8074** (`am_l6_walk`) left running for the coordinator; test DBs `am_l6_t1`, `am_l6_t2` kept. The L5 walk server on
-  8073 was stopped (L5 is complete) to copy its database.
+- Commits on 19.1 (not pushed): `c52835660` (wip — everything, installs), `c71f23071` (fix — walk fixes), `22f74c1e8` (test — claims
+  classes isolated), `f9530bb03` (docs — report at the first gate), **`a07273276` (fix — the three release blockers from the 11:14
+  p0clone run, §3b)**, and the docs commit with this refreshed report. **Deploy tree = `a07273276`** for pb_training, pb_home_hub,
+  pb_learn (pb_learn's own files at `a07273276` differ from the first gate only in a test file; its content and version are the same).
+- Suites: the walked-DB run (§2 Suites) and the **live-data run on a p0clone copy: 912 tests, 0 failed, 0 errors** (§2).
+- `pb_payrun_wizard/learn_manifest.py` (the guide fix) is committed on 19.1 but is **not part of L6's deploy**: HEAD's pb_payrun_wizard
+  carries payroll work that is not live yet. It reaches live with the next pb_payrun_wizard release from HEAD; it needs no upgrade.
+- Tree under test = repo tree (overlay identical to the repo for the five Learning modules; the p0clone overlay = `f9d5eaca8` + those
+  modules + the one manifest file).
+- Walk server on 8074 (`am_l6_walk`) still running; test DBs `am_l6_t1`, `am_l6_t2` kept.
