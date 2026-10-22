@@ -2988,7 +2988,7 @@
                       </div>
                     </div>
                     <div class="cs-resume" t-if="bpSetup(c)">Still being set up — step <t t-esc="bpSetup(c).step_no"/> of <t t-esc="bpSetup(c).total"/></div>
-                    <p t-if="state.csHistory">Main schema: <t t-esc="c.parent_name"/></p><div class="cs-flags" t-if="!state.csHistory">
+                    <p t-if="state.csHistory and c.parent_id">Main schema: <t t-esc="c.parent_name"/></p><div class="cs-flags" t-if="!state.csHistory">
                       <span t-if="(c.problem_counts.error || 0)" class="cs-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
                       <span t-if="(c.problem_counts.warning || 0)" class="cs-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
                       <span t-if="(c.problem_counts.hint || 0)" class="cs-flag hint"><t t-esc="c.problem_counts.hint"/> hint<t t-if="c.problem_counts.hint !== 1">s</t></span>
@@ -3006,7 +3006,7 @@
                             t-att-title="'Carry on setting up ' + c.name">
                       Resume setup
                     </button>
-                    <button t-attf-class="pbfs-btn {{ bpSetup(c) ? 'ghost' : 'soft' }} sm" t-on-click="() => this.chooseConfig(c.id)"><t t-esc="state.csHistory ? 'View branch' : 'Open'"/></button>
+                    <button t-attf-class="pbfs-btn {{ bpSetup(c) ? 'ghost' : 'soft' }} sm" t-on-click="() => this.chooseConfig(c.id)"><t t-esc="state.csHistory ? (c.parent_id ? 'View branch' : 'View scheme') : 'Open'"/></button>
                     <button t-if="csCanEdit" class="pbfs-btn ghost sm" t-att-disabled="state.csCloningId === c.id" t-on-click="(ev) => this.csClone(c, ev)">
                       <t t-if="state.csCloningId === c.id">Cloning…</t><t t-else="">Clone</t>
                     </button>
