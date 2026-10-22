@@ -1246,6 +1246,12 @@ a {
     }
 }
 
+// A single employee version already shows its selected state on the date
+// button. The contract timeline connector is only useful between versions.
+.o_form_view .o_statusbar_status .o_arrow_button_wrapper > .o_purple_line.o_first.o_last {
+    display: none;
+}
+
 // Compact stat buttons (Bookings, Packages, Payments)
 .o_form_view .oe_button_box .oe_stat_button {
     padding: 2px 8px !important;
@@ -1302,6 +1308,16 @@ a {
 // transparent via --o-input-border-color). Matches Odoo's standard form fields.
 .o_form_view .o_field_widget .o_input:not(:hover):not(:focus) {
     border-bottom-color: var(--vu-border-soft, #E0E0E0) !important;
+}
+
+// Native form inputs inset their text by 8px padding + a 1px border.
+// Plain readonly values need the same inset in mixed editable/readonly groups.
+// Keep this out of boxed VU forms, tables and compound widgets with inputs.
+.o_form_view .o_form_renderer:not(.vu-form) .o_inner_group .o_wrap_input >
+.o_field_widget.o_readonly_modifier:is(.o_field_char, .o_field_text,
+    .o_field_many2one, .o_field_selection, .o_field_date, .o_field_datetime,
+    .o_field_integer, .o_field_float, .o_field_monetary):not(:has(.o_input)) {
+    padding-inline-start: 9px;
 }
 // Keep inputs inside embedded list/grid tables flat (no underline at rest).
 .o_form_view .o_list_renderer .o_field_widget .o_input:not(:hover):not(:focus),
