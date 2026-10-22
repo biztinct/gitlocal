@@ -275,6 +275,7 @@ a {
 
         > :is(.o_group, .o_inner_group) {
             // Indent the complete child group, so its labels and title agree.
+            padding-block: 0;
             padding-inline-start: 16px;
             min-width: 0;
             background: transparent;
@@ -289,6 +290,11 @@ a {
     }
 
     @media (max-width: 767.98px) {
+        .o_group.row > .o_inner_group {
+            // Allow peer columns to stack without the desktop 320px minimum.
+            min-width: 0 !important;
+        }
+
         .o_group.row:has(> .o_horizontal_separator:not(:empty)) > :is(.o_group, .o_inner_group) {
             padding-inline-start: 8px;
         }
