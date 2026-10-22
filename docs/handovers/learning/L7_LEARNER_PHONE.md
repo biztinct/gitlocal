@@ -3,7 +3,7 @@
 Programme: LEARNING. Design page `docs/design/rize-learning-blueprint.html` §5 "My learning",
 §7 phase L7, §8 decisions 6–8. Ledger binding. Predecessors L0–L6 reports.
 
-**Owner decisions asked at launch:** LD7 phone depth (recommended: phone-first pages that
+**DECIDED 2026-10-22: LD7, LD8, LD9 all as recommended below — build §3 as written.** **Owner decisions asked at launch:** LD7 phone depth (recommended: phone-first pages that
 keep their place when the signal drops; no native/offline app), LD8 badges (recommended: a
 badge on each certificate and a streak on My learning; no leaderboards), LD9 PayAI drafting
 (recommended: yes, drafts only, a trainer publishes). SCORM import is **out**: stock Odoo 19

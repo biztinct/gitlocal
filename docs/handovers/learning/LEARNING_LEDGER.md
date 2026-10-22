@@ -19,7 +19,9 @@ new gotcha, ruling or convention is hit. Rows are `LN` (ledger) and `LD` (owner 
 | LD11 | 2026-10-22 06:58 | **Vietnam group 4 by default:** in a company whose country is Vietnam, an employee with no safety group set counts as group 4 for the matrix and the yearly refresher; HR may set another group per person. Build in L4 (carried from L2 report §7 item 3). |
 | LD12 | 2026-10-22 06:58 | Country-pack rules marked "to confirm" stay switched off; the owner asks Rize and HR switches each on in Settings › Required training when confirmed. Nothing more to build. |
 | LD6 | 2026-10-22 | Outside-course catalogue = **our own list** (HR enters provider, link, cost, hours). No paid connectors (Go1, Udemy, LinkedIn) unless Rize contracts one later. L5 builds §3.1 as written. |
-| LD7–LD9 | open | Offline (L7), badges (L7), PayAI drafting (L7) — ask when L7 comes up. |
+| LD7 | 2026-10-22 | Phone depth = phone-first lesson pages that keep their place when the signal drops and replay progress when it returns. No native/offline app (a later, separate decision). |
+| LD8 | 2026-10-22 | Badges = a badge on each certificate + an on-time streak on My learning. No leaderboards, no points ranking colleagues. |
+| LD9 | 2026-10-22 | PayAI drafts a course (outline, lessons, ten-question quiz) from an uploaded document — drafts only, unpublished; a trainer edits and publishes. |
 
 ## Standing rules carried in (do not restate per phase; cite the row)
 
