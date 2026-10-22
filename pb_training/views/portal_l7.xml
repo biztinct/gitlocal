@@ -37,17 +37,17 @@
       <span class="pbtr-offline-say"/>
     </div>
     <div class="pbtr-words" hidden="hidden" aria-hidden="true">
-      <span data-w="saved">Saved on your phone. It will send when you are back online.</span>
-      <span data-w="quiz_saved">Your answers are saved on your phone. They are checked when you are back online.</span>
-      <span data-w="saved_button">Saved on your phone</span>
-      <span data-w="offline">You are offline. Your place in this lesson is kept.</span>
-      <span data-w="sending">Sending what was saved on your phone…</span>
-      <span data-w="sent_head">Sent while you were offline:</span>
-      <span data-w="out_done">done</span>
-      <span data-w="out_passed">passed</span>
-      <span data-w="out_failed">not quite yet, open it to try again</span>
-      <span data-w="out_refused">not saved, open it and try again</span>
-      <span data-w="checking">Checking…</span>
+      <div data-w="saved">Saved on your phone. It will send when you are back online.</div>
+      <div data-w="quiz_saved">Your answers are saved on your phone. They are checked when you are back online.</div>
+      <div data-w="saved_button">Saved on your phone</div>
+      <div data-w="offline">You are offline. Your place in this lesson is kept.</div>
+      <div data-w="sending">Sending what was saved on your phone…</div>
+      <div data-w="sent_head">Sent while you were offline:</div>
+      <div data-w="out_done">done</div>
+      <div data-w="out_passed">passed</div>
+      <div data-w="out_failed">not quite yet, open it to try again</div>
+      <div data-w="out_refused">not saved, open it and try again</div>
+      <div data-w="checking">Checking…</div>
     </div>
   </template>
 

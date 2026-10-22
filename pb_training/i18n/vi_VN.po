@@ -493,6 +493,7 @@ msgstr "Ai đang học gì và xin thêm thời gian"
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__required
 #: code:addons/pb_training/models/training_common.py:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__required
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 msgid "Required"
 msgstr "Bắt buộc"
 
@@ -681,12 +682,17 @@ msgstr "Ai đang học gì"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
 msgid "Continue"
 msgstr "Tiếp tục"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "The test at the end"
 msgstr "Bài kiểm tra cuối khóa"
 
@@ -694,6 +700,8 @@ msgstr "Bài kiểm tra cuối khóa"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Take the test"
 msgstr "Làm bài kiểm tra"
 
@@ -701,6 +709,8 @@ msgstr "Làm bài kiểm tra"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Open"
 msgstr "Mở"
 
@@ -875,18 +885,24 @@ msgstr "Việc tiếp theo"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Nothing to do right now."
 msgstr "Hiện chưa có việc gì cần làm."
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Every course you are on is finished. When the training team puts you on a new one, it appears here."
 msgstr "Bạn đã hoàn thành mọi khóa học đang tham gia. Khi nhóm đào tạo giao khóa mới, khóa đó sẽ hiện ở đây."
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "You are not on any course yet. When the training team puts you on one, it appears here."
 msgstr "Bạn chưa tham gia khóa học nào. Khi nhóm đào tạo giao khóa học cho bạn, khóa đó sẽ hiện ở đây."
 
@@ -1881,6 +1897,8 @@ msgstr "Giấy phép"
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training_certificates
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "My certificates"
 msgstr "Chứng chỉ của tôi"
 
@@ -2111,6 +2129,8 @@ msgstr "Hiện tất cả"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Start renewal"
 msgstr "Bắt đầu gia hạn"
 
@@ -4213,6 +4233,8 @@ msgstr "Phí phát triển kỹ năng (0,25% lương tháng, tối thiểu 2 S$ 
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
 #: model_terms:ir.ui.view,arch_db:pb_training.survey_start_words
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "Start"
 msgstr "Bắt đầu"
 
@@ -10230,6 +10252,7 @@ msgstr "Không mở được khóa học này."
 #: code:addons/pb_training/models/assignment.py:0
 #: code:addons/pb_training/models/pb_training.py:0
 #: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: code:addons/pb_training/models/learner_l7.py:0
 msgid "That course is not here any more."
 msgstr "Khóa học này không còn nữa."
 
@@ -12045,3 +12068,328 @@ msgstr "đã dự %s buổi học"
 #: code:addons/pb_training/models/numbers_l6.py:0
 msgid "%(hours)s hours of training, by %(n)s people · 1 hour each on average."
 msgstr "%(hours)s giờ đào tạo, của %(n)s người · trung bình 1 giờ mỗi người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "%s in a row, on time"
+msgstr "%s lần liên tiếp, đúng hạn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "%s lessons missing Vietnamese"
+msgstr "%s bài học chưa có tiếng Việt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "1 lesson missing Vietnamese"
+msgstr "1 bài học chưa có tiếng Việt"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "<span>Open the file</span>"
+msgstr "<span>Mở tệp</span>"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "A course the training team put you on."
+msgstr "Khóa học nhóm đào tạo đã giao cho bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "A short lesson for today."
+msgstr "Một bài học ngắn cho hôm nay."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Answer"
+msgstr "Trả lời"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Back to the course"
+msgstr "Quay lại khóa học"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Check again"
+msgstr "Kiểm tra lại"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Check my answers"
+msgstr "Kiểm tra câu trả lời"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Give it a name, then add videos, documents, reading and a quiz yourself."
+msgstr "Đặt tên, rồi tự thêm video, tài liệu, bài đọc và câu hỏi nhanh."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "How do you want to start?"
+msgstr "Bạn muốn bắt đầu thế nào?"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "It is past its date. Finish it, or ask your manager for more time."
+msgstr "Đã quá hạn. Hãy hoàn thành, hoặc xin quản lý thêm thời gian."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Lessons with no Vietnamese words yet. A learner reading in Vietnamese sees them in English."
+msgstr "Các bài học chưa có tiếng Việt. Học viên đọc bằng tiếng Việt sẽ thấy bài bằng tiếng Anh."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Mark as done"
+msgstr "Đánh dấu đã xong"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Marked as short lessons. A lesson from it can be offered as three minutes today."
+msgstr "Đã đánh dấu là bài học ngắn. Một bài của khóa này có thể được gợi ý là ba phút hôm nay."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Missing Vietnamese"
+msgstr "Chưa có tiếng Việt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Next for you"
+msgstr "Việc nên làm tiếp"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Next lesson"
+msgstr "Bài tiếp theo"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "No longer marked as short lessons."
+msgstr "Không còn đánh dấu là bài học ngắn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Only you see this"
+msgstr "Chỉ bạn thấy điều này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Open my training"
+msgstr "Mở trang đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Pick up where you left off."
+msgstr "Học tiếp từ chỗ bạn đã dừng."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Required for your job."
+msgstr "Bắt buộc cho công việc của bạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Short lessons, 3 to 5 minutes each. A lesson from this course can be offered to learners as \"Three minutes today\"."
+msgstr "Bài học ngắn, mỗi bài 3 đến 5 phút. Một bài của khóa này có thể được gợi ý cho học viên là \"Ba phút hôm nay\"."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_short
+msgid "Short lessons, 3–5 minutes each"
+msgstr "Bài học ngắn, mỗi bài 3–5 phút"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Show both languages"
+msgstr "Hiện cả hai ngôn ngữ"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Show one language"
+msgstr "Hiện một ngôn ngữ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Start a blank course"
+msgstr "Bắt đầu một khóa học trống"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "Tell the training team — it has a name but no content behind it."
+msgstr "Hãy báo nhóm đào tạo — bài này có tên nhưng chưa có nội dung."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__pb_short
+msgid "Tells the learner's page that every lesson of this course is short, so one can be offered as \"Three minutes today\" even when nobody timed it."
+msgstr "Cho trang học viên biết mọi bài của khóa này đều ngắn, để có thể gợi ý một bài là \"Ba phút hôm nay\" kể cả khi chưa ai bấm giờ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "The next step on your path."
+msgstr "Bước tiếp theo trên lộ trình của bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "The training team asked what you thought. It takes a minute."
+msgstr "Nhóm đào tạo muốn biết ý kiến của bạn. Chỉ mất một phút."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "There is nothing in this lesson yet"
+msgstr "Bài học này chưa có nội dung"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Three minutes today"
+msgstr "Ba phút hôm nay"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "You are nearly there on this one."
+msgstr "Bạn sắp xong khóa này rồi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your certificate runs out soon. Add the new one when you have it."
+msgstr "Chứng chỉ của bạn sắp hết hạn. Hãy thêm chứng chỉ mới khi bạn có."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your certificate runs out soon. The refresher course renews it."
+msgstr "Chứng chỉ của bạn sắp hết hạn. Khóa học bồi dưỡng sẽ gia hạn chứng chỉ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your last course was finished on time."
+msgstr "Khóa học gần nhất của bạn đã hoàn thành đúng hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your path is late. This is the step it waits for."
+msgstr "Lộ trình của bạn đã trễ hạn. Đây là bước đang chờ bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your session is today."
+msgstr "Buổi học của bạn là hôm nay."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/learner_l7.py:0
+msgid "Your session is tomorrow."
+msgstr "Buổi học của bạn là ngày mai."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "done"
+msgstr "đã xong"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_lesson
+msgid "have another look"
+msgstr "xem lại câu này"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training_l7
+msgid "<span class=\"pbtr-three-go\">Start</span>"
+msgstr "<span class=\"pbtr-three-go\">Bắt đầu</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training_l7
+msgid "<span class=\"pbtr-three-l\">Three minutes today</span>"
+msgstr "<span class=\"pbtr-three-l\">Ba phút hôm nay</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training_l7
+msgid "<span>Next for you</span>"
+msgstr "<span>Việc nên làm tiếp</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Checking…"
+msgstr "Đang kiểm tra…"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Saved on your phone"
+msgstr "Đã lưu trên điện thoại"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Saved on your phone. It will send when you are back online."
+msgstr "Đã lưu trên điện thoại. Sẽ gửi khi bạn có mạng trở lại."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Sending what was saved on your phone…"
+msgstr "Đang gửi những gì đã lưu trên điện thoại…"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Sent while you were offline:"
+msgstr "Đã gửi những gì bạn làm lúc mất mạng:"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "You are offline. Your place in this lesson is kept."
+msgstr "Bạn đang mất mạng. Vị trí của bạn trong bài học này vẫn được giữ."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "Your answers are saved on your phone. They are checked when you are back online."
+msgstr "Câu trả lời đã lưu trên điện thoại. Sẽ được chấm khi bạn có mạng trở lại."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "not quite yet, open it to try again"
+msgstr "chưa đúng hết, mở bài để làm lại"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "not saved, open it and try again"
+msgstr "chưa lưu được, mở bài và thử lại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_phone_kit
+msgid "passed"
+msgstr "đạt"

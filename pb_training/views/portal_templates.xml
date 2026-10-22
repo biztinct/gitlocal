@@ -827,22 +827,22 @@
         <!-- LEARNING L7: both languages, stacked. A link without a script
              (`?both=1`); with the script it toggles in place and the phone
              remembers the choice. -->
-        <p t-if="lesson.get('both')" class="pbtr-both-bar">
+        <div t-if="lesson.get('both')" class="pbtr-both-bar">
           <a t-if="not both_on" t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['id']}?both=1" class="pbtr-both-toggle" data-pbtr-both="1">
             <t t-call="pb_training.tr_icon">
               <t t-set="icon" t-value="'languages'"/>
               <t t-set="isz" t-value="15"/>
             </t>
-            <span class="pbtr-both-off-label">Show both languages</span><span class="pbtr-both-on-label">Show one language</span>
+            <div class="pbtr-both-off-label">Show both languages</div><div class="pbtr-both-on-label">Show one language</div>
           </a>
           <a t-else="" t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['id']}" class="pbtr-both-toggle" data-pbtr-both="0">
             <t t-call="pb_training.tr_icon">
               <t t-set="icon" t-value="'languages'"/>
               <t t-set="isz" t-value="15"/>
             </t>
-            <span class="pbtr-both-off-label">Show both languages</span><span class="pbtr-both-on-label">Show one language</span>
+            <div class="pbtr-both-off-label">Show both languages</div><div class="pbtr-both-on-label">Show one language</div>
           </a>
-        </p>
+        </div>
 
         <!-- ==================== what is on the page ==================== -->
         <div class="pbme-card pbtr-stage">
@@ -885,8 +885,7 @@
               </t>
             </div>
             <h3>There is nothing in this lesson yet</h3>
-            <p class="pbme-muted">Tell the training team — it has a name but
-               no content behind it.</p>
+            <p class="pbme-muted">Tell the training team — it has a name but no content behind it.</p>
           </div>
 
           <!-- ==================== the quiz ==================== -->

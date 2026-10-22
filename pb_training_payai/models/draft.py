@@ -440,6 +440,9 @@ class PbTrainingDraft(models.AbstractModel):
     def _make_draft(self, clean, att, lang_key, cfg, cut):
         """The course, as the person (their create rights, their name on it)."""
         lang = LANGS[lang_key][1]
+        if not self.env['res.lang'].sudo().search_count(
+                [('code', '=', lang), ('active', '=', True)]):
+            lang = 'en_US'
         Channel = self.env['slide.channel'].with_context(
             lang=lang, mail_create_nosubscribe=True)
         values = {
@@ -460,8 +463,9 @@ class PbTrainingDraft(models.AbstractModel):
         channel = Channel.create(values)
         # website_slides puts the responsible on their own course as a member
         # (ledger LN46): a draft is nobody's course yet.
-        if channel.channel_partner_ids:
-            channel._remove_membership(channel.channel_partner_ids.ids)
+        members = channel.channel_partner_ids.mapped('partner_id')
+        if members:
+            channel._remove_membership(members.ids)
         Slide = self.env['slide.slide'].with_context(lang=lang)
         seq = 1
         for lesson in clean['lessons']:

@@ -24035,6 +24035,13 @@
               "en": "See who is late on a course",
               "vi": "Xem ai đang trễ hạn khóa học"
             }
+          },
+          {
+            "lens": "courses",
+            "text": {
+              "en": "Draft a course from a document",
+              "vi": "Soạn khóa học từ tài liệu"
+            }
           }
         ],
         "tabs": {
@@ -24070,8 +24077,8 @@
           },
           "courses": {
             "line": {
-              "en": "Every course, the sessions in a room or on site, and the outside courses people can ask for.",
-              "vi": "Mọi khóa học, các buổi học tại lớp hoặc tại hiện trường, và các khóa học bên ngoài mọi người có thể yêu cầu."
+              "en": "Every course, the sessions in a room or on site, the outside courses people can ask for, and drafts PayAI writes from a document.",
+              "vi": "Mọi khóa học, các buổi học tại lớp hoặc tại hiện trường, các khóa học bên ngoài mọi người có thể yêu cầu, và bản nháp PayAI soạn từ tài liệu."
             },
             "name": {
               "en": "Courses",
@@ -24080,8 +24087,8 @@
           },
           "mine": {
             "line": {
-              "en": "Your own courses: the next lesson, how far you have got, and your team if people report to you.",
-              "vi": "Khóa học của chính bạn: bài tiếp theo, tiến độ, và đội của bạn nếu có người báo cáo cho bạn."
+              "en": "Your own courses: what to do next, a three-minute lesson for today, your certificate badges, and your team if people report to you.",
+              "vi": "Khóa học của chính bạn: việc nên làm tiếp, một bài học ba phút cho hôm nay, huy hiệu chứng chỉ, và đội của bạn nếu có người báo cáo cho bạn."
             },
             "name": {
               "en": "My learning",
@@ -24161,8 +24168,8 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Open My learning and press Continue. It drops you into your next lesson.",
-        "vi": "Hãy mở mục Của tôi và bấm Tiếp tục. Nút này đưa bạn vào bài học tiếp theo."
+        "en": "Open My learning and press the button under Next for you. It drops you into the one thing to do next.",
+        "vi": "Hãy mở mục Của tôi và bấm nút dưới Việc nên làm tiếp. Nút này đưa bạn vào đúng việc cần làm tiếp theo."
       },
       "open": "",
       "places": [],
@@ -40727,5 +40734,5 @@
       }
     }
   ],
-  "version": "c4fc9e172c6d"
+  "version": "413267424458"
 }

@@ -75,7 +75,7 @@ BADGE_TONES = {'valid': 'brand', 'soon': 'warn', 'expired': 'muted',
 BADGE_HEX = {'brand': '#5A4BB0', 'warn': '#B7791F', 'muted': '#8A8798'}
 
 #: Words a badge's initials skip ("Fire safety for the warehouse" → "FS").
-_SMALL_WORDS = {'a', 'an', 'and', 'the', 'of', 'for', 'to', 'in', 'on', 'demo',
+_SMALL_WORDS = {'a', 'and', 'the', 'of', 'for', 'to', 'in', 'on', 'demo',
                 'va', 'cho', 'cua', 've', 'tai', 'voi'}
 
 

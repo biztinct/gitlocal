@@ -1,0 +1,299 @@
+# Translation of Payobook Server.
+# This file contains the translation of the following modules:
+# 	* pb_training_payai
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "A PDF, a Word file or a text file, up to 10 MB."
+msgstr "Tệp PDF, Word hoặc văn bản, tối đa 10 MB."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "Check what you learnt"
+msgstr "Kiểm tra những gì bạn đã học"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Choose a file"
+msgstr "Chọn tệp"
+
+#. module: pb_training_payai
+#: model:ir.model,name:pb_training_payai.model_slide_channel
+msgid "Course"
+msgstr "Khóa học"
+
+#. module: pb_training_payai
+#: model:ir.model.fields,field_description:pb_training_payai.field_pb_training__display_name model:ir.model.fields,field_description:pb_training_payai.field_slide_channel__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0 code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Draft a course from a document"
+msgstr "Soạn khóa học từ tài liệu"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Draft a course from the forklift procedure"
+msgstr "Soạn khóa học từ quy trình xe nâng"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Draft it with PayAI from a document"
+msgstr "Để PayAI soạn từ một tài liệu"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Draft the course"
+msgstr "Soạn khóa học"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "Drafted by PayAI from %(file)s with %(model)s, for %(who)s. It is not published: read every lesson before you publish."
+msgstr "PayAI đã soạn từ %(file)s bằng %(model)s, cho %(who)s. Khóa học chưa được công bố: hãy đọc mọi bài trước khi công bố."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "Drafted by PayAI from %s. Read every lesson before you publish."
+msgstr "PayAI đã soạn từ %s. Hãy đọc mọi bài trước khi công bố."
+
+#. module: pb_training_payai
+#: model:ir.model.fields,field_description:pb_training_payai.field_slide_channel__pb_draft_source_id
+msgid "Drafted from"
+msgstr "Soạn từ"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/js/draft_way.js:0
+msgid "Drafted."
+msgstr "Đã soạn xong."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "Drafted. Read every lesson before you publish."
+msgstr "Đã soạn xong. Hãy đọc mọi bài trước khi công bố."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Drafting courses"
+msgstr "Soạn khóa học"
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Drafting… this takes a few seconds"
+msgstr "Đang soạn… việc này mất vài giây"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "English"
+msgstr "Tiếng Anh"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "I could not find a document called \"%s\" among the courses' files. Upload it in Learning › Courses › New course."
+msgstr "Tôi không tìm thấy tài liệu nào tên \"%s\" trong các tệp của khóa học. Hãy tải lên ở Học tập › Khóa học › Khóa học mới."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "I will open New course with %s picked."
+msgstr "Tôi sẽ mở Khóa học mới với %s đã được chọn."
+
+#. module: pb_training_payai
+#: model:ir.model.fields,field_description:pb_training_payai.field_pb_training__id model:ir.model.fields,field_description:pb_training_payai.field_slide_channel__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Learning"
+msgstr "Học tập"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Make a course out of fire-safety.pdf"
+msgstr "Làm khóa học từ an-toan-chay-no.pdf"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Open Learning › New course with a document the person already has picked, so PayAI can draft a course from it (an outline, lessons and a quiz) for a trainer to edit and publish. Nothing is drafted or published from the chat."
+msgstr "Mở Học tập › Khóa học mới với tài liệu người dùng đã chọn, để PayAI soạn một khóa học (dàn ý, bài học và câu hỏi) cho giảng viên chỉnh sửa và công bố. Không có gì được soạn hay công bố từ khung trò chuyện."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Open New course with this file"
+msgstr "Mở Khóa học mới với tệp này"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Open New course with this file to draft it."
+msgstr "Mở Khóa học mới với tệp này để soạn."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0 code:addons/pb_training_payai/static/src/js/draft_way.js:0
+msgid "PayAI can draft a course from a PDF, a Word file or a text file. Save it as one of those and upload it again."
+msgstr "PayAI có thể soạn khóa học từ tệp PDF, Word hoặc văn bản. Hãy lưu tài liệu thành một trong các dạng đó rồi tải lên lại."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0 code:addons/pb_training_payai/static/src/js/draft_way.js:0
+msgid "PayAI could not draft a course just now. Try again in a minute, or start a blank course."
+msgstr "PayAI chưa soạn được khóa học lúc này. Hãy thử lại sau một phút, hoặc bắt đầu một khóa học trống."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "PayAI did not return a course it could use. Try again, or start a blank course."
+msgstr "PayAI chưa trả về được khóa học dùng được. Hãy thử lại, hoặc bắt đầu một khóa học trống."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "PayAI is not set up for documents yet. Ask the administrator to add a provider under Settings › PayAI."
+msgstr "PayAI chưa được thiết lập để đọc tài liệu. Hãy nhờ quản trị viên thêm nhà cung cấp ở Cài đặt › PayAI."
+
+#. module: pb_training_payai
+#: model:ir.model,name:pb_training_payai.model_pb_training
+msgid "Payobook Training cockpit data"
+msgstr "Dữ liệu bảng điều khiển đào tạo Payobook"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Prepare · opens the screen · nothing is drafted yet"
+msgstr "Chuẩn bị · mở màn hình · chưa soạn gì"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "That PDF is a picture of the pages, with no words in it PayAI can read. Upload the Word file or a PDF saved from it instead."
+msgstr "Tệp PDF này là ảnh chụp các trang, không có chữ để PayAI đọc. Hãy tải lên tệp Word hoặc tệp PDF được lưu từ tệp đó."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "That Word file could not be read. Save it as a PDF first and upload that."
+msgstr "Không đọc được tệp Word này. Hãy lưu thành PDF trước rồi tải lên."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/js/draft_way.js:0
+msgid "That did not load. Try again in a moment."
+msgstr "Chưa tải được. Hãy thử lại sau giây lát."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "That document is not here any more."
+msgstr "Tài liệu này không còn ở đây."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "That file could not be read. Try again, or save it as a PDF first."
+msgstr "Không đọc được tệp này. Hãy thử lại, hoặc lưu thành PDF trước."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "That file is empty."
+msgstr "Tệp này trống."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0 code:addons/pb_training_payai/static/src/js/draft_way.js:0
+msgid "That file is larger than 10 MB. Upload a shorter document, or the part of it the course is about."
+msgstr "Tệp lớn hơn 10 MB. Hãy tải lên tài liệu ngắn hơn, hoặc chỉ phần liên quan đến khóa học."
+
+#. module: pb_training_payai
+#: model:ir.model.fields,help:pb_training_payai.field_slide_channel__pb_draft_source_id
+msgid "The document PayAI drafted this course from. The course stays unpublished until a trainer publishes it."
+msgstr "Tài liệu PayAI dùng để soạn khóa học này. Khóa học chưa được công bố cho đến khi giảng viên công bố."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "The document is sent to the PayAI provider your administrator set up. The course stays unpublished until a trainer publishes it."
+msgstr "Tài liệu được gửi đến nhà cung cấp PayAI mà quản trị viên đã thiết lập. Khóa học chưa được công bố cho đến khi giảng viên công bố."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "The document was long, so only its first part was used."
+msgstr "Tài liệu dài, nên chỉ phần đầu được dùng."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "The draft is made on the screen: pick the language and press \"Draft the course\". It stays unpublished until a trainer publishes it."
+msgstr "Bản nháp được soạn trên màn hình: chọn ngôn ngữ và bấm \"Soạn khóa học\". Khóa học chưa được công bố cho đến khi giảng viên công bố."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "There are no words in that file that PayAI can read."
+msgstr "Tệp này không có chữ nào PayAI đọc được."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Upload a procedure. PayAI writes an outline, short lessons and a ten-question quiz. You read it, change what you need and publish it."
+msgstr "Tải lên một quy trình. PayAI viết dàn ý, các bài học ngắn và mười câu hỏi. Bạn đọc, sửa những gì cần và công bố."
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/models/draft.py:0
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+#. module: pb_training_payai
+#. odoo-python
+#: code:addons/pb_training_payai/payai/action_draft_course.py:0
+msgid "Which document? Say its file name."
+msgstr "Tài liệu nào? Hãy nói tên tệp."
+
+#. module: pb_training_payai
+#. odoo-javascript
+#: code:addons/pb_training_payai/static/src/xml/draft_way.xml:0
+msgid "Write it in"
+msgstr "Viết bằng"
