@@ -217,13 +217,9 @@ MANIFESTS = {
                         'vi': "Chỉ tạo phiếu lương nháp: chưa có gì được chi, gửi hay "
                               "phê duyệt."},
              'writes': True},
-            {'label': {'en': "Update records", 'vi': "Cập nhật hồ sơ"},
-             'method': 'pb.payrun.wizard.update_records_from_feed',
-             'effect': {'en': "Copies the connected system's latest values onto employee "
-                              "and contract records before the run.",
-                        'vi': "Chép các giá trị mới nhất từ hệ thống được kết nối vào hồ "
-                              "sơ nhân viên và hợp đồng trước khi chạy lương."},
-             'writes': True},
+            # LEARNING L6 (2026-10-22): "Update records" left the Pay Run screen
+            # (163f75c60 — master-record sync stays outside Pay Run), so the
+            # Guide no longer names it (ledger rule L3: lessons follow screens).
         ],
         'right_now': None,
         'station': 'runpayroll',

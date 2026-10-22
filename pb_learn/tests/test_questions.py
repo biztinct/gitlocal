@@ -24,6 +24,7 @@ somebody has to walk through twice. These tests are the shape of the opening:
 
 The last one matters most in the long run, and is the easiest to let rot.
 """
+import os
 from datetime import timedelta
 
 from odoo import fields
@@ -337,7 +338,15 @@ class TestQuestionMining(TransactionCase):
                             raise_if_not_found=False)
         self.assertTrue(cron, "the retention job has no cron — rows would live "
                               "forever while the prompt promises 180 days")
-        self.assertTrue(cron.active)
+        # The job SHIPS switched on (the data file), but a database may keep
+        # its jobs off on purpose — the template and the clones are run with
+        # every cron off by policy (LEARNING L6, found on a p0clone run). So
+        # the shipped value is checked, never this database's switch.
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(here, 'data', 'learn_question_cron.xml'),
+                  encoding='utf-8') as fh:
+            shipped = fh.read()
+        self.assertIn('<field name="active" eval="True"/>', shipped)
         self.assertIn('_gc_questions', cron.code)
         self.assertEqual(cron.model_id.model, 'learn.question')
 
