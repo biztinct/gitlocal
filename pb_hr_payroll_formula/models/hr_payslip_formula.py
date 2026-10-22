@@ -238,7 +238,12 @@ class HrPayslipFormula(models.Model):
         if not rules:
             return input_values.copy(), []
 
-        rules._compute_dependencies()
+        # Certified runs freeze rule/source fingerprints before evaluation.
+        # Diagnostic writes would invalidate earlier employees in a batch and
+        # make an unchanged run fail approval on the next request.
+        readonly = hasattr(self, '_application_mode') and self._application_mode()
+        if not readonly:
+            rules._compute_dependencies()
         try:
             from ..formula_engine import FormulaEvaluator
             evaluator = FormulaEvaluator()
@@ -265,7 +270,8 @@ class HrPayslipFormula(models.Model):
                         f"[{rule.column_letter}] {rule.code} (constant) = {value}"
                     )
                 elif rule.column_type == 'formula':
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula, write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                     results[rule.code] = value
                     computation_log.append(
                         f"[{rule.column_letter}] {rule.code} = {rule.excel_formula} -> {value}"
@@ -285,7 +291,8 @@ class HrPayslipFormula(models.Model):
                 if rule.column_type != 'formula':
                     continue
                 try:
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula, write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                 except Exception as e:
                     computation_log.append(f"[ERROR] Error in {rule.code}: {str(e)}")
                     value = 0.0

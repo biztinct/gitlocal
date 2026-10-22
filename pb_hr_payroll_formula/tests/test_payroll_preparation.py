@@ -175,3 +175,19 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
             self.assertTrue(draft.review(draft.revision,self._cert()['channels'],'Checked')['ready'])
             self.assertTrue(draft.workspace()['ready'])
             draft._assert_scope(self.config,self.employee.ids,self.start,self.end)
+
+    def test_computation_and_repeated_approval_checks_do_not_write_rules(self):
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-stable-compute',[self._change()])
+        draft.review(draft.revision,self._cert()['channels'],'Reviewed')
+        run,slip=self._run_and_slip()
+        review=json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'],review['reason'])
+        draft._attach(run)
+        with patch.object(type(self.bonus),'_compute_dependencies',side_effect=AssertionError('Certified evaluation wrote rules')):
+            slip.compute_sheet_with_formulas()
+            before=self.config._application_settings_stamp()
+            self.assertTrue(run._application_assert_current())
+            self.assertTrue(run._application_assert_current())
+            self.assertEqual(self.config._application_settings_stamp(),before)
+            self.assertEqual(json.loads(slip.formula_input_values)[self.bonus.code],500)
