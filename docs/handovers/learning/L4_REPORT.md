@@ -1,7 +1,7 @@
 # LEARNING L4 — Sessions, attendance and toolbox talks — report
 
 Implementer: Opus, 2026-10-22. Spec: `L4_SESSIONS_SIGNOFF.md` minus the LD5 cuts (no practical sign-off). Ledger: `LEARNING_LEDGER.md` (candidate rows from LN45 in §5).
-Status: **AT DEPLOY GATE** — built, committed, tested locally (suites + Chrome walk). Not deployed. Not pushed.
+Status: **DEPLOYED ×4 DBs 2026-10-22 16:22 AEDT (DONE 05:22 UTC)** — live walk pending (Fable, LN16). Not pushed.
 
 ## 1. What shipped (committed on 19.1, not pushed)
 
@@ -267,3 +267,42 @@ it is under way. Settings › HR › Required training — the Vietnam card's gr
   (pre-existing). The `ir_attachment` foreign-key line in the log is pre-existing (L2/L3 logs).
 - Tree under test = repo tree (`diff -rq` of the overlay against the repo: identical).
 - Walk server stopped; walk DB `am_l4_walk` kept.
+
+## 10. Deploy record (GO DEPLOY 2026-10-22 05:15 UTC)
+
+| Step | Result |
+|---|---|
+| Notes / lock | no open START (last: ChatGPT DONE 22:24 UTC 10-21 and my HOLD note); lock free; server process up, health 200. Lock held by detached unit `l4-lock` from 05:16 to the DONE line; START 05:16, DONE 05:22 UTC — the DONE line carries **"LEARNING L4 DONE"** (HOLD cleared); lock released |
+| Versions before | pb_training 19.0.1.7.0 ×4 (nobody had shipped L4) |
+| Backups | `/odoo/backups/learning-l4-20261022/` p0clone 24 MB, payobook 74 MB, payobook_template 24 MB, rize 32 MB (each `pg_restore -l` ok) |
+| Files | `git archive 2d5040acb pb_training` (nothing after it touches pb_training) = the tested tree; clean `/tmp/deployL4`, scoped `rsync --delete` into `/odoo/odoo-server/addons/pb_training/`; tree hash equal both sides (183e24ff…); PO gate on the box 1,486 / 0; one addons path |
+| Upgrade | service stopped 05:17:59 (gone by PID 05:18:09); detached unit `l4-upgrade`, `-u pb_training`, p0clone → payobook → payobook_template → rize: **EXIT=0 ×4** (≈20 s each), 0 tracebacks, 0 ERROR, 0 CRITICAL |
+| Assets / start | signal + `/web/assets/%` deleted + `web.assets.version=learning-l4-20261022` ×4; started, health 200 at 05:20:09 (down ≈2 min) |
+| Warm | payobook.com 200, rize.payobook.com 200, p0clone.payobook.com 200 (after the start and again after the seed) |
+| Crons | 26 / 37 / 0 / 69 = snapshot; payobook_template 72/73 re-activated by `-u`, switched back off (LN18) |
+| After | pb_training 19.0.1.8.0 **installed** ×4; tables `pb_training_session` / `pb_training_attendance` ×4 (0 rows except payobook); `assignment.session_id`, `employee_document.attendance_id`, `slide_channel.self_booking` ×4; every existing course "online" (payobook 5); five session mail templates ×4; `calendar` dependency recorded; a QR code draws on the live engine (`data:image/png`, 1,106 chars, shell rolled back); 0 ERROR lines since the start |
+| Demo seed (payobook) | one stop 05:21:08–05:21:40 UTC. Course 290 **DEMO Site safety walk**; session **1** next week (Hall A, 14 seats): 14 booked + 2 waiting, invitations marked sent (none sent), diary entry 725 made quietly; session **2** last week: 9 attended, 1 did not come, closed — **9 attendance certificates filed** (the live PDF engine rendered them); session **3** toolbox talk **DEMO Lifting safely** yesterday, logged as lam.ngo for 8 of his people. 5 records on the demo register. Morning legs rolled back (0 / 0). 0 mail queued by the seed, 0 calendar mails, 0 ERROR lines. |
+| Live walk | pending (Fable, LN16) |
+
+### Live walk — what needs which login (for server-side facade calls)
+
+The admin tab (head of training) covers: Overview chip/block; Courses › Sessions (week strip, day filter, numbers, cards);
+session 1's page (take one person off → the first waiting moves up; Book people; Start the session → **QR shows**; a tick
+by hand; live count); **Sign-in sheet PDF** `/report/pdf/pb_training.report_session_sheet/1` (first live render) and the
+attendance spreadsheet; session 2 (closed) and its certificates in Certificates (source "Attended a session"); session 3;
+Log a toolbox talk; Numbers › Sessions + spreadsheet "Sessions" sheet; the course form "How it is taught"; Settings › HR ›
+Required training (Vietnam card's group-4 line); Vietnamese labels.
+
+Needs a specific person — as server-side calls (`odoo-bin shell -d payobook`, `env(user=<uid>, context={'allowed_company_ids':[5],'lang':'vi_VN'})`, roll back):
+
+| Walk item | Login (uid) | Call | Expect |
+|---|---|---|---|
+| Learner "My sessions" | demo.field@example.com (6533, booked on session 1) | `pb.my.training.home()['sessions']` | `next.id == 1`, `my_state 'booked'`, `ics_url '/my/training/sessions/1/calendar.ics'` |
+| Learner calendar file | 6533 | `pb.my.training.session_ics(1)` | bytes starting `BEGIN:VCALENDAR`, `METHOD:REQUEST`; a stranger gets `None` |
+| Learner course card | 6533 | `home()['courses']` → course 290 | `delivery 'session'`, `session.my_state 'booked'` |
+| QR scan (only while session 1 is under way, or within an hour of its start) | 6533 | `pb.my.training.attend_by_token(<session 1 qr_token>)` | `'ok'` (then `'already'`); before that: `'not_yet'` |
+| Self-booking | demo.field after the training team ticks "People may book a seat themselves" on course 290 (already ticked by the seed) and they owe it | `home()['sessions']['bookable']` / `book_my_seat(id)` | demo.field is already booked on session 1, so nothing bookable — expected |
+| Manager toolbox talk | lam.ngo@example.com (2326) | `pb.training.toolbox_lists()`, `toolbox_people('')` | `allowed True`, `is_team` True only if lam has no training group; people = only those under him |
+| Manager's own sessions | 2326 (booked on session 1) | `pb.my.training.home()['sessions']` | `next.id == 1` |
+| HR lead's attended session | demo.hr@example.com (6678, attended session 2) | `pb.my.training.home()['courses']` → course 290 | `finished True`; Certificates register has their "DEMO Site safety walk — certificate (…)" |
+| demo.learner@example.com (5344) | portal-only, no employee record (L3 finding) | — | not on any session: My sessions block absent (correct) |
