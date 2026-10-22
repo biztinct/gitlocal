@@ -236,6 +236,74 @@ a {
     display: none !important;
 }
 
+// Native section hierarchy. Unnamed outer groups are layout columns, not
+// semantic parents; only a group with its own title creates nested sections.
+// The boxed VU form engine retains its own card spacing.
+.o_form_view .o_form_renderer:not(.vu-form) {
+    .o_horizontal_separator:not(:empty) {
+        padding: 0;
+        margin: 0 0 12px !important;
+        flex-shrink: 0;
+    }
+
+    .o_inner_group > div:has(> .o_horizontal_separator:not(:empty)) {
+        grid-column: 1 / -1;
+
+        > .o_horizontal_separator {
+            // The compact inner grid contributes the remaining 2px.
+            margin-bottom: 10px !important;
+        }
+
+        &:not(:first-child) {
+            margin-top: 22px;
+        }
+    }
+
+    // Stacked sections: 20px + the preceding group's 4px bottom margin.
+    // Exclude row containers, whose children are peer columns.
+    :not(.row) > .o_inner_group ~ .o_inner_group:has(> div > .o_horizontal_separator) {
+        margin-top: 20px;
+    }
+
+    .o_group.row:has(> .o_horizontal_separator:not(:empty)) {
+        row-gap: 16px;
+
+        > .o_horizontal_separator {
+            flex-basis: 100%;
+            margin-bottom: 0 !important;
+        }
+
+        > :is(.o_group, .o_inner_group) {
+            // Indent the complete child group, so its labels and title agree.
+            padding-inline-start: 16px;
+            min-width: 0;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+
+            > .o_horizontal_separator,
+            > div > .o_horizontal_separator {
+                font-size: 0.75rem;
+            }
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .o_group.row:has(> .o_horizontal_separator:not(:empty)) > :is(.o_group, .o_inner_group) {
+            padding-inline-start: 8px;
+        }
+    }
+}
+
+// Resume lists sit below a heading inside a column, rather than filling a
+// whole notebook page. Odoo's full-width list margins otherwise pull the
+// experience table 16px upward, painting over the Resume heading.
+.o_form_view .o_group_resume .o_field_x2many_list .o_list_renderer {
+    margin: 0 !important;
+    --ListRenderer-margin-x: 0px;
+    --ListRenderer-table-padding-x: 0px;
+}
+
 // Fix padding for standalone elements outside of groups (separators, radio buttons, etc.)
 // These elements appear directly on the form sheet without a containing <group> tag
 .o_form_sheet>.o_field_widget,
