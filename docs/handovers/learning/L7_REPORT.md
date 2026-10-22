@@ -2,7 +2,7 @@
 
 Implementer: Opus, 2026-10-23. Spec: `L7_LEARNER_PHONE.md` (LD7, LD8, LD9 decided as recommended; SCORM out). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN66 in §5).
-Status: **DEPLOYED ×4 DBs 2026-10-23 08:31 AEDT (DONE 21:31 UTC), live walk pending** — built, committed (not pushed), tested
+Status: **COMPLETE** — LIVE ×4 DBs 2026-10-23 08:31 AEDT (DONE 21:31 UTC); live walk by Fable passed (§12) — built, committed (not pushed), tested
 locally (L7 tests, the full Learning + PayAI suites, a node suite, a live-data run on a copy of p0clone), walked in Chrome at phone width,
 deployed from `f63eeda51` (§11).
 
@@ -153,7 +153,7 @@ languages" = **Hiện cả hai ngôn ngữ**, "Saved on your phone…" = **Đã 
 Vietnamese" = **Chưa có tiếng Việt**. `pb_training_payai/i18n/vi_VN.po` is new (48 entries, one line per msgid). Help (pb_learn) carries
 its own EN + VI in `data.js`. Mail bodies stay English (LD10).
 
-## 5. Ledger rows to add after the deploy (candidates, from LN66)
+## 5. Ledger rows (added to the ledger as LN66–LN73 after the walk)
 
 - LN66: **Writing a rich-text translated field (a lesson's text, `html_translate`) in another language when it has no translation yet
   replaces it in EVERY language** (the walk's Vietnamese overwrote the English). Set a translation with
@@ -173,6 +173,9 @@ its own EN + VI in `data.js`. Mail bodies stay English (LD10).
   `ollama` needs only `requests`; this computer has no `openai` library, the live box has openai 2.44).
 - LN72: **Owner standing rule (2026-10-23): never delete payobook demo data.** Seeds only add; no purge, reset or restore over payobook;
   a needed deletion goes to the coordinator first.
+- LN73: **ChatGPT ships HEAD's committed state** (its 20:21 release took pb_training 19.0.1.10.1 from HEAD and left L7 out only because
+  the owner said so): write the HOLD note in `/opt/deploy-notes.md` BEFORE the first Learning commit of a phase, and bump a manifest only
+  when the phase is ready to install.
 
 ## 6. Score against the design bar
 
@@ -202,7 +205,7 @@ its own EN + VI in `data.js`. Mail bodies stay English (LD10).
    says which lessons have none ("Missing Vietnamese").
 7. **Still English for Vietnamese readers (older pages, not L7):** the top of the portal training page ("Your training", "2 of your
    courses are past their date…") and "Lesson 1 of 3". Say if you want them translated in a follow-up.
-8. **Demo on payobook** (after the deploy): one small course "DEMO Three-minute safety tips" (three short lessons in English and
+8. **Demo on payobook:** one small course "DEMO Three-minute safety tips" (three short lessons in English and
    Vietnamese and a two-question quick check) is ADDED, and the HR lead `demo.hr@example.com` is put on it. Nothing is removed or
    changed elsewhere (your rule of 2026-10-23).
 
@@ -352,3 +355,24 @@ Closed along the way: Talent's empty tab for training-only roles (L1), certifica
 | Start | 21:30:45; payobook.com, rize.payobook.com, p0clone.payobook.com 200; `/my/training/manifest.webmanifest` start_url `/my/training`, 2 icons 200 on all three; 0 ERROR lines since the start |
 | Verify ×4 | pb_training 19.0.1.11.0, pb_learn 19.0.20.6.2, pb_training_payai 19.0.1.0.0 installed; columns `pb_short`, `pb_draft_source_id`; `draft_course` registered (tier prepare; "Draft a course from the forklift procedure" → `draft_course`, file "forklift procedure"); Help name Help / Trợ giúp; PayAI draft **ready on payobook only** (the others say "PayAI chưa được thiết lập…"); no AI call made |
 | Downtime | 21:12:31–21:30:45 UTC (~18 min; payobook's own upgrade ~15 min) |
+
+## 12. Live walk (Fable, payobook.com, 2026-10-23) — PASSED
+
+Admin tab (head of training, company 5) plus the §8 server-side calls as the named users (`tz` stripped, each rolled back, **no AI call**).
+
+- **Screens:** Courses › New course shows "Start a blank course" and "Draft it with PayAI from a document" (Choose a file, English /
+  Vietnamese, "Draft the course" disabled until a file is chosen, the "stays unpublished until a trainer publishes it" line) — Draft was
+  not pressed. The Courses lens lists DEMO Safe chemical storage v2. My learning for the admin (no courses of their own) shows its empty
+  states. No console errors.
+- **Server-side:** demo course 293 "DEMO Three-minute safety tips" with 4 lessons; demo.hr (Vietnamese): Next for you = the path step
+  "DEMO Leading a line — read this first", reason "Bước tiếp theo trên lộ trình của bạn.", button "Tiếp tục", `/my/training/289/999`;
+  Three minutes today = "DEMO Kiểm tra nhanh" (2 phút, "Câu hỏi nhanh") of course 293; English gives the same kinds; both languages on
+  lesson one: other EN "DEMO Wear your badge"; badge {SS, brand, #5A4BB0}; course drawer `short` True, `missing_vi` 0; the PayAI draft
+  ready on payobook, not set up on rize; PayAI "Draft a course from the forklift procedure" → `draft_course` with file "forklift
+  procedure", allowed for the admin and demo.hr; the home-screen manifest answers with start_url `/my/training` and its icons.
+
+## 13. Commits (on 19.1, not pushed)
+
+- `4b9678af5` wip (installs) · `1b2bdb28c` tests, Vietnamese, Help, seed · `66e1868d5` walk fixes, screenshots
+- `f63eeda51` report at the gate + T10 fix (**the live tree**) · `670cf2133` deploy tree named · `3043ba6c1` deploy record
+- closing commit — this walk section, ledger rows LN66–LN73, phase log, programme-complete note
