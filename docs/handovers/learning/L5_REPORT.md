@@ -2,8 +2,7 @@
 
 Implementer: Opus, 2026-10-22. Spec: `L5_COURSES_REQUESTS_SKILLS.md` (LD6: outside catalogue = our own list). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN52 in §5).
-Status: **AT DEPLOY GATE** — built, committed, suites green locally (only the two pre-existing failures), local walk done
-(the browser extension dropped near the end; the last items were checked server-side, §2). Not deployed. Not pushed.
+Status: **LIVE ×4 DBs 2026-10-22 20:27 AEDT** (DONE 09:27 UTC, EXIT=0 ×4); live walk pending (Fable). Not pushed.
 
 ## 1. What ships (committed on 19.1, not pushed)
 
@@ -164,9 +163,10 @@ set aside = **giữ chỗ**, skills = **kỹ năng**. Mail bodies and subjects s
 
 ## 7. Owner items (plain English)
 
-1. **Publishing course 27 as version 2 on payobook resets lesson progress for everybody who finished it** (about 7 demo people) and
-   gives each a short "read it again" course. One of them is the manager Ngô Bảo Lâm, whose learning path will show its first step as
-   open again until he re-reads it. That is what the feature does; say if you would rather the demo use another course.
+1. **The demo's "new version" uses a small course of its own, "DEMO Safe chemical storage"**, not course 27 (the coordinator's call:
+   course 27 is the first step of the demo learning paths and re-reading it would have reopened that step). Three demo people finished
+   it and now have a re-read: Trần Minh Khôi, Ngô Bảo Lâm, Lâm Tuấn Kiệt. In real use, publishing a new version of a course that is on
+   a learning path does reopen that step for the people who re-read it — say if you want paths to ignore re-reads.
 2. **Paid outside courses go to the HR lead after the manager.** Free ones and our own courses go to the manager only. Change it in the
    Approval Matrix if you want, for example, the HR lead only above five million.
 3. **Agreed outside courses hold money aside** from the person's allowance until the claim is agreed, so the allowance page can show
@@ -218,30 +218,31 @@ jobs 147 / 762 / 1009 / 1010; no "DEMO Line leader" job (the seed makes one).
    `sudo -u odoo /odoo/odoo-server/odoo-bin shell -c /etc/odoo-server.conf -d payobook --no-http < docs/handovers/learning/l5_demo_seed.py`
    (three DEMO outside courses; DEMO skill types; course 27 gives Field safety · Basic; DEMO agronomist job + DEMO Line leader require
    two skills each; demo.field asks for Soil science online (waiting on lam.ngo); the training team (demo.hr) puts one demo person on the
-   licence (agreed, 3,000,000 set aside); course 27 → version 2 (re-reads for its finishers, ~7); test "DEMO Field safety quiz" draws 5 of
-   8; 6 feedback answers + 2 follow-ups answered on course 27; morning legs rolled back; **every mail it queued cancelled**). Restart, warm.
+   licence (agreed, 3,000,000 set aside); a small "DEMO Safe chemical storage" course finished by three demo people and published as
+   v2 (course 27 is NOT versioned — coordinator); test "DEMO Field safety quiz" draws 5 of 8; 6 feedback answers + 2 follow-ups answered
+   on course 27; morning legs rolled back; **every mail it queued cancelled**). Restart, warm.
 10. DONE line containing **"LEARNING L5 DONE"** (clears the HOLD), release the lock (`systemctl stop l5-lock`).
 
 ### Live walk — what needs which login (server-side facade calls, ledger LN43)
 
 The admin tab (head of training, company 5) covers: Overview chips; Courses › Outside courses (cards, filters, the licence page, Add a
-skill drawer, Put someone on it drawer — do not submit); course 27's drawer (v2 chip, version line, What people said 4.x · 6 ratings,
-managers' answers, Skills it gives, Publish drawer — do not publish); Claims › Requests (sentence, steps, rows); Tests (the drawn quiz,
+skill drawer, Put someone on it drawer — do not submit); course 292 "DEMO Safe chemical storage" drawer (v2 chip, version line, Publish drawer — do not publish);
+course 27's drawer (What people said 4.2 · 6 ratings, managers 3.5/5, Skills it gives "DEMO Field safety · DEMO Basic"); Claims › Requests (sentence, steps, rows); Tests (the drawn quiz,
 results drawer, New test drawer — do not save); Skills (gaps, Close it — do not press); Numbers (four new sections); Vietnamese labels.
 
 `odoo-bin shell -d payobook`, `env(user=<uid>, context={'allowed_company_ids':[5],'lang':'vi_VN'})`, strip `tz` for times (LN51), roll back:
 
 | Walk item | Login (uid) | Call | Expect |
 |---|---|---|---|
-| Manager decides in the Inbox | lam.ngo@example.com (2326) | `pb.approval.inbox` list for "my turn" (or `env['pb.training.request'].search([('state','=','submitted')])._chain_my_seat()`) | the Soil science request, seat open for 2326; `action_approve()` → state `approved` (roll back) |
+| Manager decides in the Inbox | lam.ngo@example.com (2326) | `env['pb.training.request'].browse(1)._chain_my_seat()` | seat open for 2326 on request 1 (demo.field, DEMO Soil science online); `action_approve()` → `approved` (roll back) |
 | Inbox detail rows | 2326 | `env['pb.approval.inbox']._detail(<request record of that request>)` | dict rows (Link), chips Course / What it costs / Who runs it |
 | Claim receipt row in the Inbox (the live bug) | admin | `_detail` on any submitted claim's approval request | rows Receipt / Certificate present |
 | Learner request list | demo.field@example.com (6533) | `pb.my.training.my_requests()` | the Soil science row, `Đang chờ quyết định` |
 | Learner options + allowance | 6533 | `request_options()['allowance']['words']` | "Ngân sách đào tạo năm 2026 của bạn: còn …" |
-| Claim prefill | the person put on the licence | `pb.my.training.claim_prefill(<request id>)` | course, provider, 3000000, sentence |
-| Re-read after v2 | a course-27 finisher | `home()['courses']` → course 27 | reason "Khóa học đã thay đổi", lessons back to 0 done |
+| Claim prefill | khoi.tran@example.com (2324, put on the licence — request 2) | `pb.my.training.claim_prefill(2)` | course, provider, 3000000, sentence |
+| Re-read after v2 | khoi.tran@example.com (2324), lam.ngo (2326), kiet.lam@example.com (2327) | `home()['courses']` → course 292 "DEMO Safe chemical storage" | reason "Khóa học đã thay đổi", 0 of 2 lessons done; assignment 536/537/538 `course_version` 2 |
 | Skills for a manager | 2326 | `pb.training.can_see_skills()`, `skills_board({})` | True; `team` True, only his people |
-| Feedback page | any demo learner with a pending ask | `my_feedback()` → url; GET it as public | "Khóa … thế nào?" |
+| Feedback page | khoi.tran / lam.ngo / kiet.lam (pending asks 93/94/95, from finishing the storage course) | `my_feedback()` → url; GET it as public | "Khóa DEMO Safe chemical storage thế nào?" |
 | Results page gate | a survey user without a training group (none on payobook — skip) | — | covered by T9 |
 
 ## 9. Final local state (before the gate)
@@ -254,3 +255,19 @@ results drawer, New test drawer — do not save); Skills (gaps, Close it — do 
   pre-existing (L2–L4 logs).
 - Tree under test = repo tree (`diff -rq` of the overlay against the repo: identical).
 - Walk server on 8073 left running for the coordinator; walk DB `am_l5_walk` kept.
+
+## 10. Deploy record (GO DEPLOY 2026-10-22 09:15 UTC)
+
+| Step | Result |
+|---|---|
+| Notes / lock | ChatGPT started another payroll release at 09:16 (open START, lock held, site down) — waited for its DONE at 09:22. Lock by detached unit `l5-lock` 09:22–09:27; START 09:22, DONE 09:27 UTC — DONE carries **"LEARNING L5 DONE"** (HOLD cleared); lock released |
+| Versions before | pb_training 19.0.1.8.0 ×4 (nobody had shipped L5) |
+| Backups | `/odoo/backups/learning-l5-20261022/` p0clone 25 MB, payobook 74 MB, payobook_template 24 MB, rize 31 MB (each `pg_restore -l` ok) + `crons_before.txt` |
+| Files | `git archive 9933ec554 pb_training` (nothing after it touches pb_training) → clean `/tmp/deployL5` → scoped `rsync --delete` into `addons/pb_training/`; tree hash equal both sides (dcf747b0…); PO gate on the box 2,113 / 0; one addons path |
+| Upgrade | service stopped 09:24:21 (gone by PID 09:24:23); detached unit `l5-upgrade`, `-u pb_training`, p0clone → payobook → payobook_template → rize: **EXIT=0 ×4** (~16 s each), 0 tracebacks, 0 ERROR, 0 CRITICAL; "4 L5 switch(es) materialised" ×4; "course-request route was laid for N compan(ies)": p0clone 1, payobook 4, payobook_template 1, rize 1 |
+| Assets / start | signal + `/web/assets/%` deleted + `web.assets.version=learning-l5-20261022` ×4; health 200 at 09:25:46 (down ≈1.5 min) |
+| Warm | payobook.com 200, rize.payobook.com 200, p0clone.payobook.com 200 (after the start and again after the seed) |
+| Crons | 26 / 37 / 0 / 69 = snapshot (exact id sets); payobook_template 72/73 re-activated by `-u`, switched back off (LN18) |
+| After | 19.0.1.9.0 **installed** ×4; the five tables ×4; `training_request` route active on every active company (payobook: companies 1, 2, 5, 6 — company 7 "SG Company" is archived and has no training routes at all, like the claim and delay routes); every course version 1 and open to requests; new columns ×4; switches feedback_on=1, followup_on=1, followup_days=30, reread_cap=500 ×4; five new mail templates ×4; 0 ERROR lines since the start |
+| Demo seed (payobook, 7892621aa) | one stop 09:26:33–09:26:59. Outside courses 1 DEMO Pesticide applicator licence (3,000,000 ₫), 2 DEMO Soil science online (free), 3 DEMO First aid at work (1,200,000 ₫); DEMO skill types, course 27 gives "DEMO Field safety · DEMO Basic", the licence "DEMO Spraying · DEMO Good"; DEMO Site Agronomist (147, 4 people) and a new DEMO Line leader (1016, 2 people) require two skills each → Skills board "On average a person has 0 of 2 required skills · 11 gaps across 6 people"; request 1 demo.field → Soil science, **waiting on Ngô Bảo Lâm**; request 2 Trần Minh Khôi → licence, **agreed by the training team**, 3,000,000 ₫ set aside; course **292 "DEMO Safe chemical storage"** (online, on no path) finished by Khôi, Lâm, Kiệt and published as **v2** → 3 re-reads (assignments 536–538); course 27 untouched (version 1); test 177 "DEMO Field safety quiz" draws 5 of 8; course 27 "4.2 · 6 ratings", 2 follow-ups answered (3.5/5); 36 records on the demo register; morning legs rolled back (0 / 0); **11 queued mails cancelled, 0 outgoing since**; 0 ERROR lines |
+| Live walk | pending (Fable, LN16) — the login table above is current |
