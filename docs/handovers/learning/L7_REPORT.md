@@ -2,8 +2,9 @@
 
 Implementer: Opus, 2026-10-23. Spec: `L7_LEARNER_PHONE.md` (LD7, LD8, LD9 decided as recommended; SCORM out). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN66 in §5).
-Status: **AT DEPLOY GATE** — built, committed (WIP commits, not pushed), tested locally (L7 tests, the full Learning + PayAI
-suites, a node suite, a live-data run on a copy of p0clone) and walked in Chrome at phone width. Not deployed.
+Status: **DEPLOYED ×4 DBs 2026-10-23 08:31 AEDT (DONE 21:31 UTC), live walk pending** — built, committed (not pushed), tested
+locally (L7 tests, the full Learning + PayAI suites, a node suite, a live-data run on a copy of p0clone), walked in Chrome at phone width,
+deployed from `f63eeda51` (§11).
 
 ## 1. What ships (committed on 19.1, not pushed)
 
@@ -335,3 +336,19 @@ Closed along the way: Talent's empty tab for training-only roles (L1), certifica
 - **Paid course catalogues** (Go1, Udemy, LinkedIn — LD6) — the outside-course list is our own.
 - **PayAI publishing anything** (LD9) — it drafts; a trainer reads, edits and publishes.
 - **Vietnamese email bodies** (LD10) — English for now.
+
+## 11. Deploy record (GO 2026-10-22 21:09 UTC)
+
+| Step | Result |
+|---|---|
+| Before | pb_training **19.0.1.10.1** (ChatGPT shipped the L6 fixes 20:21–20:29 UTC, L7 excluded), pb_learn 19.0.20.6.1, pb_training_payai absent ×4; notes: ChatGPT DONE 21:09, no open START; lock free; health 200 |
+| Lock / notes | detached unit `l7-lock`; START 21:10 UTC; DONE 21:31 UTC carries **"LEARNING L7 DONE"** (HOLD cleared); lock released |
+| Backups | `/odoo/backups/learning-l7-20261023/` p0clone 25M, payobook 74M, payobook_template 25M, rize 39M; each `pg_restore -l` ~29,100 entries |
+| Stage | `git archive f63eeda51 pb_training pb_learn pb_training_payai` (nothing newer touches them); per-module `rsync -a --delete`; tree hashes live = commit: pb_training `dd0f272a…`, pb_learn `39d24985…`, pb_training_payai `fd6f002b…`; translation gate on the box 2,358 / 0, 50 / 0, 241 / 0; one addons path |
+| Upgrade | service stopped 21:12:31 (gone by PID); detached units, `-i pb_training_payai -u pb_training,pb_learn`: **p0clone EXIT=0**, then **payobook EXIT=0** (~15 min), **payobook_template EXIT=0**, **rize EXIT=0**; 0 tracebacks, 0 ERROR / CRITICAL lines |
+| Jobs | p0clone 26, payobook 37, rize 69 = before sets; **payobook_template: 18 re-activated by the reload (43 44 51 54–58 60 62 63 67 68 71–75) switched back off → 0** (LN18) |
+| Assets | `/web/assets/%` purged, `web.assets.version` 20261022T213019Z ×4; the live frontend bundle carries the phone script |
+| Demo seed (payobook, adds only) | service still stopped; course **293 "DEMO Three-minute safety tips"** (short lessons 1002–1004 EN + VI, quick check 1005), demo.hr put on it as a member; nothing deleted or changed elsewhere; 0 mail queued. As demo.hr: Next for you = path · "DEMO Leading a line — read this first" (VI "Bước tiếp theo trên lộ trình của bạn."), Three minutes today = DEMO Quick check · 2 min (VI "DEMO Kiểm tra nhanh · 2 phút"), streak none yet, badge SS (brand) on "DEMO Site safety walk — certificate", both languages EN ↔ VI on lesson 1002 |
+| Start | 21:30:45; payobook.com, rize.payobook.com, p0clone.payobook.com 200; `/my/training/manifest.webmanifest` start_url `/my/training`, 2 icons 200 on all three; 0 ERROR lines since the start |
+| Verify ×4 | pb_training 19.0.1.11.0, pb_learn 19.0.20.6.2, pb_training_payai 19.0.1.0.0 installed; columns `pb_short`, `pb_draft_source_id`; `draft_course` registered (tier prepare; "Draft a course from the forklift procedure" → `draft_course`, file "forklift procedure"); Help name Help / Trợ giúp; PayAI draft **ready on payobook only** (the others say "PayAI chưa được thiết lập…"); no AI call made |
+| Downtime | 21:12:31–21:30:45 UTC (~18 min; payobook's own upgrade ~15 min) |
