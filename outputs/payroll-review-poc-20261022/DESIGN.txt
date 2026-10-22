@@ -1,0 +1,278 @@
+RIZE — REVIEW PAY DATA
+Design recommendation and interactive prototype · 22 October 2026
+
+DECISION
+Replace Check application data / Check payroll readiness and Review monthly
+adjustments with one primary entry point: Review pay data. It opens a resizable,
+maximizable worksheet for the selected scheme, period and employees. Validation
+runs when the sheet opens and as affected values change. No separate adjustment
+list and no large list of repeated component-code errors in the Pay Run wizard.
+
+Status: design proposal, not a new production implementation. The accompanying
+HTML uses fictional sample data, browser-local demo persistence and simulated
+source dialogs. It does not connect to Rize, update master records, approve real
+requests or calculate payroll. All production behaviors below require application
+implementation and verification. Previously deployed timezone / Pay Run shortcut
+changes remain a separate release; its final Chrome acceptance was blocked by
+browser-control connection failures.
+
+WHAT THE USER SEES
+A light worksheet with a compact violet identity header, clear period / scheme /
+currency, an honest saved-state indicator, pinned employee identity and column
+headers, and a source inspector on the right. Normal values remain quiet. Salary,
+time, allowances, deductions and employer contributions are grouped into tabs.
+The default shows the payroll-relevant inputs; read-only computed results and
+employer contributions remain available. Irrelevant HR profile fields stay out.
+Search employees, filter Needs attention only, and use Next issue to focus the
+exact cell. In a filtered or hidden column, Next issue reveals that column and
+scrolls to the employee. Counts distinguish employees affected from cells affected.
+
+Cells:
+  Red + ! + short text: required value missing / invalid. Example: missing salary.
+  Amber + clock / review label: pending approval, conflicting source or unusual
+    value needing a decision. A real approval or conflict may block computation;
+    an advisory variance should not be presented as mandatory.
+  Purple corner + text: value edited for this run. It is not an error.
+  Neutral dash: no optional amount; eligible blanks use zero under schema rules.
+  Grey/read-only + explanation: formula result or protected / restricted source.
+Colours are always accompanied by icons, labels and accessible descriptions.
+
+Click a cell to inspect its owner and originating value, edit directly where
+permitted, or open the exact relevant source record. Keyboard entry, Tab / Enter,
+rectangular paste, undo and a change-only filter are part of the application
+experience. The POC implements direct entry, column groups, range paste with
+skipped protected cells reported, restore-source, change history and issue filters.
+Production paste must validate the entire patch before applying and present any
+rejections; it must never silently drop, shift or partially apply a range.
+
+The footer offers Save & close and Review & continue. No payroll is posted by
+saving, checking or confirming this screen. Compute remains the next run step.
+
+OPTIONAL BLANKS: DO NOT REQUIRE USERS TO INVENT PAYMENTS
+The current monthly source resolver requires one approved period-input record.
+For a component with no activity, it returns a missing-value issue unless the
+manager supplies a zero certification. Repeating this per person and component
+creates the wall of errors shown in the screenshot.
+
+Recommended rule: for explicitly classified ordinary OPTIONAL numeric monthly
+items, no record means no amount. Show a dash / uses zero and include the exact
+employee-component set in one period-review summary. The manager confirms the
+period once. Do not create thousands of artificial zero records, and do not ask
+users to tick every allowance separately. Preserve the actual raw state (absent)
+plus resolution (reviewed zero) and the schema rule version in audit evidence.
+
+Do not infer optionality from a label or merely because a field accepts zero.
+Migrate only approved component classifications, using application_zero_allowed
+as evidence to review, not blanket authorization for every component. Source
+mapping validity and record completeness are separate concerns.
+
+A blank may become zero only when all are true:
+- Ordinary numeric period adjustment explicitly permits an absent-as-zero policy.
+- There is no approved nonzero amount, pending draft/approval, duplicate, conflict,
+  reserved/consumed record from another run, invalid mapping or failed source fetch.
+- The authorized period review covers this precise population, period, schema
+  version and zero set. A changed population or input set invalidates the review.
+
+Do not zero missing salary, statutory rates, required identifiers or eligibility,
+unknown work calendars, unresolved worked time or leave, or amounts with uncertain
+settlement / tax treatment. Preserve existing policy-settlement restrictions.
+In particular, pending HR/payroll confirmation for Singapore leave cash-outs and
+all-country excess-leave recovery is not bypassed by this screen.
+
+If a pending bonus is actually not payable, open the adjustment and cancel/return
+it through its proper lifecycle. A zero checkbox cannot erase an approval request.
+Current period-input model needs a deliberate cancellation lifecycle for draft
+items; approved/reserved items retain supersession and consumption protections.
+
+EDITING WITHOUT SURPRISES
+The right inspector answers: What is the value? Where did it come from? How is it
+used? What will this edit change?
+
+Default: This payroll run only.
+- Store an exact typed replacement against this preparation draft and component.
+- Retain original value, source owner/record/version, reason, editor and timestamp.
+- Preserve it after closing the sheet or browser. Never write through on typing.
+- Mark it as an override in the grid, final review and resulting payslip evidence.
+- Replacement is explicit: it is not added on top of an already approved amount.
+- An optional item explicitly changed to zero remains an intentional zero, distinct
+  from absent-as-zero. Clearing a cell and restoring the source are separate actions.
+
+For genuinely writable recurring mappings, offer This run + future payrolls.
+- Show the actual logical destination, old/new values and effective date.
+- Ask this choice once in the inspector or a consolidated final change review,
+  not a blocking confirmation dialog after every keystroke.
+- Proposed changes are autosaved, but source records change only on explicit
+  Apply/Submit record updates, with the normal model permission and approval flow.
+- Run-only approval and source-update approval are separate capabilities. Rejecting
+  a future update must not silently turn it into an approved payroll override.
+- Show pending, applied, rejected and returned states in the sheet.
+- Existing payroll history is never overwritten. Do not silently backdate.
+- If the destination supports dated versions, create the effective-dated update.
+  If it does not, do not pretend a future effective date is supported: open the
+  source's proper change process, or clearly offer an immediate change only where
+  authorized. Future-only updates do not change the current run's source value.
+- The current run's explicit correction and later effective source change are
+  recorded independently, so their time scope is unambiguous.
+
+Not every mapping is writable. Paid days is calculated from calendar, contract
+eligibility, leave and optionally approved time. It is not a stored employee field.
+Its inspector shows the calculation and links to calendar/contract/leave records.
+Any permitted run-only time correction requires reason and the configured payroll
+approval. It cannot approve a leave/overtime/timesheet request by itself. Future
+writeback is unavailable for calculated aggregates, formula results, statutory
+rules and one-off period inputs. To establish a new recurring allowance, use the
+compensation process explicitly; do not make a bonus recurring just by saving it.
+
+SOURCE NAVIGATION
+Each cell has a source action with a plain label such as Open contract, Open leave
+request or Open overtime request. Reuse application_source_record_action with
+server-validated scheme/component/employee/period, never a client-supplied arbitrary
+model, field or record ID. If several records supply the value, open their filtered
+list; if none exist, show a genuine empty state and a permission-aware Create action.
+
+Opening a source keeps the worksheet state, selection and scroll position. After
+returning, refresh only affected values. If the source changed while an override
+exists, show both values and ask Keep run correction / Use updated source. Never
+silently overwrite either. Shared calendar edits must use their normal process;
+changing one employee's payroll cell must not rewrite a calendar used by others.
+Source-form changes do not happen automatically on opening a form.
+
+DURABLE DRAFTS: APPLICATION DESIGN
+The current wizard is an AbstractModel. Its review state is held in the client;
+prepare_run requires a successful preflight before creating the payroll run.
+Immutable hr.payroll.application.snapshot rows are created by validated computation.
+A new preparation model is therefore needed; a browser-only cache is insufficient.
+
+Proposed models (technical names kept out of the user interface):
+  pb.payrun.preparation
+    company, scheme/version, period, run type / slot, explicit employee population,
+    currency, source mode, base source fingerprint, revision, state, owner/team,
+    last_saved_at, linked run, review/approval references and zero-policy coverage.
+  pb.payrun.preparation.value
+    preparation, employee, component, exact type/unit/value, original source value,
+    provenance, source version, action (replace/restore), scope, effective date,
+    reason, approval state and linked proposed record change.
+  pb.payrun.preparation.event
+    append-only edit/review/apply/rebase history, actor, time, before/after,
+    mutation identifier, draft revision and approval or source-transaction link.
+
+Use durable models, not transient records subject to automatic vacuum. Keep
+company and role access on drafts, cell values and history. Do not expose salary
+through a globally readable JSON blob or unconditional sudo. Never trust a
+component's proposed owner, current value or writable status sent by the client.
+Use existing source catalogues and authorized record adapters.
+
+Opening the workspace creates or resumes a preparation for that run intent.
+If several drafts legitimately exist for the same month (regular / off-cycle /
+different populations), list them clearly; do not merge them by month alone.
+Resume from Pay Run with a server draft ID. Do not depend on user-local storage.
+
+Autosave valid cell edits in short batches (about 500 ms after editing, also on
+blur), using mutation IDs and optimistic revisions. Show Saving, Saved at [time],
+Not saved / reconnect, and Conflict distinctly. A closed browser can recover only
+server-acknowledged edits; never promise recovery of unsent keystrokes. Pending
+network operations block review/compute until acknowledged. Retrying a patch must
+not create duplicate adjustments or source updates. Concurrent edits to the same
+cell show a comparison; unrelated edits can be merged with updated revisions.
+
+Pipeline:
+  authorized source resolution -> proposed overrides -> reviewed optional zeros
+  -> typed validation/approval -> sealed input revision -> payroll calculation.
+Source mapping/ownership errors and unapproved source records cannot be hidden by
+an override. Reuse business validators rather than reimplementing payroll logic in
+JavaScript. Preserve exact decimal values and precision; validate money vs hours
+vs days and currency. Identity and input types are locked. Formula results are
+read only. Derived estimates must be labelled and must use the same server rules
+before being represented as payroll results.
+
+On Review & continue, re-fetch fingerprints and approvals, validate population,
+config and currency, and seal the acknowledged draft revision in one transaction.
+Atomic, idempotent creation links one preparation revision to its intended run.
+Reserve applicable period inputs exactly once; respect current unique approved
+input index and reserved/consumed protections. No modification of posted payroll.
+Recomputation creates a new snapshot while retaining earlier evidence. Audit links
+allow an auditor to follow source -> override -> review -> computed payslip.
+Approved run-only overrides must not leak into another period or another run slot.
+
+Reuse pb.records.apply / records_approval where it supports the owning model;
+it already has change proposals, before-value comparison and approvals. Extend
+with explicit domain adapters for supported targets instead of arbitrary dynamic
+field writes. Contract changes must preserve effective history. The runtime
+module dependency must be explicit if this adapter is required; otherwise disable
+future-writeback gracefully when that feature is not installed. Each tenant uses
+its existing permissions and approval policies, with no new blanket write rights.
+
+SCOPE OF IMPLEMENTATION
+1. Durable preparation model, audit events, tenant access and typed patch API.
+2. Explicit per-component empty behavior, override/writeback capabilities and
+   human-facing source metadata. Review the four Rize schemes' optional items.
+3. Worksheet UI, maximization, cell status, issue navigation, source drawer,
+   keyboard/paste, bulk review and resume flow.
+4. Revision sealing, run-only overrides and snapshot/consumption integration.
+5. Controlled future update proposals through effective-dated owner adapters.
+6. Remove Review monthly adjustments and old error/zero checkbox panels from
+   Pay Run. Repair the period-input empty-state layout independently because its
+   source list remains accessible through source navigation and administration.
+7. Deploy generic functionality to installed modules on all four active databases;
+   only Rize receives its reviewed scheme configuration. Respect deployment log,
+   lock, backups, clone rehearsal, concurrent releases and retired ABM exclusions.
+
+The screenshot's overlapping empty-state paragraph is a presentation defect,
+not a message the user should need to interpret. The new default workspace avoids
+that list view, but the underlying list's empty-state layout must also be fixed.
+
+IMPLEMENTATION ACCEPTANCE
+- 50 employees with 30 optional blank items produce one comprehensible period
+  review, not 1,500 blocking errors. No zero records are manufactured.
+- Missing salary stays red. Pending overtime stays amber and blocks until approved.
+- Cell labels are business names; technical codes are available only in details.
+- Edit a bonus, close the browser after Saved, reopen and recover exact edits.
+- Offline / failed saves are visible and prevent accidental computation.
+- Two users editing one cell produce a conflict, not last-writer data loss.
+- Run-only correction leaves the owning record unchanged and is auditable on slip.
+- Future change follows existing approval and effective-date rules, preserving past
+  payroll. Repeated apply requests cannot write twice.
+- Partial/invalid paste, country-specific numbers, zero/blank, negative deductions,
+  dates and large values have explicit validation. No client-only financial maths.
+- Source edits refresh relevant cells and expose stale overrides for review.
+- Paid-days overrides cannot change calendars or bypass approval / settlement rules.
+- Employer contributions and payslip-only items remain visible where relevant.
+- Cross-company access, arbitrary model/field injection and approvals are enforced
+  server-side. Other tenants have independent drafts and configuration.
+- Chrome end-to-end checks cover reopening drafts, full-screen resizing, keyboard
+  navigation, highlighted-cell resolution, source return and final review.
+
+MARKET REFERENCE AND RIZE ADAPTATION
+Workday documents recalculating pay as pay-impacting events arrive and a separate
+final audit. This supports immediate feedback during review. Rize should validate
+and refresh affected cells, while keeping compute/posting a deliberate next step.
+https://doc.workday.com/admin-guide/en-us/payroll/set-up-payroll-processing/mnd1564095975340.html
+
+Oracle HRMS documents recurring versus nonrecurring entries, effective-dated
+history, batch entry, and cases that must be changed in their source application.
+This supports separate run-only and dated recurring changes. This reference is
+Oracle E-Business Suite documentation; it is not evidence of an identical current
+Fusion interface or of our proposed zero-default policy.
+https://docs.oracle.com/cd/E26401_01/doc.122/e59055/T1250T439647.htm
+
+SAP Payroll Control Center documents alerts with source-maintenance navigation
+and revalidation after correction. Rize adapts that into highlighted worksheet
+cells and an inspector, rather than forcing users through technical alert lists.
+https://help.sap.com/docs/HR_RENEWAL_SPV/dc99051d9ca64808bb3a8d352daf9d7c/5b696c666fc243e7a9b4f285aba865e7.html
+
+The worksheet layout, per-cell edit scope, consolidated optional-zero review and
+draft design are recommendations customized for Rize, not claims that these
+vendors provide this exact interface or behavior.
+
+POC WALKTHROUGH
+Open payroll-review.html in a browser. It opens the review popup automatically.
+1. Click Next issue: enter a salary for the highlighted sample employee.
+2. Click a phone allowance and type a new amount. The inspector offers run-only
+   or future change proposal, with an effective date.
+3. Click the amber overtime cell, Open source, and Simulate approval.
+4. Leave unused bonus/deduction cells empty; they remain neutral.
+5. Review & continue: inspect changes and confirm the period once.
+6. Save & close, reopen, or refresh the page: the demo restores local saved edits.
+Use Reset demo to remove only this prototype's fictional local edits.
+The prototype does not implement production approvals, server persistence,
+source writes, actual payroll computations or cross-user conflict resolution.
