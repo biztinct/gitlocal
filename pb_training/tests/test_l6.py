@@ -156,7 +156,13 @@ class TestT1Hours(L6Case):
         self.assertEqual(hours['by_kind']['toolbox'], 0.25)
         self.assertEqual(sum(r['hours'] for r in hours['by_department']),
                          hours['total'])
-        self.assertIn('5.25 hours of training', hours['headline'])
+        # Sentences round: one decimal (half up), whole hours from 10.
+        self.assertIn('5.3 hours of training', hours['headline'])
+        from odoo.addons.pb_training.models.numbers_l6 import \
+            _headline_hours
+        self.assertEqual([_headline_hours(v) for v in (22.05, 9.96, 1.0,
+                                                        0.25, 10.4)],
+                         [22, 10, 1, 0.3, 10])
 
     def test_t1_period_and_kind_filters(self):
         self._world()

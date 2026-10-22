@@ -2,7 +2,7 @@
 
 Implementer: Opus, 2026-10-22. Spec: `L6_NUMBERS_OVERVIEW.md` (incl. the "Carried in from L3–L5 walks" block). Ledger:
 `LEARNING_LEDGER.md` (candidate rows from LN59 in §5).
-Status: **DEPLOYED ×4 DBs — live walk pending.** The upgrade itself was **ChatGPT's combined release 15:51–15:59 UTC** (`a07273276`, it carried this phase despite the HOLD); I verified it and seeded the demo under my own START/DONE (17:03–17:06 UTC, §10). Not pushed.
+Status: **COMPLETE** — LIVE ×4 DBs; live walk by Fable passed (§11). The upgrade itself was **ChatGPT's combined release 15:51–15:59 UTC** (`a07273276`, it carried this phase despite the HOLD); I verified it and seeded the demo under my own START/DONE (17:03–17:06 UTC, §10). Not pushed.
 
 > **2026-10-22 11:14–11:24 UTC:** ChatGPT's combined release `ed47fb8a0` carried committed L6, upgraded p0clone, failed three tests there and restored p0clone from its backup (live is back on L5 everywhere). The coordinator put L6 on HOLD. §3b says what each failure was and what changed; §8 is the refreshed plan.
 
@@ -220,6 +220,13 @@ pack stay English (LD10). "Report pack" = **Báo cáo định kỳ**, "Send me a
 6. **Practical sign-off is still not built** (your earlier decision), so the Overview counts "sessions to close" where the plan said
    "sign-offs waiting".
 7. **A small display fault from L5 is fixed:** some percentages showed as "80%%" on the course drawer, outside courses and Tests.
+8. **ChatGPT shipped L6 itself, despite the HOLD.** Its 11:14 release carried the phase before it was ready, failed three tests on
+   p0clone and rolled back; its 15:51 release carried the fixed version (`a07273276`) and that is what is live. I only checked it and
+   added the demo data. Nothing was lost, but the HOLD note did not stop a combined release — say if releases that include Learning
+   should wait for the Learning DONE line.
+9. **The test-results page was never open to the wrong people.** The 11:14 failure looked like it, but it was the live server not
+   letting test pages reach the database; the page itself sends anybody outside the training team to their own training page (checked
+   on all four databases).
 
 ## 8. Deploy plan (refreshed at the second gate) — normal tier
 
@@ -324,3 +331,31 @@ link lands on Country packs; a session page shows its cost; Help › the Learnin
 **Found in the seed read-out, fixed, not deployed:** the Hours sentence said "1 hours each on average" when the average is exactly
 one. Now "1 hour each on average" (EN + VI). pb_training **19.0.1.10.1**, committed — rides the next pb_training upgrade (whoever
 ships next from HEAD). L6 tests T1 / T10 rerun green.
+
+**After the walk (Fable's nit):** hours in a sentence now round like a person says them — one decimal, half up, and whole hours from
+10 (the live headline read "22.05 giờ"; it will read "22 giờ"). Same rule EN and VI; tables and sheets keep two decimals. Ships with
+**19.0.1.10.1** (with the "1 hour each" fix), committed, not deployed — rides the next pb_training upgrade. T1 / T8 / T10 green.
+
+## 11. Live walk (Fable, payobook.com, 2026-10-23) — PASSED
+
+Admin tab (head of training, company 5) plus the §8 server-side calls as the named users (`tz` stripped, each rolled back).
+
+- **Screens:** Numbers sections Week by week · By department · By course · Why they were set · By path · Hours · Sessions · Cost ·
+  Required training · Did it work? · Skills · Country reports · Certificates · What people claimed back. Overview "35 people are on 7
+  courses. 5 are past their date. 3 people are late on a path. 4520 people are missing required training.", amber chips in order 5 /
+  3 / 4520 / 2 / 1, grey "Nothing waiting on" Claims to agree · More time requests · Sessions to close · Follow-ups. Help opens.
+  Console clean.
+- **Server-side:** demo.hr `settings_get` allowed / can_write False, `settings_set` → AccessError "Chỉ trưởng đào tạo mới thay đổi
+  được cài đặt Học tập."; admin `settings_set` manager_days 3 → "…cho quản lý sau 3 ngày trễ…"; pack preview "Training — September
+  2026" to training.pack@example.com; `send_test` → exactly one mail to demo.hr@example.com, one attachment, subject "(test)"; Numbers
+  hours "22.05 giờ đào tạo, của 22 người · trung bình 1 giờ mỗi người." (rounding nit above), cost "Đã chi 11.800.000 ₫ … đã dùng 0%
+  ngân sách…", `by_country` present, 6 ratings; Overview waiting late → paths → required → certs → course_requests, calm False;
+  lam.ngo TEAM training overdue 3, expiring 1, waiting 1, no amounts; learning record of employee 21182 lists the session "Có mặt" and
+  "… · đã dự 1 buổi học"; record PDF `%PDF`, 297,865 bytes, one record.
+
+## 12. Commits (on 19.1, not pushed)
+
+- `c52835660` wip (installs) · `c71f23071` walk fixes · `22f74c1e8` claims test isolation · `f9530bb03` docs (first gate)
+- `a07273276` fix — the three release blockers (**the live tree**, shipped by ChatGPT's 15:51 release)
+- `53a6eb53b` docs (second gate) · `0cd3d3d6c` "1 hour each" (19.0.1.10.1) + deploy record
+- closing commit — hours rounding in sentences, this walk section, ledger rows LN59–LN65, phase log

@@ -77,6 +77,16 @@ def one_currency(sums):
     return used[0] if used else None
 
 
+def _headline_hours(value):
+    """Hours as a sentence says them: one decimal, or whole hours from 10
+    up, rounded half up ("22.05" read like a ledger — live walk, L6)."""
+    from decimal import ROUND_HALF_UP, Decimal
+    value = Decimal(str(float(value or 0.0)))
+    step = Decimal('1') if value >= 10 else Decimal('0.1')
+    value = value.quantize(step, rounding=ROUND_HALF_UP)
+    return int(value) if value == value.to_integral_value() else float(value)
+
+
 def _hours_num(value):
     value = round(float(value or 0.0), 2)
     return int(value) if value == int(value) else value
@@ -280,17 +290,17 @@ class PbTrainingAnalyticsL6(models.AbstractModel):
                          "and %(to)s.", **{'from': start_s, 'to': end_s})
         elif len(rows) == 1:
             headline = _("%(hours)s hours of training, by 1 person.",
-                         hours=_hours_num(total))
-        elif _hours_num(total / len(rows)) == 1:
+                         hours=_headline_hours(total))
+        elif _headline_hours(total / len(rows)) == 1:
             # "1 hours each" read wrong (found in the live seed read-out).
             headline = _("%(hours)s hours of training, by %(n)s people · "
                          "1 hour each on average.",
-                         hours=_hours_num(total), n=len(rows))
+                         hours=_headline_hours(total), n=len(rows))
         else:
             headline = _("%(hours)s hours of training, by %(n)s people · "
                          "%(avg)s hours each on average.",
-                         hours=_hours_num(total), n=len(rows),
-                         avg=_hours_num(total / len(rows)))
+                         hours=_headline_hours(total), n=len(rows),
+                         avg=_headline_hours(total / len(rows)))
         return {
             'total': _hours_num(total),
             'people': len(rows),
