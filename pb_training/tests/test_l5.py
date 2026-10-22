@@ -605,17 +605,18 @@ class TestT9ResultsGate(HttpCase):
             'title': 'DEMO L5 pulse', 'survey_type': 'survey'})
         self.assertTrue(surveyor and trainer)
         self.authenticate('demo.l5.gate.surveyor', 'demo.l5.gate.surveyor')
-        res = self.url_open('/survey/results/%s' % test.id,
-                            allow_redirects=False)
-        self.assertIn(res.status_code, (302, 303))
-        self.assertIn('/my/training', res.headers.get('Location', ''))
-        res = self.url_open('/survey/results/%s' % pulse.id,
-                            allow_redirects=False)
-        self.assertEqual(res.status_code, 200,
-                         'an ordinary survey is not touched')
+        # Followed to the end: the website may add its own language hop
+        # (a 301) in front of ours, so the test reads where it LANDS.
+        res = self.url_open('/survey/results/%s' % test.id)
+        self.assertIn('/my/training', res.url)
+        self.assertNotIn('/survey/results', res.url)
+        res = self.url_open('/survey/results/%s' % pulse.id)
+        self.assertIn('/survey/results', res.url,
+                      'an ordinary survey is not touched')
+        self.assertEqual(res.status_code, 200)
         self.authenticate('demo.l5.gate.trainer', 'demo.l5.gate.trainer')
-        res = self.url_open('/survey/results/%s' % test.id,
-                            allow_redirects=False)
+        res = self.url_open('/survey/results/%s' % test.id)
+        self.assertIn('/survey/results', res.url)
         self.assertEqual(res.status_code, 200)
 
 

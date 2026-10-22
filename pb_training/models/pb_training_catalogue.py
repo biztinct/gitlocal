@@ -378,7 +378,11 @@ class PbTrainingCatalogue(models.AbstractModel):
         for rec in shown:
             data = rec._payload()
             data['waiting_on'] = self._waiting_on(rec)
-            data['can_decide'] = rec.state == 'submitted'
+            # Agree / Turn down only for the person whose seat is live (or,
+            # with no route published, the training team) — anybody else
+            # would only be told "this step is not waiting for you".
+            data['can_decide'] = rec.state == 'submitted' and (
+                bool(rec._chain_my_seat()) or not rec._chain_open_request())
             data['can_mark_taken'] = rec.state == 'approved' \
                 and rec.kind != 'ours'
             out.append(data)
