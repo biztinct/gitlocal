@@ -1,0 +1,67 @@
+Payroll timezones and Pay Run cleanup — 22 October 2026 (Australia/Sydney)
+
+Status: code and configuration deployed; final Chrome acceptance remains pending
+because browser control timed out on three attempts after the owner resumed work.
+Do not treat the implementation as fully complete until that check finishes.
+
+Commits
+6989ea818 — Default employee work timezones from payroll country and location.
+cba590997 — Label timezone controls; remove Payroll sources from Pay Run.
+163f75c60 — Remove the integration master-record sync card and unused handler
+from Pay Run. Existing integration-screen Update records now remains available.
+
+Targets and coordination
+Payobook19v2: p0clone, payobook, payobook_template, rize.
+Only /odoo/odoo-server/addons was used, with per-module copies and the shared
+flock. START/DONE entries are recorded in /opt/deploy-notes.md.
+Latest committed combined content was verified across 153 custom module trees,
+with the owner's explicit exception: Learning L4 WIP 029e4c178 is held;
+pb_training remains the live 19.0.1.7.0 tree. ABM was untouched.
+Installed versions verified on all four databases. Active cron counts preserved:
+p0clone 26; payobook 37; payobook_template 0; rize 69. All three live hosts warmed
+with HTTP 200. Main timezone release downtime 393 seconds; two UI releases zero.
+
+Timezone behavior
+Explicit work-location timezone takes priority, then Payroll Country, then the
+work-location address country. Nationality is not used. Indonesia falls back to
+Asia/Jakarta; Vietnam Asia/Ho_Chi_Minh; India Asia/Kolkata; Singapore Asia/Singapore.
+Explicit employee timezone and custom calendar choices are preserved on creation.
+New contracts inherit the employee calendar when no calendar is supplied.
+Rize correction: 225 employees and 225 contracts (VN70, IN27, SG2, ID126).
+70 missing Vietnam Payroll Country values filled from exact scheme membership.
+Country-specific calendar copies preserve the shared original calendar, eight
+hours per day and forty per week. Contract dates, wages and leave facts unchanged.
+The correction was rehearsed with rollback, then applied and repeated idempotently.
+A morning four-hour interval is 0.5 day; afternoon four hours is another 0.5 day.
+Nguyen Thanh Phong's August two-day result remains driven by contract end 4 August;
+the contradictory source workbook needs clarification before changing those dates.
+
+Pay Run behavior
+Payroll sources shortcut removed. Master-record integration sync removed from Pay
+Run; it remains on the integration screen with its existing confirmation and
+writeback configuration. It was not executed during this verification.
+Check payroll readiness validates application data without creating payroll.
+Review monthly adjustments opens period-scoped adjustment records.
+Excel retains Update Payobook and This run only choices and its import validation;
+there is no separate integration-sync button to press when uploading Excel.
+
+Validation
+52 local tests: zero failures/errors. 52 deployed p0clone tests: zero failures/errors.
+Employee merged-view validation passed locally and on all four deployed databases.
+Final JavaScript syntax, XML parse and git diff whitespace checks passed.
+Read-only Rize smoke check after final deployment passed: Indonesia onchange ->
+Asia/Jakarta; labelled employee timezone group; integration refresh action exists;
+both Pay Run shortcuts absent; readiness/adjustments and Excel choices retained.
+All smoke-check database changes rolled back (employee was virtual, not saved).
+Chrome before pause verified Phong's corrected calendar and timezone, and the
+new labelled Work timezone / Payroll Country / Timezone / Timezone source group.
+Final Chrome checks still needed: Indonesia selection on an unsaved new employee,
+Pay Run Pay data screen without both removed controls, and navigation to the
+integration-screen action. Do not execute sync or compute payroll for this check.
+No test PNGs or screenshot files were generated or retained by this task.
+
+Private release evidence
+/tmp/payroll-work-timezone-6989ea818
+/tmp/payroll-ui-cleanup-cba590997
+/tmp/payroll-sync-separation-163f75c60
+Permanent Rize backup: /odoo/archives/rize-payroll-work-timezone-20261021T211308Z
