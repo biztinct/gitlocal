@@ -219,12 +219,12 @@ my HOLD (17:12 UTC), ChatGPT's last release DONE 17:08 (`dec04c7b2` = HEAD's par
    **stop and report** (do not restore it from the dump on my own); p0clone, payobook_template and rize may be restored from their dumps.
 1. Read `/opt/deploy-notes.md` right before START (LN58) — no open START, HTTP pid up. Lock (LN25):
    `sudo systemd-run --collect --unit=l7-lock /usr/bin/flock /tmp/payobook-studio-deploy.lock /bin/sleep 10800`. START line
-   `… | Claude (LEARNING L7) | START | pb_training,pb_learn,pb_training_payai(new) | p0clone,payobook,payobook_template,rize | ~8 min, service stopped during -u | learner phone, Next for you, badges, PayAI drafts; git <commit>; backups first; p0clone first`.
+   `… | Claude (LEARNING L7) | START | pb_training,pb_learn,pb_training_payai(new) | p0clone,payobook,payobook_template,rize | ~8 min, service stopped during -u | learner phone, Next for you, badges, PayAI drafts; git f63eeda51; backups first; p0clone first`.
    Announce to peer sessions.
 2. Versions before = 19.0.1.10.0 / 19.0.20.6.1 ×4, pb_training_payai absent (nobody shipped L7 — LN15/LN64).
 3. Backups (LN25): `sudo sh -c "sudo -u postgres pg_dump -Fc <db> > /odoo/backups/learning-l7-20261023/<db>.dump"` ×4, each `pg_restore -l`.
-4. Stage: `sudo rm -rf /tmp/deployL7 && mkdir -p /tmp/deployL7`; `git archive <commit> pb_training pb_learn pb_training_payai`
-   (check `git log <commit>..HEAD -- pb_training pb_learn pb_training_payai` is empty, LN44; **do not ship pb_payai_actions** — unchanged);
+4. Stage: `sudo rm -rf /tmp/deployL7 && mkdir -p /tmp/deployL7`; `git archive f63eeda51 pb_training pb_learn pb_training_payai`
+   (check `git log f63eeda51..HEAD -- pb_training pb_learn pb_training_payai` is empty, LN44; **do not ship pb_payai_actions** — unchanged);
    upload; per module `sudo rsync -a --delete /tmp/deployL7/<m>/ /odoo/odoo-server/addons/<m>/` (never the addons root; the new module's
    directory is created by rsync); tree hashes = local (skip `__pycache__`, `*.pyc`, `.DS_Store`); PO gate on the box (pb_training 2,358 / 0,
    pb_training_payai 50 / 0, pb_learn unchanged); one addons path.
