@@ -565,7 +565,7 @@ class TestT10Words(TrainingCase):
         for msgid in ('Next for you', 'Three minutes today',
                       'Show both languages', 'Show one language',
                       'Saved on your phone. It will send when you are back online.',
-                      'Sent while you were offline:', 'Open the file',
+                      'Sent while you were offline:', '<span>Open the file</span>',
                       '%s in a row, on time', 'Missing Vietnamese',
                       'Nothing to do right now.', 'Required for your job.'):
             m = re.search(r'msgid "%s"\nmsgstr "([^"]+)"' % re.escape(msgid), po)
