@@ -314,6 +314,58 @@
               </t>
             </div>
 
+            <!-- ==================== LEARNING L5: ratings, did it work, requests, skills ==================== -->
+            <div class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('star',16)"/> Ratings</h3>
+                <p t-esc="ratingsWords"/>
+              </div>
+              <t t-foreach="(state.ratings and state.ratings.rows) || []" t-as="rt" t-key="rt_index">
+                <div class="pbtnm-row">
+                  <div class="pbtnm-row-name"><t t-esc="rt.name"/><t t-if="rt.outside"> · <span class="pbtnm-dim">Outside</span></t></div>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ (rt.avg || 0) * 20 }}%;"/></div>
+                  <div class="pbtnm-row-n" t-esc="rt.avg or '—'"/>
+                  <div class="pbtnm-row-sub" t-esc="ratingRowWords(rt)"/>
+                </div>
+              </t>
+            </div>
+
+            <div class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('trendingUp',16)"/> Did it work?</h3>
+                <p t-esc="workWords"/>
+              </div>
+            </div>
+
+            <div class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('send',16)"/> Requests and spend</h3>
+                <p t-esc="requestsWords"/>
+              </div>
+              <t t-foreach="(state.courseRequests and state.courseRequests.by_state) || []" t-as="rs" t-key="rs.key">
+                <div class="pbtnm-row">
+                  <div class="pbtnm-row-name" t-esc="rs.label"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ share2(state.courseRequests.by_state, rs.n) }}%;"/></div>
+                  <div class="pbtnm-row-n" t-esc="rs.n"/>
+                </div>
+              </t>
+            </div>
+
+            <div t-if="state.skills and (state.skills.rows || []).length" class="pbim-panel pbtnm-table pbtnm-certs">
+              <div class="pbtnm-table-head">
+                <h3><t t-out="ic('sparkles',16)"/> Skills</h3>
+                <p t-esc="state.skills.headline"/>
+              </div>
+              <t t-foreach="state.skills.rows || []" t-as="sr" t-key="sr.skill_id">
+                <div class="pbtnm-row" t-att-class="{ bad: sr.coverage_pct &lt; 50 }">
+                  <div class="pbtnm-row-name" t-esc="sr.skill"/>
+                  <div class="pbtnm-bar"><span t-attf-style="width: {{ sr.coverage_pct }}%;"/></div>
+                  <div class="pbtnm-row-n"><t t-esc="sr.coverage_pct"/>%</div>
+                  <div class="pbtnm-row-sub" t-esc="skillRowWords(sr)"/>
+                </div>
+              </t>
+            </div>
+
             <!-- ==================== by certificate (LEARNING L1) ====================
                  Cloned from By course. Today's position, the ten certificates
                  the most people hold; a test certificate counts under its

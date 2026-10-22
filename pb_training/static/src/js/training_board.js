@@ -28,6 +28,9 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { PbSessionsLens } from "@pb_training/js/sessions_lens";
+import { PbOutsideLens } from "@pb_training/js/outside_lens";
+import { PbRequestsLens } from "@pb_training/js/requests_lens";
+import { PbCourseExtras } from "@pb_training/js/course_extras";
 
 /** Fold accents in the browser too, so the picker filters as you type. */
 function fold(text) {
@@ -38,7 +41,9 @@ function fold(text) {
 export class PbTrainingBoard extends Component {
     static template = "pb_training.PbTrainingBoard";
     // LEARNING L4: the Sessions inner tab of Courses is its own component.
-    static components = { PbSessionsLens };
+    // LEARNING L5: Courses › Outside, Claims › Requests and the course
+    // drawer's version / ratings / skills sections are components of their own.
+    static components = { PbSessionsLens, PbOutsideLens, PbRequestsLens, PbCourseExtras };
     /**
      * LEARNING L0. A Learning lens says which inner tab it opens on
      * (`startTab`) and which inner tabs it owns (`tabs`); the board draws
@@ -415,7 +420,7 @@ export class PbTrainingBoard extends Component {
             if (!this.state.cLoaded) { await this.loadClaims(); }
             return;
         }
-        if (tab === "sessions") { return; }
+        if (tab === "sessions" || tab === "outside" || tab === "course_requests") { return; }
         if (tab !== "courses" && !this.state.aLoaded) {
             await this.loadAssignments();
         }

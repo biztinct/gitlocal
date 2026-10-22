@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       My learning's LEARNING L5 blocks: feedback asks, Ask to take a
+       course, My requests, My skills. Uses My learning's own section look
+       (`.pbml-panel`, `.pbml-sec-h`, `.pbml-chip`) plus `.pbcl-*`; the drawer
+       borrows the Sessions drawer (`.pbss-*` with `.pbss-vars`). `=` rules
+       (R35); text nodes on one line (LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbMyRequestsBlock">
+    <div class="pbcl-mine">
+
+      <!-- ============ tell us how it went ============ -->
+      <section t-if="state.feedback.length" class="pbml-panel pbcl-fbask">
+        <div class="pbml-sec-h"><h3><t t-out="ic('star',16)"/> Tell us how it went</h3></div>
+        <div class="pbcl-fbask-list">
+          <button t-foreach="state.feedback" t-as="fb" t-key="fb.id" class="pbim-btn ghost" t-on-click="() => this.go(fb.url)"><t t-esc="feedbackWords(fb)"/> <t t-out="ic('arrow',13)"/></button>
+        </div>
+      </section>
+
+      <!-- ============ my requests ============ -->
+      <section t-if="hasEmployee" class="pbml-panel">
+        <div class="pbml-sec-h">
+          <h3>My requests<span t-if="state.mine.waiting" class="pbml-chip is-warn pbcl-gapl"><t t-esc="state.mine.waiting"/></span></h3>
+          <button class="pbim-btn primary" t-on-click="openAsk"><t t-out="ic('send',14)"/> Ask to take a course</button>
+        </div>
+        <p t-if="!rows.length" class="pbml-calm">Want to learn something? Ask for one of our courses, one from the outside list, or a course you found. Your manager decides, and you get an email either way.</p>
+        <div t-else="" class="pbcl-myreqs">
+          <div t-foreach="rows" t-as="req" t-key="req.id" class="pbcl-myreq">
+            <div class="pbcl-myreq-id">
+              <b t-esc="req.course"/>
+              <span class="pbml-dim"><t t-esc="req.kind_word"/><t t-if="req.provider"> · <t t-esc="req.provider"/></t> · <t t-esc="req.amount_words"/></span>
+              <span t-if="req.state === 'refused' and req.refuse_note" class="pbcl-refused"><t t-out="ic('messageSquare',12)"/> <t t-esc="req.refuse_note"/></span>
+            </div>
+            <span class="pbss-state" t-att-class="stateClass(req)" t-esc="req.state_word"/>
+            <div class="pbcl-myreq-act">
+              <button t-if="req.can_claim" class="pbim-btn primary" t-on-click="() => this.go('/my/training/claims?request=' + req.id)"><t t-out="ic('receipt',14)"/> Claim this course back</button>
+              <button t-if="req.channel_id and (req.state === 'approved' or req.state === 'taken')" class="pbim-btn ghost" t-on-click="() => this.go('/my/training/' + req.channel_id)">Open the course</button>
+              <button t-if="req.can_cancel" class="pbim-btn ghost" t-on-click="() => this.cancel(req)">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ my skills ============ -->
+      <section t-if="state.skills and state.skills.has_employee and (skills.skills.length or skills.required.length)" class="pbml-panel">
+        <div class="pbml-sec-h"><h3>My skills</h3><span t-if="skills.job" class="pbml-dim" t-esc="skills.job"/></div>
+        <div class="pbcl-chips">
+          <span t-foreach="skills.skills" t-as="sk" t-key="sk_index" class="pbss-state is-ok pbcl-sk"><t t-out="ic('sparkles',12)"/> <t t-esc="sk.skill"/> · <t t-esc="sk.level"/></span>
+        </div>
+        <t t-if="gaps.length">
+          <p class="pbml-dim pbcl-gap-h">Your job also needs:</p>
+          <div class="pbcl-chips">
+            <span t-foreach="gaps" t-as="gp" t-key="gp.skill_id" class="pbss-state pbcl-sk" t-att-class="gp.state === 'missing' ? 'is-bad' : 'is-warn'"><t t-esc="gp.skill"/> · <t t-esc="gp.level"/><t t-if="gp.courses.length"> — <t t-esc="gp.courses[0].name"/></t></span>
+          </div>
+        </t>
+      </section>
+
+      <!-- ============ ask to take a course ============ -->
+      <div t-if="state.drawer" class="pbim-modal-scrim pbss-scrim" t-on-click="closeAsk">
+        <div class="pbss-drawer pbss-vars" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Ask to take a course</div>
+              <h2 class="pbss-drawer-title">What would you like to learn?</h2>
+              <p t-if="state.options" class="pbss-note" t-esc="allowanceWords"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeAsk" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div t-if="!state.options" class="pbss-drawer-body"><div class="pbss-skel-line"/></div>
+          <div t-else="" class="pbss-drawer-body">
+            <div class="pbss-f pbss-f--wide">
+              <div class="pbss-modes" role="group">
+                <button t-if="state.options.ours.length" class="pbss-filter" t-att-class="{ 'is-on': state.form.kind === 'ours' }" t-on-click="() => this.setKind('ours')">One of our courses</button>
+                <button t-if="state.options.outside.length" class="pbss-filter" t-att-class="{ 'is-on': state.form.kind === 'outside' }" t-on-click="() => this.setKind('outside')">An outside course</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.form.kind === 'other' }" t-on-click="() => this.setKind('other')">Something else</button>
+              </div>
+            </div>
+            <label t-if="state.form.kind === 'ours'" class="pbss-f pbss-f--wide"><span class="pbss-f-l">Course</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setField('channel_id', ev, 'num')">
+                <option value="0">Pick one</option>
+                <t t-foreach="state.options.ours" t-as="crs" t-key="crs.id"><option t-att-value="crs.id"><t t-esc="crs.name"/><t t-if="crs.duration"> · <t t-esc="crs.duration"/></t></option></t>
+              </select>
+            </label>
+            <div t-if="state.form.kind === 'outside'" class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Outside course</span>
+              <div class="pbcl-outpick">
+                <button t-foreach="state.options.outside" t-as="ocs" t-key="ocs.id" class="pbcl-outpick-row" t-att-class="{ 'is-on': state.form.outside_course_id === ocs.id }" t-on-click="() => this.pickOutside(ocs.id)">
+                  <span class="pbcl-outpick-main"><b t-esc="ocs.name"/><span class="pbss-dim"><t t-esc="ocs.provider"/><t t-if="ocs.provider"> · </t><t t-esc="ocs.kind_word"/><t t-if="ocs.hours_words"> · <t t-esc="ocs.hours_words"/></t></span></span>
+                  <span class="pbcl-outpick-cost" t-esc="ocs.cost_words"/>
+                </button>
+              </div>
+            </div>
+            <t t-if="state.form.kind === 'other'">
+              <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">What the course is called</span><input class="pbss-in" type="text" t-att-value="state.form.course_name" t-on-input="(ev) => this.setField('course_name', ev)"/></label>
+              <label class="pbss-f"><span class="pbss-f-l">Who runs it</span><input class="pbss-in" type="text" t-att-value="state.form.provider" t-on-input="(ev) => this.setField('provider', ev)"/></label>
+              <label class="pbss-f"><span class="pbss-f-l">What it costs (0 if free)</span><input class="pbss-in" type="number" min="0" t-att-value="state.form.amount" t-on-change="(ev) => this.setField('amount', ev, 'num')"/></label>
+              <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Link</span><input class="pbss-in" type="text" placeholder="https://" t-att-value="state.form.url" t-on-input="(ev) => this.setField('url', ev)"/></label>
+            </t>
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">When would you take it</span><input class="pbss-in" type="text" placeholder="For example: next month, after the harvest" t-att-value="state.form.when_words" t-on-input="(ev) => this.setField('when_words', ev)"/></label>
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Why — what it will help you do</span><textarea class="pbss-in" rows="3" t-att-value="state.form.why" t-on-input="(ev) => this.setField('why', ev)"/></label>
+            <p class="pbss-note pbss-f--wide" t-esc="whoDecides"/>
+          </div>
+          <div class="pbss-drawer-foot">
+            <span t-if="askHint" class="pbss-hint" t-esc="askHint"/>
+            <button class="pbim-btn ghost" t-on-click="closeAsk">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!!askHint or state.busy" t-on-click="send"><t t-out="ic('send',15)"/> Ask</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

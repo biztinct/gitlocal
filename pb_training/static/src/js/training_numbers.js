@@ -64,6 +64,11 @@ export class PbTrainingNumbers extends Component {
             // during an interrupted read never loops over undefined.
             byPath: [],
             sessions: { has_sessions: false, by_kind: [], by_trainer: [], by_course: [] },
+            // LEARNING L5
+            ratings: { rows: [] },
+            didItWork: {},
+            courseRequests: { by_state: [], by_kind: [] },
+            skills: { rows: [] },
             required: { has_rules: false },
             countryReports: [],
             reporting: "",
@@ -160,6 +165,10 @@ export class PbTrainingNumbers extends Component {
                 byPath: d.by_path || [],
                 byCertificate: d.by_certificate || [],
                 sessions: d.sessions || { has_sessions: false },
+                ratings: d.ratings || { rows: [] },
+                didItWork: d.did_it_work || {},
+                courseRequests: d.course_requests || { by_state: [], by_kind: [] },
+                skills: d.skills || { rows: [] },
                 required: d.required || { has_rules: false },
                 countryReports: d.country_reports || [],
                 trend: d.trend || [],
@@ -288,6 +297,54 @@ export class PbTrainingNumbers extends Component {
     // ------------------------------------------------------------ LEARNING L4
     /** "92%" or a dash when nothing could be counted yet. */
     pct(v) { return v === null || v === undefined ? "—" : `${v}%`; }
+
+    // ---------------------------------------------------- LEARNING L5
+    /** "4.3 out of 5 from 17 ratings · 82% would recommend" */
+    get ratingsWords() {
+        const r = this.state.ratings || {};
+        if (!r.count) { return _t("Nobody has rated a course in this period yet."); }
+        const bits = [r.count === 1 ? _t("%s out of 5 from 1 rating", r.avg) : _t("%(avg)s out of 5 from %(n)s ratings", { avg: r.avg, n: r.count })];
+        if (r.recommend !== null && r.recommend !== undefined) { bits.push(_t("%s%% would recommend the course", r.recommend)); }
+        return bits.join(" · ");
+    }
+
+    ratingRowWords(row) {
+        const bits = [];
+        if (row.count) { bits.push(row.count === 1 ? _t("1 rating") : _t("%s ratings", row.count)); }
+        if (row.recommend !== null && row.recommend !== undefined) { bits.push(_t("%s%% recommend", row.recommend)); }
+        if (row.answered) { bits.push(_t("work changed %s/5", row.effect)); }
+        return bits.join(" · ");
+    }
+
+    get workWords() {
+        const w = this.state.didItWork || {};
+        if (!w.answered) {
+            return w.waiting ? _t("No manager has answered yet; %s follow-ups are waiting.", w.waiting) : _t("A month after a course, the manager is asked whether the person's work has changed. No answers in this period yet.");
+        }
+        const bits = [_t("Managers say work changed %s out of 5", w.effect)];
+        if (w.used !== null && w.used !== undefined) { bits.push(_t("%s%% used what they learned", w.used)); }
+        bits.push(w.answered === 1 ? _t("1 answer") : _t("%s answers", w.answered));
+        if (w.waiting) { bits.push(w.waiting === 1 ? _t("1 waiting on a manager") : _t("%s waiting on managers", w.waiting)); }
+        return bits.join(" · ");
+    }
+
+    get requestsWords() {
+        const r = this.state.courseRequests || {};
+        if (!r.total) { return _t("Nobody asked to take a course in this period."); }
+        const bits = [r.total === 1 ? _t("1 course request") : _t("%s course requests", r.total)];
+        if (r.committed_words) { bits.push(_t("%s set aside", r.committed_words)); }
+        if (r.claimed_words) { bits.push(_t("%s claimed back", r.claimed_words)); }
+        return bits.join(" · ");
+    }
+
+    skillRowWords(row) {
+        return _t("%(ok)s of %(n)s at the level", { ok: row.ok, n: row.employees });
+    }
+
+    share2(list, n) {
+        const max = Math.max(1, ...(list || []).map((x) => x.n || 0));
+        return Math.round((100 * (n || 0)) / max);
+    }
 
     /** "4 closed sessions · 12 hours of training · 90% attended · 10% did not come" */
     get sessionsWords() {

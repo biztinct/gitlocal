@@ -138,13 +138,12 @@ class PbTrainingRequestApproval(models.Model):
                               'value': _('this is more than they have left')})
         if rec.when_words:
             chips.append({'label': _('When'), 'value': rec.when_words})
-        rows = [{'head': _('Why'), 'sub': '',
-                 'cells': [(rec.why or '')[:40]], 'tone': ''}]
+        rows = []
         if rec.url:
             rows.append({'head': _('Link'), 'sub': '',
                          'cells': [rec.url[:40]], 'tone': ''})
         return {'title': _('Asking to take a course'),
-                'columns': [_('What they said')], 'rows': rows,
+                'columns': [_('Where')], 'rows': rows,
                 'chips': chips, 'note': rec.why or ''}
 
     # ------------------------------------------------------------- the seed

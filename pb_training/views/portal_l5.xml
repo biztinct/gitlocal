@@ -32,10 +32,7 @@
           <b>Tell us how it went</b>
         </div>
         <p t-foreach="me['feedback']" t-as="fb" class="pbtr-feedback-line">
-          <a t-att-href="fb['url']" class="pbme-btn">
-            <t t-if="fb['kind'] == 'training'">Rate <t t-esc="fb['course']"/></t>
-            <t t-else="">Has <t t-esc="fb['about']"/>'s work changed since <t t-esc="fb['course']"/>?</t>
-          </a>
+          <a t-att-href="fb['url']" class="pbme-btn" t-esc="fb['words']"/>
         </p>
       </div>
     </xpath>
@@ -68,9 +65,7 @@
         </div>
 
         <t t-else="">
-          <p t-if="options['allowance']['set']" class="pbtr-teamnote">
-            Your training allowance for <t t-esc="options['allowance']['year']"/>: <b t-esc="options['allowance']['left_words']"/> left<t t-if="options['allowance']['committed_words']"> after <t t-esc="options['allowance']['committed_words']"/> set aside for courses already agreed</t>.
-          </p>
+          <p class="pbtr-teamnote" t-esc="options['allowance']['words']"/>
 
           <!-- ======== one of ours ======== -->
           <details class="pbtr-ask pbtr-claim-form" t-att-open="'open' if form.get('kind', 'ours') == 'ours' else None">
@@ -237,8 +232,7 @@
               </t>
               <t t-if="kind == 'training'">Course feedback</t><t t-else="">A month on</t>
             </div>
-            <h1 t-if="kind == 'training'">How was <t t-esc="course"/>?</h1>
-            <h1 t-else="">Has <t t-esc="about"/>'s work changed since <t t-esc="course"/>?</h1>
+            <h1 t-esc="heading"/>
             <p class="pbme-muted" t-if="kind == 'training'">Two ratings and one line. The training team reads them to make the course better for the next person.</p>
             <p class="pbme-muted" t-else="">Three short questions. The training team uses them to spend on the courses that work.</p>
             <form t-attf-action="/my/training/feedback/#{token}/submit" method="post" class="pbtr-fb-form">
@@ -280,7 +274,7 @@
                 </fieldset>
               </t>
               <button type="submit" class="pbme-btn pbtr-btn--primary">Send</button>
-              <p t-if="window_end" class="pbtr-ask-note">This link is open until <t t-esc="window_end"/> and works once.</p>
+              <p t-if="window_words" class="pbtr-ask-note" t-esc="window_words"/>
             </form>
           </t>
           <t t-elif="status == 'thanks'">

@@ -254,6 +254,9 @@
             </div>
           </section>
 
+          <!-- ============ asking for a course, my skills (LEARNING L5) ============ -->
+          <PbMyRequestsBlock/>
+
           <!-- ============ my team (managers only) ============ -->
           <section t-if="team and team.manages" class="pbml-panel">
             <div class="pbml-sec-h">

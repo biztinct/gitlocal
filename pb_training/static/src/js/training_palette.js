@@ -10,7 +10,15 @@
  *      decision LD3): nothing here registers into Talent's registry any more.
  *
  *          10 overview · 20 mine · 30 courses · 35 paths · 40 assigned ·
- *          50 required · 60 tests · 65 certificates · 70 claims · 80 numbers
+ *          50 required · 60 tests · 65 certificates · 70 claims · 75 skills ·
+ *          80 numbers
+ *
+ *      LEARNING L5 gave Courses a third inner tab, OUTSIDE (the outside-course
+ *      catalogue), Claims a second, REQUESTS (course requests; Overview's
+ *      "Course requests waiting" arrives on it), and added SKILLS (75): each
+ *      person against their job's skills — offered to the training team and
+ *      to anybody who manages people (`probe`). Eleven items (twelve is the
+ *      hard maximum, ledger L2).
  *
  *      LEARNING L4 gave Courses a second inner tab, SESSIONS (sessions,
  *      attendance, toolbox talks); Overview's "Sessions to close" and the
@@ -64,6 +72,7 @@ import { PbRequiredLens } from "@pb_training/js/required_lens";
 import { REQ_TAB_KEY, REQ_STATE_KEY, REQ_PACK_KEY } from "@pb_training/js/required_settings";
 import { PbPathsLens, PATH_STATE_KEY, TRAINING_TERM_KEY } from "@pb_training/js/paths_lens";
 import { SESSION_STATE_KEY, SESSION_OPEN_KEY } from "@pb_training/js/sessions_lens";
+import { PbSkillsLens } from "@pb_training/js/skills_lens";
 
 const TRAINING_GATE = [
     "pb_training.group_training_user",
@@ -95,7 +104,7 @@ lenses.add("mine", {
 // LEARNING L4: Courses owns two inner tabs — Courses and Sessions. The
 // arrival may ask for Sessions (Overview's "Sessions to close", the command
 // bar), filtered on the sessions to close or opened on one session.
-const COURSE_TABS = ["courses", "sessions"];
+const COURSE_TABS = ["courses", "sessions", "outside"];
 lenses.add("courses", {
     key: "courses",
     icon: "bookOpen",
@@ -105,7 +114,8 @@ lenses.add("courses", {
     groups: TRAINING_GATE,
     propsFromContext(ctx) {
         const c = ctx || {};
-        const asked = c[TRAINING_TAB_KEY] || (c.pb_focus === "sessions" ? "sessions" : "");
+        const focus = c.pb_focus;
+        const asked = c[TRAINING_TAB_KEY] || (COURSE_TABS.includes(focus) ? focus : "");
         return {
             startTab: COURSE_TABS.includes(asked) ? asked : "courses",
             tabs: COURSE_TABS,
@@ -197,15 +207,35 @@ lenses.add("certificates", {
     },
 }, { sequence: 65 });
 
+// LEARNING L5: Claims owns two inner tabs — Claims and Requests (course
+// requests). Overview's "Course requests waiting" and the command bar arrive
+// on Requests.
+const CLAIM_TABS = ["claims", "course_requests"];
 lenses.add("claims", {
     key: "claims",
     icon: "receipt",
     label: _t("Claims"),
-    title: _t("Training claims"),
+    title: _t("Training claims and course requests"),
     Component: PbTrainingBoard,
     groups: TRAINING_GATE,
-    props: { startTab: "claims", tabs: ["claims"] },
+    propsFromContext(ctx) {
+        const c = ctx || {};
+        const asked = c[TRAINING_TAB_KEY] || (c.pb_focus === "course_requests" ? "course_requests" : "");
+        return { startTab: CLAIM_TABS.includes(asked) ? asked : "claims", tabs: CLAIM_TABS };
+    },
 }, { sequence: 70 });
+
+// LEARNING L5: skills against each job. Offered to the training team and to
+// managers (their team only) — the probe asks the server.
+lenses.add("skills", {
+    key: "skills",
+    icon: "sparkles",
+    label: _t("Skills"),
+    title: _t("Skills against each job, and the course that closes the gap"),
+    Component: PbSkillsLens,
+    groups: ["base.group_user"],
+    probe: { model: "pb.training", method: "can_see_skills" },
+}, { sequence: 75 });
 
 lenses.add("numbers", {
     key: "numbers",
@@ -314,6 +344,39 @@ palette.add("training_sessions", {
     action: { xmlid: HUB_XMLID, lens: "courses", focus: "sessions" },
     keywords: ["session", "classroom", "toolbox", "attendance", "buổi học", "điểm danh", "training"],
 }, { sequence: 3915 });
+
+// LEARNING L5: the outside catalogue, course requests and skills.
+palette.add("training_outside", {
+    id: "training_outside",
+    label: _t("Outside courses"),
+    sublabel: _t("Learning"),
+    icon: "graduationCap",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: HUB_XMLID, lens: "courses", focus: "outside" },
+    keywords: ["outside", "provider", "catalogue", "external", "khóa học bên ngoài", "training"],
+}, { sequence: 3916 });
+
+palette.add("training_requests", {
+    id: "training_requests",
+    label: _t("Course requests"),
+    sublabel: _t("Learning"),
+    icon: "send",
+    groups: TRAINING_GATE,
+    requires: "pb_training_board",
+    action: { xmlid: HUB_XMLID, lens: "claims", focus: "course_requests" },
+    keywords: ["request", "ask", "course", "yêu cầu", "training"],
+}, { sequence: 3961 });
+
+palette.add("training_skills", {
+    id: "training_skills",
+    label: _t("Skills"),
+    sublabel: _t("Learning"),
+    icon: "sparkles",
+    requires: "pb_training_board",
+    action: { xmlid: HUB_XMLID, lens: "skills" },
+    keywords: ["skill", "gap", "kỹ năng", "competency", "training"],
+}, { sequence: 3965 });
 
 // LEARNING L1: the register, from the command bar.
 palette.add("training_certificates", {

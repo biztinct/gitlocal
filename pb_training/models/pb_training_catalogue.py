@@ -23,6 +23,7 @@ version of a course.
 import logging
 
 from odoo import _, api, fields, models
+from odoo.tools.misc import format_date
 from odoo.exceptions import AccessError, UserError
 
 from .course_version import require_manager
@@ -515,9 +516,18 @@ class PbTrainingCatalogue(models.AbstractModel):
         return {
             'id': channel.id,
             'version': channel.pb_version or 1,
-            'version_since': fields.Date.to_string(
-                channel.pb_version_published_on) or '',
+            'version_since': format_date(
+                self.env, channel.pb_version_published_on)
+            if channel.pb_version_published_on else '',
             'version_note': channel.pb_version_note or '',
+            'version_words': (_("Version %(n)s, since %(when)s. What changed: "
+                                "%(note)s", n=channel.pb_version,
+                                when=format_date(
+                                    self.env,
+                                    channel.pb_version_published_on),
+                                note=channel.pb_version_note or '')
+                              if channel.pb_version_published_on
+                              else _("The first version.")),
             'version_log': str(channel.pb_version_log or ''),
             'pending': len(channel._pb_queue()),
             'reread_days': channel.pb_reread_days or 14,

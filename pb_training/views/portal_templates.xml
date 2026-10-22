@@ -1158,7 +1158,7 @@
               <input type="hidden" name="csrf_token"
                      t-att-value="request.csrf_token()"/>
               <input t-if="prefill" type="hidden" name="request_id" t-att-value="prefill['request_id']"/>
-              <p t-if="prefill" class="pbtr-ask-note">This claim is for a course request that was agreed. What it cost when you asked: <b t-esc="prefill['amount_words']"/>.</p>
+              <p t-if="prefill" class="pbtr-ask-note" t-esc="prefill['words']"/>
               <label class="pbtr-f pbtr-f--wide">
                 <span>What the course was</span>
                 <input type="text" name="course_name" required="required"

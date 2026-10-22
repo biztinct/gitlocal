@@ -26,7 +26,7 @@ export const TRAINING_TAB_KEY = "pb_training_tab";
 /** The context key the Certificates lens reads its first filter from (LEARNING L1). */
 export const CERT_FILTER_KEY = "pb_training_cert_filter";
 
-const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks", paths: "route", sessions: "calendar" };
+const QUEUE_ICON = { claims: "receipt", requests: "clock", late: "alert", certs: "award", required: "listChecks", paths: "route", sessions: "calendar", course_requests: "send", followups: "messageSquare" };
 /** The context key Courses reads its Sessions filter from (LEARNING L4). */
 const SESSION_STATE_KEY = "pb_training_session_state";
 

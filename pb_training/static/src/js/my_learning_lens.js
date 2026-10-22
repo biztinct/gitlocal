@@ -30,13 +30,15 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { PbToolboxDrawer } from "@pb_training/js/toolbox_drawer";
+import { PbMyRequestsBlock } from "@pb_training/js/my_requests_block";
 
 const MODEL = "pb.my.training";
 const LATE_FIRST = { overdue: 0, assigned: 1, in_progress: 2, excused: 3 };
 
 export class PbMyLearningLens extends Component {
     static template = "pb_training.PbMyLearningLens";
-    static components = { PbToolboxDrawer };
+    // LEARNING L5: feedback asks, Ask to take a course, My requests, My skills.
+    static components = { PbToolboxDrawer, PbMyRequestsBlock };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {

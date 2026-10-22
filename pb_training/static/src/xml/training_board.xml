@@ -98,6 +98,7 @@
                     t-on-click="() => this.setTab('sessions')">
               <t t-out="ic('calendar',15)"/> Sessions
             </button>
+            <button t-if="showTab('outside')" class="pbtn-tab" role="tab" t-att-class="{ on: state.tab === 'outside' }" t-on-click="() => this.setTab('outside')"><t t-out="ic('graduationCap',15)"/> Outside courses</button>
             <button t-if="showTab('assignments')" class="pbtn-tab" role="tab"
                     t-att-class="{ on: state.tab === 'assignments' }"
                     t-on-click="() => this.setTab('assignments')">
@@ -130,6 +131,7 @@
               <span t-if="state.cLoaded and state.cKpis.waiting"
                     class="pbtn-tab-n"><t t-esc="state.cKpis.waiting"/></span>
             </button>
+            <button t-if="showTab('course_requests')" class="pbtn-tab" role="tab" t-att-class="{ on: state.tab === 'course_requests' }" t-on-click="() => this.setTab('course_requests')"><t t-out="ic('send',15)"/> Requests</button>
           </div>
 
           <t t-if="state.tab === 'courses'">
@@ -189,6 +191,7 @@
                 <span t-if="!crs.published" class="pbim-badge draft">
                   Not published
                 </span>
+                <span t-if="crs.version and crs.version > 1" class="pbim-badge pbcl-nocap" title="Version">v<t t-esc="crs.version"/></span>
               </div>
 
               <div class="pbtn-card-meta">
@@ -223,6 +226,7 @@
                 <span t-if="!crs.members" class="pbim-badge warn">
                   Nobody on it
                 </span>
+                <span t-if="crs.rating_words" class="pbim-badge pbcl-nocap"><t t-out="ic('star',12)"/> <t t-esc="crs.rating_words"/></span>
               </div>
             </div>
           </div>
@@ -244,6 +248,16 @@
             <PbSessionsLens t-key="state.sessionKey" embedded="true"
                             startState="props.startSessionState or ''"
                             startSession="state.sessionOpen"/>
+          </t>
+
+          <!-- LEARNING L5: OUTSIDE — the outside-course catalogue. -->
+          <t t-elif="state.tab === 'outside'">
+            <PbOutsideLens embedded="true"/>
+          </t>
+
+          <!-- LEARNING L5: REQUESTS — every course request (Claims lens). -->
+          <t t-elif="state.tab === 'course_requests'">
+            <PbRequestsLens embedded="true"/>
           </t>
 
           <!-- ================================================================
@@ -1027,6 +1041,9 @@
             </div>
             <button t-if="showTab('sessions')" class="pbim-btn ghost" t-on-click="() => this.openSessionFromCourse(0)"><t t-out="ic('calendar',15)"/> Open Sessions</button>
           </div>
+
+          <!-- ============ version, ratings, skills (LEARNING L5) ============ -->
+          <PbCourseExtras channelId="state.open.id"/>
 
           <!-- ====================== the people ====================== -->
           <div class="pbtn-sec">

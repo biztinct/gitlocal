@@ -458,14 +458,18 @@ class PbTrainingRequest(models.Model):
             if problem:
                 raise UserError(problem)
             rec._advance_state('submitted')
-        manager = emp.parent_id.name or _('your manager')
+        manager = emp.parent_id.name
         if rec.amount > 0:
             message = _("Asked. %(who)s decides first, then the HR lead, "
                         "because it costs money. You get an email either way.",
-                        who=manager)
+                        who=manager) if manager else _(
+                "Asked. Your manager decides first, then the HR lead, because "
+                "it costs money. You get an email either way.")
         else:
             message = _("Asked. %(who)s decides, and you get an email either "
-                        "way.", who=manager)
+                        "way.", who=manager) if manager else _(
+                "Asked. Your manager decides, and you get an email either "
+                "way.")
         return {'id': rec.id, 'state': rec.state, 'message': message}
 
     @api.model

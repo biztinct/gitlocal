@@ -1,82 +1,192 @@
 /** @odoo-module **/
 /**
- * Learning › TESTS (LEARNING L0) — the existing list of tests, in the hub.
+ * Learning › TESTS (LEARNING L5; L0 shipped a stock-list stand-in).
  *
- * A DELIBERATE L0 SHORTCUT: the stock list of certification tests
- * (`pb_training.action_pb_training_tests`: `survey.survey` where
- * `certification` is set) mounted through the web client's own `View`, with
- * a small header row of two doors — "New test" (the board's own `new_test`
- * verb, which opens a blank, already-scored certification) and "Question
- * bank". Phase L5 redesigns this tab; nothing here is meant to outlive it.
+ * HERO MOMENT: the RESULTS DRAWER — a pass-rate ring, the score spread as
+ * ten bars that add up to the attempts, and the hardest questions (wrong ÷
+ * how many times the question was ASKED, so a question in a pool is never
+ * blamed for attempts that did not draw it). Under the ring: how many goes
+ * people get and how the questions are drawn ("Each attempt draws 10 of 30"),
+ * with "Questions drawn per attempt" to change it.
  *
- * View-wrapper precedent: Expenses › Claims / Home › Ask HR (NAV P2):
- * `noBreadcrumbs` is a PROP, `searchViewId: false` loads the model's search
- * view, `selectRecord` / `createRecord` are handed in (ledger rows, NAV P2).
+ * The list: every test with its course, pass mark, goes, how questions are
+ * drawn, people and pass rate (grey at zero, quiet board). "New test" opens
+ * a small drawer before the editor — name, pass mark, goes, and "Draw N
+ * questions per attempt" — and lands in the test editor. "Question bank" and
+ * "Open the test editor" keep the stock forms one press away.
+ *
+ * Reads `pb.training.tests_board` / `test_results`; writes through
+ * `pb.training.act` (`create_test`, `set_pool`, `open_test`,
+ * `open_questions`).
  */
-import { Component, markup } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { escape } from "@web/core/utils/strings";
-import { View } from "@web/views/view";
 import { ic } from "@pb_import_kit/js/import_icons";
 
-const MODEL = "survey.survey";
+const RING = 2 * Math.PI * 34;
 
 export class PbTrainingTestsLens extends Component {
     static template = "pb_training.PbTrainingTestsLens";
-    static components = { View };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {
         this.action = useService("action");
         this.orm = useService("orm");
         this.notif = useService("notification");
-        // Built ONCE: a fresh props object per render would reload the view.
-        this.viewProps = {
-            resModel: MODEL,
-            type: "list",
-            // Same as the Tests action: a TEST is a certification survey.
-            domain: [["certification", "=", true]],
-            context: { default_certification: true,
-                       default_survey_type: "assessment" },
-            display: { controlPanel: {} },
-            noBreadcrumbs: true,
-            searchViewId: false,
-            selectRecord: (resId) => this.openTest(resId),
-            createRecord: () => this.newTest(),
-            // Zero dead ends: an empty list says what a test is and what to
-            // press, instead of the stock empty rows (found in the L0 walk).
-            noContentHelp: markup(
-                `<p class="o_view_nocontent_smiling_face">${escape(_t("Write your first test"))}</p>` +
-                `<p>${escape(_t("A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item and nobody can take it until they have finished every lesson."))}</p>`),
-        };
+        this.state = useState({
+            loaded: false,
+            failed: false,
+            data: { tests: [] },
+            q: "",
+            results: null,
+            newTest: false,
+            form: { name: "", pass_mark: 70, attempts: 3, pool: false, draw: 10 },
+            draw: 0,
+            busy: false,
+        });
+        onWillStart(() => this.load());
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
-    /** A CLICK handler: the test's own form, in the main breadcrumb. */
-    openTest(resId) {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Test"),
-            res_model: MODEL,
-            res_id: resId,
-            views: [[false, "form"]],
-            target: "current",
-        });
-    }
-
-    /** The board's own verbs, so the defaults live in one place. */
-    async run(verb) {
+    async load() {
+        this.state.failed = false;
         try {
-            const res = await this.orm.call("pb.training", "act", [verb, {}]);
-            if (res && res.type) { await this.action.doAction(res); }
+            this.state.data = await this.orm.call("pb.training", "tests_board", [this.state.q]);
         } catch (e) {
-            this.notif.add((e && e.data && e.data.message)
-                || _t("That could not be opened."), { type: "danger" });
+            console.warn("pb_training: the tests could not be read", e);
+            this.state.failed = true;
+        } finally {
+            this.state.loaded = true;
         }
     }
 
-    newTest() { return this.run("new_test"); }
+    async retry() { this.state.loaded = false; await this.load(); }
+
+    get data() { return this.state.data || {}; }
+    get allowed() { return this.data.allowed !== false; }
+    get tests() { return this.data.tests || []; }
+
+    onSearch(ev) {
+        this.state.q = ev.target.value;
+        clearTimeout(this._q);
+        this._q = setTimeout(() => this.load(), 250);
+    }
+
+    rateWords(t) { return (t.pass_rate === null || t.pass_rate === undefined) ? "—" : `${t.pass_rate}%`; }
+
+    peopleWords(n) { return n === 1 ? _t("1 person") : _t("%s people", n); }
+
+    // ------------------------------------------------------------- doors
+    async run(verb, payload = {}) {
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call("pb.training", "act", [verb, payload]);
+            if (res && res.type) { await this.action.doAction(res); return res; }
+            if (res && res.message) { this.notif.add(res.message, { type: "success" }); }
+            return res || {};
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || _t("That could not be opened."), { type: "danger" });
+            return null;
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     openQuestions() { return this.run("open_questions"); }
+    openEditor(id) { return this.run("open_test", { survey_id: id }); }
+
+    // ------------------------------------------------------- results drawer
+    async openResults(t) {
+        this.state.results = { loading: true, name: t.name };
+        try {
+            const res = await this.orm.call("pb.training", "test_results", [t.id]);
+            this.state.results = res;
+            this.state.draw = res.random ? res.drawn : 0;
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || _t("The results could not be read."), { type: "danger" });
+            this.state.results = null;
+        }
+    }
+
+    closeResults() { this.state.results = null; this.load(); }
+
+    get ringDash() {
+        const r = this.state.results || {};
+        const pct = r.pass_rate || 0;
+        return `${(RING * pct) / 100} ${RING}`;
+    }
+
+    get histMax() {
+        const h = (this.state.results && this.state.results.histogram) || [];
+        return Math.max(1, ...h.map((b) => b.n));
+    }
+
+    barHeight(b) { return `${Math.round((100 * b.n) / this.histMax)}%`; }
+
+    barClass(b, i) {
+        const mark = (this.state.results && this.state.results.pass_mark) || 0;
+        return (i + 1) * 10 > mark ? "is-pass" : "is-fail";
+    }
+
+    get resultsWords() {
+        const r = this.state.results || {};
+        if (!r.attempts) { return _t("Nobody has taken it yet."); }
+        const a = r.attempts === 1 ? _t("1 attempt") : _t("%s attempts", r.attempts);
+        const p = r.people === 1 ? _t("by 1 person") : _t("by %s people", r.people);
+        return _t("%(attempts)s %(people)s · average score %(avg)s%%", { attempts: a, people: p, avg: r.avg });
+    }
+
+    get atEndWords() { return _t("At the end of %s", this.state.results.course); }
+
+    get rulesWords() {
+        const r = this.state.results || {};
+        return _t("Pass mark %(mark)s%% · %(goes)s · %(pool)s", { mark: r.pass_mark, goes: r.retake_words, pool: r.pool_words });
+    }
+
+    hardWords(hq) {
+        return _t("%(pct)s%% wrong · %(wrong)s of %(asked)s asked", { pct: hq.pct, wrong: hq.wrong, asked: hq.asked });
+    }
+
+    onDraw(ev) { this.state.draw = Number(ev.target.value) || 0; }
+
+    async savePool() {
+        const res = await this.run("set_pool", { survey_id: this.state.results.id, draw: this.state.draw });
+        if (res) { await this.openResults({ id: this.state.results.id, name: this.state.results.name }); }
+    }
+
+    // ------------------------------------------------------- new test drawer
+    openNew() {
+        this.state.form = { name: "", pass_mark: 70, attempts: 3, pool: false, draw: 10 };
+        this.state.newTest = true;
+    }
+
+    closeNew() { this.state.newTest = false; }
+
+    setForm(key, ev, kind = "") {
+        let value = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
+        if (kind === "num") { value = Number(value) || 0; }
+        this.state.form[key] = value;
+    }
+
+    get newHint() {
+        const f = this.state.form;
+        if (!(f.name || "").trim()) { return _t("Give the test a name."); }
+        if (f.pass_mark < 1 || f.pass_mark > 100) { return _t("The pass mark is between 1 and 100."); }
+        if (f.pool && f.draw < 1) { return _t("Say how many questions each attempt draws."); }
+        return "";
+    }
+
+    async createTest() {
+        if (this.newHint) { return; }
+        const f = this.state.form;
+        const res = await this.run("create_test", {
+            name: f.name, pass_mark: f.pass_mark, attempts: f.attempts, draw: f.pool ? f.draw : 0,
+        });
+        if (res && res.action) {
+            this.closeNew();
+            await this.action.doAction(res.action);
+        }
+    }
 }

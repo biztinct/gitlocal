@@ -36,6 +36,8 @@ RAIL = [
     # LEARNING L1
     ('certificates', 65, 'Certificates', 'award', 'PbCertificatesLens'),
     ('claims', 70, 'Claims', 'receipt', 'PbTrainingBoard'),
+    # LEARNING L5: offered to the training team and to managers (probe)
+    ('skills', 75, 'Skills', 'sparkles', 'PbSkillsLens'),
     ('numbers', 80, 'Numbers', 'barChart', 'PbTrainingNumbers'),
 ]
 
@@ -77,19 +79,26 @@ class TestT4TheRail(TransactionCase):
             self.assertIn('groups: TRAINING_GATE,', blocks[key][0], key)
         self.assertIn('groups: TRAINING_GATE.concat(["base.group_system"])',
                       blocks['numbers'][0])
+        # LEARNING L5: every member of staff is a candidate; the probe asks
+        # the server (training team, or somebody who manages people).
+        self.assertIn('groups: ["base.group_user"]', blocks['skills'][0])
+        self.assertIn('probe: { model: "pb.training", method: "can_see_skills" }',
+                      blocks['skills'][0])
 
     def test_t4_the_board_lenses_carry_their_tabs(self):
         blocks = _lens_blocks(_src('static', 'src', 'js', 'training_palette.js'))
         # LEARNING L4: Courses owns Courses + Sessions and reads its arrival.
         self.assertIn('propsFromContext(ctx)', blocks['courses'][0])
-        self.assertIn('const COURSE_TABS = ["courses", "sessions"];',
+        self.assertIn('const COURSE_TABS = ["courses", "sessions", "outside"];',
                       _src('static', 'src', 'js', 'training_palette.js'))
         # LEARNING L2: Required reads its arrival (tab, cell state, pack).
         self.assertIn('propsFromContext(ctx)', blocks['required'][0])
         self.assertIn('const REQUIRED_TABS = ["matrix", "rules", "day_one", "recurring"];',
                       _src('static', 'src', 'js', 'training_palette.js'))
-        self.assertIn('props: { startTab: "claims", tabs: ["claims"] }',
-                      blocks['claims'][0])
+        # LEARNING L5: Claims owns Claims + Requests and reads its arrival.
+        self.assertIn('propsFromContext(ctx)', blocks['claims'][0])
+        self.assertIn('const CLAIM_TABS = ["claims", "course_requests"];',
+                      _src('static', 'src', 'js', 'training_palette.js'))
         # Assigned reads the arrival so Overview can open the requests.
         self.assertIn('propsFromContext(ctx)', blocks['assigned'][0])
         src = _src('static', 'src', 'js', 'training_palette.js')
@@ -299,7 +308,8 @@ class TestT7Overview(AssignmentCase):
         self.assertTrue(data['allowed'])
         self.assertEqual(data['headline'], 'Nobody is on a course yet.')
         self.assertTrue(data['calm'])
-        self.assertEqual([q['count'] for q in data['queue']], [0, 0, 0, 0])
+        # LEARNING L5 adds two quiet chips (course requests, follow-ups).
+        self.assertEqual([q['count'] for q in data['queue']], [0] * 6)
 
     def test_t7_the_headline_counts_people_and_courses(self):
         for emp in (self.e_one, self.e_two):

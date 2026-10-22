@@ -52,6 +52,9 @@ msgstr "1 yêu cầu hoàn tiền"
 #: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__approved
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__approved
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Agreed"
 msgstr "Đã đồng ý"
 
@@ -115,6 +118,9 @@ msgstr "Chưa có yêu cầu hoàn tiền nào"
 #: code:addons/pb_training/static/src/js/training_board.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__draft
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__state__draft
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__draft
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Not sent yet"
 msgstr "Chưa gửi"
 
@@ -133,6 +139,7 @@ msgstr "Chưa bắt đầu"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Pass rate"
 msgstr "Tỷ lệ đạt"
 
@@ -179,6 +186,9 @@ msgstr "Đang hiển thị 1 yêu cầu hoàn tiền · bấm một bước ho�
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_claim__state__refused
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__state__refused
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__refused
+#: code:addons/pb_training/models/training_common.py:0
 msgid "Turned down"
 msgstr "Bị từ chối"
 
@@ -216,6 +226,7 @@ msgstr "đạt bài kiểm tra, trên 1 người đã làm"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
 
@@ -560,6 +571,9 @@ msgstr "%s đã hoàn thành"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/learning_overview.js:0
 #: code:addons/pb_training/static/src/js/required_lens.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
 msgid "1 person"
 msgstr "1 người"
 
@@ -567,6 +581,9 @@ msgstr "1 người"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/learning_overview.js:0
 #: code:addons/pb_training/static/src/js/required_lens.js:0
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
 msgid "%s people"
 msgstr "%s người"
 
@@ -590,6 +607,10 @@ msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát; nếu 
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_settings.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Try again"
 msgstr "Thử lại"
 
@@ -953,12 +974,14 @@ msgstr "Mở toàn bộ trang đào tạo của tôi"
 #: code:addons/pb_training/models/pb_training.py:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__survey_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__survey_id
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Test"
 msgstr "Bài kiểm tra"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
 msgid "That could not be opened."
 msgstr "Không mở được mục này."
 
@@ -996,12 +1019,14 @@ msgstr "Bài kiểm tra mới"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
 #: model_terms:ir.actions.act_window,help:pb_training.action_pb_training_tests
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Write your first test"
 msgstr "Viết bài kiểm tra đầu tiên"
 
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "A test is a set of questions with a pass mark and a limited number of goes. Add it to a course as its last item and nobody can take it until they have finished every lesson."
 msgstr "Bài kiểm tra là một bộ câu hỏi có điểm đạt và số lần làm giới hạn. Hãy thêm nó làm mục cuối cùng của khóa học; chưa học xong mọi bài thì chưa ai làm được."
 
@@ -1468,6 +1493,11 @@ msgstr "Hãy đính kèm chứng chỉ — tệp PDF, JPG hoặc PNG."
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Cancel"
 msgstr "Hủy"
 
@@ -1482,6 +1512,7 @@ msgstr "Hủy"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__certificate_file
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
 #: code:addons/pb_training/models/document_ext.py:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "Certificate"
 msgstr "Chứng chỉ"
 
@@ -1555,6 +1586,11 @@ msgstr "Đã kiểm tra nghĩa là bộ phận nhân sự đã xem bản gốc. 
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Close"
 msgstr "Đóng"
 
@@ -1581,6 +1617,15 @@ msgstr "Đóng"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__channel_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__channel_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_session__channel_id
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__name
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__course_name
 msgid "Course"
 msgstr "Khóa học"
 
@@ -1598,6 +1643,7 @@ msgstr "Khóa học đã hoàn thành"
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
 #: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -1617,6 +1663,7 @@ msgstr "Mọi chứng chỉ và giấy phép trong hồ sơ của bạn, và khi
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/training_numbers.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Every department"
 msgstr "Mọi phòng ban"
 
@@ -1624,6 +1671,7 @@ msgstr "Mọi phòng ban"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Every job"
 msgstr "Mọi vị trí"
 
@@ -1739,6 +1787,7 @@ msgstr "Ngày cấp"
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_required.py:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Job"
 msgstr "Vị trí"
 
@@ -1750,6 +1799,8 @@ msgstr "Vị trí"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__kind
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__kind
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_session__kind
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__kind
 msgid "Kind"
 msgstr "Loại"
 
@@ -1889,6 +1940,10 @@ msgstr "Không có kết quả. Bấm lại bộ lọc, hoặc chọn Hiện t�
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_settings.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Nothing was changed. Try again in a moment."
 msgstr "Không có gì bị thay đổi. Hãy thử lại sau giây lát."
 
@@ -2004,6 +2059,7 @@ msgstr "Tìm tên người hoặc chứng chỉ"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "Show everything"
 msgstr "Hiện tất cả"
 
@@ -2105,6 +2161,7 @@ msgstr "Ngày hết hiệu lực trước ngày cấp."
 #. module: pb_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_certificates
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
 msgid "There is no employee record against your login yet"
 msgstr "Tài khoản của bạn chưa gắn với hồ sơ nhân viên nào"
 
@@ -2360,6 +2417,7 @@ msgstr "Giấy phép"
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/learning_record.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
 msgid "Yes"
 msgstr "Có"
 
@@ -2503,6 +2561,7 @@ msgstr "%s giờ là quy định đào tạo bắt buộc."
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_required.py:0
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
 msgid "%s is saved."
 msgstr "Đã lưu %s."
 
@@ -2549,6 +2608,7 @@ msgstr "%s người còn thiếu đào tạo bắt buộc."
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/required_lens.js:0
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
 msgid "%s people picked"
 msgstr "Đã chọn %s người"
 
@@ -2630,6 +2690,7 @@ msgstr "1 người còn thiếu đào tạo bắt buộc."
 #. odoo-javascript
 #: code:addons/pb_training/static/src/js/required_lens.js:0
 #: code:addons/pb_training/static/src/js/training_board.js:0
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
 msgid "1 person picked"
 msgstr "Đã chọn 1 người"
 
@@ -2766,6 +2827,10 @@ msgstr "Một quy định khác trong công ty đã dùng mã %s."
 
 #. module: pb_training
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_requirement_form
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Archived"
 msgstr "Đã lưu trữ"
 
@@ -2968,6 +3033,7 @@ msgstr "Quốc gia nơi làm việc"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__country_id
 msgid "Country"
 msgstr "Quốc gia"
 
@@ -3084,6 +3150,7 @@ msgstr "Tải bảng tính"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "Edit"
 msgstr "Sửa"
 
@@ -3228,6 +3295,8 @@ msgstr "Từ quy định đào tạo bắt buộc"
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_required.py:0
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
 msgid "Gaps"
 msgstr "Còn thiếu"
 
@@ -3319,6 +3388,8 @@ msgstr "Luôn phải có"
 #: code:addons/pb_training/models/training_common.py:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__hours
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__hours
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__hours
 msgid "Hours"
 msgstr "Số giờ"
 
@@ -3440,6 +3511,7 @@ msgstr "Sức khỏe — công đoạn nguy hiểm"
 #. odoo-python
 #: code:addons/pb_training/static/src/js/required_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Missing"
 msgstr "Còn thiếu"
 
@@ -3680,6 +3752,9 @@ msgstr "Permenaker 8/2020 Điều 162-163: hiệu lực năm năm, xin gia hạn
 #: code:addons/pb_training/models/assignment.py:0
 #: code:addons/pb_training/models/pb_training.py:0
 #: code:addons/pb_training/models/pb_training_required.py:0
+#. odoo-javascript
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
 msgid "Pick at least one person."
 msgstr "Hãy chọn ít nhất một người."
 
@@ -3922,6 +3997,9 @@ msgstr "Huấn luyện an toàn — nhóm 6 (an toàn vệ sinh viên)"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/required_settings.xml:0
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "Save"
 msgstr "Lưu"
 
@@ -4107,6 +4185,11 @@ msgstr "Bỏ ra"
 #: code:addons/pb_training/static/src/js/required_settings.js:0
 #: code:addons/pb_training/static/src/js/training_board.js:0
 #: code:addons/pb_training/static/src/js/training_numbers.js:0
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
 msgid "That did not work."
 msgstr "Không thực hiện được."
 
@@ -5006,6 +5089,7 @@ msgstr "Đã có %s."
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "Archive"
 msgstr "Lưu trữ"
 
@@ -5024,6 +5108,7 @@ msgstr "Khôi phục"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "Bring it back"
 msgstr "Khôi phục"
 
@@ -5049,6 +5134,10 @@ msgstr "Theo lộ trình"
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_search
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__company_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_session__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -5488,6 +5577,8 @@ msgstr "Lộ trình"
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/paths_lens.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_session__attendance_ids
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
 msgid "People"
 msgstr "Từng người"
 
@@ -5595,6 +5686,7 @@ msgstr "Hiện mọi lộ trình"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
 msgid "Show everybody"
 msgstr "Hiện mọi người"
 
@@ -5620,6 +5712,7 @@ msgstr "Hiện trên thẻ lộ trình và cho người học."
 #: code:addons/pb_training/models/assignment.py:0
 #: code:addons/pb_training/models/claim.py:0
 #: code:addons/pb_training/models/path.py:0
+#: code:addons/pb_training/models/request.py:0
 msgid "Somebody"
 msgstr "Một người"
 
@@ -5796,6 +5889,8 @@ msgstr "Tình trạng"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__employee_id
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__employee_id
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
 msgid "Who"
 msgstr "Ai"
 
@@ -5817,6 +5912,10 @@ msgstr "Hạn cho cả lộ trình"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__reason_kind
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__reason
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__why
 msgid "Why"
 msgstr "Lý do"
 
@@ -5824,6 +5923,7 @@ msgstr "Lý do"
 #. odoo-python
 #: code:addons/pb_training/models/assignment.py:0
 #: code:addons/pb_training/models/claim.py:0
+#: code:addons/pb_training/models/request.py:0
 msgid "a course"
 msgstr "một khóa học"
 
@@ -6290,6 +6390,7 @@ msgstr "Hủy buổi học"
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__cancelled
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__cancelled
 #: code:addons/pb_training/models/session.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__cancelled
 msgid "Cancelled"
 msgstr "Đã hủy"
 
@@ -6545,6 +6646,9 @@ msgstr "Số giờ được tính"
 
 #. module: pb_training
 #: model:ir.model.fields,field_description:pb_training.field_slide_channel__delivery
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__kind
 msgid "How it is taught"
 msgstr "Hình thức giảng dạy"
 
@@ -6749,6 +6853,8 @@ msgstr "Chưa xếp chỗ cho ai. Người quét mã có thể tham gia nếu c�
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
 #: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
 msgid "Nobody matches that."
 msgstr "Không có ai khớp."
 
@@ -6789,6 +6895,7 @@ msgstr "Người trong công ty."
 #. odoo-python
 #: model:ir.model.fields.selection,name:pb_training.selection__slide_channel__delivery__online
 #: code:addons/pb_training/models/session.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_outside_course__kind__online
 msgid "Online"
 msgstr "Trực tuyến"
 
@@ -6925,6 +7032,7 @@ msgstr "Lên lịch buổi học đầu tiên"
 #. odoo-python
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__planned
 #: code:addons/pb_training/models/session.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_followup__state__planned
 msgid "Planned"
 msgstr "Đã lên lịch"
 
@@ -7418,6 +7526,8 @@ msgstr "Đang chờ chỗ"
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_sessions.py:0
 #: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
 msgid "When"
 msgstr "Khi nào"
 
@@ -7434,6 +7544,7 @@ msgstr "Khi nào, ở đâu, ai phụ trách, bao nhiêu chỗ"
 #: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
 #: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_session__place
+#: code:addons/pb_training/models/request_approval.py:0
 msgid "Where"
 msgstr "Ở đâu"
 
@@ -7579,6 +7690,8 @@ msgstr "%s người đã đặt chỗ"
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/session.py:0
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
 msgid "%s waiting"
 msgstr "%s người chờ"
 
@@ -7635,3 +7748,3151 @@ msgstr "Buổi nói chuyện an toàn do %(who)s ghi: 1 người."
 #: code:addons/pb_training/models/pb_training_sessions.py:0
 msgid "Toolbox talk logged: %(topic)s, 1 person."
 msgstr "Đã ghi buổi nói chuyện an toàn: %(topic)s, 1 người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid " — put them under the section, and each attempt draws %s of them"
+msgstr " — đặt chúng vào phần đó, mỗi lượt sẽ rút %s câu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "%(attempts)s %(people)s · average score %(avg)s%%"
+msgstr "%(attempts)s %(people)s · điểm trung bình %(avg)s%%"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%(avg)s out of 5 from %(n)s ratings"
+msgstr "%(avg)s/5 từ %(n)s lượt đánh giá"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "%(first)s · %(gaps)s across %(who)s"
+msgstr "%(first)s · %(gaps)s trên %(who)s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "%(name)s is made. Add the questions in the test editor%(pool)s."
+msgstr "Đã tạo %(name)s. Hãy thêm câu hỏi trong trình soạn bài kiểm tra%(pool)s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%(ok)s of %(n)s at the level"
+msgstr "%(ok)s/%(n)s đạt mức yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "%(pct)s%% wrong · %(wrong)s of %(asked)s asked"
+msgstr "%(pct)s%% sai · %(wrong)s trên %(asked)s lượt được hỏi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "%(skill)s: the job needs %(level)s"
+msgstr "%(skill)s: công việc cần mức %(level)s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "%(taken)s taken · %(asked)s asked"
+msgstr "%(taken)s đã học · %(asked)s đã xin"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "%(tests)s · %(people)s people took one · %(rate)s%% passed"
+msgstr "%(tests)s · %(people)s người đã làm · %(rate)s%% đạt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "%(who)s has already asked for %(course)s and that request is still open."
+msgstr "%(who)s đã xin học %(course)s và yêu cầu đó vẫn đang mở."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "%(words)s · %(pct)s%% would recommend it"
+msgstr "%(words)s · %(pct)s%% sẽ giới thiệu khóa học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s agreed and not taken yet"
+msgstr "%s đã đồng ý, chưa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s answers"
+msgstr "%s câu trả lời"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "%s attempts"
+msgstr "%s lượt làm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s claimed back"
+msgstr "%s đã hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "%s closes it"
+msgstr "%s lấp được khoảng trống này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s course requests"
+msgstr "%s yêu cầu khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "%s decides first, then the HR lead, because it costs money."
+msgstr "%s quyết định trước, sau đó là trưởng nhân sự, vì khóa học có chi phí."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "%s decides."
+msgstr "%s quyết định."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "%s gaps"
+msgstr "%s khoảng trống"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "%s goes"
+msgstr "%s lượt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s is archived. Nobody new can ask for it; requests already agreed carry on."
+msgstr "%s đã được lưu trữ. Không ai có thể xin thêm; các yêu cầu đã đồng ý vẫn tiếp tục."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s is back on the list."
+msgstr "%s đã trở lại danh sách."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s is marked as taken."
+msgstr "%s đã được đánh dấu là đã học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s is no longer given by this course. Nobody who already has it loses it."
+msgstr "Khóa học này không còn trang bị %s. Ai đã có kỹ năng đó vẫn giữ nguyên."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s is on the outside list. People can ask to take it from My learning."
+msgstr "%s đã có trong danh sách khóa học bên ngoài. Mọi người có thể xin học từ mục Của tôi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "%s managers have not answered the follow-up yet."
+msgstr "%s quản lý chưa trả lời câu hỏi theo dõi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "%s need a decision"
+msgstr "%s cần quyết định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s out of 5 from 1 rating"
+msgstr "%s/5 từ 1 lượt đánh giá"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s outside courses"
+msgstr "%s khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s people are on it."
+msgstr "%s người đã được ghi danh."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "%s people are still to be put on the re-read — the morning job carries on."
+msgstr "Còn %s người chưa được giao đọc lại — tác vụ buổi sáng sẽ làm tiếp."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "%s people finished this version. Each gets a re-read due in the days you set, and one email."
+msgstr "%s người đã học xong phiên bản này. Mỗi người được giao đọc lại trong số ngày bạn đặt, và nhận một email."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/feedback.py:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s ratings"
+msgstr "%s lượt đánh giá"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "%s requests"
+msgstr "%s yêu cầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s requests are waiting for a decision"
+msgstr "%s yêu cầu đang chờ quyết định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "%s requests are waiting for a decision — see Claims › Requests."
+msgstr "%s yêu cầu đang chờ quyết định — xem Hoàn tiền › Yêu cầu."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s requests waiting"
+msgstr "%s yêu cầu đang chờ"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s set aside"
+msgstr "%s đã giữ chỗ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "%s taken this year"
+msgstr "%s đã học trong năm nay"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "%s tests"
+msgstr "%s bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s waiting on managers"
+msgstr "%s đang chờ quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "%s · agreed by you now, set aside from each person's allowance"
+msgstr "%s · bạn đồng ý ngay, giữ chỗ trong ngân sách của từng người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "%s · no gaps"
+msgstr "%s · không có khoảng trống"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "%s · no gaps across %s people"
+msgstr "%s · không có khoảng trống trên %s người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "%s · nobody has taken one yet"
+msgstr "%s · chưa ai làm bài nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s%% recommend"
+msgstr "%s%% giới thiệu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s%% used what they learned"
+msgstr "%s%% đã áp dụng điều đã học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s%% would recommend the course"
+msgstr "%s%% sẽ giới thiệu khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid ", 0 if free)"
+msgstr ", 0 nếu miễn phí)"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_outside_course__validity_months
+msgid "0 when the certificate never runs out."
+msgstr "0 khi chứng chỉ không bao giờ hết hạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 agreed and not taken yet"
+msgstr "1 đã đồng ý, chưa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 answer"
+msgstr "1 câu trả lời"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "1 attempt"
+msgstr "1 lượt làm"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 course request"
+msgstr "1 yêu cầu khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "1 gap"
+msgstr "1 khoảng trống"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "1 go"
+msgstr "1 lượt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "1 hour"
+msgstr "1 giờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "1 manager has not answered the follow-up yet."
+msgstr "1 quản lý chưa trả lời câu hỏi theo dõi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "1 needs a decision"
+msgstr "1 cần quyết định"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 outside course"
+msgstr "1 khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "1 person finished this version. They get a re-read due in the days you set, and one email."
+msgstr "1 người đã học xong phiên bản này. Họ được giao đọc lại trong số ngày bạn đặt, và nhận một email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 person is on it."
+msgstr "1 người đã được ghi danh."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "1 person is still to be put on the re-read — the morning job carries on."
+msgstr "Còn 1 người chưa được giao đọc lại — tác vụ buổi sáng sẽ làm tiếp."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/feedback.py:0
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 rating"
+msgstr "1 lượt đánh giá"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "1 request"
+msgstr "1 yêu cầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 request is waiting for a decision"
+msgstr "1 yêu cầu đang chờ quyết định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "1 request is waiting for a decision — see Claims › Requests."
+msgstr "1 yêu cầu đang chờ quyết định — xem Hoàn tiền › Yêu cầu."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 request waiting"
+msgstr "1 yêu cầu đang chờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "1 taken this year"
+msgstr "1 đã học trong năm nay"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "1 test"
+msgstr "1 bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "1 waiting"
+msgstr "1 đang chờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 waiting on a manager"
+msgstr "1 đang chờ quản lý"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training_l5
+msgid "<b>Tell us how it went</b>"
+msgstr "<b>Cho chúng tôi biết khóa học thế nào</b>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "<span class=\"pbtr-fb-scale\"><span>1 = not at all</span><span>5 = very much</span></span>"
+msgstr "<span class=\"pbtr-fb-scale\"><span>1 = hoàn toàn không</span><span>5 = rất nhiều</span></span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>Link</span>"
+msgstr "<span>Đường dẫn</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>What it costs (0 if free)</span>"
+msgstr "<span>Chi phí (0 nếu miễn phí)</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>What the course is called</span>"
+msgstr "<span>Tên khóa học</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>When would you take it</span>"
+msgstr "<span>Khi nào bạn sẽ học</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>Which course</span>"
+msgstr "<span>Khóa học nào</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>Who runs it</span>"
+msgstr "<span>Đơn vị tổ chức</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "<span>Why — what it will help you do</span>"
+msgstr "<span>Vì sao — khóa học giúp bạn làm được gì</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "A few questions"
+msgstr "Vài câu hỏi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "A month after a course, the manager is asked whether the person's work has changed. No answers in this period yet."
+msgstr "Một tháng sau khóa học, quản lý được hỏi công việc của người đó có thay đổi không. Chưa có câu trả lời nào trong giai đoạn này."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "A month on"
+msgstr "Một tháng sau"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "A request goes to your manager, so it needs an employee record. Tell your HR team and this page fills in by itself."
+msgstr "Yêu cầu được gửi tới quản lý của bạn nên cần có hồ sơ nhân viên. Hãy báo nhóm nhân sự, trang này sẽ tự cập nhật."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "A request you were asked to decide is in your Approvals inbox."
+msgstr "Yêu cầu bạn được mời quyết định nằm trong hộp Phê duyệt của bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/skill_grant.py:0
+msgid "A skill is given by one course: one of ours or an outside one."
+msgstr "Một kỹ năng được trang bị bởi một khóa học: khóa nội bộ hoặc khóa bên ngoài."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Add a skill"
+msgstr "Thêm kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Add the first one"
+msgstr "Thêm khóa học đầu tiên"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Advanced Excel for finance teams"
+msgstr "Excel nâng cao cho nhóm tài chính"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Agree"
+msgstr "Đồng ý"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Agreed by the training team (%s) on the person's behalf."
+msgstr "Nhóm đào tạo (%s) đã đồng ý thay cho người này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Agreed by you now, on their behalf"
+msgstr "Bạn đồng ý ngay, thay cho họ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "Agreed this year: %s"
+msgstr "Đã đồng ý trong năm nay: %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Agreed, but the course could not be put on them: %s"
+msgstr "Đã đồng ý, nhưng không giao được khóa học cho họ: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Agreed, not taken yet"
+msgstr "Đã đồng ý, chưa học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_claims.py:0
+msgid "Agreed."
+msgstr "Đã đồng ý."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Agreed. %s is on their training page now."
+msgstr "Đã đồng ý. %s đã có trên trang đào tạo của họ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Agreed. They have the link and how to claim it back."
+msgstr "Đã đồng ý. Họ đã nhận đường dẫn và cách xin hoàn tiền."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__allowance_left_words
+msgid "Allowance left"
+msgstr "Ngân sách còn lại"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Already answered"
+msgstr "Đã trả lời"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Already on it"
+msgstr "Đã có trong khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_outside_course__kind__exam
+#: code:addons/pb_training/models/training_common.py:0
+msgid "An exam or licence"
+msgstr "Kỳ thi hoặc giấy phép"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__kind__outside
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+#: code:addons/pb_training/models/training_common.py:0
+msgid "An outside course"
+msgstr "Khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "An outside course is one somebody else runs — a college, a licensing body, an online school. Put the ones you are willing to pay for on this list with the link, the cost and the hours. People ask for them from My learning; their manager decides."
+msgstr "Khóa học bên ngoài là khóa do đơn vị khác tổ chức — trường cao đẳng, cơ quan cấp phép, trường trực tuyến. Hãy đưa những khóa bạn sẵn sàng chi trả vào danh sách này kèm đường dẫn, chi phí và số giờ. Mọi người xin học từ mục Của tôi; quản lý của họ quyết định."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_followup__state__answered
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Answered"
+msgstr "Đã trả lời"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__decided_on
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__decided_on
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__decided_on
+msgid "Answered on"
+msgstr "Trả lời ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Any job"
+msgstr "Mọi vị trí"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Anything to add?"
+msgstr "Bạn muốn bổ sung gì?"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "As many goes as they like"
+msgstr "Không giới hạn số lượt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "Ask"
+msgstr "Gửi yêu cầu"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Ask my manager"
+msgstr "Hỏi quản lý của tôi"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__due_date
+msgid "Ask on"
+msgstr "Hỏi vào ngày"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training_l5
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Ask to take a course"
+msgstr "Xin học một khóa"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__requests_count
+msgid "Asked for"
+msgstr "Đã được xin"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Asked. %(who)s decides first, then the HR lead, because it costs money. You get an email either way."
+msgstr "Đã gửi. %(who)s quyết định trước, sau đó là trưởng nhân sự, vì khóa học có chi phí. Dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Asked. %(who)s decides, and you get an email either way."
+msgstr "Đã gửi. %(who)s quyết định, và dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/delay.py:0
+msgid "Asked. %(who)s will see it and you will get an email either way."
+msgstr "Đã gửi. %(who)s sẽ xem và dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "Asked. You get an email when it is decided."
+msgstr "Đã gửi. Bạn sẽ nhận email khi có quyết định."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Asked. Your manager decides first, then the HR lead, because it costs money. You get an email either way."
+msgstr "Đã gửi. Quản lý của bạn quyết định trước, sau đó là trưởng nhân sự, vì khóa học có chi phí. Dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Asked. Your manager decides, and you get an email either way."
+msgstr "Đã gửi. Quản lý của bạn quyết định, và dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "Asking to take a course"
+msgstr "Xin học một khóa"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Asking to take it"
+msgstr "Xin học khóa này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Asks all %s questions"
+msgstr "Hỏi cả %s câu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Asks its 1 question"
+msgstr "Hỏi 1 câu duy nhất"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "At the end of %s"
+msgstr "Ở cuối khóa %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "At the level"
+msgstr "Đạt mức"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__avg_rating
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_avg_rating
+msgid "Average rating"
+msgstr "Đánh giá trung bình"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Below"
+msgstr "Dưới mức"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Below the level"
+msgstr "Dưới mức yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "By skill"
+msgstr "Theo kỹ năng"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Cancel the request"
+msgstr "Hủy yêu cầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Cancelled. Nobody needs to decide it now."
+msgstr "Đã hủy. Không ai cần quyết định nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "Careful"
+msgstr "Lưu ý"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Certificate that does not run out"
+msgstr "Chứng chỉ không hết hạn"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__validity_months
+msgid "Certificate valid for (months)"
+msgstr "Chứng chỉ có hiệu lực (tháng)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Certificate, valid %s months"
+msgstr "Chứng chỉ, hiệu lực %s tháng"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__reread
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__reread
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Changed course"
+msgstr "Khóa học đã thay đổi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Claim this course back"
+msgstr "Xin hoàn tiền khóa học này"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__claimed
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Claimed back"
+msgstr "Đã hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Claimed back this year: %s"
+msgstr "Đã hoàn tiền trong năm nay: %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Claimed back: the claim was agreed."
+msgstr "Đã hoàn tiền: yêu cầu hoàn tiền đã được đồng ý."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Claims against it"
+msgstr "Yêu cầu hoàn tiền cho khóa này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Close it: %s"
+msgstr "Lấp khoảng trống: %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Closes a skills gap: %s"
+msgstr "Lấp khoảng trống kỹ năng: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "Cost and hours cannot be below zero."
+msgstr "Chi phí và số giờ không được nhỏ hơn 0."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "Cost, hours and months are numbers."
+msgstr "Chi phí, số giờ và số tháng phải là số."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "Cost, hours and months cannot be below zero."
+msgstr "Chi phí, số giờ và số tháng không được nhỏ hơn 0."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__year
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__year
+msgid "Counts against"
+msgstr "Tính vào năm"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_feedback_request__kind__training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Course feedback"
+msgstr "Đánh giá khóa học"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_followup_list
+msgid "Course follow-ups"
+msgstr "Theo dõi sau khóa học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: model:biz.approval.process,name:pb_training.process_training_request
+#: model:ir.model,name:pb_training.model_pb_training_request
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__training_request_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__training_request_id
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_request_form
+msgid "Course request"
+msgstr "Yêu cầu khóa học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "Course request · %(who)s · %(course)s"
+msgstr "Yêu cầu khóa học · %(who)s · %(course)s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_requests
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_request_list
+msgid "Course requests"
+msgstr "Yêu cầu khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Course requests are looked after by the training team"
+msgstr "Yêu cầu khóa học do nhóm đào tạo quản lý"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Course requests waiting"
+msgstr "Yêu cầu khóa học đang chờ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Course that gives it"
+msgstr "Khóa học trang bị kỹ năng này"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__course_version
+msgid "Course version"
+msgstr "Phiên bản khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Covered"
+msgstr "Đáp ứng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_allowance__currency_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__currency_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__currency_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Days to read it again"
+msgstr "Số ngày để đọc lại"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_reread_days
+msgid "Days to read the changes"
+msgstr "Số ngày để đọc phần thay đổi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Did it work?"
+msgstr "Có hiệu quả không?"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Did they use what they learned?"
+msgstr "Họ có áp dụng điều đã học không?"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Draw a few questions per attempt from a bigger pool"
+msgstr "Mỗi lượt rút vài câu từ một ngân hàng câu hỏi lớn hơn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Each attempt draws %(n)s of %(m)s questions"
+msgstr "Mỗi lượt rút %(n)s trong %(m)s câu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Each attempt now draws %(n)s of %(m)s questions."
+msgstr "Giờ mỗi lượt rút %(n)s trong %(m)s câu."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Each person against the skills their job needs. A course that gives a skill closes the gap when they finish it."
+msgstr "Mỗi người so với các kỹ năng công việc yêu cầu. Khóa học trang bị kỹ năng sẽ lấp khoảng trống khi họ học xong."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Edit the outside course"
+msgstr "Sửa khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__issues_certificate
+msgid "Ends with a certificate"
+msgstr "Có chứng chỉ khi hoàn thành"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Every attempt now asks every question."
+msgstr "Giờ mỗi lượt hỏi tất cả các câu."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Every outside course"
+msgstr "Tất cả khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Every required skill"
+msgstr "Đủ mọi kỹ năng yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Every skill"
+msgstr "Mọi kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Every version"
+msgstr "Tất cả phiên bản"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+msgid "File name"
+msgstr "Tên tệp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Find a course or a provider"
+msgstr "Tìm khóa học hoặc đơn vị tổ chức"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Find a person or a course"
+msgstr "Tìm người hoặc khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Find a test or a course"
+msgstr "Tìm bài kiểm tra hoặc khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Find somebody by name — accents and all"
+msgstr "Tìm theo tên — có dấu hay không đều được"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__assignment_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__assignment_id
+msgid "Finished course"
+msgstr "Khóa học đã hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Finishing it gives this skill, at this level"
+msgstr "Học xong sẽ có kỹ năng này, ở mức này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Finishing it now gives %(skill)s at %(level)s."
+msgstr "Giờ học xong sẽ có %(skill)s ở mức %(level)s."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__followup_id
+msgid "Follow-up"
+msgstr "Theo dõi"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Follow-ups waiting on managers"
+msgstr "Câu hỏi theo dõi đang chờ quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "For example: Pesticide handling — test"
+msgstr "Ví dụ: Xử lý thuốc trừ sâu — bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "For example: next month, after the harvest"
+msgstr "Ví dụ: tháng sau, sau vụ thu hoạch"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "For example: step 3 now uses the new harness."
+msgstr "Ví dụ: bước 3 nay dùng dây an toàn mới."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "Free"
+msgstr "Miễn phí"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__request_id
+msgid "From a course request"
+msgstr "Từ yêu cầu khóa học"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__request_id
+msgid "From the request"
+msgstr "Từ yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Give it a name, a pass mark and a number of goes. You can ask every question, or have each attempt draw a few from a bigger pool so no two people get the same test."
+msgstr "Đặt tên, điểm đạt và số lượt làm. Bạn có thể hỏi tất cả các câu, hoặc cho mỗi lượt rút vài câu từ ngân hàng lớn hơn để không ai nhận cùng một đề."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "Give it the name the provider uses."
+msgstr "Hãy dùng tên mà đơn vị tổ chức đặt."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/outside_course.py:0
+msgid "Give the course a name — what the provider calls it."
+msgstr "Hãy đặt tên khóa học — theo tên đơn vị tổ chức dùng."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "Give the test a name."
+msgstr "Hãy đặt tên cho bài kiểm tra."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Goes"
+msgstr "Số lượt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Goes allowed (0 = as many as they like)"
+msgstr "Số lượt được làm (0 = không giới hạn)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Goes and questions drawn cannot be below zero."
+msgstr "Số lượt và số câu rút không được nhỏ hơn 0."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__job_ids
+msgid "Good for these jobs"
+msgstr "Phù hợp với các vị trí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Good for this job"
+msgstr "Phù hợp với vị trí này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Has %(have)s, the job needs %(need)s"
+msgstr "Đang ở mức %(have)s, công việc cần %(need)s"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Has %(who)s's work changed since %(course)s?"
+msgstr "Công việc của %(who)s có thay đổi kể từ khóa %(course)s không?"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Has it at %s"
+msgstr "Đã có ở mức %s"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Has their work changed since the course?"
+msgstr "Công việc của họ có thay đổi kể từ khóa học không?"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__state
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__state
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__state
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__state
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__state
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+msgid "How far it has got"
+msgstr "Tiến độ"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__ratings_count
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_ratings_count
+msgid "How many ratings"
+msgstr "Số lượt đánh giá"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "How the scores spread"
+msgstr "Phân bố điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "How was %s?"
+msgstr "Khóa %s thế nào?"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "If your manager agrees, the course is on your training page straight away."
+msgstr "Nếu quản lý đồng ý, khóa học sẽ có ngay trên trang đào tạo của bạn."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_outside_course__kind__classroom
+#: code:addons/pb_training/models/training_common.py:0
+msgid "In a classroom"
+msgstr "Học tại lớp"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "It is no longer offered when people ask for a course."
+msgstr "Khóa này không còn được đưa ra khi mọi người xin học."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "It may have been typed wrongly or already used. Nothing else is needed from you."
+msgstr "Có thể đường dẫn bị gõ sai hoặc đã được dùng. Bạn không cần làm gì thêm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Kind of skill"
+msgstr "Loại kỹ năng"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_outside_course__country_id
+msgid "Leave empty when it is open to anybody."
+msgstr "Để trống nếu ai cũng học được."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Leave it"
+msgstr "Để sau"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__skill_level_id
+msgid "Level"
+msgstr "Mức"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__url
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__url
+msgid "Link"
+msgstr "Đường dẫn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Make it and open the editor"
+msgstr "Tạo và mở trình soạn bài kiểm tra"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_feedback_request__kind__training_followup
+msgid "Manager follow-up"
+msgstr "Quản lý theo dõi"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_followup
+msgid "Manager follow-up after a course"
+msgstr "Quản lý theo dõi sau khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "Managers say work changed %s out of 5"
+msgstr "Quản lý đánh giá công việc thay đổi %s/5"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "Managers, a month on: their work changed %(n)s out of 5 · %(used)s%% used what they learned."
+msgstr "Quản lý, một tháng sau: công việc thay đổi %(n)s/5 · %(used)s%% đã áp dụng điều đã học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "Managers, a month on: their work changed %s out of 5."
+msgstr "Quản lý, một tháng sau: công việc thay đổi %s/5."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Mark as taken"
+msgstr "Đánh dấu đã học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Marked as taken."
+msgstr "Đã đánh dấu là đã học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Missing — the job needs %s"
+msgstr "Còn thiếu — công việc cần mức %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "More than they have left"
+msgstr "Nhiều hơn số còn lại"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_team
+msgid "My own training"
+msgstr "Đào tạo của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "My requests"
+msgstr "Yêu cầu của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "My skills"
+msgstr "Kỹ năng của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/analytics.py:0
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "New outside course"
+msgstr "Khóa học bên ngoài mới"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Next month, after the harvest"
+msgstr "Tháng sau, sau vụ thu hoạch"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "No"
+msgstr "Không"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "No cost"
+msgstr "Không mất phí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "No course gives it yet"
+msgstr "Chưa có khóa học nào trang bị kỹ năng này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "No job lists the skills it needs yet"
+msgstr "Chưa có vị trí nào ghi kỹ năng cần có"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "No manager has answered yet; %s follow-ups are waiting."
+msgstr "Chưa quản lý nào trả lời; %s câu hỏi theo dõi đang chờ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "No outside course matches that"
+msgstr "Không có khóa học bên ngoài nào phù hợp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "No outside courses yet"
+msgstr "Chưa có khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "No outside courses yet."
+msgstr "Chưa có khóa học bên ngoài."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "No ratings yet. Everybody who finishes it is asked two ratings and one line; a month later their manager is asked whether their work has changed."
+msgstr "Chưa có đánh giá. Ai học xong sẽ được hỏi hai điểm đánh giá và một dòng góp ý; một tháng sau quản lý của họ được hỏi công việc có thay đổi không."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "No ratings yet. Everybody who takes it is asked two ratings and one line."
+msgstr "Chưa có đánh giá. Ai học khóa này sẽ được hỏi hai điểm đánh giá và một dòng góp ý."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "No request matches that"
+msgstr "Không có yêu cầu nào phù hợp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "No requests yet"
+msgstr "Chưa có yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "No skills are set up yet. Add them under Employees › Skills first."
+msgstr "Chưa thiết lập kỹ năng nào. Hãy thêm ở Nhân viên › Kỹ năng trước."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "No test"
+msgstr "Không có bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "No test matches that"
+msgstr "Không có bài kiểm tra nào phù hợp"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "No tests yet."
+msgstr "Chưa có bài kiểm tra."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "No training allowance has been set for %(year)s, so a course that costs money cannot be agreed yet. Ask the training team to set one."
+msgstr "Chưa đặt ngân sách đào tạo cho năm %(year)s, nên chưa thể đồng ý khóa học có chi phí. Hãy nhờ nhóm đào tạo đặt ngân sách."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "No training allowance is set for this year, so only free courses and ours can be agreed."
+msgstr "Năm nay chưa đặt ngân sách đào tạo, nên chỉ có thể đồng ý các khóa miễn phí và khóa nội bộ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "Nobody asked to take a course in this period."
+msgstr "Không ai xin học khóa nào trong giai đoạn này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Nobody has a gap here"
+msgstr "Không ai có khoảng trống ở đây"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Nobody has asked for it yet."
+msgstr "Chưa ai xin học khóa này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Nobody has asked to take a course yet"
+msgstr "Chưa ai xin học khóa nào"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Nobody has asked to take a course yet."
+msgstr "Chưa ai xin học khóa nào."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/course_extras.js:0
+msgid "Nobody has finished this version yet, so nobody would be asked to read it again."
+msgstr "Chưa ai học xong phiên bản này, nên không ai phải đọc lại."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "Nobody has rated a course in this period yet."
+msgstr "Chưa ai đánh giá khóa học nào trong giai đoạn này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Nobody has taken it yet."
+msgstr "Chưa ai làm bài này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Nobody is ever moved down: a person already at this level or higher keeps theirs."
+msgstr "Không ai bị hạ mức: người đã ở mức này hoặc cao hơn vẫn giữ nguyên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Nobody matches that"
+msgstr "Không ai phù hợp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Nobody picked yet"
+msgstr "Chưa chọn ai"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Nobody's job lists the skills it needs yet."
+msgstr "Chưa có vị trí nào ghi kỹ năng cần có."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "None yet. A skill added here goes on a person's record the moment they finish the course; nobody is ever moved down."
+msgstr "Chưa có. Kỹ năng thêm ở đây sẽ ghi vào hồ sơ ngay khi người đó học xong; không ai bị hạ mức."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "None yet. A skill added here goes on a person's record when the training team marks the course taken or the claim is agreed."
+msgstr "Chưa có. Kỹ năng thêm ở đây sẽ ghi vào hồ sơ khi nhóm đào tạo đánh dấu đã học hoặc yêu cầu hoàn tiền được đồng ý."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Not done for: %s"
+msgstr "Chưa làm được cho: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Nothing is deleted. Their lesson progress on this course goes back to the start; a test they passed still stands, and so do their certificates."
+msgstr "Không có gì bị xóa. Tiến độ bài học của họ trong khóa này quay về từ đầu; bài kiểm tra đã đạt vẫn giữ nguyên, chứng chỉ cũng vậy."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "Nothing is waiting on anybody"
+msgstr "Không có gì đang chờ ai"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Nothing to show for these filters."
+msgstr "Không có gì để hiển thị với bộ lọc này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Nothing to show yet — a question appears here once somebody has been asked it."
+msgstr "Chưa có gì — một câu hỏi sẽ hiện ở đây khi đã có người được hỏi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "On average a person has %(have)s of %(need)s required skills"
+msgstr "Trung bình mỗi người có %(have)s trên %(need)s kỹ năng yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "One line is enough — for example, not this quarter: the team is short until March."
+msgstr "Một dòng là đủ — ví dụ: chưa phải quý này, nhóm thiếu người đến tháng Ba."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__kind__ours
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+#: code:addons/pb_training/models/training_common.py:0
+msgid "One of our courses"
+msgstr "Một khóa học của chúng ta"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "One of ours goes on their training page straight away. An outside course is set aside from their allowance and claimed back with the receipt and the certificate."
+msgstr "Khóa nội bộ sẽ có ngay trên trang đào tạo của họ. Khóa bên ngoài được giữ chỗ trong ngân sách của họ và hoàn tiền bằng hóa đơn và chứng chỉ."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "One of ours, one from the outside list, or one you found. Your manager decides, and the HR lead too when it costs money."
+msgstr "Khóa nội bộ, khóa trong danh sách bên ngoài, hoặc khóa bạn tự tìm. Quản lý của bạn quyết định, và cả trưởng nhân sự nếu có chi phí."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/course_version.py:0
+msgid "Only a training manager can publish a new version of a course."
+msgstr "Chỉ quản lý đào tạo mới có thể xuất bản phiên bản mới của khóa học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Only an agreed request can be marked as taken."
+msgstr "Chỉ yêu cầu đã đồng ý mới có thể đánh dấu là đã học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Only gaps"
+msgstr "Chỉ khoảng trống"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Open a job (Employees › Jobs), add the skills it needs and the level for each. Then add \"Skills it gives\" to the courses that teach them. This board shows who has what, the gaps, and the course that closes each one."
+msgstr "Mở một vị trí (Nhân viên › Vị trí), thêm các kỹ năng cần có và mức cho từng kỹ năng. Sau đó thêm \"Kỹ năng trang bị\" cho các khóa dạy kỹ năng đó. Bảng này cho thấy ai có gì, các khoảng trống và khóa học lấp từng khoảng trống."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Open the course"
+msgstr "Mở khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Open the request"
+msgstr "Mở yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Open the test"
+msgstr "Mở bài kiểm tra"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Open the test editor"
+msgstr "Mở trình soạn bài kiểm tra"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__channel_id
+msgid "Our course"
+msgstr "Khóa học nội bộ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Outside"
+msgstr "Bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model,name:pb_training.model_pb_training_outside_course
+#: model:ir.model.fields,field_description:pb_training.field_pb_feedback_request__outside_course_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__outside_course_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__outside_course_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__outside_course_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__outside_course_id
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_outside_course_form
+msgid "Outside course"
+msgstr "Khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.actions.act_window,name:pb_training.action_pb_training_outside_courses
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_outside_course_list
+msgid "Outside courses"
+msgstr "Khóa học bên ngoài"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Partly"
+msgstr "Một phần"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Pass mark"
+msgstr "Điểm đạt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "Pass mark %(mark)s%% · %(goes)s · %(pool)s"
+msgstr "Điểm đạt %(mark)s%% · %(goes)s · %(pool)s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Pass mark (%)"
+msgstr "Điểm đạt (%)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "People ask for it from My learning. Their manager decides, then the HR lead when it costs money; the cost is set aside from their allowance and claimed back with the receipt and the certificate."
+msgstr "Mọi người xin học từ mục Của tôi. Quản lý quyết định, sau đó là trưởng nhân sự nếu có chi phí; chi phí được giữ chỗ trong ngân sách của họ và hoàn tiền bằng hóa đơn và chứng chỉ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "People ask from My learning (or their own training page): one of our courses, one from the outside list, or something they found. Their manager decides, and the HR lead too when it costs money. Agreed outside courses are claimed back with the receipt and the certificate."
+msgstr "Mọi người xin học từ mục Của tôi (hoặc trang đào tạo của họ): khóa nội bộ, khóa trong danh sách bên ngoài, hoặc khóa tự tìm. Quản lý quyết định, và cả trưởng nhân sự nếu có chi phí. Khóa bên ngoài đã đồng ý được hoàn tiền bằng hóa đơn và chứng chỉ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "People can ask to take it."
+msgstr "Mọi người có thể xin học khóa này."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_requestable
+msgid "People may ask to take it"
+msgstr "Cho phép xin học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "People may ask to take it from My learning. Their manager decides; an agreed request puts the course on them at once."
+msgstr "Mọi người có thể xin học từ mục Của tôi. Quản lý quyết định; yêu cầu được đồng ý sẽ giao khóa học ngay."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "People who need it"
+msgstr "Số người cần"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "People whose job lists skills"
+msgstr "Số người có vị trí ghi kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Pick an outside course."
+msgstr "Hãy chọn một khóa học bên ngoài."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Pick one"
+msgstr "Chọn một"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "Pick one above. Your manager sees it in their inbox, and you get an email either way."
+msgstr "Chọn một khóa ở trên. Quản lý của bạn sẽ thấy trong hộp phê duyệt, và dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Pick one of our courses."
+msgstr "Hãy chọn một khóa học nội bộ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Pick one of the courses on the list."
+msgstr "Hãy chọn một khóa học trong danh sách."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Pick one of the outside courses on the list."
+msgstr "Hãy chọn một khóa học bên ngoài trong danh sách."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Pick the course."
+msgstr "Hãy chọn khóa học."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Pick the outside course."
+msgstr "Hãy chọn khóa học bên ngoài."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Pick the person."
+msgstr "Hãy chọn người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Pick the skill and the level it gives."
+msgstr "Hãy chọn kỹ năng và mức trang bị."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Pick which of our courses."
+msgstr "Hãy chọn khóa học nội bộ nào."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Publish a new version"
+msgstr "Xuất bản phiên bản mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "Publish it"
+msgstr "Xuất bản"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Put on by %s"
+msgstr "Giao bởi %s"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__put_on_by_id
+msgid "Put on by the training team"
+msgstr "Nhóm đào tạo giao"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Put on by the training team."
+msgstr "Nhóm đào tạo giao."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Put someone on a course"
+msgstr "Giao khóa học cho ai đó"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Put someone on it"
+msgstr "Giao cho ai đó"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Put them on it"
+msgstr "Giao cho họ"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/models/test_results.py:0
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Questions"
+msgstr "Câu hỏi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Questions drawn per attempt (0 = every question)"
+msgstr "Số câu rút mỗi lượt (0 = tất cả)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Questions per attempt"
+msgstr "Số câu mỗi lượt"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Rate %s"
+msgstr "Đánh giá %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__rating_ids
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim.py:0
+#: code:addons/pb_training/models/claim_approval.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__invoice_file
+msgid "Receipt"
+msgstr "Hóa đơn"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__name
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__request_ids
+msgid "Requests"
+msgstr "Yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Requests and spend"
+msgstr "Yêu cầu và chi tiêu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "Requests waiting for a decision"
+msgstr "Yêu cầu đang chờ quyết định"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Results"
+msgstr "Kết quả"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "Say how many questions each attempt draws."
+msgstr "Hãy nhập số câu mỗi lượt rút."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "Say how many questions, as a number."
+msgstr "Hãy nhập số câu, dưới dạng số."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/course_version.py:0
+msgid "Say in a line what changed. It goes in the email the people who finished the course get."
+msgstr "Hãy viết một dòng về điều đã thay đổi. Nội dung này nằm trong email gửi những người đã học xong."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Say in a line why — what it will help you do. Your manager reads it."
+msgstr "Hãy viết một dòng vì sao — khóa học giúp bạn làm được gì. Quản lý của bạn sẽ đọc."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Say in a line why — your manager reads it."
+msgstr "Hãy viết một dòng vì sao — quản lý của bạn sẽ đọc."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Say what the course is called."
+msgstr "Hãy nhập tên khóa học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "Say what you would like to take."
+msgstr "Hãy cho biết bạn muốn học gì."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Say why. They get it in an email, and a refusal with no reason is one they will ask about instead."
+msgstr "Hãy nêu lý do. Họ sẽ nhận qua email, và một lời từ chối không có lý do sẽ khiến họ phải hỏi lại."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Scores in ten bands"
+msgstr "Điểm theo mười khoảng"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Send"
+msgstr "Gửi"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__submitted_on
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__submitted_on
+msgid "Sent in on"
+msgstr "Gửi ngày"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_request__put_on_by_id
+msgid "Set when the training team agreed it on the person's behalf (\"Put someone on it\")."
+msgstr "Được ghi khi nhóm đào tạo đồng ý thay cho người đó (\"Giao cho ai đó\")."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Showing %(shown)s of %(all)s — narrow it by department, job or skill."
+msgstr "Đang hiện %(shown)s trên %(all)s — thu hẹp theo phòng ban, vị trí hoặc kỹ năng."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Showing %s of %s requests"
+msgstr "Đang hiện %s trên %s yêu cầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Showing all %s requests · press a step to narrow it"
+msgstr "Đang hiện tất cả %s yêu cầu · bấm một bước để thu hẹp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Showing the 1 request · press a step to narrow it"
+msgstr "Đang hiện 1 yêu cầu · bấm một bước để thu hẹp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Showing the first %(shown)s of %(all)s — narrow it with a step or a search."
+msgstr "Đang hiện %(shown)s đầu tiên trên %(all)s — thu hẹp bằng một bước hoặc tìm kiếm."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__skill_id
+msgid "Skill"
+msgstr "Kỹ năng"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_skill_grant
+msgid "Skill a course gives"
+msgstr "Kỹ năng khóa học trang bị"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_skill_grant__skill_type_id
+msgid "Skill type"
+msgstr "Loại kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "Skills"
+msgstr "Kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Skills against each job, and the course that closes the gap"
+msgstr "Kỹ năng theo từng vị trí, và khóa học lấp khoảng trống"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/skill_grant.py:0
+msgid "Skills from a finished course: %s."
+msgstr "Kỹ năng từ khóa học đã hoàn thành: %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__skill_grant_ids
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_skill_grant_ids
+msgid "Skills it gives"
+msgstr "Kỹ năng trang bị"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/skills_lens.js:0
+msgid "Skills missing"
+msgstr "Kỹ năng còn thiếu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Skills shows the people you look after"
+msgstr "Kỹ năng cho thấy những người bạn phụ trách"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Skills · your team"
+msgstr "Kỹ năng · nhóm của bạn"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_followup__state__skipped
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Skipped"
+msgstr "Bỏ qua"
+
+#. module: pb_training
+#: model:biz.approval.process,description:pb_training.process_training_request
+msgid "Somebody asking to take a course — one of ours, one from the outside list, or one they found — with why, when and what it costs against their training allowance."
+msgstr "Ai đó xin học một khóa — khóa nội bộ, khóa trong danh sách bên ngoài, hoặc khóa tự tìm — kèm lý do, thời gian và chi phí so với ngân sách đào tạo."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_delay__reason_kind__other
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__kind__other
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Something else"
+msgstr "Khóa khác"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_version_pending
+msgid "Still putting people on the re-read"
+msgstr "Vẫn đang giao đọc lại"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__taken_count
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__taken
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Taken"
+msgstr "Đã học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Taken or claimed back"
+msgstr "Đã học hoặc đã hoàn tiền"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+msgid "Taken this year"
+msgstr "Đã học trong năm nay"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "Tell us how it went"
+msgstr "Cho chúng tôi biết khóa học thế nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Tests are written by the training team"
+msgstr "Bài kiểm tra do nhóm đào tạo soạn"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Thank you"
+msgstr "Cảm ơn bạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "That cannot be below zero."
+msgstr "Không được nhỏ hơn 0."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/outside_lens.js:0
+#: code:addons/pb_training/static/src/js/training_board.js:0
+msgid "That course could not be opened."
+msgstr "Không mở được khóa học này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/assignment.py:0
+#: code:addons/pb_training/models/pb_training.py:0
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "That course is not here any more."
+msgstr "Khóa học này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "That is more than is left. The allowance for %(year)s is %(allowance)s; %(agreed)s is already agreed and %(committed)s is set aside for courses agreed but not claimed yet, so %(left)s is left and this course is %(asked)s."
+msgstr "Số tiền vượt quá phần còn lại. Ngân sách năm %(year)s là %(allowance)s; %(agreed)s đã được đồng ý và %(committed)s đang giữ chỗ cho các khóa đã đồng ý nhưng chưa hoàn tiền, nên còn %(left)s trong khi khóa này là %(asked)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "That is not here any more."
+msgstr "Mục này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/skill_grant.py:0
+msgid "That level belongs to another kind of skill."
+msgstr "Mức này thuộc loại kỹ năng khác."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "That outside course is archived."
+msgstr "Khóa học bên ngoài này đã được lưu trữ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "That outside course is not here any more."
+msgstr "Khóa học bên ngoài này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "That request could not be cancelled. It may already be decided — ask the training team."
+msgstr "Không hủy được yêu cầu. Có thể yêu cầu đã được quyết định — hãy hỏi nhóm đào tạo."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "That request could not be sent."
+msgstr "Không gửi được yêu cầu."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "That request could not be sent. Try again, and tell the training team if it keeps happening."
+msgstr "Không gửi được yêu cầu. Hãy thử lại, và báo nhóm đào tạo nếu vẫn lỗi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "That request is already closed."
+msgstr "Yêu cầu này đã đóng."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "That request is already under way, so it cannot be cancelled from here. Ask the training team."
+msgstr "Yêu cầu đang được thực hiện nên không thể hủy ở đây. Hãy hỏi nhóm đào tạo."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "That request is not here any more."
+msgstr "Yêu cầu này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "That request is not one of yours."
+msgstr "Yêu cầu này không phải của bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "That test is not here any more."
+msgstr "Bài kiểm tra này không còn nữa."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "The March intake"
+msgstr "Đợt tuyển sinh tháng Ba"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__claim_id
+msgid "The claim"
+msgstr "Yêu cầu hoàn tiền"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "The cost cannot be below zero."
+msgstr "Chi phí không được nhỏ hơn 0."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "The cost is a number — 0 if it is free."
+msgstr "Chi phí là một con số — 0 nếu miễn phí."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__assignment_id
+msgid "The course put on them"
+msgstr "Khóa học đã giao cho họ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "The course requests could not be read just now"
+msgstr "Hiện không đọc được các yêu cầu khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "The editor opens next. Add the questions and mark the right answers."
+msgstr "Trình soạn sẽ mở tiếp theo. Hãy thêm câu hỏi và đánh dấu đáp án đúng."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "The editor opens with one section. Put all the questions under it; each attempt draws the number you set."
+msgstr "Trình soạn mở với một phần. Đặt tất cả câu hỏi vào phần đó; mỗi lượt sẽ rút đúng số câu bạn đặt."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "The first version."
+msgstr "Phiên bản đầu tiên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "The hardest questions"
+msgstr "Những câu khó nhất"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_outside_course__job_ids
+msgid "The jobs it is a good fit for. The catalogue can be filtered by job."
+msgstr "Các vị trí phù hợp. Danh mục có thể lọc theo vị trí."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "The link"
+msgstr "Đường dẫn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "The outside courses could not be read just now"
+msgstr "Hiện không đọc được các khóa học bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "The outside list is kept by the training team"
+msgstr "Danh sách khóa học bên ngoài do nhóm đào tạo quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "The pass mark is between 1 and 100."
+msgstr "Điểm đạt nằm trong khoảng 1 đến 100."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "The pass mark, the goes and the questions drawn are numbers."
+msgstr "Điểm đạt, số lượt và số câu rút phải là số."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "The provider's page"
+msgstr "Trang của đơn vị tổ chức"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__feedback_request_id
+msgid "The questions sent"
+msgstr "Bộ câu hỏi đã gửi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "The results could not be read."
+msgstr "Không đọc được kết quả."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "The rules first, the questions next"
+msgstr "Quy định trước, câu hỏi sau"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "The skills could not be read just now"
+msgstr "Hiện không đọc được kỹ năng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "The test"
+msgstr "Bài kiểm tra"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "The test has %(m)s questions, so drawing %(n)s is every question. Pick a smaller number, or 0 for all."
+msgstr "Bài kiểm tra có %(m)s câu, nên rút %(n)s câu là hỏi tất cả. Hãy chọn số nhỏ hơn, hoặc 0 để hỏi tất cả."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "The tests could not be read just now"
+msgstr "Hiện không đọc được các bài kiểm tra"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "The time to answer has passed. Thank you all the same."
+msgstr "Đã hết thời gian trả lời. Dù sao cũng cảm ơn bạn."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "The training team has not put any outside courses on the list yet. Use \"Something else\" for a course you found."
+msgstr "Nhóm đào tạo chưa đưa khóa học bên ngoài nào vào danh sách. Hãy dùng \"Khóa khác\" cho khóa bạn tự tìm."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_assignment__course_version
+msgid "The version of the course this was finished on (or, for a re-read, the version it asks them to read)."
+msgstr "Phiên bản khóa học lúc hoàn thành (hoặc, với lượt đọc lại, phiên bản cần đọc)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/delay_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__manager_id
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "There is no course of ours to ask for right now — you may already be on all of them."
+msgstr "Hiện không có khóa nội bộ nào để xin — có thể bạn đã học tất cả."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "These questions have been answered, so the link has closed itself."
+msgstr "Các câu hỏi này đã được trả lời, nên đường dẫn đã tự đóng."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "They get this in an email, and it is on their own page."
+msgstr "Họ nhận nội dung này qua email và trên trang của họ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "This claim is for a course request that was agreed. What it cost when you asked: %s."
+msgstr "Yêu cầu hoàn tiền này dành cho một yêu cầu khóa học đã được đồng ý. Chi phí lúc bạn xin: %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "This course no longer gives it"
+msgstr "Khóa học này không còn trang bị kỹ năng đó"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "This link does not work"
+msgstr "Đường dẫn này không dùng được"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "This link has closed"
+msgstr "Đường dẫn này đã đóng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "This link is open until %s and works once."
+msgstr "Đường dẫn mở đến %s và chỉ dùng được một lần."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/test_results.py:0
+msgid "This test has more than one section. Set how many questions each section draws in the test editor."
+msgstr "Bài kiểm tra có nhiều hơn một phần. Hãy đặt số câu mỗi phần rút trong trình soạn bài kiểm tra."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_version_published_on
+msgid "This version since"
+msgstr "Phiên bản này từ ngày"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Three short questions. The training team uses them to spend on the courses that work."
+msgstr "Ba câu hỏi ngắn. Nhóm đào tạo dùng chúng để chi cho những khóa học hiệu quả."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__pb_requestable
+msgid "Ticked, the course is offered on \"Ask to take a course\". The manager decides, and an agreed request puts the course on the person at once."
+msgstr "Khi đánh dấu, khóa học sẽ có trong \"Xin học một khóa\". Quản lý quyết định, và yêu cầu được đồng ý sẽ giao khóa học ngay."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "To ask for a course, open My learning and press Ask to take a course."
+msgstr "Để xin học, hãy mở mục Của tôi và bấm Xin học một khóa."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training claims and course requests"
+msgstr "Hoàn tiền đào tạo và yêu cầu khóa học"
+
+#. module: pb_training
+#: model:mail.template,name:pb_training.mail_template_course_changed
+msgid "Training: a course you finished has changed"
+msgstr "Đào tạo: khóa học bạn đã học xong đã thay đổi"
+
+#. module: pb_training
+#: model:mail.template,name:pb_training.mail_template_training_followup
+msgid "Training: has the course made a difference?"
+msgstr "Đào tạo: khóa học có tạo ra khác biệt không?"
+
+#. module: pb_training
+#: model:mail.template,name:pb_training.mail_template_course_feedback
+msgid "Training: how was the course?"
+msgstr "Đào tạo: khóa học thế nào?"
+
+#. module: pb_training
+#: model:mail.template,name:pb_training.mail_template_request_approved
+msgid "Training: your course request was agreed"
+msgstr "Đào tạo: yêu cầu khóa học của bạn đã được đồng ý"
+
+#. module: pb_training
+#: model:mail.template,name:pb_training.mail_template_request_refused
+msgid "Training: your course request was not agreed"
+msgstr "Đào tạo: yêu cầu khóa học của bạn không được đồng ý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Turn down"
+msgstr "Từ chối"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_form
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_delay_form
+msgid "Turn it down"
+msgstr "Từ chối"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Turn this request down"
+msgstr "Từ chối yêu cầu này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+msgid "Turned down or cancelled"
+msgstr "Đã từ chối hoặc đã hủy"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+#: code:addons/pb_training/models/pb_training_claims.py:0
+msgid "Turned down, and they have been told why."
+msgstr "Đã từ chối, và họ đã được báo lý do."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Two ratings and one line. The training team reads them to make the course better for the next person."
+msgstr "Hai điểm đánh giá và một dòng góp ý. Nhóm đào tạo đọc để cải thiện khóa học cho người sau."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Valid for (months, 0 = does not run out)"
+msgstr "Hiệu lực (tháng, 0 = không hết hạn)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_version
+msgid "Version"
+msgstr "Phiên bản"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/course_version.py:0
+msgid "Version %(n)s published: %(note)s — %(people)s finished the last version and are asked to read it again."
+msgstr "Đã xuất bản phiên bản %(n)s: %(note)s — %(people)s người đã học xong phiên bản trước và được yêu cầu đọc lại."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Version %(n)s, since %(when)s. What changed: %(note)s"
+msgstr "Phiên bản %(n)s, từ %(when)s. Thay đổi: %(note)s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Version %(v)s is published. %(done)s of %(n)s people are on the re-read now; the morning job puts on the other %(left)s."
+msgstr "Đã xuất bản phiên bản %(v)s. %(done)s trên %(n)s người đã được giao đọc lại; tác vụ buổi sáng sẽ giao cho %(left)s người còn lại."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Version %(v)s is published. %(n)s people who finished the last one have a re-read and an email saying what changed."
+msgstr "Đã xuất bản phiên bản %(v)s. %(n)s người đã học xong phiên bản trước được giao đọc lại và nhận email về những thay đổi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/course_version.py:0
+msgid "Version %s"
+msgstr "Phiên bản %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Version %s is published. Nobody had finished the last one, so nobody is asked to read it again."
+msgstr "Đã xuất bản phiên bản %s. Chưa ai học xong phiên bản trước, nên không ai phải đọc lại."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_version_log
+msgid "Version history"
+msgstr "Lịch sử phiên bản"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/requests_lens.js:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_request__state__submitted
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Waiting for a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Waiting on %s"
+msgstr "Đang chờ %s"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_followup__state__sent
+#: code:addons/pb_training/models/training_common.py:0
+msgid "Waiting on the manager"
+msgstr "Đang chờ quản lý"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "Want to learn something? Ask for one of our courses, one from the outside list, or a course you found. Your manager decides, and you get an email either way."
+msgstr "Muốn học điều gì đó? Hãy xin một khóa nội bộ, một khóa trong danh sách bên ngoài, hoặc khóa bạn tự tìm. Quản lý của bạn quyết định, và dù kết quả thế nào bạn cũng nhận email."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Was it useful?"
+msgstr "Khóa học có hữu ích không?"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "What"
+msgstr "Khóa học"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_version_note
+msgid "What changed"
+msgstr "Điều đã thay đổi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+msgid "What changed (it goes in the email)"
+msgstr "Điều đã thay đổi (sẽ có trong email)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+msgid "What is left of their allowance"
+msgstr "Ngân sách còn lại của họ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "What is left of their allowance after this"
+msgstr "Ngân sách còn lại sau khóa này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__amount
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_form
+msgid "What it cost"
+msgstr "Chi phí"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__cost
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__amount
+msgid "What it costs"
+msgstr "Chi phí"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "What it costs ("
+msgstr "Chi phí ("
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "What it costs (0 if free)"
+msgstr "Chi phí (0 nếu miễn phí)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__blurb
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_outside_course_form
+msgid "What it is, in a sentence or two"
+msgstr "Mô tả ngắn trong một hai câu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "What it is, who runs it, what it costs"
+msgstr "Khóa học gì, ai tổ chức, chi phí bao nhiêu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/course_extras.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "What people said"
+msgstr "Mọi người nói gì"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "What the course is called"
+msgstr "Tên khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_outside_course_form
+msgid "What the provider calls it"
+msgstr "Tên theo đơn vị tổ chức"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__kind
+msgid "What they are asking for"
+msgstr "Họ xin học gì"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "What would you change?"
+msgstr "Bạn muốn thay đổi điều gì?"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "What would you like to learn?"
+msgstr "Bạn muốn học gì?"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__pb_reread_days
+msgid "When a new version is published, the people who finished the last one have this many days to read it again."
+msgstr "Khi xuất bản phiên bản mới, những người đã học xong phiên bản trước có số ngày này để đọc lại."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "When it costs money, the HR lead decides after your manager. If it is agreed, the cost is set aside from your allowance and you claim it back with the receipt and the certificate."
+msgstr "Nếu có chi phí, trưởng nhân sự quyết định sau quản lý của bạn. Nếu được đồng ý, chi phí được giữ chỗ trong ngân sách của bạn và bạn xin hoàn tiền bằng hóa đơn và chứng chỉ."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__when_words
+msgid "When they would take it"
+msgstr "Khi nào họ sẽ học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "When would you take it"
+msgstr "Khi nào bạn sẽ học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/delay_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "Which course"
+msgstr "Khóa học nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+msgid "Who asked"
+msgstr "Ai đã xin"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__employee_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__employee_id
+msgid "Who is asking"
+msgstr "Người xin"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/request_approval.py:0
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_outside_course__provider
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__provider
+msgid "Who runs it"
+msgstr "Đơn vị tổ chức"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_followup__employee_id
+msgid "Who took it"
+msgstr "Người đã học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/outside_lens.xml:0
+#: code:addons/pb_training/static/src/xml/requests_lens.xml:0
+msgid "Why (they read it in the email)"
+msgstr "Lý do (họ sẽ đọc trong email)"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_claim__refuse_note
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_delay__refuse_note
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_request__refuse_note
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_form
+#: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_delay_form
+msgid "Why it was turned down"
+msgstr "Lý do bị từ chối"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "Why — what it will help you do"
+msgstr "Vì sao — khóa học giúp bạn làm được gì"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_recommend_pct
+msgid "Would recommend (%)"
+msgstr "Sẽ giới thiệu (%)"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Would you recommend it?"
+msgstr "Bạn có giới thiệu khóa học này không?"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/request.py:0
+msgid "You do not have an employee record yet, so there is nobody to ask for. Tell your HR team."
+msgstr "Bạn chưa có hồ sơ nhân viên nên chưa thể gửi yêu cầu. Hãy báo nhóm nhân sự."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "You do not have an employee record yet, so there is nowhere to pay a claim into. Tell your HR team."
+msgstr "Bạn chưa có hồ sơ nhân viên nên chưa có nơi nhận tiền hoàn. Hãy báo nhóm nhân sự."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_requests
+msgid "You have not asked for a course yet"
+msgstr "Bạn chưa xin học khóa nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Your allowance for %(year)s: %(left)s left, after %(set)s set aside for courses already agreed."
+msgstr "Ngân sách năm %(year)s của bạn: còn %(left)s, sau khi giữ chỗ %(set)s cho các khóa đã đồng ý."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Your allowance for %(year)s: %(left)s left."
+msgstr "Ngân sách năm %(year)s của bạn: còn %(left)s."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_feedback
+msgid "Your answers are with the training team. There is nothing left to do here."
+msgstr "Câu trả lời của bạn đã đến nhóm đào tạo. Bạn không cần làm gì thêm."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_catalogue.py:0
+msgid "Your decision is recorded. It now waits on the next person."
+msgstr "Quyết định của bạn đã được ghi lại. Yêu cầu đang chờ người tiếp theo."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_requests_block.xml:0
+msgid "Your job also needs:"
+msgstr "Công việc của bạn còn cần:"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Your manager decides first, then the HR lead, because it costs money."
+msgstr "Quản lý của bạn quyết định trước, sau đó là trưởng nhân sự, vì khóa học có chi phí."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_requests_block.js:0
+msgid "Your manager decides."
+msgstr "Quản lý của bạn quyết định."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/skills_lens.xml:0
+msgid "Your own skills are on My learning."
+msgstr "Kỹ năng của bạn có ở mục Của tôi."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_tests_lens.xml:0
+msgid "Your own tests are inside your courses on My learning."
+msgstr "Bài kiểm tra của bạn nằm trong các khóa học ở mục Của tôi."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_claims
+msgid "Your training allowance"
+msgstr "Ngân sách đào tạo của bạn"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Your training allowance for %(year)s: %(left)s left, after %(set)s set aside for courses already agreed."
+msgstr "Ngân sách đào tạo năm %(year)s của bạn: còn %(left)s, sau khi giữ chỗ %(set)s cho các khóa đã đồng ý."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_skills.py:0
+msgid "Your training allowance for %(year)s: %(left)s left."
+msgstr "Ngân sách đào tạo năm %(year)s của bạn: còn %(left)s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "by %s people"
+msgstr "bởi %s người"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_tests_lens.js:0
+msgid "by 1 person"
+msgstr "bởi 1 người"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/claim_approval.py:0
+#: code:addons/pb_training/models/request_approval.py:0
+msgid "this is more than they have left"
+msgstr "số này nhiều hơn phần còn lại của họ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "work changed %s/5"
+msgstr "công việc thay đổi %s/5"

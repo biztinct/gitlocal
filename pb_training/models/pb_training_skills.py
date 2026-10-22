@@ -323,6 +323,19 @@ class PbMyTrainingL5(models.AbstractModel):
             order='name', limit=200)
         facts = self.env['pb.training.claim'].sudo()._facts_for(
             emp, fields.Date.today().year)
+        left = money_words(self.env, facts['left'], facts['currency'])
+        committed = money_words(self.env, facts.get('committed', 0.0),
+                                facts['currency'])
+        if not facts['allowance']:
+            words = _("No training allowance is set for this year, so only "
+                      "free courses and ours can be agreed.")
+        elif facts.get('committed'):
+            words = _("Your training allowance for %(year)s: %(left)s left, "
+                      "after %(set)s set aside for courses already agreed.",
+                      year=facts['year'], left=left, set=committed)
+        else:
+            words = _("Your training allowance for %(year)s: %(left)s left.",
+                      year=facts['year'], left=left)
         return {
             'has_employee': True,
             'manager': emp.parent_id.name or '',
@@ -343,6 +356,7 @@ class PbMyTrainingL5(models.AbstractModel):
                 'blurb': o.blurb or '',
             } for o in outside if o.id not in busy_outside],
             'allowance': {
+                'words': words,
                 'set': bool(facts['allowance']),
                 'year': facts['year'],
                 'left': facts['left'],
@@ -391,7 +405,10 @@ class PbMyTrainingL5(models.AbstractModel):
         return {'request_id': req.id, 'course_name': req.course_name or '',
                 'provider': req.provider or '',
                 'amount': req.amount or 0.0,
-                'amount_words': req.amount_words()}
+                'amount_words': req.amount_words(),
+                'words': _("This claim is for a course request that was "
+                           "agreed. What it cost when you asked: %s.",
+                           req.amount_words())}
 
     @api.model
     def my_skills(self):
@@ -426,6 +443,11 @@ class PbMyTrainingL5(models.AbstractModel):
         return [{
             'id': r.id,
             'kind': r.kind,
+            'words': _("Rate %s", r._pb_course_name())
+            if r.kind == 'training' else _(
+                "Has %(who)s's work changed since %(course)s?",
+                who=r.subject_employee_id.sudo().name or '',
+                course=r._pb_course_name()),
             'course': r._pb_course_name(),
             'about': r.subject_employee_id.sudo().name or '',
             'url': '/my/training/feedback/%s' % r.token,

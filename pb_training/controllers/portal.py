@@ -23,6 +23,7 @@ import logging
 from odoo import _, http
 from odoo.exceptions import AccessError, UserError
 from odoo.http import content_disposition, request
+from odoo.tools.misc import format_date
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 _logger = logging.getLogger(__name__)
@@ -698,14 +699,26 @@ class PbTrainingPortal(CustomerPortal):
         return self._tr_feedback_page(token, req, status)
 
     def _tr_feedback_page(self, token, req, status):
+        env = request.env
+        course = req._pb_course_name() if req else ''
+        about = req.subject_employee_id.sudo().name if req else ''
+        heading = env._("How was %s?", course) \
+            if (req and req.kind == 'training') else \
+            env._("Has %(who)s's work changed since %(course)s?", who=about,
+                  course=course)
+        window = env._("This link is open until %s and works once.",
+                       format_date(env, req.window_end)) \
+            if (req and req.window_end) else ''
         return request.render('pb_training.portal_training_feedback', {
             'status': status,
             'token': token,
+            'heading': heading,
+            'window_words': window,
             'kind': req.kind if req else '',
             'course': req._pb_course_name() if req else '',
             'about': req.subject_employee_id.sudo().name if req else '',
-            'window_end': str(req.window_end) if (req and req.window_end)
-            else '',
+            'window_end': format_date(request.env, req.window_end)
+            if (req and req.window_end) else '',
             'questions': req.questions() if (req and status == 'ok') else [],
         })
 

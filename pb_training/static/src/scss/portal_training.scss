@@ -692,3 +692,50 @@ body:has(.o_survey_form) .modal-body {
 .pbtr-attend--no_employee .pbtr-attend-ic { background: #FEF2F2; color: #B91C1C; }
 .pbtr-attend-what { display: flex; flex-direction: column; gap: 2px; margin: 6px 0 12px; color: #475569; b { color: #1B1733; } }
 .pbtr-attend-form { margin: 14px 0 10px; .pbme-btn { width: 100%; justify-content: center; min-height: 48px; font-size: 16px; } }
+
+// ------------------------------------------------- LEARNING L5
+// Ask to take a course, the feedback asks on /my/training, and the
+// course feedback page. Literal colours (R39), light-only like the rest.
+.pbtr-feedback-ask { padding: 14px 18px; margin-bottom: 16px; border-left: 3px solid #5A4BB0; }
+.pbtr-feedback-ask-h { display: flex; align-items: center; gap: 8px; color: #1B1733; margin-bottom: 6px; }
+.pbtr-feedback-line { margin: 6px 0 0; }
+.pbtr-outside-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.pbtr-outside {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px;
+    border: 1px solid #E2E8F0; background: #FFFFFF; cursor: pointer;
+    input { margin-top: 4px; }
+    &:has(input:checked) { border-color: #5A4BB0; background: #F6F4FD; }
+}
+.pbtr-outside-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; b { color: #1B1733; } }
+.pbtr-outside-cost { font-weight: 700; color: #1B1733; white-space: nowrap; }
+.pbtr-inline-form { display: inline; margin: 0; }
+
+.pbtr-fb { max-width: 560px; margin: 28px auto; padding: 0 16px; }
+.pbtr-fb-card { padding: 26px 24px; h1 { font-size: 22px; color: #1B1733; margin: 8px 0 10px; } }
+.pbtr-fb-eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #5A4BB0; }
+.pbtr-fb-form { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; .pbme-btn { align-self: flex-start; min-height: 44px; } }
+.pbtr-fb-q {
+    border: 0; padding: 0; margin: 0;
+    legend { font-size: 15px; font-weight: 650; color: #1B1733; margin-bottom: 8px; }
+    textarea { width: 100%; border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 12px; font: inherit; }
+}
+.pbtr-fb-stars { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pbtr-fb-star {
+    position: relative;
+    input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    span {
+        display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center;
+        border: 1px solid #E2E8F0; background: #FFFFFF; font-weight: 700; font-size: 16px; color: #334155; cursor: pointer;
+    }
+    input:checked + span { background: #5A4BB0; border-color: #5A4BB0; color: #FFFFFF; }
+    input:focus-visible + span { box-shadow: 0 0 0 3px #C7D2FE; }
+}
+.pbtr-fb-scale { display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: #64748B; }
+.pbtr-fb-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.pbtr-fb-choice {
+    position: relative;
+    input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    span { display: inline-flex; padding: 10px 18px; border-radius: 99px; border: 1px solid #E2E8F0; background: #FFFFFF; font-weight: 650; color: #334155; cursor: pointer; }
+    input:checked + span { background: #5A4BB0; border-color: #5A4BB0; color: #FFFFFF; }
+    input:focus-visible + span { box-shadow: 0 0 0 3px #C7D2FE; }
+}
