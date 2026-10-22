@@ -112,9 +112,13 @@ def outside(name, **vals):
     return rec
 
 
+# A DEMO job first (payobook also has a tester's own "… Agronomist").
 agro_job = env['hr.job'].sudo().search([
-    ('name', 'ilike', 'agronomist'),
-    ('company_id', 'in', [company.id, False])], order='id', limit=1)
+    ('name', '=ilike', 'DEMO%agronomist%'),
+    ('company_id', 'in', [company.id, False])], order='id', limit=1) or \
+    env['hr.job'].sudo().search([
+        ('name', 'ilike', 'agronomist'),
+        ('company_id', 'in', [company.id, False])], order='id', limit=1)
 licence = outside(
     'DEMO Pesticide applicator licence', provider='DEMO Southern Ag College',
     url='https://example.com/pesticide-licence', cost=3000000.0, hours=8.0,
@@ -187,8 +191,9 @@ if course:
 grant(spraying, lv(field_t, 'DEMO Good'), outside_course_id=licence)
 grant(soil_t, lv(field_t, 'DEMO Basic'), outside_course_id=soil)
 
+# Only a DEMO job is given required skills; a missing one is made.
 line_job = env['hr.job'].sudo().search([
-    ('name', 'ilike', 'line leader'),
+    ('name', '=ilike', 'DEMO%line leader%'),
     ('company_id', 'in', [company.id, False])], limit=1)
 if not line_job:
     line_job = env['hr.job'].sudo().create({'name': 'DEMO Line leader',
