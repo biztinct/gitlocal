@@ -1,7 +1,7 @@
 # LEARNING L4 — Sessions, attendance and toolbox talks — report
 
 Implementer: Opus, 2026-10-22. Spec: `L4_SESSIONS_SIGNOFF.md` minus the LD5 cuts (no practical sign-off). Ledger: `LEARNING_LEDGER.md` (candidate rows from LN45 in §5).
-Status: **DEPLOYED ×4 DBs 2026-10-22 16:22 AEDT (DONE 05:22 UTC)** — live walk pending (Fable, LN16). Not pushed.
+Status: **COMPLETE** — LIVE ×4 DBs 2026-10-22 16:22 AEDT (DONE 05:22 UTC); live walk by Fable passed. One small fix (19.0.1.8.1) committed, not deployed — ships with L5. Not pushed.
 
 ## 1. What shipped (committed on 19.1, not pushed)
 
@@ -161,7 +161,7 @@ occurrences the new pages need); text-level merge, pure additions (LN29). "Sessi
 chuyện an toàn đầu ca**. Mail bodies stay English (LD10). Auto-generated technical field labels ("Booked Count" …) are not
 translated (they are not on any screen).
 
-## 5. Ledger rows to add after the deploy (candidates, from LN45)
+## 5. Ledger rows (written as LN45–LN51; the list below is what was found during the build)
 
 - LN45: **The stock `/report/barcode` route answers 500 on the live box and locally** — reportlab has no `rlPyCairo`
   backend. Draw QR codes with the `qrcode` library (10.2.0, present on both) as an inline `data:image/png` — it also
@@ -200,6 +200,10 @@ translated (they are not on any screen).
    shows on a training page for them and no email goes to them.
 5. **A course taught in a room with no session yet** shows on the learner's page as "the training team books you on a
    session". If a session is never booked, its due date still passes and the usual reminders run.
+6. **Time zones on payobook (demo data):** the demo users are on Sydney time and the demo company's own address is on
+   Brussels time, so a session's printed times depend on who reads them. Real customers set their own; say if you want the
+   demo company set to Vietnam time.
+7. **Required training went from 12,066 to 16,561 missing on payobook** because of the group-4 rule (item 1) — expected.
 
 ## 8. Deploy plan (as at the gate) — normal tier
 
@@ -306,3 +310,35 @@ Needs a specific person — as server-side calls (`odoo-bin shell -d payobook`, 
 | Manager's own sessions | 2326 (booked on session 1) | `pb.my.training.home()['sessions']` | `next.id == 1` |
 | HR lead's attended session | demo.hr@example.com (6678, attended session 2) | `pb.my.training.home()['courses']` → course 290 | `finished True`; Certificates register has their "DEMO Site safety walk — certificate (…)" |
 | demo.learner@example.com (5344) | portal-only, no employee record (L3 finding) | — | not on any session: My sessions block absent (correct) |
+
+## 11. Live walk (Fable, payobook.com, 2026-10-22) — PASSED
+
+Admin tab (head of training, company 5), plus the §10 server-side calls as the named users (rolled back):
+- **Numbers › Sessions:** "2 closed sessions · 20 hours of training · 94% attended · 6% did not come", by kind / trainer /
+  course; the "Every course" filter lists both DEMO courses.
+- **Courses › Sessions:** headline "1 session coming up · 14 seats booked", Log a toolbox talk, New session, week strip
+  Thu 22 – Wed 28, the numbers row; Coming up card "Invitations sent · On site · Thu 29 Oct 2026 · 13:00–15:00 · DEMO Hall A
+  · 14 of 14 seats · 2 waiting"; last-30-days cards for the toolbox talk and the closed session.
+- **Session 1 page:** every button and the "what happens next" line; 16 people with Booked / Mark attended / Did not come.
+- **Sign-in sheet PDF live:** 200, application/pdf, 363,427 bytes, `%PDF-1.4` — the first live render, one document.
+- **Overview:** "0 Sessions to close" chip. **Required:** missing went 12,066 → 16,561 (the group-4 rule, expected).
+- Console clean on every screen. Start the session was not pressed on live (it would leave the demo session "under way"
+  for a week); the QR check in the shell stands.
+- **Server-side:** demo.field — next = session 1 booked, calendar link ok, file starts `BEGIN:VCALENDAR`, course 290
+  "session" + booked, a scan before the start → "not yet", Vietnamese "Tại hiện trường" / "Th 5 29 thg 10 2026"; lam.ngo —
+  toolbox allowed, team mode, 30 people, his next = session 1; demo.hr — course 290 finished; 9 attendance certificates on file.
+
+**One inconsistency found in the walk — fixed, ships with L5:** the number "Sessions in the next 7 days" counted session 1
+on Thu 29 Oct (today + 7) while the week strip runs Thu 22 – Wed 28 and showed no dot for it. The number (and the Overview's
+"sessions this week") now use the strip's own seven days (today … today + 6, the reader's days). Test
+`test_t13_this_week_is_the_strips_seven_days`; all 51 session and rail tests pass. pb_training **19.0.1.8.1**, committed, not
+deployed (the coordinator's instruction) — it rides L5's pb_training deploy (ledger LN50).
+
+## 12. Commits (on 19.1, not pushed)
+
+- `029e4c178` wip — models, facade, screens, portal, mails, reports, LD11, tests (installs)
+- `820873634` wip — Vietnamese, demo seed, test fixes, report stub (installs)
+- `2d5040acb` fix — walk fixes (QR drawn in-house, English mails, start a planned session, toolbox course membership,
+  wording) + local screenshots — **the deployed tree**
+- `b86f33313` docs — report at the gate; `73c7b4793` docs — deploy record and login table
+- closing commit — week-figure fix (19.0.1.8.1, ships with L5), this report's walk section, ledger rows LN45–LN51, phase log

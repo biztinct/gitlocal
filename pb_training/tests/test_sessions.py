@@ -667,6 +667,20 @@ class TestT13Numbers(SessionCase):
         self.assertEqual(len(board['week']), 7)
         self.assertTrue(board['week'][0]['today'])
 
+    def test_t13_this_week_is_the_strips_seven_days(self):
+        """Live-walk finding: the figure counted a session on day 8."""
+        board = self._board(self.trainer)
+        today = board._local_today()
+        utc = lambda day, h: datetime(day.year, day.month, day.day, h, 0)
+        self._session(start=utc(today + timedelta(days=6), 10), seats=5)
+        day8 = self._session(start=utc(today + timedelta(days=7), 10),
+                             seats=5)
+        data = board.sessions_board()
+        self.assertEqual(data['kpis']['this_week'], 1)
+        self.assertEqual(sum(d['count'] for d in data['week']), 1)
+        self.assertEqual(board.overview()['sessions']['this_week'], 1)
+        self.assertIn(day8.id, [c['id'] for c in data['upcoming']])
+
     def test_t13_numbers_add_up_and_the_sheet_is_there(self):
         rec = self._session(days=-2, minutes=60)
         rec._book(self.e_one | self.e_two | self.e_three)

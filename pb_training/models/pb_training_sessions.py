@@ -112,6 +112,12 @@ class PbTrainingSessions(models.AbstractModel):
             else None
 
     @api.model
+    def _in_week(self, session, today):
+        """Is this session on one of the week strip's seven days?"""
+        day = self._local_day(session)
+        return bool(day) and today <= day <= today + timedelta(days=6)
+
+    @api.model
     def _kind_word(self, key):
         return tr(self.env, SESSION_KIND_LABEL.get(key or '', ''))
 
@@ -214,8 +220,10 @@ class PbTrainingSessions(models.AbstractModel):
             '|', ('state', 'in', ('closed', 'cancelled')),
             '&', ('state', 'in', SESSION_LIVE), ('stop', '<', now)],
             order='start desc', limit=PAST_CAP)
-        week_end = now + timedelta(days=7)
-        this_week = live.filtered(lambda s: s.start and s.start <= week_end)
+        # THE SAME SEVEN DAYS AS THE WEEK STRIP (today … today + 6, the
+        # reader's own days) — found in the live walk: the figure counted a
+        # session on day 8 that the strip did not show.
+        this_week = live.filtered(lambda s: self._in_week(s, today))
         recent_closed = Session.search(scope + [
             ('state', '=', 'closed'),
             ('start', '>=', now - timedelta(days=30))])
@@ -887,9 +895,11 @@ class PbTrainingSessions(models.AbstractModel):
         scope = self._sessions_scope()
         if not Session.search_count(scope):
             return {'has_sessions': False}
+        today = self._local_today()
         week = Session.search(scope + [
             ('state', 'in', SESSION_LIVE), ('start', '>=', now - timedelta(
-                hours=12)), ('start', '<=', now + timedelta(days=7))])
+                days=1)), ('start', '<=', now + timedelta(days=8))])
+        week = week.filtered(lambda s: self._in_week(s, today))
         to_close = Session.search_count(scope + [
             ('state', 'in', ('open', 'held')), ('stop', '<', now)])
         return {
