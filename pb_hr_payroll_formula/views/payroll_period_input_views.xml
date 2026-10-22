@@ -20,7 +20,9 @@
         <group><field name="date_from" readonly="state != 'draft'"/><field name="date_to" readonly="state != 'draft'"/><field name="value_kind"/><field name="value_decimal" readonly="state != 'draft'" invisible="value_kind not in ['money', 'quantity', 'rate', 'integer']"/><field name="value_text" readonly="state != 'draft'" invisible="value_kind in ['money', 'quantity', 'rate', 'integer']"/><field name="unit" readonly="state != 'draft'"/></group>
         <field name="reason" readonly="state != 'draft'"/><field name="evidence_reference" readonly="state != 'draft'"/>
         <field name="settlement_kind" readonly="state != 'draft'"/>
-        <group string="Policy exit calculation" invisible="settlement_kind == 'none'">
+        <field name="settlement_basis" readonly="state != 'draft'" invisible="settlement_kind == 'none'"/>
+        <div class="alert alert-info" invisible="settlement_basis != 'historical'">Enter the exact previously approved cash-out and its approval reference for a completed payroll period. This records the amount; it does not calculate or change leave balances. Manager approval and payment reservation checks still apply.</div>
+        <group string="Policy exit calculation" invisible="settlement_kind == 'none' or settlement_basis == 'historical'">
           <field name="exit_reference" readonly="state != 'draft'"/><field name="leave_type_reference" readonly="state != 'draft'"/><field name="settlement_gross_salary" readonly="state != 'draft'"/>
           <field name="settlement_tax_review_reference" readonly="state != 'draft'"/><field name="settlement_employment_start" readonly="state != 'draft'"/><field name="settlement_review_months" readonly="state != 'draft'"/>
           <field name="settlement_months" readonly="state != 'draft'" invisible="not settlement_review_months"/>

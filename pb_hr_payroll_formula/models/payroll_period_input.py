@@ -69,6 +69,11 @@ class PayrollPeriodInput(models.Model):
         ('none', 'Ordinary period input'), ('cashout_days', 'Policy leave cash-out days'),
         ('cashout_amount', 'Policy leave cash-out amount'), ('recovery_amount', 'Policy excess-leave recovery'),
     ], default='none', required=True)
+    settlement_basis = fields.Selection([
+        ('policy', 'Calculate from exit policy'),
+        ('historical', 'Already-approved historical amount'),
+    ], default='policy', required=True,
+        help='Historical cash-out amounts require an explicit approval reference and a completed payroll period. They do not calculate or change leave balances.')
     exit_reference = fields.Reference(selection=[('pb.resignation', 'Approved resignation')],
                                         string='Approved exit')
     leave_type_reference = fields.Reference(selection=[('hr.leave.type', 'Annual leave type')],
@@ -107,6 +112,16 @@ class PayrollPeriodInput(models.Model):
             ON hr_payroll_period_input (exit_reference, leave_type_reference,
                 (CASE WHEN settlement_kind = 'recovery_amount' THEN 'recovery' ELSE 'cashout' END))
             WHERE state = 'approved' AND settlement_kind != 'none'
+        """)
+        self.env.cr.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS payroll_period_input_one_historical_reference
+            ON hr_payroll_period_input (company_id, employee_id, lower(btrim(evidence_reference)))
+            WHERE state = 'approved' AND settlement_basis = 'historical'
+        """)
+        self.env.cr.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS payroll_period_input_one_historical_period
+            ON hr_payroll_period_input (company_id, employee_id, date_from, date_to)
+            WHERE state = 'approved' AND settlement_basis = 'historical'
         """)
 
     def _manager(self):
@@ -172,6 +187,28 @@ class PayrollPeriodInput(models.Model):
         expected_kind = self.component_id.application_settlement_kind or 'none'
         if expected_kind != self.settlement_kind:
             raise ValidationError(_('Use the settlement treatment configured for this component.'))
+        if self.settlement_basis == 'historical':
+            if self.settlement_kind != 'cashout_amount' or self.unit != 'money' or self.value_kind != 'money':
+                raise ValidationError(_('Historical settlement entry is only available for a monetary leave cash-out.'))
+            if self.date_to >= fields.Date.context_today(self):
+                raise ValidationError(_('Historical amounts require a completed payroll period.'))
+            if self.exit_reference or self.leave_type_reference:
+                raise ValidationError(_('Use policy calculation when linking an exit or leave type. Historical amounts retain their external approval reference.'))
+            if decimal_value(self.value_decimal) <= 0:
+                raise ValidationError(_('Enter the positive historical cash-out amount that was approved.'))
+            result = {
+                'basis': 'historical', 'cashout_amount': str(decimal_value(self.value_decimal)),
+                'company_id': self.company_id.id, 'employee_id': self.employee_id.id,
+                'config_id': self.config_id.id, 'component_id': self.component_id.id,
+                'date_from': str(self.date_from), 'date_to': str(self.date_to),
+                'currency_id': self.config_id.currency_id.id,
+                'approval_reference': self.evidence_reference, 'reason': self.reason,
+            }
+            payload = json.dumps(result, sort_keys=True, default=str)
+            if self.state == 'approved' and (not self.policy_assessment_hash or
+                    hashlib.sha256(payload.encode()).hexdigest() != self.policy_assessment_hash):
+                raise ValidationError(_('The approved historical evidence has changed. Review a replacement input.'))
+            return result
         if self.settlement_kind == 'none':
             return None
         if (self.settlement_kind == 'recovery_amount' or self.config_id.country_code == 'SG') and not (self.settlement_tax_review_reference or '').strip():
@@ -231,7 +268,28 @@ class PayrollPeriodInput(models.Model):
                 raise UserError(_('An approved value already exists. Supersede it explicitly before approving a correction.'))
             assessment = row._assessment()
             if row.settlement_kind != 'none':
+                # Serialize cross-scheme approvals for the same employee. A
+                # historical receipt cannot silently duplicate a policy payout.
+                self.env.cr.execute('SELECT pg_advisory_xact_lock(hashtext(%s))',
+                    ['payroll-settlement:%s:%s' % (row.company_id.id, row.employee_id.id)])
                 kinds = ['recovery_amount'] if row.settlement_kind == 'recovery_amount' else ['cashout_days', 'cashout_amount']
+                overlap = self.search([
+                    ('state', '=', 'approved'), ('company_id', '=', row.company_id.id),
+                    ('employee_id', '=', row.employee_id.id), ('settlement_kind', 'in', kinds),
+                    ('date_from', '<=', row.date_to), ('date_to', '>=', row.date_from),
+                ])
+                if overlap and (row.settlement_basis == 'historical' or
+                                any(r.settlement_basis == 'historical' for r in overlap)):
+                    raise UserError(_('An approved historical or policy cash-out already covers this employee and period.'))
+            if row.settlement_basis == 'historical':
+                self.env.cr.execute("""SELECT id FROM hr_payroll_period_input
+                    WHERE state='approved' AND settlement_basis='historical'
+                      AND company_id=%s AND employee_id=%s
+                      AND lower(btrim(evidence_reference))=lower(btrim(%s))""",
+                    [row.company_id.id, row.employee_id.id, row.evidence_reference])
+                if self.env.cr.fetchone():
+                    raise UserError(_('This historical approval reference has already been used for this employee.'))
+            elif row.settlement_kind != 'none':
                 previous = self.search([('state', '=', 'approved'),
                     ('exit_reference', '=', '%s,%s' % (row.exit_reference._name, row.exit_reference.id)),
                     ('leave_type_reference', '=', '%s,%s' % (row.leave_type_reference._name, row.leave_type_reference.id)),
@@ -280,7 +338,7 @@ class PayrollPeriodInput(models.Model):
             raise UserError(_('This approved input has already been consumed.'))
         for row in self.filtered(lambda r: not r.consumed_payslip_id):
             assessment = row._assessment()
-            if row.settlement_kind != 'none':
+            if row.settlement_kind != 'none' and row.settlement_basis == 'policy':
                 policy = row.employee_id._pb_policy_for_date(row.exit_reference.approved_lwd)
                 if not hasattr(policy, '_consume_exit_settlement'):
                     raise UserError(_('The native leave settlement posting is unavailable. Payroll cannot consume this settlement.'))

@@ -104,6 +104,75 @@ class TestPayrollPeriodInput(TransactionCase):
         row = self._row(settlement_kind='cashout_amount')
         with self.assertRaisesRegex(ValidationError, 'approved exit'): row.action_approve()
 
+    def _historical_row(self, **values):
+        self.start, self.end = date(2020, 8, 1), date(2020, 8, 31)
+        self.contract.date_start = date(2020, 1, 1)
+        self.rule.application_settlement_kind = 'cashout_amount'
+        return self._row(settlement_kind='cashout_amount', settlement_basis='historical', **values)
+
+    def test_historical_cashout_keeps_exact_evidence_and_paid_once_controls(self):
+        row = self._historical_row(value='125.51')
+        row.action_approve()
+        self.assertEqual(row._assessment()['cashout_amount'], '125.51')
+        self.assertEqual(row._assessment()['basis'], 'historical')
+        facts = self.config._application_domain_values(self.employee, self.contract, self.start, self.end)
+        self.assertEqual(facts['period.input.LEDGERADJ']['value'], 125.51)
+        self.assertEqual(facts['period.input.LEDGERADJ']['evidence']['period_input_ids'], row.ids)
+        with self.assertRaises(UserError): row.write({'settlement_basis': 'policy'})
+        with self.assertRaises(UserError): row.write({'evidence_reference': 'Different approval'})
+        run, slip = self._slip()
+        run2, slip2 = self._slip()
+        row._application_reserve(run, slip)
+        with self.assertRaises(UserError): row._application_reserve(run2, slip2)
+        # Historical approval imports an amount, not a fabricated policy exit
+        # or leave-balance posting. It still consumes exactly once.
+        row._application_consume(slip)
+        row._application_consume(slip)
+        self.assertEqual(row.consumed_payslip_id, slip)
+        with self.assertRaises(UserError): row._application_release(slip)
+
+    def test_historical_cashout_requires_past_positive_money_and_manager(self):
+        row = self._historical_row()
+        user = self.env['res.users'].create({'name': 'Historical input reader',
+            'login': 'historical-input-reader',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        with self.assertRaises(AccessError): row.with_user(user).action_approve()
+        row.write({'date_from': '2099-08-01', 'date_to': '2099-08-31'})
+        with self.assertRaisesRegex(ValidationError, 'completed payroll period'): row._assessment()
+        row.write({'date_from': self.start, 'date_to': self.end})
+        for value in ('0', '-1'):
+            row.value_decimal = value
+            with self.assertRaisesRegex(ValidationError, 'positive historical'): row.action_approve()
+        row.value_decimal = '125.50'
+        self.rule.application_settlement_kind = 'none'
+        row.settlement_kind = 'none'
+        with self.assertRaisesRegex(ValidationError, 'only available'): row.action_approve()
+
+    def test_historical_cashout_reference_and_period_cannot_repeat_across_schemes(self):
+        row = self._historical_row(); row.action_approve()
+        config2 = self.config.copy({'code': 'HISTORICALOTHER', 'name': 'Other historical schema'})
+        rule2 = self.env['hr.formula.rule'].create({'config_id': config2.id, 'name': 'Other cashout',
+            'code': 'HISTOTHER', 'column_type': 'input', 'value_kind': 'money',
+            'application_settlement_kind': 'cashout_amount'})
+        second = self._historical_row(config_id=config2.id, component_id=rule2.id,
+            evidence_reference='Another receipt')
+        with self.assertRaisesRegex(UserError, 'already covers'): second.action_approve()
+        second.write({'date_from': '2020-09-01', 'date_to': '2020-09-30',
+            'evidence_reference': ' test-approval-2026 '})
+        with self.assertRaisesRegex(UserError, 'reference has already been used'): second.action_approve()
+
+    def test_historical_cashout_rechecks_sealed_currency_and_evidence(self):
+        row = self._historical_row(); row.action_approve()
+        currency = self.env['res.currency'].search([('id', '!=', self.config.currency_id.id)], limit=1)
+        original = self.config.currency_id
+        self.config.currency_id = currency
+        with self.assertRaisesRegex(ValidationError, 'approved input currency'): row._assessment()
+        self.config.currency_id = original
+        # Simulate damaged stored evidence; public writes are already blocked.
+        self.env.cr.execute('UPDATE hr_payroll_period_input SET value_decimal=%s WHERE id=%s', ['125.52', row.id])
+        row.invalidate_recordset()
+        with self.assertRaisesRegex(ValidationError, 'historical evidence has changed'): row._assessment()
+
     def test_excess_recovery_waits_for_country_tax_treatment_review(self):
         self.rule.application_settlement_kind = 'recovery_amount'
         row = self._row(settlement_kind='recovery_amount')
