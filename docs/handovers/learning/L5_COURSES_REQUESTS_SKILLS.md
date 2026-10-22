@@ -6,7 +6,7 @@ binding. Predecessors L0–L4 reports: take the hub registry, the assignment eng
 path links), the certificate record, hours, requirements, paths and sessions from the
 reports. **Owner decision LD6 (outside catalogue: our own list now, paid connectors only if
 Rize contracts one) is the recommendation in the design page §8 — ask it when this phase
-launches; build §3.1 as "our own list" unless the owner says otherwise.**
+launches; build §3.1 as "our own list" unless the owner says otherwise.** **DECIDED 2026-10-22: our own list (LD6).**
 
 Report back to `docs/handovers/learning/L5_REPORT.md`.
 
