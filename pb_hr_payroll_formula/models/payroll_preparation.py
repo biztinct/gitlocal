@@ -113,6 +113,12 @@ class PayrollPreparation(models.Model):
                 and rule.application_zero_allowed and rule.value_kind in _NUMERIC
                 and rule.application_settlement_kind == 'none' and not rule.is_contract_component)
 
+    def _settlement_zero(self, rule):
+        """Missing settlement amounts need a separate, explicit no-activity review."""
+        return (rule.application_source_key == 'period.input.' + rule.code
+                and rule.application_zero_allowed and rule.value_kind in _NUMERIC
+                and rule.application_settlement_kind != 'none' and not rule.is_contract_component)
+
     def _cards(self, for_write=True):
         if 'pb.records.desk' not in self.env:
             return {}
@@ -124,23 +130,26 @@ class PayrollPreparation(models.Model):
                 return {}
         return {c['component']['id']: c for c in desk._cards(self.config_id.id).values()
                 if c.get('component') and c.get('editable') and c.get('group') != 'bank'
-                and c.get('ttype') in ('float', 'integer', 'monetary', 'amount', 'char', 'text', 'text_component')
+                and c.get('ttype') in ('float', 'integer', 'monetary', 'amount', 'char', 'text', 'text_component', 'selection')
                 and (not for_write or desk._may_write(c['model']))}
 
     def _capabilities(self, rule, cell, cards):
         key = rule.application_source_key or ''
         numeric = rule.value_kind in _NUMERIC
-        # Event approval, statutory inputs and settlements can only be corrected
-        # at their owner. Derived paid days may be overridden after clean resolution.
+        # Pending/conflicting operational sources still require their owner.
+        # A signed period review can correct clean time totals and record values
+        # for this run without rewriting the underlying HR or attendance records.
         ordinary = key == 'period.input.' + rule.code and rule.application_settlement_kind == 'none'
         card = cards.get(rule.id, {})
         canonical = (key.startswith('employee.') and card.get('id') == 'f:hr.employee:' + key.split('.', 1)[1]
                      or key.startswith('contract.') and card.get('id') == 'f:hr.contract:' + key.split('.', 1)[1])
         stored = (not key and (rule.is_contract_component or rule.id in cards)) or canonical
-        paid_days = key == 'period.paid_day_equivalents'
-        editable = numeric and cell['status'] in ('resolved', 'missing', 'zero_confirmed') and (
-            ordinary or stored or (paid_days and cell['status'] == 'resolved'))
-        future = editable and stored and rule.id in cards
+        reviewable_time = key in ('period.paid_day_equivalents', 'period.standard_days') or (
+            key.startswith('period.ot.') and key.endswith('.approved_hours'))
+        supported_value = numeric or (rule.value_kind == 'text' and stored)
+        editable = supported_value and cell['status'] in ('resolved', 'missing', 'zero_confirmed') and (
+            ordinary or stored or (reviewable_time and cell['status'] == 'resolved'))
+        future = editable and stored and rule.id in cards and card.get('ttype') != 'selection'
         return bool(editable), bool(future)
 
     def _raw(self, signed=False):
@@ -196,14 +205,16 @@ class PayrollPreparation(models.Model):
                 'key': cell['key'], 'status': 'resolved', 'evidence': evidence}
             row['blockers'] = [b for b in row['blockers'] if b['code'] != rule.code]
         paid = next((c for c in row['inputs'] if c.get('key') == 'period.paid_day_equivalents'
-                     and c.get('edited') and c['status'] == 'resolved'), None)
-        if paid:
+                     and c['status'] == 'resolved'), None)
+        standard_cell = next((c for c in row['inputs'] if c.get('key') == 'period.standard_days'
+                              and c['status'] == 'resolved'), None)
+        if paid and (paid.get('edited') or standard_cell and standard_cell.get('edited')):
             for cell in row['inputs']:
                 if cell.get('key') == 'period.nonpayable_day_equivalents' and cell['status'] in ('resolved', 'zero_confirmed'):
-                    standard = cell.get('evidence', {}).get('standard_days')
+                    standard = standard_cell['value'] if standard_cell else cell.get('evidence', {}).get('standard_days')
                     if standard is not None:
                         evidence = dict(cell['evidence'], derived_from_preparation=self.id,
-                                        paid_day_equivalents=paid['value'])
+                                        paid_day_equivalents=paid['value'], standard_days=standard)
                         cell.update(value=round(standard-paid['value'],6), evidence=evidence)
                         row['values'][cell['code']] = cell['value']
                         row['provenance'][cell['code']] = {'src':'employee_field','via':'application_snapshot',
@@ -236,7 +247,7 @@ class PayrollPreparation(models.Model):
             key = rule.application_source_key or ''
             columns.append({'id': rule.id, 'code': rule.code, 'name': rule.name, 'kind': rule.value_kind,
                 'group': 'adjustments' if key.startswith('period.input.') else 'time' if key.startswith('period.') else 'records',
-                'optional': bool(self._optional(rule)), 'future': rule.id in cards})
+                'optional': bool(self._optional(rule) or self._settlement_zero(rule)), 'future': rule.id in cards})
         results = self.config_id.rule_ids.filtered(lambda r: r.column_type == 'formula' and
                     (r.appears_on_payslip or r.column_role == 'payroll' and r.net_role != 'info'))
         for rule in results:
@@ -250,10 +261,11 @@ class PayrollPreparation(models.Model):
                 if not rule:
                     continue
                 editable, future = self._capabilities(rule, cell, cards)
-                optional = self._optional(rule) and cell['status'] in ('missing', 'zero_confirmed')
+                optional = (self._optional(rule) or self._settlement_zero(rule)) and cell['status'] in ('missing', 'zero_confirmed')
                 edit = edits.get('%s:%s' % (row['employee_id'], rule.code))
                 issue = cell['status'] == 'conflict' or (cell['status'] == 'missing' and cell['required'] and not optional)
                 cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
+                    settlement_zero=bool(optional and self._settlement_zero(rule)),
                     tone='amber' if cell['status'] == 'conflict' else 'red' if issue else 'edited' if edit else 'normal',
                     edit=edit or False, rule_id=rule.id)
                 row['cells'][cell['code']] = cell
@@ -291,6 +303,7 @@ class PayrollPreparation(models.Model):
                 'columns': columns, 'people': people, 'global_issues': global_issues,
                 'issues': issue_count, 'affected': sum(any(c['issue'] for c in p['cells'].values()) for p in preview['employees']),
                 'changes': len(edits), 'optional': sum(c['optional'] for p in preview['employees'] for c in p['cells'].values()),
+                'settlement_zeros': sum(c.get('settlement_zero', False) for p in preview['employees'] for c in p['cells'].values()),
                 'ready': self.state == 'reviewed' and preview['ok'] and self.reviewed_hash == self._fingerprint(self._resolved(True)),
                 'review': json.loads(self.review_json), 'saved_at': str(self.write_date),
                 'timesheets': self.config_id.payroll_basis == 'timesheet',
@@ -339,28 +352,45 @@ class PayrollPreparation(models.Model):
             if not editable or scope not in ('run', 'future') or scope == 'future' and not future:
                 raise AccessError(_('This source must be corrected in its own record.'))
             reason = (change.get('reason') or '').strip()
-            try:
-                number = Decimal(str(change.get('value')))
-                if not number.is_finite() or abs(number) > Decimal('1e15') or rule.value_kind == 'integer' and number != number.to_integral_value():
-                    raise InvalidOperation
-            except (InvalidOperation, ValueError):
-                raise ValidationError(_('Enter a finite number using a decimal point, without thousands separators.'))
-            if rule.application_source_key == 'period.paid_day_equivalents':
-                standard = next((c.get('value') for (eid, code), c in cells.items() if eid == pair[0] and c.get('key') == 'period.standard_days'), None)
-                if standard is None:
-                    employee = self.env['hr.employee'].browse(pair[0])
-                    contract, ambiguous = self.config_id._application_contract(employee, self.date_from, self.date_to)
-                    standard = self.config_id._application_time_values(employee, contract, self.date_from, self.date_to, {})['period.standard_days'].get('value')
-                if standard is None or number < 0 or number > Decimal(str(standard)):
-                    raise ValidationError(_('Paid days must be between zero and the standard days for this period.'))
-            value = int(number) if rule.value_kind == 'integer' else float(number)
-            edit = {'value': value, 'decimal': str(number), 'scope': scope, 'reason': reason,
+            if rule.value_kind == 'text':
+                value = change.get('value')
+                if not isinstance(value, str) or len(value) > 1000 or '\x00' in value:
+                    raise ValidationError(_('Enter a text value of up to 1,000 characters.'))
+                number = None
+            else:
+                try:
+                    number = Decimal(str(change.get('value')))
+                    if not number.is_finite() or abs(number) > Decimal('1e15') or rule.value_kind == 'integer' and number != number.to_integral_value():
+                        raise InvalidOperation
+                except (InvalidOperation, ValueError):
+                    raise ValidationError(_('Enter a finite number using a decimal point, without thousands separators.'))
+                if rule.application_source_key == 'period.standard_days' and not 0 < number <= max(31, (self.date_to-self.date_from).days+1):
+                    raise ValidationError(_('Standard days must be positive and fit this payroll period.'))
+                if rule.application_source_key.startswith('period.ot.') and not 0 <= number <= 24 * ((self.date_to-self.date_from).days+1):
+                    raise ValidationError(_('Overtime hours must be nonnegative and fit this payroll period.'))
+                value = int(number) if rule.value_kind == 'integer' else float(number)
+            edit = {'value': value, 'decimal': str(number) if number is not None else None, 'scope': scope, 'reason': reason,
                     'original': cell.get('value'), 'source_stamp': _cell_stamp(cell),
                     'source_evidence': {k: cell.get(k) for k in ('source_ids', 'evidence', 'key', 'source_owner')},
                     'editor': self.env.uid, 'at': str(fields.Datetime.now()),
                     'field_id': cards[rule.id]['id'] if scope == 'future' else False}
             edits[key] = edit
             audit.append({'employee_id': pair[0], 'code': pair[1], 'before': old, 'after': edit})
+        # Validate the final batch, so a pasted standard/paid-day pair is atomic
+        # and independent of column order. Existing corrections count as well.
+        for employee_id in {pair[0] for pair in seen}:
+            time_values = {}
+            for (eid, code), cell in cells.items():
+                if eid == employee_id and cell.get('key') in ('period.standard_days', 'period.paid_day_equivalents'):
+                    time_values[cell['key']] = edits.get('%s:%s' % (eid, code), {}).get('value', cell.get('value'))
+            paid = time_values.get('period.paid_day_equivalents')
+            standard = time_values.get('period.standard_days')
+            if paid is not None and standard is None:
+                employee = self.env['hr.employee'].browse(employee_id)
+                contract, ambiguous = self.config_id._application_contract(employee, self.date_from, self.date_to)
+                standard = self.config_id._application_time_values(employee, contract, self.date_from, self.date_to, {})['period.standard_days'].get('value')
+            if paid is not None and (standard is None or paid < 0 or paid > standard):
+                raise ValidationError(_('Paid days must be between zero and the standard days for this period.'))
         self._store({'edits_json': _json(edits), 'revision': self.revision+1, 'state': 'draft', 'reviewed_hash': False})
         self._event('cells_saved', {'request_hash': _stamp(changes), 'changes': audit}, mutation)
         return self.workspace()
@@ -401,6 +431,12 @@ class PayrollPreparation(models.Model):
         required = ['leave', 'overtime', 'adjustments'] + (['timesheets'] if self.config_id.payroll_basis == 'timesheet' else [])
         if not isinstance(channels, dict) or any(channels.get(k) is not True for k in required) or not (reason or '').strip():
             raise ValidationError(_('Confirm the period checklist and add a review note.'))
+        allowed_settlement_keys = {r.application_source_key for r in self._rules() if self._settlement_zero(r)}
+        settlement_keys = sorted({cell['key'] for row in self._raw()['employees'] for cell in row['inputs']
+                                  if cell.get('key') in allowed_settlement_keys and cell['status'] in ('missing', 'zero_confirmed')})
+        if settlement_keys:
+            if channels.get('settlements') is not True:
+                raise ValidationError(_('Explicitly confirm no settlement activity for eligible empty settlement amounts.'))
         edits = json.loads(self.edits_json)
         if any(v['scope'] == 'future' and not v.get('proposal_id') for v in edits.values()):
             raise UserError(_('Submit your saved-record changes before completing the review.'))
@@ -408,10 +444,11 @@ class PayrollPreparation(models.Model):
             if not edit['reason']:
                 edit['reason'] = reason.strip()
         self._store({'edits_json': _json(edits)})
-        zero_keys = [r.application_source_key for r in self._rules() if self._optional(r)]
+        zero_keys = [r.application_source_key for r in self._rules() if self._optional(r)] + settlement_keys
         cert = {'channels': {k: bool(channels.get(k)) for k in required}, 'zero_keys': sorted(zero_keys),
                 'employee_ids': sorted(self.employee_ids.ids)}
-        review = {'certification': cert, 'reason': reason.strip(), 'by': self.env.uid, 'at': str(fields.Datetime.now())}
+        review = {'certification': cert, 'reason': reason.strip(), 'by': self.env.uid, 'at': str(fields.Datetime.now()),
+                  'settlement_no_activity': bool(settlement_keys), 'settlement_zero_keys': settlement_keys}
         self._store({'review_json': _json(review)})
         preview = self._resolved(True)
         if not preview['ok']:

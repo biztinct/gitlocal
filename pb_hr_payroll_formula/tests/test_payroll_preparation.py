@@ -110,12 +110,89 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
         with self.assertRaises(AccessError):
             self.config._application_employee_inputs(self.employee,self.start,self.end,forged)
 
-    def test_settlement_cannot_be_edited_or_zeroed(self):
+    def test_settlement_requires_explicit_no_activity_review(self):
         self.bonus.application_settlement_kind='recovery_amount'
         draft=self._draft()
-        self.assertFalse(draft.workspace()['people'][0]['cells'][self.bonus.code]['optional'])
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['settlement_zero'])
         with self.assertRaises(AccessError):
             draft.save_cells(draft.revision,'save-test-0009',[self._change()])
+        with self.assertRaises(ValidationError):
+            draft.review(draft.revision, self._cert()['channels'], 'Checked monthly inputs')
+        channels = dict(self._cert()['channels'], settlements=True)
+        result = draft.review(draft.revision, channels, 'Verified no settlement activity')
+        self.assertTrue(result['ready'])
+        self.assertIn([self.employee.id, self.bonus.code], result['review']['zero_cells'])
+
+    def test_settlement_without_zero_policy_still_blocks(self):
+        self.bonus.write({'application_settlement_kind': 'recovery_amount', 'application_zero_allowed': False})
+        draft = self._draft()
+        cell = draft.workspace()['people'][0]['cells'][self.bonus.code]
+        self.assertFalse(cell['optional'])
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, dict(self._cert()['channels'], settlements=True), 'Checked')
+
+    def test_review_standard_and_paid_days_are_atomic_and_frozen(self):
+        standard = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Standard days', 'code': 'REVIEWSTANDARD', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'application_source_key': 'period.standard_days'})
+        draft = self._draft()
+        # Paid before standard deliberately exercises order-independent validation.
+        draft.save_cells(draft.revision, 'save-test-day-pair', [
+            dict(self._change('31'), code=self.paid.code), dict(self._change('31'), code=standard.code)])
+        result = draft.review(draft.revision, self._cert()['channels'], 'Client calendar-day basis for this month')
+        self.assertTrue(result['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        self.assertEqual(values[self.paid.code], 31)
+        self.assertEqual(values[standard.code], 31)
+        self.assertNotEqual(self.config.fixed_standard_days, 31)
+
+    def test_standard_days_cannot_make_paid_days_invalid(self):
+        standard = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Standard days', 'code': 'REVIEWSTANDARD', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'application_source_key': 'period.standard_days'})
+        draft = self._draft()
+        for value in ('0', '-1', '99', '1'):
+            with self.assertRaises(ValidationError):
+                draft.save_cells(draft.revision, 'save-test-standard-' + value,
+                                 [dict(self._change(value), code=standard.code)])
+        self.assertEqual(json.loads(draft.edits_json), {})
+
+    def test_text_record_correction_is_run_scoped_including_explicit_blank(self):
+        flag = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Membership flag', 'code': 'REVIEWFLAG', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'text', 'is_contract_component': True,
+            'is_required': True})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-text', [dict(self._change(''), code=flag.code)])
+        result = draft.review(draft.revision, self._cert()['channels'], 'Client explicitly reports no membership')
+        self.assertTrue(result['ready'])
+        self.assertEqual(draft._resolved(True)['employees'][0]['values'][flag.code], '')
+        self.assertEqual(json.loads(draft.edits_json)[f'{self.employee.id}:{flag.code}']['scope'], 'run')
+
+    def test_overtime_total_correction_keeps_pending_approval_block(self):
+        key = 'period.ot.weekend.approved_hours'
+        overtime = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Weekend hours', 'code': 'REVIEWOT', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'is_required': True,
+            'application_source_key': key})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-overtime', [dict(self._change('8'), code=overtime.code)])
+        self.assertEqual(draft._resolved()['employees'][0]['values'][overtime.code], 8)
+        original = self.config._application_time_values
+        def pending(config, employee, contract, start, end, certification):
+            facts = original(employee, contract, start, end, certification)
+            facts[key].update(status='conflict', reason='Awaiting overtime approval')
+            return facts
+        with patch.object(type(self.config), '_application_time_values', pending):
+            self.assertTrue(draft.workspace()['people'][0]['cells'][overtime.code]['issue'])
+            with self.assertRaises(AccessError):
+                draft.save_cells(draft.revision, 'save-test-overtime-pending', [dict(self._change('9'), code=overtime.code)])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Checked overtime')
 
     def test_period_scope_is_exact(self):
         draft=self._draft()

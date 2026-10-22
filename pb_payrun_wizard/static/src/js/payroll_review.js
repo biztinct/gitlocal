@@ -13,7 +13,7 @@ export class PayrollReviewDialog extends Component {
         this.grid = useRef('grid'); this.alive = true;
         this.state = useState({data:null, loading:true, saving:false, error:'', query:'', filter:'all', group:'all',
             selected:null, detail:null, value:'', reason:'', scope:'run', review:false, history:false, maximized:false,
-            channels:{leave:false,overtime:false,adjustments:false,timesheets:false}, note:'', pending:false});
+            channels:{leave:false,overtime:false,adjustments:false,timesheets:false,settlements:false}, note:'', pending:false});
         onWillStart(()=>this.load());
         onWillUnmount(()=>{this.alive=false;});
     }
@@ -26,6 +26,7 @@ export class PayrollReviewDialog extends Component {
     accept(data) {
         this.state.data=data;
         if(data.review?.certification) this.state.channels={...this.state.channels,...data.review.certification.channels};
+        if(data.review?.settlement_no_activity) this.state.channels.settlements=true;
         this.state.note=data.review?.reason||this.state.note;
         if(this.state.selected) {
             const p=data.people.find(p=>p.employee_id===this.state.selected.employee_id);

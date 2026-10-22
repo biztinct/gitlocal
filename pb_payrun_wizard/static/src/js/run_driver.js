@@ -114,6 +114,7 @@ export async function runPayroll(orm, payload, { onStep, onProgress, sheet } = {
     const total = empIds.length;
     let computed = 0;
     const exceptions = [];
+    const exceptionKeys = new Set();
     progress({ done: 0, total, phase: "compute" });
     step("Computing payslips…");
     for (let i = 0; i < total; i += CHUNK) {
@@ -123,7 +124,13 @@ export async function runPayroll(orm, payload, { onStep, onProgress, sheet } = {
             [{ run_id, name, date_start, date_end, division,
                 formula_config_id: prep.formula_config_id, emp_ids: chunk }]);
         computed += (r && r.computed) || 0;
-        if (r && r.exceptions) { exceptions.push(...r.exceptions); }
+        for (const exception of r?.exceptions || []) {
+            const key = JSON.stringify([exception.employee_id || exception.emp || '', exception.why || '', exception.action || null]);
+            if (!exceptionKeys.has(key)) {
+                exceptionKeys.add(key);
+                exceptions.push(exception);
+            }
+        }
         const done = Math.min(total, i + chunk.length);
         progress({ done, total, phase: "compute" });
     }
