@@ -136,6 +136,15 @@ export class PayrollReviewDialog extends Component {
             await this.action.doAction({...action,target:'new'},{onClose:()=>this.load()});
         }catch(e){this.state.error=e.data?.message||e.message;}
     }
+    async openRecordProposal() {
+        const id=this.selected?.edit?.proposal_id;
+        if(!id)return;
+        try {
+            await this.action.doAction({type:'ir.actions.act_window',name:'Saved-record change',
+                res_model:'pb.records.apply',res_id:id,views:[[false,'form']],target:'new'},
+                {onClose:()=>this.load()});
+        }catch(e){this.state.error=e.data?.message||e.message;}
+    }
     submitFuture() {
         this.dialog.add(ConfirmationDialog,{title:'Update saved records on approval?',
             body:`Submit ${this.pendingFuture} saved-record changes through Records Desk approval. These will affect future payrolls once approved. Current records remain unchanged until approval.`,

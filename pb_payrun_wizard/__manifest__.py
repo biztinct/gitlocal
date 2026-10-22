@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Run Payroll Wizard',
     'summary': 'Guided multi-step Run Payroll cockpit (Select period → Compute → Review → Approve)',
-    'version': '19.0.1.35.0',
+    'version': '19.0.1.36.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

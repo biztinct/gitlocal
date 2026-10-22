@@ -26,6 +26,7 @@
         <aside class="pr-inspector" t-if="selected"><span class="pr-eyebrow">VALUE &amp; SOURCE</span><h3 t-esc="selected.label"/><p class="pr-person-name" t-esc="selected.person"/><span class="pr-owner" t-esc="selected.source_owner"/>
             <p t-if="selected.issue" class="pr-cell-reason" t-esc="selected.reason"/>
             <p t-if="state.detail" t-esc="state.detail.explanation"/>
+            <button t-if="selected.edit?.proposal_id" class="pr-btn" t-on-click="openRecordProposal">Review saved-record change ↗</button>
             <div t-if="selected.editable" class="pr-edit-form"><label>Value for this run<input aria-label="Correction value" t-model="state.value" t-on-input="changed" t-on-blur="() => state.pending &amp;&amp; this.saveSelected()"/></label>
                 <label>Why are you changing it?<input aria-label="Correction reason" placeholder="e.g. Approved bonus for this month" t-model="state.reason"/></label>
                 <label>Apply this change<select aria-label="Correction scope" t-model="state.scope" t-on-change="changed"><option value="run">This payroll run only</option><option t-if="selected.future" value="future">This run + saved record</option></select></label>
