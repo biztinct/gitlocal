@@ -35,7 +35,7 @@ assert eligible==48,eligible
 preview=desk.preview_changes(config.id,changes)
 assert not any(i['status']!='ok' for i in preview['items']),preview['counts']
 print('ZERO_REPAIR_PREVIEW',json.dumps({'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'eligible':eligible,'recoverable':len(changes),'skipped':skipped}))
-if os.getenv('APPLY_ZERO_REPAIR')=='1':
+if os.getenv('APPLY_ZERO_REPAIR') in ('1', 'rehearse'):
     result=desk.apply_changes(config.id,changes,note='Recover explicit zero registered-dependent counts omitted by the original Vietnam master import because absent contract components compared equal to zero. Preserve existing values and later change history.',source='import')
     assert result.get('ok') and not result.get('refused'),result
     print('ZERO_REPAIR_RESULT',json.dumps(result,default=str))
@@ -43,5 +43,6 @@ if os.getenv('APPLY_ZERO_REPAIR')=='1':
         for change in changes:
             person=env['hr.employee'].browse(change['emp_id']);contract=probe._get_latest_contract(person)
             line=desk._advantage_line(probe,contract,'VNREGISTER');assert line and line.amount==0
-    env.cr.commit()
+    if os.getenv('APPLY_ZERO_REPAIR')=='1':env.cr.commit()
+    else:env.cr.rollback()
 else:env.cr.rollback()
