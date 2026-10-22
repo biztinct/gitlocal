@@ -2466,6 +2466,8 @@ msgstr "%s quy định chưa gắn khóa học."
 #. module: pb_training
 #. odoo-python
 #: code:addons/pb_training/models/pb_training_required.py:0
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
 msgid "%s hours of training"
 msgstr "%s giờ đào tạo"
 
@@ -5844,3 +5846,1752 @@ msgstr "Chưa vào lộ trình"
 #: code:addons/pb_training/models/pb_training_paths.py:0
 msgid "Whole path: %s"
 msgstr "Cả lộ trình: %s"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%(here)s of %(n)s here"
+msgstr "%(here)s/%(n)s người đã có mặt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%(who)s: %(state)s."
+msgstr "%(who)s: %(state)s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "%s (by default)"
+msgstr "%s (mặc định)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s attended"
+msgstr "%s có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s closed sessions"
+msgstr "%s buổi học đã đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s did not come"
+msgstr "%s vắng mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s h"
+msgstr "%s giờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s invitations sent, each with a calendar file."
+msgstr "Đã gửi %s lời mời, mỗi lời mời kèm tệp lịch."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "%s is an online course. Set it to \"In a room or on site\" (or both) on the course before planning a session."
+msgstr "%s là khóa học trực tuyến. Hãy đặt khóa học là \"Tại phòng học hoặc tại hiện trường\" (hoặc cả hai) trước khi lên lịch buổi học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s is off this session."
+msgstr "%s đã được rút khỏi buổi học này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s is planned. Book people on it, then send the invitations."
+msgstr "Đã lên lịch %s. Hãy xếp người tham gia, rồi gửi lời mời."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s people are booked."
+msgstr "Đã xếp chỗ cho %s người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s people are waiting for a seat."
+msgstr "%s người đang chờ chỗ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "%s people ticked"
+msgstr "Đã đánh dấu %s người"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s seats booked"
+msgstr "%s chỗ đã đặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "%s sessions"
+msgstr "%s buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s sessions coming up"
+msgstr "%s buổi học sắp tới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s sessions this week"
+msgstr "%s buổi học tuần này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s sessions to close"
+msgstr "%s buổi học cần đóng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "%s to close"
+msgstr "%s cần đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "%s waiting for a seat"
+msgstr "%s người chờ chỗ"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_session__seats
+msgid "0 = as many as come."
+msgstr "0 = không giới hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 attended"
+msgstr "1 có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 closed session"
+msgstr "1 buổi học đã đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 did not come"
+msgstr "1 vắng mặt"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "1 invitation sent, with a calendar file."
+msgstr "Đã gửi 1 lời mời, kèm tệp lịch."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "1 person is booked."
+msgstr "Đã xếp chỗ cho 1 người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "1 person is waiting for a seat."
+msgstr "1 người đang chờ chỗ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "1 person ticked"
+msgstr "Đã đánh dấu 1 người"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 seat booked"
+msgstr "1 chỗ đã đặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_numbers.js:0
+msgid "1 session"
+msgstr "1 buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "1 session coming up"
+msgstr "1 buổi học sắp tới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 session this week"
+msgstr "1 buổi học tuần này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 session to close"
+msgstr "1 buổi học cần đóng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "1 to close"
+msgstr "1 cần đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/learning_overview.js:0
+msgid "1 waiting for a seat"
+msgstr "1 người chờ chỗ"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+msgid "<span class=\"pbtr-ses-eyebrow\">Next</span>"
+msgstr "<span class=\"pbtr-ses-eyebrow\">Sắp tới</span>"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_certificate
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "<span>Trainer:</span>"
+msgstr "<span>Giảng viên:</span>"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "A classroom course"
+msgstr "Một khóa học tại lớp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "A new classroom course"
+msgstr "Một khóa học tại lớp mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "A new topic"
+msgstr "Một chủ đề mới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "A session is a course taught in a room or on site: a date, a place, a trainer and seats. People scan a code to be marked as there, and attending finishes the course for them. A toolbox talk is a short session logged after it happened."
+msgstr "Buổi học là một khóa học dạy tại phòng học hoặc tại hiện trường: có ngày, địa điểm, giảng viên và số chỗ. Người học quét mã để được ghi nhận có mặt, và tham dự là hoàn thành khóa học. Buổi nói chuyện an toàn đầu ca là một buổi ngắn được ghi lại sau khi diễn ra."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__session_hours
+msgid "A session usually lasts (hours)"
+msgstr "Một buổi học thường kéo dài (giờ)"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "A toolbox talk is logged by the training team or by somebody who manages people."
+msgstr "Buổi nói chuyện an toàn đầu ca do bộ phận đào tạo hoặc người quản lý nhân sự ghi lại."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_session_line
+msgid "Add to my calendar"
+msgstr "Thêm vào lịch của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "An outside trainer."
+msgstr "Giảng viên bên ngoài."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Anyone with no safety group set counts as group 4. Set another group on the person's record."
+msgstr "Ai chưa được đặt nhóm an toàn sẽ được tính là nhóm 4. Có thể đặt nhóm khác trong hồ sơ của từng người."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "Ask to join"
+msgstr "Xin tham gia"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "Attendance"
+msgstr "Điểm danh"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__qr_token
+msgid "Attendance code"
+msgstr "Mã điểm danh"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Attendance spreadsheet"
+msgstr "Bảng tính điểm danh"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__attended
+msgid "Attended"
+msgstr "Có mặt"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_employee_document__training_source__session
+#: code:addons/pb_training/models/session.py:0
+msgid "Attended a session"
+msgstr "Đã tham dự buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Attended on %(when)s (%(hours)s hours)."
+msgstr "Tham dự ngày %(when)s (%(hours)s giờ)."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__session_certificate
+msgid "Attending files a certificate"
+msgstr "Tham dự thì được cấp chứng chỉ"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__attendance_completes
+msgid "Attending finishes the course"
+msgstr "Tham dự là hoàn thành khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Back to the session"
+msgstr "Quay lại buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Beyond the seats, people wait for a seat and are booked in turn when somebody drops out. Somebody not on the course yet is put on it, due the day of the session. People with no login still count on their record."
+msgstr "Khi hết chỗ, người học sẽ chờ và được xếp chỗ lần lượt khi có người rút. Ai chưa có khóa học này sẽ được giao khóa học, hạn là ngày của buổi học. Người chưa có tài khoản vẫn được ghi vào hồ sơ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_session_line
+msgid "Book a seat"
+msgstr "Đặt chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Book people"
+msgstr "Xếp người tham gia"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Book people on the session first — there is nobody to invite yet."
+msgstr "Hãy xếp người tham gia buổi học trước — chưa có ai để mời."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Book them"
+msgstr "Xếp chỗ"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__booked
+#: code:addons/pb_training/models/session.py:0
+msgid "Booked"
+msgstr "Đã đặt chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "Booked."
+msgstr "Đã đặt chỗ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By kind"
+msgstr "Theo loại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+msgid "By trainer"
+msgstr "Theo giảng viên"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Cancel the session"
+msgstr "Hủy buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__cancelled
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__cancelled
+#: code:addons/pb_training/models/session.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Cancelled by %s."
+msgstr "Đã hủy bởi %s."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Cancelled. %s people were told, with a calendar update."
+msgstr "Đã hủy. Đã báo cho %s người, kèm cập nhật lịch."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Cancelled. 1 person was told, with a calendar update."
+msgstr "Đã hủy. Đã báo cho 1 người, kèm cập nhật lịch."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Cancelled. Nobody had an invitation yet, so nobody was written to."
+msgstr "Đã hủy. Chưa ai nhận lời mời nên không gửi thư cho ai."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Cancelled. The people who had an invitation were told."
+msgstr "Đã hủy. Những người đã nhận lời mời đều đã được báo."
+
+#. module: pb_training
+#: model:ir.actions.report,name:pb_training.action_report_session_certificate
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_certificate
+msgid "Certificate of attendance"
+msgstr "Giấy chứng nhận tham dự"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "Checked in"
+msgstr "Giờ điểm danh"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__checked_in_at
+msgid "Checked in at"
+msgstr "Điểm danh lúc"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__how__self
+msgid "Checked in themselves"
+msgstr "Tự điểm danh"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__kind__classroom
+#: code:addons/pb_training/models/session.py:0
+msgid "Classroom"
+msgstr "Tại lớp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Close the session"
+msgstr "Đóng buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__closed
+#: code:addons/pb_training/models/session.py:0
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Closed by itself a day after it ended: %(here)s attended, %(away)s did not come."
+msgstr "Tự đóng một ngày sau khi kết thúc: %(here)s có mặt, %(away)s vắng mặt."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Closed. %(here)s attended and their course is marked finished; %(away)s did not come."
+msgstr "Đã đóng. %(here)s người có mặt và khóa học của họ được ghi là hoàn thành; %(away)s người vắng mặt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Closed. Everybody who attended has the course marked finished and the hours on their record."
+msgstr "Đã đóng. Ai có mặt đều được ghi hoàn thành khóa học và số giờ vào hồ sơ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Closed: %(here)s attended, %(away)s did not come."
+msgstr "Đã đóng: %(here)s có mặt, %(away)s vắng mặt."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Coming up"
+msgstr "Sắp tới"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__reminded
+msgid "Day-before reminder sent"
+msgstr "Đã gửi nhắc trước một ngày"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__event_id
+msgid "Diary entry"
+msgstr "Mục lịch"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__no_show
+msgid "Did not come"
+msgstr "Vắng mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Did not come, last 30 days"
+msgstr "Vắng mặt, 30 ngày qua"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Edit the session"
+msgstr "Sửa buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Empty hours = the length of the session. Changing the time or the place of a session whose invitations are out sends everybody the new time."
+msgstr "Để trống số giờ = thời lượng buổi học. Đổi giờ hoặc địa điểm của buổi học đã gửi lời mời sẽ gửi giờ mới cho mọi người."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__session_validity_months
+msgid "Empty or 0: it never runs out."
+msgstr "Để trống hoặc 0: không bao giờ hết hạn."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Ended, still to close"
+msgstr "Đã kết thúc, chưa đóng"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__stop
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Every session"
+msgstr "Mọi buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Everybody booked already has their invitation."
+msgstr "Mọi người đã xếp chỗ đều đã nhận lời mời."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Everybody booked is marked here (%s)."
+msgstr "Mọi người đã xếp chỗ được ghi là có mặt (%s)."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Everybody ticked is marked as attended, the hours go on their record and the course counts as done for them."
+msgstr "Mọi người được đánh dấu sẽ được ghi là có mặt, số giờ vào hồ sơ và khóa học được tính là hoàn thành."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Everybody who has this course to do and has not finished it."
+msgstr "Mọi người được giao khóa học này mà chưa hoàn thành."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Everybody who owes this course"
+msgstr "Mọi người còn nợ khóa học này"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Everyone is here"
+msgstr "Mọi người đã có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Find a course, a place or a trainer"
+msgstr "Tìm khóa học, địa điểm hoặc giảng viên"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "For example: Lifting safely"
+msgstr "Ví dụ: Nâng hạ an toàn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "For example: Site safety walk"
+msgstr "Ví dụ: Đi kiểm tra an toàn công trường"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "For example: Training room 2, Building A"
+msgstr "Ví dụ: Phòng đào tạo 2, Tòa A"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "For example: Warehouse B, loading bay"
+msgstr "Ví dụ: Kho B, khu bốc dỡ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "For people joining from somewhere else"
+msgstr "Cho người tham gia từ nơi khác"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Give the new course a name."
+msgstr "Hãy đặt tên cho khóa học mới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__hours
+msgid "Hours it counts for"
+msgstr "Số giờ được tính"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__delivery
+msgid "How it is taught"
+msgstr "Hình thức giảng dạy"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__how
+msgid "How they checked in"
+msgstr "Cách điểm danh"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__slide_channel__delivery__session
+msgid "In a room or on site"
+msgstr "Tại phòng học hoặc tại hiện trường"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+msgid "In a room or on site — the training team books you on a session."
+msgstr "Tại phòng học hoặc tại hiện trường — bộ phận đào tạo sẽ xếp bạn vào một buổi học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "In a room or on site — you are booked on a session by the training team"
+msgstr "Tại phòng học hoặc tại hiện trường — bộ phận đào tạo sẽ xếp bạn vào một buổi học"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__invited
+msgid "Invitation sent"
+msgstr "Đã gửi lời mời"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Invitations are out. On the day, press Start the session and show the code."
+msgstr "Đã gửi lời mời. Vào ngày học, bấm Bắt đầu buổi học và cho mọi người quét mã."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__open
+#: code:addons/pb_training/models/session.py:0
+msgid "Invitations sent"
+msgstr "Đã gửi lời mời"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "It cannot take a scan any more. Tell the trainer if you were there."
+msgstr "Buổi học không nhận quét mã nữa. Hãy báo giảng viên nếu bạn đã có mặt."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "It counts on your training record when the trainer closes the session."
+msgstr "Sẽ được ghi vào hồ sơ đào tạo của bạn khi giảng viên đóng buổi học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__join_url
+#: model_terms:ir.ui.view,arch_db:pb_training.tr_session_line
+msgid "Join link"
+msgstr "Liên kết tham gia"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Join link (optional)"
+msgstr "Liên kết tham gia (không bắt buộc)"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Join: %s"
+msgstr "Tham gia: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Log a toolbox talk"
+msgstr "Ghi buổi nói chuyện an toàn"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Log the talk"
+msgstr "Ghi lại buổi nói chuyện"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Log who was at a short safety talk, after it happened"
+msgstr "Ghi lại những người dự buổi nói chuyện an toàn ngắn, sau khi diễn ra"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__logged_by_id
+msgid "Logged by"
+msgstr "Người ghi"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__session_id
+msgid "Made for the session"
+msgstr "Giao cho buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Mark attended"
+msgstr "Ghi có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__minutes
+msgid "Minutes"
+msgstr "Số phút"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+msgid "My sessions"
+msgstr "Buổi học của tôi"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Name the new classroom course."
+msgstr "Hãy đặt tên cho khóa học tại lớp mới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "Name the new topic."
+msgstr "Hãy đặt tên cho chủ đề mới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "New session"
+msgstr "Buổi học mới"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__session_hours
+msgid "New sessions of this course start with this length."
+msgstr "Buổi học mới của khóa này mặc định có thời lượng này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Next"
+msgstr "Sắp tới"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Next: book people, then send the invitations. Each person gets an email with a calendar file."
+msgstr "Tiếp theo: xếp người tham gia, rồi gửi lời mời. Mỗi người nhận một email kèm tệp lịch."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "No login — counts on their record only"
+msgstr "Chưa có tài khoản — chỉ ghi vào hồ sơ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "No session matches that"
+msgstr "Không có buổi học nào khớp"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "No session planned yet. Plan one from Sessions."
+msgstr "Chưa có buổi học nào. Hãy lên lịch ở mục Buổi học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "No sessions coming up."
+msgstr "Không có buổi học nào sắp tới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "No sessions yet"
+msgstr "Chưa có buổi học nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Nobody is booked yet. Press Book people."
+msgstr "Chưa xếp chỗ cho ai. Bấm Xếp người tham gia."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Nobody is booked. People who scan the code can join if there are seats."
+msgstr "Chưa xếp chỗ cho ai. Người quét mã có thể tham gia nếu còn chỗ."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Nobody matches that."
+msgstr "Không có ai khớp."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Nobody new was booked."
+msgstr "Không xếp thêm ai."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__notes
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__kind__onsite
+#: code:addons/pb_training/models/session.py:0
+msgid "On site"
+msgstr "Tại hiện trường"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "One of your people."
+msgstr "Người trong công ty."
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__slide_channel__delivery__online
+#: code:addons/pb_training/models/session.py:0
+msgid "Online"
+msgstr "Trực tuyến"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__slide_channel__delivery__blended
+msgid "Online and in a room"
+msgstr "Trực tuyến và tại lớp"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__delivery
+msgid "Online: lessons on the training page. In a room or on site: the course is a session people attend. Online and in a room: both, and attending is part of finishing it."
+msgstr "Trực tuyến: bài học trên trang đào tạo. Tại phòng học hoặc tại hiện trường: khóa học là buổi học người học tham dự. Trực tuyến và tại lớp: cả hai, và tham dự là một phần để hoàn thành."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Only a JPG, PNG, WEBP or PDF file."
+msgstr "Chỉ nhận tệp JPG, PNG, WEBP hoặc PDF."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Only a training manager can open a closed session again."
+msgstr "Chỉ quản lý đào tạo mới mở lại được buổi học đã đóng."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Only courses taught in a room or on site are listed. To add one, set \"How it is taught\" on the course, or name a new one here."
+msgstr "Chỉ liệt kê các khóa học tại phòng học hoặc tại hiện trường. Để thêm, hãy đặt \"Hình thức giảng dạy\" trên khóa học, hoặc đặt tên khóa học mới ở đây."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+msgid "Open Sessions"
+msgstr "Mở mục Buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Open it again"
+msgstr "Mở lại"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+msgid "Open the sessions"
+msgstr "Mở các buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Opened again by %s."
+msgstr "Được mở lại bởi %s."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Optional."
+msgstr "Không bắt buộc."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_session__join_url
+msgid "Optional: a link for people joining from somewhere else."
+msgstr "Không bắt buộc: liên kết cho người tham gia từ nơi khác."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Optional: what was covered"
+msgstr "Không bắt buộc: nội dung đã trao đổi"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__trainer_name
+msgid "Outside trainer"
+msgstr "Giảng viên bên ngoài"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__self_booking
+msgid "People may book a seat themselves"
+msgstr "Người học được tự đặt chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Photo of the paper sign-in sheet (if there is one)"
+msgstr "Ảnh tờ ký tên giấy (nếu có)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Photo of the sheet"
+msgstr "Ảnh tờ ký tên"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Pick a classroom course, or name a new toolbox topic."
+msgstr "Hãy chọn một khóa học tại lớp, hoặc đặt tên chủ đề nói chuyện an toàn mới."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Pick the course"
+msgstr "Chọn khóa học"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Pick the course this session is for."
+msgstr "Hãy chọn khóa học cho buổi học này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Pick the topic"
+msgstr "Chọn chủ đề"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "Pick the topic."
+msgstr "Hãy chọn chủ đề."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Plan the first session"
+msgstr "Lên lịch buổi học đầu tiên"
+
+#. module: pb_training
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__planned
+#: code:addons/pb_training/models/session.py:0
+msgid "Planned"
+msgstr "Đã lên lịch"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Reading…"
+msgstr "Đang đọc…"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__reminded
+msgid "Reminder sent"
+msgstr "Đã gửi nhắc"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_required.py:0
+msgid "Safety group %s (by default)"
+msgstr "Nhóm an toàn %s (mặc định)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Save the session"
+msgstr "Lưu buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Say when the session starts."
+msgstr "Hãy cho biết giờ bắt đầu buổi học."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "Scan the code again when the trainer starts the session."
+msgstr "Hãy quét mã lại khi giảng viên bắt đầu buổi học."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "Scan the code on the trainer's screen again."
+msgstr "Hãy quét lại mã trên màn hình của giảng viên."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "Scan to be marked as here"
+msgstr "Quét mã để được ghi có mặt"
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__how__qr
+msgid "Scanned the code"
+msgstr "Đã quét mã"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__seats
+msgid "Seats"
+msgstr "Số chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Seats (0 = as many as come)"
+msgstr "Số chỗ (0 = không giới hạn)"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Seats still free"
+msgstr "Chỗ còn trống"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Send the invitations"
+msgstr "Gửi lời mời"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__session_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__name
+msgid "Session"
+msgstr "Buổi học"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_employee_document__attendance_id
+msgid "Session attended"
+msgstr "Buổi học đã tham dự"
+
+#. module: pb_training
+#: model:ir.actions.report,name:pb_training.action_report_session_sheet
+msgid "Session sign-in sheet"
+msgstr "Tờ ký tên buổi học"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__session_start
+msgid "Session starts"
+msgstr "Buổi học bắt đầu"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/training_board.xml:0
+#: code:addons/pb_training/static/src/xml/training_numbers.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__attendance_ids
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__session_ids
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+msgid "Sessions"
+msgstr "Buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Sessions are run by the training team"
+msgstr "Buổi học do bộ phận đào tạo tổ chức"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "Sessions in the next 7 days"
+msgstr "Buổi học trong 7 ngày tới"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Sessions to close"
+msgstr "Buổi học cần đóng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+msgid "Sessions you can book yourself"
+msgstr "Buổi học bạn có thể tự đặt chỗ"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_pb_training_assignment__session_id
+msgid "Set when booking a session put this course on the person."
+msgstr "Được đặt khi việc xếp chỗ buổi học giao khóa học này cho người học."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Show the code"
+msgstr "Hiện mã"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "Sign-in sheet"
+msgstr "Tờ ký tên"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__photo_id
+msgid "Sign-in sheet photo"
+msgstr "Ảnh tờ ký tên"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
+msgid "Signature"
+msgstr "Chữ ký"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Start the session"
+msgstr "Bắt đầu buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__start
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Take them off this session"
+msgstr "Rút khỏi buổi học này"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_slide_channel__session_validity_months
+msgid "That certificate is valid for (months)"
+msgstr "Chứng chỉ có hiệu lực (tháng)"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "That code is not a session"
+msgstr "Mã này không phải của buổi học nào"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "That is not something this screen can do."
+msgstr "Màn hình này không làm được việc đó."
+
+#. module: pb_training
+#: model:ir.model.constraint,message:pb_training.constraint_pb_training_attendance_person_once
+msgid "That person is already on this session."
+msgstr "Người này đã có trong buổi học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "That person is not on the session any more."
+msgstr "Người này không còn trong buổi học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "That photo could not be read."
+msgstr "Không đọc được ảnh này."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/my_learning_lens.js:0
+msgid "That seat could not be booked."
+msgstr "Không đặt được chỗ này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "That seat could not be booked. The session may be full or closed to booking — ask the training team."
+msgstr "Không đặt được chỗ. Buổi học có thể đã hết chỗ hoặc không cho đặt chỗ — hãy hỏi bộ phận đào tạo."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "That session cannot be booked from here. It may be full, already started, or not open to booking — ask the training team."
+msgstr "Không thể đặt chỗ buổi học này ở đây. Buổi học có thể đã hết chỗ, đã bắt đầu hoặc không cho đặt chỗ — hãy hỏi bộ phận đào tạo."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+msgid "That session could not be read just now."
+msgstr "Hiện chưa đọc được buổi học này."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "That session is not here any more."
+msgstr "Buổi học này không còn nữa."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "That session is not one of yours, so there is no calendar file for it."
+msgstr "Đây không phải buổi học của bạn nên không có tệp lịch."
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__assignment_id
+msgid "The course it completes"
+msgstr "Khóa học được hoàn thành"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "The last 30 days"
+msgstr "30 ngày qua"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "The next seven days"
+msgstr "Bảy ngày tới"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "The photo is bigger than 5 MB."
+msgstr "Ảnh lớn hơn 5 MB."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "The session is full, so you are waiting for a seat."
+msgstr "Buổi học đã hết chỗ nên bạn đang chờ chỗ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+msgid "The session is full, so you are waiting for a seat. You get an email if one comes free."
+msgstr "Buổi học đã hết chỗ nên bạn đang chờ chỗ. Bạn sẽ nhận email nếu có chỗ trống."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "The session is open again."
+msgstr "Buổi học đã được mở lại."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "The session is saved."
+msgstr "Đã lưu buổi học."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "The session is under way. Show the code so people can scan it."
+msgstr "Buổi học đang diễn ra. Hãy hiện mã để mọi người quét."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "The sessions could not be read just now"
+msgstr "Hiện chưa đọc được các buổi học"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Their invitations have gone out."
+msgstr "Lời mời của họ đã được gửi."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "There are seats left. Join it and you are marked as here."
+msgstr "Vẫn còn chỗ. Tham gia và bạn sẽ được ghi có mặt."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "These numbers cannot be read."
+msgstr "Không đọc được các số này."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_course
+msgid "This course is taught in a room or on site. The training team books you on a session and the invitation comes by email."
+msgstr "Khóa học này dạy tại phòng học hoặc tại hiện trường. Bộ phận đào tạo sẽ xếp bạn vào một buổi học và lời mời được gửi qua email."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "This session has not started yet"
+msgstr "Buổi học chưa bắt đầu"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "This session is %s. A training manager can open it again if something needs changing."
+msgstr "Buổi học này %s. Quản lý đào tạo có thể mở lại nếu cần thay đổi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/models/session.py:0
+msgid "This session is already %s."
+msgstr "Buổi học này đã %s."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "This session is closed"
+msgstr "Buổi học đã đóng"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "This session is full"
+msgstr "Buổi học đã hết chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Tick all shown"
+msgstr "Đánh dấu tất cả"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/js/toolbox_drawer.js:0
+msgid "Tick who was there."
+msgstr "Hãy đánh dấu những người có mặt."
+
+#. module: pb_training
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__how__trainer
+msgid "Ticked by the trainer"
+msgstr "Giảng viên đánh dấu"
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__attendance_completes
+msgid "Ticked: attending a session marks the course finished for that person (and, for a course that is also online, the lessons and the test still count)."
+msgstr "Được chọn: tham dự buổi học sẽ ghi khóa học là hoàn thành cho người đó (với khóa học có cả phần trực tuyến, bài học và bài kiểm tra vẫn được tính)."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__session_certificate
+msgid "Ticked: closing a session files a certificate on the record of everybody who attended."
+msgstr "Được chọn: khi đóng buổi học, chứng chỉ được lưu vào hồ sơ của mọi người có mặt."
+
+#. module: pb_training
+#: model:ir.model.fields,help:pb_training.field_slide_channel__self_booking
+msgid "Ticked: somebody put on this course sees its open sessions on their training page with a \"Book a seat\" button."
+msgstr "Được chọn: người được giao khóa học sẽ thấy các buổi học đang mở trên trang đào tạo của họ, kèm nút \"Đặt chỗ\"."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__kind__toolbox
+#: code:addons/pb_training/models/session.py:0
+msgid "Toolbox talk"
+msgstr "Nói chuyện an toàn đầu ca"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Toolbox talk logged by %(who)s: %(n)s people."
+msgstr "Buổi nói chuyện an toàn do %(who)s ghi: %(n)s người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Toolbox talk logged: %(topic)s, %(n)s people."
+msgstr "Đã ghi buổi nói chuyện an toàn: %(topic)s, %(n)s người."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Topic"
+msgstr "Chủ đề"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Trainer: %s"
+msgstr "Giảng viên: %s"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/learning_overview.xml:0
+#: code:addons/pb_training/static/src/xml/my_learning_lens.xml:0
+msgid "Training in a room or on site"
+msgstr "Đào tạo tại phòng học hoặc tại hiện trường"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+#: model:ir.model,name:pb_training.model_pb_training_session
+msgid "Training session"
+msgstr "Buổi đào tạo"
+
+#. module: pb_training
+#: model:ir.model,name:pb_training.model_pb_training_attendance
+msgid "Training session attendance"
+msgstr "Điểm danh buổi đào tạo"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/js/training_palette.js:0
+msgid "Training sessions"
+msgstr "Buổi đào tạo"
+
+#. module: pb_training
+#: model:ir.model.constraint,message:pb_training.constraint_pb_training_session_qr_token_uniq
+msgid "Two sessions cannot share the same attendance code."
+msgstr "Hai buổi học không thể dùng chung một mã điểm danh."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Type a name, or an outside trainer's name"
+msgstr "Nhập tên, hoặc tên giảng viên bên ngoài"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Under way. Close it when it ends: anybody booked and not marked counts as not coming."
+msgstr "Đang diễn ra. Đóng buổi học khi kết thúc: ai đã xếp chỗ mà chưa được ghi có mặt sẽ tính là vắng mặt."
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/static/src/js/sessions_lens.js:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__waitlist_ids
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_attendance__state__waitlisted
+#: code:addons/pb_training/models/session.py:0
+msgid "Waiting for a seat"
+msgstr "Đang chờ chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "When"
+msgstr "Khi nào"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "When, where, who runs it, how many seats"
+msgstr "Khi nào, ở đâu, ai phụ trách, bao nhiêu chỗ"
+
+#. module: pb_training
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__place
+msgid "Where"
+msgstr "Ở đâu"
+
+#. module: pb_training
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__state
+msgid "Where it has got to"
+msgstr "Tình trạng"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Who was there"
+msgstr "Những người có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "Who was there, in a minute"
+msgstr "Ghi người có mặt trong một phút"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You are already marked as here"
+msgstr "Bạn đã được ghi có mặt"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You are marked as here"
+msgstr "Bạn đã được ghi có mặt"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You are not booked on it and every seat is taken. Tell the trainer — they can add you by hand."
+msgstr "Bạn chưa được xếp chỗ và đã hết chỗ. Hãy báo giảng viên — họ có thể thêm bạn."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You are not booked on this session"
+msgstr "Bạn chưa được xếp chỗ trong buổi học này"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "You can log a toolbox talk only for the people who report to you."
+msgstr "Bạn chỉ có thể ghi buổi nói chuyện an toàn cho những người dưới quyền."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/toolbox_drawer.xml:0
+msgid "You can tick the people who report to you."
+msgstr "Bạn có thể đánh dấu những người dưới quyền."
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You cannot be marked here"
+msgstr "Không thể ghi bạn có mặt"
+
+#. module: pb_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
+msgid "You do not have an employee record in this company. Tell the trainer — they can tick you by hand."
+msgstr "Bạn chưa có hồ sơ nhân viên ở công ty này. Hãy báo giảng viên — họ có thể đánh dấu cho bạn."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "You do not have an employee record yet, so there is nothing to book a seat for."
+msgstr "Bạn chưa có hồ sơ nhân viên nên chưa thể đặt chỗ."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "You have a seat. The invitation comes by email when the training team sends them."
+msgstr "Bạn đã có chỗ. Lời mời sẽ đến qua email khi bộ phận đào tạo gửi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/controllers/portal.py:0
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "You have a seat. The invitation comes by email."
+msgstr "Bạn đã có chỗ. Lời mời sẽ đến qua email."
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "Your own sessions are on My learning."
+msgstr "Buổi học của bạn ở mục Học tập của tôi."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "a session"
+msgstr "một buổi học"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_certificate
+msgid "attended"
+msgstr "có mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "did not come"
+msgstr "vắng mặt"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "· no login"
+msgstr "· chưa có tài khoản"
+
+#. module: pb_training
+#. odoo-javascript
+#: code:addons/pb_training/static/src/xml/sessions_lens.xml:0
+msgid "· scanned"
+msgstr "· đã quét mã"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Place not set yet"
+msgstr "Chưa có địa điểm"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "%s of %s seats"
+msgstr "%s/%s chỗ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "1 booked"
+msgstr "1 người đã đặt chỗ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "%s booked"
+msgstr "%s người đã đặt chỗ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "%s waiting"
+msgstr "%s người chờ"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Mon"
+msgstr "T2"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Tue"
+msgstr "T3"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Wed"
+msgstr "T4"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Thu"
+msgstr "T5"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Fri"
+msgstr "T6"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Sat"
+msgstr "T7"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/session.py:0
+msgid "Sun"
+msgstr "CN"

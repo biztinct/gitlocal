@@ -80,8 +80,10 @@ class TestT4TheRail(TransactionCase):
 
     def test_t4_the_board_lenses_carry_their_tabs(self):
         blocks = _lens_blocks(_src('static', 'src', 'js', 'training_palette.js'))
-        self.assertIn('props: { startTab: "courses", tabs: ["courses"] }',
-                      blocks['courses'][0])
+        # LEARNING L4: Courses owns Courses + Sessions and reads its arrival.
+        self.assertIn('propsFromContext(ctx)', blocks['courses'][0])
+        self.assertIn('const COURSE_TABS = ["courses", "sessions"];',
+                      _src('static', 'src', 'js', 'training_palette.js'))
         # LEARNING L2: Required reads its arrival (tab, cell state, pack).
         self.assertIn('propsFromContext(ctx)', blocks['required'][0])
         self.assertIn('const REQUIRED_TABS = ["matrix", "rules", "day_one", "recurring"];',

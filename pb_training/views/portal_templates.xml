@@ -1527,7 +1527,8 @@
             <span><t t-esc="info.get('where_words')"/></span>
           </div>
           <p t-if="code == 'ok'" class="pbtr-muted">It counts on your training record when the trainer closes the session.</p>
-          <p t-elif="code == 'ask'" class="pbtr-muted">There are seats left (<t t-esc="seats_words"/>). Join it and you are marked as here.</p>
+          <p t-elif="code == 'ask'" class="pbtr-muted">There are seats left. Join it and you are marked as here.</p>
+          <p t-if="code == 'ask' and seats_words" class="pbtr-muted"><t t-esc="seats_words"/></p>
           <p t-elif="code == 'full'" class="pbtr-muted">You are not booked on it and every seat is taken. Tell the trainer — they can add you by hand.</p>
           <p t-elif="code == 'closed'" class="pbtr-muted">It cannot take a scan any more. Tell the trainer if you were there.</p>
           <p t-elif="code == 'not_yet'" class="pbtr-muted">Scan the code again when the trainer starts the session.</p>

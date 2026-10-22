@@ -289,6 +289,19 @@ export class PbTrainingNumbers extends Component {
     /** "92%" or a dash when nothing could be counted yet. */
     pct(v) { return v === null || v === undefined ? "—" : `${v}%`; }
 
+    /** "4 closed sessions · 12 hours of training · 90% attended · 10% did not come" */
+    get sessionsWords() {
+        const x = this.state.sessions || {};
+        return [
+            x.sessions === 1 ? _t("1 closed session") : _t("%s closed sessions", x.sessions || 0),
+            _t("%s hours of training", x.hours || 0),
+            _t("%s attended", this.pct(x.attendance_rate)),
+            _t("%s did not come", this.pct(x.no_show_rate)),
+        ].join(" · ");
+    }
+
+    hoursWords(h) { return _t("%s h", h || 0); }
+
     sessionRowWords(row) {
         const bits = [row.sessions === 1 ? _t("1 session") : _t("%s sessions", row.sessions)];
         bits.push(row.attended === 1 ? _t("1 attended") : _t("%s attended", row.attended));

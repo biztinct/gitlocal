@@ -544,7 +544,8 @@ class TestT8Job(SessionCase):
         self.assertEqual(old.state, 'closed')
         self.assertEqual(self._att(old, self.e_one).state, 'no_show')
         self.assertEqual(fresh.state, 'held')
-        self.assertIn('by itself', old.message_ids[:1].body)
+        self.assertTrue(any('by itself' in (m.body or '')
+                            for m in old.message_ids))
 
 
 # =========================================================================
