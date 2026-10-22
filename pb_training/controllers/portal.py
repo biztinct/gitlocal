@@ -73,6 +73,11 @@ _PROBLEMS = {
               "closed to booking — ask the training team."),
     'calendar': _("That session is not one of yours, so there is no "
                   "calendar file for it."),
+    # LEARNING L5
+    'request': _("That request could not be sent. Try again, and tell the "
+                 "training team if it keeps happening."),
+    'request_cancel': _("That request could not be cancelled. It may "
+                        "already be decided — ask the training team."),
 }
 
 
@@ -147,6 +152,10 @@ class PbTrainingPortal(CustomerPortal):
             'booked': _("You have a seat. The invitation comes by email."),
             'waiting': _("The session is full, so you are waiting for a "
                          "seat. You get an email if one comes free."),
+            # LEARNING L5
+            'requested': _("Asked. You get an email when it is decided."),
+            'request_cancelled': _("Cancelled. Nobody needs to decide it "
+                                   "now."),
         }.get(key or '', '')
 
     # =================================================================
@@ -364,9 +373,10 @@ class PbTrainingPortal(CustomerPortal):
                 website=True)
     def portal_training_claims(self, **kw):
         return self._tr_claims_page(notice=self._tr_notice(kw.get('ok')),
-                                    problem=self._tr_problem(kw))
+                                    problem=self._tr_problem(kw),
+                                    request_id=self._tr_int(kw.get('request')))
 
-    def _tr_claims_page(self, notice='', problem=''):
+    def _tr_claims_page(self, notice='', problem='', request_id=0):
         """The page, rendered from one read. Used by the GET and by a refusal.
 
         A REFUSAL RE-RENDERS RATHER THAN REDIRECTING, and that is not a style
@@ -382,6 +392,10 @@ class PbTrainingPortal(CustomerPortal):
             'claims': self._tr_facade().claims(),
             'notice': notice,
             'problem': problem,
+            # LEARNING L5: "Claim this course back" from an agreed request
+            # opens the form already filled in (re-checked on the way in).
+            'prefill': self._tr_facade().claim_prefill(request_id)
+            if request_id else {},
         })
 
     @http.route(['/my/training/claims/new'], type='http', auth='user',
@@ -404,6 +418,7 @@ class PbTrainingPortal(CustomerPortal):
                     'paid_on': post.get('paid_on') or False,
                     'note': (post.get('note') or '')[:2000],
                     'assignment_id': self._tr_int(post.get('assignment_id')),
+                    'request_id': self._tr_int(post.get('request_id')),
                 },
                 invoice=self._tr_upload(post.get('invoice')),
                 certificate=self._tr_upload(post.get('certificate')))
@@ -594,3 +609,126 @@ class PbTrainingPortal(CustomerPortal):
             return request.redirect('%s?problem=book' % back)
         code = 'waiting' if res.get('code') == 'waiting' else 'booked'
         return request.redirect('%s?ok=%s' % (back, code))
+
+
+    # =================================================================
+    #  LEARNING L5 — asking to take a course, and the feedback pages
+    # =================================================================
+    @http.route(['/my/training/requests'], type='http', auth='user',
+                website=True)
+    def portal_training_requests(self, **kw):
+        return self._tr_requests_page(notice=self._tr_notice(kw.get('ok')),
+                                      problem=self._tr_problem(kw))
+
+    def _tr_requests_page(self, notice='', problem='', form=None):
+        """Re-renders on a refusal rather than redirecting: the money
+        refusal carries arithmetic, which must never travel in a query
+        string (the claims page's rule)."""
+        facade = self._tr_facade()
+        return request.render('pb_training.portal_training_requests', {
+            'page_name': 'training',
+            'options': facade.request_options(),
+            'mine': facade.my_requests(),
+            'notice': notice,
+            'problem': problem,
+            'form': form or {},
+        })
+
+    @http.route(['/my/training/requests/new'], type='http', auth='user',
+                website=True, methods=['POST'])
+    def portal_training_request_new(self, **post):
+        kind = post.get('kind') or 'ours'
+        values = {
+            'kind': kind,
+            'channel_id': self._tr_int(post.get('channel_id')),
+            'outside_course_id': self._tr_int(post.get('outside_course_id')),
+            'course_name': (post.get('course_name') or '').strip()[:200],
+            'provider': (post.get('provider') or '').strip()[:200],
+            'url': (post.get('url') or '').strip()[:500],
+            'amount': self._tr_money(post.get('amount')),
+            'when_words': (post.get('when_words') or '').strip()[:200],
+            'why': (post.get('why') or '')[:2000],
+        }
+        try:
+            self._tr_facade().ask_course(values)
+        except AccessError:
+            return request.redirect('/my/training/requests?problem='
+                                    'no_employee')
+        except (UserError, Exception) as err:  # noqa: BLE001
+            if not isinstance(err, UserError):
+                _logger.warning('pb_training: a course request could not be '
+                                'sent', exc_info=True)
+                return request.redirect('/my/training/requests?problem='
+                                        'request')
+            return self._tr_requests_page(problem=str(err), form=values)
+        return request.redirect('/my/training/requests?ok=requested')
+
+    @http.route(['/my/training/requests/<int:request_id>/cancel'],
+                type='http', auth='user', website=True, methods=['POST'])
+    def portal_training_request_cancel(self, request_id, **post):
+        try:
+            self._tr_facade().cancel_request(request_id)
+        except (AccessError, UserError):
+            return request.redirect('/my/training/requests?problem='
+                                    'request_cancel')
+        except Exception:               # noqa: BLE001 — never a 500 on /my
+            _logger.warning('pb_training: a course request could not be '
+                            'cancelled', exc_info=True)
+            return request.redirect('/my/training/requests?problem='
+                                    'request_cancel')
+        return request.redirect('/my/training/requests?ok='
+                                'request_cancelled')
+
+    def _tr_feedback(self, token):
+        """(request, status) for a COURSE feedback token only — the other
+        kinds have their own page in the journey module."""
+        req, status = request.env['pb.feedback.request'].sudo() \
+            ._request_for_token(token)
+        if req and req.kind not in ('training', 'training_followup'):
+            return request.env['pb.feedback.request'].sudo().browse(), \
+                'invalid'
+        return req, status
+
+    @http.route(['/my/training/feedback/<string:token>'], type='http',
+                auth='public', website=True, sitemap=False)
+    def portal_training_feedback(self, token, **kw):
+        req, status = self._tr_feedback(token)
+        if kw.get('done') == '1' and status in ('used', 'ok'):
+            status = 'thanks'
+        return self._tr_feedback_page(token, req, status)
+
+    def _tr_feedback_page(self, token, req, status):
+        return request.render('pb_training.portal_training_feedback', {
+            'status': status,
+            'token': token,
+            'kind': req.kind if req else '',
+            'course': req._pb_course_name() if req else '',
+            'about': req.subject_employee_id.sudo().name if req else '',
+            'window_end': str(req.window_end) if (req and req.window_end)
+            else '',
+            'questions': req.questions() if (req and status == 'ok') else [],
+        })
+
+    @http.route(['/my/training/feedback/<string:token>/submit'],
+                type='http', auth='public', website=True, methods=['POST'],
+                sitemap=False)
+    def portal_training_feedback_submit(self, token, **post):
+        req, status = self._tr_feedback(token)
+        if status == 'ok':
+            answers = {}
+            for q in req.questions():
+                raw = post.get('q_%s' % q['key'], '')
+                if isinstance(raw, str):
+                    raw = raw.strip()[:2000]
+                if q['type'] == 'rating' and raw not in ('1', '2', '3', '4',
+                                                         '5'):
+                    raw = ''
+                if q['type'] == 'choice' and raw not in q['options']:
+                    raw = ''
+                answers[q['key']] = {'label': q['label'], 'value': raw}
+            try:
+                req.sudo().submit_answers(answers)
+            except Exception:           # noqa: BLE001 — never a 500
+                _logger.warning('pb_training: feedback could not be saved',
+                                exc_info=True)
+        return request.redirect('/my/training/feedback/%s?done=1' % token)

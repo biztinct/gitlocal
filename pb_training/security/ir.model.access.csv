@@ -40,3 +40,16 @@ access_pb_training_session_admin,Training session — head of training,model_pb_
 access_pb_training_attendance_user,Session attendance — trainer,model_pb_training_attendance,pb_training.group_training_user,1,1,1,0
 access_pb_training_attendance_manager,Session attendance — training manager,model_pb_training_attendance,pb_training.group_training_manager,1,1,1,1
 access_pb_training_attendance_admin,Session attendance — head of training,model_pb_training_attendance,pb_training.group_training_admin,1,1,1,1
+access_pb_training_outside_course_user,Outside course — trainer,model_pb_training_outside_course,pb_training.group_training_user,1,1,1,0
+access_pb_training_outside_course_manager,Outside course — training manager,model_pb_training_outside_course,pb_training.group_training_manager,1,1,1,1
+access_pb_training_outside_course_admin,Outside course — head of training,model_pb_training_outside_course,pb_training.group_training_admin,1,1,1,1
+access_pb_training_request_staff,Course request — ask and read my own,model_pb_training_request,base.group_user,1,1,1,0
+access_pb_training_request_user,Course request — trainer,model_pb_training_request,pb_training.group_training_user,1,1,1,0
+access_pb_training_request_manager,Course request — training manager,model_pb_training_request,pb_training.group_training_manager,1,1,1,1
+access_pb_training_request_admin,Course request — head of training,model_pb_training_request,pb_training.group_training_admin,1,1,1,1
+access_pb_training_followup_user,Course follow-up — trainer reads,model_pb_training_followup,pb_training.group_training_user,1,0,0,0
+access_pb_training_followup_manager,Course follow-up — training manager,model_pb_training_followup,pb_training.group_training_manager,1,1,1,1
+access_pb_training_followup_admin,Course follow-up — head of training,model_pb_training_followup,pb_training.group_training_admin,1,1,1,1
+access_pb_training_skill_grant_user,Skill a course gives — trainer,model_pb_training_skill_grant,pb_training.group_training_user,1,1,1,1
+access_pb_training_skill_grant_manager,Skill a course gives — training manager,model_pb_training_skill_grant,pb_training.group_training_manager,1,1,1,1
+access_pb_training_skill_grant_admin,Skill a course gives — head of training,model_pb_training_skill_grant,pb_training.group_training_admin,1,1,1,1

@@ -74,3 +74,20 @@ from . import pb_training_paths
 # paths facade's verb tuple and the Overview chain, so it comes last.
 from . import session
 from . import pb_training_sessions
+
+# ---------------------------------------------------------------- LEARNING L5
+# Outside courses and course requests (with their route and the pre-booked
+# allowance), course versions, test results and pools, course feedback and
+# the manager's follow-up, skills a course gives — then the facades: the
+# catalogue / requests / course drawer / Overview / Numbers one (it extends
+# the sessions facade's verb tuple), and the SKILLS board with the learner's
+# side, which comes last.
+from . import outside_course
+from . import request
+from . import request_approval
+from . import course_version
+from . import test_results
+from . import feedback
+from . import skill_grant
+from . import pb_training_catalogue
+from . import pb_training_skills

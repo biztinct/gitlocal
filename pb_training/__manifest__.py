@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.8.1',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -111,6 +111,13 @@ public.
         # (ruling D12: our own mail carries the calendar file, the diary
         # entry never mails anybody). Installed on every live database.
         'calendar',
+        # LEARNING L5. The course feedback and the manager's follow-up are
+        # `pb.feedback.request` rows (the house pattern, ledger F5), and a
+        # course gives skills (`hr.employee.skill`). Both were already
+        # installed everywhere through pb_onboarding and hr_skills_survey;
+        # named because this module now writes into them.
+        'pb_lifecycle',
+        'hr_skills',
     ],
     'data': [
         'security/pb_training_security.xml',
@@ -138,6 +145,9 @@ public.
         'data/mail_template_sessions.xml',
         'views/session_views.xml',
         'report/session_sheet.xml',
+        'data/mail_template_l5.xml',
+        'views/l5_views.xml',
+        'views/portal_l5.xml',
     ],
     'assets': {
         'web.assets_backend': [

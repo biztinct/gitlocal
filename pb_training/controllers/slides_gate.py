@@ -172,3 +172,38 @@ class PbTrainingSlidesGate(WebsiteSlides):
     @route()
     def view_ranks_badges(self, *args, **kwargs):
         return _send_away() or super().view_ranks_badges(*args, **kwargs)
+
+
+# =========================================================================
+#  LEARNING L5 — the stock results page of a TEST
+# =========================================================================
+from odoo.addons.survey.controllers.main import Survey  # noqa: E402
+
+from ..models.training_common import ALL_GROUPS  # noqa: E402
+
+
+def _is_test(survey):
+    """A certification, or a survey a course uses as its test."""
+    survey = survey.sudo()
+    if survey.certification:
+        return True
+    return bool(request.env['slide.slide'].sudo().search_count(
+        [('survey_id', '=', survey.id)], limit=1))
+
+
+class PbTrainingSurveyResultsGate(Survey):
+    """`/survey/results/<id>` lists every attempt with names and scores. For
+    a TEST it is the training team's page: anybody else — an internal user
+    without a training group included — is sent to their own training page
+    (the stock route only asks for a login). Ordinary surveys (an appraisal,
+    a pulse) are not touched. Bare `@route()` (see `PbTrainingSlidesGate`)."""
+
+    @route()
+    def survey_report(self, survey, answer_token=None, **post):
+        user = request.env.user
+        allowed = user.has_group('base.group_system') or any(
+            user.has_group(g) for g in ALL_GROUPS)
+        if not allowed and _is_test(survey):
+            return request.redirect('/my/training')
+        return super().survey_report(survey, answer_token=answer_token,
+                                     **post)

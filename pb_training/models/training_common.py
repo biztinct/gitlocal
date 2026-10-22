@@ -69,6 +69,12 @@ P_ENFORCE_CAP = 'pb_training.enforce_cap'
 #: the row on this build).
 P_PACK_SWITCH = 'pb_training.pack.%s.%s'
 
+# ------------------------------------------------------- LEARNING L5 dials
+P_REREAD_CAP = 'pb_training.reread_cap'
+P_FEEDBACK_ON = 'pb_training.feedback_on'
+P_FOLLOWUP_ON = 'pb_training.followup_on'
+P_FOLLOWUP_DAYS = 'pb_training.followup_days'
+
 DEFAULTS = {
     # ON. The pages that came with the content engine are a PUBLIC WEB SITE
     # with a course catalogue, a member leaderboard and a public profile per
@@ -152,6 +158,20 @@ DEFAULTS = {
     # size: a rule pointed at the wrong audience cannot enrol the whole
     # company in one night. The log says so when it bites.
     P_ENFORCE_CAP: '500',
+    # LEARNING L5. How many people one "Publish a new version" press resets
+    # and puts on a re-read; the rest are picked up by the morning job. A
+    # safety rail: a course everybody finished cannot mail the company in
+    # one press.
+    P_REREAD_CAP: '500',
+    # ON. Finishing a course asks the person two ratings and one line
+    # ("Was it useful?", "Would you recommend it?", "What would you
+    # change?"), once, by email and on their own page.
+    P_FEEDBACK_ON: '1',
+    # ON. A set number of days after somebody finishes a course their
+    # manager is asked whether their work has changed. One question set,
+    # one email.
+    P_FOLLOWUP_ON: '1',
+    P_FOLLOWUP_DAYS: '30',
 }
 
 # =========================================================================
@@ -171,6 +191,9 @@ ASSIGN_REASONS = [
     # LEARNING L2: put on because a required-training rule says they must
     # hold it and they do not (or it is about to run out).
     ('required', 'Required'),
+    # LEARNING L5: a course they had finished was published again as a new
+    # version, and they are asked to read the changed parts.
+    ('reread', 'Changed course'),
 ]
 ASSIGN_REASON_LABEL = dict(ASSIGN_REASONS)
 
@@ -254,6 +277,49 @@ SCHEDULE_AUDIENCES = [
     ('job', 'Everybody doing one job'),
     ('everyone', 'Everybody, in every company'),
 ]
+
+# =========================================================================
+#  LEARNING L5 — outside courses, course requests, follow-ups
+# =========================================================================
+#: What kind of outside course it is, in the words on the card.
+OUTSIDE_KINDS = [
+    ('online', 'Online'),
+    ('classroom', 'In a classroom'),
+    ('exam', 'An exam or licence'),
+]
+OUTSIDE_KIND_LABEL = dict(OUTSIDE_KINDS)
+
+#: What somebody is asking to take: one of our courses, one from the outside
+#: list, or something they found themselves (free text and a link).
+REQUEST_KINDS = [
+    ('ours', 'One of our courses'),
+    ('outside', 'An outside course'),
+    ('other', 'Something else'),
+]
+REQUEST_KIND_LABEL = dict(REQUEST_KINDS)
+
+#: HOW FAR A COURSE REQUEST HAS GOT. `submitted → approved / refused` is the
+#: route's; `taken`, `claimed` and `cancelled` are the request's own.
+REQUEST_STATES = [
+    ('draft', 'Not sent yet'),
+    ('submitted', 'Waiting for a decision'),
+    ('approved', 'Agreed'),
+    ('refused', 'Turned down'),
+    ('taken', 'Taken'),
+    ('claimed', 'Claimed back'),
+    ('cancelled', 'Cancelled'),
+]
+REQUEST_STATE_LABEL = dict(REQUEST_STATES)
+REQUEST_OPEN = ('draft', 'submitted', 'approved')
+
+#: The manager's 30-day question set.
+FOLLOWUP_STATES = [
+    ('planned', 'Planned'),
+    ('sent', 'Waiting on the manager'),
+    ('answered', 'Answered'),
+    ('skipped', 'Skipped'),
+]
+FOLLOWUP_STATE_LABEL = dict(FOLLOWUP_STATES)
 
 #: The most days a delay request may ask for in one go. Longer than this and
 #: the honest answer is a new due date typed by the training team, not an

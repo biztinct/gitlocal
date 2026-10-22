@@ -35,4 +35,16 @@
         <field name="sequence">245</field>
     </record>
 
+    <!-- LEARNING L5. The third row: somebody asking to take a course. The
+         manager decides; the HR lead after them when it costs money (a
+         condition on the route, not a second row). -->
+    <record id="process_training_request" model="biz.approval.process">
+        <field name="key">training_request</field>
+        <field name="name">Course request</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.training.request</field>
+        <field name="description">Somebody asking to take a course — one of ours, one from the outside list, or one they found — with why, when and what it costs against their training allowance.</field>
+        <field name="sequence">250</field>
+    </record>
+
 </odoo>

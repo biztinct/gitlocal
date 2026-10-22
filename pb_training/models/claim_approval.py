@@ -147,14 +147,21 @@ class PbTrainingClaimApproval(models.Model):
         if self.amount > facts['left']:
             chips.append({'label': _('Careful'),
                           'value': _('this is more than they have left')})
+        # ROWS ARE DICTS (LEARNING L5, ledger F10). The Inbox reads `head` /
+        # `sub` / `cells` / `tone` and silently drops any row that is not a
+        # dict, so the receipt and certificate rows were built as lists for
+        # a year and never once reached the person deciding.
         rows = []
         if self.invoice_attachment_id:
-            rows.append([_('Receipt'), self.invoice_attachment_id.name or ''])
+            rows.append({'head': _('Receipt'), 'sub': '',
+                         'cells': [self.invoice_attachment_id.name or ''],
+                         'tone': ''})
         if self.certificate_attachment_id:
-            rows.append([_('Certificate'),
-                         self.certificate_attachment_id.name or ''])
+            rows.append({'head': _('Certificate'), 'sub': '',
+                         'cells': [self.certificate_attachment_id.name or ''],
+                         'tone': ''})
         return {'title': _('Paying somebody back for a course'),
-                'columns': [_('File'), _('Name')], 'rows': rows,
+                'columns': [_('File name')], 'rows': rows,
                 'chips': chips, 'note': self.note or ''}
 
     # ------------------------------------------------------------- the seed

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         LEARNING L5 — five emails. noupdate="1" like every template here
+         (a tenant's rewording survives upgrades). Sent with an explicit
+         `email_to` (R6) and in English end to end (ledger LD10 / LN47:
+         `with_context(lang='en_US')`). Brand colour #5A4BB0. No vendor word.
+         ================================================================== -->
+
+    <!-- ============ a course request was agreed (outside / something else) ============ -->
+    <record id="mail_template_request_approved" model="mail.template">
+        <field name="name">Training: your course request was agreed</field>
+        <field name="model_id" ref="model_pb_training_request"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">You can take {{ object.course_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>Your request to take <strong><t t-out="object.course_name or ''"/></strong> has been agreed.</p>
+                <ul>
+                    <li t-if="object.provider">Run by: <t t-out="object.provider or ''"/></li>
+                    <li t-if="object.amount">What it costs: <strong><t t-out="format_amount(object.amount, object.currency_id) or ''"/></strong> — set aside from your training allowance for <t t-out="object.year"/></li>
+                    <li t-if="object.url">Where to book: <a t-att-href="object.url" style="color:#5A4BB0;"><t t-out="object.url"/></a></li>
+                </ul>
+                <p t-if="object.amount">Book it and pay for it yourself. Keep the receipt and, when you finish, the certificate. Then claim it back on your training page — the claim form is already filled in for this course. It is paid with a pay run.</p>
+                <p t-else="">Book it when it suits you and your manager. When you finish, tell the training team so it goes on your record.</p>
+                <p>
+                    <a t-att-href="object.claim_url() if object.amount else '/my/training/requests'"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        <t t-if="object.amount">Claim it back when you have finished</t><t t-else="">See my requests</t>
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ a course request was turned down ============ -->
+    <record id="mail_template_request_refused" model="mail.template">
+        <field name="name">Training: your course request was not agreed</field>
+        <field name="model_id" ref="model_pb_training_request"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your request to take {{ object.course_name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>Your request to take <strong><t t-out="object.course_name or ''"/></strong> has not been agreed.</p>
+                <p t-if="object.refuse_note" style="padding:10px 14px; background:#F6F7FB; border-left:3px solid #5A4BB0;"><t t-out="object.refuse_note"/></p>
+                <p>If something has changed, talk to your manager and ask again from your training page.</p>
+                <p>
+                    <a href="/my/training/requests"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        See my requests
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ a course you finished has changed ============ -->
+    <record id="mail_template_course_changed" model="mail.template">
+        <field name="name">Training: a course you finished has changed</field>
+        <field name="model_id" ref="model_pb_training_assignment"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.channel_id.name }} has changed — please read it again</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>You finished <strong><t t-out="object.channel_id.name or ''"/></strong>, and a new version of it has been published.</p>
+                <p t-if="object.channel_id.pb_version_note" style="padding:10px 14px; background:#F6F7FB; border-left:3px solid #5A4BB0;">What changed: <t t-out="object.channel_id.pb_version_note"/></p>
+                <p>Please read the lessons again by <strong><t t-out="object.due_date or ''"/></strong> (<t t-out="object.due_words or ''"/>). If you passed its test, that still stands.</p>
+                <p>
+                    <a t-attf-href="/my/training/{{ object.channel_id.id }}"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open the course
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ how was the course? ============ -->
+    <record id="mail_template_course_feedback" model="mail.template">
+        <field name="name">Training: how was the course?</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_feedback_request"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.respondent_email or '' }}</field>
+        <field name="subject">How was {{ object._pb_course_name() }}?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.subject_employee_id.name or ''"/>,</p>
+                <p>Well done on finishing <strong><t t-out="object._pb_course_name()"/></strong>.</p>
+                <p>Two quick ratings and one line help the training team make it better for the next person. It takes under a minute.</p>
+                <p style="margin: 22px 0;">
+                    <a t-att-href="object._pb_feedback_url()"
+                       style="display:inline-block; padding:11px 22px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none; font-weight:700;">
+                        Rate the course
+                    </a>
+                </p>
+                <p t-if="object.window_end">The link is open until <t t-out="object.window_end"/>.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the manager's follow-up ============ -->
+    <record id="mail_template_training_followup" model="mail.template">
+        <field name="name">Training: has the course made a difference?</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_feedback_request"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.respondent_email or '' }}</field>
+        <field name="subject">Has {{ object.subject_employee_id.name }}'s work changed since {{ object._pb_course_name() }}?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p><strong><t t-out="object.subject_employee_id.name or ''"/></strong> finished <strong><t t-out="object._pb_course_name()"/></strong> a month ago.</p>
+                <p>Three short questions: has their work changed, did they use what they learned, and anything to add. It takes under a minute and helps the training team spend on the courses that work.</p>
+                <p style="margin: 22px 0;">
+                    <a t-att-href="object._pb_feedback_url()"
+                       style="display:inline-block; padding:11px 22px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none; font-weight:700;">
+                        Answer the questions
+                    </a>
+                </p>
+                <p t-if="object.window_end">The link is open until <t t-out="object.window_end"/>.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+</data>
+</odoo>

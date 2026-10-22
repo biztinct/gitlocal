@@ -73,7 +73,8 @@ def _seed_routes(env):
     anything, so running both on the same database is running one.
     """
     for module, label in (('delay_approval', 'more time on a course'),
-                          ('claim_approval', 'training claims')):
+                          ('claim_approval', 'training claims'),
+                          ('request_approval', 'course requests')):
         try:
             seed_all = __import__(
                 'odoo.addons.pb_training.models.%s' % module,
