@@ -53,7 +53,7 @@
               <div class="pbss-actions">
                 <button t-if="page.can_write and page.editable" class="pbim-btn primary" t-on-click="openBook"><t t-out="ic('userPlus',15)"/> Book people</button>
                 <button t-if="page.can_write and page.can_invite" class="pbim-btn ghost" t-att-disabled="state.acting === 'send_invites'" t-on-click="() => this.pageVerb('send_invites')"><t t-out="ic('send',15)"/> Send the invitations</button>
-                <button t-if="page.can_write and page.can_close" class="pbim-btn primary" t-on-click="startScreen"><t t-out="ic('scan',15)"/> <t t-if="page.can_start">Start the session</t><t t-else="">Show the code</t></button>
+                <button t-if="page.can_write and (page.can_start or page.can_close)" class="pbim-btn primary" t-on-click="startScreen"><t t-out="ic('scan',15)"/> <t t-if="page.can_start">Start the session</t><t t-else="">Show the code</t></button>
                 <button t-if="page.can_write and page.can_close" class="pbim-btn ghost" t-att-disabled="state.acting === 'close_session'" t-on-click="() => this.pageVerb('close_session')"><t t-out="ic('checkCheck',15)"/> Close the session</button>
                 <button t-if="page.can_reopen" class="pbim-btn ghost" t-on-click="() => this.pageVerb('reopen_session')"><t t-out="ic('rotate',15)"/> Open it again</button>
                 <button t-if="page.can_write and page.editable" class="pbim-btn ghost" t-on-click="editSession"><t t-out="ic('pencil',15)"/> Edit</button>

@@ -35,6 +35,7 @@ LD5) and deliberately not built here.
 """
 
 import base64
+import io
 import logging
 import re
 import secrets
@@ -752,7 +753,7 @@ class PbTrainingSession(models.Model):
         if not template:
             return False
         attachment = self._ics_attachment()
-        template.sudo().send_mail(self.id, force_send=False, email_values={
+        template.sudo().with_context(lang='en_US').send_mail(self.id, force_send=False, email_values={
             'email_to': email, 'auto_delete': False,
             'attachment_ids': [(6, 0, attachment.ids)]})
         return True
@@ -768,11 +769,24 @@ class PbTrainingSession(models.Model):
                                              self.sudo().qr_token)
 
     def _qr_src(self, size=400):
-        """The stock QR route (handover F3): a PNG from reportlab, public."""
+        """The attendance code as an inline PNG (data URI), drawn here with
+        the `qrcode` library. NOT the stock `/report/barcode` route (handover
+        F3): it answers 500 on the live box and locally — reportlab there has
+        no `rlPyCairo` backend (found in the L4 walk). Inline also means the
+        PDF sign-in sheet needs no second request. `size` is kept for the
+        callers; the picture is scaled by the page."""
         self.ensure_one()
-        from urllib.parse import quote
-        return '/report/barcode/?barcode_type=QR&value=%s&width=%s&height=%s' \
-            % (quote(self._attend_url(), safe=''), size, size)
+        try:
+            import qrcode
+            img = qrcode.make(self._attend_url(), box_size=10, border=2)
+            buf = io.BytesIO()
+            img.save(buf, format='PNG')
+            return 'data:image/png;base64,%s' % base64.b64encode(
+                buf.getvalue()).decode()
+        except Exception:               # noqa: BLE001 — a picture is not fatal
+            _logger.warning('pb_training: the attendance code for session %s '
+                            'could not be drawn', self.id, exc_info=True)
+            return ''
 
     def qr_src(self, size=220):
         """The sign-in sheet's QR (a report template calls it)."""
@@ -904,7 +918,9 @@ class PbTrainingAttendance(models.Model):
             (emp.user_id.email or '').strip()
 
     def _send_mail(self, xmlid, with_ics=False, method='REQUEST'):
-        """One mail to this person (to the address, explicitly — R6)."""
+        """One mail to this person (to the address, explicitly — R6). In
+        English end to end, words included (ledger LD10: mail bodies have no
+        Vietnamese yet, so a translated date would make it half and half)."""
         self.ensure_one()
         email = self._email()
         if not email:
@@ -917,7 +933,7 @@ class PbTrainingAttendance(models.Model):
         if with_ics:
             attachment = self.session_id.sudo()._ics_attachment(method)
             values['attachment_ids'] = [(6, 0, attachment.ids)]
-        template.sudo().send_mail(self.id, force_send=False,
+        template.sudo().with_context(lang='en_US').send_mail(self.id, force_send=False,
                                   email_values=values)
         return True
 

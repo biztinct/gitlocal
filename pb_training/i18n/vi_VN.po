@@ -243,6 +243,7 @@ msgstr "Bài kiểm tra và ngân hàng câu hỏi"
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_breadcrumbs_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_home_training
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
+#: model_terms:ir.ui.view,arch_db:pb_training.portal_training_attend
 msgid "My training"
 msgstr "Đào tạo của tôi"
 
@@ -472,6 +473,7 @@ msgstr "Ai đang học gì và xin thêm thời gian"
 #. odoo-python
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__required
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__required
 msgid "Required"
 msgstr "Bắt buộc"
 
@@ -730,6 +732,7 @@ msgstr "Chưa đạt"
 #: model_terms:ir.ui.view,arch_db:pb_training.portal_my_training
 #: code:addons/pb_training/static/src/js/paths_lens.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__state__in_progress
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_session__state__held
 msgid "Under way"
 msgstr "Đang học"
 
@@ -1050,6 +1053,7 @@ msgstr "Quá hạn %s ngày"
 #: code:addons/pb_training/models/training_common.py:0
 #: code:addons/pb_training/static/src/js/required_lens.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__day_one
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__day_one
 msgid "Day one"
 msgstr "Ngày đầu"
 
@@ -1060,6 +1064,7 @@ msgstr "Ngày đầu"
 #: code:addons/pb_training/models/training_common.py:0
 #: code:addons/pb_training/models/delay_approval.py:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__probation
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__probation
 msgid "Trial period"
 msgstr "Thử việc"
 
@@ -1069,6 +1074,7 @@ msgstr "Thử việc"
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__compliance
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__compliance
 msgid "Compliance"
 msgstr "Tuân thủ"
 
@@ -1078,6 +1084,7 @@ msgstr "Tuân thủ"
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__adhoc
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__adhoc
 msgid "One-off"
 msgstr "Một lần"
 
@@ -1087,6 +1094,7 @@ msgstr "Một lần"
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: code:addons/pb_training/models/training_common.py:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__leadership
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__leadership
 msgid "Leadership programme"
 msgstr "Chương trình lãnh đạo"
 
@@ -1570,6 +1578,9 @@ msgstr "Đóng"
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_assignment_search
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__channel_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__channel_id
 msgid "Course"
 msgstr "Khóa học"
 
@@ -1586,6 +1597,7 @@ msgstr "Khóa học đã hoàn thành"
 #: code:addons/pb_training/models/pb_training_required.py:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_training.report_required_matrix
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_sheet
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -1667,6 +1679,7 @@ msgstr "Lưu chứng chỉ hoặc giấy phép cho một người"
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
 #. odoo-python
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__completed_on
 msgid "Finished on"
 msgstr "Hoàn thành ngày"
 
@@ -1735,6 +1748,8 @@ msgstr "Vị trí"
 #: model:ir.model.fields,field_description:pb_training.field_pb_incentive__kind
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__kind
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__kind
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__kind
 msgid "Kind"
 msgstr "Loại"
 
@@ -1955,6 +1970,7 @@ msgstr "Giao lại khóa học cho họ ngay bây giờ"
 #: code:addons/pb_training/static/src/js/my_learning_lens.js:0
 #: model:ir.model.fields.selection,name:pb_training.selection__pb_training_assignment__reason__renewal
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields.selection,name:pb_training.selection__pb_training_path_enrolment__reason__renewal
 msgid "Renewal"
 msgstr "Gia hạn"
 
@@ -2138,6 +2154,7 @@ msgstr "Xác nhận"
 #: code:addons/pb_training/static/src/xml/certificates_lens.xml:0
 #: code:addons/pb_training/static/src/xml/required_lens.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__name
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__name
 msgid "What it is called"
 msgstr "Tên chứng chỉ"
 
@@ -2641,6 +2658,7 @@ msgstr "<span>Áp dụng cho:</span>"
 
 #. module: pb_training
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
+#: model_terms:ir.ui.view,arch_db:pb_training.report_session_certificate
 msgid "<span>hours of training</span>"
 msgstr "<span>giờ đào tạo</span>"
 
@@ -3299,6 +3317,8 @@ msgstr "Luôn phải có"
 #: model:ir.model.fields,field_description:pb_training.field_slide_channel__pb_hours
 #: model_terms:ir.ui.view,arch_db:pb_training.report_learning_record
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__hours
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path_step__hours
 msgid "Hours"
 msgstr "Số giờ"
 
@@ -4195,6 +4215,7 @@ msgstr "Các danh sách theo luật của gói quốc gia đang bật cho công 
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__counts_for_probation
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_requirement__counts_for_probation
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_path__counts_for_probation
 msgid "Their trial period waits for it"
 msgstr "Thử việc chờ khóa học này"
 
@@ -4275,6 +4296,7 @@ msgstr "Cần xác nhận trước khi dùng"
 #. odoo-python
 #: model:res.groups,name:pb_training.group_training_user
 #: code:addons/pb_training/models/training_common.py:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__trainer_id
 msgid "Trainer"
 msgstr "Người huấn luyện"
 
@@ -5025,6 +5047,8 @@ msgstr "Theo lộ trình"
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_rule__company_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_schedule__company_id
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_allowance_search
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__company_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -5463,6 +5487,7 @@ msgstr "Lộ trình"
 #. module: pb_training
 #. odoo-javascript
 #: code:addons/pb_training/static/src/xml/paths_lens.xml:0
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_session__attendance_ids
 msgid "People"
 msgstr "Từng người"
 
@@ -5703,6 +5728,7 @@ msgstr "Các bước sau chỉ mở khi bước này hoàn thành."
 #. module: pb_training
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_assignment__partner_id
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__partner_id
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__partner_id
 msgid "Their contact"
 msgstr "Liên hệ của họ"
 
@@ -5759,6 +5785,7 @@ msgstr "Đang ở đâu"
 
 #. module: pb_training
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__state_words
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__state
 msgid "Where they stand"
 msgstr "Tình trạng"
 
@@ -5768,6 +5795,7 @@ msgstr "Tình trạng"
 #: code:addons/pb_training/static/src/xml/training_board.xml:0
 #: model:ir.model.fields,field_description:pb_training.field_pb_training_path_enrolment__employee_id
 #: model_terms:ir.ui.view,arch_db:pb_training.view_pb_training_claim_search
+#: model:ir.model.fields,field_description:pb_training.field_pb_training_attendance__employee_id
 msgid "Who"
 msgstr "Ai"
 
@@ -7595,3 +7623,15 @@ msgstr "T7"
 #: code:addons/pb_training/models/session.py:0
 msgid "Sun"
 msgstr "CN"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Toolbox talk logged by %(who)s: 1 person."
+msgstr "Buổi nói chuyện an toàn do %(who)s ghi: 1 người."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/pb_training_sessions.py:0
+msgid "Toolbox talk logged: %(topic)s, 1 person."
+msgstr "Đã ghi buổi nói chuyện an toàn: %(topic)s, 1 người."

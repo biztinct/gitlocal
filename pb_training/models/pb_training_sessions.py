@@ -439,7 +439,7 @@ class PbTrainingSessions(models.AbstractModel):
         name = (name or '').strip()[:200]
         if not name:
             raise UserError(_("Give the new course a name."))
-        return self.env['slide.channel'].sudo().create({
+        channel = self.env['slide.channel'].sudo().create({
             'name': name, 'channel_type': 'training',
             'visibility': 'members', 'enroll': 'invite',
             'completed_template_id': False, 'is_published': True,
@@ -447,6 +447,14 @@ class PbTrainingSessions(models.AbstractModel):
             'session_hours': hours,
             'pb_hours': hours,
         })
+        # The content engine puts a course's responsible (the caller) on it
+        # as a member, so whoever logged a toolbox talk found the course on
+        # their own page (walk finding). Take that membership off again; a
+        # caller who attended is booked like everybody else.
+        partner = self.env.user.partner_id
+        if partner:
+            channel._remove_membership(partner.ids)
+        return channel
 
     @api.model
     def save_session(self, payload=None):
@@ -785,12 +793,19 @@ class PbTrainingSessions(models.AbstractModel):
                 'res_model': 'pb.training.session', 'res_id': rec.id,
             })
             rec.write({'photo_id': attachment.id})
-        rec.action_close(note=_("Toolbox talk logged by %(who)s: %(n)s "
-                                "people.", who=self.env.user.name or '',
-                                n=len(people)))
-        return {'id': rec.id, 'message': _(
-            "Toolbox talk logged: %(topic)s, %(n)s people.",
-            topic=channel.name, n=len(people))}
+        n = len(people)
+        rec.action_close(note=_(
+            "Toolbox talk logged by %(who)s: 1 person.",
+            who=self.env.user.name or '') if n == 1 else _(
+            "Toolbox talk logged by %(who)s: %(n)s people.",
+            who=self.env.user.name or '', n=n))
+        if n == 1:
+            message = _("Toolbox talk logged: %(topic)s, 1 person.",
+                        topic=channel.name)
+        else:
+            message = _("Toolbox talk logged: %(topic)s, %(n)s people.",
+                        topic=channel.name, n=n)
+        return {'id': rec.id, 'message': message}
 
     # =====================================================================
     #  the attendance sheet (spreadsheet)

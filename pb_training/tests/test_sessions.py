@@ -138,6 +138,10 @@ class TestT1Shape(SessionCase):
         rec = self._session(seats=20, minutes=90)
         self.assertEqual(rec.stop, rec.start + timedelta(minutes=90))
         self.assertTrue(rec.qr_token and len(rec.qr_token) >= 16)
+        # the code is drawn here (the stock barcode route fails live)
+        self.assertTrue(rec._qr_src().startswith('data:image/png;base64,'))
+        self.assertIn('/my/training/attend/%s' % rec.qr_token,
+                      rec._attend_url())
         self.assertEqual(rec.state, 'planned')
         self.assertIn('DEMO L4 Site safety walk', rec.name)
         self.assertEqual(rec.seats_words, '0 of 20 seats')
@@ -484,6 +488,12 @@ class TestT7Toolbox(SessionCase):
         res = board.log_toolbox({'new_course': 'DEMO L4 Ladders',
                                  'employee_ids': [self.e_one.id]})
         self.assertTrue(res['id'])
+        talk = self.env['pb.training.session'].sudo().browse(res['id'])
+        # whoever logged it is not put on the new course by the engine
+        self.assertFalse(self.env['slide.channel.partner'].sudo().search([
+            ('channel_id', '=', talk.channel_id.id),
+            ('partner_id', '=', self.boss_user.partner_id.id)]))
+        self.assertIn('1 person', res['message'])
         with self.assertRaises(AccessError):
             board.log_toolbox({'new_course': 'DEMO L4 Ladders 2',
                                'employee_ids': [self.stranger.id]})
@@ -691,7 +701,7 @@ class TestT13Numbers(SessionCase):
             'pb_training.report_session_sheet', [rec.id])
         html = html.decode() if isinstance(html, bytes) else html
         self.assertEqual(html.count('class="article'), 1)
-        self.assertIn('/report/barcode/?barcode_type=QR', html)
+        self.assertIn('data:image/png;base64,', html)
         self.assertIn(self.e_one.name, html)
         with patch.object(type(self.env['ir.actions.report']),
                           '_render_qweb_pdf',
