@@ -31,6 +31,6 @@
   </record>
   <record id="action_payroll_period_inputs" model="ir.actions.act_window">
     <field name="name">Period pay inputs</field><field name="res_model">hr.payroll.period.input</field><field name="view_mode">list,form</field>
-    <field name="help" type="html"><p>Record a period amount or reviewed control here, attach its evidence reference and approve it before payroll. No entry is different from a confirmed zero.</p></field>
+    <field name="help" type="html"><p>No monthly adjustments yet. Use Review pay data in Pay Run to review optional amounts, or create an adjustment with its approval reference.</p></field>
   </record>
 </odoo>

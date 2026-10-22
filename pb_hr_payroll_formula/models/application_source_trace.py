@@ -54,7 +54,9 @@ class ApplicationSourceTrace(models.Model):
         elif key == 'period.public_holiday_days':
             explanation = 'Public holiday hours from the work calendar converted to scheduled day equivalents, within the employee’s employment dates. Paid holiday credit is included once.'
         elif key.startswith('period.input.'):
-            explanation = 'The approved monthly adjustment for this employee, payroll item and exact pay period. Missing, pending or conflicting amounts need review; missing does not automatically mean zero.'
+            explanation = ('Approved amount for this employee and pay period. If no record exists, this optional monthly item can use zero after the period review. Pending approvals and conflicting amounts still need attention.'
+                if rule.application_zero_allowed and rule.application_settlement_kind == 'none' else
+                'The approved monthly adjustment for this employee, payroll item and exact pay period. Missing, pending or conflicting amounts need review; missing does not automatically mean zero.')
         elif '.ot.' in key:
             explanation = 'Approved overtime hours of this category in the selected period. In timesheet mode they must also appear in approved daily timesheets. Payroll applies the rate in the consuming formula.'
         actions = []

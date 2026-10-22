@@ -1,4 +1,6 @@
 """Application-record payroll is an explicit, scoped route through the wizard."""
+import json
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
@@ -56,8 +58,23 @@ class ApplicationPayrunWizard(models.AbstractModel):
         return answer
 
     @api.model
+    def open_payroll_review(self, vals):
+        config, employee_ids = self._application_scope(vals)
+        prep = self.env['hr.payroll.preparation']._open(config, employee_ids, vals['date_start'], vals['date_end'])
+        return prep.workspace()
+
+    def _reviewed_preparation(self, vals, config, employee_ids):
+        prep = self.env['hr.payroll.preparation'].browse(int(vals.get('preparation_id') or 0)).exists()
+        if not prep:
+            raise UserError(_('Open Review pay data and complete the worksheet review first.'))
+        prep._assert_scope(config, employee_ids, vals['date_start'], vals['date_end'])
+        return prep
+
+    @api.model
     def application_data_preview(self, vals):
         config, employee_ids = self._application_scope(vals)
+        if vals.get('preparation_id'):
+            return self._reviewed_preparation(vals, config, employee_ids)._resolved(True)
         cert = self._application_certification_payload(vals, employee_ids)
         if any(cert['channels'].values()) or cert['zero_keys']:
             config._application_require_access(certify=True)
@@ -99,9 +116,13 @@ class ApplicationPayrunWizard(models.AbstractModel):
             return super().prepare_run(vals)
         config, employee_ids = self._application_scope(vals)
         config._application_require_access(certify=True)
+        prep = self._reviewed_preparation(vals, config, employee_ids) if vals.get('preparation_id') else False
+        if prep:
+            review = json.loads(prep.review_json)
+            vals = dict(vals, application_certifications=review['certification'], application_certification_reason=review['reason'])
         if not (vals.get('application_certification_reason') or '').strip():
             raise UserError(_('Record your period review before running payroll from application data.'))
-        preview = self.application_data_preview(vals)
+        preview = prep._resolved(True) if prep else self.application_data_preview(vals)
         if not preview['ok']:
             return {'blocked': True, 'message': _('Resolve the application data blockers before creating payroll.'),
                     'application_preflight': preview}
@@ -119,6 +140,8 @@ class ApplicationPayrunWizard(models.AbstractModel):
             run.action_certify_application_data(
                 self._application_certification_payload(vals, employee_ids),
                 vals['application_certification_reason'])
+            if prep:
+                prep._attach(run)
             answer['application_data_mode'] = True
         return answer
 

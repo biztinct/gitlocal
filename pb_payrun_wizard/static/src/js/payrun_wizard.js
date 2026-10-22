@@ -7,6 +7,7 @@ import { _t } from "@web/core/l10n/translation";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { Dialog } from "@web/core/dialog/dialog";
 import { IC as KIT_IC } from "@pb_import_kit/js/import_icons";
+import { PayrollReviewDialog } from '@pb_payrun_wizard/js/payroll_review';
 import { runPayroll, takePrefill } from "@pb_payrun_wizard/js/run_driver";
 import { useSetupAction } from "@web/search/action_hook";
 
@@ -449,13 +450,14 @@ export class PayrunWizard extends Component {
         const payload = { ...this.state.form, spreadsheet_skipped: true,
             application_certifications: { channels: { ...this.state.application.channels },
                 zero_keys: [...this.state.application.zeroKeys] },
-            application_certification_reason: this.state.application.reason };
+            application_certification_reason: this.state.application.reason,
+            preparation_id: this.state.application.preparationId || false };
         if (this.hasStatusFilter) { payload.statuses = this.chosenStatuses; }
         if (this.state.who.picked.length) { payload.employee_ids = [...this.state.who.picked]; }
         return payload;
     }
     invalidateApplicationScope() {
-        Object.assign(this.state.application, { preview: null, reason: "", zeroKeys: [],
+        Object.assign(this.state.application, { preview: null, preparationId: false, reviewed: null, reason: "", zeroKeys: [],
             channels: { leave: false, overtime: false, adjustments: false, timesheets: false } });
     }
     changeApplicationChannel(key, ev) {
@@ -471,6 +473,15 @@ export class PayrunWizard extends Component {
     changeApplicationReason(ev) {
         this.state.application.reason = ev.target.value;
         if (this.state.application.preview) { this.state.application.preview.ok = false; }
+    }
+    openPayrollReview() {
+        this.dialog.add(PayrollReviewDialog, {payload:this.applicationPayload(), onReviewed:(data)=>{
+            this.state.application.preparationId=data.id;
+            this.state.application.reason=data.review.reason;
+            this.state.application.channels=data.review.certification.channels;
+            this.state.application.zeroKeys=data.review.certification.zero_keys;
+            this.state.application.reviewed=data;
+        }});
     }
     async previewApplicationData() {
         const a = this.state.application;
@@ -990,6 +1001,7 @@ export class PayrunWizard extends Component {
     // "Run without a spreadsheet" — a choice made while looking at the list of
     // components that will fall back, never a silent default.
     async runWithoutSheet() {
+        if (this.applicationEnabled && !this.state.application.preparationId) {this.openPayrollReview();return;}
         if (this.applicationEnabled && !(await this.previewApplicationData())) { return; }
         Object.assign(this.state.sheet, {
             skipped: true, file_b64: "", file_name: "", preflight: null, error: "",

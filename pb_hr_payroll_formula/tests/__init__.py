@@ -177,3 +177,5 @@ from . import test_application_payroll_source
 
 from . import test_payroll_period_input
 from . import test_employee_work_timezone
+
+from . import test_payroll_preparation

@@ -191,7 +191,7 @@
                 <t t-elif="stepKey === 'data'">
                     <section class="pw-appdata" t-if="state.sheet.gate.application">
                         <div class="pw-appdata-head">
-                            <div><h3>Ready from your records</h3>
+                            <div><h3>Review your payroll inputs</h3>
                                 <p class="pw-muted">Use employee records, approved time off, overtime and monthly adjustments for the selected period.</p></div>
                         </div>
                         <t t-if="applicationEnabled and !state.sheet.file_name">
@@ -203,66 +203,12 @@
                                 <span>Effective from <t t-esc="applicationSettings.effective_from"/></span>
                             </div>
                             <div class="pw-appdata-review">
-                                <div>
-                                    <h4>Review the period once</h4>
-                                    <p class="pw-hint">A payroll manager confirms that all relevant records have been entered and reviewed. Outstanding approvals and conflicting values still block the run.</p>
-                                    <t t-foreach="['leave', 'overtime', 'adjustments', 'timesheets']" t-as="channel" t-key="channel"><label class="pw-appcheck" t-if="channel !== 'timesheets' or applicationSettings.basis === 'timesheet'">
-                                        <input type="checkbox" t-att-checked="state.application.channels[channel]"
-                                               t-att-disabled="!applicationSettings.can_certify"
-                                               t-on-change="(ev) => this.changeApplicationChannel(channel, ev)"/>
-                                        <span><t t-esc="({leave: 'Time off', overtime: 'Overtime', adjustments: 'Monthly adjustments', timesheets: 'Timesheets and attendance'})[channel]"/> records are complete for this period</span>
-                                    </label></t>
-                                    <label class="pw-appreason">Review note
-                                        <input type="text" placeholder="e.g. October records reviewed against manager approvals" t-att-value="state.application.reason" t-on-input="changeApplicationReason"
-                                               t-att-disabled="!applicationSettings.can_certify"/>
-                                    </label>
-                                    <p class="pw-hint" t-if="!applicationSettings.can_certify">A payroll or HR manager must sign the period review before this run can proceed.</p>
-                                </div>
-                                <div class="pw-appdata-check">
-                                    <button class="pw-btn primary" t-on-click="previewApplicationData" t-att-disabled="state.application.loading">
-                                        <t t-if="state.application.loading">Checking records…</t><t t-else="">Check payroll readiness</t>
-                                    </button>
-                                    <button class="pw-btn ghost" t-on-click="openApplicationEvents">Review monthly adjustments</button>
+                                <div><h4>Review pay data in one worksheet</h4><p class="pw-hint">See every employee’s values, correct highlighted cells and open the source records. Optional monthly amounts can stay empty. Your saved corrections are kept if you close the browser.</p></div>
+                                <div class="pw-appdata-check"><button class="pw-btn primary" t-on-click="openPayrollReview">Review pay data</button>
+                                    <div class="pw-cov pw-review-status" t-if="state.application.reviewed"><b>Period reviewed</b><span>Preparation #<t t-esc="state.application.reviewed.id"/> · <t t-esc="state.application.reviewed.changes"/> saved corrections</span><span>Sources are checked again before computation.</span></div>
                                     <div class="pw-err" t-if="state.application.error" t-esc="state.application.error"/>
-                                    <div t-if="state.application.preview" t-attf-class="pw-cov {{state.application.preview.ok ? '' : 'pw-cov--warn'}}" role="status">
-                                        <b><t t-esc="state.application.preview.ok ? 'Ready to compute' : 'Review required'"/></b>
-                                        <span><t t-esc="state.application.preview.summary.employees"/> employees checked</span>
-                                        <span t-if="state.application.preview.issue_groups.length"><t t-esc="state.application.preview.issue_groups.length"/> grouped actions to review</span>
-                                    </div>
                                 </div>
                             </div>
-                            <details class="pw-appzero" t-if="applicationZeroOptions.length">
-                                <summary>Nothing to enter for a monthly item?</summary>
-                                <p class="pw-hint">For employees with no entry for an item, confirm there is nothing to pay or deduct this month. Select only items you have reviewed. Existing approved amounts stay unchanged, and pending approvals still need attention. This does not replace missing salary or tax information.</p>
-                                <label class="pw-appcheck" t-foreach="applicationZeroOptions" t-as="option" t-key="option.key">
-                                    <input type="checkbox" t-att-checked="state.application.zeroKeys.includes(option.key)" t-att-disabled="!applicationSettings.can_certify"
-                                           t-on-change="(ev) => this.changeApplicationZero(option.key, ev)"/>
-                                    <span><b t-esc="option.label"/><small class="pw-zero-explain">Confirm zero for <t t-esc="option.missing_count"/> employee<t t-if="option.missing_count!==1">s</t> without an amount</small></span>
-                                </label>
-                            </details>
-                            <section class="pw-readiness" t-if="state.application.preview and state.application.preview.issue_groups.length">
-                                <header><div><span class="pw-readiness-eyebrow">YOUR NEXT STEPS</span><h4>Resolve the cause, once.</h4><p>Repeated employee checks are grouped here. Open the relevant records, make the changes, then check again.</p></div></header>
-                                <div class="pw-issue-tools"><input type="search" placeholder="Find an employee or payroll item…" aria-label="Find a payroll issue" t-model="state.application.issueQuery"/><select aria-label="Filter payroll issues" t-model="state.application.issueFilter"><option value="all">All actions</option><option value="review">Period review</option><option value="adjustments">Monthly adjustments</option><option value="leave">Time off</option><option value="overtime">Overtime</option><option value="timesheets">Timesheets</option><option value="source">Employee &amp; source records</option><option value="setup">Payroll setup</option></select></div>
-                                <article t-foreach="applicationIssueGroups" t-as="issue" t-key="issue.id" t-attf-class="pw-issue-card {{issue.kind==='setup'?'is-setup':''}}">
-                                    <div class="pw-issue-top"><span class="pw-issue-number" t-esc="issue_index+1"/><div><h5 t-esc="issue.title"/><span class="pw-issue-owner" t-if="issue.owner" t-esc="issue.owner"/><small><t t-esc="issue.count"/> employee<t t-if="issue.count!==1">s</t> affected</small></div><button class="pw-btn ghost pw-btn--sm" t-on-click="()=>this.openApplicationIssue(issue)"><t t-esc="issue.action_label"/> →</button></div>
-                                    <p t-esc="issue.message"/>
-                                    <details t-if="issue.items.length"><summary>View affected employees</summary><div class="pw-issue-person" t-foreach="issuePeople(issue)" t-as="person" t-key="person.employee_id"><span t-esc="person.employee"/><button class="pw-issue-link" t-on-click="()=>this.openApplicationIssue(issue,person.employee_id)">Open record →</button></div></details>
-                                </article>
-                                <p class="pw-hint" t-if="!applicationIssueGroups.length">No actions match your search.</p>
-                            </section>
-                            <details class="pw-appvalues" t-if="state.application.preview">
-                                <summary>View values used for this period</summary>
-                                <details t-foreach="state.application.preview.employees.slice(0, 10)" t-as="person" t-key="person.employee_id">
-                                    <summary><t t-esc="person.name"/> · <t t-esc="person.ok ? 'Ready' : 'Review needed'"/></summary>
-                                    <div class="pw-apptable"><table><thead><tr><th>Component</th><th>Value</th><th>Source</th><th>Status</th></tr></thead><tbody>
-                                        <tr t-foreach="person.inputs" t-as="value" t-key="value.code">
-                                            <td><t t-esc="value.label"/> <small t-esc="value.code"/></td><td><t t-esc="value.value"/> <small t-esc="value.unit"/></td>
-                                            <td t-esc="value.source_owner || 'Employee or contract record'"/><td t-esc="({resolved:'Available',zero_confirmed:'Confirmed zero',missing:'Needs a value',conflict:'Needs review'})[value.status] || 'Needs review'"/>
-                                        </tr>
-                                    </tbody></table></div>
-                                </details>
-                                <p class="pw-hint" t-if="state.application.preview.employees.length > 10">Preview shows the first ten employees. Every employee is validated before computation; each computed payslip retains its input snapshot.</p>
-                            </details>
                         </t>
                         <p class="pw-hint" t-elif="!applicationEnabled">Application payroll is not enabled for this scheme. Configure the calculation basis and source mappings to use it.</p>
                         <p class="pw-hint" t-else="">A spreadsheet is selected. Remove it to review application data, or continue with this file.</p>
