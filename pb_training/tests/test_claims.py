@@ -59,6 +59,12 @@ class ClaimCase(TrainingCase):
             'work_email': 'demo.claimant.one@example.com',
             'company_id': cls.company.id,
         })
+        # LN32: a database that already holds this year's company figure (a
+        # seeded demo) must not stop the class — put it aside for the
+        # transaction (found in the L6 run on a seeded copy).
+        cls.Allowance.sudo().search([
+            ('company_id', '=', cls.company.id), ('employee_id', '=', False),
+            ('year', '=', fields.Date.today().year)]).unlink()
         cls.allowance = cls.Allowance.create({
             'company_id': cls.company.id,
             'year': fields.Date.today().year,
