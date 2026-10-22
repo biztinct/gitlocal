@@ -58,6 +58,12 @@
       <t t-elif="icon == 'send'"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></t>
       <t t-elif="icon == 'star'"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></t>
       <t t-elif="icon == 'link'"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></t>
+      <!-- LEARNING L7 -->
+      <t t-elif="icon == 'languages'"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></t>
+      <t t-elif="icon == 'timer'"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></t>
+      <t t-elif="icon == 'calendarCheck'"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></t>
+      <t t-elif="icon == 'wifiOff'"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></t>
+      <t t-elif="icon == 'compass'"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
@@ -768,7 +774,15 @@
     <t t-call="portal.portal_layout">
       <!-- The browser tab title (the layout falls back to this view's name). -->
       <t t-set="additional_title" t-value="lesson['name']"/>
-      <div class="pbme pbtr pbtr-lessonpage">
+      <!-- LEARNING L7: "My training" can go on the phone's home screen. -->
+      <t t-set="head"><t t-call="pb_training.tr_pwa_head"/></t>
+      <!-- LEARNING L7: the phone layer (`portal_lesson.js`) reads these:
+           the lesson to keep the place of, and whether it is done. The page
+           works the same without it — every form still posts. -->
+      <div t-attf-class="pbme pbtr pbtr-lessonpage #{both_on and lesson.get('both') and 'is-both' or ''}"
+           t-att-data-pbtr-lesson="lesson['id']"
+           t-att-data-pbtr-channel="lesson['channel_id']"
+           t-att-data-pbtr-done="lesson['done'] and '1' or '0'">
 
         <!-- `result` and `chosen` are set on BOTH paths through the
              controller, never defaulted here: QWeb raises on a name it has
@@ -777,6 +791,7 @@
              `t-if` is a 500 for the whole page. -->
         <t t-set="notice" t-value="''"/>
         <t t-call="pb_training.tr_notices"/>
+        <t t-call="pb_training.tr_phone_kit"/>
 
         <a t-attf-href="/my/training/#{lesson['channel_id']}" class="pbtr-back">
           <t t-call="pb_training.tr_icon">
@@ -792,7 +807,8 @@
               Lesson <t t-esc="lesson['position']"/> of <t t-esc="lesson['total']"/>
               · <t t-esc="lesson['kind_word']"/><t t-if="lesson['duration']"> · <t t-esc="lesson['duration']"/></t>
             </div>
-            <h1 class="pbme-h1"><t t-esc="lesson['name']"/></h1>
+            <h1 class="pbme-h1"><span t-if="lesson.get('both')" class="pbtr-langchip pbtr-both-only" t-esc="lesson['both']['this_code']"/><t t-esc="lesson['name']"/></h1>
+            <p t-if="lesson.get('both') and lesson['both']['name'] != lesson['name']" class="pbtr-both-name pbtr-both-only"><span class="pbtr-langchip" t-esc="lesson['both']['other_code']"/><span t-esc="lesson['both']['name']"/></p>
           </div>
           <span t-if="lesson['done']" class="pbtr-chip pbtr-chip--ok">
             <t t-call="pb_training.tr_icon">
@@ -806,6 +822,27 @@
         <p t-if="lesson['description']" class="pbtr-lesson-desc">
           <t t-esc="lesson['description']"/>
         </p>
+        <p t-if="lesson.get('both') and lesson['both']['description'] and lesson['both']['description'] != lesson['description']" class="pbtr-lesson-desc pbtr-both-only"><span class="pbtr-langchip" t-esc="lesson['both']['other_code']"/><span t-esc="lesson['both']['description']"/></p>
+
+        <!-- LEARNING L7: both languages, stacked. A link without a script
+             (`?both=1`); with the script it toggles in place and the phone
+             remembers the choice. -->
+        <p t-if="lesson.get('both')" class="pbtr-both-bar">
+          <a t-if="not both_on" t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['id']}?both=1" class="pbtr-both-toggle" data-pbtr-both="1">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'languages'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            <span class="pbtr-both-off-label">Show both languages</span><span class="pbtr-both-on-label">Show one language</span>
+          </a>
+          <a t-else="" t-attf-href="/my/training/#{lesson['channel_id']}/#{lesson['id']}" class="pbtr-both-toggle" data-pbtr-both="0">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'languages'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            <span class="pbtr-both-off-label">Show both languages</span><span class="pbtr-both-on-label">Show one language</span>
+          </a>
+        </p>
 
         <!-- ==================== what is on the page ==================== -->
         <div class="pbme-card pbtr-stage">
@@ -816,11 +853,29 @@
             <iframe t-att-src="lesson['pdf_url']" title="Document"
                     loading="lazy"/>
           </div>
+          <!-- LEARNING L7: some phones will not show a document inside a
+               page; the file opens on its own. -->
+          <p t-if="lesson['pdf_url'] and not lesson['embed']" class="pbtr-openfile">
+            <a t-att-href="lesson['pdf_url']" target="_blank" rel="noopener" class="pbme-btn">
+              <t t-call="pb_training.tr_icon">
+                <t t-set="icon" t-value="'fileText'"/>
+                <t t-set="isz" t-value="15"/>
+              </t>
+              <span>Open the file</span>
+            </a>
+          </p>
           <div t-elif="lesson['image_url']" class="pbtr-image">
             <img t-att-src="lesson['image_url']" t-att-alt="lesson['name']"/>
           </div>
           <div t-elif="lesson['article']" class="pbtr-article">
+            <div t-if="lesson.get('both') and lesson['both']['article']" class="pbtr-both-rule pbtr-both-only"><span class="pbtr-langchip" t-esc="lesson['both']['this_code']"/></div>
             <t t-out="lesson['article']"/>
+            <t t-if="lesson.get('both') and lesson['both']['article']">
+              <div class="pbtr-both-only pbtr-both-article">
+                <div class="pbtr-both-rule"><span class="pbtr-langchip" t-esc="lesson['both']['other_code']"/></div>
+                <t t-out="lesson['both']['article']"/>
+              </div>
+            </t>
           </div>
           <div t-elif="not lesson['quiz']" class="pbme-empty">
             <div class="pbme-empty-ic">
@@ -845,11 +900,11 @@
             </div>
 
             <form t-attf-action="/my/training/#{lesson['channel_id']}/#{lesson['id']}/quiz"
-                  method="post">
+                  method="post" data-pbtr-form="quiz">
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
               <input type="hidden" name="next_id" t-att-value="lesson['next_id']"/>
 
-              <div t-foreach="lesson['questions']" t-as="qst"
+              <div t-foreach="lesson['questions']" t-as="qst" t-att-data-q="qst['id']"
                    t-attf-class="pbtr-q #{result and qst['id'] in result['wrong'] and 'pbtr-q--wrong' or ''} #{result and qst['id'] in result['right'] and 'pbtr-q--right' or ''}">
                 <p class="pbtr-q-text">
                   <t t-esc="qst['text']"/>
@@ -886,7 +941,7 @@
           <div class="pbtr-foot-main">
             <form t-if="not lesson['quiz'] and not lesson['done']"
                   t-attf-action="/my/training/#{lesson['channel_id']}/#{lesson['id']}/done"
-                  method="post">
+                  method="post" data-pbtr-form="done">
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
               <input type="hidden" name="next_id" t-att-value="lesson['next_id']"/>
               <button type="submit" class="pbme-btn pbtr-btn--primary pbtr-btn--big">
@@ -1461,6 +1516,13 @@
           <div t-else="" class="pbtr-grid">
             <div t-foreach="wallet['rows']" t-as="crt" t-attf-class="pbme-card pbtr-cert #{crt['state'] == 'renewed' and 'pbtr-cert--old' or ''}">
               <div class="pbtr-course-top">
+                <!-- LEARNING L7: a badge on every certificate (LD8). -->
+                <span t-if="crt.get('badge')" class="pbtr-badge-wrap">
+                  <t t-call="pb_training.tr_badge">
+                    <t t-set="bdg" t-value="crt['badge']"/>
+                    <t t-set="bsz" t-value="44"/>
+                  </t>
+                </span>
                 <div class="pbtr-course-id">
                   <h3 class="pbtr-course-name" t-esc="crt['name']"/>
                   <p class="pbtr-course-blurb"><span t-esc="crt['kind_words']"/><t t-if="crt['issuer']"> · <span t-esc="crt['issuer']"/></t></p>

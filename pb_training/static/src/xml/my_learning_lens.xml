@@ -35,9 +35,36 @@
         </div>
 
         <t t-else="">
-          <!-- ============ the hero: next up ============ -->
-          <t t-set="nxt" t-value="nextCourse"/>
-          <section t-if="nxt" class="pbml-hero">
+          <!-- ============ the hero: next for you (LEARNING L7) ============
+               One rule engine on the server (`pb.my.training.home().next`)
+               draws this hero and the portal's: late first, then the path,
+               a certificate running out, required training, the course
+               nearest to done ... "Nothing to do right now." -->
+          <t t-set="nb" t-value="nextBest"/>
+          <t t-set="nxt" t-value="nb ? null : nextCourse"/>
+          <section t-if="nb and nb.kind !== 'none'" class="pbml-hero" t-att-class="heroClass(nb)">
+            <div class="pbml-eyebrow">
+              <t t-out="ic(nb.kind === 'overdue' or nb.kind === 'renewal' ? 'alert' : 'compass',13)"/> Next for you
+            </div>
+            <div class="pbml-hero-body">
+              <div class="pbml-hero-text">
+                <h2 class="pbml-next" t-esc="nb.title"/>
+                <div class="pbml-hero-meta">
+                  <span t-if="nb.line"><t t-out="ic('bookOpen',13)"/> <t t-esc="nb.line"/></span>
+                  <span t-if="nb.duration"><t t-out="ic('clock',13)"/> <t t-esc="nb.duration"/></span>
+                </div>
+                <p t-if="nb.reason" class="pbml-why" t-esc="nb.reason"/>
+                <div t-if="nb.channel_id and heroTile" class="pbml-hero-bar">
+                  <span class="pbml-bar"><span class="pbml-bar-fill" t-attf-style="width: {{ heroTile.percent }}%;"/></span>
+                  <span class="pbml-dim" t-esc="lessonWords(heroTile)"/>
+                </div>
+              </div>
+              <button class="pbim-btn primary pbml-go" t-on-click="() => this.go(nb.url)">
+                <t t-esc="nb.button"/> <t t-out="ic('arrow',15)"/>
+              </button>
+            </div>
+          </section>
+          <section t-elif="!nb and nxt" class="pbml-hero">
             <t t-set="step" t-value="nextStep(nxt)"/>
             <div class="pbml-eyebrow">
               <t t-out="ic('play',13)"/> Next up
@@ -47,17 +74,7 @@
                 <h2 class="pbml-next" t-esc="step.title"/>
                 <div class="pbml-hero-meta">
                   <span><t t-out="ic('bookOpen',13)"/> <t t-esc="nxt.name"/></span>
-                  <span t-if="nextPath"><t t-out="ic('route',13)"/> <t t-esc="nextPath.name"/></span>
                   <span t-if="nxt.duration"><t t-out="ic('clock',13)"/> <t t-esc="nxt.duration"/></span>
-                  <span t-if="nxt.assignment and nxt.assignment.due_words"
-                        class="pbml-due" t-att-class="dueClass(nxt.assignment)">
-                    <t t-out="ic('calendar',13)"/> <t t-esc="dueWords(nxt.assignment.due)"/>
-                  </span>
-                </div>
-                <div class="pbml-hero-bar">
-                  <span class="pbml-bar"><span class="pbml-bar-fill"
-                        t-attf-style="width: {{ nxt.percent }}%;"/></span>
-                  <span class="pbml-dim" t-esc="lessonWords(nxt)"/>
                 </div>
               </div>
               <button class="pbim-btn primary pbml-go" t-on-click="() => this.go(step.url)">
@@ -73,6 +90,20 @@
               <p t-else="" class="pbml-dim">You are not on any course yet. When the training team puts you on one, it appears here.</p>
             </div>
           </section>
+
+          <!-- ============ three minutes today, the streak (LEARNING L7) ============ -->
+          <div t-if="threeToday or streak.count" class="pbml-l7row">
+            <button t-if="threeToday" class="pbml-three" t-on-click="() => this.go(threeToday.url)">
+              <span class="pbml-three-ic"><t t-out="ic('hourglass',17)"/></span>
+              <span class="pbml-three-main">
+                <span class="pbml-three-l">Three minutes today</span>
+                <b class="pbml-three-name" t-esc="threeToday.name"/>
+                <span class="pbml-dim"><t t-esc="threeToday.course"/><t t-if="threeToday.duration"> · <t t-esc="threeToday.duration"/></t></span>
+              </span>
+              <span class="pbml-three-go">Start <t t-out="ic('arrow',13)"/></span>
+            </button>
+            <span t-if="streak.count" class="pbml-streak" title="Only you see this"><t t-out="ic('checkCheck',14)"/> <t t-esc="streak.words"/></span>
+          </div>
 
           <!-- ============ my path (LEARNING L3) ============ -->
           <section t-if="paths.length" class="pbml-panel pbml-paths">
@@ -231,6 +262,7 @@
             </p>
             <div t-else="" class="pbml-certlist">
               <div t-foreach="certRows" t-as="crt" t-key="crt.id" class="pbml-cert">
+                <t t-if="crt.badge"><t t-call="pb_training.CertBadge"><t t-set="bdg" t-value="crt.badge"/></t></t>
                 <div class="pbml-cert-main">
                   <b t-esc="crt.name"/>
                   <span class="pbml-dim" t-if="crt.next_words" t-esc="crt.next_words"/>
@@ -333,6 +365,19 @@
       </div>
       <PbToolboxDrawer t-if="state.toolbox" onClose="() => this.closeToolbox()" onSaved="() => this.load()"/>
     </div>
+  </t>
+
+  <!-- ============ the certificate badge (LEARNING L7, LD8) ============
+       The portal's medal (`pb_training.tr_badge`), for OWL: the course
+       initials on the brand colour, two ribbon tails. -->
+  <t t-name="pb_training.CertBadge">
+    <svg width="34" height="40" viewBox="0 0 48 56" class="pbml-badge" role="img" t-att-aria-label="bdg.initials">
+      <path d="M15 34 10.5 53 17.5 49.5 22.5 54 23 39Z" t-att-fill="bdg.hex" opacity="0.72"/>
+      <path d="M33 34 37.5 53 30.5 49.5 25.5 54 25 39Z" t-att-fill="bdg.hex" opacity="0.72"/>
+      <circle cx="24" cy="22" r="19" t-att-fill="bdg.hex"/>
+      <circle cx="24" cy="22" r="15" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="24" y="26.5" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff" font-family="Inter, Helvetica, Arial, sans-serif" letter-spacing="0.5" t-esc="bdg.initials"/>
+    </svg>
   </t>
 
 </templates>

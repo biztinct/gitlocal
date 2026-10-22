@@ -74,7 +74,7 @@
                 <t t-out="ic('target',15)"/> New test
               </button>
               <button t-if="state.canWrite" class="pbim-btn primary"
-                      t-on-click="() => this.act('new_course', {}, { reload: false })">
+                      t-on-click="() => this.openNewCourse()">
                 <t t-out="ic('plus',15)"/> New course
               </button>
               <button t-if="state.canWrite" class="pbim-btn primary"
@@ -950,6 +950,36 @@
            grid: a panel that slides over the page must not inherit the
            stacking context of a card (R114).
            ================================================================ -->
+      <!-- ================================================================
+           LEARNING L7 — "New course": a blank course, or another way of
+           starting one that a module registered (PayAI drafts one from a
+           document). Only drawn when there is another way.
+           ================================================================ -->
+      <div t-if="state.newCourse" class="pbim-modal-scrim pbtn-scrim pbtn-scrim--right" t-on-click="closeNewCourse">
+        <div class="pbtn-drawer pbtn-newcourse" t-on-click.stop="() => {}">
+          <div class="pbtn-drawer-head">
+            <div class="pbtn-drawer-id">
+              <div class="pbim-eyebrow">New course</div>
+              <h2 class="pbtn-drawer-name">How do you want to start?</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeNewCourse" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbtn-sec">
+            <button class="pbtn-way" t-on-click="() => this.blankCourse()">
+              <span class="pbtn-way-ic"><t t-out="ic('pencil',18)"/></span>
+              <span class="pbtn-way-main">
+                <b>Start a blank course</b>
+                <span>Give it a name, then add videos, documents, reading and a quiz yourself.</span>
+              </span>
+              <t t-out="ic('chevron',15)"/>
+            </button>
+          </div>
+          <t t-foreach="newCourseWays" t-as="way" t-key="way.key">
+            <t t-component="way.Component" startAttachment="props.startDraftAttachment || 0" onMade="(id) => this.newCourseMade(id)" onClose="() => this.closeNewCourse()"/>
+          </t>
+        </div>
+      </div>
+
       <div t-if="state.open" class="pbim-modal-scrim pbtn-scrim pbtn-scrim--right"
            t-on-click="closeDrawer">
         <div class="pbtn-drawer" t-on-click.stop="() => {}">
@@ -985,12 +1015,26 @@
             </button>
           </div>
 
+          <!-- LEARNING L7: a course another module drafted (PayAI, from a
+               document) says so until it is published. -->
+          <div t-if="state.open.draft" class="pbtn-draft-banner">
+            <t t-out="ic('sparkles',16)"/>
+            <span t-esc="state.open.draft.words"/>
+          </div>
+
           <!-- ====================== the lessons ====================== -->
           <div class="pbtn-sec">
             <h4 class="pbtn-sec-h">
               What is in it
               <span class="pbtn-sec-n"><t t-esc="state.open.lessons.length"/></span>
+              <span t-if="state.open.missing_vi" class="pbtn-vi-n" title="Lessons with no Vietnamese words yet. A learner reading in Vietnamese sees them in English."><t t-out="ic('globe',12)"/> <t t-esc="missingViWords(state.open.missing_vi)"/></span>
             </h4>
+            <!-- LEARNING L7: "Short lessons" lets the learner's page offer one
+                 of them as "Three minutes today". -->
+            <label t-if="state.open.can_write and state.open.short !== undefined" class="pbtn-short">
+              <input type="checkbox" t-att-checked="state.open.short" t-att-disabled="state.busy" t-on-change="() => this.act('set_short', { channel_id: state.open.id, on: !state.open.short })"/>
+              <span>Short lessons, 3 to 5 minutes each. A lesson from this course can be offered to learners as "Three minutes today".</span>
+            </label>
             <div t-if="!state.open.lessons.length" class="pbtn-sec-empty">
               Nothing yet. Open the course and add a video, a document or
               something to read.
@@ -1000,7 +1044,7 @@
                    class="pbtn-line">
                 <span class="pbtn-line-ic"><t t-out="ic(lsn.icon,15)"/></span>
                 <span class="pbtn-line-main">
-                  <span class="pbtn-line-name"><t t-esc="lsn.name"/></span>
+                  <span class="pbtn-line-name"><t t-esc="lsn.name"/><span t-if="lsn.missing_vi" class="pbtn-vi-chip">Missing Vietnamese</span></span>
                   <span class="pbtn-line-meta">
                     <t t-esc="lsn.kind_word"/><t t-if="lsn.duration"> · <t t-esc="lsn.duration"/></t><t t-if="lsn.section"> · <t t-esc="lsn.section"/></t>
                   </span>

@@ -310,3 +310,45 @@
                 .pbim-btn { display: inline-flex; align-items: center; gap: 5px; } }
 .pbml-ses-sub { margin: 12px 0 2px; }
 .pbml-toolbox { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; margin-right: 8px; }
+
+// ============================================================ LEARNING L7
+// Next for you (amber when something is late or running out), three minutes
+// today, the on-time streak, the certificate badge.
+.pbml-hero.is-warn {
+    background: #FFFBEB; border-color: #FDE68A;
+    .pbml-eyebrow { color: var(--pbml-amber); }
+}
+.pbml-why { margin: -4px 0 10px; font-size: 12.5px; color: var(--pbml-muted); }
+.pbml-l7row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.pbml-three {
+    flex: 1 1 360px; display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 14px; text-align: left;
+    background: var(--pbml-surface); border: 1px solid var(--pbml-line);
+    color: inherit; cursor: pointer;
+    &:hover { border-color: #C7C2EE; }
+    &:focus-visible { outline: 2px solid var(--pbml-primary); outline-offset: 2px; }
+}
+.pbml-three-ic {
+    flex: 0 0 auto; width: 36px; height: 36px; border-radius: 11px;
+    display: grid; place-items: center; background: var(--pbml-soft);
+    color: var(--pbml-primary);
+}
+.pbml-three-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pbml-three-l {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--pbml-primary);
+}
+.pbml-three-name { color: var(--pbml-ink); font-size: 14px; }
+.pbml-three-go {
+    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
+    font-weight: 700; color: var(--pbml-primary);
+}
+.pbml-streak {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    background: #ECFDF5; color: var(--pbml-green); font-weight: 650; font-size: 12.5px;
+}
+.pbml-badge { flex: 0 0 auto; }
+@media (max-width: 767px) {
+    .pbml-three { flex-basis: 100%; min-height: 56px; }
+}

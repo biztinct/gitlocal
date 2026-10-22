@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.10.1',
+    'version': '19.0.1.11.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -149,6 +149,9 @@ public.
         'views/l5_views.xml',
         'views/portal_l5.xml',
         'views/learning_settings.xml',
+        # LEARNING L7: the learner's phone (home-screen icon, the phone
+        # words, Next for you, three minutes today, the streak, badges).
+        'views/portal_l7.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -202,6 +205,12 @@ public.
         ],
         'web.assets_frontend': [
             'pb_training/static/src/scss/portal_training.scss',
+            # LEARNING L7: the lesson page on a phone — keeps the place,
+            # saves "Mark as done" and quiz answers on the phone while the
+            # signal is gone and sends them when it is back. Plain script,
+            # progressive enhancement; no service worker (LD7).
+            'pb_training/static/src/scss/portal_l7.scss',
+            'pb_training/static/src/js/portal_lesson.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

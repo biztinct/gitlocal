@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       New course › "Draft it with PayAI from a document" (LEARNING L7).
+       Every translatable text node on one line (LN13).
+       ==================================================================== -->
+  <t t-name="pb_training_payai.PbDraftWithPayAI">
+    <div class="pbtn-sec pbtd">
+      <div class="pbtd-card" t-att-class="{ 'is-off': state.loaded and !state.ready }">
+        <div class="pbtd-head">
+          <span class="pbtd-ic"><t t-out="ic('sparkles',18)"/></span>
+          <span class="pbtd-head-main">
+            <b>Draft it with PayAI from a document</b>
+            <span>Upload a procedure. PayAI writes an outline, short lessons and a ten-question quiz. You read it, change what you need and publish it.</span>
+          </span>
+        </div>
+
+        <t t-if="!state.loaded">
+          <div class="pbtd-skel" aria-busy="true"/>
+        </t>
+
+        <t t-elif="!state.ready">
+          <p class="pbtd-off"><t t-out="ic('info',14)"/> <t t-esc="state.notReady"/></p>
+        </t>
+
+        <t t-else="">
+          <label class="pbtd-drop" t-att-class="{ 'has-file': fileLabel }">
+            <input type="file" t-att-accept="accept" t-on-change="onFile" t-att-disabled="state.busy"/>
+            <span class="pbtd-drop-ic"><t t-out="ic(fileLabel ? 'fileCheck' : 'upload',20)"/></span>
+            <span class="pbtd-drop-main">
+              <b t-if="fileLabel" t-esc="fileLabel"/>
+              <b t-else="">Choose a file</b>
+              <span>A PDF, a Word file or a text file, up to 10 MB.</span>
+            </span>
+          </label>
+
+          <div class="pbtd-lang" role="group">
+            <span class="pbtd-lang-l">Write it in</span>
+            <button t-foreach="state.languages" t-as="lng" t-key="lng.key" type="button" class="pbtd-lang-b" t-att-class="{ 'is-on': state.language === lng.key }" t-att-aria-pressed="state.language === lng.key ? 'true' : 'false'" t-on-click="() => this.pickLanguage(lng.key)"><t t-esc="lng.label"/></button>
+          </div>
+
+          <p t-if="state.problem" class="pbtd-problem"><t t-out="ic('alert',14)"/> <t t-esc="state.problem"/></p>
+
+          <div class="pbtd-act">
+            <button class="pbim-btn primary" t-att-disabled="!canDraft" t-on-click="() => this.draft()">
+              <t t-if="state.busy"><t t-out="ic('loader',15)"/> Drafting… this takes a few seconds</t>
+              <t t-else=""><t t-out="ic('sparkles',15)"/> Draft the course</t>
+            </button>
+          </div>
+          <p class="pbtd-note">The document is sent to the PayAI provider your administrator set up. The course stays unpublished until a trainer publishes it.</p>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

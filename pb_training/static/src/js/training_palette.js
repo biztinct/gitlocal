@@ -74,6 +74,10 @@ import { PbPathsLens, PATH_STATE_KEY, TRAINING_TERM_KEY } from "@pb_training/js/
 import { SESSION_STATE_KEY, SESSION_OPEN_KEY } from "@pb_training/js/sessions_lens";
 import { PbSkillsLens } from "@pb_training/js/skills_lens";
 
+/** LEARNING L7: the arrival keys that open "New course" on a way. */
+export const NEW_COURSE_KEY = "pb_training_new_course";
+export const DRAFT_ATTACHMENT_KEY = "pb_training_draft_attachment";
+
 const TRAINING_GATE = [
     "pb_training.group_training_user",
     "pb_training.group_training_manager",
@@ -121,6 +125,10 @@ lenses.add("courses", {
             tabs: COURSE_TABS,
             startSessionState: c[SESSION_STATE_KEY] === "to_close" ? "to_close" : "",
             startSession: Number(c[SESSION_OPEN_KEY]) || 0,
+            // LEARNING L7: arrive with "New course" open on one way of
+            // starting (PayAI's door), a document already picked.
+            startNewCourse: typeof c[NEW_COURSE_KEY] === "string" ? c[NEW_COURSE_KEY] : "",
+            startDraftAttachment: Number(c[DRAFT_ATTACHMENT_KEY]) || 0,
         };
     },
 }, { sequence: 30 });

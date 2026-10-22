@@ -21,6 +21,10 @@
  * <the step it waits for>"), "At step 2 of 4: …" and Continue. The hero
  * prefers a path's current step, so the reader sees one thing to do.
  *
+ * LEARNING L7: the hero is the server's "Next for you" (`home().next`, the
+ * same rules as the portal's), with "Three minutes today" and the on-time
+ * streak under it; every certificate wears its badge.
+ *
  * Reads only `pb.my.training` — "me" is the session user and is never a
  * parameter, so nothing here can show somebody else's courses. The team
  * block is the existing `team()` read (direct reports, as the system).
@@ -105,6 +109,32 @@ export class PbMyLearningLens extends Component {
 
     // ------------------------------------------------------------- next up
     get courses() { return this.state.home.courses || []; }
+
+    // ------------------------------------------------- next for you (LEARNING L7)
+    /** The server's one answer (`home().next`): the same rules as the
+     *  portal's hero. Missing only on an older server, when the hero falls
+     *  back to `nextCourse` below. */
+    get nextBest() { return this.state.home.next || null; }
+
+    heroClass(nb) {
+        return { "is-warn": nb.kind === "overdue" || nb.kind === "renewal" };
+    }
+
+    /** The course card behind the hero, for its progress bar. */
+    get heroTile() {
+        const nb = this.nextBest;
+        return nb && nb.channel_id ? this.courses.find((c) => c.id === nb.channel_id) || null : null;
+    }
+
+    /** "Three minutes today" — not drawn when it IS the hero. */
+    get threeToday() {
+        const t = this.state.home.three;
+        const nb = this.nextBest;
+        return t && !(nb && nb.kind === "three") ? t : null;
+    }
+
+    /** "3 in a row, on time" — the reader's own, never shown to others. */
+    get streak() { return this.state.home.streak || { count: 0, words: "" }; }
 
     // ------------------------------------------------------------- my paths
     get paths() { return this.state.home.paths || []; }

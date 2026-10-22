@@ -18,6 +18,7 @@ NOTHING HERE LINKS TO THE PUBLIC COURSE SITE. Not one `/slides` href: the
 content routes are used for a PDF and an image and that is the whole of it.
 """
 
+import json
 import logging
 
 from odoo import _, http
@@ -222,6 +223,9 @@ class PbTrainingPortal(CustomerPortal):
         return request.render('pb_training.portal_training_lesson', {
             'page_name': 'training',
             'lesson': lesson,
+            # LEARNING L7: "Show both languages" without a script is a link
+            # (`?both=1`); the script remembers the choice on the phone.
+            'both_on': kw.get('both') == '1',
             'problem': self._tr_words(_PROBLEMS.get(kw.get('problem') or '', '')),
             # The quiz result, when they have just answered one. Carried in
             # the render values and never in the URL: a wrong answer is
@@ -234,29 +238,67 @@ class PbTrainingPortal(CustomerPortal):
             'chosen': set(),
         })
 
+    # ------------------------------------------------ LEARNING L7: the phone
+    @staticmethod
+    def _tr_wants_json():
+        """The phone page's own fetch (`portal_lesson.js`) asks for JSON with
+        `X-Requested-With`; a plain form post (no script, or the script
+        absent) gets the redirect it always got."""
+        try:
+            return request.httprequest.headers.get('X-Requested-With') \
+                == 'XMLHttpRequest'
+        except Exception:               # noqa: BLE001
+            return False
+
+    def _tr_json(self, payload):
+        return request.make_json_response(payload)
+
+    def _tr_lesson_name(self, channel_id, slide_id):
+        try:
+            lesson = self._tr_facade().lesson(channel_id, slide_id)
+            return (lesson or {}).get('name') or ''
+        except Exception:               # noqa: BLE001
+            return ''
+
+    def _tr_refusal(self, code):
+        """A refusal the phone page shows as a sentence (never queued)."""
+        return self._tr_json({'ok': False, 'problem': code,
+                              'message': self._tr_words(_PROBLEMS.get(code,
+                                                                      ''))})
+
     @http.route(['/my/training/<int:channel_id>/<int:slide_id>/done'],
                 type='http', auth='user', website=True, methods=['POST'])
     def portal_training_done(self, channel_id, slide_id, **post):
+        wants_json = self._tr_wants_json()
         try:
             self._tr_facade().mark_done(channel_id, slide_id)
         except UserError:
+            if wants_json:
+                return self._tr_refusal('quiz')
             return request.redirect('/my/training/%s/%s?problem=quiz'
                                     % (channel_id, slide_id))
         except AccessError:
+            if wants_json:
+                return self._tr_refusal('mine')
             return request.redirect('/my/training?problem=mine')
         except Exception:               # noqa: BLE001 — never a 500 on /my
             _logger.warning('pb_training: lesson %s on course %s could not be '
                             'marked done', slide_id, channel_id, exc_info=True)
+            if wants_json:
+                return self._tr_refusal('denied')
             return request.redirect('/my/training/%s/%s?problem=denied'
                                     % (channel_id, slide_id))
         # STRAIGHT ON TO THE NEXT ONE, and back to the course when there is no
         # next one. A person who has just finished a lesson wants the next
         # lesson, not the page they were already on with a tick added to it.
         nxt = self._tr_int(post.get('next_id'))
-        if nxt:
-            return request.redirect('/my/training/%s/%s' % (channel_id, nxt))
-        return request.redirect('/my/training/%s?ok=done&from=%s'
-                                % (channel_id, slide_id))
+        next_url = '/my/training/%s/%s' % (channel_id, nxt) if nxt else \
+            '/my/training/%s?ok=done&from=%s' % (channel_id, slide_id)
+        if wants_json:
+            return self._tr_json({
+                'ok': True, 'done': True, 'next_url': next_url,
+                'lesson_name': self._tr_lesson_name(channel_id, slide_id)})
+        return request.redirect(next_url)
 
     @http.route(['/my/training/<int:channel_id>/<int:slide_id>/quiz'],
                 type='http', auth='user', website=True, methods=['POST'])
@@ -268,6 +310,7 @@ class PbTrainingPortal(CustomerPortal):
         direction — a page that knew which answer was right would be a page a
         learner could read the answers off.
         """
+        wants_json = self._tr_wants_json()
         chosen = []
         for key, value in (post or {}).items():
             if not key.startswith('q'):
@@ -276,17 +319,29 @@ class PbTrainingPortal(CustomerPortal):
         try:
             result = self._tr_facade().answer_quiz(channel_id, slide_id, chosen)
         except AccessError:
+            if wants_json:
+                return self._tr_refusal('mine')
             return request.redirect('/my/training?problem=mine')
         except UserError:
+            if wants_json:
+                return self._tr_refusal('lesson')
             return request.redirect('/my/training/%s/%s?problem=lesson'
                                     % (channel_id, slide_id))
+        nxt = self._tr_int(post.get('next_id'))
+        next_url = '/my/training/%s/%s' % (channel_id, nxt) if nxt else \
+            '/my/training/%s?ok=done&from=%s' % (channel_id, slide_id)
+        if wants_json:
+            # The marks only (which questions were right, wrong or left
+            # blank) and the sentence — never which answer was the right one.
+            return self._tr_json({
+                'ok': True, 'passed': bool(result.get('passed')),
+                'result': {k: result.get(k) for k in
+                           ('passed', 'wrong', 'unanswered', 'right',
+                            'message')},
+                'next_url': next_url if result.get('passed') else '',
+                'lesson_name': self._tr_lesson_name(channel_id, slide_id)})
         if result.get('passed'):
-            nxt = self._tr_int(post.get('next_id'))
-            if nxt:
-                return request.redirect('/my/training/%s/%s'
-                                        % (channel_id, nxt))
-            return request.redirect('/my/training/%s?ok=done&from=%s'
-                                    % (channel_id, slide_id))
+            return request.redirect(next_url)
         # A wrong answer RE-RENDERS rather than redirecting, so the marks
         # against the questions they got wrong survive the round trip.
         lesson = self._tr_facade().lesson(channel_id, slide_id)
@@ -295,6 +350,7 @@ class PbTrainingPortal(CustomerPortal):
         return request.render('pb_training.portal_training_lesson', {
             'page_name': 'training',
             'lesson': lesson,
+            'both_on': False,
             'problem': '',
             'result': result,
             'chosen': set(chosen),
@@ -745,3 +801,43 @@ class PbTrainingPortal(CustomerPortal):
                 _logger.warning('pb_training: feedback could not be saved',
                                 exc_info=True)
         return request.redirect('/my/training/feedback/%s?done=1' % token)
+
+    # =================================================================
+    #  LEARNING L7 — the home-screen manifest (no service worker, LD7)
+    # =================================================================
+    #: What a phone needs to put "My training" on its home screen. The
+    #: shape is `biz_geo_tracking`'s `_make_manifest` (handover F2), written
+    #: here so the training pages do not depend on the tracking module. NO
+    #: SERVICE WORKER: nothing is cached for offline use — a lesson keeps its
+    #: place and its answers wait on the phone (`portal_lesson.js`), and that
+    #: is all (owner decision LD7).
+    _TR_MANIFEST = {
+        'name': 'My training',
+        'short_name': 'Training',
+        'description': 'My training',
+        'scope': '/my/training',
+        'start_url': '/my/training',
+        'display': 'standalone',
+        'orientation': 'portrait',
+        'background_color': '#ffffff',
+        'theme_color': '#1E1B2E',
+        'icons': [
+            {'src': '/pb_training/static/src/img/pwa-192.png',
+             'sizes': '192x192', 'type': 'image/png',
+             'purpose': 'any maskable'},
+            {'src': '/pb_training/static/src/img/pwa-512.png',
+             'sizes': '512x512', 'type': 'image/png',
+             'purpose': 'any maskable'},
+        ],
+    }
+
+    @http.route(['/my/training/manifest.webmanifest'], type='http',
+                auth='public', methods=['GET'], website=False, sitemap=False)
+    def portal_training_manifest(self, **kw):
+        """Public on purpose: a browser fetches a manifest without the
+        session cookie, so a signed-in-only route would answer the sign-in
+        page. It names the page and nothing else."""
+        return request.make_response(
+            json.dumps(self._TR_MANIFEST),
+            [('Content-Type', 'application/manifest+json'),
+             ('Cache-Control', 'public, max-age=86400')])

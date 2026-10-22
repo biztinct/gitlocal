@@ -883,3 +883,44 @@
     }
     .pbtnm-table-head p + p { margin-top: 2px; }
 }
+
+// ------------------------------------------------------------ LEARNING L7
+// The course drawer: lessons with no Vietnamese, and "Short lessons".
+.pbtn-vi-n {
+    display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;
+    padding: 2px 8px; border-radius: 999px; background: #FFFBEB; color: #92400E;
+    font-size: 11px; font-weight: 650; text-transform: none; letter-spacing: 0;
+}
+.pbtn-vi-chip {
+    display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 6px;
+    background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A;
+    font-size: 10.5px; font-weight: 650; vertical-align: middle;
+}
+.pbtn-short {
+    display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px;
+    font-size: 12.5px; color: var(--pbim-muted, #64748B); cursor: pointer;
+    input { margin-top: 2px; accent-color: var(--pbim-primary, #5A4BB0); }
+}
+.pbtn-way {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 14px 16px; border-radius: 12px; text-align: left; cursor: pointer;
+    background: var(--pbim-surface, #FFFFFF); border: 1px solid var(--pbim-line, #E2E8F0);
+    color: var(--pbim-ink, #1B1733);
+    &:hover { border-color: #C7C2EE; }
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+}
+.pbtn-way-ic {
+    flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
+    display: grid; place-items: center; background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary, #5A4BB0);
+}
+.pbtn-way-main {
+    flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+    b { font-size: 14px; }
+    span { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+}
+.pbtn-draft-banner {
+    display: flex; gap: 10px; align-items: flex-start; margin: 0 0 18px;
+    padding: 12px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A;
+}

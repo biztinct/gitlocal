@@ -32,6 +32,9 @@ import { PbOutsideLens } from "@pb_training/js/outside_lens";
 import { PbRequestsLens } from "@pb_training/js/requests_lens";
 import { PbCourseExtras } from "@pb_training/js/course_extras";
 
+/** LEARNING L7: where another module adds a way of starting a course. */
+export const NEW_COURSE_WAYS = "pb_training_new_course_ways";
+
 /** Fold accents in the browser too, so the picker filters as you type. */
 function fold(text) {
     return (text || "").normalize("NFKD").replace(/[̀-ͯ]/g, "")
@@ -61,6 +64,11 @@ export class PbTrainingBoard extends Component {
         // sessions to close (Overview's chip) or on one session.
         startSessionState: { type: String, optional: true },
         startSession: { type: Number, optional: true },
+        // LEARNING L7: Courses may arrive with the "New course" drawer open
+        // on one way of starting (PayAI's "Draft a course" door pre-fills a
+        // document the person can already read).
+        startNewCourse: { type: String, optional: true },
+        startDraftAttachment: { type: Number, optional: true },
         embedded: { type: Boolean, optional: true },
         "*": true,
     };
@@ -84,6 +92,9 @@ export class PbTrainingBoard extends Component {
             completionMail: false,
             search: "",
             busy: false,
+
+            // LEARNING L7: the "New course" drawer (ways of starting one)
+            newCourse: false,
 
             // the drawer
             open: null,             // the course payload, or null
@@ -172,7 +183,43 @@ export class PbTrainingBoard extends Component {
             if (this.props.startTab && this.props.startTab !== this.state.tab) {
                 await this.setTab(this.props.startTab);
             }
+            if (this.props.startNewCourse && this.state.canWrite && this.newCourseWays.length) {
+                this.state.newCourse = true;
+            }
         });
+    }
+
+    // ------------------------------------------------- "New course" (LEARNING L7)
+    /**
+     * Other ways of starting a course, registered by other modules
+     * (`registry.category(NEW_COURSE_WAYS)`: {key, Component}). With none,
+     * "New course" opens the blank course form as it always did; with one
+     * (PayAI's "Draft it from a document"), it opens a small drawer offering
+     * both.
+     */
+    get newCourseWays() {
+        return registry.category(NEW_COURSE_WAYS).getAll();
+    }
+
+    openNewCourse() {
+        if (!this.newCourseWays.length) {
+            return this.act("new_course", {}, { reload: false });
+        }
+        this.state.newCourse = true;
+    }
+
+    closeNewCourse() { this.state.newCourse = false; }
+
+    blankCourse() {
+        this.state.newCourse = false;
+        return this.act("new_course", {}, { reload: false });
+    }
+
+    /** A way finished: a course was made — open it in the drawer. */
+    async newCourseMade(channelId) {
+        this.state.newCourse = false;
+        await this.load();
+        if (channelId) { await this.openCourse(channelId); }
     }
 
     ic(n, s = 16) { return ic(n, s); }
@@ -324,6 +371,11 @@ export class PbTrainingBoard extends Component {
         this.state.sessionOpen = sessionId || 0;
         this.state.sessionKey += 1;
         this.setTab("sessions");
+    }
+
+    /** LEARNING L7: "2 lessons missing Vietnamese" on the drawer's lessons. */
+    missingViWords(n) {
+        return n === 1 ? _t("1 lesson missing Vietnamese") : _t("%s lessons missing Vietnamese", n);
     }
 
     closeDrawer() {

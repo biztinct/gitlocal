@@ -100,3 +100,10 @@ from . import pb_training_skills
 # link of its chain, so they come last.
 from . import numbers_l6
 from . import overview_l6
+
+# ---------------------------------------------------------------- LEARNING L7
+# The learner's phone: "Next for you", three minutes today, the on-time
+# streak, certificate badges, both languages, and "Short lessons" / "Missing
+# Vietnamese" on the course drawer. Extends the last link of every chain
+# (the catalogue's verb tuple, the learner's `home()`), so it comes last.
+from . import learner_l7
