@@ -553,7 +553,7 @@ class PbPayrunWizard(models.AbstractModel):
             statuses=vals.get('statuses'),
             employee_ids=vals.get('employee_ids'),
             date_start=vals.get('date_start'), date_end=vals.get('date_end'))
-        covered, missed = self._scheme_population(config_id, base)
+        covered, missed = self._scheme_population(config_id, base, on_date=vals.get('date_start'))
         # GROUP P5 — the host employments this run would gain, counted before
         # anything is created, exactly like the rest of this preview.
         hosts = self._segment_hosts(config_id, vals.get('date_start'),

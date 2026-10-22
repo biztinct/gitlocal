@@ -152,6 +152,9 @@ class TestSchemeMap(TransactionCase):
                                                    date_start='2026-09-01', date_end='2026-09-30')
             self.assertIn(employee.id, august)
             self.assertNotIn(employee.id, september)
+            preview = wizard.scheme_preview({'employee_ids': employee.ids, 'formula_config_id': self.end.id,
+                                             'date_start': '2026-08-01', 'date_end': '2026-08-31'})
+            self.assertEqual(preview['covered'], len(august))
 
     # =================================================================== T1
     def test_t1_the_ladder_climbs_in_order(self):
