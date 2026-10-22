@@ -795,7 +795,10 @@ class ApplicationPayrollPayslip(models.Model):
             for line in slip.line_ids:
                 rule = expected_lines[line.code]
                 amount = float(expected.get(rule.code, 0.))
-                if (not math.isfinite(amount) or not math.isclose(line.amount, amount, rel_tol=0., abs_tol=.000001)
+                # Formula results retain intermediate precision; persisted
+                # payslip lines use the amount field's two-decimal rounding.
+                # Compare against that same representation, not raw results.
+                if (not math.isfinite(amount) or not math.isclose(line.amount, line._smart_round(amount), rel_tol=0., abs_tol=.000001)
                         or line.quantity != 1. or line.rate != 100.
                         or line.pay_role != (rule.net_role or False)
                         or line.component_detail != bool(rule.net_role_detail)

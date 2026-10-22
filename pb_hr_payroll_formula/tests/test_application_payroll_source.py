@@ -333,6 +333,22 @@ class TestApplicationPayrollSource(TransactionCase):
         with self.assertRaisesRegex(UserError, 'line amounts'):
             run._application_assert_current()
 
+    def test_rounded_formula_line_is_current_but_one_cent_edit_is_rejected(self):
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Fractional allowance',
+            'code': 'APPFRACTION', 'column_type': 'formula',
+            'column_role': 'payroll', 'value_kind': 'money',
+            'net_role': 'earning', 'appears_on_payslip': True,
+            'excel_formula': '=154217.112'})
+        run, slip = self._run_and_slip()
+        slip.compute_sheet_with_formulas()
+        line = slip.line_ids.filtered(lambda row: row.code == 'APPFRACTION')
+        self.assertEqual(line.amount, 154217.11)
+        self.assertTrue(run._application_assert_current())
+        line.amount += .01
+        with self.assertRaisesRegex(UserError, 'line amounts'):
+            run._application_assert_current()
+
     def test_done_retry_preserves_historical_snapshot_after_sources_change(self):
         run, slip = self._run_and_slip()
         slip.compute_sheet_with_formulas()
