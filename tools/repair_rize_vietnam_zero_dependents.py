@@ -38,7 +38,7 @@ print('ZERO_REPAIR_PREVIEW',json.dumps({'source_sha256':hashlib.sha256(source.re
 if os.getenv('APPLY_ZERO_REPAIR') in ('1', 'rehearse'):
     result=desk.apply_changes(config.id,changes,note='Recover explicit zero registered-dependent counts omitted by the original Vietnam master import because absent contract components compared equal to zero. Preserve existing values and later change history.',source='import')
     assert result.get('ok') and not result.get('refused'),result
-    print('ZERO_REPAIR_RESULT',json.dumps(result,default=str))
+    print('ZERO_REPAIR_RESULT',json.dumps({k:result.get(k) for k in ('ok','written','people','pending','reference','apply_id','state')},default=str))
     if not result.get('pending'):
         for change in changes:
             person=env['hr.employee'].browse(change['emp_id']);contract=probe._get_latest_contract(person)
