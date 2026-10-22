@@ -6,6 +6,20 @@ field name from them (hours L2, sessions L4, requests/feedback/follow-up/skills 
 
 Report back to `docs/handovers/learning/L6_REPORT.md`.
 
+**Carried in from L3–L5 walks (2026-10-22, Fable):**
+- Several Numbers sections already exist (Sessions L4; Ratings, Did it work?, Requests and
+  spend, Skills L5; By path L3). Extend them — do not build second copies.
+- When a lens's first read fails (server restart mid-request), the Courses lens shows the
+  "Training is looked after by the training team" refusal panel, as if the person had no
+  access. Every Learning lens must tell "no access" (facade `allowed: False`) apart from
+  "could not load" (RPC error) and show a plain "That did not load. Try again" state with a
+  retry button for the second. Add a test per lens component where feasible.
+- The Help screen's description of Learning still lists only the L0 tabs. Final rail is 11
+  tabs: Overview · My learning · Courses · Paths · Assigned · Required · Tests · Certificates
+  · Claims · Skills · Numbers. Update the pb_learn content that describes Learning (ledger L3
+  rule: lessons follow screen changes; bump `pb_learn`; keep its vi_VN.po invariants).
+- Deploy set is exactly payobook, payobook_template, p0clone, rize — never abm (archived).
+
 ## 1. Scope
 1. **Numbers** gains: Hours (per person, department, course, kind; period), Cost (claims
    paid, approved outside requests, session costs; against the yearly allowances and the
