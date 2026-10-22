@@ -1319,6 +1319,14 @@ a {
     .o_field_integer, .o_field_float, .o_field_monetary):not(:has(.o_input)) {
     padding-inline-start: 9px;
 }
+
+// Multiline many2one values (for example a work address) render their extra
+// lines outside the editable input. Match its text inset without adding a
+// second inset when the entire field is readonly.
+.o_form_view .o_form_renderer:not(.vu-form) .o_inner_group .o_wrap_input > .o_field_many2one
+.o_many2one:has(.o_field_many2one_selection .o_input) > .o_field_many2one_extra {
+    padding-inline-start: 9px;
+}
 // Keep inputs inside embedded list/grid tables flat (no underline at rest).
 .o_form_view .o_list_renderer .o_field_widget .o_input:not(:hover):not(:focus),
 .o_form_view .o_list_table .o_field_widget .o_input:not(:hover):not(:focus) {
