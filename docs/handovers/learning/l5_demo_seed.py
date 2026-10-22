@@ -28,8 +28,10 @@ when that module is installed):
   4. Two course requests: the field demo login asks for DEMO Soil science
      online (waiting on their manager); the training team puts another demo
      person on the licence (agreed, 3,000,000 set aside).
-  5. Course 27 published as version 2 ("DEMO step 2 now covers the new
-     spray-drift rule") — everybody who finished it gets a re-read.
+  5. A small course of its own, "DEMO Safe chemical storage" (online, on
+     no learning path), finished by three demo people and published as
+     version 2 — they get a re-read. NOT course 27: it is a step of the L3
+     learning paths and a re-read would reopen that step (coordinator).
   6. A test "DEMO Field safety quiz" that draws 5 of 8 questions.
   7. Six feedback answers on course 27 and two manager follow-ups answered.
   8. NO EMAIL: only demo logins ("@example.com") are used; everything this
@@ -277,17 +279,67 @@ if hr_user and put_on and not Request.search(
         say('putting %s on the licence failed: %s', put_on.name, err)
 
 # ------------------------------------------------------------- 5. version
-if course and hr_user and (course.pb_version or 1) < 2:
-    res = env['pb.training'].with_user(hr_user).with_context(
-        allowed_company_ids=[company.id]).publish_version(
-            course.id, 'DEMO step 2 now covers the new spray-drift rule.', 14)
-    say('course %s: %s', course.id, res['message'])
-    rereads = env['pb.training.assignment'].sudo().search(
-        [('channel_id', '=', course.id), ('reason', '=', 'reread')])
-    new_records += list(rereads)
+# NOT course 27 (coordinator, 2026-10-22): every online course with
+# finishers on payobook is a step of an L3 learning path, and a re-read
+# would reopen that step for the people on the path. So a small course of
+# its own — "DEMO Safe chemical storage", online, on no path, no session —
+# is made here, three demo people finish it, and it is published as v2.
+Channel = env['slide.channel'].sudo()
+storage = Channel.search([('name', '=', 'DEMO Safe chemical storage')],
+                         limit=1)
+if not storage:
+    storage = Channel.create({
+        'name': 'DEMO Safe chemical storage', 'channel_type': 'training',
+        'visibility': 'members', 'enroll': 'invite',
+        'completed_template_id': False, 'is_published': True,
+        'user_id': hr_user.id or env.uid})
+    for i, (title, body) in enumerate((
+            ('DEMO The store room rules', 'Locked, labelled, ventilated.'),
+            ('DEMO Spills and first steps', 'Kit, gloves, tell the lead.'))):
+        env['slide.slide'].sudo().create({
+            'name': title, 'channel_id': storage.id,
+            'slide_category': 'article', 'is_published': True,
+            'html_content': '<p>%s</p>' % body, 'sequence': i + 1,
+            'completion_time': 0.25})
+    new_records.append(storage)
+    if hr_user and hr_user.partner_id:
+        storage._remove_membership(hr_user.partner_id.ids)   # LN46
+storage.pb_requestable = True
+on_path = env['pb.training.path.step'].sudo().search_count(
+    [('channel_id', '=', storage.id)])
+say('version course %s "%s" (on %s path steps, delivery %s)', storage.id,
+    storage.name, on_path, storage.delivery)
+if (storage.pb_version or 1) < 2:
+    Assignment = env['pb.training.assignment'].sudo().with_context(
+        pb_training_no_announce=True)
+    finishers = pool.filtered(lambda e: e.user_id)[:3]
+    for emp in finishers:
+        if not Assignment.search_count([('channel_id', '=', storage.id),
+                                        ('employee_id', '=', emp.id)]):
+            row = Assignment.create({'channel_id': storage.id,
+                                     'employee_id': emp.id,
+                                     'reason': 'adhoc',
+                                     'company_id': company.id})
+            new_records.append(row)
+        me = env['pb.my.training'].with_user(emp.user_id).with_context(
+            allowed_company_ids=[company.id])
+        for slide in storage._pb_lessons():
+            me.mark_done(storage.id, slide.id)
+    Assignment.search([('channel_id', '=', storage.id)])._refresh()
+    done = Assignment.search_count([('channel_id', '=', storage.id),
+                                    ('state', '=', 'done')])
+    say('course %s: %s demo people finished it', storage.id, done)
+    if hr_user:
+        res = env['pb.training'].with_user(hr_user).with_context(
+            allowed_company_ids=[company.id]).publish_version(
+                storage.id, 'DEMO the store room now needs a second '
+                            'extinguisher by the door.', 14)
+        say('course %s: %s', storage.id, res['message'])
+        new_records += list(Assignment.search(
+            [('channel_id', '=', storage.id), ('reason', '=', 'reread')]))
 else:
-    say('course %s already at version %s — left alone', course.id,
-        course.pb_version if course else '-')
+    say('course %s already at version %s — left alone', storage.id,
+        storage.pb_version)
 
 # ------------------------------------------------------------- 6. drawn test
 Survey = env['survey.survey'].sudo()
