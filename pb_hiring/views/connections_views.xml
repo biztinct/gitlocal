@@ -1,4 +1,18 @@
 <odoo>
+  <record id="cover_rule_connections_list" model="ir.ui.view">
+    <field name="name">Cover approvers in hiring rules</field>
+    <field name="model">pb.hiring.country.rule</field>
+    <field name="inherit_id" ref="view_pb_hiring_country_rule_list"/>
+    <field name="arch" type="xml">
+      <xpath expr="//list" position="attributes"><attribute name="open_form_view">1</attribute></xpath>
+      <xpath expr="//field[@name='recruiter_manager_id']" position="after">
+        <field name="ta_lead_id" optional="show"/>
+        <field name="cover_hr_fallback_id" optional="show"/>
+        <field name="ta_absent_from" optional="hide"/>
+        <field name="ta_absent_until" optional="hide"/>
+      </xpath>
+    </field>
+  </record>
   <record id="action_hiring_connections" model="ir.actions.client"><field name="name">Hiring connections</field><field name="tag">pb_hiring_connections</field></record>
   <record id="view_visibility_policy_list" model="ir.ui.view"><field name="name">Hiring stage visibility</field><field name="model">pb.hiring.visibility.policy</field><field name="arch" type="xml">
     <list editable="bottom"><field name="company_id" groups="base.group_multi_company"/><field name="stage_id"/><field name="audience"/><field name="group_id" readonly="audience != 'group'" required="audience == 'group'"/><field name="profile"/><field name="cv"/><field name="portfolio"/><field name="assignment"/><field name="attachments"/><field name="answers"/><field name="scorecards"/><field name="expected_pay"/><field name="active" optional="hide"/></list>

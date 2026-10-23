@@ -50,7 +50,7 @@ class OfferCost(models.Model):
     pb_cost_profile_id = fields.Many2one('pb.hiring.cost.profile', string='Country calculation', domain="[('company_id', '=', company_id)]")
     pb_cost_inputs = fields.Text(string='Additional calculation inputs (JSON)', default='{}')
     pb_cost_result = fields.Html(string='Employer-cost estimate', sanitize=True, readonly=True, copy=False, groups='pb_hiring.group_hiring_user')
-    pb_cost_at = fields.Datetime(readonly=True, copy=False)
+    pb_cost_at = fields.Datetime(string='Calculated on', readonly=True, copy=False)
 
     def action_country_offer_setup(self):
         self._sign_gate()

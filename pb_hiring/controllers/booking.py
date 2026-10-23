@@ -10,7 +10,7 @@ class InterviewBooking(http.Controller):
         booking = request.env['pb.hiring.booking'].sudo().search([('token', '=', token)], limit=1)
         if not booking or booking.state not in ('ready', 'booked') or booking.expires_at <= fields.Datetime.now():
             return request.not_found()
-        zone_name = post.get('tz') if post.get('tz') in pytz.common_timezones else booking.tz
+        zone_name = post.get('tz') if post.get('tz') in pytz.all_timezones else booking.tz
         zone = pytz.timezone(zone_name)
         error = ''
         if request.httprequest.method == 'POST' and booking.state == 'ready':
@@ -22,7 +22,7 @@ class InterviewBooking(http.Controller):
         slots = [{'id': s.id, 'label': pytz.utc.localize(s.start).astimezone(zone).strftime('%a %d %b, %H:%M')}
                  for s in booking.slot_ids if s.start > fields.Datetime.now()]
         response = request.render('pb_hiring.interview_booking_page', dict(
-            booking=booking, slots=slots, tz=zone_name, zones=pytz.common_timezones, error=error))
+            booking=booking, slots=slots, tz=zone_name, zones=pytz.all_timezones, error=error))
         response.headers['Cache-Control'] = 'no-store'
         response.headers['Referrer-Policy'] = 'no-referrer'
         return response

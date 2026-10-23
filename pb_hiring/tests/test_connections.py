@@ -1,5 +1,6 @@
 """Provider boundaries are mocked: no candidate messages or external uploads."""
 import hashlib
+import pytz
 from html import unescape
 from datetime import timedelta
 from unittest.mock import patch, Mock
@@ -178,6 +179,21 @@ class TestConnections(OfferCase):
 
 @tagged('post_install', '-at_install', 'recruit_connect')
 class TestPanelBooking(InterviewCase):
+    def test_booking_preserves_existing_user_timezone_alias(self):
+        # Odoo accepts aliases such as Asia/Calcutta; the booking form must
+        # include that default in its selection instead of displaying blank.
+        self.env.user.tz = 'Asia/Calcutta'
+        Booking = self.env['pb.hiring.booking']
+        default = Booking.default_get(['tz'])['tz']
+        self.assertIn(default, dict(Booking.fields_get(['tz'])['tz']['selection']))
+        invitation = Booking.create({'applicant_id': self.applicant.id,
+            'panel_ids': [(6, 0, self.boss.ids)]})
+        self.assertEqual(invitation.tz, default)
+        with patch.object(type(invitation), '_busy', return_value=[]):
+            invitation.action_find_slots()
+        local = pytz.utc.localize(invitation.slot_ids[0].start).astimezone(pytz.timezone(default))
+        self.assertEqual(local.hour, invitation.hour_from)
+
     def test_booking_rechecks_busy_and_rejects_reuse(self):
         Booking = self.env['pb.hiring.booking']
         invitation = Booking.create({'applicant_id':self.applicant.id,'organiser_id':self.env.uid,

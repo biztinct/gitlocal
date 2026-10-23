@@ -7,14 +7,14 @@ from odoo.exceptions import AccessError, UserError
 class ApplicantCV(models.Model):
     _inherit = 'hr.applicant'
 
-    pb_cv_state = fields.Selection([('none', 'Not extracted'), ('queued', 'Waiting for extraction'), ('failed', 'Extraction needs attention'), ('review', 'Review needed'), ('applied', 'Reviewed')], default='none', copy=False)
-    pb_cv_note = fields.Char(readonly=True, copy=False)
+    pb_cv_state = fields.Selection([('none', 'Not extracted'), ('queued', 'Waiting for extraction'), ('failed', 'Extraction needs attention'), ('review', 'Review needed'), ('applied', 'Reviewed')], string='CV extraction status', default='none', copy=False)
+    pb_cv_note = fields.Char(string='CV extraction update', readonly=True, copy=False)
     pb_cv_result = fields.Json(copy=False, groups='pb_hiring.group_hiring_user')
     pb_cv_experience = fields.Text(string='CV employment history', groups='pb_hiring.group_hiring_user')
     pb_cv_education = fields.Text(string='CV education', groups='pb_hiring.group_hiring_user')
     pb_cv_attachment_id = fields.Many2one('ir.attachment', copy=False, groups='pb_hiring.group_hiring_user')
-    pb_cv_reviewed_by = fields.Many2one('res.users', readonly=True, copy=False)
-    pb_cv_reviewed_at = fields.Datetime(readonly=True, copy=False)
+    pb_cv_reviewed_by = fields.Many2one('res.users', string='CV reviewed by', readonly=True, copy=False)
+    pb_cv_reviewed_at = fields.Datetime(string='CV reviewed on', readonly=True, copy=False)
 
     def action_extract_cv(self):
         self.ensure_one()

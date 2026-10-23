@@ -34,7 +34,7 @@ class HiringBooking(models.Model):
     date_from = fields.Date(required=True, default=lambda s: fields.Date.today() + timedelta(days=1))
     date_to = fields.Date(required=True, default=lambda s: fields.Date.today() + timedelta(days=7))
     duration = fields.Integer(string='Minutes', default=45, required=True)
-    tz = fields.Selection(selection=lambda s: [(x,x) for x in pytz.common_timezones], string='Working-hours timezone', default=lambda s: s.env.user.tz or 'UTC', required=True)
+    tz = fields.Selection(selection=lambda s: [(x,x) for x in pytz.all_timezones], string='Working-hours timezone', default=lambda s: s.env.user.tz or 'UTC', required=True)
     hour_from = fields.Integer(string='Start of working day', default=9)
     hour_to = fields.Integer(string='End of working day', default=17)
     location = fields.Char(string='Location or video link')

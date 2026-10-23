@@ -13,12 +13,12 @@ class OfferSigning(models.Model):
     pb_sign_connection_id = fields.Many2one('pb.hiring.connection', readonly=True, copy=False)
     pb_envelope_id = fields.Char(string='Documenso envelope', readonly=True, copy=False, index=True)
     pb_sign_status = fields.Selection([('draft', 'Draft in Documenso'), ('pending', 'Awaiting signatures'),
-        ('completed', 'Signed copy filed'), ('rejected', 'Declined'), ('cancelled', 'Cancelled')], readonly=True, copy=False)
+        ('completed', 'Signed copy filed'), ('rejected', 'Declined'), ('cancelled', 'Cancelled')], string='Signing status', readonly=True, copy=False)
     pb_sign_hash = fields.Char(readonly=True, copy=False)
     pb_company_signer_id = fields.Many2one('res.users', string='Company counter-signatory', domain="[('share', '=', False)]")
     pb_sign_reviewed = fields.Boolean(string='I reviewed the document, recipients and signature positions in Documenso', copy=False)
-    pb_sign_checked_at = fields.Datetime(readonly=True, copy=False)
-    pb_sign_note = fields.Char(readonly=True, copy=False)
+    pb_sign_checked_at = fields.Datetime(string='Last signing check', readonly=True, copy=False)
+    pb_sign_note = fields.Char(string='Signing update', readonly=True, copy=False)
     pb_sign_attempt = fields.Integer(default=1, readonly=True, copy=False)
 
     def _sign_gate(self):

@@ -16,7 +16,7 @@ export class HiringConnections extends Component {
             const previous = document.activeElement;
             this.dialog.el.querySelector("button")?.focus();
             return () => previous?.focus?.();
-        }, () => [this.state.selected?.key]);
+        }, () => [this.state.selected?.key, this.state.step, this.state.busy]);
         onWillStart(() => this.load());
     }
     async load() {
