@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useRef, useState } from "@odoo/owl";
+import { Component, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
@@ -11,8 +11,9 @@ export class LearningAuthoringGuide extends Component {
     static props = { ...standardWidgetProps };
     setup() {
         this.root = useRef("root");
-        this.state = useState({ saving: false });
+        this.state = useState({ saving: false, destination: "" });
         this.notification = useService("notification");
+        onWillUnmount(() => this.clearDestination());
     }
     get isCourse() { return this.props.record.resModel === "slide.channel"; }
     get data() { return this.props.record.data; }
@@ -60,16 +61,41 @@ export class LearningAuthoringGuide extends Component {
         if (this.isCourse) { return _t("Save your work, then preview and assign"); }
         return this.data.scoring_type === "no_scoring" ? _t("Scoring is switched off") : _t("Pass mark: %s%%", this.data.scoring_success_min);
     }
+    clearDestination() {
+        cancelAnimationFrame(this.navigationFrame);
+        for (const element of this.highlighted || []) {
+            element.classList.remove("pb-author-spotlight", "pb-author-tab-target");
+        }
+        this.highlighted = [];
+    }
     go(key) {
         // Scope to this form: a nested question dialog must never switch its parent.
         const form = this.root.el.closest(".o_form_renderer");
-        if (key === "title") {
-            form?.querySelector(`.o_field_widget[name="${this.isCourse ? "name" : "title"}"] input, .o_field_widget[name="${this.isCourse ? "name" : "title"}"] textarea`)?.focus();
-        } else {
-            const tab = form?.querySelector(`.o_notebook_headers .nav-link[name="${key}"]`);
-            tab?.click();
-            tab?.focus();
-        }
+        if (!form) { return; }
+        this.clearDestination();
+        this.state.destination = key;
+        const tab = key !== "title" && form.querySelector(`.o_notebook_headers .nav-link[name="${key}"]`);
+        if (tab) { tab.click(); }
+        // Notebook pages mount asynchronously. Wait for the actual destination,
+        // not just the tab, and cancel pending navigation on another click/unmount.
+        let frames = 0;
+        const reveal = () => {
+            const page = form.querySelector(".o_notebook_content > .tab-pane.active");
+            const field = { description: "description", content: "slide_ids", questions: "question_and_page_ids" }[key];
+            const target = key === "title" ? form.querySelector(".oe_title")
+                : (tab?.classList.contains("active") && (field ? page?.querySelector(`.o_field_widget[name="${field}"]`) : page));
+            if (!target || !target.getClientRects().length) {
+                if (++frames < 120) { this.navigationFrame = requestAnimationFrame(reveal); }
+                return;
+            }
+            target.classList.add("pb-author-spotlight");
+            this.highlighted.push(target);
+            if (tab) { tab.classList.add("pb-author-tab-target"); this.highlighted.push(tab); }
+            const focus = target.querySelector("input:not([type=hidden]), textarea, [contenteditable=true], .o_field_x2many_list_row_add a, button");
+            focus?.focus({ preventScroll: true });
+            target.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+        };
+        this.navigationFrame = requestAnimationFrame(reveal);
     }
 }
 registry.category("view_widgets").add("pb_learning_authoring_guide", { component: LearningAuthoringGuide });

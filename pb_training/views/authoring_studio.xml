@@ -269,7 +269,7 @@ Who is it for? What should learners know before starting?</attribute>
         </div>
       </xpath>
       <xpath expr="//field[@name='is_preview']" position="after">
-        <div class="pb-author-inline-help" colspan="2">Preview makes this lesson available before enrolment. Leave it off for private training material.</div>
+        <div class="pb-author-inline-help" colspan="2" invisible="slide_category == 'certification'">Preview makes this lesson available before enrolment. Leave it off for private training material.</div>
       </xpath>
     <xpath expr="//page[@name='document']/group" position="after"><div invisible="slide_category != 'article'" class="pb-author-article"><h3>Write your lesson</h3><p class="pb-author-inline-help">Use short sections, examples and a clear takeaway. This is the content learners will read.</p><field name="html_content" widget="html" nolabel="1" placeholder="Start with the one thing your learner needs to know…" options="{'embedded_components': false}"/></div></xpath><xpath expr="//field[@name='survey_id']" position="attributes"><attribute name="string">Final test</attribute><attribute name="context">{'default_survey_type': 'assessment', 'default_certification': True, 'default_scoring_type': 'scoring_with_answers', 'default_scoring_success_min': 70, 'default_users_login_required': True, 'default_access_mode': 'token', 'default_is_attempts_limited': True, 'default_attempts_limit': 3}</attribute></xpath></field>
   </record>

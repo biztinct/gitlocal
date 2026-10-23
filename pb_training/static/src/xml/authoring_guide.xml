@@ -12,7 +12,7 @@
       <aside class="pb-author-checklist" aria-label="Setup checklist">
         <div class="pb-author-checklist__heading"><strong>YOUR STARTING POINT</strong><span t-esc="progressLabel" aria-live="polite"/></div>
         <div class="pb-author-progress" role="progressbar" t-att-aria-valuenow="completed" aria-valuemin="0" aria-valuemax="3" aria-label="Essentials added"><span t-att-style="'width:' + (completed / 3 * 100) + '%'"/></div>
-        <button t-foreach="checks" t-as="check" t-key="check.key" type="button" t-att-class="check.done ? 'is-done' : ''" t-on-click="() => this.go(check.key)"><i t-att-class="check.done ? 'fa fa-check-circle' : 'fa fa-circle-o'" aria-hidden="true"/><span t-esc="check.label"/><i class="fa fa-arrow-right" aria-hidden="true"/></button>
+        <button t-foreach="checks" t-as="check" t-key="check.key" type="button" t-att-class="{'is-done': check.done, 'is-current': state.destination === check.key}" t-att-aria-pressed="state.destination === check.key ? 'true' : 'false'" t-on-click="() => this.go(check.key)"><i t-att-class="check.done ? 'fa fa-check-circle' : 'fa fa-circle-o'" aria-hidden="true"/><span t-esc="check.label"/><i class="fa fa-arrow-right" aria-hidden="true"/></button>
       </aside>
     </section>
   </t>
