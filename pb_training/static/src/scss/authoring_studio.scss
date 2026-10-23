@@ -95,7 +95,7 @@
     .o_form_sheet > div > .o_field_widget { padding-left: 0; padding-right: 0; }
     .o_form_sheet > div:has(> .o_field_many2many_tags) {
         margin-top: 8px !important; margin-bottom: 0 !important;
-        > .o_field_many2many_tags { width: min(100%, 580px); margin-bottom: 0; }
+        > .o_field_many2many_tags { width: 100%; max-width: 580px; margin-bottom: 0; }
     }
     .oe_title .o_field_many2many_tags { display: block; width: 100%; margin-top: 12px; }
     .o_field_many2many_tags .o_field_tags { display: flex !important; width: 100%; min-height: 42px; padding: 7px 10px; align-items: center; }
