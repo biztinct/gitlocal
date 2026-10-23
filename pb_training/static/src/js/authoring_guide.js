@@ -1,0 +1,58 @@
+/** @odoo-module **/
+import { Component, useRef } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { _t } from "@web/core/l10n/translation";
+import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
+
+/** A guide over the native record, never a second copy of the editor's data. */
+export class LearningAuthoringGuide extends Component {
+    static template = "pb_training.AuthoringGuide";
+    static props = { ...standardWidgetProps };
+    setup() { this.root = useRef("root"); }
+    get isCourse() { return this.props.record.resModel === "slide.channel"; }
+    get data() { return this.props.record.data; }
+    get title() { return this.isCourse ? _t("Create a course worth taking") : _t("Make every question count"); }
+    get subtitle() {
+        return this.isCourse
+            ? _t("A clear outcome. Bite-sized lessons. A confident next step for your people.")
+            : _t("Build a focused assessment, set fair rules, and show learners what success looks like.");
+    }
+    get checks() {
+        const rows = this.data[this.isCourse ? "slide_ids" : "question_and_page_ids"]?.records || [];
+        const description = new DOMParser().parseFromString(String(this.data.description || ""), "text/html");
+        return [
+            { key: "title", label: _t("Give it a clear name"), done: Boolean(String(this.data[this.isCourse ? "name" : "title"] || "").trim()) },
+            { key: "description", label: this.isCourse ? _t("Describe the learning outcome") : _t("Introduce the test"), done: Boolean(description.body.textContent.trim() || description.querySelector("img,video,iframe")) },
+            { key: this.isCourse ? "content" : "questions", label: this.isCourse ? _t("Add your first lesson") : _t("Add your first question"), done: rows.some(r => !r.data[this.isCourse ? "is_category" : "is_page"]) },
+        ];
+    }
+    get completed() { return this.checks.filter(c => c.done).length; }
+    get progressLabel() { return _t("%s of 3 essentials added", this.completed); }
+    get status() {
+        if (!this.props.record.resId) { return _t("Not saved yet"); }
+        if (this.props.record.dirty) { return _t("Unsaved changes"); }
+        return this.isCourse && this.data.website_published ? _t("Published course") : _t("Saved record");
+    }
+    get audience() {
+        if (this.isCourse) {
+            return this.data.visibility === "members" ? _t("Enrolled learners only") : _t("Review course visibility before sharing");
+        }
+        return this.data.access_mode === "token" ? _t("Invited learners only") : _t("Anyone with the link");
+    }
+    get rules() {
+        if (this.isCourse) { return _t("Save your work, then preview and assign"); }
+        return this.data.scoring_type === "no_scoring" ? _t("Scoring is switched off") : _t("Pass mark: %s%%", this.data.scoring_success_min);
+    }
+    go(key) {
+        // Scope to this form: a nested question dialog must never switch its parent.
+        const form = this.root.el.closest(".o_form_renderer");
+        if (key === "title") {
+            form?.querySelector(`.o_field_widget[name="${this.isCourse ? "name" : "title"}"] input, .o_field_widget[name="${this.isCourse ? "name" : "title"}"] textarea`)?.focus();
+        } else {
+            const tab = form?.querySelector(`.o_notebook_headers .nav-link[name="${key}"]`);
+            tab?.click();
+            tab?.focus();
+        }
+    }
+}
+registry.category("view_widgets").add("pb_learning_authoring_guide", { component: LearningAuthoringGuide });

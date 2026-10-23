@@ -56,7 +56,7 @@ layer over them, and the reason every learner page is ours is that the pages
 that came with them are a public web site, and an employee's training is not
 public.
 """,
-    'version': '19.0.1.11.1',
+    'version': '19.0.1.12.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -152,10 +152,14 @@ public.
         # LEARNING L7: the learner's phone (home-screen icon, the phone
         # words, Next for you, three minutes today, the streak, badges).
         'views/portal_l7.xml',
+        'views/authoring_studio.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_training/static/src/scss/training.scss',
+            'pb_training/static/src/scss/authoring_studio.scss',
+            'pb_training/static/src/js/authoring_guide.js',
+            'pb_training/static/src/xml/authoring_guide.xml',
             'pb_training/static/src/scss/learning_overview.scss',
             'pb_training/static/src/scss/my_learning_lens.scss',
             'pb_training/static/src/scss/training_tests_lens.scss',

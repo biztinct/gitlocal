@@ -1,0 +1,377 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+  <record id="view_course_authoring_studio" model="ir.ui.view">
+    <field name="name">slide.channel.form.learning.studio</field>
+    <field name="model">slide.channel</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-course" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <widget name="pb_learning_authoring_guide"/>
+      </xpath>
+      <xpath expr="//div[@name='button_box']" position="attributes">
+        <attribute name="invisible">not id</attribute>
+      </xpath>
+      <xpath expr="//header" position="attributes">
+        <attribute name="invisible">not id</attribute>
+      </xpath>
+      <xpath expr="//field[@name='name']" position="attributes">
+        <attribute name="placeholder">e.g. A confident first week</attribute>
+        <attribute name="string">Course name</attribute>
+      </xpath>
+      <xpath expr="//label[@for='name']" position="attributes">
+        <attribute name="string">What will you teach?</attribute>
+      </xpath>
+      <xpath expr="//field[@name='tag_ids']" position="attributes">
+        <attribute name="placeholder">Add topics to help people find this course</attribute>
+      </xpath>
+      <xpath expr="//page[@name='content']" position="attributes">
+        <attribute name="string">02 · Curriculum</attribute>
+      </xpath>
+      <xpath expr="//page[@name='description']" position="attributes">
+        <attribute name="string">01 · Overview</attribute>
+      </xpath>
+      <xpath expr="//page[@name='options']" position="attributes">
+        <attribute name="string">03 · Delivery &amp; access</attribute>
+      </xpath>
+      <xpath expr="//page[@name='karma_rules']" position="attributes">
+        <attribute name="string">04 · Rewards</attribute>
+      </xpath>
+      <xpath expr="//page[@name='content']" position="before">
+        <xpath expr="//page[@name='description']" position="move"/>
+      </xpath>
+      <xpath expr="//field[@name='description']" position="attributes">
+        <attribute name="placeholder">By the end of this course, you will be able to…
+Who is it for? What should learners know before starting?</attribute>
+      </xpath>
+      <xpath expr="//field[@name='description']" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Start with the outcome</h3>
+            <p>Tell learners what they will be able to do, who this course is for, and what to expect.</p>
+          </div>
+        </div>
+      </xpath>
+      <xpath expr="//field[@name='slide_ids']" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Build a learning journey</h3>
+            <p>Group lessons into sections. Add a video, document, article or quiz, then finish with a test if needed. Drag the handles to change the order.</p>
+          </div>
+        </div>
+        <div class="pb-author-empty" invisible="slide_ids">
+          <i class="fa fa-plus-circle" aria-hidden="true"/>
+          <strong>Your canvas is ready</strong>
+          <span>Use the buttons below to add your first item. You can reorder items as you go.</span>
+        </div>
+      </xpath>
+      <xpath expr="//create[@name='add_slide_section']" position="attributes">
+        <attribute name="string">Add section</attribute>
+      </xpath>
+      <xpath expr="//create[@name='add_slide_lesson']" position="attributes">
+        <attribute name="string">Add lesson</attribute>
+      </xpath>
+      <xpath expr="//page[@name='options']/*[1]" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Decide how people learn</h3>
+            <p>Choose the delivery method, course owner and audience. Review visibility before you publish or invite anyone.</p>
+          </div>
+        </div>
+      </xpath>
+      <xpath expr="//page[@name='karma_rules']/*[1]" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>A little motivation goes a long way</h3>
+            <p>Optional points reward participation and completion. These are separate from test scores and certificates.</p>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_test_authoring_studio" model="ir.ui.view">
+    <field name="name">survey.survey.form.learning.studio</field>
+    <field name="model">survey.survey</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="survey.survey_survey_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-test" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <widget name="pb_learning_authoring_guide"/>
+      </xpath>
+      <xpath expr="//div[@name='button_box']" position="attributes">
+        <attribute name="invisible">not id</attribute>
+      </xpath>
+      <xpath expr="//header" position="attributes">
+        <attribute name="invisible">not id</attribute>
+      </xpath>
+      <xpath expr="//field[@name='title']" position="attributes">
+        <attribute name="placeholder">e.g. Workplace safety essentials</attribute>
+      </xpath>
+      <xpath expr="//div[hasclass('oe_title')]/h1" position="before">
+        <label for="title" string="Give your test a clear name"/>
+      </xpath>
+      <xpath expr="//button[@name='action_test_survey']" position="attributes">
+        <attribute name="string">Preview as learner</attribute>
+      </xpath>
+      <xpath expr="//button[@name='action_archive']" position="attributes">
+        <attribute name="string">Close responses</attribute>
+      </xpath>
+      <xpath expr="//page[@name='questions']" position="attributes">
+        <attribute name="string">02 · Questions</attribute>
+      </xpath>
+      <xpath expr="//page[@name='description']" position="attributes">
+        <attribute name="string">01 · Welcome</attribute>
+      </xpath>
+      <xpath expr="//page[@name='options']" position="attributes">
+        <attribute name="string">03 · Rules &amp; scoring</attribute>
+      </xpath>
+      <xpath expr="//page[@name='description_done']" position="attributes">
+        <attribute name="string">04 · Finish screen</attribute>
+      </xpath>
+      <xpath expr="//page[@name='questions']" position="before">
+        <xpath expr="//page[@name='description']" position="move"/>
+      </xpath>
+      <xpath expr="//page[@name='options']/group" position="before">
+        <group string="Ownership &amp; languages" name="pb_author_ownership">
+          <xpath expr="//sheet/group[1]" position="move"/>
+        </group>
+      </xpath>
+      <xpath expr="//page[@name='options']/group[@name='pb_author_ownership']" position="before">
+        <group string="Assessment format">
+          <xpath expr="//sheet/field[@name='survey_type']" position="move"/>
+        </group>
+      </xpath>
+      <xpath expr="//field[@name='description']" position="attributes">
+        <attribute name="placeholder">Explain what this test covers, how long it takes, and what learners need to do to pass.</attribute>
+      </xpath>
+      <xpath expr="//field[@name='description_done']" position="attributes">
+        <attribute name="placeholder">Thank the learner and explain their next step after submitting.</attribute>
+      </xpath>
+      <xpath expr="//field[@name='description']" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Set learners up for success</h3>
+            <p>This welcome message is shown before the test starts. Explain the purpose and any preparation they need.</p>
+          </div>
+        </div>
+      </xpath>
+      <xpath expr="//field[@name='question_and_page_ids']" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Ask one clear thing at a time</h3>
+            <p>Add questions and use sections to group topics. Open a question to write answer choices and assign points.</p>
+          </div>
+        </div>
+        <div class="pb-author-empty" invisible="question_and_page_ids">
+          <i class="fa fa-plus-circle" aria-hidden="true"/>
+          <strong>Your canvas is ready</strong>
+          <span>Use the buttons below to add your first item. You can reorder items as you go.</span>
+        </div>
+      </xpath>
+      <xpath expr="//page[@name='options']/*[1]" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Make the rules clear and fair</h3>
+            <p>Review the pass mark, attempts and access. Use Preview as learner after saving to check the complete experience.</p>
+          </div>
+        </div>
+      </xpath>
+      <xpath expr="//field[@name='description_done']" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>End with a useful next step</h3>
+            <p>Tell learners what happens after they submit, where to find their certificate, or who to contact for help.</p>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_lesson_authoring_studio" model="ir.ui.view">
+    <field name="name">slide.slide.form.learning.studio</field>
+    <field name="model">slide.slide</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-lesson" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <div class="pb-author-mini">
+          <span class="pb-author-eyebrow">LEARNING STUDIO</span>
+          <h2>One lesson. One useful outcome.</h2>
+          <p>Choose a format, add your material, and give learners a clear next step.</p>
+        </div>
+      </xpath>
+      <xpath expr="//page[@name='document']" position="attributes">
+        <attribute name="string">01 · Lesson content</attribute>
+      </xpath>
+      <xpath expr="//page[@name='description']" position="attributes">
+        <attribute name="string">02 · Introduction</attribute>
+      </xpath>
+      <xpath expr="//page[@name='external_links']" position="attributes">
+        <attribute name="string">03 · Resources</attribute>
+      </xpath>
+      <xpath expr="//page[@name='quiz']" position="attributes">
+        <attribute name="string">04 · Knowledge check</attribute>
+      </xpath>
+      <xpath expr="//group[@name='lesson_details']" position="attributes">
+        <attribute name="string">Content &amp; format</attribute>
+      </xpath>
+      <xpath expr="//group[@name='related_details']" position="attributes">
+        <attribute name="string">Learner experience</attribute>
+      </xpath>
+      <xpath expr="//field[@name='slide_category']" position="attributes">
+        <attribute name="widget">radio</attribute>
+        <attribute name="options">{'horizontal': true}</attribute>
+      </xpath>
+      <xpath expr="//field[@name='description']" position="attributes">
+        <attribute name="placeholder">What will this lesson help the learner do? Add a short introduction or useful context.</attribute>
+      </xpath>
+      <xpath expr="//page[@name='document']/*[1]" position="before">
+        <div class="pb-author-note">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-lightbulb-o" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Keep it focused</h3>
+            <p>A short lesson is easier to finish. Choose the content type below; the fields adapt to your choice.</p>
+          </div>
+        </div>
+      </xpath>
+      <xpath expr="//field[@name='is_preview']" position="after">
+        <div class="pb-author-inline-help" colspan="2">Preview makes this lesson available before enrolment. Leave it off for private training material.</div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_question_authoring_studio" model="ir.ui.view">
+    <field name="name">survey.question.form.learning.studio</field>
+    <field name="model">survey.question</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="survey.survey_question_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-question" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <div class="pb-author-mini">
+          <span class="pb-author-eyebrow">LEARNING STUDIO</span>
+          <h2>Design a great question</h2>
+          <p>Write a clear prompt, choose how learners answer, then add choices and scoring.</p>
+        </div>
+      </xpath>
+      <xpath expr="//field[@name='question_type']" position="attributes">
+        <attribute name="options">{'horizontal': true}</attribute>
+      </xpath>
+      <xpath expr="//field[@name='title']" position="attributes">
+        <attribute name="placeholder">e.g. What should you do before starting the equipment?</attribute>
+      </xpath>
+      <xpath expr="//page[@name='answers']" position="attributes">
+        <attribute name="string">01 · Answers &amp; points</attribute>
+      </xpath>
+      <xpath expr="//page[@name='survey_description']" position="attributes">
+        <attribute name="string">02 · Helpful context</attribute>
+      </xpath>
+      <xpath expr="//page[@name='options']" position="attributes">
+        <attribute name="string">03 · Answer rules</attribute>
+      </xpath>
+      <xpath expr="//field[@name='suggested_answer_ids']" position="before">
+        <div class="pb-author-note" invisible="question_type not in ['simple_choice', 'multiple_choice'] or scoring_type == 'no_scoring'">
+          <span class="pb-author-note__icon">
+            <i class="fa fa-check-circle" aria-hidden="true"/>
+          </span>
+          <div>
+            <h3>Make the correct answer count</h3>
+            <p>Mark the correct choices and check their points. A scored question needs a positive score for a correct answer.</p>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_quiz_authoring_studio" model="ir.ui.view">
+    <field name="name">slide.question.form.learning.studio</field>
+    <field name="model">slide.question</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="website_slides.slide_question_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-question" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <div class="pb-author-mini">
+          <span class="pb-author-eyebrow">LEARNING STUDIO</span>
+          <h2>A quick check for understanding</h2>
+          <p>Add answer choices, mark the correct one, and explain why in the feedback.</p>
+        </div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_course_invite_studio" model="ir.ui.view">
+    <field name="name">slide.channel.invite.form.learning.studio</field>
+    <field name="model">slide.channel.invite</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="website_slides.slide_channel_invite_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-invite" separator=" "/>
+      </xpath>
+      <xpath expr="//sheet/*[1]" position="before">
+        <div class="pb-author-mini">
+          <span class="pb-author-eyebrow">LEARNING STUDIO</span>
+          <h2>Bring your learners in</h2>
+          <p>Choose the recipients and review the invitation before sending. Sending emails is a separate, explicit action.</p>
+        </div>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_test_invite_studio" model="ir.ui.view">
+    <field name="name">survey.invite.form.learning.studio</field>
+    <field name="model">survey.invite</field>
+    <field name="priority">90</field>
+    <field name="inherit_id" ref="survey.survey_invite_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes">
+        <attribute name="class" add="pb-authoring vu-form-native pb-author-invite" separator=" "/>
+      </xpath>
+      <xpath expr="//form/group[1]" position="before">
+        <div class="pb-author-mini">
+          <span class="pb-author-eyebrow">LEARNING STUDIO</span>
+          <h2>Invite people to take part</h2>
+          <p>Choose recipients, check the message, and set a deadline if needed. Review everything before sending.</p>
+        </div>
+      </xpath>
+      <xpath expr="//label[@for='survey_start_url']" position="attributes">
+        <attribute name="string">Assessment link</attribute>
+      </xpath>
+    </field>
+  </record>
+</odoo>
