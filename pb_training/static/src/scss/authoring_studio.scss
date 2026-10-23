@@ -129,7 +129,13 @@
     .o_field_widget .o_external_button { width: auto !important; flex: 0 0 auto; }
     .o_field_radio[name="source_type"] > div { flex-direction: row !important; }
     .o_field_radio .o_radio_item { margin: 0; }
-    :is(.o_field_one2many, .o_field_many2many) .o_list_renderer { margin: 0; --ListRenderer-margin-x: 0px; }
+    // Native notebook lists use a negative top margin to meet the notebook edge.
+    // Our bordered field already supplies its own inset; that margin clips the
+    // header above the field's overflow boundary (notably lesson resources).
+    :is(.o_field_one2many, .o_field_many2many) .o_list_renderer {
+        margin: 0 !important;
+        --ListRenderer-margin-x: 0px;
+    }
     .pb-author-spotlight {
         outline: 3px solid #7960d5; outline-offset: 5px;
         box-shadow: 0 0 0 9px #795bd51a; border-radius: 12px;
