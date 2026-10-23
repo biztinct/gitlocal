@@ -114,6 +114,108 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
             with self.assertRaises(UserError):
                 draft.review(draft.revision, self._cert()['channels'], 'Cannot skip required amount')
 
+    def _conditional_amount(self):
+        """Arbitrary codes/choices prove this is not a country or tax-name rule."""
+        self.bonus.write({'application_zero_allowed': False, 'column_letter': 'ZY'})
+        mode = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Calculation choice', 'code': 'CHOICEMETHOD',
+            'column_letter': 'ZX', 'column_type': 'input', 'column_role': 'payroll',
+            'value_kind': 'text', 'is_text_component': True, 'is_required': True, 'is_contract_component': True})
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': 'Calculation choice', 'code': mode.code, 'value_type': 'text'})
+        source = self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'text_value': 'Automatic'})
+        result = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Conditional amount', 'code': 'CHOICERESULT',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=IF(APPPAIDDAYS<0,"Review, days",IF($ZX$2="Custom",$ZY$2,42))'})
+        return mode, source, result
+
+    def test_conditional_blank_uses_employee_choice_and_keeps_source_absent(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        ws = draft.workspace()
+        cell = ws['people'][0]['cells'][self.bonus.code]
+        self.assertTrue(cell['not_applicable'], {k: ws['people'][0]['cells'][k] for k in (mode.code, self.bonus.code)})
+        self.assertFalse(cell['issue'])
+        self.assertIsNone(cell['value'])
+        self.assertEqual(ws['people'][0]['cells'][result.code]['value'], 42)
+        revision = draft.revision
+        draft.save_cells(revision, 'unused-blank-noop', [self._change('')])
+        self.assertEqual(draft.revision, revision)
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Automatic branch checked')['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        frozen = json.loads(slip.application_snapshot_id.payload_json)
+        cell = next(c for c in frozen['inputs'] if c['code'] == self.bonus.code)
+        self.assertIsNone(cell['value'])
+        self.assertTrue(cell['not_applicable'])
+        self.assertTrue(sources[self.bonus.code]['omitted'])
+        self.assertFalse(self.env['hr.payroll.period.input'].search_count([('config_id', '=', self.config.id)]))
+        self.assertEqual(source.text_value, 'Automatic')
+
+    def test_conditional_requirement_follows_run_correction_and_accepts_zero(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        for index, value in enumerate(('Custom', 'Automatic', 'Custom')):
+            ws = draft.save_cells(draft.revision, 'choice-change-%s' % index,
+                                  [dict(self._change(value), code=mode.code)])
+            cell = ws['people'][0]['cells'][self.bonus.code]
+            self.assertEqual(cell['issue'], value == 'Custom')
+            self.assertEqual(cell['not_applicable'], value == 'Automatic')
+        with self.assertRaises(ValidationError):
+            draft.save_cells(draft.revision, 'custom-blank-refused', [self._change('')])
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, self._cert()['channels'], 'Custom amount still missing')
+        ws = draft.save_cells(draft.revision, 'custom-explicit-zero', [self._change('0')])
+        self.assertFalse(ws['people'][0]['cells'][self.bonus.code]['issue'])
+        self.assertEqual(ws['people'][0]['cells'][result.code]['value'], 0)
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Explicit zero checked')['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        self.assertEqual(values[mode.code], 'Custom')
+        self.assertEqual(values[self.bonus.code], 0)
+        self.assertEqual(source.text_value, 'Automatic', 'Run corrections never overwrite the saved mode')
+
+    def test_unknown_mode_and_other_consumers_keep_amount_required(self):
+        mode, source, result = self._conditional_amount()
+        source.unlink()
+        draft = self._draft()
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        # A mode corrected for this run selects the branch, but another formula
+        # using the same amount must still keep its requirement.
+        draft.save_cells(draft.revision, 'mode-from-blank', [dict(self._change('Automatic'), code=mode.code)])
+        self.assertFalse(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Other payment', 'code': 'OTHERPAYMENT',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=REVIEWBONUS+1'})
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+
+    def test_unused_branch_does_not_waive_conflict_or_explicit_source_requirement(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        self.bonus.application_source_required = True
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        self.bonus.application_source_required = False
+        original = self.config._application_domain_values
+        def pending(config, employee, contract, start, end):
+            facts = original(employee, contract, start, end)
+            facts['period.input.REVIEWBONUS'].update(status='conflict', reason='Pending approval')
+            return facts
+        with patch.object(type(self.config), '_application_domain_values', pending):
+            cell = draft.workspace()['people'][0]['cells'][self.bonus.code]
+            self.assertTrue(cell['issue'])
+            self.assertFalse(cell['not_applicable'])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Cannot waive pending approval')
+
     def test_absent_component_is_blank_but_saved_zero_is_ready(self):
         rule = self.env['hr.formula.rule'].create({
             'config_id': self.config.id, 'name': 'Registered dependents',

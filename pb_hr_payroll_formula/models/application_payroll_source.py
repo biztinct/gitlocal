@@ -50,41 +50,85 @@ def _date(value):
     return fields.Date.to_date(value)
 
 
-def _application_branch(formula, mode_references):
-    """Select only an explicit outer IF(application-mode=1, app, legacy).
+def _application_branches(formula, known, depth=0):
+    """Prune only IF branches selected by verified input/literal comparisons.
 
-    Other conditions stay conservative. Strings and nested function commas
-    are respected; this is selection, never evaluation of user code.
+    Unknown predicates retain both branches. No formula or user code is
+    executed here; quoted commas/parentheses and nested IFs are preserved.
+    Return the controlling input codes as dependencies even after pruning.
     """
-    text = (formula or '').strip().lstrip('=').strip()
-    match = re.fullmatch(r'IF\s*\((.*)\)', text, flags=re.I | re.S)
-    if not match:
-        return None
-    parts, start, depth, quoted, index = [], 0, 0, False, 0
-    body = match.group(1)
-    while index < len(body):
-        char = body[index]
-        if char == '"':
-            if quoted and index + 1 < len(body) and body[index + 1] == '"':
-                index += 2
-                continue
-            quoted = not quoted
-        elif not quoted:
-            if char == '(':
-                depth += 1
-            elif char == ')':
-                depth -= 1
-            elif char == ',' and depth == 0:
-                parts.append(body[start:index]); start = index + 1
-        index += 1
-    parts.append(body[start:])
-    if len(parts) != 3 or quoted or depth != 0:
-        return None
-    condition = re.sub(r'\s|\$', '', parts[0]).upper()
-    if any(re.fullmatch(re.escape(ref) + r'(?:\d+)?=1', condition)
-           for ref in mode_references if ref):
-        return parts[1]
-    return None
+    if depth > 60:
+        return formula, set()
+    out, used, index = [], set(), 0
+    while index < len(formula):
+        if formula[index] == '"':
+            end = index + 1
+            while end < len(formula):
+                if formula[end] == '"':
+                    if end + 1 < len(formula) and formula[end + 1] == '"':
+                        end += 2
+                        continue
+                    end += 1
+                    break
+                end += 1
+            out.append(formula[index:end]); index = end
+            continue
+        match = re.match(r'IF\s*\(', formula[index:], re.I) if index == 0 or not (formula[index-1].isalnum() or formula[index-1] == '_') else None
+        if not match:
+            out.append(formula[index]); index += 1
+            continue
+        begin = index + match.end()
+        cursor, nesting, quoted, split, parts = begin, 0, False, begin, []
+        while cursor < len(formula):
+            char = formula[cursor]
+            if char == '"':
+                if quoted and cursor + 1 < len(formula) and formula[cursor+1] == '"':
+                    cursor += 2
+                    continue
+                quoted = not quoted
+            elif not quoted:
+                if char == '(':
+                    nesting += 1
+                elif char == ')':
+                    if nesting == 0:
+                        parts.append(formula[split:cursor])
+                        break
+                    nesting -= 1
+                elif char == ',' and nesting == 0:
+                    parts.append(formula[split:cursor]); split = cursor + 1
+            cursor += 1
+        if cursor == len(formula) or quoted or len(parts) != 3:
+            out.append(formula[index:]); break
+        predicate = re.fullmatch(r'\s*(\$?[A-Za-z_][A-Za-z_0-9$]*)\s*(=|<>)\s*("(?:[^"]|"")*"|[-+]?\d+(?:\.\d+)?)\s*', parts[0])
+        selected = None
+        if predicate:
+            ref, op, literal = predicate.groups()
+            ref = ref.replace('$', '').upper()
+            source = known.get(ref)
+            if source is None:
+                source = known.get(re.sub(r'\d+$', '', ref))
+            if source is not None:
+                code, value = source
+                if literal.startswith('"') and isinstance(value, str):
+                    equal = value.casefold() == literal[1:-1].replace('""', '"').casefold()
+                elif not literal.startswith('"') and type(value) in (int, float):
+                    equal = value == float(literal)
+                else:
+                    equal = None
+                if equal is not None:
+                    selected = parts[1 if (equal if op == '=' else not equal) else 2]
+                    used.add(code)
+        if selected is not None:
+            rewritten, controls = _application_branches(selected, known, depth+1)
+            out.append('(' + rewritten + ')'); used.update(controls)
+        else:
+            branches = []
+            for part in parts:
+                rewritten, controls = _application_branches(part, known, depth+1)
+                branches.append(rewritten); used.update(controls)
+            out.append('IF(' + ','.join(branches) + ')')
+        index = cursor + 1
+    return ''.join(out), used
 
 
 class ApplicationFormulaConfig(models.Model):
@@ -406,6 +450,87 @@ class ApplicationFormulaConfig(models.Model):
             meaning='Includes employment-slice gaps and approved unpaid/partial-pay losses; not an unpaid-leave report.')
         return result
 
+    def _application_dependency_usage(self, cells):
+        # Walk only the dependency closure of pay-affecting formulas. A
+        # profile/display formula must not make its HR metadata a pay blocker.
+        by_reference = {}
+        for rule in self.rule_ids:
+            by_reference[rule.code.upper()] = rule
+            by_reference[(rule.column_letter or '').upper()] = rule
+        pending = list(self.rule_ids.filtered(lambda r: r.column_type == 'formula'
+                       and r.column_role == 'payroll' and r.net_role != 'info'))
+        known = {}
+        for ref, rule in by_reference.items():
+            cell = cells.get(rule.code, {})
+            if ref and cell.get('status') in _READY and cell.get('value') is not None:
+                known[ref] = (rule.code.upper(), cell['value'])
+        visited, dependencies, inactive_candidates = set(), set(), set()
+        while pending:
+            formula = pending.pop()
+            if formula.id in visited:
+                continue
+            visited.add(formula.id)
+            branch, controls = _application_branches(formula.excel_formula or '', known)
+            dependencies.update(controls)
+            if branch != formula.excel_formula:
+                probe = self.env['hr.formula.rule'].new({'config_id': self.id, 'name': formula.name,
+                    'code': formula.code, 'column_type': 'formula', 'excel_formula': branch})
+                refs = probe.formula_dependencies or ''
+                inactive_candidates.update(set((formula.formula_dependencies or '').split(',')) - set(refs.split(',')))
+            else:
+                refs = formula.formula_dependencies or ''
+            for token in refs.split(','):
+                target = by_reference.get(token)
+                if target:
+                    dependencies.add(target.code.upper())
+                    if target.column_type == 'formula':
+                        pending.append(target)
+        # Preserve spreadsheet-required fields, while ignoring those reached
+        # exclusively through an unselected calculation branch.
+        inactive, inactive_pending = set(), list(inactive_candidates)
+        while inactive_pending:
+            target = by_reference.get(inactive_pending.pop())
+            if not target or target.code.upper() in inactive:
+                continue
+            inactive.add(target.code.upper())
+            if target.column_type == 'formula':
+                inactive_pending.extend((target.formula_dependencies or '').split(','))
+        inactive -= dependencies
+        return dependencies, inactive
+
+    def _application_refresh_input_requirements(self, row):
+        """Recheck conditional inputs after source resolution AND saved edits."""
+        cells = {c['code']: c for c in row['inputs']}
+        dependencies, inactive = self._application_dependency_usage(cells)
+        row['blockers'] = [b for b in row['blockers'] if b['code'] not in cells]
+        for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input'):
+            cell = cells[rule.code]
+            optional_record = _optional_record_input(rule)
+            required = not optional_record and bool(rule.application_source_required or
+                (rule.code.upper() not in inactive and (rule.is_required or
+                 rule.code.upper() in dependencies or (rule.column_role == 'payroll' and rule.net_role != 'info'))))
+            consumption = cell.get('evidence', {}).get('consumption_required')
+            unused = rule.code.upper() in inactive and not required and cell['status'] == 'missing' and not consumption
+            if cell.get('not_applicable') and not unused and cell['status'] == 'missing':
+                cell['reason'] = 'A value is required by this employee’s current calculation settings.'
+            cell.update(required=required, not_applicable=unused)
+            if cell['status'] in _READY and cell.get('value') is not None:
+                continue
+            if cell['status'] == 'conflict' or consumption or required:
+                row['blockers'].append({'code': rule.code, 'key': cell['key'], 'status': cell['status'],
+                    'reason': cell['reason'] or 'Mapped value is missing or conflicting.'})
+            if cell['status'] == 'missing' and not consumption and (unused or optional_record):
+                row['values'][rule.code] = '' if rule.value_kind == 'text' else 0
+                row['provenance'][rule.code] = {'src': 'optional_blank', 'via': 'application_snapshot',
+                                              'status': 'missing', 'omitted': True}
+                cell['reason'] = ('Not used with this employee’s current calculation settings. Leave blank.' if unused
+                                  else 'Optional input left blank; saved records are unchanged.')
+            else:
+                row['values'].pop(rule.code, None)
+                row['provenance'].pop(rule.code, None)
+        row['ok'] = not row['blockers']
+        return row
+
     def _application_employee_inputs(self, employee, start, end, certification):
         self.ensure_one()
         contract, ambiguous = self._application_contract(employee, start, end)
@@ -438,48 +563,9 @@ class ApplicationFormulaConfig(models.Model):
         catalogue = self._application_source_catalogue()
         zero_keys = set((certification or {}).get('zero_keys') or [])
         inputs = []
-        # Walk only the dependency closure of pay-affecting formulas. A
-        # profile/display formula must not make its HR metadata a pay blocker.
-        by_reference = {}
-        for rule in self.rule_ids:
-            by_reference[rule.code.upper()] = rule
-            by_reference[(rule.column_letter or '').upper()] = rule
-        pending = list(self.rule_ids.filtered(lambda r: r.column_type == 'formula'
-                       and r.column_role == 'payroll' and r.net_role != 'info'))
-        modes = self.rule_ids.filtered(lambda r: r.application_source_key == 'application.mode')
-        mode_refs = [v for r in modes for v in (r.code.upper(), (r.column_letter or '').upper())]
-        visited, dependencies, inactive_candidates = set(), set(), set()
-        while pending:
-            formula = pending.pop()
-            if formula.id in visited:
-                continue
-            visited.add(formula.id)
-            branch = _application_branch(formula.excel_formula, mode_refs)
-            if branch is not None:
-                probe = self.env['hr.formula.rule'].new({'config_id': self.id, 'name': formula.name,
-                    'code': formula.code, 'column_type': 'formula', 'excel_formula': '=' + branch})
-                refs = probe.formula_dependencies or ''
-                dependencies.update(r.code.upper() for r in modes)
-                inactive_candidates.update(set((formula.formula_dependencies or '').split(',')) - set(refs.split(',')))
-            else:
-                refs = formula.formula_dependencies or ''
-            for token in refs.split(','):
-                target = by_reference.get(token)
-                if target:
-                    dependencies.add(target.code.upper())
-                    if target.column_type == 'formula':
-                        pending.append(target)
-        # Preserve spreadsheet-required fields, while ignoring those reached
-        # exclusively through the explicitly unselected legacy branch.
-        inactive, inactive_pending = set(), list(inactive_candidates)
-        while inactive_pending:
-            target = by_reference.get(inactive_pending.pop())
-            if not target or target.code.upper() in inactive:
-                continue
-            inactive.add(target.code.upper())
-            if target.column_type == 'formula':
-                inactive_pending.extend((target.formula_dependencies or '').split(','))
-        inactive -= dependencies
+        dependencies, _inactive = self._application_dependency_usage({
+            r.code: {'status': 'resolved', 'value': 1} for r in self.rule_ids
+            if r.application_source_key == 'application.mode'})
         # Overtime is a payable event even if the scheme has never had a column
         # for its category. An informational mapping does not constitute pay.
         paid_source_keys = set(self.rule_ids.filtered(
@@ -495,11 +581,6 @@ class ApplicationFormulaConfig(models.Model):
                 blockers.append({'code': '', 'key': key, 'reason': 'Approved overtime has no pay-affecting mapping. Configure its payment component before running payroll.'})
         for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input'):
             key = (rule.application_source_key or '').strip()
-            optional_record = _optional_record_input(rule)
-            required = not optional_record and bool(rule.application_source_required or
-                            (rule.code.upper() not in inactive and
-                             (rule.is_required or rule.code.upper() in dependencies or
-                              (rule.column_role == 'payroll' and rule.net_role != 'info'))))
             if key:
                 # An explicit provider is authoritative even when it cannot
                 # answer. Never retain a value read through an old contract
@@ -536,27 +617,18 @@ class ApplicationFormulaConfig(models.Model):
             if fact.get('evidence', {}).get('consumption_required'):
                 fact.update(status='missing', reason='This event needs a paid-once reservation before payroll can consume it.')
             row = dict(fact, code=rule.code, label=rule.name, key=key,
-                       unit=catalogue.get(key, {}).get('unit', ''), required=required,
+                       unit=catalogue.get(key, {}).get('unit', ''), required=False,
                        source_owner=self._application_source_display(key, catalogue.get(key, {}))['owner'] if key else 'Employee or contract record')
             if fact.get('status') in _READY and fact.get('value') is not None:
                 values[rule.code] = fact['value']
                 if key:
                     provenance[rule.code] = {'src': 'employee_field', 'via': 'application_snapshot',
                                             'key': key, 'status': fact['status'], 'evidence': fact['evidence']}
-            elif optional_record and fact.get('status') == 'missing':
-                # The calculation receives a neutral operand, while the source
-                # cell and frozen evidence remain absent, not a saved zero.
-                values[rule.code] = '' if rule.value_kind == 'text' else 0
-                provenance[rule.code] = {'src': 'optional_blank', 'via': 'application_snapshot',
-                                         'status': 'missing', 'omitted': True}
-                row['reason'] = 'Optional input left blank; saved records are unchanged.'
-            elif required or fact.get('status') == 'conflict':
-                blockers.append({'code': rule.code, 'key': key, 'status': fact['status'], 'reason': fact['reason'] or 'Mapped value is missing or conflicting.'})
             inputs.append(row)
-        return {'employee_id': employee.id, 'name': employee.name, 'ok': not blockers,
+        return self._application_refresh_input_requirements({'employee_id': employee.id, 'name': employee.name, 'ok': not blockers,
                 'contract_id': contract.id, 'inputs': inputs, 'blockers': blockers,
                 'values': values, 'provenance': provenance, 'settings_stamp': self._application_settings_stamp(),
-                'period': [str(start), str(end)], 'certification': certification or {}}
+                'period': [str(start), str(end)], 'certification': certification or {}})
 
     def application_preflight(self, employee_ids, date_from, date_to, certifications=None):
         self.ensure_one()

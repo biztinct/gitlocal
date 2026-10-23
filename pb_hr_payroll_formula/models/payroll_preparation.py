@@ -4,6 +4,7 @@ Only signed revisions feed payroll. Source resolution and final approval use the
 same overlay; pending operational approvals and paid-once checks remain upstream.
 """
 import json
+from copy import deepcopy
 from decimal import Decimal, InvalidOperation
 
 from odoo import api, fields, models, _
@@ -219,8 +220,7 @@ class PayrollPreparation(models.Model):
                         row['values'][cell['code']] = cell['value']
                         row['provenance'][cell['code']] = {'src':'employee_field','via':'application_snapshot',
                             'key':cell['key'],'status':'resolved','evidence':evidence}
-        row['ok'] = not row['blockers']
-        return row
+        return self.config_id._application_refresh_input_requirements(row)
 
     def _resolved(self, signed=False):
         preview = self._raw(signed)
@@ -261,7 +261,7 @@ class PayrollPreparation(models.Model):
                 if not rule:
                     continue
                 editable, future = self._capabilities(rule, cell, cards)
-                optional = (self._optional(rule) or self._settlement_zero(rule)) and cell['status'] in ('missing', 'zero_confirmed')
+                optional = (self._optional(rule) or self._settlement_zero(rule) or cell.get('not_applicable')) and cell['status'] in ('missing', 'zero_confirmed')
                 edit = edits.get('%s:%s' % (row['employee_id'], rule.code))
                 issue = cell['status'] == 'conflict' or (cell['status'] == 'missing' and cell['required'] and not optional)
                 cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
@@ -327,6 +327,8 @@ class PayrollPreparation(models.Model):
         rules = {r.code: r for r in self._rules()}
         cards = self._cards()
         edits = json.loads(self.edits_json)
+        effective_cells = {(p['employee_id'], c['code']): c for p in preview['employees']
+                           for c in self._apply_row(deepcopy(p), edits)['inputs']}
         audit = []
         seen = set()
         for change in changes:
@@ -351,7 +353,7 @@ class PayrollPreparation(models.Model):
             scope = change.get('scope', 'run')
             if not editable or scope not in ('run', 'future') or scope == 'future' and not future:
                 raise AccessError(_('This source must be corrected in its own record.'))
-            if (rule.value_kind in _NUMERIC and self._optional(rule)
+            if (rule.value_kind in _NUMERIC and (self._optional(rule) or effective_cells[pair].get('not_applicable'))
                     and (change.get('value') is None or str(change['value']).strip() == '')):
                 # Empty optional entries are omissions, never implicit zeroes
                 # or requests to clear an existing source/correction.

@@ -11,7 +11,7 @@ export class PayrollReviewDialog extends Component {
     setup() {
         this.orm = useService('orm'); this.action = useService('action'); this.dialog = useService('dialog');
         this.grid = useRef('grid'); this.alive = true;
-        this.state = useState({data:null, loading:true, saving:false, error:'', query:'', filter:'all', group:'all',
+        this.state = useState({data:null, loading:true, saving:false, error:'', query:'', componentQuery:'', filter:'all', group:'all',
             selected:null, detail:null, value:'', reason:'', scope:'run', review:false, history:false, maximized:false,
             channels:{leave:false,overtime:false,adjustments:false,timesheets:false,settlements:false}, note:'', pending:false});
         onWillStart(()=>this.load());
@@ -34,17 +34,30 @@ export class PayrollReviewDialog extends Component {
             if(cell) this.state.selected={...cell,employee_id:p.employee_id,person:p.name};
         }
     }
-    get columns() { return (this.state.data?.columns||[]).filter(c=>this.state.group==='all'?c.group!=='results':c.group===this.state.group); }
+    searchText(value) {return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLocaleLowerCase();}
+    get groupedColumns() {return (this.state.data?.columns||[]).filter(c=>this.state.group==='all'||c.group===this.state.group);}
+    get columns() {
+        const words=this.searchText(this.state.componentQuery).trim().split(/\s+/).filter(Boolean);
+        return this.groupedColumns.filter(c=>words.every(word=>this.searchText(`${c.name} ${c.code}`).includes(word)));
+    }
+    componentSearch(ev) {this.state.componentQuery=ev.target.value;this.columnsChanged();}
+    clearComponentSearch() {this.state.componentQuery='';this.columnsChanged();}
+    columnsChanged() {
+        if(this.selected && !this.columns.some(c=>c.code===this.selected.code)) {
+            this.state.selected=null;this.state.detail=null;
+        }
+        requestAnimationFrame(()=>{if(this.grid.el)this.grid.el.scrollLeft=0;});
+    }
     get people() {
-        const q=this.state.query.toLocaleLowerCase();
-        return (this.state.data?.people||[]).filter(p=>(!q||p.name.toLocaleLowerCase().includes(q))&&
+        const q=this.searchText(this.state.query);
+        return (this.state.data?.people||[]).filter(p=>(!q||this.searchText(p.name).includes(q))&&
             (this.state.filter==='all'||Object.values(p.cells).some(c=>this.state.filter==='issues'?c.issue:c.edit)));
     }
     get selected() {return this.state.selected;}
     get pendingFuture() { return (this.state.data?.people||[]).flatMap(p=>Object.values(p.cells)).filter(c=>c.edit?.scope==='future'&&!c.edit?.proposal_id).length; }
     get canReview() {return this.state.data&&!this.state.data.issues&&!this.state.data.global_issues.length&&!this.pendingFuture&&!this.state.saving&&!this.state.pending;}
     display(cell) { return cell?.optional?'':cell?.value===null||cell?.value===undefined?'':String(cell.value); }
-    status(cell) {return cell?.status==='preview'?'Calculation preview':cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.edit?'Edited for this run':cell?.optional?'Optional · left blank':cell?.editable?'From records':'Read only';}
+    status(cell) {return cell?.status==='preview'?'Calculation preview':cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.edit?'Edited for this run':cell?.not_applicable?'Not used for this employee':cell?.optional?'Optional · left blank':cell?.editable?'From records':'Read only';}
     async select(person,col) {
         const cell=person.cells[col.code]; if(!cell)return;
         if(this.selected?.employee_id===person.employee_id && this.selected?.code===col.code)return;
@@ -93,7 +106,7 @@ export class PayrollReviewDialog extends Component {
     }
     blankIgnored(cell, value) {
         const col=this.state.data.columns.find(c=>c.code===cell.code);
-        return col?.optional && col.kind!=='text' && !String(value ?? '').trim();
+        return (col?.optional || cell.not_applicable) && col?.kind!=='text' && !String(value ?? '').trim();
     }
     async saveSelected() {
         if(this.state.saving)return;
@@ -131,7 +144,7 @@ export class PayrollReviewDialog extends Component {
         const issues=this.state.data.people.flatMap(p=>this.state.data.columns.filter(c=>p.cells[c.code]?.issue).map(c=>({p,c})));
         if(!issues.length)return;
         const i=issues.findIndex(v=>v.p.employee_id===this.selected?.employee_id&&v.c.code===this.selected?.code);
-        const {p,c}=issues[(i+1)%issues.length];this.state.query='';this.state.filter='issues';this.state.group='all';
+        const {p,c}=issues[(i+1)%issues.length];this.state.query='';this.state.componentQuery='';this.state.filter='issues';this.state.group='all';
         this.select(p,c);
         requestAnimationFrame(()=>{const el=this.grid.el?.querySelector(`[data-cell="${p.employee_id}:${c.id}"]`);el?.scrollIntoView({block:'nearest',inline:'center'});el?.querySelector('input,button')?.focus();});
     }
