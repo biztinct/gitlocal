@@ -2,7 +2,8 @@ Recruitment integrations — 23 October 2026
 
 Implementation commit: ae2ae077c
 Sass compatibility fix: dd3aaaacf
-pb_hiring: 19.0.2.12.0
+Chrome verification fixes: e9a60a7d7
+pb_hiring: 19.0.2.12.1
 Server: Payobook19v2, /odoo/odoo-server/addons
 Databases upgraded: payobook, payobook_template, p0clone, rize.
 Retired ABM and its permanent archive were not changed.
@@ -17,9 +18,13 @@ Delivered
   designated TA Lead assignment notices and country employer-cost profiles.
 - Optional Meta WhatsApp consent/template reminders and verified status callbacks.
   Existing Odoo email/OAuth remains the email implementation.
+- Chrome testing found and fixed wizard focus after changing/saving a step,
+  inaccessible cover-approver fields on existing rules, and blank booking
+  timezones for valid Odoo aliases such as Asia/Calcutta. CV/signing field labels
+  now use clear names instead of internal prefixes.
 
 Validation
-- Isolated restored Payobook database: 29 regression tests, zero failures/errors.
+- Isolated restored Payobook database: 30 regression tests, zero failures/errors.
 - CV service: six tests passed, including synthetic PDF, DOCX and image OCR.
   Local Intel Mac/Python 3.12 peak RSS approximately 2 GB on small synthetic CVs.
   The selected Linux host/container and representative EN/VI/ID CVs still need tests.
@@ -30,14 +35,22 @@ Validation
   All 560 installed custom-module/database version pairs match local manifests.
 - New views/actions and Microsoft calendar installed across all four databases;
   official isolated SDK imports pass. No external connection is enabled.
-- Chrome deployed asset/page load passes, no console errors. Full Hiring wizard
-  end-to-end check is PENDING: Chrome was signed in as Komal; automatic approval
-  review rejected logging out because it could interrupt that session. Approval
-  to switch or an isolated Chrome session has been requested. No completion of
-  that UI test is claimed.
-- Workbook: 457 original cells preserved, 36 + 21 comment rows added, rendered
+- Deployed Chrome checks passed using the authorized DEMO Talent Lead and
+  DEMO Recruiter accounts: all six connection guides, HTTPS validation,
+  missing-configuration checks, keyboard focus/Tab/Escape, cover-rule form and
+  absence fields, stage-policy screen, read-only country offer setup, candidate
+  extraction gate, booking timezone default, and missing cost-profile gate.
+  CV form labels were verified; the signing form was inspected. No candidate
+  data was changed.
+  Recruiter has the hiring-only sidebar, cannot load connection settings, and
+  sees hiring rules read-only without create/edit controls. No console errors.
+  These checks do not establish live provider signing, CV extraction, calendar
+  booking or WhatsApp delivery; those require activation and controlled tests.
+  Chrome was signed out of the demo account after testing. One empty, disabled
+  CV connection setup record remains in the demo company; no keys were saved.
+- Workbook: 457 original cells (374 populated) preserved, 36 + 21 comment rows added, rendered
   and visually reviewed. Second-sheet client results remain unchanged/untested.
-- Seven test/render PNGs were removed; product/user images were preserved.
+- Current-run test/render PNGs were removed; product/user images were preserved.
 
 Manual activation (owner/IT unless stated)
 1. Hosting: choose a separate 8 GB / 4 vCPU service host initially processing one
@@ -68,5 +81,6 @@ Manual tracked posting packs remain available.
 Operations: ops/recruit_connections/OPERATIONS.txt and
 services/recruit_cv/OPERATIONS.txt contain the activation steps and limitations.
 Backup set: /odoo/backups/recruit-connect-20261023-deploy (root-only directory).
+UI-fix backup set: /odoo/backups/recruit-ui-20261023-deploy (root-only directory).
 Rize backups remain exempt from deletion; nonproduction retention is seven days,
 keeping the latest usable backup. No retention cleanup was run.
