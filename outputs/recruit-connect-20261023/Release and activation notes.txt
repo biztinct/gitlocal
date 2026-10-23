@@ -4,7 +4,8 @@ Implementation commit: ae2ae077c
 Sass compatibility fix: dd3aaaacf
 Chrome verification fixes: e9a60a7d7
 DocuSign integration: f7cd70ae0
-pb_hiring: 19.0.2.13.0
+CV profile completion: 850908163
+pb_hiring: 19.0.2.14.0
 Server: Payobook19v2, /odoo/odoo-server/addons
 Databases upgraded: payobook, payobook_template, p0clone, rize.
 Retired ABM and its permanent archive were not changed.
@@ -16,7 +17,13 @@ Delivered
   including completion certificate, encrypted JWT credentials, draft recovery,
   account-scoped HMAC callbacks and signer/order checks. Existing Documenso
   envelope references remain supported for their original provider.
-- Docling + spaCy CV service and Payobook queue/review integration.
+- Docling + spaCy CV service and Payobook queue/review integration, including
+  editable employer/job-title/date records with source evidence, year/month
+  precision, current employment, education and configured skill mentions.
+  Search covers current CV text and reviewed profiles; skill facets include
+  CV mentions without creating proficiency assessments. Stale reviews are
+  rejected after replacement/re-extraction; anonymisation removes CV profiles
+  and pending review wizards. Custom CV form keys are recognised consistently.
 - Official Google/Microsoft SDK free/busy, panel booking and calendar audit.
 - Native stage visibility policies, TA Lead/HR fallback approval routing,
   designated TA Lead assignment notices and country employer-cost profiles.
@@ -28,12 +35,17 @@ Delivered
   now use clear names instead of internal prefixes.
 
 Validation
-- Isolated restored Payobook database: 42 regression tests, zero failures/errors.
+- Isolated restored Payobook database: 50 regression tests, zero failures/errors.
+  Eight new CV cases cover review revisions, deletion, custom form keys/current
+  indexed search, skills without proficiency, invalid dates, safe HTML output,
+  paused connections, invalid responses and anonymisation.
   Twelve DocuSign tests cover authentication, host validation, encrypted token
   caching, draft recovery, approval gates, recipient/order/field validation,
   completion filing, cancellation, webhook integrity and account isolation.
   A final targeted rerun of all twelve passed after header validation hardening.
-- CV service: six tests passed, including synthetic PDF, DOCX and image OCR.
+- CV service: 11 tests passed, including synthetic PDF, DOCX and image OCR
+  with employer/title/date assertions and EN/VI/ID dates/labels.
+  A further synthetic DOCX result was prepared for the deployed review test.
   Local Intel Mac/Python 3.12 peak RSS approximately 2 GB on small synthetic CVs.
   The selected Linux host/container and representative EN/VI/ID CVs still need tests.
 - Deployed independent DEMO Talent Lead/Recruiter API sessions: board access,
@@ -49,7 +61,7 @@ Validation
   missing-configuration checks, keyboard focus/Tab/Escape, cover-rule form and
   absence fields, stage-policy screen, read-only country offer setup, candidate
   extraction gate, booking timezone default, and missing cost-profile gate.
-  CV form labels were verified; the signing form was inspected. No candidate
+  CV form labels were verified; the signing form was inspected. No real candidate
   data was changed.
   Recruiter has the hiring-only sidebar, cannot load connection settings, and
   sees hiring rules read-only without create/edit controls. No console errors.
@@ -63,6 +75,17 @@ Validation
   No console errors. A disabled DocuSign setup row with Demo selected remains
   in Payobook Vietnam JSC; no IDs or secrets were entered. The test session
   was signed out. Provider round-trip remains blocked by account creation.
+- CV completion deployed checks: Chrome reviewed a synthetic DOCX result from
+  local Docling, corrected Agronomist to Senior Agronomist and applied it. The
+  saved employer, corrected title, month-precision dates, education, review user
+  and Reviewed state were verified. Live API search found employer, corrected
+  role and education; Chrome employer search returned the synthetic candidate and its drawer showed
+  the corrected role, dates and education, with no console errors.
+  Disabled-service extraction correctly stops at the configuration gate.
+  This is a split local-parser/deployed-review test, not an activated production
+  parser round-trip. No real candidate records or messages were used. The synthetic candidate was
+  anonymised and archived; its document and review wizards were removed. Chrome
+  was signed out of the demo account.
 - Workbook: 457 original cells (374 populated) preserved, 36 + 21 comment rows added, rendered
   and visually reviewed. Second-sheet client results remain unchanged/untested.
 - Current-run test/render PNGs were removed; product/user images were preserved.
@@ -71,16 +94,21 @@ Manual activation (owner/IT unless stated)
 1. CV hosting only: recommend a separate 8 GB / 4 vCPU service host, processing
    one CV at a time. 4 GB is for a limited pilot; 16 GB offers headroom for large
    scans or concurrency. The current Odoo host still has approximately 2 GB RAM.
-   No purchase, resize or CV hosting change occurred. Linux load testing remains.
+   Owner plans to increase RAM later. No purchase or resize occurred. Parser
+   source is staged inactive at /odoo/services/recruit_cv on Payobook19v2.
+   For co-hosting with Odoo, plan 16 GB initially and measure combined load.
+   Linux load testing remains.
 2. Signing: owner selected DocuSign demo and confirmed the account still needs
    to be created. Create its developer account, register the integration/RSA
    key, grant sender signature/impersonation consent, and configure account IDs
    and Connect HMAC in Payobook. Test with approved synthetic offer recipients.
    DocuSign hosts signing; no self-hosted signing service or .p12 is required.
    No live DocuSign upload, invitation, signature or filing is claimed.
-3. CVs: deploy/test the Linux service, set URL/key, representative customer tests.
-   Extraction provides text sections and configured skill matches; normalized
-   employer/title/years and inferred proficiency are not implemented.
+3. CVs: after capacity is available, build/test the Linux service, set URL/key,
+   Check and Enable for each company, then test representative customer CVs.
+   Structured employer/title/date extraction is implemented for explicit layouts;
+   ambiguous fields remain blank and editable with source evidence. No invented
+   duration, assessed proficiency, ranking or demographic attributes.
 4. Calendar: OAuth apps, tenant consent, organiser accounts and panel permissions;
    controlled live Google and Outlook availability/booking/sync checks.
 5. WhatsApp: verified WABA/phone, approved four-parameter template, token/app
@@ -103,6 +131,7 @@ ops/recruit_connections/OPERATIONS.txt and
 services/recruit_cv/OPERATIONS.txt contain the activation steps and limitations.
 Backup set: /odoo/backups/recruit-connect-20261023-deploy (root-only directory).
 UI-fix backup set: /odoo/backups/recruit-ui-20261023-deploy (root-only directory).
+CV completion backup set: /odoo/backups/recruit-cv-20261023-deploy (root-only directory).
 DocuSign backup set: /odoo/backups/recruit-docusign-20261023-deploy (root-only directory).
 Rize backups remain exempt from deletion; nonproduction retention is seven days,
 keeping the latest usable backup. No retention cleanup was run.
