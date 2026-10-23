@@ -25,8 +25,16 @@ Server: ssh alias `Payobook19v2`. Strategy: `docs/SAAS_STRATEGY.html`.
 - **Custom-domain automation:** `/usr/local/bin/pb-domain-attach|pb-domain-detach`
   (root-owned, arg-validated), sudoers drop-in `/etc/sudoers.d/pb-tenants` lets the
   `odoo` user run exactly these two.
-- **Backups:** `/odoo/backups/tenants/<slug>/` — nightly cron on the apex DB keeps the
-  last 14 nightly dumps per tenant; manual/final kept forever.
+- **Backups:** nightly at 19:30 UTC by `/etc/cron.d/payobook-nightly-backup` →
+  `ops/nightly_backup.py` (config `/etc/payobook/nightly-backup.json`): every active DB
+  (`payobook`, `payobook_template`, `p0clone`, `rize`) to `/odoo/nightly-backups/<db>/<date>/`
+  = `db.dump` + hard-linked `filestore/` + `OK`. Keep rize 30 days, the rest 7 (owner,
+  2026-10-23); the newest good copy is never pruned. Log `/var/log/payobook-nightly-backup.log`.
+  Restore: `sudo cat db.dump | sudo -u postgres pg_restore --no-owner -d <newdb>` and copy
+  `filestore/` back. SAME DISK as the server — off-box copies are still a gap.
+  The in-app job "Payobook Tenants: nightly backups" (`/odoo/backups/tenants/`) is OFF since
+  2026-09-16, so the Tenants cockpit's last-backup date for rize reads stale; it is not the
+  source of truth.
 
 ## Go-live: registrar DNS (one-time, manual)
 
