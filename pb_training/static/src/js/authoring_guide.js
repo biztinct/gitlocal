@@ -101,8 +101,9 @@ export class LearningAuthoringGuide extends Component {
             this.highlighted.push(target);
             if (tab) { tab.classList.add("pb-author-tab-target"); this.highlighted.push(tab); }
             const addButtons = target.querySelectorAll(".o_field_x2many_list_row_add a");
-            const focus = target.querySelector("input:not([type=hidden]), textarea, [contenteditable=true]")
-                || addButtons[key === "content" ? 1 : 0];
+            const focus = key === "content" || key === "questions"
+                ? addButtons[key === "content" ? 1 : 0]
+                : target.querySelector("input:not([type=hidden]):not([disabled]), textarea:not([disabled]), [contenteditable=true]");
             focus?.focus({ preventScroll: true });
             target.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
         };

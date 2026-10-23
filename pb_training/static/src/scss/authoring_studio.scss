@@ -94,7 +94,7 @@
 .o_form_view.pb-authoring .o_form_renderer {
     .o_form_sheet > .o_group.row { margin-left: 28px; margin-right: 28px; width: auto !important; }
     .o_form_sheet > .o_field_x2many { width: calc(100% - 56px); padding: 0; }
-    .o_form_sheet > div > .o_field_widget { padding-left: 0; padding-right: 0; }
+    .o_form_sheet > div > .o_field_widget { padding-left: 0 !important; padding-right: 0 !important; }
     .o_form_sheet > div:has(> .o_field_many2many_tags) {
         margin-top: 8px !important; margin-bottom: 0 !important;
         > .o_field_many2many_tags { width: 100%; max-width: 580px; margin-bottom: 0; }
@@ -122,7 +122,11 @@
         .o_horizontal_separator { margin: 0 0 2px !important; padding-bottom: 10px; border-bottom: 1px solid var(--pa-line); letter-spacing: .04em; font-size: 12px; }
     }
     .o_field_boolean { padding-top: 9px; }
-    .o_field_float_time.oe_inline { min-width: 84px; }
+    .o_field_float_time.oe_inline {
+        width: 84px; min-width: 84px; max-width: none;
+        input.o_input { width: 100%; max-width: none; }
+    }
+    .o_field_widget .o_external_button { width: auto !important; flex: 0 0 auto; }
     .o_field_radio[name="source_type"] > div { flex-direction: row !important; }
     .o_field_radio .o_radio_item { margin: 0; }
     .o_field_x2many .o_list_renderer { margin: 0; --ListRenderer-margin-x: 0px; }
