@@ -127,6 +127,9 @@
 .pbcl-hard-n { font-size: 12px; color: var(--pbss-muted, #64748B); white-space: nowrap; b { color: var(--pbss-ink, #1B1733); } }
 
 // ------------------------------------------------------------ skills
+// Inside the Learning hub the lens box has a fixed height: the lens itself is
+// the scroll area, as on Certificates (.pbcl--embedded).
+.pbsk.pbss--embedded { height: 100%; min-height: 0; overflow-y: auto; }
 .pbcl-views { margin-top: -4px; }
 .pbsk-people { display: flex; flex-direction: column; gap: 10px; }
 .pbsk-person {

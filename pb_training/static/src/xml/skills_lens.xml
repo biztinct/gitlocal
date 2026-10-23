@@ -7,7 +7,7 @@
        phone. `=` rules (R35); text nodes on one line (LN13).
        ==================================================================== -->
   <t t-name="pb_training.PbSkillsLens">
-    <div class="pbim pbss pbss-vars pbcl" t-att-class="{ 'pbss--embedded': props.embedded }">
+    <div class="pbim pbss pbss-vars pbcl pbsk" t-att-class="{ 'pbss--embedded': props.embedded }">
       <div class="pbss-wrap">
 
         <div t-if="!state.loaded" class="pbss-hero pbss-skel" aria-busy="true"><div class="pbss-skel-line"/></div>
