@@ -13,13 +13,18 @@ from ..services.connection_crypto import encrypt, decrypt
 
 
 PROVIDERS = [
-    ('documenso', 'Offer signing'), ('cv', 'CV extraction'),
+    ('docusign', 'DocuSign offer signing'), ('documenso', 'Documenso (existing envelopes)'), ('cv', 'CV extraction'),
     ('google', 'Google Calendar'), ('microsoft', 'Microsoft Outlook'),
     ('whatsapp', 'WhatsApp reminders'), ('email', 'Recruitment email'),
 ]
 
 # Labels and prerequisites are shared by the setup UI and validation.
 SPECS = {
+    'docusign': dict(description='Send offers through DocuSign and automatically file the signed PDF and completion certificate.',
+        help='Use a DocuSign account with eSignature API access. Start in demo. Register an integration key and RSA key, grant signature/impersonation consent for the sender, and copy the account Connect HMAC key. No signing server is required. After preparing a draft, sign in to that DocuSign sender account to place signature fields; send from Payobook.',
+        fields=[('environment', 'Environment', False), ('client_id', 'Integration key (client ID)', False),
+                ('user_id', 'Sender user ID (GUID)', False), ('account_id', 'API account ID (GUID)', False),
+                ('private_key', 'RSA private key (PEM)', True), ('hmac_key', 'Connect HMAC key', True)]),
     'documenso': dict(description='Send offers for signature and file the completed copy automatically.',
         help='Run Documenso on a separate HTTPS service. Create a team API key and a webhook secret. Prepare an offer draft before sending it.',
         fields=[('url', 'Service URL', False), ('api_key', 'Team API key', True), ('webhook_secret', 'Webhook secret', True)]),
@@ -96,6 +101,8 @@ class HiringConnection(models.Model):
         for key, label, secret in SPECS[self.provider]['fields']:
             if not (self._secret(key) if secret else cfg.get(key)):
                 raise UserError(_('Complete %s before checking.', label))
+        if self.provider == 'docusign':
+            return self._check_docusign()
         if self.provider == 'documenso':
             data = self._http('GET', '/api/v2/envelope', params={'page': 1, 'perPage': 1}).json()
             if not isinstance(data, dict) or not isinstance(data.get('data'), list):
@@ -153,6 +160,8 @@ class HiringConnectionsFacade(models.AbstractModel):
         cards = []
         for key, title in PROVIDERS:
             row = Conn._for_company(key, self.env.company)
+            if key == 'documenso' and not row:
+                continue
             if row:
                 cards.append(row._card())
             else:
@@ -176,7 +185,7 @@ class HiringConnectionsFacade(models.AbstractModel):
             if key not in values:
                 continue
             value = str(values[key] or '').strip()
-            if len(value) > 4096:
+            if len(value) > (8192 if key == 'private_key' else 4096):
                 raise ValidationError(_('The value for %s is too long.', label))
             if secret:
                 if value:

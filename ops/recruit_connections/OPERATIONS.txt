@@ -5,26 +5,27 @@ The code deploys disabled connections. A saved configuration is not a passed
 check. Configure, Check, then Enable. Run controlled provider tests before use.
 
 Hosting decision still required
-Recommended starting point: a separate 8 GB RAM / 4 vCPU host, one CV at a time.
-Allow 2 GB for Documenso and budget 4–6 GB for CV conversion, then measure peak
-use on representative CVs. 16 GB gives more headroom for OCR/concurrency.
-If sharing the current Odoo host, recommend 16 GB overall. This is capacity
-planning, not a measured production guarantee. No new host has been purchased.
-Documenso vendor requirements: https://docs.documenso.com/docs/self-hosting/getting-started/requirements
+CV parser only: a separate 8 GB RAM / 4 vCPU host, one CV at a time, is the
+recommended starting point. 4 GB is for a limited pilot; 16 GB gives headroom
+for larger scans or concurrency. The measured small synthetic Mac run peaked
+at 2,095,153,152 bytes, not a Linux production guarantee. Test representative
+CVs on the chosen host before acceptance. No host purchase/resize is authorized.
+DocuSign hosts signing; there is no Documenso service to provision. The existing
+2 GB Odoo server should not also run Docling. A combined Odoo/parser host needs
+separate load measurement and headroom for its four active databases.
 
 1. Signing
-Deploy Documenso using its official self-host guide and supported envelope API.
-Provide HTTPS hostname, PostgreSQL, verified SMTP and a signing .p12 certificate.
-Create the team API key and a random webhook secret. Enter these in the guide.
-Register the displayed callback and X-Documenso-Secret value with Documenso.
-The API check reads the envelope list. It does not prove SMTP or signature
-certificate operation. Use a synthetic offer and controlled test recipients
-for the first signature and signed-PDF archive check.
-Offer flow: country setup > agreed offer > Prepare signing draft > open
-Documenso > place signature fields and review > tick reviewed > Send.
-Cancel before editing pay lines; completed offers require a new revision.
-Poller verifies provider state and signer identities before filing once.
-An unsent draft can be cancelled/deleted; the audit history retains its ID.
+DocuSign is the selected provider for all new signing drafts. Follow
+DOCUSIGN.txt for API entitlement, sender consent, RSA key and Connect HMAC setup.
+The connection check reads the account and envelope list, without sending.
+Offer flow: approved request/offer > Prepare signing draft > Open signing
+provider > sign in as the configured sender > find the offer reference >
+place required signature fields and review > return to Payobook > tick reviewed
+> Send signature invitation. Signed PDF includes the completion certificate.
+Cancel before editing pay lines; signed offers need a new revision. Draft
+cancellation moves it to DocuSign's recycle bin; sent envelopes are voided.
+Existing Documenso envelopes retain their provider and history for verification
+and cancellation only; no new Documenso host is required or activated.
 
 2. CV extraction
 Build services/recruit_cv on the separate service host. Follow its OPERATIONS.

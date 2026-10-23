@@ -1,4 +1,4 @@
-"""Documenso envelope API. Completion is verified, then filed exactly once."""
+"""Shared signing workflow; legacy Documenso envelopes remain verifiable."""
 import hashlib
 import json
 from urllib.parse import quote
@@ -11,12 +11,12 @@ class OfferSigning(models.Model):
     _inherit = 'pb.hiring.offer'
 
     pb_sign_connection_id = fields.Many2one('pb.hiring.connection', readonly=True, copy=False)
-    pb_envelope_id = fields.Char(string='Documenso envelope', readonly=True, copy=False, index=True)
-    pb_sign_status = fields.Selection([('draft', 'Draft in Documenso'), ('pending', 'Awaiting signatures'),
+    pb_envelope_id = fields.Char(string='Signing envelope', readonly=True, copy=False, index=True)
+    pb_sign_status = fields.Selection([('draft', 'Draft prepared'), ('pending', 'Awaiting signatures'),
         ('completed', 'Signed copy filed'), ('rejected', 'Declined'), ('cancelled', 'Cancelled')], string='Signing status', readonly=True, copy=False)
     pb_sign_hash = fields.Char(readonly=True, copy=False)
     pb_company_signer_id = fields.Many2one('res.users', string='Company counter-signatory', domain="[('share', '=', False)]")
-    pb_sign_reviewed = fields.Boolean(string='I reviewed the document, recipients and signature positions in Documenso', copy=False)
+    pb_sign_reviewed = fields.Boolean(string='I reviewed the provider document, recipients and signature positions', copy=False)
     pb_sign_checked_at = fields.Datetime(string='Last signing check', readonly=True, copy=False)
     pb_sign_note = fields.Char(string='Signing update', readonly=True, copy=False)
     pb_sign_attempt = fields.Integer(default=1, readonly=True, copy=False)
@@ -104,28 +104,38 @@ class OfferSigning(models.Model):
             raise UserError(_('Prepare an agreed offer before sending.'))
         self.pb_sign_connection_id._ready()
         if not self.pb_sign_reviewed:
-            raise UserError(_('Review the PDF, signers and signature positions in Documenso and tick the review box.'))
+            raise UserError(_('Review the PDF, signers and signature positions with the signing provider and tick the review box.'))
         raw = self.attachment_id.sudo().raw
         if not raw or hashlib.sha256(raw).hexdigest() != self.pb_sign_hash:
             raise UserError(_('The offer PDF changed after the signing draft was created. Reconcile the draft before sending.'))
         document = self._envelope()
         if document.get('externalId') != self._sign_reference():
             raise UserError(_('The envelope does not belong to this offer.'))
-        if document.get('status') != 'DRAFT':
+        if document.get('status', '').lower() != 'draft':
             self._sync_esign(document)
             return True
         expected = {r['email'].lower() for r in self._sign_recipients()}
         signers = [r for r in document.get('recipients', []) if r.get('role') == 'SIGNER']
         if {r['email'].lower() for r in signers} != expected or len(signers) != len(expected):
-            raise UserError(_('Documenso signers do not match the offer. Correct the draft before sending.'))
+            raise UserError(_('The provider signers do not match the offer. Correct the draft before sending.'))
         signature_ids = {f.get('recipientId') for f in document.get('fields', []) if f.get('type') in ('SIGNATURE','FREE_SIGNATURE')}
         if any(r['id'] not in signature_ids for r in signers):
-            raise UserError(_('Place a signature field for every signer in Documenso.'))
-        self.pb_sign_connection_id._http('POST', '/api/v2/envelope/distribute', json={'envelopeId': self.pb_envelope_id})
+            raise UserError(_('Place a required signature field for every signer with the signing provider.'))
+        self._distribute_esign()
         self.sudo().write({'pb_sign_status': 'pending', 'state': 'sent', 'sent_on': fields.Datetime.now(),
-                          'pb_sign_note': _('Signature invitation sent by Documenso.')})
-        self.message_post(body=_('Signature invitation sent through Documenso.'))
+                          'pb_sign_note': _('Signature invitation sent by the signing provider.')})
+        self.message_post(body=_('Signature invitation sent through the configured signing provider.'))
         return True
+
+    def _distribute_esign(self):
+        return self.pb_sign_connection_id._http('POST', '/api/v2/envelope/distribute', json={'envelopeId': self.pb_envelope_id})
+
+    def _signed_esign_pdf(self, document):
+        return self.pb_sign_connection_id._http('GET', '/api/v2/envelope/item/' + quote(document['envelopeItems'][0]['id'], safe='') + '/download', params={'version': 'signed'}).content
+
+    def _cancel_esign_provider(self):
+        endpoint = 'delete' if self.pb_sign_status == 'draft' else 'cancel'
+        return self.pb_sign_connection_id._http('POST', '/api/v2/envelope/' + endpoint, json={'envelopeId': self.pb_envelope_id})
 
     def action_sync_esign(self):
         self._sign_gate()
@@ -147,14 +157,14 @@ class OfferSigning(models.Model):
         if status == 'completed':
             expected = {r['email'].lower() for r in self._sign_recipients()}
             signers = [r for r in document.get('recipients', []) if r.get('role') == 'SIGNER']
-            if {r['email'].lower() for r in signers} != expected or any(r.get('signingStatus') != 'SIGNED' for r in signers):
+            if {r['email'].lower() for r in signers} != expected or len(signers) != len(expected) or any(r.get('signingStatus') != 'SIGNED' for r in signers):
                 raise UserError(_('The completed envelope does not contain all required signatures.'))
             items = document.get('envelopeItems', [])
             if len(items) != 1:
                 raise UserError(_('This offer expects one signed PDF. Review the envelope documents.'))
-            content = self.pb_sign_connection_id._http('GET', '/api/v2/envelope/item/' + quote(items[0]['id'], safe='') + '/download', params={'version': 'signed'}).content
+            content = self._signed_esign_pdf(document)
             if not content.startswith(b'%PDF'):
-                raise UserError(_('Documenso did not return a signed PDF.'))
+                raise UserError(_('The signing provider did not return a signed PDF.'))
             if self.state == 'hr_ok':
                 self.sudo().write({'state': 'sent'})
             self.sudo().action_record_signed(filename='signed-offer.pdf', content=content, mimetype='application/pdf')
@@ -172,8 +182,7 @@ class OfferSigning(models.Model):
         self._sync_esign(document)
         if self.pb_sign_status not in ('draft', 'pending'):
             raise UserError(_('Only a draft or pending signature request can be cancelled here.'))
-        endpoint = 'delete' if self.pb_sign_status == 'draft' else 'cancel'
-        self.pb_sign_connection_id._http('POST', '/api/v2/envelope/' + endpoint, json={'envelopeId': self.pb_envelope_id})
+        self._cancel_esign_provider()
         self.message_post(body=_('Signing envelope %s cancelled; its reference is retained in this history.', self.pb_envelope_id))
         self.sudo().write({'pb_sign_status': 'cancelled', 'pb_sign_note': _('Signature request cancelled.')})
         return True

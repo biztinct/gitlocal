@@ -4,6 +4,7 @@ Original adapter: I Am Dream Catcher Ltd. No healthcare models or credentials
 are copied. Delivery evidence comes from signed, account-scoped webhooks.
 """
 import re
+from datetime import timedelta
 
 import requests
 
@@ -123,11 +124,17 @@ class ConnectionJobs(models.AbstractModel):
             ('pb_envelope_id','!=',False), ('pb_sign_status','in', ['draft','pending']),
             ('pb_sign_connection_id.enabled','=',True)], order='pb_sign_checked_at asc, id', limit=10)
         for offer in offers:
+            if (offer.pb_sign_connection_id.provider == 'docusign' and
+                    not offer.pb_sign_refresh_requested and offer.pb_sign_checked_at and
+                    offer.pb_sign_checked_at > fields.Datetime.now() - timedelta(minutes=15)):
+                continue
             try:
                 with self.env.cr.savepoint():
                     offer._sync_esign(offer._envelope())
+                    offer.write({'pb_sign_refresh_requested': False})
             except Exception:
-                offer.write({'pb_sign_checked_at': fields.Datetime.now(), 'pb_sign_note': _('Status check failed. Use Check signing status to retry.')})
+                offer.write({'pb_sign_checked_at': fields.Datetime.now(), 'pb_sign_refresh_requested': False,
+                             'pb_sign_note': _('Status check failed. Use Check signing status to retry.')})
         deliveries = self.env['pb.hiring.message.delivery'].sudo().search([('state','=','queued')], limit=20)
         for delivery in deliveries:
             with Registry(self.env.cr.dbname).cursor() as cr:

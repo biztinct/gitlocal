@@ -4,12 +4,13 @@ import json
 
 from odoo import http
 from odoo.http import request
+from ..services.docusign import valid_hmac
 
 
 class HiringWebhooks(http.Controller):
     @http.route('/hiring/connect/<provider>/<key>', type='http', auth='public', methods=['GET','POST'], csrf=False, save_session=False)
     def webhook(self, provider, key, **params):
-        if provider not in ('documenso', 'whatsapp'):
+        if provider not in ('docusign', 'documenso', 'whatsapp'):
             return request.make_response('', status=404)
         conn = request.env['pb.hiring.connection'].sudo().search([
             ('provider', '=', provider), ('webhook_key', '=', key), ('enabled', '=', True)], limit=1)
@@ -26,6 +27,9 @@ class HiringWebhooks(http.Controller):
         if provider == 'documenso':
             expected = conn._secret('webhook_secret')
             valid = expected and hmac.compare_digest(expected, request.httprequest.headers.get('X-Documenso-Secret', ''))
+        elif provider == 'docusign':
+            valid = valid_hmac(conn._secret('hmac_key'), raw,
+                [request.httprequest.headers.get('X-Docusign-Signature-%s' % i, '') for i in range(1, 6)])
         else:
             secret = conn._secret('app_secret')
             expected = 'sha256=' + hmac.new(secret.encode(), raw, hashlib.sha256).hexdigest() if secret else ''
@@ -46,6 +50,8 @@ class HiringWebhooks(http.Controller):
             # Acknowledge quickly; the scheduled job verifies over the API.
             for offer in offers:
                 offer.write({'pb_sign_note': 'Provider update received; verification queued.'})
+        elif provider == 'docusign':
+            conn._ds_receive(data)
         else:
             conn._receive_whatsapp_status(data)
         return request.make_response('', status=200)
