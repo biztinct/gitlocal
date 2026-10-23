@@ -851,8 +851,10 @@ class PbHiringInterview(models.Model):
 
         # RECRUIT P5: a Google entry is MOVED, not replaced, so its Meet link
         # survives (the new row adopts the entry and the link).
-        google_entry = bool(self.event_id and 'google_id' in self.event_id._fields
-                            and self.event_id.sudo().google_id)
+        google_entry = bool(self.event_id and (
+            self.event_id.sudo().google_id or
+            ('microsoft_id' in self.event_id._fields and self.event_id.sudo().microsoft_id) or
+            self.env.context.get('pb_hiring_calendar_inbound')))
         new_where = values.get('location') if values.get('location') is not None \
             else self.location
         fresh = self.sudo().create({

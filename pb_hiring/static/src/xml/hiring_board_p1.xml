@@ -298,6 +298,11 @@
           </div>
 
           <!-- RECRUIT P4: who sees this person, or what is not shared with the reader -->
+          <div t-if="cand.can_recruit" class="d-flex flex-wrap gap-2 p-3">
+            <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.candidateConnection('action_extract_cv')">Extract CV</button>
+            <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.candidateConnection('action_booking_invitation')">Find panel availability</button>
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="candidateConnectionDetails">CV review and reminders</button>
+          </div>
           <t t-call="pb_hiring.P4DrawerShare"/>
           <t t-call="pb_hiring.P4DrawerLocks"/>
 

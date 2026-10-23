@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The cover's own route: one rung, the recruiter's manager.
+"""The cover's own route: one rung, the designated TA Lead or HR fallback.
 
 ONE RUNG AND NOT TWO, deliberately. Handing your candidates to a colleague for
 a fortnight is a decision about workload, not about money or head count — and
@@ -34,7 +34,7 @@ register_chain(
 
 
 def cover_route():
-    return route(manager_step(_("The recruiter's manager")))
+    return route(manager_step(_("TA Lead / Head of HR fallback")))
 
 
 class PbHiringCoverApproval(models.Model):
@@ -117,9 +117,8 @@ class PbHiringCoverApproval(models.Model):
             company, COVER_PROCESS_KEY, 'Recruiter cover', cover_route(),
             binding_note="Who agrees that a colleague picks up a recruiter's "
                          "roles while they are away. By default the "
-                         "recruiter's own manager — from the hiring rule for "
-                         "their country if there is one, and from the org "
-                         "chart if there is not.",
+                         "designated TA Lead, with the dated Head of HR "
+                         "fallback configured in the country hiring rule.",
             model_name='pb.hiring.cover',
             role_keys=(),
             reason='Set up when recruiter cover was switched on')

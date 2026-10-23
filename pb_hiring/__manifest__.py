@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.11.0',
+    'version': '19.0.2.12.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -217,6 +217,8 @@ WHAT THIS MODULE IS
         'phone_validation',         # RECRUIT P2: the phone checked against the country
         'hr_recruitment_skills',    # RECRUIT P4: the Resume bank searches by skill
         'google_calendar',          # RECRUIT P5 (RC-D3): Google Calendar + Meet for interviews
+        'microsoft_calendar',
+        'pb_hr_payroll_formula',
     ],
     'data': [
         'security/pb_hiring_security.xml',
@@ -262,10 +264,15 @@ WHAT THIS MODULE IS
         'data/recruit_p7.xml',
         'data/recruit_p8.xml',
         'data/pb_sidebar.xml',      # NAV P2: OPERATE › Hiring
+        'security/connections_security.xml',
+        'views/connections_views.xml',
+        'views/booking_page.xml',
+        'data/connections_cron.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_hiring/static/src/scss/hiring.scss',
+            'pb_hiring/static/src/scss/hiring_connections.scss',
             # the leaf component first, then the rows that name its action
             'pb_hiring/static/src/scss/hiring_numbers.scss',
             'pb_hiring/static/src/scss/hiring_board_p1.scss',
@@ -290,6 +297,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_hub.js',
             'pb_hiring/static/src/js/hiring_palette.js',
+            'pb_hiring/static/src/js/hiring_connections.js',
             'pb_hiring/static/src/js/home_no_pulse.js',
             'pb_hiring/static/src/xml/hiring_board.xml',
             'pb_hiring/static/src/xml/hiring_board_p1.xml',
@@ -304,8 +312,10 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_p9.xml',
             'pb_hiring/static/src/xml/hiring_numbers.xml',
             'pb_hiring/static/src/xml/hiring_hub.xml',
+            'pb_hiring/static/src/xml/hiring_connections.xml',
         ],
         'web.assets_frontend': [
+            'pb_hiring/static/src/js/interview_booking.js',
             'pb_hiring/static/src/scss/portal_hiring.scss',
             'pb_hiring/static/src/js/apply_page.js',
             'pb_hiring/static/src/scss/request_page.scss',

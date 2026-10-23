@@ -174,3 +174,13 @@ access_pb_hiring_auto_run_user,Automation run recruiter,model_pb_hiring_automati
 access_pb_hiring_auto_run_manager,Automation run talent lead,model_pb_hiring_automation_run,pb_hiring.group_hiring_manager,1,0,0,0
 access_pb_hiring_auto_run_admin,Automation run head of hiring,model_pb_hiring_automation_run,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_auto_run_system,Automation run system,model_pb_hiring_automation_run,base.group_system,1,1,1,1
+connection_read,Hiring connection read,model_pb_hiring_connection,pb_hiring.group_hiring_user,1,0,0,0
+connection_admin,Hiring connection admin,model_pb_hiring_connection,base.group_system,1,1,1,1
+visibility_read,Stage policy read,model_pb_hiring_visibility_policy,pb_hiring.group_hiring_user,1,0,0,0
+visibility_lead,Stage policy lead,model_pb_hiring_visibility_policy,pb_hiring.group_hiring_manager,1,1,1,1
+cost_read,Country offer setup read,model_pb_hiring_cost_profile,pb_hiring.group_hiring_user,1,0,0,0
+cost_admin,Country offer setup admin,model_pb_hiring_cost_profile,base.group_system,1,1,1,1
+booking_user,Interview booking user,model_pb_hiring_booking,pb_hiring.group_hiring_user,1,1,1,0
+booking_slot_read,Interview booking slots read,model_pb_hiring_booking_slot,pb_hiring.group_hiring_user,1,0,0,0
+cv_review_user,CV review user,model_pb_hiring_cv_review,pb_hiring.group_hiring_user,1,1,1,1
+delivery_read,Reminder delivery read,model_pb_hiring_message_delivery,pb_hiring.group_hiring_user,1,0,0,0

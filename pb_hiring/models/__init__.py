@@ -54,3 +54,6 @@ from . import hooks_p8       # RECRUIT P8 — the event hooks, G-44, the share e
 from . import sidebar_door   # 2026-10-03 — the Lifecycle left-menu door for everybody Hiring admits
 from . import registers_p9   # NAV P3a — Applicants and Offers across every role
 from . import review_fixes
+from . import connections, booking, cv_extraction, esign, offer_cost
+from . import visibility_policy, cover_routing, whatsapp
+from . import calendar_sync

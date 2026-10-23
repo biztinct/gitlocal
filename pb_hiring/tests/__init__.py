@@ -15,3 +15,4 @@ from . import test_channels_p7
 from . import test_comms_p8
 from . import test_registers_p9
 from . import test_client_review
+from . import test_connections

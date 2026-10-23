@@ -795,15 +795,21 @@ class PbHiringRequisition(models.Model):
                          self.recruiter_id.name or 'nobody')
             return 0
         sent = 0
+        rule = self.env['pb.hiring.country.rule'].sudo().rule_for(
+            self.company_id, self.country_id or self.company_id.country_id)
         pairs = (
             ('pb_hiring.mail_template_requisition_recruiter',
              self.recruiter_id),
             ('pb_hiring.mail_template_requisition_recruiter_manager',
              self.recruiter_manager_id),
+            ('pb_hiring.mail_template_requisition_recruiter_manager',
+             rule.ta_lead_id if rule else self.env['res.users']),
         )
+        notified = set()
         for xmlid, user in pairs:
-            if not user or not user.email:
+            if not user or not user.email or user.id in notified:
                 continue
+            notified.add(user.id)
             template = self.env.ref(xmlid, raise_if_not_found=False)
             if not template:
                 continue

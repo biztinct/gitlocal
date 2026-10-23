@@ -450,9 +450,8 @@
                     <div class="alert alert-warning" role="status"
                          invisible="approver_source != 'none'">
                         <strong>Nobody can be asked to agree this yet.</strong>
-                        Add a hiring rule naming the recruiter's manager, or
-                        ask the HR team to set the manager on the employee
-                        record.
+                        Set the designated TA Lead and Head of HR fallback
+                        in the country hiring rule.
                     </div>
                     <group>
                         <group string="Who">
@@ -515,7 +514,7 @@
             <p class="o_view_nocontent_smiley_face">Nobody is covering for
                anybody</p>
             <p>When a recruiter is away, one named colleague can pick up their
-               roles for a set number of days. Their own manager agrees it,
+               roles for a set number of days. The designated TA Lead or Head of HR fallback agrees it,
                nothing about anybody's permissions changes, and it ends by
                itself on the day it says.</p>
         </field>

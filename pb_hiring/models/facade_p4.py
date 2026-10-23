@@ -289,9 +289,8 @@ class PbHiringP4(models.AbstractModel):
                     c['shared_tone'] = 'quiet'
                 c['shared_names'] = who
             return cards
-        mine = {}
-        for share in Share.search([('applicant_id', 'in', ids), ('user_id', '=', self.env.uid)]):
-            mine[share.applicant_id.id] = share._part_set()
+        mine = {app.id: Share.parts_for(app, self.env.user) - {'card'}
+                for app in self.env['hr.applicant'].sudo().browse(ids)}
         return [self._mask_card(c, mine.get(c['id'], set())) for c in cards]
 
     @api.model

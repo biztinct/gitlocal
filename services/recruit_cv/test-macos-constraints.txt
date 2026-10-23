@@ -1,0 +1,4 @@
+# Intel Mac test runtime: PyTorch stopped shipping new x86_64 macOS wheels
+# after 2.2.2. Production uses the Linux CPU container instead.
+numpy<2
+transformers>=4.42,<4.50
