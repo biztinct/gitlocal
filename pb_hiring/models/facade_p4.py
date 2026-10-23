@@ -100,16 +100,7 @@ class PbHiringP4(models.AbstractModel):
     #  Files: which part a file is, and the link a reader gets
     # =====================================================================
     @api.model
-    def _doc_rows(self, app, parts=None, tokenised=False):
-        """Every file on the candidate, each with its part. With `parts`,
-        only the files of those parts; with `tokenised`, each URL carries the
-        file's own access token (a reader outside the hiring team cannot open
-        `/web/content/<id>` on their own: they have no read on the candidate).
-        """
-        app = app.sudo()
-        atts = self.env['ir.attachment'].sudo().search(
-            [('res_model', '=', 'hr.applicant'), ('res_id', '=', app.id)],
-            order='id desc', limit=60)
+    def _classify_documents(self, app, atts):
         kinds = {}
         form = app.pb_form_id.sudo().with_context(active_test=False)
         for fld in form.field_ids:
@@ -125,6 +116,8 @@ class PbHiringP4(models.AbstractModel):
             key = att.pb_form_key or ''
             if key and key in kinds:
                 kind = kinds[key]
+            elif key == 'cv':
+                kind = 'cv'
             elif key:
                 kind = 'assignment' if _ASSIGN_NAME.search(key) else 'attachments'
             elif _CV_NAME.search(att.name or ''):
@@ -136,15 +129,29 @@ class PbHiringP4(models.AbstractModel):
             else:
                 kind = 'attachments'
             rows.append([att, kind])
-        # A CV with no tell-tale name: the first PDF / Word file, when nothing
+        # A CV with no tell-tale name: the newest PDF / Word file, when nothing
         # else on the record is the CV.
         if not any(k == 'cv' for _a, k in rows):
-            for row in reversed(rows):
+            for row in rows:
                 if row[1] == 'attachments' and (row[0].mimetype or '') in (
                         'application/pdf', 'application/msword',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'):
                     row[1] = 'cv'
                     break
+        return rows
+
+    @api.model
+    def _doc_rows(self, app, parts=None, tokenised=False):
+        """Every file on the candidate, each with its part. With `parts`,
+        only the files of those parts; with `tokenised`, each URL carries the
+        file's own access token (a reader outside the hiring team cannot open
+        `/web/content/<id>` on their own: they have no read on the candidate).
+        """
+        app = app.sudo()
+        atts = self.env['ir.attachment'].sudo().search(
+            [('res_model', '=', 'hr.applicant'), ('res_id', '=', app.id)],
+            order='id desc', limit=60)
+        rows = self._classify_documents(app, atts)
         out = []
         for att, kind in rows:
             if parts is not None and kind not in parts:
@@ -899,20 +906,35 @@ class PbHiringP4(models.AbstractModel):
         Applicant = self.env['hr.applicant'].sudo().with_context(active_test=False)
         fnames = ['partner_name', 'email_from', 'email_normalized', 'job_id', 'pb_country_id',
                   'pb_requisition_id', 'categ_ids', 'source_id', 'pb_screen', 'create_date',
-                  'pb_retention_until', 'talent_pool_ids', 'department_id', 'stage_id', 'active']
+                  'pb_retention_until', 'talent_pool_ids', 'department_id', 'stage_id', 'active',
+                  'pb_cv_revision', 'pb_cv_skill_ids', 'pb_cv_experience', 'pb_cv_education', 'pb_cv_employment']
+        if p.get('q'):
+            fnames.append('pb_cv_search_text')
         skills_on = self._skills_on()
         if skills_on:
             fnames.append('skill_ids')
         raw = Applicant.search_read(dom, fnames, order='create_date desc, id desc',
                                     limit=BANK_READ_CAP)
-        cv_text = {}
+        cv_text = {r['id']: r.get('pb_cv_search_text') or '' for r in raw}
+        # Search only the latest classified CV, even while the parser is off.
+        # Batch attachments; use the same custom-form/fallback classification
+        # as the candidate drawer, instead of relying on a filename convention.
         if p.get('q') and raw:
-            attachments = self.env['ir.attachment'].sudo().search_read([
-                ('res_model', '=', 'hr.applicant'), ('res_id', 'in', [r['id'] for r in raw]),
-                '|', ('pb_form_key', '=', 'cv'), '|', ('name', 'ilike', 'resume'),
-                ('name', 'ilike', 'cv')], ['res_id', 'index_content'])
-            for att in attachments:
-                cv_text[att['res_id']] = cv_text.get(att['res_id'], '') + ' ' + (att['index_content'] or '')
+            app_ids = [r['id'] for r in raw if not r.get('pb_cv_search_text')]
+            by_app = {}
+            attachments = self.env['ir.attachment'].sudo().search([
+                ('res_model', '=', 'hr.applicant'), ('res_id', 'in', app_ids)], order='id desc')
+            for attachment in attachments:
+                bucket = by_app.setdefault(attachment.res_id, [])
+                if len(bucket) < 60:
+                    bucket.append(attachment)
+            for app in Applicant.browse(app_ids):
+                classified = self._classify_documents(app, by_app.get(app.id, []))
+                cv = next((att for att, kind in classified if kind == 'cv'), None)
+                if cv is not None:
+                    cv_text[app.id] = cv.index_content or ''
+        for r in raw:
+            r['skill_ids'] = sorted(set((r.get('skill_ids') or []) + (r.get('pb_cv_skill_ids') or [])))
         # one row per person: the newest application wins
         people, order = {}, []
         for r in raw:
@@ -969,7 +991,9 @@ class PbHiringP4(models.AbstractModel):
                 hay = fold(' '.join([row['name'], row['email'], row['last_role'], row['team'],
                                      ' '.join(s['name'] for s in row['skills']),
                                      ' '.join(t['name'] for t in row['tags']),
-                                     cv_text.get(row['id'], '')]))
+                                     cv_text.get(row['id'], ''), r.get('pb_cv_experience') or '',
+                                     r.get('pb_cv_education') or '',
+                                     ' '.join(' '.join(str(job.get(k) or '') for k in ('employer','title','start','end')) for job in r.get('pb_cv_employment') or [])]))
                 if q not in hay:
                     continue
             built.append(row)

@@ -63,7 +63,9 @@ patch(PbHiringBoard.prototype, {
         if (!id) return;
         try {
             const result = await this.orm.call("hr.applicant", method, [[id]]);
-            if (result?.type) await this.action.doAction(result);
+            if (result?.type) await this.action.doAction(result, { onClose: async () => {
+                if (this.state.cand?.id === id) this.state.cand = await this.orm.call("pb.hiring", "get_candidate", [id]);
+            } });
         } catch (e) { this.notif.add(e.data?.message || "This step could not be completed.", { type: "danger" }); }
     },
     candidateConnectionDetails() {

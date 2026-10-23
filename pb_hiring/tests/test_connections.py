@@ -242,3 +242,99 @@ class TestPanelBooking(InterviewCase):
         self.assertEqual(interview.rescheduled_to_id.event_id,event)
         event.write({'active':False})
         self.assertEqual(interview.rescheduled_to_id.state,'cancelled')
+
+
+@tagged('post_install', '-at_install', 'recruit_connect')
+class TestCVProfile(OfferCase):
+    _connection = TestConnections._connection
+    def _parsed(self, text='Unique agronomist history', employment=None, skills=None):
+        conn = self._connection('cv')
+        attachment = self.env['ir.attachment'].create({'name': 'cv.pdf', 'raw': b'%PDF-synthetic',
+            'mimetype': 'application/pdf', 'res_model': 'hr.applicant', 'res_id': self.applicant.id, 'pb_form_key': 'cv'})
+        result = {'contract': 'payobook-cv-v1', 'text': text, 'skill_ids': skills or [],
+                  'experience': 'Agronomist at Acme', 'education': 'BSc', 'employment': employment or []}
+        with patch.object(type(conn), '_http', return_value=Mock(json=lambda: result)):
+            action = self.applicant.action_extract_cv()
+        return attachment, self.env['pb.hiring.cv.review'].browse(action['res_id'])
+
+    def test_review_is_invalid_after_replacement_or_new_extraction(self):
+        att, wizard = self._parsed()
+        att.write({'raw': b'%PDF-replacement'})
+        with self.assertRaises(UserError): wizard.action_apply()
+        att, wizard = self._parsed()
+        newer = self.applicant.action_review_cv()
+        self.env['pb.hiring.cv.review'].browse(newer['res_id']).action_apply()
+        with self.assertRaises(UserError): wizard.action_apply()
+
+    def test_deleting_cv_clears_extraction_and_prevents_apply(self):
+        att, wizard = self._parsed()
+        att.unlink()
+        self.assertFalse(self.applicant.pb_cv_result)
+        self.assertFalse(self.applicant.pb_cv_search_text)
+        with self.assertRaises(UserError): wizard.action_apply()
+
+    def test_reviewed_skills_are_searchable_without_inventing_proficiency(self):
+        skill_type = self.env['hr.skill.type'].create({'name': 'CV test type'})
+        skill = self.env['hr.skill'].create({'name': 'Agronomy CV test', 'skill_type_id': skill_type.id})
+        self.env['hr.skill.level'].create({'name': 'Beginner', 'skill_type_id': skill_type.id, 'level_progress': 10})
+        att, wizard = self._parsed(skills=skill.ids, employment=[{'employer': 'Acme', 'title': 'Agronomist', 'start': '2020', 'end': '2023-12', 'source': 'Acme 2020-2023'}])
+        wizard.action_apply()
+        self.assertIn(skill, self.applicant.pb_cv_skill_ids)
+        self.assertNotIn(skill, self.applicant.skill_ids)
+        self.assertEqual(self.applicant.pb_cv_employment[0]['start'], '2020')
+        bank = self.env['pb.hiring'].search_bank({'q': 'Agronomy CV test', 'include_all': True, 'skill_ids': skill.ids})
+        self.assertIn(self.applicant.id, [r['id'] for r in bank['rows']])
+        bank = self.env['pb.hiring'].search_bank({'q': 'Unique agronomist history', 'include_all': True})
+        self.assertIn(self.applicant.id, [r['id'] for r in bank['rows']])
+
+    def test_bad_dates_cannot_be_applied_and_source_is_escaped(self):
+        att, wizard = self._parsed(employment=[{'employer': '<script>bad()</script>', 'title': 'Engineer', 'start': '2025-12', 'end': '2021-01'}])
+        with self.assertRaises(ValidationError): wizard.action_apply()
+        wizard.employment_ids.end = '2026-01'
+        wizard.action_apply()
+        self.assertNotIn('<script>', str(self.applicant.pb_cv_employment_html))
+        self.assertIn('&lt;script&gt;', str(self.applicant.pb_cv_employment_html))
+
+    def test_paused_connection_invalidates_current_review(self):
+        att, wizard = self._parsed()
+        self._connection('cv').enabled = False
+        att.raw = b'%PDF-new-disabled'
+        self.assertEqual(self.applicant.pb_cv_state, 'none')
+        self.assertFalse(self.applicant.pb_cv_result)
+        with self.assertRaises(UserError): wizard.action_apply()
+
+    def test_anonymisation_clears_extraction_and_review_wizards(self):
+        att, wizard = self._parsed(employment=[{'employer': 'Private employer', 'title': 'Engineer'}])
+        wizard.action_apply()
+        self.applicant._pb_anonymise()
+        for field in ('pb_cv_result', 'pb_cv_employment', 'pb_cv_search_text', 'pb_cv_experience', 'pb_cv_education', 'pb_cv_skill_ids'):
+            self.assertFalse(self.applicant[field], field)
+        self.assertFalse(wizard.exists())
+        with self.assertRaises(UserError): self.applicant._extract_cv()
+
+    def test_invalid_service_response_does_not_apply(self):
+        att, wizard = self._parsed()
+        conn = self._connection('cv')
+        for result in [[], {'contract': 'payobook-cv-v1', 'text': 12},
+                       {'contract': 'payobook-cv-v1', 'text': 'hello', 'employment': ['not a row']}]:
+            with patch.object(type(conn), '_http', return_value=Mock(json=lambda: result)):
+                with self.assertRaises(UserError): self.applicant._extract_cv()
+
+    def test_custom_cv_key_and_latest_document_search(self):
+        form = self.env['pb.hiring.form'].create({'name': 'CV custom form', 'field_ids': [(0, 0, {
+            'kind': 'cv', 'key': 'q_professional_history', 'label': 'Professional history'})]})
+        self.applicant.pb_form_id = form
+        conn = self._connection('cv')
+        first = self.env['ir.attachment'].create({'name': 'document.pdf', 'raw': b'%PDF-first',
+            'mimetype': 'application/pdf', 'res_model': 'hr.applicant', 'res_id': self.applicant.id,
+            'pb_form_key': 'q_professional_history', 'index_content': 'Obsolete unique employer'})
+        self.assertEqual(self.applicant.pb_cv_state, 'queued')
+        second = self.env['ir.attachment'].create({'name': 'document-new.pdf', 'raw': b'%PDF-second',
+            'mimetype': 'application/pdf', 'res_model': 'hr.applicant', 'res_id': self.applicant.id,
+            'pb_form_key': 'q_professional_history', 'index_content': 'Current unique employer'})
+        first.write({'index_content': 'Obsolete unique employer'})
+        second.write({'index_content': 'Current unique employer'})
+        self.assertEqual(self.applicant._current_cv(), second)
+        for term, expected in [('Obsolete unique employer', False), ('Current unique employer', True)]:
+            result = self.env['pb.hiring'].search_bank({'q': term, 'include_all': True})
+            self.assertEqual(self.applicant.id in [r['id'] for r in result['rows']], expected)

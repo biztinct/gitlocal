@@ -303,6 +303,14 @@
             <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.candidateConnection('action_booking_invitation')">Find panel availability</button>
             <button class="btn btn-sm btn-outline-secondary" t-on-click="candidateConnectionDetails">CV review and reminders</button>
           </div>
+          <section t-if="cand.can_recruit and cand.cv_profile" class="px-3 pb-3" aria-label="CV profile">
+            <h6>CV profile</h6><p class="text-muted" t-esc="cand.cv_profile.note or 'Extract a CV to find skills, education and employment history.'"/>
+            <button t-if="cand.cv_profile.state === 'review'" class="btn btn-sm btn-primary mb-2" t-on-click="() => this.candidateConnection('action_review_cv')">Review extracted CV</button>
+            <p t-if="cand.cv_profile.skills.length"><strong>Skills mentioned in CV: </strong><t t-esc="cand.cv_profile.skills.join(', ')"/></p>
+            <t t-foreach="cand.cv_profile.employment" t-as="job" t-key="job_index"><p><strong t-esc="job.title or 'Role not supplied'"/> · <span t-esc="job.employer or 'Employer not supplied'"/><br/><span t-esc="job.start or '?'"/> – <span t-esc="job.current ? 'Present' : (job.end or '?')"/></p></t>
+            <details t-if="cand.cv_profile.experience"><summary>Employment evidence</summary><p style="white-space: pre-wrap" t-esc="cand.cv_profile.experience"/></details>
+            <details t-if="cand.cv_profile.education"><summary>Education</summary><p style="white-space: pre-wrap" t-esc="cand.cv_profile.education"/></details>
+          </section>
           <t t-call="pb_hiring.P4DrawerShare"/>
           <t t-call="pb_hiring.P4DrawerLocks"/>
 

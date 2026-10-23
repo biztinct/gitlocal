@@ -86,7 +86,7 @@ class HiringConnection(models.Model):
         headers['Authorization'] = 'Bearer ' + self._secret('api_key')
         try:
             response = requests.request(method, url + path, headers=headers,
-                timeout=(5, 45), allow_redirects=False, **kwargs)
+                timeout=kwargs.pop('timeout', (5, 45)), allow_redirects=False, **kwargs)
             if response.status_code >= 300:
                 raise UserError(_('The service refused the request (HTTP %s). Check the connection and account permissions.', response.status_code))
             if len(response.content) > 15 * 1024 * 1024:

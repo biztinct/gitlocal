@@ -7,6 +7,7 @@ import re
 import zipfile
 from contextlib import asynccontextmanager
 from threading import Lock
+from employment import employment_records
 
 from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 
@@ -81,13 +82,14 @@ def structure(text, skills, nlp):
         found = next((key for key, pattern in headings.items() if re.match(pattern, line, re.I)), None)
         if found:
             section = found
-        elif re.match(r'^(skills|languages|references|certifications|kỹ năng|keahlian)\s*:?', line, re.I):
+        elif re.match(r'^(skills|languages|references|certifications|kỹ năng|keahlian)\s*[:：]?$', line, re.I):
             section = None
         elif section and line:
             sections[section].append(line)
     return {'text': text[:200000], 'skill_ids': matched,
             'experience': '\n'.join(sections['experience'])[:20000],
             'education': '\n'.join(sections['education'])[:10000],
+            'employment': employment_records('\n'.join(sections['experience'])),
             'review_note': 'Review extracted sections and skill matches against the original CV. Missing sections are left blank.'}
 
 

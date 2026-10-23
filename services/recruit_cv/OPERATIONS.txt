@@ -1,35 +1,55 @@
-Payobook CV extraction service
+Payobook CV extraction service — 23 Oct 2026
 
-Build: docker build -t payobook-recruit-cv services/recruit_cv
-Run behind an HTTPS reverse proxy, on a separate service host. Supply a random
-RECRUIT_CV_KEY of at least 32 characters through the host's secret store. Mount
-a persistent model cache at /models owned by uid 10001. Do not expose port 8080
-directly to the Internet. Limit request bodies to 6 MB and rate-limit requests.
-Allow at least 4 GB RAM for initial evaluation; measure OCR peak use before
-accepting production load. One worker and one conversion at a time.
+Activation is intentionally deferred until the owner increases RAM or supplies
+an adequately sized separate host. Source is staged at
+/odoo/services/recruit_cv on Payobook19v2; no container or model service is
+started on its existing 2 GB server. DocuSign runs outside Payobook and adds
+no local signing service requirement.
 
-Initial model downloads need network access. Prewarm with synthetic PDF,
-scanned PDF and DOCX examples. Then restrict outbound access as appropriate.
-The service does not retain CVs, access logs or extracted content. It uses
-Docling locally and a spaCy phrase matcher with Payobook's configured skills.
-Models have their own upstream licences in addition to the library licences.
+For a separate parser host, start with 8 GB RAM / 4 vCPU and one conversion at
+a time. 4 GB is a limited pilot allowance, not production acceptance. For
+co-hosting with Odoo and four databases, provision 16 GB as an initial planning
+allowance, then measure combined load. These are estimates, not guarantees.
+The previous small Intel Mac test peaked at 2,095,153,152 bytes (~2 GB).
+Large scans, multilingual layouts and Linux runtime behaviour need validation.
 
-Enter the HTTPS URL and matching service key in Hiring connections > CV
-extraction. Check the connection, enable. New CV uploads queue extraction; use Extract CV for existing candidates.
-Recruiters review the suggestions before applying them. No automatic ranking.
-EN/VI/ID section headings are recognised; representative customer CV testing
-is required. Employment duration and employer/job-title splitting are not
-guessed when the source is ambiguous. The extracted evidence remains visible.
+After capacity is available:
+1. Build: docker build -t payobook-recruit-cv services/recruit_cv
+2. Supply a random RECRUIT_CV_KEY of at least 32 characters through the host's
+   secret store. Mount a persistent /models cache owned by uid 10001. Run one
+   worker. Bind port 8080 privately behind an HTTPS reverse proxy; do not expose
+   it directly to the Internet. Limit request bodies to 6 MB, rate-limit
+   requests, and allow at least 180 seconds for conversion responses.
+3. Prewarm models with synthetic PDF, DOCX and scanned images. Initial downloads
+   require network access. Restrict outbound traffic afterwards as appropriate.
+   Model licences are separate from library licences. Record resolved packages
+   and the image digest. Test peak memory on the chosen Linux host.
+4. In Hiring connections > CV extraction, enter HTTPS URL and the matching key,
+   Check, then Enable separately for each company that should use parsing.
+5. Test authorised representative CVs in English, Vietnamese and Indonesian.
+   Confirm search, skill facets, review, replacement and removal behaviour.
 
-The directly tested service packages are pinned in requirements.
-Record the resolved versions and image digest when deploying the service.
+The service stores no CVs or extracted content and makes no external AI calls.
+Limits: 5 MB, 30 pages; one conversion at a time. Payobook stores the extracted
+text and reviewed profile under its hiring access and retention rules.
 
-Local unit tests: python -m unittest discover -s services/recruit_cv -v.
-Synthetic OCR/PDF/DOCX tests: set RECRUIT_CV_INTEGRATION=1 and install reportlab, python-docx, Pillow and httpx.
-Intel Mac testing also needs test-macos-constraints.txt. Linux container tests
-and a measured peak-memory check on the chosen production host remain required.
+New/replaced CV attachments queue extraction. Existing candidates use Extract
+CV, then Review extracted CV. Skills use exact spaCy token phrases from the
+configured Payobook skill vocabulary. Reviewers can add/remove matched skills;
+CV mentions never assign an assessed proficiency level. Bank search includes
+CV text, reviewed skills, employers, roles and education. Previously reviewed
+history stays unless Replace is selected. A newer CV invalidates old reviews.
 
-23 Oct 2026 validation: six tests passed, including synthetic PDF, DOCX and
-scanned-image extraction. Intel Mac/Python 3.12 peak RSS was 2,095,153,152
-bytes (~2 GB) for this small synthetic run. This is not a Linux production
-capacity guarantee; larger/multicolumn/multilingual scans need acceptance tests.
+Structured employment recognises explicit employer/title labels, role-at-
+employer lines and dated ranges. English/Vietnamese/Indonesian headings,
+month names and current-job markers are supported. Unknown fields remain blank
+with source evidence visible for correction. YYYY and YYYY-MM retain source
+precision; no invented month, total duration, ranking or demographic inference.
+Unrecognised layouts remain full text for human review. Customer acceptance on
+representative CVs is still required; no universal extraction accuracy is claimed.
+Anonymisation clears CV text, structured history, CV skills and review wizards.
+
+Tests: python -m unittest discover -s services/recruit_cv -v
+Set RECRUIT_CV_INTEGRATION=1 and install reportlab, python-docx, Pillow and httpx
+for synthetic PDF/DOCX/scanned-image tests. Intel Mac testing also uses
+test-macos-constraints.txt. Test images are generated in memory only.

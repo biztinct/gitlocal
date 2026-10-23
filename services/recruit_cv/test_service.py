@@ -56,7 +56,7 @@ class SyntheticDocuments(unittest.TestCase):
         from docx import Document
         from PIL import Image, ImageDraw, ImageFont
         os.environ['RECRUIT_CV_KEY']='synthetic-service-test-key-at-least-32'
-        words=['Synthetic Candidate','Work experience','Acme Developer 2021 - 2025',
+        words=['Synthetic Candidate','Work experience','Developer at Acme 2021 - 2025',
                'Skills','Python SQL','Education','Bachelor of Science 2020']
         pdf=io.BytesIO(); page=canvas.Canvas(pdf)
         y=780
@@ -80,6 +80,10 @@ class SyntheticDocuments(unittest.TestCase):
                 self.assertIn(1,result['skill_ids'],filename)
                 self.assertIn('Acme',result['experience'],filename + ': ' + repr(result['text']))
                 self.assertIn('2020',result['education'],filename)
+                self.assertEqual(result['employment'][0]['employer'], 'Acme', filename)
+                self.assertEqual(result['employment'][0]['title'], 'Developer', filename)
+                self.assertEqual(result['employment'][0]['start'], '2021', filename)
+                self.assertEqual(result['employment'][0]['end'], '2025', filename)
                 print('Synthetic extraction passed:',filename,flush=True)
             invalid=client.post('/extract',headers=headers,files={'file':('bad.exe',b'invalid','application/octet-stream')})
             self.assertEqual(invalid.status_code,422)
