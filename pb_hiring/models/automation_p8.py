@@ -141,9 +141,9 @@ BUILTINS = [
      'pb_hiring.auto_check_todo', '1', '', ''),
     ('offer', 'When an offer is sent, email it to the candidate with the letter attached.',
      P_OFFER_MAIL, '1', 'offer', ''),
-    ('finalists', 'When an offer is signed and the role has nobody else to find, close the '
-                  'other finalists as Interview reject and send them “Not this time”.',
-     'pb_hiring.auto_close_finalists', '1', 'interview_reject', ''),
+    ('finalists', 'When every opening has a signed offer, keep remaining candidates without '
+                  'a live offer On hold as Future-fit. No rejection email is sent.',
+     'pb_hiring.auto_close_finalists', '1', '', ''),
     ('week_before', '%(days)s before somebody joins, ask the recruiter, the hiring manager and '
                     'HR whether it is still on.', 'pb_hiring.auto_week_before', '1', '', ''),
     ('joined', 'When somebody joins, tell the hiring manager and the people who get the new '
@@ -820,12 +820,13 @@ class PbHiringAutomations(models.AbstractModel):
         emails = Tpl.search([('company_id', '=', company.id), ('active', '=', True)])
         from .comms_i18n_p8 import EMAIL_KEYS
         order = {k: i for i, k in enumerate(EMAIL_KEYS)}
-        lead_days = number(self.env, P_LEAD_LATE_DAYS, 2)
+        lead_days = number(self.env, P_LEAD_LATE_DAYS, 0)
         week = number(self.env, P_WEEK_BEFORE_DAYS, 7)
         builtins = []
         for key, sentence, param, default, email_key, why in BUILTINS:
             sentence, why = _(sentence), (_(why) if why else '')
-            sentence = sentence % {'lead': _days_words(lead_days) + ' ' + _('late'),
+            sentence = sentence % {'lead': (_days_words(lead_days) + ' ' + _('late')) if lead_days
+                                   else _('the feedback deadline'),
                                    'days': _days_words(week).capitalize()} \
                 if '%(' in sentence else sentence
             builtins.append({

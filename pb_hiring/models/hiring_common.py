@@ -75,7 +75,7 @@ DEFAULTS = {
     'pb_hiring.week_before_days': '7',
     P_PHONE_AUTO_MAIL: '1',
     P_PHONE_MINUTES: '30',
-    P_LEAD_LATE_DAYS: '2',
+    P_LEAD_LATE_DAYS: '0',
     P_CHASE_EVERY_HOURS: '24',
     P_CHASE_STOP_DAYS: '14',
     P_LINE_MANAGERS_MOVE: '0',

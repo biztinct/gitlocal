@@ -906,6 +906,14 @@ class PbHiringP4(models.AbstractModel):
             fnames.append('skill_ids')
         raw = Applicant.search_read(dom, fnames, order='create_date desc, id desc',
                                     limit=BANK_READ_CAP)
+        cv_text = {}
+        if p.get('q') and raw:
+            attachments = self.env['ir.attachment'].sudo().search_read([
+                ('res_model', '=', 'hr.applicant'), ('res_id', 'in', [r['id'] for r in raw]),
+                '|', ('pb_form_key', '=', 'cv'), '|', ('name', 'ilike', 'resume'),
+                ('name', 'ilike', 'cv')], ['res_id', 'index_content'])
+            for att in attachments:
+                cv_text[att['res_id']] = cv_text.get(att['res_id'], '') + ' ' + (att['index_content'] or '')
         # one row per person: the newest application wins
         people, order = {}, []
         for r in raw:
@@ -961,7 +969,8 @@ class PbHiringP4(models.AbstractModel):
             if q:
                 hay = fold(' '.join([row['name'], row['email'], row['last_role'], row['team'],
                                      ' '.join(s['name'] for s in row['skills']),
-                                     ' '.join(t['name'] for t in row['tags'])]))
+                                     ' '.join(t['name'] for t in row['tags']),
+                                     cv_text.get(row['id'], '')]))
                 if q not in hay:
                     continue
             built.append(row)
@@ -1200,7 +1209,7 @@ class PbHiringP4(models.AbstractModel):
             'enabled': flag(self.env, P_RETENTION_ENABLED),
             'next_run': str(cron.sudo().nextcall or '') if cron else '',
             'fallback_months': self.env.company.pb_retention_months or 12,
-            'can_edit': bool(self._can_write()), 'can_run': bool(self._can_admin()),
+            'can_edit': bool(self._can_write()), 'can_run': bool(self._can_write()),
             'modes': [{'key': k, 'label': _(v)} for k, v in PURGE_MODES],
             'countries': self.env['res.country'].sudo().search_read([], ['name']),
         }
@@ -1258,9 +1267,8 @@ class PbHiringP4(models.AbstractModel):
         return {'before': before, 'note': _("Every other market keeps applications for %s months.", months)}
 
     def _act_retention_switch(self, payload):
-        """The nightly clean-up, on or off — the head of hiring's call."""
-        if not self._can_admin():
-            raise AccessError(_("Switching the clean-up on or off is for the head of hiring."))
+        """The talent lead owns the retention workflow."""
+        self._require_write()
         on = bool(payload.get('on'))
         self.env['ir.config_parameter'].sudo().set_param(P_RETENTION_ENABLED, '1' if on else '0')
         return {'on': on, 'note': _("The clean-up runs every night now.") if on
@@ -1269,8 +1277,7 @@ class PbHiringP4(models.AbstractModel):
 
     def _act_retention_run(self, payload):
         """"Run now": exactly what the night does, for this company."""
-        if not self._can_admin():
-            raise AccessError(_("Running the clean-up is for the head of hiring."))
+        self._require_write()
         counts = self.env['hr.applicant']._pb_retention_leg(companies=self.env.company)
         n = counts['anonymised']
         note = _("Nobody was due.") if not n else (

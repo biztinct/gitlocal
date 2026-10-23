@@ -8,8 +8,8 @@ never a move, an offer or a signature undone (handover §4).
 
 Leftovers:
   * G-44 — an offer is signed and the role has nobody else to find: the other
-    finalists are closed at Interview reject ("Not selected"), with a note on
-    their timeline and the "Not this time" email in their language. A
+    candidates without live offers are kept On hold / Future-fit, with a note
+    on their timeline and no automatic rejection email. A
     built-in the talent lead can switch off (`pb_hiring.auto_close_finalists`).
   * RC80 — the "papers are in" to-do now reaches the recruiter (on the offer,
     `comms_p8.HiringDocreqComms.activity_schedule`).
@@ -28,8 +28,6 @@ from .hiring_common import P_CANDIDATE_MAIL, flag, leg
 _logger = logging.getLogger(__name__)
 
 _TODO = 'mail.mail_activity_data_todo'
-#: Who counts as a finalist (P5 `FINALIST_KEYS`).
-FINALIST_KEYS = ('discussion_1', 'discussion_2', 'discussion_3', 'reference', 'offer')
 
 
 def _fire(env, event, app=None, record=None, stage=None, req=None):
@@ -178,6 +176,8 @@ class HiringOfferHooks(models.Model):
     def _on_signed(self, kind=None, label=None, quiet=False):
         res = super()._on_signed(kind=kind, label=label, quiet=quiet)
         if not quiet:
+            leg(self.env, 'closing the filled role %s' % self.requisition_id.name,
+                self.requisition_id._on_filled)
             leg(self.env, 'closing the other finalists on %s' % self.name,
                 self._pb_close_other_finalists)
             _fire(self.env, 'offer_signed', self.applicant_id, record=self)
@@ -196,12 +196,11 @@ class HiringOfferHooks(models.Model):
             _fire(self.env, 'did_not_join', rec.applicant_id, record=rec)
         return res
 
-    def _pb_close_other_finalists(self):
-        """G-44. The role is full once as many people have signed as it
-        needs; then every other finalist still in play is told "not this
-        time" — never somebody with an offer of their own on the way."""
+    def _pb_close_other_finalists(self, force=False):
+        """Keep remaining candidates for future roles once every seat is
+        signed; protect everybody with a live offer of their own."""
         self.ensure_one()
-        if not flag(self.env, 'pb_hiring.auto_close_finalists', '1'):
+        if not force and not flag(self.env, 'pb_hiring.auto_close_finalists', '1'):
             return 0
         offer = self.sudo()
         req = offer.requisition_id
@@ -212,34 +211,32 @@ class HiringOfferHooks(models.Model):
         if signed < max(1, req.headcount or 1):
             return 0
         Stage = self.env['hr.recruitment.stage']
-        reject = Stage._pb_stage('interview_reject')
+        reject = Stage._pb_stage('on_hold')
         if not reject:
             return 0
         others = self.env['hr.applicant'].sudo().search([
             ('pb_requisition_id', '=', req.id), ('id', '!=', offer.applicant_id.id),
-            ('active', '=', True), ('stage_id.pb_key', 'in', FINALIST_KEYS)])
+            ('active', '=', True), ('stage_id.pb_family', '=', 'open')])
         live = set(self.search([('requisition_id', '=', req.id),
                                 ('state', 'in', ('draft', 'submitted', 'manager_ok', 'hr_ok',
-                                                 'sent', 'accepted'))]).mapped('applicant_id').ids)
+                                                 'sent', 'accepted', 'signed', 'joined'))]).mapped('applicant_id').ids)
         reason = _("Not selected: %s signed for this role.", offer.candidate_name or '')
         closed = 0
-        Hiring = self.env['pb.hiring']
         for app in others:
             if app.id in live:
                 continue
             app.with_context(just_moved=True, pb_no_automation=True).write(
-                {'stage_id': reject.id, 'pb_stage_reason': reason})
+                {'stage_id': reject.id, 'pb_screen': 'future_fit', 'pb_stage_reason': reason})
             app.message_post(body=Markup('<p>%s</p>') % _(
-                "Closed as %(stage)s: another finalist signed for this role.",
+                "Kept for a future role in %(stage)s: every opening has a signed offer.",
                 stage=reject.name or ''), message_type='comment',
                 subtype_xmlid='mail.mt_note')
-            if flag(self.env, P_CANDIDATE_MAIL):
-                leg(self.env, 'the not-selected email to %s' % app.id,
-                    lambda a=app: Hiring._mail_candidate('interview_reject', a))
+            # Keep their profile for future roles without sending a rejection
+            # merely because another candidate signed.
             closed += 1
         if closed:
             req.message_post(body=_(
-                "%(n)s other finalists closed as %(stage)s after %(who)s signed.",
+                "%(n)s remaining candidates kept for future roles in %(stage)s after %(who)s signed.",
                 n=closed, stage=reject.name or '', who=offer.candidate_name or ''))
         return closed
 

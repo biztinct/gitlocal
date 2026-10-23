@@ -246,7 +246,7 @@ palette.add("hiring_rules", {
     label: _t("Hiring rules"),
     sublabel: _t("Hiring"),
     icon: "globe",
-    groups: HIRING_ADMIN,
+    groups: ["pb_hiring.group_hiring_manager", "pb_hiring.group_hiring_admin"],
     requires: "pb_hiring_board",
     action: { xmlid: "pb_hiring.action_pb_hiring_country_rule" },
 }, { sequence: 3540 });

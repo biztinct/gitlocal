@@ -78,7 +78,7 @@ WHAT THIS MODULE IS
     scored lines, and one decision, Yes, Maybe, No or Hold. Answers stay
     hidden from the other panellists until everyone is in. A day of working
     hours later anybody who has not answered is reminded, every day, and the
-    talent lead is told at two days late; a recruiter can enter an opinion
+    talent lead is told when the feedback deadline passes; a recruiter can enter an opinion
     that arrived another way, and the record says who typed it and where it
     came from. The candidate never waits for an opinion.
   * **The recruiter's own scheduling link.** Moving a candidate into
@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.10.0',
+    'version': '19.0.2.11.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

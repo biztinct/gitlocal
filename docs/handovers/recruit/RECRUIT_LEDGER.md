@@ -68,6 +68,38 @@ explicit staging and no push, Lucide icons via the single `ic()` registry in
 
 ## Targets & logins
 
+### October 2026 client workbook review
+
+- `pb_hiring` 19.0.2.11.0 and `pb_hub` 19.0.1.12.2 address the reviewed
+  traceability workbook: final-signature closure, future-fit handling, overdue
+  feedback counts/deadline, candidate-based agency attribution, indexed CV search,
+  Talent Lead rules/retention controls, hiring-only navigation/access-directory
+  restrictions, and hiring modal contrast/required markers.
+- Current owner scope supersedes the historical target list below: deploy to
+  `payobook`, `payobook_template`, `p0clone`, and production `rize`; ABM stays retired.
+- The migration repairs only payobook's named DEMO Territory Manager, adds three
+  DEMO stage presets and applies Hiring only to the two documented TA demo users.
+  It preserves real users' independent permissions and existing automation/mail
+  switches. Hiring only is a restriction group, not a substitute for removing
+  independently granted HR/payroll/system permissions.
+- Payobook's `auto_close_finalists`, `auto_chase`, candidate mail and closure mail
+  were off at review. The named demo repair keeps remaining candidates Future-fit
+  without sending rejection mail. Future automatic handling/reminders require the
+  Talent Lead to enable the relevant switches; mail also needs sender verification.
+- Regression tag `recruit_review` plus `TestRecruitLeftoversP8` covers the changed
+  behavior. Tests set their own automation switches so demo configuration cannot
+  silently disable the behavior under test. Odoo 19 deny-all record-rule domains
+  use `[('id', '=', 0)]`, not the old numeric `(1, '=', 0)` form.
+- Rehearsal clone `recruit_review_20261023` is restored with CONNECT revoked,
+  then cron/mail disabled before allowing the test process. Do not restore this
+  large schema in one transaction at the server's default lock limit. Restore SQL
+  clears `search_path`; qualify post-restore quarantine tables with `public.`.
+  Disable cron activation in the staged XML only; do not deploy that test override.
+- Open requirements remain explicit in the delivered review workbook: external
+  job boards, free/busy/Outlook/panel self-scheduling, structured CV parsing/OCR,
+  stage visibility policy editor, statutory employer-cost calculation and e-signing.
+  The second worksheet retains blank client test results.
+
 - Server ssh alias `Payobook19v2`, Odoo 19 CE, service `odoo-server`, config
   `/etc/odoo-server.conf`, log `/var/log/odoo/odoo-server.log`, passwordless sudo.
 - Databases: `payobook` (https://payobook.com), `rize` (tenant, not in production),

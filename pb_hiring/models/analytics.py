@@ -484,7 +484,7 @@ class PbHiringAnalytics(models.AbstractModel):
         sheet(_('Nobody came'), [_('Who did not come'), _('Times')],
               [[r['name'], r['count']] for r in board['no_shows']])
         sheet(_('Agency or our own'),
-              [_('Who filled it'), _('Roles'), _('Filled'),
+              [_('Who sourced them'), _('Candidates'), _('Joined'),
                _('Typical days'), _('Average days')],
               [[r['name'], r['roles'], r['filled'], r['median'], r['mean']]
                for r in board['agency']])

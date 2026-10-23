@@ -360,7 +360,9 @@ class PbHiring(models.AbstractModel):
         cap = int(limit or BOARD_LIMIT)
         since = fields.Datetime.now() - timedelta(days=42)
         rows = self.env['pb.hiring.interview'].search(
-            [('company_id', 'in', co_ids), ('start', '>=', since)],
+            [('company_id', 'in', co_ids), '|', ('start', '>=', since),
+             '&', ('state', 'in', ('scheduled', 'done')),
+             ('feedback_ids.state', '=', 'pending')],
             order='start', limit=cap)
         return [self._interview_row(rec) for rec in rows]
 

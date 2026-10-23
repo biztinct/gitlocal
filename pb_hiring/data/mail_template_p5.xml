@@ -65,12 +65,12 @@
         </field>
     </record>
 
-    <!-- ============ the talent lead: an opinion is two days late ============ -->
+    <!-- ============ the talent lead: an opinion is overdue ============ -->
     <record id="mail_template_feedback_lead" model="mail.template">
-        <field name="name">Hiring: an interviewer's opinion is two days late (to the talent lead)</field>
+        <field name="name">Hiring: an interviewer's opinion is overdue (to the talent lead)</field>
         <field name="model_id" ref="model_pb_hiring_feedback"/>
         <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
-        <field name="subject">{{ object.panel_employee_id.name }} is {{ object.pb_late_days }} days late on {{ object.interview_id.candidate_name }}</field>
+        <field name="subject">Feedback overdue: {{ object.panel_employee_id.name }} on {{ object.interview_id.candidate_name }}</field>
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html">
             <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">

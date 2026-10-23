@@ -356,6 +356,8 @@ class HiringApplications(WebsiteHrRecruitment):
                 rec = utm_record(request.env, 'utm.' + key, name)
                 if rec:
                     extra[key + '_id'] = rec.id
+        if not extra.get('source_id'):
+            extra['source_id'] = utm_record(request.env, 'utm.source', 'Careers page').id
         if extra.get('source_id'):
             channel = request.env['pb.hiring.channel'].sudo()._for_source(
                 job.company_id, request.env['utm.source'].sudo().browse(extra['source_id']))

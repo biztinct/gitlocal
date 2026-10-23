@@ -515,8 +515,16 @@ class PbHiringBoardP1(models.AbstractModel):
         opinions = {'in': latest.feedback_in, 'total': latest.feedback_total,
                     'late': latest.feedback_late} if latest else \
             {'in': 0, 'total': 0, 'late': 0}
+        # Older rounds still need feedback; the latest round is not the whole
+        # candidate. Closed candidates no longer contribute to the chase.
+        opinions['late'] = sum(i.feedback_late for i in asked) if family == 'open' else 0
         chips, flags, edge, waiting = [], [], '', ''
         week_end = now + timedelta(days=7)
+        unlogged = past_open or live
+        if unlogged and family != 'open':
+            chips.append({'label': _('Outcome to log'), 'tone': 'amber'})
+            flags.append('waiting')
+            waiting = _('Review the open interview for round %s', unlogged[0].round_no or 1)
         if live and live[0].start <= week_end:
             flags.append('iv')
         if family == 'open':

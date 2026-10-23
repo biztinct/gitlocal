@@ -45,9 +45,13 @@ class PbHiringAnalyticsP7(models.AbstractModel):
         for v in vendors.sorted(lambda x: (x.name or '').lower()):
             mine = subs.filtered(lambda s, v=v: s.vendor_id == v)
             figures = Sub._figures(mine)
-            filled = roles.filtered(lambda r, v=v: v in r.agency_vendor_ids
-                                    and r.filled_on and r.opened_on)
-            spans = [max(0, (r.filled_on - r.opened_on).days) for r in filled]
+            joined_apps = mine.mapped('applicant_id').filtered(
+                lambda a: a.pb_agency_vendor_id == v)
+            joined = self.env['pb.hiring.offer'].sudo().search([
+                ('applicant_id', 'in', joined_apps.ids), ('state', '=', 'joined'),
+                ('requisition_id', 'in', roles.ids)])
+            spans = [max(0, (o.joined_on - o.requisition_id.opened_on).days)
+                     for o in joined if o.joined_on and o.requisition_id.opened_on]
             out.append(dict(figures, id=v.id, name=v.name or '',
                             roles=len(roles.filtered(lambda r, v=v: v in r.agency_vendor_ids)),
                             days=round(sum(spans) / len(spans), 1) if spans else None))

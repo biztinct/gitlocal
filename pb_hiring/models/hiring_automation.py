@@ -370,8 +370,8 @@ class PbHiringAutomation(models.AbstractModel):
 
     @api.model
     def _tell_lead_late_feedback(self):
-        """Two days late: the Talent lead is told, once per opinion."""
-        days = max(1, number(self.env, P_LEAD_LATE_DAYS, 2))
+        """Escalate at the working-hours deadline, once per opinion."""
+        days = max(0, number(self.env, P_LEAD_LATE_DAYS, 0))
         stop = max(days + 1, number(self.env, P_CHASE_STOP_DAYS, 14))
         now = fields.Datetime.now()
         cap = max(1, number(self.env, P_REMINDER_CAP, 400))

@@ -495,6 +495,7 @@ class TestRecruitLeftoversP8(JoiningCase):
         self.assertEqual(DEFAULTS[P_REFERRAL_ANNOUNCE], '0')
 
     def test_g44_the_other_finalists_are_closed_when_the_role_is_full(self):
+        self.env['ir.config_parameter'].sudo().set_param('pb_hiring.auto_close_finalists', '1')
         self.req.sudo().write({'headcount': 1})
         Stage = self.env['hr.recruitment.stage']
         other = self.env['hr.applicant'].sudo().create({
@@ -507,11 +508,13 @@ class TestRecruitLeftoversP8(JoiningCase):
             'pb_requisition_id': self.req.id, 'stage_id': Stage._pb_stage('shortlist').id})
         before = self.env['mail.mail'].sudo().search([]).ids
         self._signed()
-        self.assertEqual(other.stage_id.pb_key, 'interview_reject')
+        self.assertEqual(other.stage_id.pb_key, 'on_hold')
+        self.assertEqual(other.pb_screen, 'future_fit')
         self.assertIn('Not selected', other.pb_stage_reason or '')
-        self.assertTrue(other.message_ids.filtered(lambda m: 'another finalist signed' in (m.body or '')))
-        self.assertTrue(self._mails(before).filtered(lambda m: m.email_to == 'p8.finalist@example.com'))
-        self.assertEqual(early.stage_id.pb_key, 'shortlist', 'a non-finalist was closed')
+        self.assertTrue(other.message_ids.filtered(lambda m: 'every opening has a signed offer' in (m.body or '')))
+        self.assertFalse(self._mails(before).filtered(lambda m: m.email_to == 'p8.finalist@example.com'))
+        self.assertEqual(early.stage_id.pb_key, 'on_hold')
+        self.assertEqual(early.pb_screen, 'future_fit', 'keep early candidates for future roles too')
 
     def test_g44_switch_off_and_a_role_with_seats_left(self):
         Stage = self.env['hr.recruitment.stage']
@@ -524,6 +527,7 @@ class TestRecruitLeftoversP8(JoiningCase):
         self.assertEqual(other.stage_id.pb_key, 'discussion_1')
 
     def test_share_email(self):
+        self.env['ir.config_parameter'].sudo().set_param('pb_hiring.auto_share_mail', '1')
         Users = self.env['res.users'].sudo()
         stamp = fields.Datetime.now().timestamp()
         mgr = Users.create({'name': 'RECRUIT P8 Manager', 'login': 'recruit.p8.mgr.%s' % stamp,

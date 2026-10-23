@@ -46,6 +46,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { user } from "@web/core/user";
+import { session } from "@web/session";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { HubPalette } from "@pb_hub/js/hub_palette";
 import { openHub } from "@pb_hub/js/hub_nav";
@@ -225,6 +226,7 @@ export const hubPaletteService = {
         async function resolveEntries() {
             if (lockedRefs === null) { await loadRestrictions(); }
             const all = registry.category("pb_hub_palette").getAll()
+                .filter((e) => !session.pb_hiring_only || e.id.startsWith("hiring_"))
                 .filter(isPresent)
                 // A part of the product this company has not got, that the
                 // platform asked to be taken away rather than shown locked.

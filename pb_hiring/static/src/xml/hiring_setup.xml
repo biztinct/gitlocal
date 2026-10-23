@@ -230,7 +230,7 @@
               <b t-if="ret.enabled">The clean-up runs every night</b>
               <b t-else="">The clean-up is switched off</b>
               <small t-if="ret.enabled">Next run <t t-esc="whenLong(ret.next_run)"/>. It takes exactly the people under "Due now".</small>
-              <small t-else="">Nothing is removed until the head of hiring switches it on, or presses Run now. Read "What will go" first.</small>
+              <small t-else="">Nothing is removed until the talent lead switches it on, or presses Run now. Read "What will go" first.</small>
             </div>
             <label t-if="ret.can_run" class="pbhr-su-switch pbhr-su-ret-toggle">
               <input type="checkbox" t-att-checked="ret.enabled" t-on-change="toggleRetention"/>
@@ -300,7 +300,7 @@
               </div>
               <button t-else="" class="pbim-btn ghost" t-att-disabled="!ret.due" t-on-click="() =&gt; { state.retConfirm = true; }"><t t-out="ic('play',13)"/> Run now</button>
             </t>
-            <small t-else="" class="pbhr-su-ret-who">Running the clean-up is for the head of hiring.</small>
+            <small t-else="" class="pbhr-su-ret-who">Running the clean-up is for the talent lead.</small>
           </div>
         </section>
       </div>

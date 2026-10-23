@@ -247,3 +247,19 @@
     :root:not([data-theme="light"]) .pbhr .pbhr-p8-dialog { @include pbhr-dark-tokens; }
 }
 [data-theme="dark"] .pbhr .pbhr-p8-dialog { @include pbhr-dark-tokens; }
+
+// Every hiring modal resets kit tokens. Restore the matching palette on the
+// modal itself so fields and their text inherit the same theme (CALL-01).
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .pbhr .pbim-modal { @include pbhr-dark-tokens; }
+}
+[data-theme="dark"] .pbhr .pbim-modal { @include pbhr-dark-tokens; }
+.pbhr .pbhr-in::placeholder {
+    color: var(--pbim-muted, #64748b);
+    font-style: italic;
+    opacity: 1;
+}
+.pbhr .pbhr-in {
+    color: var(--pbim-ink, #1e293b);
+    background-color: var(--pbim-surface, #fff);
+}

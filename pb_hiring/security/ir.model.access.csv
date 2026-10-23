@@ -25,7 +25,7 @@ access_pb_hiring_posting_admin,Advert head of hiring,model_pb_hiring_posting,pb_
 access_pb_hiring_posting_system,Advert system,model_pb_hiring_posting,base.group_system,1,1,1,1
 access_pb_hiring_country_rule_staff,Hiring rule read,model_pb_hiring_country_rule,base.group_user,1,0,0,0
 access_pb_hiring_country_rule_user,Hiring rule recruiter,model_pb_hiring_country_rule,pb_hiring.group_hiring_user,1,0,0,0
-access_pb_hiring_country_rule_manager,Hiring rule manager,model_pb_hiring_country_rule,pb_hiring.group_hiring_manager,1,0,0,0
+access_pb_hiring_country_rule_manager,Hiring rule manager,model_pb_hiring_country_rule,pb_hiring.group_hiring_manager,1,1,1,1
 access_pb_hiring_country_rule_admin,Hiring rule head of hiring,model_pb_hiring_country_rule,pb_hiring.group_hiring_admin,1,1,1,1
 access_pb_hiring_country_rule_system,Hiring rule system,model_pb_hiring_country_rule,base.group_system,1,1,1,1
 access_pb_hiring_interview_staff,Interview mine,model_pb_hiring_interview,base.group_user,1,0,0,0

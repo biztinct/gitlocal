@@ -653,7 +653,7 @@ class PbHiringFeedback(models.Model):
         return self.env['res.users']
 
     def _tell_lead(self):
-        """Two days late: the Talent lead gets one email and a to-do, once."""
+        """The Talent lead gets one email and a to-do when feedback is overdue."""
         self.ensure_one()
         if self.state != 'pending' or self.lead_told_at:
             return False
@@ -665,7 +665,7 @@ class PbHiringFeedback(models.Model):
                 self._send_template('pb_hiring.mail_template_feedback_lead', to=user.email)
             interview.activity_schedule(
                 _TODO,
-                summary=_("%s's opinion is two days late", who),
+                summary=_("%s's opinion is overdue", who),
                 note=_("%(who)s has not said what they thought of %(candidate)s "
                        "(round %(n)s). They are reminded every day. The recruiter "
                        "can enter it for them from the candidate's page.",

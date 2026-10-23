@@ -358,8 +358,8 @@
                   <h3><t t-out="ic('building',16)"/> An agency, or our own
                       team
                   <button class="pbhn-dl" t-on-click="() => this.download('agency')" title="Download this report"><t t-out="ic('download',14)"/></button></h3>
-                  <p>Only roles that actually filled are timed. A role still
-                     open has not taken anything yet.</p>
+                  <p>Joined candidates are attributed to the agency that submitted them.
+                     Days run from the role opening to the person's joining date.</p>
                 </div>
                 <t t-foreach="state.agency" t-as="ag" t-key="ag.key">
                   <div class="pbhn-row">
@@ -369,7 +369,7 @@
                       <t t-else=""><t t-esc="ag.median"/> <small>days</small></t>
                     </div>
                     <div class="pbhn-row-sub">
-                      <t t-esc="ag.filled"/> of <t t-esc="ag.roles"/> filled
+                      <t t-esc="ag.filled"/> of <t t-esc="ag.roles"/> candidates joined
                     </div>
                   </div>
                 </t>

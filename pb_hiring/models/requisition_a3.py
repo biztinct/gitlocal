@@ -106,23 +106,26 @@ class PbHiringRequisitionA3(models.Model):
     #  The role is full
     # =====================================================================
     def _on_filled(self):
-        """Called when an offer closes. Filled only when the count is reached.
+        """Close when signed/joined offers cover every opening, idempotently.
 
         Everything in it is guarded: the role is full the moment the count
-        says so, and the careers page, the referral switch and two emails are
+        says so, and the careers page, the referral switch and notices are
         paperwork that must never be able to report a joiner as a failure
         (R104).
         """
         self.ensure_one()
-        self.invalidate_recordset(['filled_count'])
+        if self.state == 'filled':
+            return True
+        if self.state != 'open':
+            return False
         wanted = max(1, self.headcount or 1)
-        got = self.filled_count
+        got = len(self.sudo().offer_ids.filtered(lambda o: o.state in ('signed', 'joined')))
         if got < wanted:
             self.sudo().message_post(body=_(
                 "%(got)s of %(wanted)s %(word)s now. The role stays open.",
                 got=got, wanted=wanted,
-                word=counted(wanted, _('person has joined'),
-                             _('people have joined'))))
+                word=counted(wanted, _('person has signed'),
+                             _('people have signed'))))
             return False
         if self.state == 'open':
             # `action_mark_filled` is the one place that closes a role: it
@@ -148,9 +151,11 @@ class PbHiringRequisitionA3(models.Model):
             return 0
         manager = self._person(self.reporting_manager_id)
         addresses = []
-        for candidate in (manager.user_id.email, manager.work_email,
+        leads = self.env.ref('pb_hiring.group_hiring_manager').sudo().all_user_ids.filtered(
+            lambda u: u.active and self.company_id in u.company_ids)
+        for candidate in [manager.user_id.email, manager.work_email,
                           self.recruiter_manager_id.email,
-                          self._person(self.requested_by_id).user_id.email):
+                          self._person(self.requested_by_id).user_id.email] + leads.mapped('email'):
             address = (candidate or '').strip()
             if address and address not in addresses:
                 addresses.append(address)
