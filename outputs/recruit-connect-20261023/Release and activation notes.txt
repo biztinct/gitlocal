@@ -3,7 +3,8 @@ Recruitment integrations — 23 October 2026
 Implementation commit: ae2ae077c
 Sass compatibility fix: dd3aaaacf
 Chrome verification fixes: e9a60a7d7
-pb_hiring: 19.0.2.12.1
+DocuSign integration: f7cd70ae0
+pb_hiring: 19.0.2.13.0
 Server: Payobook19v2, /odoo/odoo-server/addons
 Databases upgraded: payobook, payobook_template, p0clone, rize.
 Retired ABM and its permanent archive were not changed.
@@ -11,7 +12,10 @@ Retired ABM and its permanent archive were not changed.
 Delivered
 - Guided four-step connection setup, informed by Health19's channel setup and
   credential protection patterns. No Health19 files were changed.
-- Documenso proof-of-concept draft/review/send/cancel/verify/archive workflow.
+- DocuSign draft/review/send/void/verify/archive workflow for new offers,
+  including completion certificate, encrypted JWT credentials, draft recovery,
+  account-scoped HMAC callbacks and signer/order checks. Existing Documenso
+  envelope references remain supported for their original provider.
 - Docling + spaCy CV service and Payobook queue/review integration.
 - Official Google/Microsoft SDK free/busy, panel booking and calendar audit.
 - Native stage visibility policies, TA Lead/HR fallback approval routing,
@@ -24,13 +28,18 @@ Delivered
   now use clear names instead of internal prefixes.
 
 Validation
-- Isolated restored Payobook database: 30 regression tests, zero failures/errors.
+- Isolated restored Payobook database: 42 regression tests, zero failures/errors.
+  Twelve DocuSign tests cover authentication, host validation, encrypted token
+  caching, draft recovery, approval gates, recipient/order/field validation,
+  completion filing, cancellation, webhook integrity and account isolation.
+  A final targeted rerun of all twelve passed after header validation hardening.
 - CV service: six tests passed, including synthetic PDF, DOCX and image OCR.
   Local Intel Mac/Python 3.12 peak RSS approximately 2 GB on small synthetic CVs.
   The selected Linux host/container and representative EN/VI/ID CVs still need tests.
 - Deployed independent DEMO Talent Lead/Recruiter API sessions: board access,
   setup restrictions, stage-policy write permissions and sensitive-write denial pass.
-- Invalid Documenso/WhatsApp callback keys rejected with 403; invalid booking 404.
+- Invalid DocuSign/Documenso/WhatsApp callback keys rejected with 403;
+  previous invalid-booking check returned 404.
 - All 145 installed custom module directories match the local combined state.
   All 560 installed custom-module/database version pairs match local manifests.
 - New views/actions and Microsoft calendar installed across all four databases;
@@ -48,16 +57,27 @@ Validation
   booking or WhatsApp delivery; those require activation and controlled tests.
   Chrome was signed out of the demo account after testing. One empty, disabled
   CV connection setup record remains in the demo company; no keys were saved.
+- DocuSign deployed Chrome checks passed: card, environment selector, multiline
+  RSA input, saved Demo selection, missing-client-ID validation, disabled
+  activation, keyboard Tab/Escape, and approval-dependent offer controls.
+  No console errors. A disabled DocuSign setup row with Demo selected remains
+  in Payobook Vietnam JSC; no IDs or secrets were entered. The test session
+  was signed out. Provider round-trip remains blocked by account creation.
 - Workbook: 457 original cells (374 populated) preserved, 36 + 21 comment rows added, rendered
   and visually reviewed. Second-sheet client results remain unchanged/untested.
 - Current-run test/render PNGs were removed; product/user images were preserved.
 
 Manual activation (owner/IT unless stated)
-1. Hosting: choose a separate 8 GB / 4 vCPU service host initially processing one
-   CV at a time, or approve suitable increased capacity. 16 GB gives headroom.
-   No purchase or resize occurred. Hosting access is still required.
-2. Signing: Documenso HTTPS/PostgreSQL/SMTP/.p12 certificate/team API key/webhook;
-   controlled signing and automatic filing round trip before acceptance.
+1. CV hosting only: recommend a separate 8 GB / 4 vCPU service host, processing
+   one CV at a time. 4 GB is for a limited pilot; 16 GB offers headroom for large
+   scans or concurrency. The current Odoo host still has approximately 2 GB RAM.
+   No purchase, resize or CV hosting change occurred. Linux load testing remains.
+2. Signing: owner selected DocuSign demo and confirmed the account still needs
+   to be created. Create its developer account, register the integration/RSA
+   key, grant sender signature/impersonation consent, and configure account IDs
+   and Connect HMAC in Payobook. Test with approved synthetic offer recipients.
+   DocuSign hosts signing; no self-hosted signing service or .p12 is required.
+   No live DocuSign upload, invitation, signature or filing is claimed.
 3. CVs: deploy/test the Linux service, set URL/key, representative customer tests.
    Extraction provides text sections and configured skill matches; normalized
    employer/title/years and inferred proficiency are not implemented.
@@ -78,9 +98,11 @@ Obtain the complete Zoho board inventory and approved provider API contracts,
 then implement each supported contract. Credentials alone cannot close these.
 Manual tracked posting packs remain available.
 
-Operations: ops/recruit_connections/OPERATIONS.txt and
+Operations: ops/recruit_connections/DOCUSIGN.txt,
+ops/recruit_connections/OPERATIONS.txt and
 services/recruit_cv/OPERATIONS.txt contain the activation steps and limitations.
 Backup set: /odoo/backups/recruit-connect-20261023-deploy (root-only directory).
 UI-fix backup set: /odoo/backups/recruit-ui-20261023-deploy (root-only directory).
+DocuSign backup set: /odoo/backups/recruit-docusign-20261023-deploy (root-only directory).
 Rize backups remain exempt from deletion; nonproduction retention is seven days,
 keeping the latest usable backup. No retention cleanup was run.
