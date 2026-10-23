@@ -403,7 +403,8 @@ class PbTrainingAssignment(models.Model):
         Track = self.env['pb.training.track'].sudo()
         name = _('Assigned training')
         track = Track.search([('name', '=', name),
-                              ('company_id', '=', self.company_id.id)],
+                              ('company_id', '=', self.company_id.id),
+                              ('job_ids', '=', False)],
                              limit=1)
         if not track:
             track = Track.create({

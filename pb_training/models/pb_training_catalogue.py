@@ -599,11 +599,11 @@ class PbTrainingCatalogue(models.AbstractModel):
                 'company_id': self.env.company.id}
         if as_id(payload.get('channel_id')):
             vals['channel_id'] = as_id(payload['channel_id'])
-            key = ('channel_id', vals['channel_id'])
+            key = ('channel_id', '=', vals['channel_id'])
         elif as_id(payload.get('outside_course_id')):
             vals['outside_course_id'] = self._outside(
                 payload['outside_course_id']).id
-            key = ('outside_course_id', vals['outside_course_id'])
+            key = ('outside_course_id', '=', vals['outside_course_id'])
         else:
             raise UserError(_("Pick the course."))
         Grant = self.env['pb.training.skill.grant'].sudo()

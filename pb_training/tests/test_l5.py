@@ -308,6 +308,24 @@ class TestT3Committed(L5Case):
 @tagged('post_install', '-at_install')
 class TestT4Decisions(L5Case):
 
+    def test_t4_manager_decides_through_the_live_approval_route(self):
+        from ..models.request_approval import seed_all
+        seed_all(self.env)
+        res = self._ask(self.u_one, kind='ours', channel_id=self.simple.id)
+        req = self.Request.browse(res['id']).sudo()
+        approval = req.approval_request_id
+        self.assertTrue(approval)
+        self.assertEqual(req.state, 'submitted')
+        step = approval.step_ids.filtered(lambda s: s.status == 'active')[:1]
+        self.assertTrue(step)
+        self.assertIn(self.boss_user, step.seat_ids.mapped('acting_user_id'))
+        self.env['biz.approval.engine'].with_user(self.boss_user).decide(
+            approval, step.key, 'approve', reason='DEMO course request UAT',
+            expected_lock_revision=approval.lock_revision,
+            idempotency_key='training-request-live-route-test')
+        self.assertEqual(req.state, 'approved')
+        self.assertTrue(req.assignment_id)
+
     def test_t4_ours_assigns_once(self):
         self._dormant()
         res = self._ask(self.u_one, kind='ours', channel_id=self.simple.id)
@@ -760,6 +778,33 @@ class SkillCase(L5Case):
 
 @tagged('post_install', '-at_install')
 class TestT12Grants(SkillCase):
+
+    def test_t12_save_grant_replaces_only_the_selected_course_skill(self):
+        board = self.Board.with_user(self.tmanager)
+        Grant = self.env['pb.training.skill.grant']
+        untouched = Grant.create({
+            'channel_id': self.simple.id, 'skill_id': self.spraying.id,
+            'skill_level_id': self.good.id})
+        outside = Grant.create({
+            'outside_course_id': self.ext.id, 'skill_id': self.safety.id,
+            'skill_level_id': self.good.id})
+        for source, course in [('channel_id', self.simple),
+                               ('outside_course_id', self.ext)]:
+            for level in (self.basic, self.good):
+                board.save_grant({source: course.id,
+                                  'skill_id': self.safety.id,
+                                  'skill_level_id': level.id})
+                saved = Grant.search([(source, '=', course.id),
+                                      ('skill_id', '=', self.safety.id)])
+                self.assertEqual(len(saved), 1)
+                self.assertEqual(saved.skill_level_id, level)
+                self.assertTrue(untouched.exists())
+            if source == 'channel_id':
+                self.assertTrue(outside.exists(),
+                                'editing our course must preserve outside grants')
+        self.assertEqual(Grant.search([
+            ('channel_id', '=', self.simple.id),
+            ('skill_id', '=', self.safety.id)]).skill_level_id, self.good)
 
     def test_t12_archive_and_create_no_downgrade(self):
         old = self.env['hr.employee.skill'].create({

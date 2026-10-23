@@ -471,8 +471,22 @@ class PbTrainingCertificate(models.AbstractModel):
         vals = {'training_source': 'test'}
         emp = doc.employee_id.sudo()
         vals['issuer'] = (emp.company_id or self.env.company).name or ''
-        channel = self.env['slide.channel'].sudo().with_context(
-            active_test=False).search([('name', '=', course)], limit=1)
+        channels = self.env['slide.channel'].sudo().with_context(
+            active_test=False).search([('name', '=', course)])
+        channel = channels if len(channels) == 1 else channels.browse()
+        if len(channels) > 1 and emp.user_id.partner_id:
+            # Course names are not unique. A legacy file must not acquire
+            # another course's test or expiry merely because it sorts first.
+            surveys = {c.id: c._pb_test_slide().survey_id.id for c in channels}
+            passed = self.env['survey.user_input'].sudo().search([
+                ('survey_id', 'in', [s for s in surveys.values() if s]),
+                ('partner_id', '=', emp.user_id.partner_id.id),
+                ('state', '=', 'done'), ('test_entry', '=', False),
+                ('scoring_success', '=', True),
+            ]).mapped('survey_id').ids
+            matched = channels.filtered(lambda c: surveys[c.id] in passed)
+            if len(matched) == 1:
+                channel = matched
         if channel:
             vals['channel_id'] = channel.id
             test_slide = channel._pb_test_slide()

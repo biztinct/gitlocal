@@ -518,13 +518,12 @@ class TestProbationLink(AssignmentCase):
         """`ensure_for_employee` spreads a track to everybody whose JOB is on
         it, so the track this module makes must carry no jobs at all — or one
         person's assigned course becomes everybody's (`training.py:88-92`)."""
-        self.Assignment.create({
+        assignment = self.Assignment.create({
             'channel_id': self.simple.id,
             'employee_id': self.e_one.id,
             'reason': 'probation',
         })
-        track = self.env['pb.training.track'].sudo().search(
-            [('name', '=', 'Assigned training')], limit=1)
+        track = assignment.status_id.item_id.track_id
         self.assertTrue(track)
         self.assertFalse(track.job_ids,
                          'the assigned-training track must have no jobs on it')
@@ -532,6 +531,39 @@ class TestProbationLink(AssignmentCase):
         self.assertEqual(made, 0)
         self.assertFalse(
             self.env['pb.training.status'].pending_required_for(self.e_three))
+
+    def test_t6_a_job_track_with_the_same_name_is_not_reused(self):
+        Track = self.env['pb.training.track'].sudo()
+        # Use a separate company so no existing assignment track can mask
+        # the collision with a manually configured job-wide requirement.
+        company = self.env['res.company'].create({'name': 'DEMO Track scope'})
+        job = self.env['hr.job'].create({'name': 'DEMO Track job',
+                                         'company_id': company.id})
+        broad = Track.create({'name': 'Assigned training',
+                              'company_id': company.id,
+                              'job_ids': [(6, 0, job.ids)]})
+        employee = self.env['hr.employee'].create({
+            'name': 'DEMO Assigned only', 'company_id': company.id})
+        assignment = self.Assignment.create({
+            'channel_id': self.simple.id, 'employee_id': employee.id,
+            'company_id': company.id, 'reason': 'probation'})
+        track = assignment._assigned_track()
+        self.assertNotEqual(track, broad)
+        self.assertFalse(track.job_ids)
+        self.assertFalse(broad.item_ids)
+        self.assertEqual(broad.job_ids, job)
+
+    def test_t6_confirmation_gate_opens_only_after_course_completion(self):
+        assignment = self.Assignment.create({
+            'channel_id': self.simple.id, 'employee_id': self.e_one.id,
+            'reason': 'probation'})
+        review = self.env['pb.probation.review'].new({
+            'employee_id': self.e_one.id})
+        with self.assertRaises(UserError):
+            review._check_training_gate()
+        self._finish(self.u_one, self.simple, [self.simple_lesson])
+        assignment._refresh()
+        self.assertTrue(review._check_training_gate())
 
 
 # =========================================================================

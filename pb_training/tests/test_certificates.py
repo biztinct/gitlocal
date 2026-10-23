@@ -190,6 +190,33 @@ class TestT1T2Validity(CertCase):
 @tagged('post_install', '-at_install')
 class TestT3Backfill(CertCase):
 
+    def test_t3_duplicate_name_uses_the_employees_pass(self):
+        self.course.name = 'DEMO Duplicate legacy course'
+        duplicate = self.env['slide.channel'].create({
+            'name': self.course.name, 'channel_type': 'training'})
+        self._pass(self.u_one)
+        doc = self._test_docs(self.e_one)
+        doc.write({'training_source': False, 'attempt_id': False,
+                   'survey_id': False, 'channel_id': False,
+                   'name': self.Cert._document_name(self.course.name)})
+        self.Cert._backfill_test(doc, self.course.name,
+                                {'test': 0, 'linked': 0})
+        self.assertEqual(doc.channel_id, self.course)
+        self.assertNotEqual(doc.channel_id, duplicate)
+
+    def test_t3_ambiguous_name_does_not_invent_a_course_or_expiry(self):
+        name = 'DEMO Ambiguous legacy course'
+        self.env['slide.channel'].create([
+            {'name': name, 'channel_type': 'training'},
+            {'name': name, 'channel_type': 'training'}])
+        doc = self._doc(self.e_two,
+                        name=self.Cert._document_name(name), source=False)
+        self.Cert._backfill_test(doc, name, {'test': 0, 'linked': 0})
+        self.assertEqual(doc.training_source, 'test')
+        self.assertFalse(doc.channel_id)
+        self.assertFalse(doc.survey_id)
+        self.assertFalse(doc.expiry_date)
+
     def test_t3_old_rows_get_their_source_and_only_honest_dates(self):
         self.survey.sudo().certification_validity_months = 12
         attempt = self._pass(self.u_one)
