@@ -64,7 +64,7 @@
     .o_field_widget.o_field_invalid .o_input { border-color: #c13951; }
     .o_field_html { min-height: 190px; border: 1px solid var(--pa-line); border-radius: 12px; padding: 14px; }
     .o_field_html .odoo-editor-editable { min-height: 150px; }
-    .o_field_x2many { border: 1px solid var(--pa-line); border-radius: 14px; overflow: hidden; }
+    :is(.o_field_one2many, .o_field_many2many) { border: 1px solid var(--pa-line); border-radius: 14px; overflow: hidden; }
     .o_list_table {
         margin-bottom: 0;
         thead { background: #f6f7fc; color: var(--pa-muted); font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
@@ -92,8 +92,8 @@
 // Own the native layout here: the legacy theme otherwise adds card gutters,
 // compressed row gaps and standalone field padding even to vu-form-native.
 .o_form_view.pb-authoring .o_form_renderer {
-    .o_form_sheet > .o_group.row { margin-left: 28px; margin-right: 28px; width: auto !important; }
-    .o_form_sheet > .o_field_x2many { width: calc(100% - 56px); padding: 0; }
+    .o_form_sheet > .o_group.row { margin: 16px 28px 20px !important; width: auto !important; }
+    .o_form_sheet > :is(.o_field_one2many, .o_field_many2many) { width: calc(100% - 56px); padding: 0; }
     .o_form_sheet > div > .o_field_widget { padding-left: 0 !important; padding-right: 0 !important; }
     .o_form_sheet > div:has(> .o_field_many2many_tags) {
         margin-top: 8px !important; margin-bottom: 0 !important;
@@ -129,7 +129,7 @@
     .o_field_widget .o_external_button { width: auto !important; flex: 0 0 auto; }
     .o_field_radio[name="source_type"] > div { flex-direction: row !important; }
     .o_field_radio .o_radio_item { margin: 0; }
-    .o_field_x2many .o_list_renderer { margin: 0; --ListRenderer-margin-x: 0px; }
+    :is(.o_field_one2many, .o_field_many2many) .o_list_renderer { margin: 0; --ListRenderer-margin-x: 0px; }
     .pb-author-spotlight {
         outline: 3px solid #7960d5; outline-offset: 5px;
         box-shadow: 0 0 0 9px #795bd51a; border-radius: 12px;
@@ -141,7 +141,7 @@
     grid-template-columns: minmax(0, 1fr);
     > .o_cell { grid-column: 1 / -1; }
 }
-.o_form_view.pb-author-question .o_form_renderer .o_form_sheet > .o_group.row > .o_inner_group { flex-basis: 340px; }
+.o_form_view.pb-author-question .o_form_renderer .o_form_sheet > .o_group.row > .o_inner_group { flex-basis: 340px !important; }
 .o_form_view.pb-author-invite .o_form_renderer {
     .o_group.row > .o_inner_group { flex-basis: 100% !important; }
     .o_field_html .odoo-editor-editable { padding: 16px; }
@@ -228,7 +228,7 @@
         > :not(.o_widget_pb_learning_authoring_guide):not(.pb-author-mini):not(.oe_button_box) { margin-left: 16px; margin-right: 16px; }
         > .oe_title { width: calc(100% - 32px) !important; clear: both; h1 { font-size: 21px; } }
         > .oe_avatar { margin: 0 16px 12px auto !important; }
-        > .o_field_x2many { width: calc(100% - 32px); }
+        > :is(.o_field_one2many, .o_field_many2many) { width: calc(100% - 32px); }
         .o_inner_group { padding: 12px; }
     }
     .modal-content.pb-authoring {
