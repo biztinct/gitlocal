@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Company scoping for the trail (global — AND'd with every group's rules).
+         A blank company (an audited model without company_id) stays visible to
+         everyone allowed, same baseline as the approval step log. -->
+    <record id="biz_audit_entry_company_rule" model="ir.rule">
+        <field name="name">Audit Entry: company</field>
+        <field name="model_id" ref="model_biz_audit_entry"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_contracts.PbContracts">
+    <div class="pbim con pbim-page ppl-people ppl-contracts" t-att-class="{ 'ppl-people--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contracts…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head" data-coach="ct-head">
+          <!-- The identity block, and only the identity block (W17): inside
+               the People hub the command bar already says People > Contracts.
+               New contract and every number below are untouched. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Contracts</h1>
+            <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
+          </div>
+          <button class="pbim-btn primary" t-on-click="newContract"><t t-out="ic('plus',16)"/> New contract</button>
+        </div>
+
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+        <div data-coach="ct-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+        </div>
+
+        <!-- where every contract is: a contract is at exactly ONE step
+             (stepOf), so the counts add up. Pressing a lit step clears it. -->
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Where every contract is'"/>
+          <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+        </t>
+        <div class="pbim-showing">
+          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+          <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+            <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
+        </div>
+
+        <!-- filters -->
+        <div class="pbim-panel ppl-filters" data-coach="ct-filters">
+          <div class="ppl-filter-row">
+            <!-- the status buttons went with the quiet numbers: the figures
+                 and steps above filter, counted over every contract -->
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input t-ref="search" placeholder="Search employee, reference, structure…" t-on-input="onSearch"/>
+            </div>
+          </div>
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
+            </div>
+            <div t-if="state.structures.length" class="pbim-chips ppl-depts">
+              <button t-foreach="state.structures" t-as="s" t-key="s_index"
+                      t-attf-class="pbim-fchip {{ state.structure === s.name ? 'on' : '' }}" t-on-click="() => this.setStructure(s.name)">
+                <t t-esc="s.name"/> <span class="c" t-esc="s.count"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- roster -->
+        <div t-if="filtered.length" class="ppl-roster" data-coach="ct-roster">
+          <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
+            <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
+            <div class="ppl-id">
+              <div class="nm" t-esc="c.employee"/>
+              <div class="jb"><t t-esc="c.name"/><t t-if="c.structure"> · <t t-esc="c.structure"/></t></div>
+            </div>
+            <div class="ppl-period">
+              <span t-esc="c.date_start or '—'"/>
+              <span class="ar">→</span>
+              <span t-esc="c.date_end or 'indefinite'"/>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span>
+              <span t-if="c.days_to_expiry !== null and c.days_to_expiry >= 0 and c.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="c.days_to_expiry"/>d</span>
+            </div>
+            <div class="ppl-wage">
+              <span class="v money" t-esc="c.wage ? money(c.wage) : '—'"/>
+              <span class="k">monthly</span>
+            </div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No contracts match these filters.</div></div>
+
+        <div class="ppl-foot">
+          <t t-if="listedNote"><t t-esc="listedNote"/> ·</t>
+          <button class="ppl-link" t-on-click="openAll">Open full contract list →</button>
+        </div>
+      </div>
+
+      <!-- The contract drawer, mounted only when it registered itself into the
+           soft "pb_contracts_drawer" registry. t-key on the id forces a
+           remount, and therefore a fresh slide-in, when switching records. -->
+      <t t-if="state.drawerContractId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerContractId"/>
+    </div>
+  </t>
+
+</templates>

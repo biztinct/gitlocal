@@ -1,0 +1,85 @@
+Hiring connection activation
+
+Location: Set up hiring > Hiring connections, as Talent lead.
+The code deploys disabled connections. A saved configuration is not a passed
+check. Configure, Check, then Enable. Run controlled provider tests before use.
+
+Hosting decision still required
+CV parser only: a separate 8 GB RAM / 4 vCPU host, one CV at a time, is the
+recommended starting point. 4 GB is for a limited pilot; 16 GB gives headroom
+for larger scans or concurrency. The measured small synthetic Mac run peaked
+at 2,095,153,152 bytes, not a Linux production guarantee. Test representative
+CVs on the chosen host before acceptance. No host purchase/resize is authorized.
+DocuSign hosts signing; there is no Documenso service to provision. The existing
+2 GB Odoo server should not also run Docling. A combined Odoo/parser host needs
+separate load measurement and headroom for its four active databases.
+
+1. Signing
+DocuSign is the selected provider for all new signing drafts. Follow
+DOCUSIGN.txt for API entitlement, sender consent, RSA key and Connect HMAC setup.
+The connection check reads the account and envelope list, without sending.
+Offer flow: approved request/offer > Prepare signing draft > Open signing
+provider > sign in as the configured sender > find the offer reference >
+place required signature fields and review > return to Payobook > tick reviewed
+> Send signature invitation. Signed PDF includes the completion certificate.
+Cancel before editing pay lines; signed offers need a new revision. Draft
+cancellation moves it to DocuSign's recycle bin; sent envelopes are voided.
+Existing Documenso envelopes retain their provider and history for verification
+and cancellation only; no new Documenso host is required or activated.
+
+2. CV extraction
+Build services/recruit_cv on the separate service host. Follow its OPERATIONS.
+Supply HTTPS URL/key, Check and Enable. New CV attachments identified as CVs
+queue extraction. Existing CVs use the Extract CV button. Recruiters review
+skills, employment and education before applying. OCR/indexed text is searchable.
+No candidate ranking, inferred demographic attributes or inferred proficiency.
+An unrecognised employment section stays blank; extracted full text remains
+reviewable. Test real EN/VI/ID PDF, DOCX and scanned samples with permission.
+
+3. Calendars
+Configure the official Google/Microsoft OAuth application in Odoo Calendar.
+Rize IT supplies application credentials/redirect URI setup and tenant consent.
+Each organiser connects their own calendar; panel free/busy access is required.
+Google and Microsoft SDKs are isolated in /odoo/vendor/hiring-calendar-sdk.
+Install the rehearsed lock via pip --target, then install-calendar-sdk.sh.
+The SDK runner receives tokens on stdin; it does not replace Odoo dependencies.
+Use Find panel availability on a candidate, select panel/window/timezone, copy
+the expiring link. The link shows the browser timezone and checks again at booking.
+Calendar time moves create an audit record; the recruiter confirms the reason
+and Internal/External classification. External diary ownership does not reliably
+identify who requested a move. Live Google/Outlook consent/sync tests remain due.
+
+4. WhatsApp and email
+Meta requires a verified phone/WABA, system-user token, app secret, callback
+verification token and approved four-body-parameter template. Parameters:
+candidate name, role, local interview time, joining details. Provider fees apply.
+Run Check, register the callback, then Enable after a controlled test.
+Record candidate WhatsApp consent and evidence on the candidate form.
+Reminders use the existing 24h/30m switches. Unknown outcomes are not retried
+blindly. View accepted/delivered/read/failed/unknown in Interview > WhatsApp delivery.
+Email keeps Odoo's existing SMTP/OAuth integration and editable templates.
+Connection testing does not send email. Sender DNS and inbox delivery need the
+approved Rize mail account and controlled test inbox. Existing mail switches
+are preserved. No messages were sent to real candidates during implementation.
+
+5. Native configuration
+Stage visibility: TA Lead selects stage/audience/parts. HM/panel policies apply
+only to those related to the candidate. Named groups need existing request
+access. Matching policies replace individual shares for that stage. Agencies
+retain their restricted portal. Feedback embargo and resume-bank restrictions stay.
+Cover approvers: name TA Lead, Head of HR fallback and dated absence in Hiring
+rules. Country assignment notices include the designated TA Lead. No org-chart
+manager fallback is assumed for new cover requests.
+Country offers: administrator configures approved payroll inputs/employer
+outputs, effective dates, country letter and counter-signatory. HR/Finance
+must approve rates, defaults and templates. No statutory rates are guessed.
+Employer-cost output is an estimate, not a payroll posting. All required inputs
+must be supplied. One-time items affect first-year cost, not recurring monthly cost.
+
+Still open
+LinkedIn, JobStreet and VietnamWorks direct publishing/native applications
+need approved partner API contracts, Rize's full Zoho board inventory and
+provider-specific connector implementation. Credentials alone are insufficient.
+Branding/DNS, mail DNS, real-user access assignments, retention/legal entities,
+historical source correction and conflicting acceptance rules remain owner setup.
+The second worksheet is still not client-tested; automated checks are separate.

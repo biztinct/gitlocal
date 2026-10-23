@@ -1,0 +1,182 @@
+// =====================================================================
+//  Payobook Import — reusable .pbim-* primitives (powder identity)
+//  Consumed by: pb_import, pb_import_wizard, pb_import_batch,
+//               pb_import_advanced. Namespaced so nothing leaks globally.
+// =====================================================================
+
+// ============ Integrations Cycle 7, WP-4 — the launchers stop sitting on the
+//              last row of a cockpit.
+//
+// Two global launchers are `position: fixed` bottom-right on every backend
+// screen: pb_learn's "Stuck?" FAB (`bottom: 92px`, 50px tall) and PayAI's pill
+// (`bottom: 24px`, 58px tall). Together they occupy the bottom **142px** of the
+// viewport at the right-hand edge.
+//
+// A fixed launcher passing OVER a page while it scrolls is the pattern working
+// as intended. What is not is what the browser measured on the owner's own
+// connector cockpit at 1450px, scrolled to the very end (`scrollTop` ===
+// `scrollHeight - clientHeight`):
+//
+//     .lrn-fab              x 1324-1426  y 758-808
+//     .payai-floating-pill  x 1368-1426  y 818-876
+//     covered:  "Dependants with a PIT number"  Active
+//               "Actual working hours incl. paid leave"  Active
+//
+// Those two rows are the LAST rows of the Transformations panel, and there is
+// no scroll left to move them out — the page reserved 26px against a 142px
+// stack, so its final rows are permanently under a button. That is the defect,
+// and it is a property of the SHELL, not of one cockpit, so it is fixed here in
+// the kit for all of them (W6).
+//
+// Reserved only when a launcher is actually mounted: `:has()` because both
+// hosts are outside every `.pbim` subtree. An engine without `:has()` drops the
+// rule and the padding stays at 26px — a degrade back to today, not a break.
+//
+// TWO reservations, because pb_learn's FAB has two homes and says so in its own
+// stylesheet: `bottom: 160px` while the retired guided-tour launcher is still
+// installed, and `bottom: 92px` once it is not (`body.pb-coach-absent`, set at
+// runtime by `first_login.js`). Reserving the taller figure unconditionally
+// would leave 68px of dead space at the end of every cockpit on every tenant
+// that has already retired it — which is this one, measured live. The FAB is
+// 50px tall in both; the page's own 26px padding is added on top.
+//
+// `tests/test_connector_cockpit.py::test_41` reads pb_learn's offsets back out
+// of pb_learn and asserts these two numbers still cover them, because the
+// arithmetic lives in one module and its inputs live in another.
+body:has(.lrn-coachhost) .pbim.pbim-page,
+body:has(.payai-floating-pill) .pbim.pbim-page {
+    padding-bottom: 236px;   // 160 + 50 + 26
+}
+body.pb-coach-absent:has(.lrn-coachhost) .pbim.pbim-page,
+body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbim-page {
+    padding-bottom: 168px;   // 92 + 50 + 26
+}
+
+.pbim {
+    @include pbim-root-vars;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--pbim-text);
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    // ---- page shell ----
+    &.pbim-page { min-height: 100%; background: var(--pbim-bg); padding: 26px; overflow: auto; }
+    .pbim-wrap { max-width: 1240px; margin: 0 auto; }
+
+    // ---- headings ----
+    .pbim-h1 { font-size: 23px; font-weight: 800; letter-spacing: -.01em; }
+    .pbim-sub { font-size: 13.5px; color: var(--pbim-muted); margin-top: 3px; }
+    .pbim-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-muted); }
+    .pbim-h2 { font-size: 15px; font-weight: 800; }
+
+    // ---- surfaces ----
+    .pbim-card { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); }
+    .pbim-panel { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 18px 20px; }
+    .pbim-panel-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+
+    // ---- hero (white card + indigo left rule + light-indigo icon avatar) ----
+    .pbim-hero { display: flex; align-items: center; gap: 18px; background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-left: 4px solid var(--pbim-primary); border-radius: var(--pbim-r-lg); padding: 18px 22px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+    .pbim-hero-av { flex: 0 0 auto; width: 56px; height: 56px; border-radius: 15px; background: var(--pbim-soft); color: var(--pbim-primary); display: grid; place-items: center; font-size: 20px; font-weight: 800; }
+    .pbim-hero-id { flex: 1; min-width: 0; }
+    .pbim-hero-id .nm { font-size: 19px; font-weight: 800; color: var(--pbim-ink); }
+    .pbim-hero-id .mt { font-size: 13px; color: #4a5578; margin-top: 1px; }
+    .pbim-hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
+    .pbim-hero-net { text-align: right; }
+    .pbim-hero-net .v { font-size: 26px; font-weight: 800; color: var(--pbim-primary-strong); font-variant-numeric: tabular-nums; }
+    .pbim-hero-net .k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); }
+
+    // light-indigo chip (sits on the white hero)
+    .pbim-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--pbim-soft); color: var(--pbim-primary-strong); border-radius: var(--pbim-pill); padding: 4px 11px; font-size: 12px; font-weight: 700; }
+    .pbim-chip svg { width: 13px; height: 13px; }
+
+    // ---- KPI / stat tiles (white card + colored Lucide icon badge) ----
+    .pbim-stats { display: grid; gap: 12px; }
+    .pbim-stat { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(16,24,40,.04); }
+    .pbim-stat-ic { width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center; background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbim-stat-ic svg { width: 21px; height: 21px; }
+    .pbim-stat-ic.green { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbim-stat-ic.blue  { background: var(--pbim-cyan-soft);  color: var(--pbim-cyan); }
+    .pbim-stat-ic.amber { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbim-stat-ic.rose  { background: var(--pbim-rose-soft);  color: var(--pbim-rose); }
+    .pbim-stat-ic.teal  { background: #D5F5F1; color: #0D9488; }
+    .pbim-stat-ic.pink  { background: #FCE7F3; color: #DB2777; }
+    .pbim-stat-tx { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbim-stat .n { font-size: 21px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .pbim-stat .l { font-size: 11px; color: var(--pbim-muted); font-weight: 600; }
+    // tiles stay white; semantic colour lives in the icon badge + (money/error) number
+    .pbim-stat.ok  .n { color: var(--pbim-green); }
+    .pbim-stat.err .n { color: var(--pbim-rose); }
+    .pbim-stat .n.money { color: var(--pbim-green); }
+
+    // ---- numbered progress rail ----
+    .pbim-rail { display: flex; align-items: center; flex-wrap: wrap; }
+    .pbim-rail-step { display: flex; align-items: center; gap: 9px; }
+    .pbim-rail-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: #fff; border: 2px solid var(--pbim-line); color: var(--pbim-muted); flex: 0 0 auto; }
+    .pbim-rail-step.done .pbim-rail-dot { background: var(--pbim-green); border-color: var(--pbim-green); color: #fff; }
+    .pbim-rail-step.cur  .pbim-rail-dot { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; box-shadow: 0 0 0 4px var(--pbim-ring); }
+    .pbim-rail-lab { font-size: 12.5px; font-weight: 700; color: var(--pbim-muted); }
+    .pbim-rail-step.cur  .pbim-rail-lab { color: var(--pbim-primary-strong); }
+    .pbim-rail-step.done .pbim-rail-lab { color: var(--pbim-text); }
+    .pbim-rail-bar { flex: 1 1 18px; min-width: 18px; height: 2px; background: var(--pbim-line); margin: 0 12px; }
+    .pbim-rail-bar.done { background: var(--pbim-green); }
+
+    // ---- data table ----
+    .pbim-tablewrap { border: 1px solid var(--pbim-line); border-radius: 12px; overflow: hidden; overflow-y: auto; }
+    .pbim-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pbim-table th { text-align: left; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--pbim-muted); padding: 9px 14px; background: var(--pbim-bg); position: sticky; top: 0; z-index: 1; }
+    .pbim-table td { padding: 9px 14px; border-top: 1px solid var(--pbim-line); }
+    .pbim-table tr.click { cursor: pointer; }
+    .pbim-table tr.click:hover td { background: var(--pbim-ring); }
+    .pbim-table td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #475569; }
+
+    // ---- status badge ----
+    .pbim-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800; padding: 2px 9px; border-radius: var(--pbim-pill); text-transform: capitalize; background: var(--pbim-bg); color: var(--pbim-muted); }
+    .pbim-badge .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .pbim-badge.ok, .pbim-badge.done, .pbim-badge.connected { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbim-badge.info, .pbim-badge.new  { background: var(--pbim-soft);  color: var(--pbim-primary-strong); }
+    .pbim-badge.warn, .pbim-badge.connecting { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbim-badge.err, .pbim-badge.error { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbim-badge.muted, .pbim-badge.draft, .pbim-badge.disconnected { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+
+    // ---- filter chips ----
+    .pbim-chips { display: inline-flex; flex-wrap: wrap; gap: 7px; }
+    .pbim-fchip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--pbim-line); background: #fff; color: #475569; border-radius: var(--pbim-pill); padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .14s; font-family: inherit; }
+    .pbim-fchip:hover { border-color: var(--pbim-primary-strong); }
+    .pbim-fchip .c { font-size: 11px; font-weight: 800; opacity: .65; }
+    .pbim-fchip.on { background: var(--pbim-soft); border-color: var(--pbim-primary); color: var(--pbim-primary); }
+    .pbim-fchip.on .c { opacity: .9; }
+
+    // ---- segmented control ----
+    .pbim-seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+    .pbim-segbtn { border: 1px solid var(--pbim-line); background: #fff; color: #475569; border-radius: var(--pbim-r-sm); padding: 8px 13px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: .14s; display: inline-flex; align-items: center; gap: 7px; }
+    .pbim-segbtn:hover { border-color: var(--pbim-primary); }
+    .pbim-segbtn.on { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+
+    // ---- buttons ----
+    .pbim-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: var(--pbim-r-sm); padding: 9px 16px; font-size: 13px; font-weight: 800; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: .14s; white-space: nowrap; }
+    .pbim-btn svg { vertical-align: -.18em; }
+    .pbim-btn.primary { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; }
+    .pbim-btn.primary:hover { background: var(--pbim-primary-hover); border-color: var(--pbim-primary-hover); }
+    .pbim-btn.primary:active { background: var(--pbim-primary-dark); border-color: var(--pbim-primary-dark); }
+    .pbim-btn.outline { background: #fff; border-color: var(--pbim-primary); color: var(--pbim-primary); }
+    .pbim-btn.outline:hover { background: var(--pbim-soft); }
+    .pbim-btn.ghost { background: #fff; border-color: var(--pbim-line); color: var(--pbim-primary-strong); }
+    .pbim-btn.ghost:hover { background: var(--pbim-line-2); }
+    .pbim-btn.danger { background: #fff; border-color: #f3c7cf; color: var(--pbim-rose); }
+    .pbim-btn.danger:hover { background: var(--pbim-rose-soft); }
+    .pbim-btn:disabled { background: var(--pbim-line); border-color: var(--pbim-line); color: #94A3B8; cursor: not-allowed; }
+    .pbim-btn-sm { padding: 5px 11px; font-size: 11.5px; border-radius: 8px; }
+
+    // ---- mini inline button (table row ops) ----
+    .pbim-mini { border: 1px solid var(--pbim-primary); background: var(--pbim-soft); color: var(--pbim-primary); border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .pbim-mini.ghost { background: #fff; color: #475569; border-color: var(--pbim-line); }
+
+    // ---- note / empty ----
+    .pbim-note { font-size: 12.5px; color: #41507e; background: var(--pbim-soft); border-radius: 9px; padding: 10px 12px; }
+    .pbim-empty { padding: 26px; text-align: center; color: var(--pbim-muted); font-size: 13px; }
+
+    // ---- busy overlay + spinner ----
+    .pbim-busy { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 60px 0; color: var(--pbim-muted); }
+    .pbim-spin { width: 38px; height: 38px; border: 3px solid var(--pbim-soft); border-top-color: var(--pbim-primary-strong); border-radius: 50%; animation: pbim-spin .8s linear infinite; }
+    @keyframes pbim-spin { to { transform: rotate(360deg); } }
+}

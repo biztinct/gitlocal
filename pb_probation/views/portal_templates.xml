@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ====================================================================
+       ONE CARD, ADDED TO A BLOCK P3 ALREADY SHARES.
+
+       `ob_people_block` is called from BOTH states of /my/journey — the one
+       with a journey running and the one without — so putting the card at
+       the top of it is the whole of the integration, and P3's template is
+       not touched.
+
+       SERVER-SIDE QWEB, NOT OWL. `t-attf-class` with an interpolation is the
+       only correct conditional class here: `t-att-class` with a dict is an
+       OWL thing, and in a `<template>` it writes the Python dict's repr into
+       the attribute AND drops the static class, with no error anywhere (R42).
+
+       The portal has no dark mode at all (R39) — the website frontend is
+       light-only by design — so every colour in `portal_probation.scss`
+       resolves through a token with a literal fallback beside it, which is
+       what "checked in both themes" means on this surface.
+       ==================================================================== -->
+
+  <template id="portal_journey_probation_card"
+            inherit_id="pb_onboarding.ob_people_block"
+            name="My trial period (ESS)">
+    <!-- FIRST in the block, not last. For somebody inside a trial period this
+         is the most consequential thing on the page, and a card about their
+         job under two cards about who to ask for help reads as a footnote. -->
+    <xpath expr="//div[1]" position="before">
+
+      <div t-if="probation" class="pbme-card pbpr-card">
+        <div class="pbme-card-title">Your trial period</div>
+
+        <div class="pbpr-state">
+          <span t-attf-class="pbme-badge pbme-badge--#{probation['tone']}"
+                t-esc="probation['label']"/>
+          <span t-if="probation['review_running']"
+                class="pbme-badge pbme-badge--draft">
+            Review under way
+          </span>
+        </div>
+
+        <div t-if="probation['trial_end']" class="pbpr-when">
+          <div class="pbpr-when-d" t-esc="probation['trial_end']"/>
+          <div class="pbpr-when-w">
+            <t t-if="probation['days'] is None">no date set</t>
+            <t t-elif="probation['days'] &gt; 1">ends in <t t-esc="probation['days']"/> days</t>
+            <t t-elif="probation['days'] == 1">ends tomorrow</t>
+            <t t-elif="probation['days'] == 0">ends today</t>
+            <t t-else="">ended <t t-esc="-probation['days']"/> days ago</t>
+          </div>
+        </div>
+
+        <p class="pbme-muted" t-esc="probation['next']"/>
+
+        <p t-if="probation['live']" class="pbme-muted pbpr-note">
+          If anything is unclear, ask your manager or your HR contact — that is
+          what the conversation is for, and it is better had early.
+        </p>
+      </div>
+
+    </xpath>
+  </template>
+
+</odoo>

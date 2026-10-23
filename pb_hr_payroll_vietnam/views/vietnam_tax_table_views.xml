@@ -9,7 +9,7 @@
         <field name="name">vietnam.tax.table.tree</field>
         <field name="model">vietnam.tax.table</field>
         <field name="arch" type="xml">
-            <tree string="Tax Tables">
+            <list string="Tax Tables">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="tax_year"/>
@@ -18,7 +18,7 @@
                 <field name="dependent_deduction"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -57,14 +57,14 @@
                         <!-- Tax Slabs Tab -->
                         <page string="Tax Slabs" name="slabs">
                             <field name="slab_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="income_from"/>
                                     <field name="income_to"/>
                                     <field name="tax_rate"/>
                                     <field name="fixed_amount"/>
                                     <field name="formula_description" readonly="1"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         
@@ -112,7 +112,7 @@
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Current Year" name="current_year" 
                         domain="[('tax_year', '=', context_today().year)]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Year" name="year" context="{'group_by': 'tax_year'}"/>
                     <filter string="Company" name="company" context="{'group_by': 'company_id'}"/>
                 </group>
@@ -124,7 +124,7 @@
     <record id="action_vietnam_tax_table" model="ir.actions.act_window">
         <field name="name">Tax Tables</field>
         <field name="res_model">vietnam.tax.table</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_vietnam_tax_table_search"/>
         <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">
@@ -146,7 +146,7 @@
         <field name="name">vietnam.tax.slab.tree</field>
         <field name="model">vietnam.tax.slab</field>
         <field name="arch" type="xml">
-            <tree string="Tax Slabs">
+            <list string="Tax Slabs">
                 <field name="table_id"/>
                 <field name="sequence"/>
                 <field name="income_from"/>
@@ -154,7 +154,7 @@
                 <field name="tax_rate"/>
                 <field name="fixed_amount"/>
                 <field name="formula_description"/>
-            </tree>
+            </list>
         </field>
     </record>
 

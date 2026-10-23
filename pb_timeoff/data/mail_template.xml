@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- ==================================================================
+         Editable by the business, which is why these are records and not
+         strings in Python. `noupdate="1"` so a reworded template survives an
+         upgrade — and note R57: changing one of these later needs the
+         `ir_model_data` dance, not just an edit to this file.
+
+         THE RECIPIENT IS ALWAYS PASSED EXPLICITLY at send time (R6). The
+         `email_to` below is documentation of who the template is for; a
+         template's own rendered address can reach `mail.mail` EMPTY, queued
+         and addressed to nobody, with no error anywhere.
+
+         No "Odoo" anywhere a reader can see (binding rule 1). Outgoing
+         debranding is automatic on top of this (biz_mail_debrand).
+         ================================================================== -->
+
+    <record id="mail_backdated_leave" model="mail.template">
+      <field name="name">Time off: entered for a day that has gone</field>
+      <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+      <field name="subject">Time off entered after the fact — {{ object.employee_id.name }}</field>
+      <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+      <field name="email_to">{{ object.company_id.email or '' }}</field>
+      <field name="lang">{{ object.employee_id.user_id.lang or object.company_id.partner_id.lang }}</field>
+      <field name="body_html" type="html">
+        <div style="margin:0;padding:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#1B1733;">
+          <p style="margin:0 0 12px;">Hello,</p>
+          <p style="margin:0 0 12px;">
+            <strong t-out="object.employee_id.name or ''">Bảo</strong>
+            has asked for
+            <strong t-out="object.holiday_status_id.name or ''">Sick Time Off</strong>
+            from <t t-out="object.request_date_from or ''">2026-09-10</t>
+            to <t t-out="object.request_date_to or ''">2026-09-11</t>,
+            which has already gone.
+          </p>
+          <p style="margin:0 0 12px;">
+            Worth checking against the pay for that period before it is worked
+            out. If a certificate was attached it is on the request.
+          </p>
+          <p style="margin:0 0 4px;color:#64748B;font-size:13px;">
+            <t t-out="object.name or ''"/>
+          </p>
+        </div>
+      </field>
+      <field name="auto_delete" eval="False"/>
+    </record>
+
+    <record id="mail_carry_forward" model="mail.template">
+      <field name="name">Time off: days to use before the cut-off</field>
+      <field name="model_id" ref="hr.model_hr_employee"/>
+      <field name="subject">{{ ctx.get('pb_days_left') }} days of {{ ctx.get('pb_type_name') }} still to take</field>
+      <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+      <field name="email_to">{{ object.work_email or '' }}</field>
+      <field name="lang">{{ object.user_id.lang or object.company_id.partner_id.lang }}</field>
+      <field name="body_html" type="html">
+        <div style="margin:0;padding:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#1B1733;">
+          <t t-if="ctx.get('pb_to_manager')">
+            <p style="margin:0 0 12px;">Hello,</p>
+            <p style="margin:0 0 12px;">
+              <strong t-out="ctx.get('pb_employee_name') or ''">Bảo</strong>
+              still has <strong t-out="ctx.get('pb_days_left') or ''">14</strong>
+              days of <t t-out="ctx.get('pb_type_name') or ''">Paid Time Off</t>
+              to take before <strong t-out="ctx.get('pb_cutoff') or ''">31 December</strong>.
+            </p>
+            <p style="margin:0 0 12px;">
+              Worth a word about when they would like to take them, while
+              there is still time to cover the work.
+            </p>
+          </t>
+          <t t-else="">
+            <p style="margin:0 0 12px;">Hello <t t-out="object.name or ''">Bảo</t>,</p>
+            <p style="margin:0 0 12px;">
+              You still have <strong t-out="ctx.get('pb_days_left') or ''">14</strong>
+              days of <t t-out="ctx.get('pb_type_name') or ''">Paid Time Off</t>
+              to take before <strong t-out="ctx.get('pb_cutoff') or ''">31 December</strong>.
+            </p>
+            <p style="margin:0 0 12px;">
+              Book them in whenever suits you — your manager has had the same
+              note, so they know to expect it.
+            </p>
+          </t>
+        </div>
+      </field>
+      <field name="auto_delete" eval="False"/>
+    </record>
+
+  </data>
+</odoo>

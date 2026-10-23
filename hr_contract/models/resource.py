@@ -7,7 +7,8 @@ from odoo.osv.expression import AND
 
 
 class ResourceCalendar(models.Model):
-    _inherit = 'resource.calendar'
+    _name = 'resource.calendar'
+    _inherit = ['resource.calendar']
 
     contracts_count = fields.Integer("# Contracts using it", compute='_compute_contracts_count', groups="hr_contract.group_hr_contract_manager")
 

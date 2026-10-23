@@ -1,0 +1,6 @@
+{
+  "backup_root": "/odoo/nightly-backups",
+  "filestore_root": "/odoo/.local/share/Odoo/filestore",
+  "databases": ["payobook", "payobook_template", "p0clone", "rize"],
+  "keep_days": {"default": 7, "rize": 30}
+}

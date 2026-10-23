@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_tenancy.PlanUsage">
+  <div class="pbim pbim-page pbtn">
+    <div class="pbim-wrap pbtn-pu">
+
+      <div class="pbtn-wn-head">
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+        <div class="pbim-eyebrow"><t t-out="ic('creditCard',13)"/> About Payobook</div>
+        <h1 class="pbim-h1">Plan &amp; usage</h1>
+        <div class="pbim-sub" t-esc="lede"/>
+      </div>
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your plan…</span>
+      </div>
+
+      <div t-elif="state.error" class="pbim-card pbtn-empty">
+        <span class="pbtn-empty-ic"><t t-out="ic('alert',26)"/></span>
+        <b>We could not read your plan just now.</b>
+        <span t-esc="state.error"/>
+        <button class="pbim-btn outline" t-on-click="load">
+          <t t-out="ic('refresh',14)"/> Try again
+        </button>
+      </div>
+
+      <t t-else="">
+        <!-- ===================== the trial strip ===================== -->
+        <div t-if="onTrial" t-attf-class="pbtn-pu-trial {{ trial.phase }}">
+          <span class="pbtn-pu-trial-ic"><t t-out="ic('clock',17)"/></span>
+          <div class="pbtn-pu-trial-tx">
+            <b t-if="trial.text" t-esc="trial.text"/>
+            <b t-else="">You are on a Payobook trial.</b>
+            <span>Trial ends <t t-esc="trial.ends"/>. Nothing you have entered is
+                  affected — talk to us and we will move you onto a plan.</span>
+          </div>
+        </div>
+
+        <!-- ============ THE HERO: this month, as one picture ============ -->
+        <div class="pbim-card pbtn-pu-hero">
+          <div t-attf-class="pbtn-pu-ring {{ ringTone }}">
+            <svg viewBox="0 0 110 110" width="118" height="118">
+              <circle cx="55" cy="55" r="46" class="pbtn-pu-track"/>
+              <circle cx="55" cy="55" r="46" class="pbtn-pu-arc"
+                      t-att-stroke-dasharray="ring.total"
+                      t-att-stroke-dashoffset="ring.offset"/>
+            </svg>
+            <div class="pbtn-pu-ring-tx">
+              <span class="n" t-esc="seat.count"/>
+              <span t-if="hasLimit" class="l">of <t t-esc="seat.limit"/></span>
+              <span t-else="" class="l">employees</span>
+            </div>
+          </div>
+          <div class="pbtn-pu-hero-tx">
+            <div class="pbtn-pu-plan">
+              <span class="pbim-eyebrow">Your plan</span>
+              <b t-if="planName" t-esc="planName"/>
+              <b t-else="" class="pbtn-pu-noplan">Not set yet</b>
+            </div>
+            <p class="pbtn-pu-seat" t-esc="seatSentence"/>
+            <div class="pbtn-pu-stats">
+              <div class="pbtn-pu-stat">
+                <span class="pbtn-pu-stat-ic"><t t-out="ic('users',16)"/></span>
+                <span class="n" t-esc="d.employees"/>
+                <span class="l">Employees on Payobook</span>
+              </div>
+              <div class="pbtn-pu-stat">
+                <span class="pbtn-pu-stat-ic"><t t-out="ic('fileText',16)"/></span>
+                <span class="n" t-esc="d.payslips"/>
+                <span class="l">Payslips produced in <t t-esc="d.month"/></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== the invoices ===================== -->
+        <div class="pbtn-pu-sec">
+          <h2 class="pbim-h2">Invoices</h2>
+          <span class="pbim-sub">Every invoice we have sent you, newest first.
+                The PDF is stored here, so it opens even if you are offline
+                from us.</span>
+        </div>
+
+        <div t-if="invoices.length" class="pbim-card pbtn-pu-inv">
+          <div t-foreach="invoices" t-as="inv" t-key="inv.number" class="pbtn-pu-row">
+            <span class="pbtn-pu-no" t-esc="inv.number"/>
+            <span class="pbtn-pu-per" t-esc="inv.period_label"/>
+            <span class="pbtn-pu-amt" t-esc="inv.total"/>
+            <span t-attf-class="pbim-badge {{ inv.tone }}" t-esc="inv.state_label"/>
+            <span class="pbtn-pu-due">
+              <t t-if="inv.state === 'paid'">issued <t t-esc="inv.issued_h"/></t>
+              <t t-else="">due <t t-esc="inv.due_h"/></t>
+            </span>
+            <a class="pbim-btn outline pbim-btn-sm" t-att-href="inv.href">
+              <t t-out="ic('download',13)"/> PDF
+            </a>
+          </div>
+        </div>
+        <div t-else="" class="pbim-card pbtn-empty">
+          <span class="pbtn-empty-ic"><t t-out="ic('fileText',26)"/></span>
+          <b>No invoices yet.</b>
+          <span>Payobook raises one invoice a month, after the month has
+                finished. It will appear here and in your inbox at the same
+                time.</span>
+        </div>
+      </t>
+
+    </div>
+  </div>
+</t>
+
+</templates>

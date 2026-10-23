@@ -1,0 +1,235 @@
+<odoo>
+  <!-- ======================================================================
+       RECRUIT P2 — the application page, drawn from the ROLE's own form.
+
+       KEEP the root `<main class="pb-apply">`: the Rize site frame
+       (rize_website.rz_application) replaces exactly that node with its shell
+       and puts it back inside. The old class names it styles (pb-apply-wrap,
+       -back, -heading, -eyebrow, -card, footer, .btn-primary) are kept too.
+
+       Every sentence that is not the talent lead's own words comes from `tx`
+       (controllers/application.py `chrome()`), translated per page language
+       through the module's .po files. The questions come translated from the
+       form records themselves.
+       ====================================================================== -->
+  <template id="application_journey" name="Application journey"><t t-call="website.layout">
+    <t t-set="additional_title" t-value="job.name"/>
+    <main class="pb-apply" t-att-data-preview="'1' if preview else None" t-att-lang="lang[:2]">
+      <div class="pb-apply-wrap">
+        <div t-if="preview" class="pba-preview-banner"><t t-out="ic('eye', 15)"/><span t-esc="tx['preview_banner']"/><span class="pba-preview-lang" t-esc="lang_word"/></div>
+
+        <div class="pba-top">
+          <a href="/jobs" class="pb-apply-back"><t t-out="ic('back', 15)"/> <t t-esc="tx['back']"/></a>
+          <nav t-if="pills" class="pba-langs" t-att-aria-label="tx['lang_label']">
+            <t t-out="ic('globe', 14)"/>
+            <a t-foreach="pills" t-as="pl" t-att-href="pl['url']" t-att-class="'pba-lang' + (' is-on' if pl['on'] else '')" t-att-aria-current="'true' if pl['on'] else None" t-att-hreflang="pl['code'][:2]" t-esc="pl['label']"/>
+          </nav>
+        </div>
+
+        <div class="pb-apply-heading">
+          <span class="pb-apply-eyebrow" t-esc="brand"/>
+          <h1 t-esc="job.name"/>
+          <p t-esc="intro"/>
+        </div>
+
+        <!-- ============ THANK YOU ============ -->
+        <section t-if="done" class="pb-apply-card pba-done" data-pba-done="1" t-att-data-draft="draft_key">
+          <span class="pba-done-ic"><t t-out="ic('checkCircle', 28)"/></span>
+          <span class="pb-apply-eyebrow" t-esc="tx['done_eyebrow']"/>
+          <h2 t-esc="done_title"/>
+          <p class="pba-done-line" t-esc="done_line"/>
+          <h3 class="pba-next-h" t-esc="tx['next_title']"/>
+          <ol class="pba-next">
+            <li><span>1</span><p t-esc="tx['next_1']"/></li>
+            <li><span>2</span><p t-esc="tx['next_2']"/></li>
+            <li><span>3</span><p t-esc="next_3"/></li>
+          </ol>
+          <a href="/jobs" class="btn btn-primary"><t t-esc="tx['other_roles']"/> <t t-out="ic('arrowRight', 15)"/></a>
+        </section>
+
+        <!-- ============ THE FORM ============ -->
+        <form t-else="" t-att-action="action" method="post" enctype="multipart/form-data" class="pb-apply-card pba-form" novalidate="novalidate"
+              t-att-data-draft="draft_key" t-att-data-progress="tx['progress']" t-att-data-words="tx['words']"
+              t-att-data-err-email="tx['err_email']" t-att-data-err-url="tx['err_url']" t-att-data-err-big="tx['err_big']"
+              t-att-data-err-kind="tx['err_kind']" t-att-data-err-words="tx['err_words']"
+              t-att-data-summary-one="tx['summary_one']" t-att-data-summary-many="tx['summary_many']"
+              t-att-data-sending="tx['sending']" t-att-data-phone-hint="tx['phone_hint']">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <div class="d-none" aria-hidden="true"><input name="company_website" tabindex="-1" autocomplete="off"/></div>
+
+          <div class="pba-progress" aria-live="polite">
+            <div class="pba-progress-row"><b t-esc="tx['form_title']"/><span class="pba-progress-t" t-esc="tx['progress'].replace('{n}', '0').replace('{m}', str(n_questions))"/></div>
+            <div class="pba-bar"><span/></div>
+          </div>
+
+          <div t-if="error" class="pba-alert" role="alert"><t t-out="ic('alert', 16)"/><span t-esc="error"/></div>
+          <div class="pba-alert pba-summary" role="alert" t-att-hidden="None if summary else 'hidden'">
+            <t t-out="ic('alert', 16)"/>
+            <span><b class="pba-summary-t" t-esc="summary"/><small t-if="files_again" t-esc="files_again"/></span>
+          </div>
+
+          <div class="pba-qs">
+            <t t-foreach="fields_" t-as="f">
+              <t t-call="pb_hiring.apply_field_{{ f['widget'] }}"/>
+            </t>
+          </div>
+
+          <footer>
+            <p><t t-out="ic('lock', 13)"/> <t t-esc="tx['reassure']"/></p>
+            <button class="btn btn-primary pba-send" type="submit" t-att-disabled="'disabled' if preview else None"><span t-esc="tx['send']"/> <t t-out="ic('arrowRight', 16)"/></button>
+          </footer>
+        </form>
+      </div>
+    </main>
+  </t></template>
+
+  <!-- ====================================================================
+       One question. The frame every kind shares: its label (with the
+       "(English)" mark on a preview when this language has no words yet),
+       Required / Optional, the help line, the control, the error line.
+       `f` is the prepared row from `_pb_fields`.
+       ==================================================================== -->
+  <template id="apply_field_frame" name="Application question frame">
+    <div t-att-class="'pba-q pba-w-%s%s' % (f['widget'], ' has-error' if f['error'] else '')"
+         t-att-data-key="f['key']" t-att-data-widget="f['widget']"
+         t-att-data-required="'1' if f['required'] else None" t-att-data-err="f.get('err_required')"
+         t-att-data-min="f['min_words'] or None" t-att-data-max="f['max_words'] or None"
+         t-att-data-maxmb="f.get('max_mb')" t-att-data-suffixes="f.get('suffixes')">
+      <t t-if="f['widget'] != 'consent'">
+        <label class="pba-label" t-att-for="'pba-' + f['key']">
+          <span class="pba-label-text" t-esc="f['label']"/>
+          <span t-if="f['english']" class="pba-en" t-esc="tx['english_mark']"/>
+          <span t-if="f['required']" class="pba-req" t-att-title="tx['required']">*</span>
+          <span t-else="" class="pba-opt" t-esc="tx['optional']"/>
+        </label>
+        <p class="pba-help" t-att-hidden="None if f['help'] else 'hidden'" t-esc="f['help']"/>
+      </t>
+      <t t-out="0"/>
+      <p class="pba-err" role="alert" t-esc="f['error']"/>
+    </div>
+  </template>
+
+  <template id="apply_field_text" name="Application question: short text"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="text" maxlength="500" class="pba-in"
+           t-att-placeholder="f['placeholder'] or None" t-att-value="f['value']"
+           t-att-autocomplete="{'name': 'name', 'city': 'address-level2'}.get(f['kind'], 'off')"
+           t-att-aria-required="'true' if f['required'] else None"/>
+  </t></template>
+
+  <template id="apply_field_email" name="Application question: email"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="email" autocomplete="email" inputmode="email" class="pba-in"
+           t-att-placeholder="f['placeholder'] or None" t-att-value="f['value']" aria-required="true"/>
+  </t></template>
+
+  <template id="apply_field_tel" name="Application question: phone"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="tel" autocomplete="tel" inputmode="tel" class="pba-in"
+           t-att-placeholder="f['placeholder'] or None" t-att-value="f['value']" aria-required="true"/>
+    <small class="pba-hint pba-phone-hint"/>
+  </t></template>
+
+  <template id="apply_field_url" name="Application question: link"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="url" inputmode="url" class="pba-in"
+           t-att-placeholder="f['placeholder'] or 'https://'" t-att-value="f['value']"
+           t-att-aria-required="'true' if f['required'] else None"/>
+  </t></template>
+
+  <template id="apply_field_number" name="Application question: number"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="text" inputmode="decimal" class="pba-in pba-in--short"
+           t-att-placeholder="f['placeholder'] or None" t-att-value="f['value']"/>
+  </t></template>
+
+  <template id="apply_field_money" name="Application question: expected pay"><t t-call="pb_hiring.apply_field_frame">
+    <div class="pba-money">
+      <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="text" inputmode="decimal" class="pba-in"
+             t-att-placeholder="f['placeholder'] or None" t-att-value="f['value']"/>
+      <span class="pba-money-cur" t-esc="f.get('suffix')"/>
+    </div>
+  </t></template>
+
+  <template id="apply_field_date" name="Application question: date"><t t-call="pb_hiring.apply_field_frame">
+    <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="date" class="pba-in pba-in--short" t-att-value="f['value']"/>
+  </t></template>
+
+  <template id="apply_field_textarea" name="Application question: long text"><t t-call="pb_hiring.apply_field_frame">
+    <textarea t-att-id="'pba-' + f['key']" t-att-name="f['key']" rows="6" maxlength="12000" class="pba-in"
+              t-att-placeholder="f['placeholder'] or None" t-esc="f['value']"/>
+    <small class="pba-hint pba-words"><span class="pba-words-n"/><t t-if="f.get('words_hint')"> · <t t-esc="f['words_hint']"/></t></small>
+  </t></template>
+
+  <template id="apply_field_country" name="Application question: country"><t t-call="pb_hiring.apply_field_frame">
+    <select t-att-id="'pba-' + f['key']" t-att-name="f['key']" class="pba-in" autocomplete="country" aria-required="true">
+      <option value="" t-esc="tx['choose_country']"/>
+      <option t-foreach="countries" t-as="c" t-att-value="c.id" t-att-data-phone="c.phone_code or None"
+              t-att-selected="'selected' if str(c.id) == str(f['value']) else None" t-esc="c.name"/>
+    </select>
+  </t></template>
+
+  <template id="apply_field_choice" name="Application question: choice"><t t-call="pb_hiring.apply_field_frame">
+    <div class="pba-choices" role="radiogroup" t-att-aria-label="f['label']">
+      <label t-foreach="f['options']" t-as="op" class="pba-choice">
+        <input type="radio" t-att-name="f['key']" t-att-value="op[0]" t-att-checked="'checked' if str(f['value']) == op[0] else None"/>
+        <span class="pba-choice-dot"/><span t-esc="op[1]"/>
+      </label>
+    </div>
+  </t></template>
+
+  <template id="apply_field_multi" name="Application question: several choices"><t t-call="pb_hiring.apply_field_frame">
+    <div class="pba-choices">
+      <label t-foreach="f['options']" t-as="op" class="pba-choice pba-choice--multi">
+        <input type="checkbox" t-att-name="f['key']" t-att-value="op[0]" t-att-checked="'checked' if op[0] in (f['value'] or []) else None"/>
+        <span class="pba-choice-box"><t t-out="ic('check', 12)"/></span><span t-esc="op[1]"/>
+      </label>
+    </div>
+  </t></template>
+
+  <template id="apply_field_yes_no" name="Application question: yes or no"><t t-call="pb_hiring.apply_field_frame">
+    <div class="pba-choices pba-choices--row" role="radiogroup" t-att-aria-label="f['label']">
+      <label class="pba-choice"><input type="radio" t-att-name="f['key']" value="yes" t-att-checked="'checked' if f['value'] == 'yes' else None"/><span class="pba-choice-dot"/><span t-esc="tx['yes']"/></label>
+      <label class="pba-choice"><input type="radio" t-att-name="f['key']" value="no" t-att-checked="'checked' if f['value'] == 'no' else None"/><span class="pba-choice-dot"/><span t-esc="tx['no']"/></label>
+    </div>
+  </t></template>
+
+  <!-- A drop zone: the whole box is the label of the file input, so a tap
+       anywhere chooses a file and a drag anywhere drops one. -->
+  <template id="apply_dropzone" name="Application drop zone">
+    <label class="pba-drop" t-att-for="'pba-' + f['key']">
+      <input t-att-id="'pba-' + f['key']" t-att-name="f['key']" type="file" class="pba-file" t-att-accept="f['accept']"/>
+      <span class="pba-drop-ic"><t t-out="ic('upload', 20)"/></span>
+      <span class="pba-drop-body">
+        <b class="pba-drop-t" t-esc="tx['drop']" t-att-data-change="tx['drop_change']"/>
+        <small class="pba-drop-name"/>
+        <small class="pba-hint" t-esc="f['hint']"/>
+      </span>
+    </label>
+  </template>
+
+  <template id="apply_field_file" name="Application question: file"><t t-call="pb_hiring.apply_field_frame">
+    <t t-call="pb_hiring.apply_dropzone"/>
+  </t></template>
+
+  <template id="apply_field_portfolio" name="Application question: portfolio"><t t-call="pb_hiring.apply_field_frame">
+    <t t-if="f['mode'] == 'link'">
+      <input t-att-id="'pba-' + f['key'] + '_link'" t-att-name="f['key'] + '_link'" type="url" inputmode="url" class="pba-in"
+             t-att-placeholder="f['placeholder'] or 'https://'" t-att-value="f['link']"/>
+    </t>
+    <t t-elif="f['mode'] == 'file'">
+      <t t-call="pb_hiring.apply_dropzone"/>
+    </t>
+    <t t-else="">
+      <div class="pba-either">
+        <t t-call="pb_hiring.apply_dropzone"/>
+        <span class="pba-or" t-esc="tx['or']"/>
+        <input t-att-name="f['key'] + '_link'" type="url" inputmode="url" class="pba-in"
+               t-att-placeholder="tx['paste_link'] + ' — https://'" t-att-value="f['link']" t-att-aria-label="tx['paste_link']"/>
+      </div>
+    </t>
+  </t></template>
+
+  <template id="apply_field_consent" name="Application question: consent"><t t-call="pb_hiring.apply_field_frame">
+    <label class="pba-consent">
+      <input type="checkbox" t-att-name="f['key']" value="1" t-att-checked="'checked' if f['value'] in ('1', 'on') else None" aria-required="true"/>
+      <span class="pba-choice-box"><t t-out="ic('check', 12)"/></span>
+      <span class="pba-consent-t"><span class="pba-consent-s" t-esc="f['sentence']"/><span t-if="f['english']" class="pba-en" t-esc="tx['english_mark']"/></span>
+    </label>
+  </t></template>
+</odoo>

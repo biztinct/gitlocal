@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- India Specific Categories -->
+        <record id="categ_india_basic" model="hr.salary.rule.category">
+            <field name="name">India Basic Salary</field>
+            <field name="code">IND_BASIC</field>
+        </record>
+        
+        <record id="categ_india_allowances" model="hr.salary.rule.category">
+            <field name="name">India Allowances</field>
+            <field name="code">IND_ALLOW</field>
+        </record>
+        
+        <record id="categ_india_gross" model="hr.salary.rule.category">
+            <field name="name">India Gross Pay</field>
+            <field name="code">IND_GROSS</field>
+        </record>
+        
+        <record id="categ_india_deductions" model="hr.salary.rule.category">
+            <field name="name">India Deductions</field>
+            <field name="code">IND_DED</field>
+        </record>
+        
+        <record id="categ_india_tax" model="hr.salary.rule.category">
+            <field name="name">India Tax</field>
+            <field name="code">IND_TAX</field>
+        </record>
+        
+        <record id="categ_india_pf" model="hr.salary.rule.category">
+            <field name="name">India Provident Fund</field>
+            <field name="code">IND_PF</field>
+        </record>
+        
+        <record id="categ_india_employer" model="hr.salary.rule.category">
+            <field name="name">India Employer Contributions</field>
+            <field name="code">IND_EMP_CONTRIB</field>
+        </record>
+        
+    </data>
+</odoo>

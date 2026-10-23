@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import.PbImport">
+    <div class="pbm">
+      <div t-if="!state.loaded" class="pbm-loading"><div class="pbm-spinner"/><span>Loading import data…</span></div>
+
+      <div t-else="" class="pbm-wrap">
+        <!-- W17: the hub owns the title row. -->
+        <div class="pbm-head" t-if="!props.embedded">
+          <div>
+            <h1>Import Data</h1>
+            <p class="pbm-sub">Bring payroll data in from files and connected HR systems — map, validate, then commit.</p>
+          </div>
+        </div>
+
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+        <div data-coach="im-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.filter === 'all' ? '' : state.filter"/>
+          </t>
+        </div>
+
+        <!-- hero CTA: guided import -->
+        <div class="pbm-cta" data-coach="im-cta">
+          <span class="ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          </span>
+          <div class="tx">
+            <div class="lb">Load this period's pay data</div>
+            <div class="ds">A guided flow — upload your file, review matches, fix any issues, then commit. The tiles below set a scheme up; this one runs a period.</div>
+          </div>
+          <button class="go" t-on-click="startWizard">
+            Load pay data
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- secondary launches -->
+        <div class="pbm-launches" data-coach="im-launches" t-if="secondaryLaunches.length">
+          <button t-foreach="secondaryLaunches" t-as="l" t-key="l.xmlid"
+                  class="pbm-launch" t-on-click="() => this.launch(l.xmlid)">
+            <span class="pbm-launch-ic"><t t-out="tileIcon(l.icon)"/></span>
+            <span class="tx">
+              <span class="lb" t-esc="l.label"/>
+              <span class="ds" t-esc="l.desc"/>
+            </span>
+            <span class="ar"><t t-out="pipeIcon()"/></span>
+          </button>
+        </div>
+
+        <!-- where every batch is: the import pipeline as numbered steps.
+             A batch is at exactly ONE step (its state); errored and cancelled
+             batches are at none and "Show all" still lists them. -->
+        <div data-coach="im-pipe">
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every import batch is'"/>
+            <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+          </t>
+          <div class="pbim-showing">
+            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+              <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
+          </div>
+        </div>
+
+        <!-- ==== the one door to connectors ====
+             Deliberately a quiet LINK ROW, not a tile and not a panel. Import's
+             own tiles all start something here; this one leaves, and the
+             difference has to be legible before the click. It carries a back
+             chip, so it is a deep link rather than an exit (W5). -->
+        <div t-if="canManageConnectors" class="pbm-conndoor" data-coach="im-connectors">
+          <span class="ic"><t t-out="ic('plug',16)"/></span>
+          <span class="tx">Connectors live in Settings · Integrations</span>
+          <span class="n" t-esc="state.connectors"/>
+          <button class="go" t-on-click="manageConnectors">
+            Manage connectors <t t-out="pipeIcon()"/>
+          </button>
+        </div>
+
+        <div class="pbm-cols">
+          <!-- recent batches -->
+          <div class="pbm-panel pbm-grow" data-coach="im-batches">
+            <div class="pbm-panel-h">
+              <h2>Recent batches</h2>
+              <div class="pbm-filters">
+                <button t-foreach="['all','draft','in_progress','done','errors']" t-as="f" t-key="f"
+                        t-attf-class="pbm-fchip {{ state.filter === f ? 'on' : '' }}" t-on-click="() => this.setFilter(f)">
+                  <t t-esc="{all:'All',draft:'Draft',in_progress:'In progress',done:'Done',errors:'Errors'}[f]"/>
+                  <span class="c" t-esc="countFor(f)"/>
+                </button>
+              </div>
+            </div>
+            <div t-if="filteredBatches.length" class="pbm-table">
+              <div class="pbm-tr head">
+                <span class="c-nm">Batch</span><span class="c-src">Source</span>
+                <span class="c-st">Status</span><span class="c-ct">Lines</span>
+                <span class="c-ct">Matched</span><span class="c-ct">Errors</span><span class="c-dt">Date</span>
+              </div>
+              <div t-foreach="filteredBatches" t-as="b" t-key="b.id" class="pbm-tr" t-on-click="() => this.openBatch(b.id)">
+                <span class="c-nm" t-esc="b.name"/>
+                <span class="c-src" t-esc="b.source"/>
+                <span class="c-st"><span t-attf-class="pbm-badge {{ stateCls(b.state) }}"><span class="d"/><t t-esc="b.state_label"/></span></span>
+                <span class="c-ct" t-esc="b.total_lines"/>
+                <span class="c-ct" t-esc="b.matched"/>
+                <span t-attf-class="c-ct {{ b.errors ? 'rose' : '' }}" t-esc="b.errors"/>
+                <span class="c-dt" t-esc="b.date"/>
+              </div>
+            </div>
+            <div t-else="" class="pbm-empty">No batches match this filter.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

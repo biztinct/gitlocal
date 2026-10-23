@@ -1,0 +1,556 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-2:#4B4866; --muted:#64748B; --line:#E2E8F0; --canvas:#F4F5FB; --card:#FFFFFF;
+    --primary:#5A4BB0; --primary-deep:#4A3D96; --primary-soft:#EDEAF8; --primary-soft2:#CBC2EE; --primary-dark:#241F52;
+    --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
+    --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .num{font-variant-numeric:tabular-nums}
+  .ic{width:18px;height:18px;flex:none}
+
+  /* ---- top bar ---- */
+  .top{height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+  .crumb{color:var(--muted);font-weight:600;white-space:nowrap}.crumb b{color:var(--ink)}
+  .spacer{flex:1}
+  .name{border:1px solid transparent;border-radius:10px;padding:7px 10px;font-weight:800;min-width:180px;background:transparent}
+  .name:hover,.name:focus{border-color:var(--line);background:var(--canvas);outline:0}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap}
+  .btn:hover{background:var(--primary-soft)} .btn:disabled{opacity:.4;cursor:default}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
+  .btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  @media (max-width:900px){.top{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 14px;gap:8px}.crumb{display:none}.name{min-width:0;flex:1 1 120px}.btn{padding:7px 10px}.spacer{display:none}.wrap{padding:14px 12px 40px}.hero-l,.hero-r{padding:18px 16px}.sentence{font-size:19px}.board,.comp,.detail,.scen{padding:16px 14px}.flow{grid-template-columns:96px minmax(0,1fr) 80px}.mo{min-height:160px}.hero,.two,.split{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-l{border-right:0;border-bottom:1px solid var(--primary-soft2)}}
+  .wrap{grid-template-columns:minmax(0,1fr)} .card,.hero-l,.hero-r{min-width:0}
+
+  .wrap{max-width:1420px;margin:0 auto;padding:22px 20px 60px;display:grid;gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+  .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .sub{color:var(--muted);font-weight:600}
+
+  /* ---- hero ---- */
+  .hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0;overflow:hidden}
+  @media (max-width:1000px){.hero{grid-template-columns:1fr}}
+  .hero-l{padding:24px 26px;background:var(--primary-soft);border-right:1px solid var(--primary-soft2)}
+  .hero-r{padding:24px 26px}
+  .sentence{font-size:22px;font-weight:800;letter-spacing:-.015em;line-height:1.35;margin:10px 0 18px;max-width:34ch}
+  .sentence .tail{display:block;font-size:15px;font-weight:600;color:var(--ink-2);margin-top:8px;letter-spacing:0}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media (max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--primary-soft2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  .kpi small{color:var(--muted);font-weight:700;font-size:11px}
+  .kpi b{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .kpi .delta{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px;width:max-content;margin-top:4px;background:#F1F5F9;color:var(--ink-2)}
+  .delta.good{background:var(--money-soft);color:var(--money)} .delta.bad{background:var(--rose-soft);color:var(--rose)}
+  .delta .ic{width:12px;height:12px}
+  .river-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .river-head h2{font-size:15px;font-weight:800}
+  .target{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ink-2);font-size:13px}
+  .target input{width:110px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-weight:800;text-align:right;background:var(--canvas)}
+  .river{display:grid;gap:10px}
+  .flow{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:12px;font-weight:700}
+  .flow small{color:var(--muted);font-weight:700;display:block;font-size:11px}
+  .flow .bar{height:26px;border-radius:7px;background:var(--canvas);position:relative;overflow:hidden}
+  .flow .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:7px;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+  .flow .bar i.ghost{background:transparent;border:2px dashed #CBD5E1;border-radius:7px}
+  .flow b{text-align:right;font-size:14px}
+  .flow.total{border-top:1px solid var(--line);padding-top:10px}
+  .check{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--ink-2);font-size:13px;cursor:pointer;margin-top:10px}
+  .check input{accent-color:var(--primary);width:16px;height:16px}
+
+  /* ---- the year board ---- */
+  .board{padding:20px 22px 18px}
+  .board-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .board-head h2{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .lane{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px dashed var(--primary-soft2);border-radius:12px;background:#FAFAFE;margin-bottom:12px;flex-wrap:wrap;min-height:52px}
+  .lane .lab{font-weight:800;font-size:12px;color:var(--primary-deep);display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 12px;font-weight:700;font-size:13px;animation:pop .25s ease}
+  .chip .imp{color:var(--muted);font-weight:700;font-size:12px}
+  .chip .x{border:0;background:transparent;color:#94A3B8;cursor:pointer;display:grid;place-items:center;width:22px;height:22px;border-radius:50%}
+  .chip .x:hover{background:var(--rose-soft);color:var(--rose)}
+  .lane .hint{color:var(--muted);font-weight:600;font-size:12px}
+  .months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+  @media (max-width:1300px){.months{grid-template-columns:repeat(6,minmax(0,1fr))}}
+  @media (max-width:640px){.months{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .mo{display:flex;flex-direction:column;border-radius:12px;border:1px solid var(--line);background:var(--canvas);min-height:220px;transition:border-color .15s,background .15s;position:relative}
+  .mo.over{border-color:var(--primary);background:var(--primary-soft);box-shadow:inset 0 0 0 1px var(--primary)}
+  .mo.loss{background:#FFF6F9;border-color:#F5C6D6}
+  .mo-head{padding:10px 8px 8px;display:flex;flex-direction:column;gap:6px}
+  .mo-head .m{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:12px}
+  .mo-head .m .tet{font-size:9px;letter-spacing:.06em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:2px 5px;font-weight:800}
+  .mo-head .pbar{height:44px;display:flex;align-items:flex-end;gap:2px}
+  .mo-head .pbar i{flex:1;border-radius:4px 4px 2px 2px;background:var(--money);transition:height .4s cubic-bezier(.2,.8,.2,1);min-height:2px}
+  .mo-head .pbar i.ghost{background:#CBD5E1;opacity:.7}
+  .mo-head .pbar i.neg{background:var(--rose)}
+  .mo-head .pv{font-size:11px;font-weight:800;color:var(--money)} .mo.loss .pv{color:var(--rose)}
+  .mo-body{flex:1;padding:0 6px 8px;display:flex;flex-direction:column;gap:6px}
+  .mo-body .drop{flex:1;border-radius:8px;min-height:48px;display:grid;place-items:center;color:#B8BFCC;font-size:11px;font-weight:700;text-align:center;padding:6px;border:1px dashed transparent}
+  .mo.over .drop{border-color:var(--primary-soft2);color:var(--primary)}
+  .mv{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c,var(--primary));border-radius:10px;padding:8px 8px 8px 9px;font-size:12px;font-weight:700;line-height:1.3;cursor:grab;position:relative;animation:pop .25s ease;box-shadow:0 1px 2px rgba(30,27,46,.04)}
+  .mv:hover{box-shadow:0 8px 18px rgba(90,75,176,.14);border-color:var(--primary-soft2)}
+  .mv.drag{opacity:.4}
+  .mv .t{display:flex;align-items:center;gap:6px}
+  .mv .t .ic{width:14px;height:14px;color:var(--c,var(--primary))}
+  .mv .d{color:var(--muted);font-weight:600;font-size:11px;margin-top:3px}
+  .mv .imp{margin-top:6px;font-size:11px;font-weight:800;display:flex;flex-wrap:wrap;gap:4px}
+  .mv .imp span{border-radius:6px;padding:2px 6px;background:#F1F5F9;color:var(--ink-2);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .mv .imp .ic{width:11px;height:11px}
+  .mv .imp .good{background:var(--money-soft);color:var(--money)} .mv .imp .bad{background:var(--rose-soft);color:var(--rose)}
+  .mv .tools{position:absolute;top:6px;right:6px;display:flex;gap:2px;opacity:0;transition:opacity .15s}
+  .mv:hover .tools,.mv:focus-within .tools{opacity:1}
+  .mv .tools button{border:0;background:var(--card);width:20px;height:20px;border-radius:6px;display:grid;place-items:center;cursor:pointer;color:var(--muted);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .mv .tools button:hover{color:var(--primary);background:var(--primary-soft)}
+  .mv .tools .ic{width:12px;height:12px}
+  @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+  .empty{background:var(--primary-soft);border:1px dashed var(--primary-soft2);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;margin-bottom:12px;font-weight:600;color:var(--ink-2)}
+  .empty .ic{color:var(--primary)}
+  .empty .btn{margin-left:auto}
+
+  /* ---- composer + side ---- */
+  .two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+  @media (max-width:1000px){.two{grid-template-columns:1fr}}
+  .comp{padding:20px 22px}
+  .comp h2,.side h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+  .tab{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .tab .ic{width:14px;height:14px}
+  .tab:hover{background:var(--primary-soft)} .tab.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .sent{font-size:19px;font-weight:700;line-height:2.1;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-height:48px}
+  .sent .k{color:var(--muted);font-weight:600}
+  .blank{display:inline-flex;align-items:center;border-bottom:2px solid var(--primary-soft2);background:var(--primary-soft);border-radius:8px 8px 2px 2px;padding:0 4px;color:var(--primary-deep);transition:background .15s}
+  .blank:hover,.blank:focus-within{background:#E3DEF7;border-bottom-color:var(--primary)}
+  .blank input,.blank select{border:0;background:transparent;font-weight:800;font-size:19px;color:var(--primary-deep);outline:0;padding:0 2px;cursor:pointer;appearance:none;-webkit-appearance:none;line-height:1.6}
+  .blank input[type=number]{width:3.6ch;text-align:center;-moz-appearance:textfield}
+  .blank input[type=number]::-webkit-inner-spin-button{display:none}
+  .blank .ic{width:14px;height:14px;color:var(--primary);opacity:.7}
+  .preview{margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:13px;color:var(--ink-2)}
+  .preview .pill{border-radius:999px;padding:4px 10px;background:#F1F5F9;display:inline-flex;gap:5px;align-items:center}
+  .preview .good{background:var(--money-soft);color:var(--money)} .preview .bad{background:var(--rose-soft);color:var(--rose)}
+  .comp-foot{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .examples{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .examples .btn{font-size:12px}
+
+  .side{display:grid;gap:18px}
+  .side .card{padding:18px 20px}
+  .floor{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink-2);margin:10px 0 12px;font-size:13px}
+  .floor input{width:60px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-weight:800;text-align:center}
+  .room{display:grid;gap:8px}
+  .room button{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 12px;text-align:left;cursor:pointer;font-weight:700}
+  .room button:hover{background:var(--primary-soft);border-color:var(--primary-soft2)}
+  .room i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .room b{font-weight:800;color:var(--money)} .room b.zero{color:var(--rose)}
+  .room small{display:block;color:var(--muted);font-weight:600;font-size:11px}
+  .warns{display:grid;gap:8px;margin-top:10px}
+  .warn{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:10px 12px;font-weight:600;font-size:13px;line-height:1.4}
+  .warn .ic{margin-top:1px}
+  .w-ok{background:var(--money-soft);color:var(--money)} .w-warn{background:var(--warn-soft);color:#92400E} .w-crit{background:var(--rose-soft);color:#9F1239}
+
+  /* ---- detail ---- */
+  .detail{padding:20px 22px}
+  .detail-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .detail-head h2{font-size:16px;font-weight:800}
+  .seg{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+  .seg button{border:0;background:transparent;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;color:var(--muted)}
+  .seg button.on{background:var(--primary);color:#fff}
+  .pane{display:none}.pane.on{display:block}
+  .chart{min-height:240px}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+  .caption{color:var(--muted);font-weight:600;font-size:12px;margin-top:8px}
+
+  /* ---- scenarios ---- */
+  .scen{padding:20px 22px}
+  .scen h2{font-size:16px;font-weight:800}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:8px 10px;border-bottom:1px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid #F1F5F9;font-weight:600;white-space:nowrap}
+  td.r,th.r{text-align:right}
+  tr.cur td{background:var(--primary-soft)}
+  .tbl{overflow-x:auto}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--primary-dark);color:#fff;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13px;transition:all .25s;z-index:30;pointer-events:none;box-shadow:0 12px 30px rgba(36,31,82,.3)}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media print{.top .btn,.comp,.examples,.mv .tools,.chip .x,.seg,.lane .hint{display:none!important}.pane{display:block!important}.card{break-inside:avoid;border-color:#ccc}body{background:#fff}.wrap{padding:0}}
+</style>
+
+<header class="top">
+  <div class="brand"><span class="mark">P</span>Payobook</div>
+  <div class="crumb">People / Plan / <b>Workforce Playbook 2026</b></div>
+  <div class="spacer"></div>
+  <input class="name" id="name" value="My 2026 plan" aria-label="Plan name" maxlength="40">
+  <button class="btn" id="undo" title="Undo" disabled></button>
+  <button class="btn" id="redo" title="Redo" disabled></button>
+  <button class="btn" id="reset">Start over</button>
+  <button class="btn" id="save"></button>
+  <button class="btn primary" id="print"></button>
+</header>
+
+<main class="wrap">
+  <section class="card hero" aria-label="Your plan in one sentence">
+    <div class="hero-l">
+      <div class="eyebrow">Your plan in one sentence</div>
+      <p class="sentence" id="sentence"></p>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <div class="hero-r">
+      <div class="river-head"><h2>Where the money goes this year</h2>
+        <label class="target">Revenue target <input id="revenue" type="text" inputmode="numeric" aria-label="Revenue target in billion dong"> B</label></div>
+      <div class="river" id="river"></div>
+      <label class="check"><input type="checkbox" id="follows"> Revenue grows and shrinks with revenue-earning staff</label>
+    </div>
+  </section>
+
+  <section class="card board" aria-label="Your year">
+    <div class="board-head">
+      <div><div class="eyebrow">Your year, month by month</div><h2>Place each decision on the month it happens</h2></div>
+      <div class="legend"><span><i style="background:var(--money)"></i>Profit that month</span><span><i style="background:#CBD5E1"></i>Today, for comparison</span><span><i style="background:var(--rose)"></i>A month that loses money</span><span><i style="background:var(--warn)"></i>Tet bonus is paid</span></div>
+    </div>
+    <div id="emptyHint"></div>
+    <div class="lane" id="lane"></div>
+    <div class="months" id="months"></div>
+  </section>
+
+  <section class="two">
+    <div class="card comp" aria-label="Add a move">
+      <h2 id="compTitle"></h2>
+      <div class="tabs" id="tabs"></div>
+      <div class="sent" id="composer"></div>
+      <div class="preview" id="preview"></div>
+      <div class="comp-foot">
+        <button class="btn primary" id="add"></button>
+        <span class="sub" id="addNote"></span>
+        <div class="examples" id="examples"></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card" aria-label="How far can I go">
+        <h2 id="roomTitle"></h2>
+        <div class="floor">Keep the margin at least <input id="floor" type="number" min="0" max="40" step="1" value="15"> %</div>
+        <div class="room" id="room"></div>
+        <p class="caption">Press a row to add that many people to your plan. The limit already counts everything else you have planned.</p>
+      </div>
+      <div class="card" aria-label="Watch-outs">
+        <h2 id="warnTitle"></h2>
+        <div class="warns" id="warns"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card detail" aria-label="The detail">
+    <div class="detail-head"><h2>Look closer</h2>
+      <div class="seg" role="tablist">
+        <button class="on" data-pane="months" role="tab">Month by month</button>
+        <button data-pane="where" role="tab">Where the money goes</button>
+        <button data-pane="why" role="tab">Why profit changed</button>
+      </div>
+    </div>
+    <div class="pane on" id="p-months"><div class="chart" id="c-months"></div><p class="caption" id="cap-months"></p></div>
+    <div class="pane" id="p-where"><div class="split"><div><h3 class="eyebrow" style="margin-bottom:10px">People cost by division</h3><div class="chart" id="c-div"></div></div><div><h3 class="eyebrow" style="margin-bottom:10px">What a year of pay is made of</h3><div id="c-stack"></div><p class="caption" id="cap-take"></p></div></div></div>
+    <div class="pane" id="p-why"><div class="chart" id="c-why"></div><p class="caption">From today's profit to your plan's profit. Green steps add profit, rose steps take it away. The bars add up exactly.</p></div>
+  </section>
+
+  <section class="card scen" aria-label="Saved plans">
+    <div class="detail-head"><div><h2>Keep this plan. Try another.</h2><p class="sub" style="margin:4px 0 0">Saved on this browser. Nothing changes in payroll.</p></div><button class="btn" id="save2"></button></div>
+    <div class="tbl" id="scen"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<div class="sr" id="live" aria-live="polite"></div>
+
+<!--@core-->
+<script>
+(() => {
+  const W = window.WF, F = W.fmt, I = W.icon, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  W.injectCss();
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const TYPES = {
+    hire:  { label:'Hire',        icon:'user-plus',  monthly:true },
+    cut:   { label:'Let go',      icon:'user-minus', monthly:true },
+    raise: { label:'Pay raise',   icon:'trending-up',monthly:true },
+    ot:    { label:'Overtime',    icon:'clock' },
+    night: { label:'Night shifts',icon:'moon' },
+    tet:   { label:'Tet bonus',   icon:'gift' },
+    leave: { label:'Leavers',     icon:'users' },
+  };
+
+  // ---------- plan state ----------
+  let P = fresh();
+  function fresh() { return { name:'My 2026 plan', moves:[], revenue:2200000, other:260000, follows:false, floor:15 }; }
+  let hist = [], redo = [], nextId = 1, comp = { type:'hire', month:3, n:100, div:'con', role:'', pct:5, factor:0.8, tet:1, attr:12, backfill:true };
+
+  const baseState = () => { const s = W.defaultState(); s.revenue = P.revenue; s.otherCosts = P.other; s.revenueFollows = P.follows; return s; };
+  function share(div, n) { // spread a whole-division change across its roles, whole people
+    const roles = W.DIV[div].roles, tot = roles.reduce((a, r) => a + r.n, 0);
+    const raw = roles.map(r => n * r.n / tot), out = raw.map(Math.floor);
+    let rest = Math.round(n) - out.reduce((a, b) => a + b, 0);
+    raw.map((v, i) => [v - out[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (rest > 0) { out[i]++; rest--; } });
+    return roles.map((r, i) => [r.key, out[i]]);
+  }
+  function toState(moves) {
+    const s = baseState();
+    for (const d of W.DIVS) for (const r of d.roles) s.divs[d.key].roles[r.key] = [];
+    for (const m of moves) {
+      if (m.type === 'hire' || m.type === 'cut') {
+        const n = m.type === 'hire' ? m.n : -m.n;
+        const parts = m.role ? [[m.role, n]] : share(m.div, Math.abs(n)).map(([k, v]) => [k, n < 0 ? -v : v]);
+        parts.forEach(([k, v]) => { if (v) s.divs[m.div].roles[k].push({ n: v, month: m.month }); });
+      }
+      else if (m.type === 'raise') { s.raise = m.pct; s.raiseMonth = m.month; }
+      else if (m.type === 'ot') s.otFactor = m.factor;
+      else if (m.type === 'night') s.nightFactor = m.factor;
+      else if (m.type === 'tet') s.bonusMonths = m.tet;
+      else if (m.type === 'leave') { s.attrition = m.attr; s.backfill = m.backfill; }
+    }
+    return s;
+  }
+  let S, R, B;
+  function calc() { S = toState(P.moves); R = W.compute(S); B = W.compute(baseState()); }
+
+  // ---------- history ----------
+  function snap() { hist.push(JSON.stringify(P)); if (hist.length > 60) hist.shift(); redo = []; }
+  function apply(fn, msg) { snap(); fn(); render(); if (msg) toast(msg); }
+  function undo() { if (!hist.length) return; redo.push(JSON.stringify(P)); P = JSON.parse(hist.pop()); render(); }
+  function redoIt() { if (!redo.length) return; hist.push(JSON.stringify(P)); P = JSON.parse(redo.pop()); render(); }
+
+  // ---------- words ----------
+  const roleName = (div, role) => role ? W.DIV[div].roles.find(r => r.key === role).name : 'people';
+  function title(m) {
+    switch (m.type) {
+      case 'hire': return `Hire ${F.int(m.n)} ${roleName(m.div, m.role)}`;
+      case 'cut': return `Let go ${F.int(m.n)} ${roleName(m.div, m.role)}`;
+      case 'raise': return `${m.pct}% raise for everyone`;
+      case 'ot': return `Overtime ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`;
+      case 'night': return `Night shifts ${F.pct(m.factor - 1, { plus: true, d: 0 })} vs today`;
+      case 'tet': return m.tet === 0 ? 'No Tet bonus this year' : `${m.tet} month${m.tet === 1 ? '' : 's'} of Tet bonus`;
+      case 'leave': return `${m.attr}% leave a year, ${m.backfill ? 'replaced' : 'not replaced'}`;
+    }
+  }
+  const detail = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].name : m.type === 'raise' ? `from ${F.month(m.month)}` : 'all year';
+  const color = m => (m.type === 'hire' || m.type === 'cut') ? W.DIV[m.div].color : m.type === 'raise' ? '#5A4BB0' : '#64748B';
+
+  function impact(m) { // this move alone, against the plan without it
+    const without = W.compute(toState(P.moves.filter(x => x.id !== m.id)));
+    return { cost: R.year.cost - without.year.cost, profit: R.year.profit - without.year.profit, pts: R.year.margin - without.year.margin };
+  }
+  const impHtml = (imp, cls = '') => `<span class="${cls}">${F.money(imp.cost, { plus: true })}/yr</span><span class="${cls} ${imp.profit >= 0 ? 'good' : 'bad'}">${I(imp.profit >= 0 ? 'trending-up' : 'trending-down')} profit ${F.money(imp.profit, { plus: true })}</span>`;
+
+  // ---------- render ----------
+  function render() {
+    calc();
+    $('#name').value = P.name;
+    $('#undo').disabled = !hist.length; $('#redo').disabled = !redo.length;
+    $('#revenue').value = (P.revenue / 1000).toLocaleString('en');
+    $('#follows').checked = P.follows;
+    $('#floor').value = P.floor;
+    renderHero(); renderBoard(); renderComposer(); renderRoom(); renderWarns(); renderDetail(); renderScen();
+    clearTimeout(render.t); render.t = setTimeout(() => $('#live').textContent = `Plan updated. Yearly people cost ${F.money(R.year.cost)}, profit ${F.money(R.year.profit)}, margin ${F.pct(R.year.margin)}.`, 400);
+  }
+
+  function renderHero() {
+    const d = W.describe(S, R, B);
+    $('#sentence').innerHTML = `${esc(d.lead)}<span class="tail">${esc(d.tail)}</span>`;
+    const k = [
+      ['People in December', F.int(R.year.headsEnd), R.year.headsEnd - B.year.headsEnd, v => F.int(v, { plus: true }), null],
+      ['People cost, a year', F.money(R.year.cost), R.year.cost - B.year.cost, v => F.money(v, { plus: true }), v => v <= 0],
+      ['Profit, a year', F.money(R.year.profit), R.year.profit - B.year.profit, v => F.money(v, { plus: true }), v => v >= 0],
+      ['Margin', F.pct(R.year.margin), R.year.margin - B.year.margin, v => F.pts(v), v => v >= 0],
+    ];
+    const box = $('#kpis');
+    if (!box.children.length) box.innerHTML = k.map((x, i) => `<div class="kpi"><small>${x[0]}</small><b class="num" id="k${i}"></b><span class="delta" id="d${i}"></span></div>`).join('');
+    k.forEach((x, i) => {
+      const el = $('#k' + i), raw = [R.year.headsEnd, R.year.cost, R.year.profit, R.year.margin][i];
+      W.animateNumber(el, raw, i === 0 ? F.int : i === 3 ? F.pct : F.money);
+      const dEl = $('#d' + i), same = Math.abs(x[2]) < (i === 3 ? 0.0005 : 0.5);
+      dEl.className = 'delta ' + (same ? '' : x[4] ? (x[4](x[2]) ? 'good' : 'bad') : '');
+      dEl.innerHTML = same ? 'same as today' : `${I(x[2] >= 0 ? 'trending-up' : 'trending-down')}${x[3](x[2])} vs today`;
+    });
+    const rev = R.year.revenue, rows = [
+      ['Revenue', 'what comes in', rev, B.year.revenue, 'var(--info)'],
+      ['People cost', 'pay, insurance, bonus, hiring', R.year.cost, B.year.cost, 'var(--primary)'],
+      ['Other costs', 'rent, materials, everything else', R.year.other, B.year.other, '#94A3B8'],
+    ];
+    $('#river').innerHTML = rows.map(([n, s, v, b, c]) => `<div class="flow"><div>${n}<small>${s}</small></div><div class="bar"><i class="ghost" style="width:${Math.min(100, b / rev * 100)}%"></i><i style="width:${Math.min(100, v / rev * 100)}%;background:${c}"></i></div><b class="num">${F.money(v)}</b></div>`).join('')
+      + `<div class="flow total"><div>Profit you keep<small>margin ${F.pct(R.year.margin)} · today ${F.pct(B.year.margin)}</small></div><div class="bar"><i class="ghost" style="width:${Math.max(0, Math.min(100, B.year.profit / rev * 100))}%"></i><i style="width:${Math.max(0, Math.min(100, R.year.profit / rev * 100))}%;background:${R.year.profit < 0 ? 'var(--rose)' : 'var(--money)'}"></i></div><b class="num" style="color:${R.year.profit < 0 ? 'var(--rose)' : 'var(--money)'}">${F.money(R.year.profit)}</b></div>`;
+  }
+
+  function renderBoard() {
+    const global = P.moves.filter(m => !TYPES[m.type].monthly);
+    $('#lane').innerHTML = `<span class="lab">${I('calendar')} All year</span>` + (global.length ? global.map(m => { const imp = impact(m); return `<span class="chip" data-id="${m.id}">${I(TYPES[m.type].icon)}${esc(title(m))}<span class="imp num">${F.money(imp.cost, { plus: true })}/yr</span><button class="x" data-remove="${m.id}" aria-label="Remove ${esc(title(m))}">${I('x')}</button></span>`; }).join('') : `<span class="hint">Overtime, night shifts, Tet bonus and leavers apply to the whole year and appear here.</span>`);
+    $('#emptyHint').innerHTML = P.moves.length ? '' : `<div class="empty">${I('bulb')}<span>Nothing planned yet, so this is your company today. Add your first move below, or drop in an example to see how the board works.</span><button class="btn sm" data-ex="grow">Try an example</button></div>`;
+    const maxP = Math.max(...R.months.map(m => Math.abs(m.profit)), ...B.months.map(m => Math.abs(m.profit)), 1);
+    $('#months').innerHTML = R.months.map((row, i) => {
+      const moves = P.moves.filter(m => TYPES[m.type].monthly && m.month === i + 1);
+      const h = v => Math.max(2, Math.abs(v) / maxP * 44);
+      return `<div class="mo ${row.profit < 0 ? 'loss' : ''}" data-month="${i + 1}"><div class="mo-head"><div class="m"><span>${W.MONTHS[i]}</span>${i === 0 && S.bonusMonths > 0 ? '<span class="tet">Tet</span>' : ''}</div><div class="pbar" title="Profit in ${F.month(i + 1)}: ${F.money(row.profit)} (today ${F.money(B.months[i].profit)})"><i class="ghost" style="height:${h(B.months[i].profit)}px"></i><i class="${row.profit < 0 ? 'neg' : ''}" style="height:${h(row.profit)}px"></i></div><span class="pv num">${F.money(row.profit)}</span></div><div class="mo-body">${moves.map(card).join('')}<div class="drop">${moves.length ? '' : 'Drop a move here'}</div></div></div>`;
+    }).join('');
+  }
+  function card(m) {
+    const imp = impact(m), t = TYPES[m.type];
+    return `<div class="mv" draggable="true" data-id="${m.id}" style="--c:${color(m)}" tabindex="0" title="People cost ${F.money(imp.cost, { plus: true })} a year · profit ${F.money(imp.profit, { plus: true })} · margin ${F.pts(imp.pts)}" aria-label="${esc(title(m))}, ${esc(detail(m))}. Use the arrow buttons to move it to another month."><div class="t">${I(t.icon)}<span>${esc(title(m))}</span></div><div class="d">${esc(detail(m))} · ${F.money(imp.cost, { plus: true })}/yr</div><div class="imp num"><span class="${imp.profit >= 0 ? 'good' : 'bad'}">${I(imp.profit >= 0 ? 'trending-up' : 'trending-down')}${F.money(imp.profit, { plus: true })}</span></div><div class="tools"><button data-shift="-1" data-id="${m.id}" title="One month earlier" aria-label="Move one month earlier">${I('chevron-right')}</button><button data-shift="1" data-id="${m.id}" title="One month later" aria-label="Move one month later">${I('chevron-right')}</button><button data-remove="${m.id}" title="Remove" aria-label="Remove">${I('x')}</button></div></div>`;
+  }
+
+  // ---------- composer ----------
+  const sel = (key, opts, val) => `<span class="blank"><select data-c="${key}" aria-label="${key}">${opts.map(([v, l]) => `<option value="${v}" ${String(v) === String(val) ? 'selected' : ''}>${l}</option>`).join('')}</select>${I('chevron')}</span>`;
+  const num = (key, val, min, max, step = 1) => `<span class="blank"><input data-c="${key}" type="number" value="${val}" min="${min}" max="${max}" step="${step}" aria-label="${key}"></span>`;
+  const monthOpts = W.MONTHS_LONG.map((m, i) => [i + 1, m]);
+  const factorOpts = [[0.5, 'half'], [0.75, 'a quarter less'], [0.8, '20% less'], [0.9, '10% less'], [1.1, '10% more'], [1.25, 'a quarter more'], [1.5, 'half again']];
+  function renderComposer() {
+    $('#compTitle').innerHTML = `${I('sparkles')} Add a move to your plan`;
+    $('#tabs').innerHTML = Object.entries(TYPES).map(([k, t]) => `<button class="tab ${comp.type === k ? 'on' : ''}" data-type="${k}">${I(t.icon)}${t.label}</button>`).join('');
+    const divOpts = W.DIVS.map(d => [d.key, d.name]), roleOpts = [['', 'people across the division'], ...W.DIV[comp.div].roles.map(r => [r.key, r.name])];
+    let html;
+    switch (comp.type) {
+      case 'hire': html = `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">hire</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`; break;
+      case 'cut': html = `<span class="k">In</span> ${sel('month', monthOpts, comp.month)} <span class="k">let go</span> ${num('n', comp.n, 1, 2000)} ${sel('role', roleOpts, comp.role)} <span class="k">in</span> ${sel('div', divOpts, comp.div)}`; break;
+      case 'raise': html = `<span class="k">From</span> ${sel('month', monthOpts, comp.month)} <span class="k">give everyone a</span> ${num('pct', comp.pct, 0, 40, 0.5)}<span class="k">% raise</span>`; break;
+      case 'ot': html = `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">overtime than today, all year</span>`; break;
+      case 'night': html = `<span class="k">Run</span> ${sel('factor', factorOpts, comp.factor)} <span class="k">night shifts than today, all year</span>`; break;
+      case 'tet': html = `<span class="k">Pay</span> ${sel('tet', [[0, 'no'], [0.5, 'half a'], [1, 'one'], [1.5, 'one and a half'], [2, 'two']], comp.tet)} <span class="k">month${comp.tet === 1 || comp.tet === 0.5 ? '' : 's'} of Tet bonus in January</span>`; break;
+      case 'leave': html = `<span class="k">Expect</span> ${num('attr', comp.attr, 0, 40)}<span class="k">% of people to leave this year, and</span> ${sel('backfill', [[1, 'replace them'], [0, 'leave the seats empty']], comp.backfill ? 1 : 0)}`; break;
+    }
+    $('#composer').innerHTML = html;
+    // preview of the move against the current plan
+    const m = draft(), trial = W.compute(toState([...P.moves.filter(x => !sameSlot(x, m)), m]));
+    const dc = trial.year.cost - R.year.cost, dp = trial.year.profit - R.year.profit, dm = trial.year.margin - R.year.margin;
+    $('#preview').innerHTML = `<span>If you add this:</span><span class="pill num">${F.money(dc, { plus: true })} people cost</span><span class="pill num ${dp >= 0 ? 'good' : 'bad'}">${I(dp >= 0 ? 'trending-up' : 'trending-down')} ${F.money(dp, { plus: true })} profit</span><span class="pill num">margin ${F.pts(dm)}</span>`;
+    $('#add').innerHTML = `${I('plus')} Add to plan`;
+    $('#addNote').textContent = TYPES[comp.type].monthly ? `It lands in ${F.month(comp.month)}. Drag it to another month any time.` : 'Applies to the whole year. Adding it again replaces the earlier one.';
+    $('#examples').innerHTML = `<span class="sub" style="align-self:center">Try:</span><button class="btn sm" data-ex="grow">Grow Construction</button><button class="btn sm" data-ex="keep">Keep people happy</button><button class="btn sm" data-ex="lean">A lean year</button>`;
+  }
+  const sameSlot = (a, b) => !TYPES[a.type].monthly && a.type === b.type;
+  function draft() {
+    const m = { id: -1, type: comp.type, month: comp.month };
+    if (comp.type === 'hire' || comp.type === 'cut') Object.assign(m, { n: comp.n, div: comp.div, role: comp.role });
+    if (comp.type === 'raise') m.pct = comp.pct;
+    if (comp.type === 'ot' || comp.type === 'night') m.factor = comp.factor;
+    if (comp.type === 'tet') m.tet = comp.tet;
+    if (comp.type === 'leave') { m.attr = comp.attr; m.backfill = comp.backfill; }
+    return m;
+  }
+  function addMove(m) {
+    m.id = nextId++;
+    if (!TYPES[m.type].monthly) P.moves = P.moves.filter(x => x.type !== m.type);
+    P.moves.push(m);
+  }
+
+  // ---------- how far can I go ----------
+  function renderRoom() {
+    $('#roomTitle').innerHTML = `${I('target')} How far can I go?`;
+    const floor = P.floor / 100;
+    const rows = W.DIVS.filter(d => d.revenue).map(d => { const n = W.maxHeadsForMargin(S, d.key, floor); return `<button data-room="${d.key}" data-n="${n}" ${n ? '' : 'disabled'}><i style="background:${d.color}"></i><span>${d.name}<small>${F.int(d.roles.reduce((a, r) => a + r.n, 0))} people today</small></span><b class="num ${n ? '' : 'zero'}">${n ? '+' + F.int(n) + ' people' : 'no room'}</b></button>`; });
+    const raise = W.maxRaiseForMargin(S, floor);
+    rows.push(`<button data-raise="${raise}" ${raise ? '' : 'disabled'}><i style="background:var(--primary)"></i><span>A raise for everyone<small>on top of what is planned</small></span><b class="num ${raise ? '' : 'zero'}">${raise ? 'up to ' + raise + '%' : 'no room'}</b></button>`);
+    $('#room').innerHTML = rows.join('');
+  }
+  function renderWarns() {
+    $('#warnTitle').innerHTML = `${I('shield')} Watch-outs`;
+    $('#warns').innerHTML = W.warnings(S, R, B).map(w => `<div class="warn w-${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${esc(w.text)}</span></div>`).join('');
+  }
+
+  // ---------- detail ----------
+  function renderDetail() {
+    W.chart.lines($('#c-months'), { series: [{ name: 'Today', values: B.months.map(m => m.profit), color: '#94A3B8', dash: true }, { name: 'Your plan', values: R.months.map(m => m.profit), color: '#5A4BB0', area: true }], h: 240 });
+    const worst = R.months.reduce((a, m) => m.profit < a.profit ? m : a, R.months[0]);
+    $('#cap-months').textContent = `Monthly profit. January carries the Tet bonus, so it is always the tightest month. ${worst.profit < 0 ? `${F.month(worst.m + 1)} loses ${F.money(-worst.profit)}.` : `The lowest month is ${F.month(worst.m + 1)} at ${F.money(worst.profit)}.`}`;
+    W.chart.bars($('#c-div'), { cats: W.DIVS.map(d => d.name), series: [{ name: 'Today', values: W.DIVS.map(d => B.byDiv[d.key].year), color: '#CBD5E1', ghost: true }, { name: 'Your plan', values: W.DIVS.map(d => R.byDiv[d.key].year), color: '#5A4BB0' }], h: 240 });
+    const y = R.year;
+    W.chart.stack($('#c-stack'), [
+      { name: 'Base pay', value: y.base, color: '#5A4BB0' }, { name: 'Allowances', value: y.allow, color: '#8B7FD1' }, { name: 'Overtime', value: y.ot, color: '#2563EB' }, { name: 'Night premium', value: y.night, color: '#0F766E' },
+      { name: 'Employer insurance', value: y.erc, color: '#D97706' }, { name: 'Tet bonus', value: y.bonus, color: '#EDA100' }, { name: 'Hiring & severance', value: y.oneOff, color: '#DC2668' }], y.cost);
+    $('#cap-take').textContent = `Of ${F.money(y.gross)} gross pay, employees take home ${F.money(y.takeHome)} after ${F.money(y.eeIns)} insurance and ${F.money(y.pit)} income tax. Employer insurance of ${F.money(y.erc)} is on top and is the company's cost.`;
+    const st = (l, v) => ({ label: l, value: v });
+    W.chart.waterfall($('#c-why'), { start: { label: 'Today', value: B.year.profit }, endLabel: 'Your plan', steps: [
+      st('Revenue', y.revenue - B.year.revenue), st('Base pay', -(y.base + y.allow - B.year.base - B.year.allow)), st('Overtime & nights', -(y.ot + y.night - B.year.ot - B.year.night)),
+      st('Insurance', -(y.erc - B.year.erc)), st('Tet bonus', -(y.bonus - B.year.bonus)), st('Hiring & severance', -(y.oneOff - B.year.oneOff)), st('Other costs', -(y.other - B.year.other))],
+      upColor: '#2E7D4F', downColor: '#DC2668', h: 260 });
+  }
+
+  // ---------- scenarios ----------
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem('wfplan.playbook') || '[]'); } catch (e) { saved = []; }
+  const persist = () => { try { localStorage.setItem('wfplan.playbook', JSON.stringify(saved)); return true; } catch (e) { toast('This browser will not store plans. Print a brief to keep a copy.'); return false; } };
+  function renderScen() {
+    $('#save').innerHTML = `${I('save')} Save plan`; $('#save2').innerHTML = `${I('save')} Save this plan`; $('#print').innerHTML = `${I('columns')} Print brief`;
+    $('#undo').innerHTML = I('undo'); $('#redo').innerHTML = I('redo');
+    const rows = [{ name: 'Today (no changes)', moves: [], revenue: P.revenue, other: P.other, follows: P.follows, fixed: true }, { ...P, cur: true }, ...saved.map((s, i) => ({ ...s, idx: i }))];
+    $('#scen').innerHTML = `<table><thead><tr><th>Plan</th><th>Moves</th><th class="r">People in Dec</th><th class="r">People cost</th><th class="r">Profit</th><th class="r">Margin</th><th></th></tr></thead><tbody>${rows.map(r => {
+      const res = W.compute(toStateFor(r));
+      return `<tr class="${r.cur ? 'cur' : ''}"><td>${esc(r.name)}${r.cur ? ' <span class="sub">· on the board</span>' : ''}</td><td>${r.moves.length ? r.moves.map(title).map(esc).join(' · ') : '—'}</td><td class="r num">${F.int(res.year.headsEnd)}</td><td class="r num">${F.money(res.year.cost)}</td><td class="r num">${F.money(res.year.profit)}</td><td class="r num">${F.pct(res.year.margin)}</td><td>${r.idx !== undefined ? `<button class="btn sm" data-load="${r.idx}">Open</button> <button class="btn sm ghost" data-del="${r.idx}" aria-label="Remove ${esc(r.name)}">${I('trash')}</button>` : ''}</td></tr>`;
+    }).join('')}</tbody></table>`;
+  }
+  function toStateFor(r) { const keep = P; P = r; const s = toState(r.moves); P = keep; return s; }
+
+  // ---------- examples ----------
+  const EX = {
+    grow: { name: 'Grow Construction', moves: [{ type: 'hire', month: 3, n: 120, div: 'con', role: 'sw' }, { type: 'hire', month: 3, n: 20, div: 'con', role: 'fm' }, { type: 'hire', month: 5, n: 60, div: 'log', role: 'dr' }, { type: 'raise', month: 4, pct: 6 }] },
+    keep: { name: 'Keep people happy', moves: [{ type: 'raise', month: 4, pct: 9 }, { type: 'ot', factor: 0.8 }, { type: 'leave', attr: 8, backfill: true }, { type: 'tet', tet: 1.5 }] },
+    lean: { name: 'A lean year', moves: [{ type: 'cut', month: 6, n: 60, div: 'cor', role: 'ad' }, { type: 'leave', attr: 12, backfill: false }, { type: 'ot', factor: 0.75 }, { type: 'raise', month: 7, pct: 3 }] },
+  };
+
+  // ---------- events ----------
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 3200); }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.type) { comp.type = b.dataset.type; if (comp.type === 'hire') comp.n = comp.n || 100; renderComposer(); return; }
+    if (b.id === 'add') { const m = draft(); apply(() => addMove(m), `${title(m)} added. ${TYPES[m.type].monthly ? 'Drag it to another month to see the timing effect.' : ''}`); $('#months').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+    if (b.dataset.remove) { const id = +b.dataset.remove, m = P.moves.find(x => x.id === id); apply(() => P.moves = P.moves.filter(x => x.id !== id), `${title(m)} removed.`); return; }
+    if (b.dataset.shift) { const m = P.moves.find(x => x.id === +b.dataset.id), to = m.month + +b.dataset.shift; if (to < 1 || to > 12) { toast(to < 1 ? 'January is the first month of the plan.' : 'December is the last month of the plan.'); return; } apply(() => m.month = to, `${title(m)} now lands in ${F.month(to)}.`); return; }
+    if (b.dataset.ex) { const ex = EX[b.dataset.ex]; apply(() => { P.moves = []; ex.moves.forEach(m => addMove({ ...m })); P.name = ex.name; }, `Example loaded: ${ex.name}. Change anything.`); return; }
+    if (b.dataset.room) { const n = +b.dataset.n; apply(() => addMove({ type: 'hire', month: 4, n, div: b.dataset.room, role: '' }), `Added ${F.int(n)} people in ${W.DIV[b.dataset.room].name} from April, right at your ${P.floor}% margin floor.`); return; }
+    if (b.dataset.raise !== undefined) { const p = +b.dataset.raise, cur = P.moves.find(x => x.type === 'raise'); apply(() => addMove({ type: 'raise', month: cur ? cur.month : 4, pct: +((cur ? cur.pct : 0) + p).toFixed(1) }), `Raise set to ${((cur ? cur.pct : 0) + p).toFixed(1)}%, the most your ${P.floor}% floor allows.`); return; }
+    if (b.dataset.pane) { $$('.seg button').forEach(x => x.classList.toggle('on', x === b)); $$('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + b.dataset.pane)); renderDetail(); return; }
+    if (b.dataset.load !== undefined) { const s = saved[+b.dataset.load]; apply(() => { P = JSON.parse(JSON.stringify({ ...P, ...s })); P.moves.forEach(m => m.id = nextId++); }, `“${s.name}” is on the board.`); return; }
+    if (b.dataset.del !== undefined) { saved.splice(+b.dataset.del, 1); persist(); renderScen(); return; }
+    switch (b.id) {
+      case 'undo': undo(); break; case 'redo': redoIt(); break;
+      case 'reset': apply(() => { const n = P.name; P = fresh(); P.name = n; }, 'Board cleared. This is your company today.'); break;
+      case 'save': case 'save2': { if (saved.length >= 6) { toast('Six plans saved. Remove one to save another.'); break; } const nm = P.name.trim() || 'Untitled plan'; const i = saved.findIndex(s => s.name === nm); const rec = { name: nm, moves: P.moves.map(m => ({ ...m })), revenue: P.revenue, other: P.other, follows: P.follows, floor: P.floor }; if (i >= 0) saved[i] = rec; else saved.push(rec); if (persist()) toast(`“${nm}” saved on this browser.`); renderScen(); break; }
+      case 'print': window.print(); break;
+    }
+  });
+  document.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.c) {
+      const k = t.dataset.c, v = t.type === 'number' ? +t.value : t.value;
+      if (k === 'n' || k === 'pct' || k === 'attr') { if (!Number.isFinite(v)) return; comp[k] = Math.max(+t.min, Math.min(+t.max, v)); }
+      else if (k === 'month') comp.month = +v; else if (k === 'div') { comp.div = v; comp.role = ''; } else if (k === 'role') comp.role = v;
+      else if (k === 'factor') comp.factor = +v; else if (k === 'tet') comp.tet = +v; else if (k === 'backfill') comp.backfill = v === '1';
+      if (t.tagName === 'SELECT') renderComposer(); else { const p = $('#preview'); renderComposer.pending = true; clearTimeout(renderComposer.t); renderComposer.t = setTimeout(() => { const a = document.activeElement; renderComposer(); if (a && a.dataset && a.dataset.c) { const nx = document.querySelector(`[data-c="${a.dataset.c}"]`); if (nx) { nx.focus(); } } }, 350); void p; }
+      return;
+    }
+    if (t.id === 'name') { P.name = t.value; return; }
+    if (t.id === 'floor') { const v = Math.max(0, Math.min(40, +t.value || 0)); P.floor = v; renderRoom(); return; }
+    if (t.id === 'follows') { apply(() => P.follows = t.checked, t.checked ? 'Revenue now moves with revenue-earning staff.' : 'Revenue is fixed at your target again.'); return; }
+  });
+  $('#revenue').addEventListener('change', e => { const v = parseFloat(e.target.value.replace(/[^\d.]/g, '')); if (!Number.isFinite(v) || v <= 0) { toast('Type the yearly revenue target in billion dong, for example 2,200.'); render(); return; } apply(() => P.revenue = Math.round(v * 1000), `Revenue target set to ₫${v.toLocaleString('en')} B.`); });
+  $('#name').addEventListener('change', () => { renderScen(); });
+
+  // drag and drop between months
+  let dragId = null;
+  document.addEventListener('dragstart', e => { const c = e.target.closest('.mv'); if (!c) return; dragId = +c.dataset.id; c.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(dragId)); });
+  document.addEventListener('dragend', e => { const c = e.target.closest('.mv'); if (c) c.classList.remove('drag'); $$('.mo.over').forEach(x => x.classList.remove('over')); });
+  document.addEventListener('dragover', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; $$('.mo.over').forEach(x => x.classList.remove('over')); mo.classList.add('over'); });
+  document.addEventListener('drop', e => { const mo = e.target.closest('.mo'); if (!mo || dragId == null) return; e.preventDefault(); const m = P.moves.find(x => x.id === dragId), to = +mo.dataset.month; dragId = null; if (!m || m.month === to) { $$('.mo.over').forEach(x => x.classList.remove('over')); return; } const from = m.month; apply(() => m.month = to, `${title(m)} moved from ${F.month(from)} to ${F.month(to)}.`); });
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redoIt() : undo(); } });
+  window.addEventListener('resize', () => { clearTimeout(window._rz); window._rz = setTimeout(renderDetail, 150); });
+
+  // first paint: the "Grow Construction" example, so the board is alive on arrival
+  EX.grow.moves.forEach(m => addMove({ ...m })); P.name = 'Grow Construction';
+  render();
+})();
+</script>

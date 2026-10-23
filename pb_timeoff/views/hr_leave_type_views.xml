@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       What a KIND of time off is allowed to do.
+
+       The xpath anchors on a `name`, never on `[@string=…]`: view
+       inheritance may not select by `string` and it is not a warning — it is
+       "View inheritance may not use attribute 'string' as a selector" and it
+       ABORTS THE WHOLE MODULE LOAD, with the ParseError naming the child
+       view's own first line rather than the xpath that did it (R213).
+
+       Every `nolabel="1"` field directly inside a `<group>` would need
+       `colspan="2"` (R128) — there are none here, because every field below
+       is a plain labelled one.
+       ================================================================== -->
+  <record id="view_hr_leave_type_form_pb" model="ir.ui.view">
+    <field name="name">hr.leave.type.form.pb.timeoff</field>
+    <field name="model">hr.leave.type</field>
+    <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//group[@name='leave_validation']" position="after">
+        <group name="pb_timeoff_rules" string="Payobook rules">
+          <field name="pb_backdate_ok"/>
+          <field name="pb_backdate_alert" invisible="not pb_backdate_ok"/>
+          <field name="pb_carry_cap_days"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

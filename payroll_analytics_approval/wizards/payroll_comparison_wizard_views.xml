@@ -20,8 +20,8 @@
                     </group>
                     <group string="Comparison Period">
                         <field name="comparison_type" required="1"/>
-                        <field name="previous_date_from" attrs="{'invisible': [('comparison_type', '!=', 'custom')], 'required': [('comparison_type', '=', 'custom')]}"/>
-                        <field name="previous_date_to" attrs="{'invisible': [('comparison_type', '!=', 'custom')], 'required': [('comparison_type', '=', 'custom')]}"/>
+                        <field name="previous_date_from" invisible="comparison_type != 'custom'" required="comparison_type == 'custom'"/>
+                        <field name="previous_date_to" invisible="comparison_type != 'custom'" required="comparison_type == 'custom'"/>
                     </group>
                 </group>
                 

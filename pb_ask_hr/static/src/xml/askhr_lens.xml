@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ Home, the Ask HR tab
+       NAV P3d. The quiet board: numbers, four steps, cards, word filters.
+       One read (pb.ask.hr.get_board) as the reader; every change through
+       pb.ask.hr.act. Lucide through ic(). Comments use `=` rules only and
+       never spell a CSS custom property (W22/W72). Loop names: cd (card),
+       ch (category chip), us (owner). -->
+  <t t-name="pb_ask_hr.PbAskHrLens">
+    <div class="pbah-board" t-att-class="{ 'pbah-board--embedded': props.embedded }"
+         t-on-keydown="onRootKeydown">
+      <div class="pbah-wrap">
+
+        <!-- loading -->
+        <t t-if="state.loading and !state.d">
+          <div class="pbah-skel" aria-busy="true" aria-live="polite">
+            <div class="pbah-skel__line pbah-skel__line--l"/>
+            <div class="pbah-skel__steps">
+              <t t-foreach="[1,2,3,4]" t-as="sk" t-key="sk"><span class="pbah-skel__step"/></t>
+            </div>
+            <div class="pbah-skel__line"/>
+            <div class="pbah-skel__line"/>
+          </div>
+        </t>
+
+        <!-- failed -->
+        <t t-elif="state.failed">
+          <div class="pbah-fail" role="alert">
+            <span class="pbah-fail__ic" t-out="ic('alert', 18)"/>
+            <div>
+              <div class="pbah-fail__t">The questions could not be read just now.</div>
+              <div class="pbah-fail__s">Nothing has changed. Try again in a moment.</div>
+            </div>
+            <button type="button" class="pbah-btn" t-on-click="() => this.load()">
+              <span t-out="ic('refresh', 14)"/> Try again
+            </button>
+          </div>
+        </t>
+
+        <t t-else="">
+          <!-- ============================================== the head -->
+          <header class="pbah-head">
+            <div class="pbah-head__id">
+              <div class="pbah-eyebrow">
+                <span t-out="ic('messageSquare', 14)"/>
+                <span>Ask HR</span>
+              </div>
+              <h2 class="pbah-title" t-if="canAct">Questions people asked HR</h2>
+              <h2 class="pbah-title" t-else="">Your questions to HR</h2>
+            </div>
+            <div class="pbah-head__acts">
+              <button type="button" class="pbah-btn pbah-btn--ghost" t-on-click="() => this.load()"
+                      title="Read the board again" aria-label="Read the board again"
+                      t-att-disabled="state.loading">
+                <span t-out="ic('refresh', 14)"/>
+              </button>
+              <button t-if="canAct" type="button" class="pbah-btn pbah-btn--ghost" t-on-click="() => this.openList()">
+                <span t-out="ic('list', 14)"/> Open as a list
+              </button>
+              <button t-if="!canAct and d.can_ask" type="button" class="pbah-btn"
+                      t-on-click="askNew">
+                <span t-out="ic('plus', 14)"/> Ask a new question
+              </button>
+            </div>
+          </header>
+
+          <!-- ======================================= the numbers -->
+          <div data-coach="ah-glance">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+          </div>
+
+          <!-- ========================================= the steps
+               A question is at exactly one step, so the counts add up. -->
+          <div data-coach="ah-steps">
+            <t t-call="pb_import_kit.QuietSteps">
+              <t t-set="qSteps" t-value="steps"/>
+              <t t-set="qStepsLabel" t-value="stepsLabel"/>
+              <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+            </t>
+          </div>
+
+          <!-- ======================================= the filters -->
+          <div class="pbah-filters" role="group" aria-label="Filters">
+            <label class="pbah-search">
+              <span t-out="ic('search', 14)"/>
+              <input type="search" t-ref="search" placeholder="Find a number, a name or a word"
+                     aria-label="Find a number, a name or a word"
+                     t-att-value="state.q" t-on-input="onSearch"/>
+              <kbd class="pbah-kbd" aria-hidden="true">/</kbd>
+            </label>
+            <t t-if="canAct">
+              <button type="button" class="pbah-fchip" t-att-class="{ 'is-on': state.mine }"
+                      t-att-aria-pressed="state.mine ? 'true' : 'false'" t-on-click="toggleMine">
+                <span t-out="ic('user', 13)"/> Mine
+              </button>
+              <button type="button" class="pbah-fchip pbah-fchip--amber" t-att-class="{ 'is-on': state.nobody }"
+                      t-att-aria-pressed="state.nobody ? 'true' : 'false'" t-on-click="toggleNobody">
+                <span t-out="ic('userX', 13)"/> Nobody has it yet
+                <b t-if="d.unowned" class="pbah-fchip__n" t-esc="d.unowned"/>
+              </button>
+              <span class="pbah-filters__sep" aria-hidden="true"/>
+            </t>
+            <button t-foreach="categoryChips" t-as="ch" t-key="ch.key" type="button"
+                    class="pbah-fchip" t-att-class="{ 'is-on': state.cat === ch.key }"
+                    t-att-aria-pressed="state.cat === ch.key ? 'true' : 'false'"
+                    t-on-click="() => this.pickCat(ch.key)">
+              <span t-out="catIcon(ch.key)"/> <t t-esc="ch.label"/>
+            </button>
+          </div>
+
+          <div class="pbim-showing pbah-showing">
+            <span t-esc="showingLine"/>
+            <button t-if="filtered" type="button" class="pbim-showall" t-on-click="clearFilters">Clear</button>
+            <label t-if="canAct and cards.length" class="pbah-all">
+              <input type="checkbox" t-att-checked="allSel" t-on-change="toggleAll"/>
+              <span>Select all here</span>
+            </label>
+          </div>
+
+          <!-- ========================================= the cards -->
+          <t t-set="ek" t-value="emptyKind"/>
+          <div t-if="ek === 'calm'" class="pbah-empty is-calm">
+            <span class="pbah-empty__ic" t-out="ic('checkCircle', 26)"/>
+            <h3>Nothing is waiting.</h3>
+            <p t-if="d.last_answered_words" t-esc="d.last_answered_words"/>
+            <button t-if="counts.closed" type="button" class="pbah-btn pbah-btn--ghost"
+                    t-on-click="() => this.pickStep('closed')">Show closed</button>
+          </div>
+          <div t-elif="ek === 'never'" class="pbah-empty">
+            <span class="pbah-empty__ic" t-out="ic('messageSquare', 26)"/>
+            <h3>You have not asked HR anything yet.</h3>
+            <p>Ask about your pay, leave, documents or anything else. HR answers here and by e-mail.</p>
+            <button t-if="d.can_ask" type="button" class="pbah-btn" t-on-click="askNew">
+              <span t-out="ic('plus', 14)"/> Ask a new question
+            </button>
+          </div>
+          <div t-elif="ek === 'nomatch'" class="pbah-empty">
+            <span class="pbah-empty__ic" t-out="ic('search', 26)"/>
+            <h3>Nobody matches</h3>
+            <p>No question here matches the filters you chose.</p>
+            <button type="button" class="pbah-btn pbah-btn--ghost" t-on-click="clearFilters">Clear</button>
+          </div>
+          <div t-elif="ek === 'step'" class="pbah-empty is-small">
+            <p t-esc="stepEmptyWords"/>
+          </div>
+
+          <div t-else="" class="pbah-list" t-key="listKey" role="list"
+               aria-label="Questions" t-on-keydown="onListKeydown">
+            <article t-foreach="cards" t-as="cd" t-key="cd.id" role="listitem"
+                     class="pbah-c" data-coach="ah-card" tabindex="0"
+                     t-att-data-id="cd.id"
+                     t-att-class="{ 'is-sel': isSel(cd), 'is-late': cd.late, 'is-unread': cd.unread }"
+                     t-att-aria-label="cd.number + ' · ' + cd.subject"
+                     t-on-click="() => this.open(cd)">
+              <label t-if="canAct" class="pbah-c__pick" t-on-click.stop="() => {}">
+                <input type="checkbox" t-att-checked="isSel(cd)"
+                       t-att-aria-label="cd.number" t-on-change="() => this.toggleSel(cd)"/>
+              </label>
+              <img class="pbah-c__av" t-att-src="avatar(cd)" alt="" loading="lazy"/>
+              <div class="pbah-c__main">
+                <div class="pbah-c__top">
+                  <span class="pbah-c__num" t-esc="cd.number"/>
+                  <span class="pbah-c__who">
+                    <b t-esc="cd.person"/>
+                    <t t-if="cd.department"><span class="pbah-dot" aria-hidden="true">·</span><t t-esc="cd.department"/></t>
+                  </span>
+                  <span t-if="cd.unread" class="pbah-c__new" t-att-title="cd.unread_words">
+                    <i aria-hidden="true"/><t t-esc="cd.unread_words"/>
+                  </span>
+                </div>
+                <div class="pbah-c__q" t-esc="cd.subject"/>
+                <div t-if="cd.line" class="pbah-c__line" t-esc="cd.line"/>
+                <div class="pbah-c__foot">
+                  <span class="pbah-cat"><span t-out="catIcon(cd.category)"/><t t-esc="cd.category_label"/></span>
+                  <span class="pbah-c__age" t-att-class="{ 'is-late': cd.late }" t-att-title="cardTitle(cd)">
+                    <span t-out="ic('clock', 12)"/><t t-esc="cd.age"/>
+                  </span>
+                </div>
+              </div>
+              <div class="pbah-c__end">
+                <span t-if="cd.owner_id" class="pbah-owner" t-att-class="{ 'is-mine': cd.mine }">
+                  <img t-att-src="ownerAvatar(cd)" alt="" loading="lazy"/>
+                  <t t-esc="ownerWords(cd)"/>
+                </span>
+                <span t-else="" class="pbah-owner is-nobody" t-att-class="{ 'is-quiet': !canAct }">
+                  <span t-out="ic('userX', 13)"/> Nobody has it yet
+                </span>
+                <div t-if="canAct and cd.state !== 'closed'" class="pbah-c__acts">
+                  <button t-if="canTake(cd)" type="button" class="pbah-btn pbah-btn--sm"
+                          data-coach="ah-take" title="Take it (T)"
+                          t-att-disabled="state.busy" t-on-click.stop="() => this.take([cd.id])">
+                    <span t-out="ic('userCheck', 13)"/> Take it
+                  </button>
+                  <button t-if="canHand(cd)" type="button" class="pbah-btn pbah-btn--sm pbah-btn--ghost"
+                          title="Hand to… (H)" t-att-disabled="state.busy"
+                          t-on-click.stop="() => this.openPicker([cd.id])">
+                    Hand to…
+                  </button>
+                </div>
+              </div>
+            </article>
+            <p t-if="!state.week and state.step === 'closed' and d.closed_capped" class="pbah-note">
+              Only the most recent closed questions are shown here.
+              <button type="button" class="pbim-showall" t-on-click="() => this.openList(true)">Open as a list</button>
+            </p>
+          </div>
+
+          <p class="pbah-keys" aria-hidden="true">
+            <t t-foreach="keys" t-as="ky" t-key="ky_index"><span class="pbah-keys__k"><kbd t-esc="ky[0]"/> <t t-esc="ky[1]"/></span></t>
+          </p>
+
+          <!-- ===================================== the bulk bar -->
+          <div t-if="canAct and selCount and !state.picker and !state.closing" class="pbah-bulk" role="region" aria-label="Selected questions">
+            <b t-esc="selWords"/>
+            <button type="button" class="pbah-btn pbah-btn--sm" t-att-disabled="state.busy"
+                    t-on-click="() => this.take(selIds)">
+              <span t-out="ic('userCheck', 13)"/> Take it
+            </button>
+            <button type="button" class="pbah-btn pbah-btn--sm pbah-btn--light" t-att-disabled="state.busy"
+                    t-on-click="() => this.openPicker(selIds)">Hand to…</button>
+            <button type="button" class="pbah-btn pbah-btn--sm pbah-btn--light" t-att-disabled="state.busy"
+                    t-on-click="() => this.openClose(selIds)">
+              <span t-out="ic('checkCheck', 13)"/> Close with a note
+            </button>
+            <button type="button" class="pbah-bulk__x" t-on-click="clearSel"
+                    title="Clear the selection (Esc)" aria-label="Clear the selection">
+              <span t-out="ic('x', 14)"/>
+            </button>
+          </div>
+
+          <!-- ===================================== hand to… -->
+          <div t-if="state.picker" class="pbah-scrim" t-on-click="() => { this.state.picker = null; }">
+            <div class="pbah-sheet" role="dialog" aria-modal="true" t-att-aria-label="pickerTitle"
+                 t-on-click.stop="() => {}">
+              <div class="pbah-sheet__h">
+                <h3 t-esc="pickerTitle"/>
+                <button type="button" class="pbah-bulk__x" aria-label="Cancel"
+                        t-on-click="() => { this.state.picker = null; }"><span t-out="ic('x', 14)"/></button>
+              </div>
+              <div class="pbah-sheet__body" t-on-keydown="onPickerKeydown">
+              <label class="pbah-search">
+                <span t-out="ic('search', 14)"/>
+                <input type="search" t-ref="pickSearch" placeholder="Find somebody in HR"
+                       aria-label="Find somebody in HR" t-on-input="onPickerSearch"/>
+              </label>
+              <div t-if="!state.picker.users" class="pbah-sheet__busy">Reading the HR team…</div>
+              <div t-else="" class="pbah-pick">
+                <button t-foreach="pickerUsers" t-as="us" t-key="us.id" type="button"
+                        class="pbah-pick__b" t-on-click="() => this.handTo(us)">
+                  <img t-att-src="'/web/image/res.users/' + us.id + '/avatar_128'" alt="" loading="lazy"/>
+                  <span t-esc="us.name"/>
+                  <em t-if="us.me">you</em>
+                </button>
+                <p t-if="!pickerUsers.length" class="pbah-sheet__busy">Nobody in HR matches.</p>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================== close with a note -->
+          <div t-if="state.closing" class="pbah-scrim" t-on-click="() => { this.state.closing = null; }">
+            <div class="pbah-sheet" role="dialog" aria-modal="true" t-att-aria-label="closingTitle"
+                 t-on-click.stop="() => {}">
+              <div class="pbah-sheet__h">
+                <h3 t-esc="closingTitle"/>
+                <button type="button" class="pbah-bulk__x" aria-label="Cancel"
+                        t-on-click="() => { this.state.closing = null; }"><span t-out="ic('x', 14)"/></button>
+              </div>
+              <textarea class="pbah-note-in" rows="4" t-ref="closeNote" placeholder="A few words (you can leave this empty)"
+                        aria-label="A few words" t-on-input="onCloseNote"/>
+              <div class="pbah-radio" role="radiogroup">
+                <label><input type="radio" name="pbah-tell" t-att-checked="state.closing.tell"
+                              t-on-change="() => this.setTell(true)"/>
+                  <span>Tell the person. They get it by e-mail and on their page.</span></label>
+                <label><input type="radio" name="pbah-tell" t-att-checked="!state.closing.tell"
+                              t-on-change="() => this.setTell(false)"/>
+                  <span>Keep it inside HR, as a private note.</span></label>
+              </div>
+              <div class="pbah-sheet__f">
+                <button type="button" class="pbah-btn pbah-btn--ghost"
+                        t-on-click="() => { this.state.closing = null; }">Cancel</button>
+                <button type="button" class="pbah-btn" t-att-disabled="state.busy"
+                        t-on-click="confirmClose" t-esc="closingTitle"/>
+              </div>
+            </div>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

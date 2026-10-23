@@ -5,19 +5,22 @@
         <field name="name">hr.contract.advantage.change.tree</field>
         <field name="model">hr.contract.advantage.change</field>
         <field name="arch" type="xml">
-            <tree string="Contract Component Changes" default_order="effective_date desc, id desc">
+            <list string="Contract Component Changes" default_order="effective_date desc, id desc">
                 <field name="contract_id"/>
                 <field name="employee_id"/>
                 <field name="advantage_template_id"/>
                 <field name="advantage_template_code"/>
                 <field name="old_amount"/>
                 <field name="new_amount"/>
+                <!-- Text components record their before/after here (COLROLES). -->
+                <field name="old_text_value" optional="hide"/>
+                <field name="new_text_value" optional="hide"/>
                 <field name="effective_date"/>
                 <field name="change_source"/>
                 <field name="import_batch_id"/>
                 <field name="changed_by"/>
                 <field name="changed_at"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -38,6 +41,8 @@
                         <group>
                             <field name="old_amount"/>
                             <field name="new_amount"/>
+                            <field name="old_text_value"/>
+                            <field name="new_text_value"/>
                             <field name="effective_date"/>
                             <field name="change_source"/>
                             <field name="import_batch_id"/>
@@ -58,7 +63,7 @@
     <record id="action_contract_component_changes" model="ir.actions.act_window">
         <field name="name">Contract Component Changes</field>
         <field name="res_model">hr.contract.advantage.change</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="view_contract_component_change_button" model="ir.ui.view">

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE TWO HAND-OVER MAILS.
+
+         `noupdate="1"`: an administrator who has reworded one of these must
+         not have their wording put back by the next upgrade.
+
+         Plain sentences, no jargon and no product name — this module is
+         installed under whatever application is on top of it, and the mail
+         has to read correctly under all of them.
+         ================================================================== -->
+
+    <record id="mail_template_delegation_handed" model="mail.template">
+        <field name="name">Access: somebody is covering for you</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.delegate_user_id.email or '' }}</field>
+        <field name="subject">{{ object.delegator_user_id.name }} has handed some access to {{ object.delegate_user_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.delegator_user_id.name or ''"/></strong>
+                    has handed some of what they can do to
+                    <strong><t t-out="object.delegate_user_id.name or ''"/></strong>.
+                    Both of you are getting this message.
+                </p>
+                <p><strong>What was handed over</strong></p>
+                <ul>
+                    <t t-foreach="object.profile_ids" t-as="prof">
+                        <li>
+                            <strong><t t-out="prof.name or ''"/></strong>
+                            — <t t-out="prof.description or ''"/>
+                        </li>
+                    </t>
+                </ul>
+                <p t-if="object.kind == 'temporary'">
+                    It runs from <strong><t t-out="object.date_start or ''"/></strong>
+                    until <strong><t t-out="object.date_end or ''"/></strong>.
+                    On the morning after that it is taken back automatically —
+                    nobody has to remember.
+                </p>
+                <p t-if="object.kind != 'temporary'">
+                    It has no end date. Either of you can have it taken back at
+                    any time, and the HR access team can too.
+                </p>
+                <p t-if="object.reason">
+                    <strong>Why:</strong> <t t-out="object.reason or ''"/>
+                </p>
+                <p style="color:#4A5568;">
+                    If this is not something you expected, say so now — every
+                    hand-over is written down and can be taken back in seconds.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================ the access has been taken back ================ -->
+    <record id="mail_template_delegation_ended" model="mail.template">
+        <field name="name">Access: a hand-over has ended</field>
+        <field name="model_id" ref="model_pb_access_delegation"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.delegate_user_id.email or '' }}</field>
+        <field name="subject">The access {{ object.delegator_user_id.name }} lent has been taken back</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The access
+                    <strong><t t-out="object.delegator_user_id.name or ''"/></strong>
+                    lent to
+                    <strong><t t-out="object.delegate_user_id.name or ''"/></strong>
+                    has been taken back. Both of you are getting this message.
+                </p>
+                <p><strong>What has gone</strong></p>
+                <ul>
+                    <t t-foreach="object.profile_ids" t-as="prof">
+                        <li><t t-out="prof.name or ''"/></li>
+                    </t>
+                </ul>
+                <p><t t-out="object.ended_note or ''"/></p>
+                <p style="color:#4A5568;">
+                    Anything either of you did while it was running stays
+                    exactly as it was. This only changes what can be done from
+                    now on.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

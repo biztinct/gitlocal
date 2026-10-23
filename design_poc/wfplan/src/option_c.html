@@ -1,0 +1,377 @@
+<title>Money River</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-2:#4B4866; --muted:#64748B; --line:#E2E8F0; --canvas:#F4F5FB; --card:#FFFFFF;
+    --primary:#5A4BB0; --primary-deep:#4A3D96; --primary-soft:#EDEAF8; --primary-soft2:#CBC2EE;
+    --money:#2E7D4F; --money-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --rose:#DC2668; --rose-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1;
+    --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  h1,h2,h3{margin:0;text-wrap:balance}
+  .top{height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .brand .mark{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+  .crumb{color:var(--muted);font-weight:600}.crumb b{color:var(--ink)}
+  .spacer{flex:1}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;transition:background .15s;user-select:none}
+  .btn:hover{background:var(--primary-soft)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-deep)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--primary)}
+  .btn.hold{border-color:var(--primary-soft2);color:var(--primary-deep)}
+  .btn.hold:active,.btn.hold.on{background:var(--primary);color:#fff}
+  .btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+  .wrap{max-width:1480px;margin:0 auto;padding:20px}
+  .river-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 22px 10px;position:relative;overflow:visible}
+  .river-card .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:4px}
+  .river-card h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .river-card .sub{color:var(--muted);font-weight:600;font-size:13px;margin-top:2px}
+  .river-card .hd .btn{white-space:nowrap}
+  #river{width:100%;height:auto;aspect-ratio:1200/460;display:block;overflow:visible;font-family:inherit}
+  #river text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+  #river text.in{stroke:none}
+  #river .rib{transition:d .45s cubic-bezier(.4,0,.2,1),opacity .2s;cursor:pointer}
+  #river .rib:hover{opacity:.85!important}
+  #river .node{transition:y .45s cubic-bezier(.4,0,.2,1),height .45s cubic-bezier(.4,0,.2,1);cursor:pointer}
+  #river .node.hot{stroke:var(--ink);stroke-width:2}
+  #river .nl{font-size:12px;font-weight:800;fill:var(--ink);pointer-events:none}
+  #river .nv{font-size:11px;font-weight:700;fill:var(--muted);pointer-events:none;font-variant-numeric:tabular-nums}
+  #river .col{font-size:11px;font-weight:800;fill:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .hint{position:absolute;left:22px;bottom:10px;font-size:12px;color:var(--muted);font-weight:600;display:flex;gap:6px;align-items:center}
+  .hint .ic{width:14px;height:14px}
+
+  /* popover */
+  .pop{position:absolute;width:320px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(30,27,46,.22);padding:14px 16px;z-index:30;display:none;animation:pop .2s ease}
+  @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+  .pop.open{display:block}
+  .pop h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:2px}
+  .pop .sub{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .pop .close{position:absolute;right:8px;top:8px;border:0;background:transparent;width:28px;height:28px;border-radius:8px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+  .pop .close:hover{background:var(--primary-soft)}
+  .fld{padding:8px 0;border-top:1px solid #F1F3F9}
+  .fld:first-of-type{border-top:0}
+  .fld .lbl{display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:2px}
+  .fld .lbl b{color:var(--primary-deep);font-variant-numeric:tabular-nums}
+  .fld .lbl b.neg{color:var(--rose)}
+  .fld input[type=range]{width:100%}
+  .fld select,.fld input[type=number]{border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff;font-weight:700;font-size:12px;height:28px}
+  .fld .inline{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .money-in{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;height:30px;padding:0 8px;gap:4px;font-weight:700}
+  .money-in input{border:0;width:80px;text-align:right;font-weight:800;outline:0;font-size:13px}
+  .money-in small{color:var(--muted)}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:26px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--primary);margin-top:-7px;box-shadow:0 2px 6px rgba(90,75,176,.35);cursor:grab}
+  input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--primary-soft2)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+
+  /* dials strip */
+  .dials{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0}
+  @media (max-width:1100px){.dials{grid-template-columns:repeat(2,1fr)}}
+  .dial{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .dial .t{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--ink-2)}
+  .dial .badge{width:26px;height:26px;border-radius:7px;display:grid;place-items:center}.dial .badge .ic{width:14px;height:14px}
+  .dial .v{font-size:20px;font-weight:800;margin:4px 0 2px;font-variant-numeric:tabular-nums;color:var(--primary-deep)}
+  .dial .v.neg{color:var(--rose)}.dial .v.zero{color:var(--muted)}
+  .dial input[type=range]{width:100%}
+  .b-indigo{background:var(--primary-soft);color:var(--primary)} .b-green{background:var(--money-soft);color:var(--money)} .b-blue{background:var(--info-soft);color:var(--info)} .b-amber{background:var(--warn-soft);color:var(--warn)} .b-rose{background:var(--rose-soft);color:var(--rose)} .b-teal{background:var(--teal-soft);color:var(--teal)}
+
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start}
+  @media (max-width:1100px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .card h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .card .sub{color:var(--muted);font-size:12px;margin:2px 0 12px}
+  .limits{display:flex;flex-direction:column;gap:10px}
+  .limit{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+  .limit .n{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--primary-deep);min-width:96px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+  .limit .n small{display:block;font-size:11px;color:var(--muted);letter-spacing:0;font-weight:700;margin-top:4px}
+  .limit p{margin:0;font-weight:600;color:var(--ink-2);font-size:13px;line-height:1.5}
+  .limit p select{border:1px solid var(--line);border-radius:8px;padding:2px 6px;font-weight:800;color:var(--primary-deep);background:#fff}
+  .limit p input{border:1px solid var(--line);border-radius:8px;padding:2px 4px;width:48px;text-align:center;font-weight:800;color:var(--primary-deep)}
+  .limit button{margin-top:6px;border:1px solid var(--primary-soft2);background:var(--primary-soft);color:var(--primary-deep);border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+  .limit button:hover{background:var(--primary);color:#fff}
+  .limit button .ic{width:12px;height:12px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+  .kpi{background:var(--canvas);border-radius:12px;padding:10px 12px}
+  .kpi .t{font-size:11px;font-weight:700;color:var(--muted)}
+  .kpi .v{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .kpi .d{font-size:11px;font-weight:700}
+  .kpi .d.good{color:var(--money)}.kpi .d.bad{color:var(--rose)}.kpi .d.flat{color:var(--muted)}
+  .watch{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+  .watch div{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;font-weight:600;font-size:12px}
+  .watch .crit{background:var(--rose-soft);color:#9F1239}.watch .warn{background:var(--warn-soft);color:#92400E}.watch .ok{background:var(--money-soft);color:#166534}
+  .watch .ic{width:14px;height:14px;margin-top:2px;flex:none}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="top">
+  <div class="brand"><span class="mark">P</span>Payobook</div>
+  <div class="crumb">People · Plan · <b>Workforce Planning</b></div>
+  <div class="spacer"></div>
+  <button class="btn ghost" id="reset">RESET_ICON Start again</button>
+  <button class="btn primary" id="save">SAVE_ICON Save plan</button>
+</div>
+
+<div class="wrap">
+  <section class="river-card">
+    <div class="hd">
+      <div><h1>Where your money flows</h1><div class="sub" id="river-sub">Revenue comes in on the left. Click any block to change it and watch the river re-shape.</div></div>
+      <button class="btn hold" id="hold">EYE_ICON Hold to see today</button>
+    </div>
+    <svg id="river" viewBox="0 0 1200 460"></svg>
+    <div class="hint">HAND_ICON Click a division to hire, cut or give a raise · click Revenue to set targets · click Profit to set the margin you want</div>
+    <div class="pop" id="pop"></div>
+  </section>
+
+  <div class="dials" id="dials"></div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Profit path</h3><div class="sub">Month by month. The green band is profit territory; the dotted line is today’s company.</div>
+      <div id="c-months"></div>
+      <div class="watch" id="watch"></div>
+    </div>
+    <div class="card">
+      <h3>ZAP_ICON How far can I go?</h3><div class="sub">The system works out the limit for you. Press “Do it” to apply.</div>
+      <div class="kpis" id="kpis"></div>
+      <div class="limits" id="limits"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!--@core-->
+<script>
+(() => {
+  WF.injectCss();
+  const $ = s => document.querySelector(s), I = WF.icon, F = WF.fmt;
+  document.body.innerHTML = document.body.innerHTML
+    .replace(/RESET_ICON/g, I('reset')).replace(/SAVE_ICON/g, I('save')).replace(/EYE_ICON/g, I('eye')).replace(/HAND_ICON/g, I('hand')).replace(/ZAP_ICON/g, I('zap'));
+  const base = WF.baseline();
+  let state = WF.defaultState();
+  let targetMargin = 15;
+  let showToday = false;
+
+  // ---------- The river (3 columns: revenue → divisions + other + profit → buckets) ----------
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = $('#river');
+  const W = 1200, H = 460, PAD = 26, GAP = 10;
+  const COLX = [40, 520, 1000], NW = 150;
+  const BUCKETS = [
+    { key: 'take', name: 'Take-home pay', color: '#5A4BB0' },
+    { key: 'eetax', name: 'Employee insurance & tax', color: '#8B7FD1' },
+    { key: 'erc', name: 'Employer contributions', color: '#2E7D4F' },
+    { key: 'extra', name: 'Bonus, hiring & leaving', color: '#D97706' },
+    { key: 'other', name: 'Other costs', color: '#94A3B8' },
+    { key: 'profit', name: 'Profit you keep', color: '#0F766E' },
+  ];
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
+  const ribbon = (x1, y1, w1, x2, y2, w2) => { const c = (x1 + x2) / 2; return `M${x1},${y1} C${c},${y1} ${c},${y2} ${x2},${y2} L${x2},${y2 + w2} C${c},${y2 + w2} ${c},${y1 + w1} ${x1},${y1 + w1} Z`; };
+  let built = false, els = {};
+
+  function layout(r) {
+    // money per year, in M
+    const rev = r.year.revenue;
+    const loss = Math.max(0, -r.year.profit);
+    const totalIn = rev + loss; // if losing money, the "loss" flows in from outside
+    const mids = WF.DIVS.map(d => ({ key: d.key, name: d.name, color: d.color, v: r.byDiv[d.key].year }))
+      .concat([{ key: 'other', name: 'Other costs', color: '#94A3B8', v: r.year.other }, { key: 'profit', name: 'Profit', color: '#0F766E', v: Math.max(0, r.year.profit) }]);
+    const bucketV = { take: r.year.takeHome, eetax: r.year.eeIns + r.year.pit, erc: r.year.erc, extra: r.year.bonus + r.year.oneOff, other: r.year.other, profit: Math.max(0, r.year.profit) };
+    const scale = (H - 2 * PAD - GAP * (mids.length - 1)) / totalIn;
+    const yFor = list => { let y = PAD; return list.map(v => { const o = { y, h: v * scale }; y += o.h + GAP; return o; }); };
+    const inCol = loss ? [rev, loss] : [rev];
+    const inLay = yFor(inCol.map(v => v)).map((o, i) => Object.assign(o, { key: i ? 'loss' : 'rev', name: i ? 'Loss (from reserves)' : 'Revenue', color: i ? '#DC2668' : '#2563EB', v: inCol[i] }));
+    const midLay = yFor(mids.map(m => m.v)).map((o, i) => Object.assign(o, mids[i]));
+    const rightList = BUCKETS.map(b => Object.assign({}, b, { v: bucketV[b.key] }));
+    const rightLay = yFor(rightList.map(b => b.v)).map((o, i) => Object.assign(o, rightList[i]));
+    // ribbons in→mid: revenue feeds mids in order; loss fills the remainder
+    const rib1 = []; let cursorIn = { rev: inLay[0].y, loss: inLay[1] ? inLay[1].y : 0 };
+    let revLeft = rev;
+    midLay.forEach(m => {
+      let need = m.v, my = m.y;
+      const fromRev = Math.min(need, revLeft);
+      if (fromRev > 0) { rib1.push({ from: 'rev', to: m.key, x1: COLX[0] + NW, y1: cursorIn.rev, w1: fromRev * scale, x2: COLX[1], y2: my, w2: fromRev * scale, color: m.color, v: fromRev, label: `${m.name} ← Revenue` }); cursorIn.rev += fromRev * scale; my += fromRev * scale; revLeft -= fromRev; need -= fromRev; }
+      if (need > 0 && inLay[1]) { rib1.push({ from: 'loss', to: m.key, x1: COLX[0] + NW, y1: cursorIn.loss, w1: need * scale, x2: COLX[1], y2: my, w2: need * scale, color: '#DC2668', v: need, label: `${m.name} ← reserves` }); cursorIn.loss += need * scale; }
+    });
+    // ribbons mid→right: each division splits into the 4 people buckets by its share; other→other; profit→profit
+    const rib2 = []; const rCursor = Object.fromEntries(rightLay.map(b => [b.key, b.y]));
+    const peopleTotal = r.year.cost;
+    midLay.forEach(m => {
+      let my = m.y;
+      const parts = (m.key === 'other' || m.key === 'profit') ? [[m.key, m.v]] : ['take', 'eetax', 'erc', 'extra'].map(k => [k, m.v * bucketV[k] / peopleTotal]);
+      parts.forEach(([k, v]) => { if (v <= 0) return; rib2.push({ from: m.key, to: k, x1: COLX[1] + NW, y1: my, w1: v * scale, x2: COLX[2], y2: rCursor[k], w2: v * scale, color: m.color, v, label: `${m.name} → ${rightLay.find(b => b.key === k).name}` }); my += v * scale; rCursor[k] += v * scale; });
+    });
+    return { inLay, midLay, rightLay, rib1, rib2 };
+  }
+
+  function drawRiver(r, animate = true) {
+    const L = layout(r);
+    if (!built) {
+      svg.innerHTML = '';
+      const heads = [['Money in', COLX[0]], ['Where it goes', COLX[1]], ['Who ends up with it', COLX[2]]];
+      heads.forEach(([t, x]) => { const e = mk('text', { x, y: 14, class: 'col' }); e.textContent = t; });
+      els.g1 = mk('g'); els.g2 = mk('g'); els.gn = mk('g');
+      built = true;
+    }
+    const tip = (() => { let t = $('.river-card .wf-tip'); if (!t) { t = document.createElement('div'); t.className = 'wf-tip'; $('.river-card').appendChild(t); } return t; })();
+    const syncRibs = (g, ribs, prefix) => {
+      const seen = new Set();
+      ribs.forEach(rb => {
+        const id = `${prefix}-${rb.from}-${rb.to}`; seen.add(id);
+        let p = g.querySelector(`[data-id="${id}"]`);
+        if (!p) { p = mk('path', { 'data-id': id, class: 'rib', fill: rb.color, opacity: prefix === 'a' ? 0.28 : 0.22 }, g); p.setAttribute('d', ribbon(rb.x1, rb.y1, 0, rb.x2, rb.y2, 0)); }
+        requestAnimationFrame(() => p.setAttribute('d', ribbon(rb.x1, rb.y1, rb.w1, rb.x2, rb.y2, rb.w2)));
+        p.onmousemove = ev => { const bb = $('.river-card').getBoundingClientRect(); tip.innerHTML = `<b>${rb.label}</b><div><i style="background:${rb.color}"></i><span>${F.money(rb.v)} a year</span></div>`; tip.style.opacity = 1; tip.style.left = (ev.clientX - bb.left + 14) + 'px'; tip.style.top = (ev.clientY - bb.top - 10) + 'px'; };
+        p.onmouseleave = () => tip.style.opacity = 0;
+      });
+      g.querySelectorAll('path').forEach(p => { if (!seen.has(p.dataset.id)) p.remove(); });
+    };
+    syncRibs(els.g1, L.rib1, 'a'); syncRibs(els.g2, L.rib2, 'b');
+    const nodes = [...L.inLay.map(n => Object.assign({ x: COLX[0] }, n)), ...L.midLay.map(n => Object.assign({ x: COLX[1] }, n)), ...L.rightLay.map(n => Object.assign({ x: COLX[2] }, n))];
+    const seen = new Set();
+    nodes.forEach(n => {
+      const id = `n-${n.x}-${n.key}`; seen.add(id);
+      let g = els.gn.querySelector(`[data-id="${id}"]`);
+      if (!g) {
+        g = mk('g', { 'data-id': id }, els.gn);
+        const rect = mk('rect', { x: n.x, width: NW, rx: 6, fill: n.color, class: 'node', y: n.y, height: 0 }, g);
+        mk('text', { x: n.x + 8, class: 'nl' }, g); mk('text', { x: n.x + 8, class: 'nv' }, g);
+        rect.onclick = ev => openPop(n, ev);
+      }
+      const rect = g.querySelector('rect'), tl = g.querySelector('.nl'), tv = g.querySelector('.nv');
+      rect.setAttribute('y', n.y); rect.setAttribute('height', Math.max(2, n.h));
+      const big = n.h >= 30, mid = n.h >= 8;
+      const light = ['#eda100', '#e87ba4', '#1baf7a', '#94A3B8', '#8B7FD1', '#D97706'].includes(n.color);
+      tl.textContent = n.name; tv.textContent = F.money(n.v);
+      tl.classList.toggle('in', big); tv.classList.toggle('in', big);
+      if (big) {
+        tl.setAttribute('x', n.x + 8); tv.setAttribute('x', n.x + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor');
+        tl.setAttribute('y', n.y + 18); tv.setAttribute('y', n.y + 34);
+        tl.setAttribute('fill', light ? '#1E1B2E' : '#fff'); tv.setAttribute('fill', light ? 'rgba(30,27,46,.75)' : 'rgba(255,255,255,.85)');
+      } else {
+        // small block: label sits beside it, on a white halo so it reads over the ribbons
+        tl.setAttribute('fill', '#1E1B2E'); tv.setAttribute('fill', '#64748B');
+        const y = n.y + n.h / 2 + 4;
+        if (n.x === COLX[2]) { tl.setAttribute('x', n.x - 8); tv.setAttribute('x', n.x - 8 - n.name.length * 7 - 8); tl.setAttribute('text-anchor', 'end'); tv.setAttribute('text-anchor', 'end'); }
+        else { tl.setAttribute('x', n.x + NW + 8); tv.setAttribute('x', n.x + NW + 8 + n.name.length * 7 + 8); tl.removeAttribute('text-anchor'); tv.removeAttribute('text-anchor'); }
+        tl.setAttribute('y', y); tv.setAttribute('y', y);
+      }
+      tl.style.display = tv.style.display = mid ? '' : 'none';
+    });
+    els.gn.querySelectorAll('g').forEach(g => { if (!seen.has(g.dataset.id)) g.remove(); });
+  }
+
+  // ---------- Popover editing for a node ----------
+  function openPop(n, ev) {
+    const pop = $('#pop');
+    const card = $('.river-card').getBoundingClientRect();
+    let html = '';
+    if (n.key === 'rev' || n.key === 'loss') {
+      html = `<h3>${I('wallet')} Your money this year</h3><div class="sub">Type what you expect. Profit is what’s left after people and other costs.</div>
+        <div class="fld"><div class="lbl">Revenue</div><span class="money-in">₫<input type="number" data-k="revenue" value="${state.revenue / 1000}" step="50"><small>B</small></span></div>
+        <div class="fld"><div class="lbl">Other costs <span style="color:var(--muted);font-weight:600">rent, materials…</span></div><span class="money-in">₫<input type="number" data-k="otherCosts" value="${state.otherCosts / 1000}" step="10"><small>B</small></span></div>
+        <div class="fld"><label class="inline"><input type="checkbox" data-k="revenueFollows" ${state.revenueFollows ? 'checked' : ''}> Revenue grows when front-line staff grow</label></div>`;
+    } else if (n.key === 'profit') {
+      html = `<h3>${I('target')} The margin you want</h3><div class="sub">“How far can I go?” on the right uses this number.</div>
+        <div class="fld"><div class="lbl">Keep margin at least <b id="p-tm">${targetMargin}%</b></div><input type="range" min="0" max="40" step="1" value="${targetMargin}" data-k="targetMargin"></div>`;
+    } else if (n.key === 'other') {
+      html = `<h3>${I('building')} Other costs</h3><div class="sub">Everything that isn’t people.</div>
+        <div class="fld"><span class="money-in">₫<input type="number" data-k="otherCosts" value="${state.otherCosts / 1000}" step="10"><small>B</small></span></div>`;
+    } else if (WF.DIV[n.key]) {
+      const d = WF.DIV[n.key], ds = state.divs[d.key];
+      html = `<h3><i style="width:12px;height:12px;border-radius:3px;background:${d.color};display:inline-block"></i> ${d.name}</h3><div class="sub">${F.int(base.byDiv[d.key].headsToday)} people today · ${F.money(base.byDiv[d.key].year)} a year</div>
+        <div class="fld"><div class="lbl">People <b id="p-delta" class="${ds.delta < 0 ? 'neg' : ''}">${ds.delta === 0 ? 'same' : F.int(ds.delta, { plus: true })}</b></div><input type="range" min="-300" max="500" step="5" value="${ds.delta}" data-k="delta" data-div="${d.key}"></div>
+        <div class="fld"><div class="lbl">Change lands in</div><select data-k="month" data-div="${d.key}">${WF.MONTHS_LONG.map((m, i) => `<option value="${i + 1}" ${i + 1 === ds.month ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
+        <div class="fld"><div class="lbl">Raise for this division <b id="p-raise">${ds.raise == null ? 'company raise (' + state.raise + '%)' : ds.raise + '%'}</b></div><input type="range" min="0" max="25" step="0.5" value="${ds.raise == null ? state.raise : ds.raise}" data-k="raise" data-div="${d.key}"></div>`;
+    } else {
+      html = `<h3>${I('info')} ${n.name}</h3><div class="sub">${F.money(n.v)} a year. This block is an outcome — change the divisions, revenue or the dials below to move it.</div>`;
+    }
+    pop.innerHTML = `<button class="close">${I('x')}</button>` + html;
+    const sb = svg.getBoundingClientRect(), k = sb.width / W;
+    const x = Math.min(card.width - 340, Math.max(8, (n.x + NW + 16) * k + (sb.left - card.left))); const y = (sb.top - card.top) + n.y * k;
+    pop.style.left = x + 'px'; pop.style.top = Math.max(8, Math.min(card.height - 220, y)) + 'px';
+    pop.classList.add('open');
+    svg.querySelectorAll('.node').forEach(r => r.classList.remove('hot'));
+    ev.target.classList.add('hot');
+    pop.querySelector('.close').onclick = closePop;
+    pop.querySelectorAll('[data-k]').forEach(c => c.addEventListener(c.tagName === 'SELECT' || c.type === 'checkbox' ? 'change' : 'input', () => {
+      const k = c.dataset.k;
+      if (k === 'targetMargin') { targetMargin = +c.value; $('#p-tm').textContent = targetMargin + '%'; }
+      else if (c.dataset.div) { const ds = state.divs[c.dataset.div]; ds[k] = +c.value; if (k === 'delta') { const b = $('#p-delta'); b.textContent = ds.delta === 0 ? 'same' : F.int(ds.delta, { plus: true }); b.className = ds.delta < 0 ? 'neg' : ''; } if (k === 'raise') $('#p-raise').textContent = ds.raise + '%'; }
+      else if (k === 'revenueFollows') state.revenueFollows = c.checked;
+      else if (k === 'revenue' || k === 'otherCosts') state[k] = (+c.value || 0) * 1000;
+      render();
+    }));
+  }
+  function closePop() { $('#pop').classList.remove('open'); svg.querySelectorAll('.node').forEach(r => r.classList.remove('hot')); }
+  document.addEventListener('click', e => { if (!e.target.closest('#pop') && !e.target.closest('.node')) closePop(); });
+
+  // ---------- Dials ----------
+  const DIALS = [
+    { k: 'raise', t: 'Raise for everyone', badge: 'b-green', ic: 'percent', min: 0, max: 25, step: 0.5, show: v => v + '%', cls: v => v === 0 ? 'zero' : '' },
+    { k: 'otFactor', t: 'Overtime vs today', badge: 'b-blue', ic: 'clock', min: 0, max: 2, step: 0.1, show: v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 }), cls: v => v === 1 ? 'zero' : v > 1 ? 'neg' : '' },
+    { k: 'nightFactor', t: 'Night shifts vs today', badge: 'b-blue', ic: 'moon', min: 0, max: 2, step: 0.1, show: v => v === 1 ? 'same' : F.pct(v - 1, { plus: true, d: 0 }), cls: v => v === 1 ? 'zero' : v > 1 ? 'neg' : '' },
+    { k: 'attrition', t: 'People leaving a year', badge: 'b-amber', ic: 'user-minus', min: 0, max: 40, step: 1, show: v => v + '%', cls: v => v > 18 ? 'neg' : '' },
+    { k: 'bonusMonths', t: 'Tet bonus (months)', badge: 'b-amber', ic: 'gift', min: 0, max: 3, step: 0.5, show: v => v + (v === 1 ? ' month' : ' months'), cls: v => v === 1 ? 'zero' : '' },
+  ];
+  $('#dials').innerHTML = DIALS.map(d => `<div class="dial"><div class="t"><span class="badge ${d.badge}">${I(d.ic)}</span>${d.t}</div><div class="v" id="dv-${d.k}"></div><input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${state[d.k]}" data-k="${d.k}"></div>`).join('');
+  $('#dials').querySelectorAll('input').forEach(i => i.addEventListener('input', () => { state[i.dataset.k] = +i.value; render(); }));
+  function syncDials() { DIALS.forEach(d => { const e = $('#dv-' + d.k); e.textContent = d.show(state[d.k]); e.className = 'v ' + d.cls(state[d.k]); $(`#dials [data-k=${d.k}]`).value = state[d.k]; }); }
+
+  // ---------- Limits (goal seek) ----------
+  let limitDiv = 'mfg';
+  function renderLimits(r) {
+    const tm = targetMargin / 100;
+    const heads = WF.maxHeadsForMargin(state, limitDiv, tm);
+    const raise = WF.maxRaiseForMargin(state, tm);
+    const ok = r.year.margin >= tm;
+    $('#limits').innerHTML = `
+      <div class="limit"><div class="n">${ok ? F.int(heads) : '0'}<small>more people</small></div><p>You can add up to <b>${F.int(heads)}</b> people to <select id="limit-div">${WF.DIVS.map(d => `<option value="${d.key}" ${d.key === limitDiv ? 'selected' : ''}>${d.name}</option>`).join('')}</select> and still keep a <input type="number" id="limit-tm" value="${targetMargin}" min="0" max="40">% margin.<br><button id="do-heads">${I('play')}Do it</button></p></div>
+      <div class="limit"><div class="n">${raise}%<small>raise</small></div><p>The biggest raise for everyone that still keeps ${targetMargin}% margin is <b>${raise}%</b>${raise === 0 ? ' — there is no room right now.' : '.'}<br><button id="do-raise">${I('play')}Do it</button></p></div>
+      <div class="limit"><div class="n">${F.money(Math.abs(r.year.profit - tm * r.year.revenue))}<small>${ok ? 'headroom' : 'to find'}</small></div><p>${ok ? `You are <b>${F.money(r.year.profit - tm * r.year.revenue)}</b> above your ${targetMargin}% margin line this year.` : `You are <b>${F.money(tm * r.year.revenue - r.year.profit)}</b> short of your ${targetMargin}% margin. Cut cost or lift revenue by that much.`}</p></div>`;
+    $('#limit-div').addEventListener('change', e => { limitDiv = e.target.value; renderLimits(WF.compute(state)); });
+    $('#limit-tm').addEventListener('change', e => { targetMargin = Math.max(0, Math.min(40, +e.target.value || 0)); render(); });
+    $('#do-heads').addEventListener('click', () => { state.divs[limitDiv].delta = heads; render(); toast(`Added ${F.int(heads)} people to ${WF.DIV[limitDiv].name}. Margin sits right on ${targetMargin}%.`); });
+    $('#do-raise').addEventListener('click', () => { state.raise = raise; render(); toast(`Raise set to ${raise}% for everyone.`); });
+  }
+  const KP = [['People cost', r => r.year.cost, F.money, 'lower'], ['Profit', r => r.year.profit, F.money, 'higher'], ['Margin', r => r.year.margin, v => F.pct(v), 'higher', true]];
+  function renderKpis(r) {
+    $('#kpis').innerHTML = KP.map(([t, g, f, dir, pts]) => { const d = g(r) - g(base); const cls = Math.abs(d) < (pts ? 0.0005 : 0.5) ? 'flat' : ((dir === 'higher') === (d > 0) ? 'good' : 'bad'); return `<div class="kpi"><div class="t">${t}</div><div class="v">${f(g(r))}</div><div class="d ${cls}">${cls === 'flat' ? 'same as today' : (pts ? F.pts(d) : f(d, { plus: true })) + ' vs today'}</div></div>`; }).join('');
+  }
+
+  function render() {
+    const r = WF.compute(state);
+    drawRiver(showToday ? base : r);
+    syncDials();
+    $('#river-sub').textContent = `${F.money(r.year.revenue)} comes in. ${F.money(r.year.cost)} goes to ${F.int(r.year.headsEnd)} people, ${F.money(r.year.other)} to other costs, and you keep ${F.money(r.year.profit)} (${F.pct(r.year.margin)}).`;
+    WF.chart.lines($('#c-months'), { series: [
+      { name: 'Today', values: base.months.map(m => m.profit), color: '#94A3B8', dash: true },
+      { name: 'Your plan', values: r.months.map(m => m.profit), color: '#0F766E', area: true }], h: 210, band: { lo: 0, hi: Math.max(0, ...r.months.map(m => m.profit)) } });
+    $('#watch').innerHTML = WF.warnings(state, r, base).map(w => `<div class="${w.level}">${I(w.level === 'ok' ? 'check' : 'alert')}<span>${w.text}</span></div>`).join('');
+    renderKpis(r); renderLimits(r);
+  }
+
+  // hold-to-see-today
+  const hold = $('#hold');
+  const down = () => { showToday = true; hold.classList.add('on'); drawRiver(base); };
+  const up = () => { if (!showToday) return; showToday = false; hold.classList.remove('on'); drawRiver(WF.compute(state)); };
+  hold.addEventListener('mousedown', down); hold.addEventListener('touchstart', down, { passive: true });
+  window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
+  hold.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') down(); }); hold.addEventListener('keyup', up);
+
+  $('#reset').addEventListener('click', () => { state = WF.defaultState(); closePop(); render(); toast('Back to today’s company.'); });
+  $('#save').addEventListener('click', () => toast('Saved as “Plan A”. In the real app this goes to your plans list and can be shared with Finance.'));
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  // open with a small example so the river visibly differs from today
+  state.divs.mfg.delta = 120; state.raise = 6;
+  render();
+  window.addEventListener('resize', render);
+})();
+</script>

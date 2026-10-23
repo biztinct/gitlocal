@@ -68,10 +68,13 @@ class Bhxh630ReportXlsx(ReportXlsxAbstract):
         for emp in employees:
             emp_lines = lines_map.get(emp.id, {})
             total_days = emp_lines.get("SICK", 0.0) + emp_lines.get("MAT", 0.0)
-            bank = emp.bank_account_id
-            bank_number = wizard.bhxh630_bank_no or (bank.acc_number if bank and bank.acc_number else "")
-            bank_holder = wizard.bhxh630_bank_holder or (bank.acc_holder_name if bank and bank.acc_holder_name else "")
-            bank_bic = wizard.bhxh630_bank_code or (bank.bank_bic if bank and bank.bank_bic else "")
+            # Odoo 19 deleted hr.employee.bank_account_id. The account is
+            # resolved exactly the way Pay & Deliver resolves it, so the
+            # account BHXH is told about is the account payroll pays into.
+            emp_account, emp_holder, emp_bank_code = base._bank_details(emp)
+            bank_number = wizard.bhxh630_bank_no or emp_account
+            bank_holder = wizard.bhxh630_bank_holder or emp_holder
+            bank_bic = wizard.bhxh630_bank_code or emp_bank_code
 
             # Keep template headers; only write data columns in the official order.
             sheet.write(row, 0, emp.identification_id or emp.barcode or "")

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook — Option C · Full Custom App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css"/>
+<link rel="stylesheet" href="assets/palettes.css"/>
+<link rel="stylesheet" href="assets/app.css"/>
+<style>
+/* ============================================================
+   Option C — Full Custom SPA ("smashing" health-app calibre)
+   ============================================================ */
+body.opt-c .pb-content { padding: 22px 28px 80px; }
+
+/* ---------- Gradient heroes ---------- */
+.c-hero {
+  position:relative; overflow:hidden; border-radius:var(--r-xl);
+  background: var(--pb-hero);
+  color:#fff; padding:30px 34px; box-shadow: var(--sh-lg);
+}
+.c-hero::after { content:""; position:absolute; right:-80px; top:-90px; width:340px; height:340px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, rgba(139,92,246,.45), rgba(139,92,246,0) 70%); }
+.c-hero::before { content:""; position:absolute; right:120px; bottom:-120px; width:260px; height:260px; border-radius:50%;
+  background: radial-gradient(circle, rgba(16,185,129,.20), rgba(16,185,129,0) 70%); }
+.c-hero .eyebrow { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#B9A8F0; }
+.c-hero h1 { color:#fff; font-size:30px; font-weight:800; margin:8px 0 6px; letter-spacing:-.02em; position:relative; }
+.c-hero .sub { color:#C9BEF0; font-size:14px; position:relative; }
+.c-hero-row { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; position:relative; z-index:1; flex-wrap:wrap; }
+
+.c-hero-blue {
+  background: var(--pb-hero-blue);
+}
+.c-hero-blue::after { background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.20), rgba(255,255,255,0) 70%); }
+.c-hero-blue .eyebrow { color:#D6E2FF; }
+.c-hero-blue .sub { color:#DCE6FF; }
+
+/* segmented toggle on dark hero */
+.c-seg-dark { display:inline-flex; gap:3px; background:rgba(255,255,255,.12); border-radius:11px; padding:4px; backdrop-filter:blur(4px); }
+.c-seg-dark button { border:none; background:none; color:rgba(255,255,255,.78); padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit; }
+.c-seg-dark button.active { background:#fff; color:var(--pb-brand); box-shadow:var(--sh-xs); }
+.c-hero-btn { display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.10); color:#fff; padding:7px 14px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit; }
+.c-hero-btn:hover { background:rgba(255,255,255,.20); }
+
+/* ---------- Cockpit cards (home) ---------- */
+.c-cockpit-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; }
+.c-cockpit {
+  background:var(--pb-surface); border:1px solid var(--pb-border); border-radius:var(--r-xl);
+  padding:22px 24px; box-shadow:var(--sh-md); transition: transform var(--t-med) var(--ease), box-shadow var(--t-med);
+  position:relative; overflow:hidden;
+}
+.c-cockpit:hover { transform: translateY(-3px); box-shadow:var(--sh-lg); }
+.c-cockpit .cc-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.c-cockpit .cc-title { font-size:17px; font-weight:800; letter-spacing:-.01em; }
+.c-cockpit .cc-meta { color:var(--pb-muted); font-size:12.5px; margin-top:3px; }
+.c-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.c-pill { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:var(--r-pill); letter-spacing:.02em; }
+.c-pill .d { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.c-pill.ok { background:var(--pb-success-tint); color:#0F8A63; }
+.c-pill.warn { background:var(--pb-warn-tint); color:#B7791F; }
+.c-pill.info { background:var(--pb-info-tint); color:#2563EB; }
+.c-pill.muted { background:#EEF1F5; color:#64748B; }
+.c-mini { display:flex; gap:24px; margin-top:18px; padding-top:16px; border-top:1px solid var(--pb-border-soft); flex-wrap:wrap; }
+.c-mini .m { }
+.c-mini .m .mv { font-size:18px; font-weight:800; letter-spacing:-.02em; }
+.c-mini .m .ml { font-size:11px; color:var(--pb-muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+.c-cockpit .cc-foot { margin-top:18px; }
+.c-link { display:inline-flex; align-items:center; gap:6px; color:var(--pb-brand); font-weight:700; font-size:13px; cursor:pointer; background:none; border:none; font-family:inherit; padding:0; }
+.c-link:hover { gap:9px; }
+
+/* ---------- Floating AI pill ---------- */
+.c-ai-fab {
+  position:fixed; right:24px; bottom:24px; z-index:50;
+  display:flex; align-items:center; gap:11px; padding:11px 18px 11px 13px;
+  background: linear-gradient(120deg, #1B1230, #34216A); color:#fff;
+  border-radius:var(--r-pill); box-shadow: var(--sh-lg); cursor:pointer; border:1px solid rgba(139,92,246,.4);
+}
+.c-ai-fab:hover { transform: translateY(-2px); }
+.c-ai-fab .orb { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-size:15px;
+  background: linear-gradient(135deg, var(--pb-brand-400), var(--pb-accent)); }
+.c-ai-fab .nm { font-size:13px; font-weight:700; line-height:1.15; }
+.c-ai-fab .st { font-size:11px; color:#7CF0C2; display:flex; align-items:center; gap:5px; }
+.c-ai-fab .st .d { width:6px; height:6px; border-radius:50%; background:#34D399; box-shadow:0 0 0 0 rgba(52,211,153,.6); animation: pulse 2s infinite; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(52,211,153,.6);} 70%{box-shadow:0 0 0 7px rgba(52,211,153,0);} 100%{box-shadow:0 0 0 0 rgba(52,211,153,0);} }
+
+/* ---------- Workspace rows (run / coaching list) ---------- */
+.c-ws-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.c-ws-head h1 { font-size:24px; }
+.c-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.c-search-box { display:flex; align-items:center; gap:8px; background:var(--pb-surface); border:1px solid var(--pb-border); border-radius:var(--r-pill); padding:7px 14px; color:var(--pb-muted-2); font-size:13px; min-width:200px; }
+.c-list { display:flex; flex-direction:column; gap:10px; }
+.c-row {
+  display:flex; align-items:center; gap:16px; background:var(--pb-surface); border:1px solid var(--pb-border);
+  border-radius:var(--r-lg); padding:14px 18px; cursor:pointer; transition: all var(--t-fast);
+}
+.c-row:hover { border-color:var(--pb-brand-400); box-shadow:var(--sh-sm); transform: translateX(2px); }
+.c-row .av { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:14px; flex:none; }
+.c-row .rmain { flex:1; min-width:0; }
+.c-row .rt { font-size:14px; font-weight:700; }
+.c-row .rs { font-size:12px; color:var(--pb-muted); margin-top:2px; }
+.c-row .rprog { width:160px; flex:none; }
+.c-row .rprog .pl { font-size:11px; color:var(--pb-muted); font-weight:600; margin-bottom:4px; display:flex; justify-content:space-between; }
+.c-row .rarr { color:var(--pb-muted-2); font-size:18px; font-weight:700; flex:none; transition: transform var(--t-fast); }
+.c-row:hover .rarr { transform: translateX(3px); color:var(--pb-brand); }
+.c-flag-pill { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; background:var(--pb-warn-tint); color:#B7791F; padding:3px 9px; border-radius:var(--r-pill); }
+
+/* ---------- Score cards (batches / person grid) ---------- */
+.c-score-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+.c-score-card { background:var(--pb-surface); border:1px solid var(--pb-border); border-radius:var(--r-lg); padding:18px 20px; box-shadow:var(--sh-sm); transition: all var(--t-med) var(--ease); position:relative; overflow:hidden; }
+.c-score-card:hover { transform:translateY(-2px); box-shadow:var(--sh-md); }
+.c-score-card .scc-top { border-top:3px solid var(--pb-brand); position:absolute; left:0; right:0; top:0; }
+.c-sev { font-size:10.5px; font-weight:800; letter-spacing:.06em; padding:3px 9px; border-radius:var(--r-pill); }
+.sev-crit { background:var(--pb-danger-tint); color:#C0392B; }
+.sev-high { background:var(--pb-warn-tint); color:#B7791F; }
+.sev-med { background:var(--pb-info-tint); color:#2563EB; }
+.sev-ok { background:var(--pb-success-tint); color:#0F8A63; }
+
+/* ---------- Wizard overlay ---------- */
+.c-overlay { position:fixed; inset:0; z-index:80; background:rgba(20,15,40,.55); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; padding:24px; }
+.c-overlay.open { display:flex; animation: fadeUp var(--t-med) var(--ease); }
+.c-wizard { background:var(--pb-surface); border-radius:var(--r-xl); width:760px; max-width:96vw; max-height:92vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--sh-lg); }
+.c-wizard-head { padding:20px 26px; border-bottom:1px solid var(--pb-border); display:flex; align-items:center; justify-content:space-between; }
+.c-wizard-head h3 { font-size:17px; }
+.c-wizard-head .x { border:none; background:var(--pb-surface-2); width:34px; height:34px; border-radius:10px; cursor:pointer; color:var(--pb-muted); font-size:16px; }
+.c-wizard-steps { padding:20px 26px 4px; }
+.c-wizard-body { padding:8px 26px 24px; overflow-y:auto; flex:1; }
+.c-wizard-foot { padding:16px 26px; border-top:1px solid var(--pb-border); display:flex; justify-content:space-between; gap:10px; background:var(--pb-surface-2); }
+.c-rail-click .step { cursor:pointer; }
+.c-success { text-align:center; padding:30px 10px; }
+.c-success .check { width:78px; height:78px; border-radius:50%; background:var(--pb-success-tint); color:var(--pb-accent-600); display:grid; place-items:center; font-size:38px; margin:0 auto 16px; animation: pop var(--t-slow) var(--ease); }
+@keyframes pop { from{transform:scale(.6);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+/* ---------- Big line chart ---------- */
+.c-chart-wrap { width:100%; }
+.c-chart-wrap svg { width:100%; height:auto; display:block; }
+
+/* ---------- Root cause / AI card ---------- */
+.c-ai-tag { display:inline-flex; align-items:center; gap:7px; background:var(--pb-brand-tint); color:var(--pb-brand); border:1px solid var(--pb-brand-tint-2); padding:7px 13px; border-radius:var(--r-pill); font-size:12.5px; font-weight:700; }
+.c-bignum { font-size:30px; font-weight:900; letter-spacing:-.03em; }
+.c-bignum.up { color:var(--pb-accent-600); } .c-bignum.down { color:var(--pb-danger); }
+
+/* ---------- Inline expanded config panel ---------- */
+.c-cfg-rows { display:flex; flex-direction:column; gap:0; }
+.c-cfg-row { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--pb-border-soft); }
+.c-cfg-row:last-child { border-bottom:none; }
+.c-cfg-row .k { color:var(--pb-muted); font-size:12.5px; font-weight:600; }
+.c-cfg-row .v { font-size:13.5px; font-weight:600; }
+.c-rule-row { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid var(--pb-border-soft); background:var(--pb-surface-2); }
+.c-rule-row .col { width:34px; height:30px; border-radius:8px; background:var(--pb-brand); color:#fff; display:grid; place-items:center; font-weight:800; font-size:12px; flex:none; }
+.c-rule-row .cn { flex:1; font-weight:600; font-size:13px; }
+
+/* ---------- Stat pills inline ---------- */
+.c-statpills { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.c-statpill { background:var(--pb-surface-2); border:1px solid var(--pb-border); border-radius:10px; padding:8px 12px; text-align:center; min-width:62px; }
+.c-statpill .n { font-size:16px; font-weight:800; }
+.c-statpill .l { font-size:10px; color:var(--pb-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-top:1px; }
+
+/* ---------- Ask AI bar ---------- */
+.c-askbar { position:sticky; bottom:0; margin-top:22px; background:var(--pb-surface); border:1px solid var(--pb-border); border-radius:var(--r-pill);
+  display:flex; align-items:center; gap:12px; padding:10px 12px 10px 18px; box-shadow:var(--sh-md); }
+.c-askbar .ip { flex:1; border:none; background:none; outline:none; font-family:inherit; font-size:13.5px; color:var(--pb-ink); }
+.c-askbar .ip::placeholder { color:var(--pb-muted-2); }
+
+.c-summary { background: linear-gradient(120deg,var(--pb-brand-tint), #fff); border:1px solid var(--pb-brand-tint-2); border-radius:var(--r-lg); padding:18px 20px; }
+.c-dept-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--pb-border-soft); }
+.c-dept-row:last-child { border-bottom:none; }
+.c-dept-row .dn { width:130px; font-weight:600; font-size:13px; flex:none; }
+.c-dept-row .db { flex:1; }
+.c-dept-row .dc { width:90px; text-align:right; font-weight:700; font-size:13px; flex:none; }
+</style>
+</head>
+<body>
+<div id="app-root"></div>
+<script src="assets/data.js"></script>
+<script>
+const $ = (id)=>document.getElementById(id);
+
+/* ============================================================
+   Helpers specific to Option C
+   ============================================================ */
+function slipLines(p){
+  const basic=Math.round(p.gross*0.72), allow=Math.round(p.gross*0.16), ot=Math.round(p.gross*0.07), bonus=p.gross-basic-allow-ot;
+  return { basic, allow, ot, bonus };
+}
+function statusbarFor(state){
+  const states=[{k:"draft",l:"Draft"},{k:"level1",l:"HR Manager pending"},{k:"level2",l:"GM pending"},{k:"done",l:"Done"}];
+  const order=states.map(s=>s.k), cur=order.indexOf(state);
+  return `<div class="statusbar">`+states.map((s,i)=>{
+    const cls=i<cur?"done-st":(i===cur?"cur":"");
+    return `<div class="st ${cls}">${s.l}</div>`;
+  }).join("")+`</div>`;
+}
+/* big SVG line chart from 7 points */
+function bigLineChart(arr, opts={}){
+  const w=opts.w||640, h=opts.h||220, pad=opts.pad||34;
+  const max=Math.max(...arr)*1.08, min=Math.min(...arr)*0.9, span=(max-min)||1;
+  const iw=w-pad*2, ih=h-pad*1.4;
+  const X=i=>pad+(i/(arr.length-1))*iw;
+  const Y=v=>pad*0.5+ih-((v-min)/span)*ih;
+  const pts=arr.map((v,i)=>`${X(i)},${Y(v)}`);
+  const line=`M ${pts.join(" L ")}`;
+  const area=`M ${X(0)},${Y(min)} L ${pts.join(" L ")} L ${X(arr.length-1)},${Y(min)} Z`;
+  const target=arr[arr.length-1]; const ty=Y(target);
+  const months=["Oct","Nov","Dec","Jan","Feb","Mar","Apr"];
+  let grid=""; for(let g=0;g<=3;g++){ const gy=pad*0.5+ (ih/3)*g; grid+=`<line x1="${pad}" y1="${gy}" x2="${w-pad}" y2="${gy}" stroke="#EDEBF5" stroke-width="1"/>`; }
+  let dots=arr.map((v,i)=>`<circle cx="${X(i)}" cy="${Y(v)}" r="${i===arr.length-1?5:3.5}" fill="${i===arr.length-1?'var(--pb-chart-dot)':'var(--pb-chart-line)'}" stroke="#fff" stroke-width="2"/>`).join("");
+  let labels=arr.map((v,i)=>`<text x="${X(i)}" y="${h-6}" text-anchor="middle" font-size="11" fill="#9B97AE" font-weight="600">${months[i]}</text>`).join("");
+  return `<div class="c-chart-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="cgrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--pb-chart-line)" stop-opacity="0.22"/><stop offset="100%" stop-color="var(--pb-chart-line)" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <line x1="${pad}" y1="${ty}" x2="${w-pad}" y2="${ty}" stroke="var(--pb-chart-dot)" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="${w-pad}" y="${ty-7}" text-anchor="end" font-size="10.5" fill="#0F8A63" font-weight="700">target ₫520M</text>
+    <path d="${area}" fill="url(#cgrad)"/>
+    <path d="${line}" fill="none" stroke="var(--pb-chart-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}${labels}
+  </svg></div>`;
+}
+
+/* ============================================================
+   C — in-panel controller (route-stack / wizard / filters)
+   ============================================================ */
+const C = {
+  /* ---- HOME ---- */
+  runReadiness:96, approvalHealth:72,
+
+  /* ---- RUN workspace state ---- */
+  runTab:"slips", runScope:"this", runFilter:"all", runLatest:"latest",
+
+  setRunTab(t){ C.runTab=t; C.renderRunBody(); C._syncSeg("c-run-seg",t); },
+  setRunScope(s){ C.runScope=s; C._syncSeg("c-run-scope",s); },
+  setRunFilter(f){ C.runFilter=f; C.renderRunBody(); },
+  setRunLatest(l){ C.runLatest=l; C._syncSeg("c-run-latest",l); },
+  _syncSeg(id,val){ const el=$(id); if(!el) return; el.querySelectorAll("button").forEach(b=>b.classList.toggle("active", b.dataset.v===val)); },
+
+  renderRunBody(){
+    const body=$("c-run-body"); if(!body) return;
+    if(C.runTab==="batches"){
+      body.innerHTML = `<div class="c-score-grid">${PB.batches.map((b,i)=>{
+        const score=[88,93,96][i%3];
+        return `<div class="c-score-card"><div class="scc-top" style="border-color:${PB.ring? '':''}"></div>
+          <div class="row" style="justify-content:space-between;align-items:flex-start">
+            <div><div style="font-weight:800;font-size:15px">${b.name}</div>
+            <div class="muted" style="font-size:12px;margin-top:2px">${b.count} payslips · Vietnam Standard</div></div>
+            ${PB.ring(score,56)}
+          </div>
+          <div class="c-pills">${PB.badge(b.state)}<span class="c-pill ok"><span class="d"></span>${b.count} COMPUTED</span></div>
+          <div class="mt-4"><button class="c-link" onclick="C.setRunTab('slips')">Open batch →</button></div>
+        </div>`;
+      }).join("")}</div>`;
+      return;
+    }
+    // payslips list
+    const map={all:null,draft:"draft",level1:"level1",level2:"level2",done:"done"};
+    const want=map[C.runFilter];
+    const list=PB.payslips.filter(p=> !want || p.state===want);
+    body.innerHTML = list.length ? `<div class="c-list">${list.map(p=>{
+      const pct = Math.round(p.net/p.gross*100);
+      return `<div class="c-row" onclick="C.openSlip(${p.id})">
+        <span class="av" style="background:${p.color}">${PB.initials(p.emp)}</span>
+        <div class="rmain">
+          <div class="rt">${p.emp}</div>
+          <div class="rs">${p.title} · ${p.dept} · ${PB.run.period}</div>
+        </div>
+        ${p.flag?`<span class="c-flag-pill">${PB.icon('alert',14)} ${p.flag.length>22?'Exception':p.flag}</span>`:''}
+        <div class="rprog"><div class="pl"><span>Net / gross</span><span class="mono">${pct}%</span></div>
+          <div class="prog green"><span style="width:${pct}%"></span></div></div>
+        ${PB.badge(p.state)}
+        <span class="rarr">→</span>
+      </div>`;
+    }).join("")}</div>` : `<div class="empty"><div class="ico">${PB.icon('folder',30)}</div><div>No payslips in this filter.</div></div>`;
+  },
+
+  openSlip(id){
+    const p=PB.payslips.find(x=>x.id===id); const l=slipLines(p);
+    const i=PB.payslips.findIndex(x=>x.id===id);
+    const canAdvance = p.state!=="done";
+    const next={draft:"level1",level1:"level2",level2:"done"}[p.state];
+    PB.openDrawer(
+      `<div><strong style="font-size:15px">${p.emp}</strong><div class="muted" style="font-size:12px">${p.title} · ${p.dept}</div></div>`,
+      `<div class="form-hero mb-4">
+        <div class="av">${PB.initials(p.emp)}</div>
+        <div><div class="h-title" style="font-size:18px">${p.emp}</div><div class="h-sub">${PB.run.structure} · ${PB.run.period}</div></div>
+        <div class="h-right"><div style="font-size:11px;color:#C9BEF0">Net pay</div><div style="font-size:20px;font-weight:800" class="mono">${PB.fmtFull(p.net)}</div></div>
+      </div>
+      ${p.flag?`<div class="card card-pad mb-4" style="border-left:3px solid var(--pb-warn);background:var(--pb-warn-tint)"><strong>${PB.icon('alert',14)} Needs attention:</strong> ${p.flag}</div>`:''}
+      <div class="mb-4">${statusbarFor(p.state)}</div>
+      <div class="sec-card mb-4"><h4>Salary breakdown</h4>
+        <div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Basic salary (≈72%)</span><span class="v mono">${l.basic.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k">Allowances (≈16%)</span><span class="v mono">${l.allow.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k">Overtime (≈7%)</span><span class="v mono">${l.ot.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k">HQCV bonus</span><span class="v mono">${l.bonus.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k" style="font-weight:800;color:var(--pb-ink)">Gross</span><span class="v mono" style="font-weight:800">${p.gross.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k">− Social insurance</span><span class="v mono" style="color:var(--pb-danger)">−${p.si.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k">− Personal income tax</span><span class="v mono" style="color:var(--pb-danger)">−${p.pit.toLocaleString('en-US')}</span></div>
+          <div class="c-cfg-row"><span class="k" style="font-weight:800;color:var(--pb-ink)">Net pay</span><span class="v mono" style="font-weight:800;color:var(--pb-accent-600)">${p.net.toLocaleString('en-US')}</span></div>
+        </div>
+      </div>
+      ${canAdvance?`<button class="btn btn-primary btn-lg" style="width:100%" onclick="C.advanceSlip(${id})">Approve &amp; advance → ${PB.STATE_LABEL[next]}</button>`
+        :`<div class="card card-pad" style="text-align:center;background:var(--pb-success-tint);border-color:transparent;color:#0F8A63;font-weight:700">✓ Fully approved &amp; done</div>`}`
+    );
+  },
+  advanceSlip(id){
+    const i=PB.payslips.findIndex(x=>x.id===id);
+    const next={draft:"level1",level1:"level2",level2:"done"}[PB.payslips[i].state];
+    if(next){ PB.payslips[i].state=next; if(next==="done") PB.payslips[i].flag=null; }
+    C.renderRunBody();
+    C.openSlip(id);
+  },
+
+  /* ---- RUN WIZARD overlay ---- */
+  wizStep:1, wizTotal:4, wizMode:"run",
+  openWizard(mode){ C.wizMode=mode||"run"; C.wizStep=1; C.wizTotal = (C.wizMode==="import")?3:4; $("c-overlay").classList.add("open"); C.renderWizard(); },
+  closeWizard(){ $("c-overlay").classList.remove("open"); },
+  wizGo(s){ if(s<1||s>C.wizTotal) return; C.wizStep=s; C.renderWizard(); },
+  wizNext(){ if(C.wizStep<C.wizTotal) C.wizGo(C.wizStep+1); else { C.closeWizard(); if(C.wizMode==="run") C.renderRunBody(); } },
+
+  renderWizard(){
+    const isImport=C.wizMode==="import";
+    const steps = isImport ? ["Upload","Map columns","Validate"] : ["Select period","Compute","Review exceptions","Approve"];
+    const title = isImport ? "Import payroll data" : "Run Payroll · April 2026";
+    const sub   = isImport ? "Excel connector → Vietnam Standard Payroll" : "Vietnam Standard Payroll · Payobook";
+    let rail=`<div class="rail c-rail-click">`;
+    steps.forEach((s,idx)=>{
+      const n=idx+1, cls= n<C.wizStep?"done":(n===C.wizStep?"cur":"");
+      rail+=`<div class="step ${cls}" onclick="C.wizGo(${n})"><div class="dot">${n<C.wizStep?'✓':n}</div><div class="lab">${s}</div></div>`;
+      if(idx<steps.length-1) rail+=`<div class="bar"></div>`;
+    });
+    rail+=`</div>`;
+
+    let bodyHtml="";
+    if(isImport){
+      if(C.wizStep===1) bodyHtml=`<div class="card card-pad" style="border:2px dashed var(--pb-border);text-align:center;padding:38px">
+        <div style="font-size:40px">${PB.icon('file-text',15)}</div><div style="font-weight:700;margin-top:6px">Drop your Excel file here</div>
+        <div class="muted" style="font-size:12.5px">April_2026_VPTQ.xlsx · 7 rows detected · color-coded ✓</div></div>`;
+      else if(C.wizStep===2) bodyHtml=`<div class="sec-card"><h4>Detected column mapping</h4>
+        <div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Column G</span><span class="v">→ MCLNGHL <span class="field-auto">matched</span></span></div>
+          <div class="c-cfg-row"><span class="k">Column H</span><span class="v">→ PHCPPCCC <span class="field-auto">matched</span></span></div>
+          <div class="c-cfg-row"><span class="k">Column Y</span><span class="v">→ LNGNGYTH <span class="field-auto">matched</span></span></div>
+          <div class="c-cfg-row"><span class="k">Column AC</span><span class="v">→ LNGTNGCA <span class="field-auto">matched</span></span></div>
+        </div></div>`;
+      else bodyHtml=`<div class="c-success"><div class="check">✓</div><h3>7 rows validated</h3>
+        <p class="muted">All formula codes resolved with no conflicts. Ready to import into April 2026.</p></div>`;
+    } else {
+      if(C.wizStep===1) bodyHtml=`<div class="grid-2">
+        <div class="sec-card"><h4>Period</h4><div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Batch name</span><span class="v">April 2026</span></div>
+          <div class="c-cfg-row"><span class="k">Period</span><span class="v">Apr 1 – Apr 30, 2026</span></div>
+          <div class="c-cfg-row"><span class="k">Structure</span><span class="v">Vietnam Standard Payroll</span></div>
+          <div class="c-cfg-row"><span class="k">Cycle</span><span class="v">End-Cycle (VEC)</span></div>
+        </div></div>
+        <div class="sec-card"><h4>Scope</h4><div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Company</span><span class="v">Payobook</span></div>
+          <div class="c-cfg-row"><span class="k">Headcount</span><span class="v">7 employees</span></div>
+          <div class="c-cfg-row"><span class="k">Currency</span><span class="v">VND</span></div>
+        </div></div></div>`;
+      else if(C.wizStep===2) bodyHtml=`<div style="text-align:center;padding:24px 0">
+        ${PB.ring(96,120,"96%")}
+        <h3 style="margin-top:14px">Computing 7 payslips…</h3>
+        <p class="muted">Applying 86 rules · 32 formulas across Vietnam Standard Payroll.</p>
+        <div class="c-statpills" style="justify-content:center">
+          <div class="c-statpill"><div class="n">7</div><div class="l">Computed</div></div>
+          <div class="c-statpill"><div class="n mono">${PB.fmtVND(PB.run.totalGross)}</div><div class="l">Gross</div></div>
+          <div class="c-statpill"><div class="n mono">${PB.fmtVND(PB.run.totalNet)}</div><div class="l">Net</div></div>
+        </div></div>`;
+      else if(C.wizStep===3){ const flagged=PB.payslips.filter(p=>p.flag);
+        bodyHtml=`<p class="muted mb-3">${flagged.length} payslips were flagged for review before approval.</p>
+        <div class="c-list">${flagged.map(p=>`<div class="c-row" style="cursor:default">
+          <span class="av" style="background:${p.color}">${PB.initials(p.emp)}</span>
+          <div class="rmain"><div class="rt">${p.emp}</div><div class="rs">${p.title} · ${p.dept}</div></div>
+          <span class="c-flag-pill">${PB.icon('alert',14)} ${p.flag}</span>${PB.badge(p.state)}
+        </div>`).join("")}</div>
+        ${flagged.length===0?`<div class="empty"><div class="ico">${PB.icon('clipboard-check',16)}</div>No exceptions — all clear.</div>`:''}`;
+      }
+      else bodyHtml=`<div class="c-success"><div class="check">✓</div><h3>Run submitted for approval</h3>
+        <p class="muted">7 payslips computed · ${PB.fmtVND(PB.run.totalNet)} net · routed to GM approval.</p></div>`;
+    }
+
+    $("c-wizard").innerHTML = `
+      <div class="c-wizard-head"><div><h3>${title}</h3><div class="muted" style="font-size:12.5px">${sub}</div></div>
+        <button class="x" onclick="C.closeWizard()">✕</button></div>
+      <div class="c-wizard-steps">${rail}</div>
+      <div class="c-wizard-body">${bodyHtml}</div>
+      <div class="c-wizard-foot">
+        <button class="btn btn-ghost" onclick="${C.wizStep===1?'C.closeWizard()':'C.wizGo('+(C.wizStep-1)+')'}">${C.wizStep===1?'Cancel':'← Back'}</button>
+        <button class="btn btn-primary" onclick="C.wizNext()">${C.wizStep===C.wizTotal?(C.wizMode==='import'?'Import 7 rows':'Done'):'Continue →'}</button>
+      </div>`;
+  },
+
+  /* ---- FORMULA expand ---- */
+  expandedCfg:null,
+  toggleCfg(code){ C.expandedCfg = C.expandedCfg===code?null:code; WF.formula.repaint(); },
+
+  /* ---- ANALYTICS ---- */
+  anaRange:"MTD",
+  setAnaRange(r){ C.anaRange=r; C._syncSeg("c-ana-range",r); },
+};
+
+/* ============================================================
+   WF — the 4 workflow panels
+   ============================================================ */
+const WF = {
+
+  /* ---------------- HOME (manager command centre) ---------------- */
+  home: { render(){
+    const r=PB.run;
+    return `
+    <div class="c-hero mb-6">
+      <div class="c-hero-row">
+        <div>
+          <div class="eyebrow">Payobook · Region overview</div>
+          <h1>Good afternoon, Mai</h1>
+          <div class="sub">Payobook · Vietnam region · April 2026 cycle</div>
+        </div>
+        <div class="row" style="gap:10px">
+          <button class="c-hero-btn">${PB.icon('refresh',14)} Refresh</button>
+          <button class="c-hero-btn" onclick="PB.go('run')">${PB.icon('zap',15)} Run Payroll</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="c-cockpit-grid">
+      <div class="c-cockpit">
+        <div class="cc-head">
+          <div><div class="cc-title">April 2026 Run</div><div class="cc-meta">Vietnam Standard Payroll · Apr 1 – Apr 30</div></div>
+          ${PB.ring(C.runReadiness,68)}
+        </div>
+        <div class="c-pills">
+          <span class="c-pill ok"><span class="d"></span>7/7 COMPUTED</span>
+          <span class="c-pill warn"><span class="d"></span>${r.exceptions} NEED REVIEW</span>
+          <span class="c-pill info"><span class="d"></span>GM PENDING</span>
+        </div>
+        <div class="c-mini">
+          <div class="m"><div class="mv mono">${PB.fmtVND(r.totalNet)}</div><div class="ml">Net total</div></div>
+          <div class="m"><div class="mv mono">${PB.fmtVND(r.totalGross)}</div><div class="ml">Gross</div></div>
+          <div class="m"><div class="mv">${r.exceptions}</div><div class="ml">Exceptions</div></div>
+        </div>
+        <div class="cc-foot"><button class="c-link" onclick="PB.go('run')">Open cockpit →</button></div>
+      </div>
+
+      <div class="c-cockpit">
+        <div class="cc-head">
+          <div><div class="cc-title">Company overview</div><div class="cc-meta">Payobook · all departments · monthly</div></div>
+          ${PB.ring(C.approvalHealth,68)}
+        </div>
+        <div class="c-pills">
+          <span class="c-pill muted"><span class="d"></span>${PB.analytics.headcount} HEADCOUNT</span>
+          <span class="c-pill warn"><span class="d"></span>3 APPROVALS</span>
+          <span class="c-pill ok"><span class="d"></span>100% COVERAGE</span>
+        </div>
+        <div class="c-mini">
+          <div class="m"><div class="mv mono">${PB.fmtVND(PB.analytics.payroll)}</div><div class="ml">Monthly payroll</div></div>
+          <div class="m"><div class="mv mono">${PB.fmtVND(PB.analytics.avgNet)}</div><div class="ml">Avg net</div></div>
+          <div class="m"><div class="mv">↗ ${PB.analytics.payrollTrendPct}%</div><div class="ml">Trend</div></div>
+        </div>
+        <div class="cc-foot"><button class="c-link" onclick="PB.go('analytics')">Open cockpit →</button></div>
+      </div>
+
+      <div class="c-cockpit">
+        <div class="cc-head">
+          <div><div class="cc-title">Formula engine</div><div class="cc-meta">Excel-driven · VEC + VMC configs</div></div>
+          ${PB.ring(90,68)}
+        </div>
+        <div class="c-pills">
+          <span class="c-pill info"><span class="d"></span>2 CONFIGS ACTIVE</span>
+          <span class="c-pill warn"><span class="d"></span>PENDING VALIDATION</span>
+        </div>
+        <div class="c-mini">
+          <div class="m"><div class="mv">171</div><div class="ml">Rules</div></div>
+          <div class="m"><div class="mv">62</div><div class="ml">Formulas</div></div>
+          <div class="m"><div class="mv">9</div><div class="ml">Tests</div></div>
+        </div>
+        <div class="cc-foot"><button class="c-link" onclick="PB.go('formula')">Open cockpit →</button></div>
+      </div>
+    </div>
+
+    <div class="c-ai-fab" onclick="PB.openDrawer('<strong>PayAI Assistant</strong>','<p class=&quot;muted&quot;>Ask me anything about this run, exceptions, or analytics. (Decorative in this prototype.)</p>')">
+      <div class="orb">${PB.icon('sparkles',15)}</div>
+      <div><div class="nm">PayAI</div><div class="st"><span class="d"></span>Online</div></div>
+    </div>`;
+  }, alwaysRender:true },
+
+  /* ---------------- RUN (full SPA workspace) ---------------- */
+  run: { render(){
+    return `
+    <div class="c-ws-head">
+      <div><h1>Payroll</h1><div class="desc muted" style="font-size:13px">${PB.run.structure} · ${PB.run.period}</div></div>
+      <div class="row" style="gap:10px">
+        <div class="c-seg-dark" id="c-run-scope" style="background:var(--pb-surface-2);border:1px solid var(--pb-border)">
+          <button class="active" data-v="this" onclick="C.setRunScope('this')" style="color:var(--pb-brand)">This run</button>
+          <button data-v="all" onclick="C.setRunScope('all')" style="color:var(--pb-muted)">All runs</button>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="C.openWizard('run')">${PB.icon('zap',15)} Run Payroll</button>
+      </div>
+    </div>
+
+    <div class="seg mb-4" id="c-run-seg">
+      <button class="active" data-v="slips" onclick="C.setRunTab('slips')">${PB.icon('receipt',15)} Payslips</button>
+      <button data-v="batches" onclick="C.setRunTab('batches')">${PB.icon('calendar',16)} Batches</button>
+    </div>
+
+    <div class="c-toolbar">
+      <div class="chips">
+        <span class="chip active" onclick="C.setRunFilter('all');WF.run._chip(this)">All</span>
+        <span class="chip" onclick="C.setRunFilter('draft');WF.run._chip(this)">Draft</span>
+        <span class="chip" onclick="C.setRunFilter('level1');WF.run._chip(this)">HR pending</span>
+        <span class="chip" onclick="C.setRunFilter('level2');WF.run._chip(this)">GM pending</span>
+        <span class="chip" onclick="C.setRunFilter('done');WF.run._chip(this)">Done</span>
+        <span class="chip-divider"></span>
+        <span class="chip">Apr</span><span class="chip">Q2</span><span class="chip">YTD</span>
+      </div>
+      <div style="flex:1"></div>
+      <div class="c-search-box">${PB.icon('search',15)} <span>Search employees…</span></div>
+      <div class="c-seg-dark" id="c-run-latest" style="background:var(--pb-surface-2);border:1px solid var(--pb-border)">
+        <button class="active" data-v="latest" onclick="C.setRunLatest('latest')" style="color:var(--pb-brand)">Latest</button>
+        <button data-v="all" onclick="C.setRunLatest('all')" style="color:var(--pb-muted)">All</button>
+      </div>
+      <button class="btn btn-ghost btn-sm">↕ Sort</button>
+    </div>
+
+    <div id="c-run-body"></div>`;
+  }, mounted(){ C.renderRunBody(); },
+     _chip(el){ el.parentElement.querySelectorAll(".chip").forEach((c,i)=>{ if(i<6) c.classList.remove("active"); }); el.classList.add("active"); },
+     alwaysRender:true },
+
+  /* ---------------- FORMULA (bespoke cards + inline expand) ---------------- */
+  formula: { render(){
+    return `
+    <div class="c-ws-head">
+      <div><h1>Formula Configurations</h1><div class="desc muted" style="font-size:13px">Excel-driven payroll formula engine</div></div>
+      <div class="row" style="gap:10px">
+        <button class="btn btn-ghost" onclick="C.openWizard('import')">${PB.icon('upload',15)} Import data</button>
+        <button class="btn btn-primary">${PB.icon('plus',14)} New config</button>
+      </div>
+    </div>
+    <div id="c-formula-body"></div>`;
+  },
+  mounted(){ WF.formula.repaint(); },
+  repaint(){
+    const body=$("c-formula-body"); if(!body) return;
+    const health={VEC:92,VMC:88};
+    body.innerHTML = `<div class="c-score-grid">${PB.formulaConfigs.map(c=>{
+      const open=C.expandedCfg===c.code;
+      return `<div class="c-score-card" style="${open?'grid-column:1/-1':''}">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <div class="row" style="gap:12px;align-items:flex-start">
+            <span style="font-size:24px">${PB.icon('calculator',16)}</span>
+            <div>
+              <div style="font-weight:800;font-size:15px">${c.name} <span class="mono" style="color:var(--pb-brand);font-weight:700">${c.code}</span></div>
+              <div class="muted" style="font-size:12px;margin-top:2px">${c.cycle} · ${c.country} · ${c.structure}</div>
+              <div class="c-statpills">
+                <div class="c-statpill"><div class="n">${c.rules}</div><div class="l">Rules</div></div>
+                <div class="c-statpill"><div class="n">${c.formulas}</div><div class="l">Formulas</div></div>
+                <div class="c-statpill"><div class="n">${c.tests}</div><div class="l">Tests</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center">${PB.ring(health[c.code]||90,60)}<div class="muted" style="font-size:10px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Health</div></div>
+        </div>
+        <div class="c-pills">${PB.badge(c.state)}<span class="c-pill warn"><span class="d"></span>${c.validation}</span></div>
+        <div class="mt-4"><button class="c-link" onclick="C.toggleCfg('${c.code}')">${open?'Close config ▲':'Open config →'}</button></div>
+        ${open?WF.formula._detail(c):''}
+      </div>`;
+    }).join("")}</div>`;
+  },
+  _detail(c){
+    return `<div class="mt-5" style="border-top:1px solid var(--pb-border);padding-top:18px">
+      <div class="grid-2 mb-4">
+        <div class="sec-card"><h4>Configuration</h4><div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Reference code</span><span class="v mono">${c.code}</span></div>
+          <div class="c-cfg-row"><span class="k">Country</span><span class="v">${c.country}</span></div>
+          <div class="c-cfg-row"><span class="k">Structure</span><span class="v">${c.structure}</span></div>
+          <div class="c-cfg-row"><span class="k">Cycle type</span><span class="v">${c.cycle}</span></div>
+          <div class="c-cfg-row"><span class="k">Currency</span><span class="v">${c.currency}</span></div>
+        </div></div>
+        <div class="sec-card"><h4>Status</h4><div class="c-cfg-rows">
+          <div class="c-cfg-row"><span class="k">Validation</span><span class="v">${c.validation}</span></div>
+          <div class="c-cfg-row"><span class="k">Last validated</span><span class="v">Feb 21, 6:14 PM</span></div>
+          <div class="c-cfg-row"><span class="k">Validated by</span><span class="v">System Admin</span></div>
+          <div class="c-cfg-row"><span class="k">Data source</span><span class="v">Excel connector <span class="field-auto">auto</span></span></div>
+        </div></div>
+      </div>
+      <h4 style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--pb-muted);margin-bottom:12px">Formula rules (${c.rules})</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">${PB.formulaRules.map(r=>`
+        <div class="c-rule-row">
+          <span class="col">${r.col}</span>
+          <span class="cn">${r.name}</span>
+          <span class="mono muted" style="font-size:12px">${r.code}</span>
+          ${r.type==='calc'?'<span class="badge b-violet">Calculated</span>':'<span class="badge b-info">Input</span>'}
+        </div>`).join("")}</div>
+    </div>`;
+  },
+  alwaysRender:true },
+
+  /* ---------------- ANALYTICS (Business Impact Dashboard) ---------------- */
+  analytics: { render(){
+    const a=PB.analytics;
+    return `
+    <div class="c-hero c-hero-blue mb-5">
+      <div class="c-hero-row">
+        <div>
+          <div class="eyebrow">${PB.icon('bar-chart',16)} Payobook · April 2026</div>
+          <h1>Business Impact Dashboard</h1>
+          <div class="sub">Vietnam region · Ho Chi Minh · monthly payroll performance</div>
+        </div>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <div class="c-seg-dark" id="c-ana-range">
+            <button data-v="Today" onclick="C.setAnaRange('Today')">Today</button>
+            <button data-v="WTD" onclick="C.setAnaRange('WTD')">WTD</button>
+            <button class="active" data-v="MTD" onclick="C.setAnaRange('MTD')">MTD</button>
+            <button data-v="QTD" onclick="C.setAnaRange('QTD')">QTD</button>
+          </div>
+          <button class="c-hero-btn">${PB.icon('sparkles',15)} AI Insights</button>
+          <button class="c-hero-btn">${PB.icon('refresh',14)}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-5">
+      <div class="kpi"><div class="lbl">Monthly payroll<span class="ico">${PB.icon('wallet',16)}</span></div><div class="val mono">${PB.fmtVND(a.payroll)}</div><div class="sub"><span class="up">↗ ${a.payrollTrendPct}%</span> vs prev month</div></div>
+      <div class="kpi k-blue"><div class="lbl">Headcount<span class="ico">${PB.icon('users',16)}</span></div><div class="val">${a.headcount}</div><div class="sub">across 6 departments</div></div>
+      <div class="kpi k-amber"><div class="lbl">Avg net<span class="ico">${PB.icon('calculator',16)}</span></div><div class="val mono">${PB.fmtVND(a.avgNet)}</div><div class="sub">${a.conversionNote}</div></div>
+      <div class="kpi k-red"><div class="lbl">Contributions<span class="ico">${PB.icon('shield',16)}</span></div><div class="val mono">${PB.fmtVND(a.contributions)}</div><div class="sub">statutory SI+HI+UI</div></div>
+      <div class="kpi k-green"><div class="lbl">Coverage<span class="ico">${PB.icon('clipboard-check',16)}</span></div><div class="val">100%</div><div class="sub">7/7 payslips reported</div></div>
+    </div>
+
+    <div class="grid-2 mb-5">
+      <div class="card card-pad">
+        <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('search',16)} Root Cause Analysis</div>
+          <button class="btn btn-soft btn-sm">${PB.icon('file-text',15)} Full AI Report</button></div>
+        <div class="card-sub mb-3">Payroll up <strong>${PB.fmtVND(54200000)}</strong> month-over-month (+4.2% growth).</div>
+        <div class="c-ai-tag mb-3">${PB.icon('sparkles',15)} Commission spike — Sales</div>
+        <div class="row" style="gap:16px;align-items:baseline">
+          <span class="c-bignum up mono">+₫25.3M</span>
+          <span class="muted" style="font-size:12.5px">from 18% higher commission per Sales head</span>
+        </div>
+        <div class="mt-4" style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="c-ai-tag" style="background:var(--pb-surface-2);color:var(--pb-ink-2);border-color:var(--pb-border)">Overtime ↑ 7%</span>
+          <span class="c-ai-tag" style="background:var(--pb-surface-2);color:var(--pb-ink-2);border-color:var(--pb-border)">HQCV bonus stable</span>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('trending-up',16)} Cost trend</div>
+          <span class="badge b-done">on target · 100%</span></div>
+        <div class="card-sub mb-3">Last 7 months · net payroll (₫M) vs target line</div>
+        ${bigLineChart(a.trend)}
+      </div>
+    </div>
+
+    <div class="card card-pad mb-5">
+      <div class="row" style="justify-content:space-between"><div class="card-title">${PB.icon('building',16)} Department performance</div>
+        <span class="muted" style="font-size:12px">6 departments · April</span></div>
+      <div class="mt-3">${a.departments.map(d=>{
+        const max=Math.max(...a.departments.map(x=>x.cost)), pct=Math.round(d.cost/max*100);
+        return `<div class="c-dept-row">
+          <span class="dn">${d.name}</span>
+          <span class="db"><div class="prog"><span style="width:${pct}%"></span></div></span>
+          <span class="dc mono">${PB.fmtVND(d.cost)}</span>
+          <button class="btn btn-ghost btn-sm">Details</button>
+        </div>`;
+      }).join("")}</div>
+    </div>
+
+    <div class="mb-5">
+      <div class="card-title mb-3">${PB.icon('clipboard-check',16)} Approval Queue</div>
+      <div class="c-score-grid">${a.approvals.map(ap=>`
+        <div class="c-score-card">
+          <div class="row" style="justify-content:space-between;align-items:flex-start">
+            <div style="flex:1"><div style="font-weight:800;font-size:14px;line-height:1.3">${ap.name}</div>
+              <div class="muted" style="font-size:12px;margin-top:3px">${ap.headcount} payslips · <span class="mono">${PB.fmtVND(ap.amount)}</span></div></div>
+            ${PB.ring(ap.score,54)}
+          </div>
+          <div class="c-pills"><span class="badge b-level2">${ap.stage}</span></div>
+          <div class="mt-4"><button class="btn btn-primary btn-sm" style="width:100%">Approve</button></div>
+        </div>`).join("")}</div>
+    </div>
+
+    <div class="c-summary mb-3">
+      <div class="card-title mb-3">${PB.icon('brain',16)} Executive Summary</div>
+      <p style="margin:0;color:var(--pb-ink-2);font-size:13.5px;line-height:1.6">
+        April 2026 payroll totals <strong>${PB.fmtVND(a.payroll)}</strong> across <strong>${a.headcount} employees</strong>,
+        up <strong>${a.payrollTrendPct}%</strong> month-over-month — driven primarily by a commission spike in Sales
+        (<strong>+₫25.3M</strong>). Statutory contributions of <strong>${PB.fmtVND(a.contributions)}</strong> remain within
+        expected bands and coverage is complete at <strong>100%</strong>. Three runs await approval; the Vietnam run scores
+        <strong>96</strong> on readiness and is ready for GM sign-off.
+      </p>
+    </div>
+
+    <div class="c-askbar">
+      <span class="orb" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pb-brand-400),var(--pb-accent));color:#fff">${PB.icon('sparkles',15)}</span>
+      <input class="ip" placeholder="Ask AI about performance… e.g. why did Sales payroll rise?"/>
+      <button class="btn btn-primary btn-sm">Ask</button>
+    </div>`;
+  }, alwaysRender:true },
+};
+
+/* ---------------- Mount ---------------- */
+PB.mountShell({ tag:"OPTION C", name:"Full Custom App", bodyClass:"opt-c", role:"officer", start:"home", workflows: WF });
+
+/* Inject wizard overlay container (once) */
+(function(){
+  const ov=document.createElement("div");
+  ov.className="c-overlay"; ov.id="c-overlay";
+  ov.innerHTML=`<div class="c-wizard" id="c-wizard"></div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener("click",e=>{ if(e.target===ov) C.closeWizard(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,635 @@
+// Payobook Platform Link — the notice bar and the What's new timeline.
+// Consumes the shared pb_import_kit tokens (--pbim-*). No invented colours: the
+// only two hues here are the promoted amber (#D97706) and the product's indigo.
+
+// =============================================================================
+// THE BAR
+//
+// Not scoped under .pbim, because it is mounted in the web client's own chrome
+// rather than inside a cockpit page — so it carries its own type stack and its
+// own two-word class prefix (.pbtn-) instead of borrowing a page's.
+// =============================================================================
+.pbtn-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    font-size: 13px;
+    line-height: 1.35;
+    border-bottom: 1px solid transparent;
+    // Purposeful motion: the bar arrives from behind the top bar rather than
+    // appearing, so the eye is told something moved into place.
+    animation: pbtn-bar-in .32s cubic-bezier(.2, .8, .3, 1) both;
+
+    .pbtn-bar-ic { display: flex; flex: none; }
+
+    .pbtn-bar-kind {
+        flex: none;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 999px;
+    }
+
+    .pbtn-bar-tt { font-weight: 700; flex: none; }
+
+    .pbtn-bar-tx {
+        opacity: .88;
+        // The message is the part that must survive a narrow window: it is
+        // allowed to shrink and to end in an ellipsis, the title is not.
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .pbtn-bar-when {
+        margin-left: auto;
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        padding-left: 12px;
+    }
+
+    .pbtn-bar-x {
+        flex: none;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        opacity: .6;
+        cursor: pointer;
+        display: flex;
+        padding: 3px;
+        border-radius: 6px;
+        transition: opacity .15s ease, background .15s ease;
+        &:hover { opacity: 1; background: rgba(0, 0, 0, .07); }
+    }
+
+    // An update in progress has no close button. It has a dot, which is doing
+    // the same job as the spinner on a screen that is loading: it says the
+    // reason this bar is here has not finished yet.
+    .pbtn-bar-live {
+        flex: none;
+        width: 9px;
+        height: 9px;
+        margin: 0 6px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pbtn-bar-live 1.2s ease-in-out infinite;
+    }
+
+    // ---- planned update: amber, the promoted "something is about to happen"
+    &.pbtn-maintenance {
+        background: #FEF3C7;
+        color: #7C4A03;
+        border-bottom-color: rgba(217, 119, 6, .3);
+        .pbtn-bar-kind { background: #D97706; color: #fff; }
+        .pbtn-bar-ic { color: #D97706; }
+    }
+
+    // ---- information: the product's own indigo, soft
+    &.pbtn-info {
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary-strong, #5A4BB0);
+        border-bottom-color: var(--pbim-line, #E2E8F0);
+        .pbtn-bar-kind { background: var(--pbim-primary, #5A4BB0); color: #fff; }
+        .pbtn-bar-ic { color: var(--pbim-primary, #5A4BB0); }
+    }
+
+    // ---- inside the platform owner's composer: same bar, no page furniture
+    &.pbtn-preview {
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        animation: none;
+    }
+
+    @media (max-width: 780px) {
+        flex-wrap: wrap;
+        .pbtn-bar-when { margin-left: 0; padding-left: 0; flex-basis: 100%; }
+        .pbtn-bar-tx { white-space: normal; }
+    }
+}
+
+@keyframes pbtn-bar-in {
+    from { opacity: 0; transform: translateY(-100%); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+// A reader who has asked their machine to stop moving things gets the bar
+// without the slide. It still appears; it simply does not travel.
+@keyframes pbtn-bar-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .45; transform: scale(.7); }
+}
+
+// A reader who has asked their machine to stop moving things gets the bar
+// without the slide. It still appears; it simply does not travel.
+@media (prefers-reduced-motion: reduce) {
+    .pbtn-bar { animation: none; }
+    .pbtn-bar-live { animation: none; }
+}
+
+// =============================================================================
+// WHAT'S NEW
+// =============================================================================
+.pbtn {
+    .pbtn-wn { max-width: 860px; }
+    .pbtn-wn-head { margin-bottom: 20px; }
+
+    // ---- the hero strip: which release this database is actually on
+    .pbtn-now {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        margin-bottom: 26px;
+        border-radius: 16px;
+        background: var(--pbim-soft, #EDEAF8);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+    }
+    .pbtn-now-ring {
+        width: 40px; height: 40px; flex: none;
+        border-radius: 50%;
+        display: grid; place-items: center;
+        background: #fff;
+        box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+    }
+    .pbtn-now-dot {
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--pbim-primary, #5A4BB0);
+        animation: pbtn-pulse 2.6s ease-in-out infinite;
+    }
+    .pbtn-now-tx { display: flex; flex-direction: column; }
+    .pbtn-now-label {
+        font-size: 11px; font-weight: 700; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--pbim-muted, #64748B);
+    }
+    .pbtn-now-name {
+        font-size: 22px; font-weight: 800;
+        color: var(--pbim-primary-strong, #5A4BB0);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbtn-now-when {
+        margin-left: auto; font-size: 12px;
+        color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+    }
+
+    // ---- the timeline itself
+    .pbtn-tl { display: flex; flex-direction: column; }
+    .pbtn-rel {
+        display: flex;
+        gap: 16px;
+        // Each entry animates in one after the next, so the list reads as a
+        // sequence rather than arriving as a wall.
+        animation: pbtn-rise .4s cubic-bezier(.2, .8, .3, 1) both;
+        @for $i from 1 through 10 {
+            &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 45}ms; }
+        }
+    }
+    .pbtn-rel-rail {
+        position: relative;
+        width: 14px; flex: none;
+        display: flex; flex-direction: column; align-items: center;
+        padding-top: 22px;
+    }
+    .pbtn-rel-dot {
+        width: 11px; height: 11px; border-radius: 50%; flex: none;
+        background: #fff;
+        border: 2.5px solid var(--pbim-line, #E2E8F0);
+        z-index: 1;
+    }
+    .pbtn-rel-line {
+        flex: 1;
+        width: 2px;
+        background: var(--pbim-line, #E2E8F0);
+        margin-top: 2px;
+    }
+    .pbtn-rel:last-child .pbtn-rel-line { background: transparent; }
+    .pbtn-rel.is-now .pbtn-rel-dot {
+        border-color: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 0 0 4px var(--pbim-ring, rgba(90, 75, 176, .18));
+    }
+
+    .pbtn-rel-card { flex: 1; margin-bottom: 14px; padding: 16px 18px; }
+    .pbtn-rel.is-now .pbtn-rel-card {
+        border-color: var(--pbim-primary, #5A4BB0);
+        box-shadow: 0 6px 20px var(--pbim-ring, rgba(90, 75, 176, .18));
+    }
+    .pbtn-rel-h {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+    .pbtn-rel-name {
+        font-size: 17px; font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .pbtn-rel-date { font-size: 12.5px; color: var(--pbim-muted, #64748B); }
+    // The shared badge primitive capitalises every word, which turns a
+    // sentence into "You Are On This Release". This one is a sentence.
+    .pbtn-rel-badge { margin-left: auto; text-transform: none; }
+    .pbtn-rel-notes {
+        font-size: 13.5px; line-height: 1.6; color: var(--pbim-ink, #1B1733);
+        p { margin: 0 0 8px; &:last-child { margin-bottom: 0; } }
+        ul { margin: 0 0 8px; padding-left: 20px; &:last-child { margin-bottom: 0; } }
+        li { margin-bottom: 3px; }
+    }
+    .pbtn-rel-quiet {
+        font-size: 13px; color: var(--pbim-muted, #64748B); font-style: italic;
+    }
+
+    // ---- nothing has been pushed here yet
+    .pbtn-empty {
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; gap: 8px; padding: 44px 28px;
+        b { font-size: 15.5px; }
+        span:last-child {
+            font-size: 13px; color: var(--pbim-muted, #64748B); max-width: 46ch;
+        }
+    }
+    .pbtn-empty-ic {
+        width: 58px; height: 58px; border-radius: 16px;
+        display: grid; place-items: center; margin-bottom: 4px;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+}
+
+@keyframes pbtn-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(.72); opacity: .6; }
+}
+@keyframes pbtn-rise {
+    from { opacity: 0; transform: translateY(9px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbtn .pbtn-rel { animation: none; }
+    .pbtn .pbtn-now-dot { animation: none; }
+}
+
+// =============================================================================
+// FLEET P5 — Plan & usage.
+//
+// ITS OWN ROOT-SCOPED SECTION, appended at the very end of the file and NOT
+// inside the `.pbtn { … }` block above. Ledger F35: this stylesheet already has
+// more than one root block, and a rule appended "at the end, before the closing
+// brace" lands inside whichever one happens to be last and matches nothing —
+// silently, with the screen rendering at zero height and no error anywhere.
+// Everything below is written from `.pbtn` outwards so it cannot happen here.
+// =============================================================================
+
+.pbtn .pbtn-pu {
+    display: flex; flex-direction: column; gap: 18px;
+}
+
+// --------------------------------------------------------------- trial strip
+.pbtn .pbtn-pu-trial {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px; border-radius: 12px;
+    border: 1px solid var(--pbim-amber-soft, #F6E4C8);
+    background: var(--pbim-amber-bg, #FDF6EC);
+    animation: pbtn-rise .28s cubic-bezier(.2,.7,.3,1) both;
+
+    .pbtn-pu-trial-ic { color: #D97706; display: flex; padding-top: 1px; }
+    .pbtn-pu-trial-tx { display: flex; flex-direction: column; gap: 3px; }
+    b { font-size: 14px; }
+    span { font-size: 13px; color: var(--pbim-muted, #6B6880); }
+
+    &.ended {
+        border-color: #F3CBD6; background: #FDF1F5;
+        .pbtn-pu-trial-ic { color: #DC2668; }
+    }
+}
+
+// ------------------------------------------------------------------ the hero
+.pbtn .pbtn-pu-hero {
+    display: flex; align-items: center; gap: 30px; padding: 24px 26px;
+    flex-wrap: wrap;
+}
+
+.pbtn .pbtn-pu-ring {
+    position: relative; width: 118px; height: 118px; flex: 0 0 118px;
+
+    svg { transform: rotate(-90deg); }
+    .pbtn-pu-track {
+        fill: none; stroke: var(--pbim-line, #E6E4F0); stroke-width: 9;
+    }
+    .pbtn-pu-arc {
+        fill: none; stroke: var(--pbim-primary, #5A4BB0); stroke-width: 9;
+        stroke-linecap: round;
+        transition: stroke-dashoffset .7s cubic-bezier(.2,.7,.3,1);
+    }
+    &.warn .pbtn-pu-arc { stroke: #D97706; }
+    &.bad  .pbtn-pu-arc { stroke: #DC2668; }
+
+    .pbtn-pu-ring-tx {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 1px;
+        .n { font-size: 27px; font-weight: 800; letter-spacing: -.6px; }
+        .l { font-size: 11px; color: var(--pbim-muted, #6B6880); }
+    }
+}
+
+.pbtn .pbtn-pu-hero-tx {
+    flex: 1 1 300px; display: flex; flex-direction: column; gap: 12px;
+
+    .pbtn-pu-plan {
+        display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 21px; letter-spacing: -.3px; }
+        .pbtn-pu-noplan { color: var(--pbim-muted, #6B6880); font-weight: 600; }
+    }
+    .pbtn-pu-seat { margin: 0; font-size: 14px; line-height: 1.5; }
+}
+
+.pbtn .pbtn-pu-stats {
+    display: flex; gap: 10px; flex-wrap: wrap;
+
+    .pbtn-pu-stat {
+        display: flex; align-items: center; gap: 9px;
+        padding: 10px 14px; border-radius: 11px;
+        border: 1px solid var(--pbim-line, #E6E4F0);
+        background: var(--pbim-surface, #fff);
+        .pbtn-pu-stat-ic { color: var(--pbim-primary, #5A4BB0); display: flex; }
+        .n { font-size: 19px; font-weight: 700; letter-spacing: -.3px; }
+        .l { font-size: 12px; color: var(--pbim-muted, #6B6880); }
+    }
+}
+
+// -------------------------------------------------------------- the invoices
+.pbtn .pbtn-pu-sec {
+    display: flex; flex-direction: column; gap: 2px; margin-top: 4px;
+}
+
+.pbtn .pbtn-pu-inv { padding: 4px 0; overflow-x: auto; }
+
+.pbtn .pbtn-pu-row {
+    display: grid;
+    grid-template-columns: 170px 1fr 140px 150px 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 12px 20px; min-width: 760px;
+    border-bottom: 1px solid var(--pbim-line-soft, #F1F0F7);
+    &:last-child { border-bottom: 0; }
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+
+    .pbtn-pu-no { font-weight: 700; font-size: 13px; }
+    .pbtn-pu-per { font-size: 13px; }
+    .pbtn-pu-amt { font-weight: 700; font-size: 14px; }
+    .pbtn-pu-due { font-size: 12px; color: var(--pbim-muted, #6B6880); }
+}
+
+@media (max-width: 720px) {
+    .pbtn .pbtn-pu-hero { gap: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pbtn .pbtn-pu-trial { animation: none; }
+    .pbtn .pbtn-pu-ring .pbtn-pu-arc { transition: none; }
+}
+
+// =============================================================================
+// FLEET P6 — support access: the bar, and the customer's own record of it.
+//
+// ITS OWN ROOT-SCOPED SECTION, for the reason written above the P5 block:
+// this stylesheet has more than one root block and a rule appended "at the end"
+// lands inside whichever one is last and matches nothing (ledger F35).
+// Everything below is written from `.pbtn` — or from its own root class, for
+// the bar, which is mounted in the web client's chrome rather than on a page.
+//
+// ROSE, AND ONLY HERE. `#DC2668` is the product's promoted "be careful" colour.
+// The bar is the one piece of chrome that is allowed to wear it continuously,
+// because the thing it is saying — you are inside somebody else's payroll — is
+// true continuously.
+// =============================================================================
+
+.pbtn-supbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #7A1338;
+    background: #FCEDF3;
+    border-bottom: 1px solid #F3C9D8;
+    animation: pbtn-bar-in .32s cubic-bezier(.2,.7,.3,1) both;
+
+    b { font-weight: 700; }
+}
+.pbtn-supbar-ic {
+    display: inline-flex;
+    color: #DC2668;
+}
+.pbtn-supbar-tt { font-weight: 600; }
+.pbtn-supbar-when {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #F3C9D8;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.pbtn-supbar-sp { flex: 1 1 auto; }
+.pbtn-supbar-leave {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    background: #DC2668;
+    border: 1px solid #DC2668;
+    cursor: pointer;
+    transition: filter .14s ease, transform .14s ease;
+
+    &:hover:not(:disabled) { filter: brightness(1.06); }
+    &:active:not(:disabled) { transform: translateY(1px); }
+    &:disabled { opacity: .6; cursor: default; }
+}
+
+// The last five minutes: the bar deepens, and it pulses ONCE. A bar that
+// pulses for five minutes is a bar people stop seeing.
+.pbtn-supbar.closing {
+    background: #F9DDE7;
+    border-bottom-color: #E9A9C1;
+}
+.pbtn-supbar.closing.pulsed { animation: pbtn-supbar-pulse .9s ease-out 1; }
+
+@keyframes pbtn-supbar-pulse {
+    0%   { box-shadow: inset 0 0 0 0 rgba(220, 38, 104, .55); }
+    35%  { box-shadow: inset 0 0 0 3px rgba(220, 38, 104, .55); }
+    100% { box-shadow: inset 0 0 0 0 rgba(220, 38, 104, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbtn-supbar { animation: none; }
+    .pbtn-supbar.closing.pulsed { animation: none; }
+}
+
+// ------------------------------------------------------------- the page
+.pbtn .pbtn-sup { display: flex; flex-direction: column; gap: 18px; }
+
+// ---- the hero: the switch, and the sentence that explains it
+.pbtn .pbtn-sup-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 24px;
+    animation: pbtn-rise .28s cubic-bezier(.2,.7,.3,1) both;
+
+    &.off {
+        border-color: #F3C9D8;
+        background: #FEF7FA;
+    }
+}
+.pbtn .pbtn-sup-hero-ic {
+    flex: 0 0 auto;
+    width: 58px; height: 58px; border-radius: 16px;
+    display: grid; place-items: center;
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary, #5A4BB0);
+
+    &.off { background: #FCEDF3; color: #DC2668; }
+}
+.pbtn .pbtn-sup-hero-tx {
+    flex: 1 1 auto;
+    display: flex; flex-direction: column; gap: 4px;
+
+    b { font-size: 16px; letter-spacing: -.2px; }
+    p { margin: 0; font-size: 13.5px; line-height: 1.55;
+        color: var(--pbim-muted, #6B6880); }
+}
+
+// The switch itself. `aria-pressed` carries the state, bound as a STRING —
+// a JavaScript `true` renders as an empty attribute and matches nothing
+// (ledger F58).
+.pbtn .pbtn-sup-switch {
+    flex: 0 0 auto;
+    width: 62px; height: 34px;
+    border-radius: 999px;
+    border: 1px solid #E9A9C1;
+    background: #F3C9D8;
+    position: relative;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease;
+
+    &[aria-pressed="true"] {
+        background: var(--pbim-primary, #5A4BB0);
+        border-color: var(--pbim-primary, #5A4BB0);
+    }
+    &:disabled { opacity: .55; cursor: default; }
+}
+.pbtn .pbtn-sup-knob {
+    position: absolute; top: 3px; left: 3px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(30,27,46,.28);
+    transition: transform .18s cubic-bezier(.2,.7,.3,1);
+}
+.pbtn .pbtn-sup-switch[aria-pressed="true"] .pbtn-sup-knob {
+    transform: translateX(28px);
+}
+
+.pbtn .pbtn-sup-offnote {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 15px; border-radius: 12px;
+    border: 1px solid #F3C9D8; background: #FEF7FA;
+    font-size: 13px; line-height: 1.55; color: #7A1338;
+
+    svg { flex: 0 0 auto; margin-top: 1px; }
+}
+
+// ---- the trail
+.pbtn .pbtn-sup-trail { padding: 4px 0; }
+
+.pbtn .pbtn-sup-line {
+    display: grid;
+    grid-template-columns: 10px 168px 150px minmax(140px, 1fr) 118px 108px 20px;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--pbim-line, #EDEBF4);
+    transition: background .14s ease;
+
+    &:hover { background: var(--pbim-hover, #FAF9FD); }
+}
+.pbtn .pbtn-sup-row:last-child .pbtn-sup-line { border-bottom: none; }
+
+.pbtn .pbtn-sup-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--pbim-muted, #6B6880);
+
+    &.ok { background: #2E7D4F; }
+    &.warn { background: #D97706; }
+    &.info { background: #2563EB; }
+    &.muted { background: #B7B4C6; }
+}
+.pbtn .pbtn-sup-when { font-size: 13px; font-variant-numeric: tabular-nums; }
+.pbtn .pbtn-sup-who { font-size: 13px; font-weight: 600; }
+.pbtn .pbtn-sup-why {
+    font-size: 13px; color: var(--pbim-muted, #6B6880);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pbtn .pbtn-sup-screens {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12.5px; color: var(--pbim-muted, #6B6880);
+}
+.pbtn .pbtn-sup-caret {
+    color: var(--pbim-muted, #6B6880);
+    transition: transform .16s ease;
+}
+.pbtn .pbtn-sup-row.open .pbtn-sup-caret { transform: rotate(180deg); }
+
+.pbtn .pbtn-sup-det {
+    padding: 4px 18px 18px 40px;
+    border-bottom: 1px solid var(--pbim-line, #EDEBF4);
+    animation: pbtn-rise .2s cubic-bezier(.2,.7,.3,1) both;
+}
+.pbtn .pbtn-sup-facts {
+    display: flex; flex-wrap: wrap; gap: 10px 26px; margin-bottom: 12px;
+
+    > div { display: flex; flex-direction: column; gap: 1px; }
+    span { font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+           color: var(--pbim-muted, #6B6880); }
+    b { font-size: 13px; }
+}
+.pbtn .pbtn-sup-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pbtn .pbtn-sup-chip {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 12px;
+    background: var(--pbim-soft, #EDEAF8);
+    color: var(--pbim-primary-ink, #40357F);
+}
+.pbtn .pbtn-sup-noscreens {
+    font-size: 12.5px; color: var(--pbim-muted, #6B6880);
+}
+.pbtn .pbtn-sup-foot {
+    font-size: 12.5px; line-height: 1.6;
+    color: var(--pbim-muted, #6B6880);
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .pbtn .pbtn-sup-line {
+        grid-template-columns: 10px 1fr auto;
+        grid-row-gap: 4px;
+    }
+    .pbtn .pbtn-sup-why, .pbtn .pbtn-sup-screens { grid-column: 2 / span 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pbtn .pbtn-sup-hero, .pbtn .pbtn-sup-det { animation: none; }
+}

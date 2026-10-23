@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_demo.DemoAnalytics">
+    <div class="pbda">
+        <div t-if="state.loading" class="pbda-loading">Loading analytics…</div>
+        <t t-else="">
+            <!-- Hero -->
+            <div class="pbda-hero">
+                <div>
+                    <div class="pbda-eyebrow">PAYOBOOK · WORKFORCE ANALYTICS</div>
+                    <h1>Workforce &amp; Payroll Insights</h1>
+                    <div class="pbda-period" t-esc="'Reference period · ' + state.data.period"/>
+                </div>
+            </div>
+
+            <!-- KPI band -->
+            <div class="pbda-kpis">
+                <div class="pbda-kpi"><div class="pbda-kpi-l">Headcount</div><div class="pbda-kpi-v" t-esc="num(state.data.kpis.headcount)"/></div>
+                <div class="pbda-kpi"><div class="pbda-kpi-l">Gross payroll</div><div class="pbda-kpi-v" t-esc="money(state.data.kpis.gross)"/></div>
+                <div class="pbda-kpi"><div class="pbda-kpi-l">Net pay</div><div class="pbda-kpi-v" t-esc="money(state.data.kpis.net)"/></div>
+                <div class="pbda-kpi"><div class="pbda-kpi-l">Employer cost</div><div class="pbda-kpi-v" t-esc="money(state.data.kpis.employer_cost)"/></div>
+                <div class="pbda-kpi"><div class="pbda-kpi-l">Avg cost / head</div><div class="pbda-kpi-v" t-esc="money(state.data.kpis.avg_cost)"/></div>
+            </div>
+
+            <div class="pbda-grid">
+                <!-- Payroll by division -->
+                <div class="pbda-card pbda-wide">
+                    <h3>Payroll cost by division</h3>
+                    <t t-foreach="state.data.by_division" t-as="r" t-key="r.label">
+                        <div class="pbda-bar-row">
+                            <div class="pbda-bar-label" t-esc="r.label"/>
+                            <div class="pbda-bar-track">
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.by_division, g, r.gross) }}%; background:#5A4BB0;"/>
+                            </div>
+                            <div class="pbda-bar-val" t-esc="money(r.gross)"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Headcount by division -->
+                <div class="pbda-card">
+                    <h3>Headcount by division</h3>
+                    <t t-foreach="state.data.by_division" t-as="r" t-key="r.label">
+                        <div class="pbda-bar-row">
+                            <div class="pbda-bar-label" t-esc="r.label"/>
+                            <div class="pbda-bar-track">
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.by_division, h, r.headcount) }}%; background:#2563EB;"/>
+                            </div>
+                            <div class="pbda-bar-val" t-esc="num(r.headcount)"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Salary distribution -->
+                <div class="pbda-card">
+                    <h3>Salary distribution (monthly basic)</h3>
+                    <div class="pbda-cols">
+                        <t t-foreach="state.data.salary_dist" t-as="b" t-key="b.label">
+                            <div class="pbda-col">
+                                <div class="pbda-col-bar" t-attf-style="height:{{ pct(state.data.salary_dist, c, b.count) }}%; background:#2E7D4F;"/>
+                                <div class="pbda-col-x" t-esc="b.label"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Gender -->
+                <div class="pbda-card">
+                    <h3>Gender split</h3>
+                    <t t-foreach="state.data.gender" t-as="r" t-key="r.label">
+                        <div class="pbda-bar-row">
+                            <div class="pbda-bar-label" t-esc="r.label"/>
+                            <div class="pbda-bar-track">
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.gender, c, r.count) }}%; background:{{ color(r_index) }};"/>
+                            </div>
+                            <div class="pbda-bar-val" t-esc="num(r.count)"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Age -->
+                <div class="pbda-card">
+                    <h3>Age bands</h3>
+                    <div class="pbda-cols">
+                        <t t-foreach="state.data.age" t-as="b" t-key="b.label">
+                            <div class="pbda-col">
+                                <div class="pbda-col-bar" t-attf-style="height:{{ pct(state.data.age, c, b.count) }}%; background:#7C3AED;"/>
+                                <div class="pbda-col-x" t-esc="b.label"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Overtime & bonuses -->
+                <div class="pbda-card">
+                    <h3>Overtime &amp; bonuses by division</h3>
+                    <t t-foreach="state.data.by_division" t-as="r" t-key="r.label">
+                        <div class="pbda-bar-row">
+                            <div class="pbda-bar-label" t-esc="r.label"/>
+                            <div class="pbda-bar-track pbda-track-2">
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.by_division, otb, r.ot) }}%; background:#D97706;"/>
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.by_division, otb, r.bonus) }}%; background:#DC2668;"/>
+                            </div>
+                        </div>
+                    </t>
+                    <div class="pbda-legend"><span style="background:#D97706"/>Overtime <span style="background:#DC2668"/>Bonuses</div>
+                </div>
+
+                <!-- Cost centre -->
+                <div class="pbda-card pbda-wide">
+                    <h3>Cost-centre payroll (top)</h3>
+                    <t t-foreach="state.data.cost_centre" t-as="r" t-key="r.label">
+                        <div class="pbda-bar-row">
+                            <div class="pbda-bar-label" t-esc="r.label"/>
+                            <div class="pbda-bar-track">
+                                <div class="pbda-bar" t-attf-style="width:{{ pct(state.data.cost_centre, g, r.gross) }}%; background:#0EA5E9;"/>
+                            </div>
+                            <div class="pbda-bar-val" t-esc="money(r.gross)"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Employer vs employee -->
+                <div class="pbda-card">
+                    <h3>Cost composition</h3>
+                    <div class="pbda-split">
+                        <div><span class="pbda-dot" style="background:#2E7D4F"/>Net pay <b t-esc="money(state.data.employer_employee.net)"/></div>
+                        <div><span class="pbda-dot" style="background:#DC2668"/>Employee insurance <b t-esc="money(state.data.employer_employee.employee_insurance)"/></div>
+                        <div><span class="pbda-dot" style="background:#D97706"/>Personal income tax <b t-esc="money(state.data.employer_employee.tax)"/></div>
+                        <div><span class="pbda-dot" style="background:#5A4BB0"/>Employer contributions <b t-esc="money(state.data.employer_employee.employer_contributions)"/></div>
+                    </div>
+                </div>
+
+                <!-- Trend -->
+                <div class="pbda-card pbda-wide">
+                    <h3>Gross vs net — monthly trend (Jan–Jul)</h3>
+                    <div class="pbda-cols pbda-cols-trend">
+                        <t t-foreach="state.data.trend" t-as="m" t-key="m.label">
+                            <div class="pbda-col">
+                                <div class="pbda-col-stack">
+                                    <div class="pbda-col-bar" t-attf-style="height:{{ pct(state.data.trend, g, m.gross) }}%; background:#5A4BB0;"/>
+                                    <div class="pbda-col-bar pbda-col-bar2" t-attf-style="height:{{ pct(state.data.trend, g, m.net) }}%; background:#2E7D4F;"/>
+                                </div>
+                                <div class="pbda-col-x" t-esc="m.label"/>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="pbda-legend"><span style="background:#5A4BB0"/>Gross <span style="background:#2E7D4F"/>Net</div>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

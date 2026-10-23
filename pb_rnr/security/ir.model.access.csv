@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_company_value_staff,Company value read for staff,model_pb_company_value,base.group_user,1,0,0,0
+access_pb_company_value_user,Company value recognition team,model_pb_company_value,pb_rnr.group_rnr_user,1,0,0,0
+access_pb_company_value_lead,Company value recognition lead,model_pb_company_value,pb_rnr.group_rnr_manager,1,1,1,1
+access_pb_rnr_nomination_staff,Praise read for staff,model_pb_rnr_nomination,base.group_user,1,0,0,0
+access_pb_rnr_nomination_user,Praise recognition team,model_pb_rnr_nomination,pb_rnr.group_rnr_user,1,1,1,0
+access_pb_rnr_nomination_lead,Praise recognition lead,model_pb_rnr_nomination,pb_rnr.group_rnr_manager,1,1,1,1
+access_pb_rnr_cycle_staff,Recognition quarter read for staff,model_pb_rnr_cycle,base.group_user,1,0,0,0
+access_pb_rnr_cycle_user,Recognition quarter recognition team,model_pb_rnr_cycle,pb_rnr.group_rnr_user,1,0,0,0
+access_pb_rnr_cycle_lead,Recognition quarter recognition lead,model_pb_rnr_cycle,pb_rnr.group_rnr_manager,1,1,1,1
+access_pb_rnr_celebration_log_user,Celebration record recognition team,model_pb_rnr_celebration_log,pb_rnr.group_rnr_user,1,0,0,0
+access_pb_rnr_celebration_log_lead,Celebration record recognition lead,model_pb_rnr_celebration_log,pb_rnr.group_rnr_manager,1,1,1,1
+access_rnr_approval_log_user,Praise approval trail,biz_approval_chain.model_biz_approval_step_log,pb_rnr.group_rnr_user,1,0,1,0
+access_rnr_approval_log_lead,Praise approval trail lead,biz_approval_chain.model_biz_approval_step_log,pb_rnr.group_rnr_manager,1,0,1,0

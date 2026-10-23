@@ -1,0 +1,144 @@
+/* A calm workspace. Existing editors and advanced tools keep their contracts. */
+.pbfs {
+    .pbfs-top { padding: 14px 22px 10px; background: #fff; border-bottom: 1px solid #e7e6ef; }
+    .pbfs-top-row1 { min-height: 38px; }
+    .pbfs-top-row2 { margin-top: 12px; }
+    .experience-navigation { justify-content: space-between; }
+    .experience-navigation .pbfs-seg { background: transparent; padding: 0; gap: 6px; }
+    .experience-navigation .pbfs-seg button { border-radius: 8px; padding: 10px 17px; }
+    .experience-navigation .pbfs-top-actions { gap: 8px; }
+    .experience-navigation kbd { margin-left: 10px; font-size: 10px; opacity: .6; }
+    .experience-issues { border: 0; border-radius: 20px; background: #f5f4f9; color: #5d5477; padding: 7px 12px; font-size: 12px; font-weight: 600; }
+    .experience-buildbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 22px; background: #f8f8fc; border-bottom: 1px solid #e7e6ef; }
+    .experience-sample { display: flex; align-items: center; gap: 10px; margin-left: auto; color: var(--muted); font-size: 12px; }
+    .experience-buildbar select, .experience-controls select, .experience-controls input, .experience-field select, .experience-field input, .experience-field textarea, .experience-sample select {
+        border: 1px solid #dfdeea; border-radius: 8px; padding: 8px 10px; background: white; color: #29243e; font: inherit; min-height: 35px;
+    }
+    .experience-controls input:focus, .experience-controls select:focus, .experience-field :focus, .experience-sample select:focus { outline: 2px solid #a79be1; outline-offset: 2px; }
+    .experience-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 13px 16px; border-bottom: 1px solid #ecebf3; background: #fff; }
+    .experience-controls input[type=search] { flex: 1; min-width: 160px; }
+    .experience-controls label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #726b82; }
+    .experience-muted { color: #797385; font-size: 12px; line-height: 1.6; }
+    .experience-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: #80788e; }
+    .experience-table-work { display: grid; grid-template-columns: minmax(450px, 1fr) 350px; min-width: 0; min-height: 0; gap: 16px; padding: 16px 22px 20px; overflow: hidden; }
+    .experience-list { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: #fff; border: 1px solid #e4e2ec; border-radius: 12px; overflow: hidden; }
+    .experience-table-scroll { flex: 1; min-height: 0; overflow: auto; }
+    .experience-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; color: #3e374f; }
+    .experience-table th { position: sticky; top: 0; z-index: 1; background: #fbfbfd; color: #888092; text-align: left; padding: 12px 16px; border-bottom: 1px solid #e9e7ef; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; font-weight: 650; }
+    .experience-table td { padding: 12px 16px; border-bottom: 1px solid #f0eef5; vertical-align: middle; }
+    .experience-table tbody tr:hover { background: #faf9fe; cursor: pointer; }
+    .experience-table tr.selected { background: #f3f0fc; }
+    .experience-table tr.selected td:first-child { box-shadow: inset 3px 0 #6b56bd; }
+    .experience-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 650; }
+    .experience-component { display: flex; align-items: center; gap: 10px; border: 0; background: transparent; text-align: left; color: inherit; padding: 0; width: 100%; }
+    .experience-component b { display: block; font-size: 12px; line-height: 1.45; max-width: 330px; }
+    .experience-component small { display: block; color: #a09aaa; font-size: 10px; margin-top: 3px; }
+    .experience-letter { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 27px; height: 27px; background: #f0edf8; color: #6d5aa9; border-radius: 6px; font-size: 10px; font-weight: 750; }
+    .experience-type { display: block; font-size: 10px; color: #827a92; margin-bottom: 4px; }
+    .experience-calculation { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #5e566e; }
+    .experience-group th { position: static; padding: 9px 16px; background: #f3f1f8; font-size: 11px; }
+    .experience-inspector { display: flex; flex-direction: column; min-height: 0; background: #fff; border: 1px solid #e4e2ec; border-radius: 12px; overflow: hidden; }
+    .experience-inspector-head { padding: 23px 22px 20px; }
+    .experience-inspector-head h2 { font-size: 19px; font-weight: 650; line-height: 1.45; margin: 9px 0 4px; }
+    .experience-inspector-head small { font-size: 10px; color: #9b94a6; }
+    .experience-selected-value { font-size: 29px; font-weight: 650; letter-spacing: -.04em; margin-top: 20px; font-variant-numeric: tabular-nums; color: #302442; overflow-wrap: anywhere; }
+    .experience-inspector-tabs { margin: 0 16px; padding: 4px; flex-shrink: 0; }
+    .experience-inspector-tabs button { flex: 1; padding: 7px 4px; font-size: 11px; }
+    .experience-inspector-body { flex: 1; min-height: 0; overflow: auto; padding: 22px; font-size: 12px; line-height: 1.7; }
+    .experience-inspector-body h3 { font-size: 13px; font-weight: 650; margin-bottom: 12px; }
+    .experience-inspector-body pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 14px; border: 1px solid #ece8f5; background: #f8f6fc; color: #5d429f; font-size: 12px; border-radius: 8px; }
+    .experience-dependency { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 12px; border: 0; border-bottom: 1px solid #f1eef7; background: #fff; color: #62566f; padding: 11px 0; text-align: left; font-size: 11px; }
+    .experience-dependency:hover { color: #6346b6; }
+    .experience-dependency b { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 11px; }
+    .experience-inspector-foot { display: flex; justify-content: space-between; gap: 8px; padding: 14px 16px; border-top: 1px solid #eeeaf4; }
+    .experience-outcomes { padding: 15px 20px; border-top: 1px solid #eeeaf4; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; background: #fcfbfe; }
+    .experience-outcomes small { display: block; color: #82768f; font-size: 10px; max-width: 160px; }
+    .experience-outcomes b { display: block; font-size: 17px; color: #463059; }
+    .experience-empty { text-align: center; color: #8b8299; padding: 40px !important; }
+    .experience-field { display: flex; flex-direction: column; gap: 8px; margin: 18px 0; color: #62576e; font-size: 12px; }
+    .experience-outcome-picker { max-width: 420px; }
+    .experience-field textarea { min-height: 90px; }
+    .experience-error { color: #b24a54; font-size: 12px; }
+    .experience-notice { margin: 12px 22px; padding: 14px 18px; border: 1px solid #ebd69b; background: #fffaf0; color: #876728; border-radius: 9px; line-height: 1.7; font-size: 12px; }
+    .experience-whatif-scope { padding: 0 0 16px; }
+    .experience-whatif-scope label { align-items: flex-start; flex-direction: column; flex: 1; }
+    .experience-whatif-scope select { max-width: 100%; width: 100%; }
+    .experience-run-name { font-size: 14px; font-weight: 600; display: block; margin-bottom: 8px; }
+    .experience-scrim { position: fixed; inset: 0; z-index: 1200; background: rgba(26,20,45,.4); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .experience-dialog { width: 550px; max-width: 100%; max-height: 90vh; overflow: auto; background: white; border-radius: 16px; padding: 26px; box-shadow: 0 24px 80px rgba(25,10,50,.2); }
+    .experience-dialog-wide { width: 780px; }
+    .experience-dialog-head { display: flex; gap: 20px; justify-content: space-between; align-items: start; }
+    .experience-dialog h2 { margin: 6px 0 12px; font-size: 23px; font-weight: 650; }
+    .experience-dialog p { font-size: 12px; line-height: 1.7; }
+    .experience-dialog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .experience-dialog-foot { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eeeaf4; padding-top: 18px; margin-top: 22px; }
+    .experience-type-review { display: flex; align-items: start; gap: 16px; padding: 14px 0; border-top: 1px solid #f0edf4; }
+    .experience-type-review p { margin: 5px 0; }
+    .experience-type-review small { color: #85788e; }
+    .experience-grid-type { font-size: 9px; display: block; margin-top: 4px; opacity: .7; }
+    .experience-column-manager { padding: 16px; border: 1px solid #e7e2f0; border-radius: 10px; background: white; max-height: 240px; overflow: auto; display: grid; grid-template-columns: repeat(3,minmax(150px,1fr)); gap: 12px; }
+    .experience-column-manager p { grid-column: 1/-1; color: #8a7f96; font-size: 11px; }
+    .experience-column-manager label { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; }
+    .experience-grid-help { position: relative; margin-left: auto; font-size: 11px; color: #867b96; }
+    .experience-grid-help p { position: absolute; right: 0; top: 25px; z-index: 10; width: 280px; padding: 14px; background: #fff; border: 1px solid #e6dff0; border-radius: 8px; box-shadow: 0 6px 20px #27203512; }
+    .g2-toolbar.experience-controls { border-radius: 10px; margin-bottom: 12px; padding: 10px; }
+    .g2-fbar { margin-bottom: 10px; }
+    .g2-table td[data-row=name] { white-space: normal; height: 62px; line-height: 1.6; }
+    .g2-foldbar { padding-bottom: 10px; }
+    .g2-root .pbfs-grid2 { flex: initial; max-height: 100%; min-height: 180px; }
+    .g2-legend { font-size: 10px; opacity: .7; padding: 8px 5px; }
+    .pbfs-gridwrap { padding-top: 4px; }
+    @media (max-width: 1199px) {
+        .experience-table-work { grid-template-columns: minmax(350px,1fr) 300px; padding: 12px; gap: 12px; }
+        .experience-table td, .experience-table th { padding: 10px; }
+        .experience-table td:nth-child(3), .experience-table th:nth-child(3) { display: none; }
+    }
+    @media (max-width: 767px) {
+        .experience-table-work { display: flex; flex-direction: column; overflow: auto; }
+        .experience-list { min-height: 380px; flex-shrink: 0; }
+        .experience-inspector { min-height: 360px; flex-shrink: 0; }
+        .experience-buildbar { padding: 10px; gap: 8px; }
+        .experience-sample { margin-left: 0; }
+        .experience-sample select { max-width: 190px; }
+        .experience-navigation { flex-wrap: wrap; gap: 10px; }
+        .experience-navigation .pbfs-seg button { padding: 9px 11px; }
+        .experience-dialog-grid { grid-template-columns: 1fr; gap: 0; }
+        .experience-column-manager { grid-template-columns: 1fr; }
+    }
+}
+
+.pbfs {
+    .experience-buildbar > .pbfs-seg { width: auto; flex: 0 0 auto; }
+    .experience-buildbar > .pbfs-seg button { flex: 0 0 auto; padding: 8px 18px; }
+    .experience-sample { width: auto; white-space: nowrap; }
+    .experience-sample select { width: auto; }
+    .experience-controls > input[type=search] { width: 240px; flex: 1 1 240px; }
+    .experience-controls > select { width: auto; flex: 0 0 auto; max-width: 190px; }
+    .experience-controls label { width: auto; white-space: nowrap; }
+    .experience-controls label select { width: auto; }
+    .experience-inspector-tabs { width: auto; }
+    .experience-inspector-foot { padding-right: 80px; }
+    .experience-default-label { color: #8c809b; font-size: 10px; }
+    .experience-component-code { display: block; margin-top: 3px; color: #9a91a6; font-size: 10px; font-weight: normal; }
+    .experience-config-verdict { color: #897c98; font-size: 11px; margin-left: auto; }
+    .experience-whatif-scope label { white-space: normal; }
+    .experience-whatif-scope label select { width: 100%; }
+    .wi-scope { flex-wrap: wrap; line-height: 1.7; }
+}
+.pbfs .pbtest-inrow .experience-default-label { margin-left: 8px; white-space: nowrap; }
+.pbfs {
+    @media (max-width: 767px) {
+        .pbfs-top { padding: 12px; }
+        .pbfs-top-row1 { flex-direction: column; align-items: stretch; gap: 8px; }
+        .pbfs-cfg { width: 100%; flex-wrap: wrap; gap: 7px; }
+        .pbfs-cfg-name { flex: 1 0 100%; max-width: 100%; text-align: left; white-space: normal; }
+        .pbfs-cfg-name .nm { white-space: normal; overflow-wrap: anywhere; line-height: 1.4; }
+        .pbfs-id-right { width: 100%; flex-wrap: wrap; justify-content: space-between; }
+        .experience-navigation .pbfs-seg { width: 100%; gap: 0; justify-content: space-between; }
+        .experience-navigation .pbfs-seg button { padding: 8px 6px; }
+        .experience-navigation .pbfs-top-actions { width: 100%; min-width: 0; flex-wrap: wrap; }
+        .experience-navigation .pbfs-top-actions button { flex: 1 1 auto; min-width: 0; max-width: 100%; white-space: normal; }
+        .experience-table td:nth-child(2), .experience-table th:nth-child(2) { display: none; }
+        .experience-component > span { min-width: 0; }
+    }
+}

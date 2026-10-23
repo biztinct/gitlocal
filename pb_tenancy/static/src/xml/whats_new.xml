@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_tenancy.WhatsNew">
+  <div class="pbim pbim-page pbtn">
+    <div class="pbim-wrap pbtn-wn">
+
+      <div class="pbtn-wn-head">
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+        <div class="pbim-eyebrow"><t t-out="ic('sparkles',13)"/> About Payobook</div>
+        <h1 class="pbim-h1">What's new</h1>
+        <div class="pbim-sub" t-esc="lede"/>
+      </div>
+
+      <!-- ======================= the hero: one release, badged ======================= -->
+      <div t-if="currentName" class="pbtn-now">
+        <div class="pbtn-now-ring">
+          <span class="pbtn-now-dot"/>
+        </div>
+        <div class="pbtn-now-tx">
+          <span class="pbtn-now-label">You are on release</span>
+          <span class="pbtn-now-name" t-esc="currentName"/>
+        </div>
+        <span t-if="pushedAt" class="pbtn-now-when">updated <t t-esc="pushedAt"/></span>
+      </div>
+
+      <!-- ======================= the timeline ======================= -->
+      <div t-if="releases.length" class="pbtn-tl">
+        <div t-foreach="releases" t-as="r" t-key="r.name"
+             t-attf-class="pbtn-rel {{ r.current ? 'is-now' : '' }}">
+          <div class="pbtn-rel-rail">
+            <span class="pbtn-rel-dot"/>
+            <span class="pbtn-rel-line"/>
+          </div>
+          <div class="pbim-card pbtn-rel-card">
+            <div class="pbtn-rel-h">
+              <b class="pbtn-rel-name" t-esc="r.name"/>
+              <span t-if="r.date" class="pbtn-rel-date" t-esc="r.date"/>
+              <span t-if="r.current" class="pbim-badge ok pbtn-rel-badge">You are on this release</span>
+            </div>
+            <div t-if="r.hasNotes" class="pbtn-rel-notes">
+              <t t-foreach="r.blocks" t-as="b" t-key="b_index">
+                <p t-if="b.kind === 'p'" t-esc="b.text"/>
+                <ul t-else="">
+                  <li t-foreach="b.items" t-as="li" t-key="li_index" t-esc="li"/>
+                </ul>
+              </t>
+            </div>
+            <div t-else="" class="pbtn-rel-quiet">
+              Small fixes and improvements. Nothing you need to do.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================= nothing yet ======================= -->
+      <div t-else="" class="pbim-card pbtn-empty">
+        <span class="pbtn-empty-ic"><t t-out="ic('sparkles',26)"/></span>
+        <b>No release notes yet.</b>
+        <span>Payobook will list what changed here after each update — what was
+              added, what was fixed, and anything you need to know about.</span>
+      </div>
+
+    </div>
+  </div>
+</t>
+
+</templates>

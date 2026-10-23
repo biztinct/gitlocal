@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13), as every hub's own rail record is. -->
+<odoo noupdate="0">
+
+    <!-- GROW › Learning (LEARNING L0, 2026-10-21) — between Talent (5) and
+         Help (10).
+
+         NO GROUPS, on purpose: every member of staff has "My learning", so
+         the entry is everybody's, like Home and Help (no SCREEN_GATES row in
+         pb_vendor_access either). Inside, the training team's tabs gate
+         themselves, so a plain employee sees one tab.
+
+         It claims the training boards' tags and the training, course and
+         test models (nothing else on the rail claims slide.* or survey.* —
+         checked 2026-10-21). The icon is in the closed ICONS set of
+         `pb_sidebar/static/src/js/pb_sidebar.js`. -->
+    <record id="item_learning" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_learn.sec_learn"/>
+        <field name="name">Learning</field>
+        <field name="icon">graduation-cap</field>
+        <field name="sequence">7</field>
+        <field name="action_xmlid">pb_learning_hub.action_pb_learning_hub</field>
+        <field name="action_tag">pb_learning_hub</field>
+        <field name="match_action_tags">pb_learning_hub,pb_training_board,pb_training_numbers</field>
+        <field name="match_models">pb.training,pb.training.assignment,pb.training.delay,pb.training.schedule,pb.training.rule,pb.training.claim,pb.training.allowance,slide.channel,slide.slide,survey.survey,survey.question</field>
+    </record>
+
+</odoo>

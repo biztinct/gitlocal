@@ -1,0 +1,61 @@
+// =====================================================================
+//  Demo-world chrome — the body tag and the ephemeral-data disclaimer.
+//
+//  MOVED FROM pb_coach IN PHASE C2. Both rules describe THE DEMO WORLD
+//  rather than a guided tour, and they were in the tour module only
+//  because that is where the overlay was mounted. pb_coach keeps its own
+//  copies until it is uninstalled; duplicate identical CSS rules are
+//  harmless, a missing one after the uninstall would not be.
+//
+//  Palette mirrors the coach chip it replaces (single indigo #5A4BB0,
+//  white surfaces, no gradients, Lucide-shaped inline SVG only).
+// =====================================================================
+
+// Demo/trial users stay inside Payroll — hide the apps-switcher "9 dots" and
+// the Discuss messaging systray so they cannot wander into other Odoo modules.
+// THE CLASS NAME IS A CONTRACT: pb_coach set the same one, and anything keyed
+// off it keeps working across the uninstall. Set in demo_chrome.js.
+body.pb-demo-user .o_navbar_apps_menu,
+body.pb-demo-user .o-mail-DiscussSystray-class { display: none !important; }
+
+.pbdc-disclaimer {
+    position: fixed;
+    z-index: 1985;
+    left: 82px;
+    bottom: 26px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    max-width: 420px;
+    padding: 9px 12px;
+    background: #fff;
+    border: 1px solid #E6E3F2;
+    border-left: 3px solid #5A4BB0;
+    border-radius: 12px;
+    box-shadow: 0 10px 26px rgba(30, 22, 70, .14);
+    font-size: 12px;
+    line-height: 1.4;
+    color: #4B5168;
+
+    .pbdc-ic { color: #5A4BB0; display: grid; place-items: center; flex: none; }
+    .pbdc-link { color: #5A4BB0; font-weight: 650; cursor: pointer; white-space: nowrap; }
+    .pbdc-link:hover { text-decoration: underline; }
+    .pbdc-x {
+        display: grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        flex: none;
+        background: none;
+        border: none;
+        color: #8A90A6;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover { background: #F1F5F9; color: #1E1646; }
+    }
+}
+
+@media (max-width: 640px) {
+    .pbdc-disclaimer { display: none; }
+}

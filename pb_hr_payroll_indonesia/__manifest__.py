@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Indonesia Payroll Extension',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.0.1',
     'category': 'Human Resources/Payroll',
-    'summary': 'Indonesia Payroll Structure Extension for Odoo HR Payroll',
+    'summary': 'Indonesia payroll structure, on top of the standard payroll module',
     'description': """
         This module extends the base payroll module to support Indonesia payroll structure.
         It adds:

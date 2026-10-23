@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Technical Skills -->
+    <record id="skill_python" model="hr.skill">
+        <field name="name">Python</field>
+        <field name="category_id" ref="skill_category_technical"/>
+        <field name="description">Python programming language for development and automation</field>
+    </record>
+
+    <record id="skill_javascript" model="hr.skill">
+        <field name="name">JavaScript</field>
+        <field name="category_id" ref="skill_category_technical"/>
+        <field name="description">JavaScript for web development</field>
+    </record>
+
+    <record id="skill_sql" model="hr.skill">
+        <field name="name">SQL</field>
+        <field name="category_id" ref="skill_category_technical"/>
+        <field name="description">Database query language</field>
+    </record>
+
+    <record id="skill_data_analysis" model="hr.skill">
+        <field name="name">Data Analysis</field>
+        <field name="category_id" ref="skill_category_technical"/>
+        <field name="description">Analyzing and interpreting data</field>
+    </record>
+
+    <record id="skill_machine_learning" model="hr.skill">
+        <field name="name">Machine Learning</field>
+        <field name="category_id" ref="skill_category_technical"/>
+        <field name="description">ML algorithms and applications</field>
+    </record>
+
+    <!-- Soft Skills -->
+    <record id="skill_leadership" model="hr.skill">
+        <field name="name">Leadership</field>
+        <field name="category_id" ref="skill_category_soft"/>
+        <field name="description">Leading and inspiring teams</field>
+    </record>
+
+    <record id="skill_communication" model="hr.skill">
+        <field name="name">Communication</field>
+        <field name="category_id" ref="skill_category_soft"/>
+        <field name="description">Clear and effective communication</field>
+    </record>
+
+    <record id="skill_project_management" model="hr.skill">
+        <field name="name">Project Management</field>
+        <field name="category_id" ref="skill_category_soft"/>
+        <field name="description">Planning and executing projects</field>
+    </record>
+
+    <record id="skill_problem_solving" model="hr.skill">
+        <field name="name">Problem Solving</field>
+        <field name="category_id" ref="skill_category_soft"/>
+        <field name="description">Analytical thinking and finding solutions</field>
+    </record>
+
+    <record id="skill_teamwork" model="hr.skill">
+        <field name="name">Teamwork</field>
+        <field name="category_id" ref="skill_category_soft"/>
+        <field name="description">Collaborating effectively with others</field>
+    </record>
+
+    <!-- Tools -->
+    <record id="skill_odoo" model="hr.skill">
+        <field name="name">ERP Platform</field>
+        <field name="category_id" ref="skill_category_tools"/>
+        <field name="description">ERP platform expertise</field>
+    </record>
+
+    <record id="skill_git" model="hr.skill">
+        <field name="name">Git</field>
+        <field name="category_id" ref="skill_category_tools"/>
+        <field name="description">Version control with Git</field>
+    </record>
+
+</odoo>

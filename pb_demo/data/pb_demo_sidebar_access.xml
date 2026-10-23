@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Re-apply the Demo User sidebar/access wiring on EVERY module update, not
+      just on install. The post_init_hook (post_init_demo) runs install-only, so
+      a reverse-dep cascade that reloads pb_sidebar's noupdate="0" data resets
+      every item's groups_id and drops the demo group. This <function> runs after
+      pb_sidebar's data (dependency order), restoring the grant declaratively.
+      noupdate defaults to 0 here → runs on each -u pb_demo (and every cascade).
+    -->
+    <function model="pb.sidebar.item" name="_pb_demo_rewire"/>
+</odoo>

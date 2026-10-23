@@ -452,6 +452,24 @@ class HeaderDetector:
             Tuple of (header_row, data_start_row, analysis_details)
             where rows are 1-based numbers.
         """
+        # A declared header prevents statutory bands above it from being
+        # mistaken for employee records by the heuristic detector.
+        declared = self.sheet.parent.defined_names.get('PayrollHeader')
+        if declared is not None:
+            from openpyxl.utils.cell import range_boundaries
+            for sheet_name, address in declared.destinations:
+                if sheet_name != self.sheet.title:
+                    continue
+                left, top, right, bottom = range_boundaries(address)
+                if top != bottom or top < 1 or right > self.sheet.max_column or right - left + 1 < self.MIN_COLUMNS:
+                    raise ValueError('PayrollHeader must name one populated header row.')
+                labels = [self.sheet.cell(top, c).value for c in range(left, right + 1)]
+                if not all(isinstance(v, str) and v.strip() and not v.startswith('=') for v in labels):
+                    raise ValueError('PayrollHeader must contain text column labels.')
+                return top, top + 1, {'detection_score': 1.0,
+                    'candidate_rows': [top], 'category_rows': [],
+                    'header_analysis': self.analyze_row(top), 'all_analyses': [],
+                    'declared_header': True}
         max_rows = max_search_rows or self.MAX_SEARCH_ROWS
         max_rows = min(max_rows, self.sheet.max_row or 1)
 

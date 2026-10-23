@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RECRUIT P8: the company boundary on the automations and their runs
+         (global rules, the P7 pattern). The screens read as the system once
+         the facade has checked the tier; these are defence in depth. -->
+    <record id="rule_automation_rule_company" model="ir.rule">
+        <field name="name">Hiring automation: company</field>
+        <field name="model_id" ref="model_pb_hiring_automation_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_automation_run_company" model="ir.rule">
+        <field name="name">Hiring automation run: company</field>
+        <field name="model_id" ref="model_pb_hiring_automation_run"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

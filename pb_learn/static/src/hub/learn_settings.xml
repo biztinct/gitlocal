@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ Learn, Settings lens
+       LEARN v3. One card, every learning switch, plain words. Section
+       comments use `=` rules, never a doubled hyphen (R35). -->
+  <t t-name="pb_learn.LearnSettings">
+    <div class="lrn-set">
+      <t t-call="pb_learn.IconSprite"/>
+      <t t-if="state.loading">
+        <div class="lrn-set-card lrn-set-loading"/>
+      </t>
+      <t t-elif="!state.allowed">
+        <div class="lrn-set-card">
+          <p class="lrn-set-lead" t-esc="t('setAdminOnly')"/>
+        </div>
+      </t>
+      <t t-else="">
+        <section class="lrn-set-card">
+          <header class="lrn-set-head">
+            <span class="lrn-set-mark">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-shield-check"/></svg>
+            </span>
+            <div>
+              <h2 t-esc="t('setTitle')"/>
+              <p class="lrn-set-lead" t-esc="t('setLead')"/>
+            </div>
+          </header>
+
+          <ul class="lrn-set-list">
+            <t t-foreach="rows()" t-as="row" t-key="row.key">
+              <li class="lrn-set-row" t-att-class="{ on: row.on }">
+                <span class="lrn-set-ic">
+                  <svg class="lrn-ic" aria-hidden="true"><use t-attf-href="#lrn-i-#{row.icon}"/></svg>
+                </span>
+                <div class="lrn-set-text">
+                  <b t-esc="row.title"/>
+                  <p t-esc="row.body"/>
+                  <span t-att-class="'lrn-set-where ' + (row.leaves ? 'out' : 'in')">
+                    <svg class="lrn-ic" aria-hidden="true">
+                      <use t-attf-href="#lrn-i-#{row.leaves ? 'send' : 'lock'}"/>
+                    </svg>
+                    <t t-esc="row.note"/>
+                  </span>
+                  <span class="lrn-set-warn" t-if="row.warn">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-info"/></svg>
+                    <t t-esc="row.warn"/>
+                  </span>
+                  <span class="lrn-set-warn bad" t-if="state.failed === row.key" t-esc="t('setFailed')"/>
+                </div>
+                <div class="lrn-set-ctl">
+                  <button type="button" role="switch" class="lrn-set-tog"
+                          t-att-id="'lrn-set-' + row.key"
+                          t-att-aria-checked="row.on ? 'true' : 'false'"
+                          t-att-aria-label="row.title"
+                          t-att-disabled="state.busy ? true : false"
+                          t-on-click="() => this.toggle(row)"/>
+                  <span class="lrn-set-state">
+                    <t t-if="state.saved === row.key">
+                      <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-check"/></svg>
+                      <t t-esc="t('setSaved')"/>
+                    </t>
+                    <t t-else="" t-esc="row.on ? t('swOn') : t('swOff')"/>
+                  </span>
+                </div>
+              </li>
+            </t>
+          </ul>
+        </section>
+        <!-- LEARNREV P5a (S4): what people asked and rated. Counts only. -->
+        <section class="lrn-set-card lrn-fbk" data-fb="card">
+          <header class="lrn-set-head">
+            <span class="lrn-set-mark">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-bar-chart"/></svg>
+            </span>
+            <div class="lrn-fbk-headtx">
+              <h2 t-esc="f('title')"/>
+              <p class="lrn-set-lead" t-esc="f('lead')"/>
+            </div>
+            <div class="lrn-fbk-tools">
+              <label class="lrn-fbk-period">
+                <span class="lrn-fbk-sr" t-esc="f('period')"/>
+                <select t-att-value="state.fb.days" t-on-change="onPeriod" t-att-aria-label="f('period')">
+                  <option value="7" t-att-selected="state.fb.days === 7" t-esc="f('d7')"/>
+                  <option value="30" t-att-selected="state.fb.days === 30" t-esc="f('d30')"/>
+                  <option value="90" t-att-selected="state.fb.days === 90" t-esc="f('d90')"/>
+                </select>
+              </label>
+              <button type="button" class="lrn-fbk-btn" data-fb="export"
+                      t-att-disabled="state.fb.loading or state.fb.failed or !state.fb.data"
+                      t-on-click="() => this.exportCsv()">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-download"/></svg>
+                <t t-esc="f('export')"/>
+              </button>
+            </div>
+          </header>
+
+          <t t-if="state.fb.failed">
+            <div class="lrn-fbk-note bad" role="alert">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-alert-triangle"/></svg>
+              <span t-esc="f('failed')"/>
+              <button type="button" class="lrn-fbk-btn" t-on-click="() => this.loadFeedback()" t-esc="f('retry')"/>
+            </div>
+          </t>
+          <t t-elif="state.fb.loading and !state.fb.data">
+            <p class="lrn-fbk-loading" t-esc="f('loading')"/>
+          </t>
+          <t t-elif="state.fb.data">
+            <ul class="lrn-fbk-tiles">
+              <li class="up">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-up"/></svg>
+                <b data-fb="up" t-esc="state.fb.data.totals.up"/>
+                <span t-esc="f('helpful')"/>
+              </li>
+              <li t-att-class="state.fb.data.totals.down ? 'down hot' : 'down'">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-down"/></svg>
+                <b data-fb="down" t-esc="state.fb.data.totals.down"/>
+                <span t-esc="f('notHelpful')"/>
+              </li>
+              <li>
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-message-circle"/></svg>
+                <b data-fb="helper" t-esc="state.fb.data.totals.helper_miss"/>
+                <span t-esc="f('noAnswer')"/>
+              </li>
+              <li>
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-search"/></svg>
+                <b data-fb="search" t-esc="state.fb.data.totals.search_miss"/>
+                <span t-esc="f('noResult')"/>
+              </li>
+            </ul>
+
+            <h3 class="lrn-fbk-h" t-esc="f('ratingsTitle')"/>
+            <p class="lrn-fbk-empty" t-if="!state.fb.data.thumbs.length" t-esc="f('ratingsEmpty')"/>
+            <ul class="lrn-fbk-list" t-else="" data-fb="ratings">
+              <t t-foreach="screenRows()" t-as="row" t-key="row.screen">
+                <li class="lrn-fbk-row">
+                  <div class="lrn-fbk-line">
+                    <b class="lrn-fbk-name" t-esc="row.name"/>
+                    <span class="lrn-fbk-bar" aria-hidden="true">
+                      <i t-att-style="'width:' + downShare(row) + '%'"/>
+                    </span>
+                    <span class="lrn-fbk-n up"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-up"/></svg><t t-esc="row.up"/></span>
+                    <span class="lrn-fbk-n down"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-down"/></svg><t t-esc="row.down"/></span>
+                    <button type="button" class="lrn-fbk-more" t-if="row.fields.length"
+                            t-att-aria-expanded="state.fb.open[row.screen] ? 'true' : 'false'"
+                            t-on-click="() => this.toggleFields(row.screen)">
+                      <t t-esc="state.fb.open[row.screen] ? f('fieldsHide') : f('fieldsShow')"/>
+                      <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-chevron-down"/></svg>
+                    </button>
+                  </div>
+                  <ul class="lrn-fbk-sub" t-if="state.fb.open[row.screen]">
+                    <t t-foreach="row.fields" t-as="fld" t-key="fld.key">
+                      <li t-att-data-kind="fld.kind or 'field'">
+                        <!-- LEARNREV P5b: a lesson step or walkthrough card
+                             rated beside the screen's field cards. -->
+                        <svg class="lrn-ic lrn-fbk-kind" aria-hidden="true"><use t-att-href="fld.kind === 'step' ? '#lrn-i-book-open' : '#lrn-i-table'"/></svg>
+                        <span class="lrn-fbk-name" t-esc="fld.label"/>
+                        <span class="lrn-fbk-n up"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-up"/></svg><t t-esc="fld.up"/></span>
+                        <span class="lrn-fbk-n down"><svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-thumbs-down"/></svg><t t-esc="fld.down"/></span>
+                      </li>
+                    </t>
+                  </ul>
+                </li>
+              </t>
+              <li t-if="moreScreens()" class="lrn-fbk-foot">
+                <button type="button" class="lrn-fbk-more" t-on-click="() => { this.state.fb.all = !this.state.fb.all }"
+                        t-esc="state.fb.all ? f('showLess') : f('showMore')"/>
+              </li>
+            </ul>
+
+            <h3 class="lrn-fbk-h" t-esc="f('missTitle')"/>
+            <p class="lrn-fbk-empty" t-if="!state.fb.data.helper.length" t-esc="f('missEmpty')"/>
+            <ul class="lrn-fbk-list" t-else="" data-fb="helper-misses">
+              <t t-foreach="state.fb.data.helper" t-as="row" t-key="row.screen">
+                <li class="lrn-fbk-row">
+                  <div class="lrn-fbk-line">
+                    <b class="lrn-fbk-name" t-esc="row.name or f('noScreen')"/>
+                    <span class="lrn-fbk-chips" t-if="row.topics.length">
+                      <t t-foreach="row.topics" t-as="tp" t-key="tp.topic">
+                        <span class="lrn-fbk-chip"><t t-esc="tp.topic"/> · <t t-esc="tp.count"/></span>
+                      </t>
+                    </span>
+                    <span class="lrn-fbk-n"><t t-esc="f('times')"/> <t t-esc="row.count"/></span>
+                  </div>
+                </li>
+              </t>
+            </ul>
+
+            <h3 class="lrn-fbk-h" t-esc="f('searchTitle')"/>
+            <p class="lrn-fbk-empty" t-if="!state.fb.data.search.length" t-esc="f('searchEmpty')"/>
+            <ol class="lrn-fbk-list lrn-fbk-search" t-else="" data-fb="searches">
+              <t t-foreach="state.fb.data.search" t-as="row" t-key="row.id">
+                <li class="lrn-fbk-row">
+                  <div class="lrn-fbk-line">
+                    <b class="lrn-fbk-name" t-esc="phraseLabel(row)"/>
+                    <span class="lrn-fbk-n"><t t-esc="f('times')"/> <t t-esc="row.count"/></span>
+                  </div>
+                </li>
+              </t>
+            </ol>
+            <p class="lrn-fbk-note" t-if="!state.fb.data.collect and state.fb.data.search.length">
+              <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-lock"/></svg>
+              <span t-esc="f('searchHidden')"/>
+            </p>
+          </t>
+        </section>
+        <!-- LEARNREV P3: one preference for this device (moved here from the
+             Learning page's header). The system setting always wins. -->
+        <section class="lrn-set-card lrn-set-device">
+          <ul class="lrn-set-list">
+            <li class="lrn-set-row" t-att-class="{ on: state.motion }">
+              <span class="lrn-set-ic">
+                <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-sparkles"/></svg>
+              </span>
+              <div class="lrn-set-text">
+                <b t-esc="t('swMotionTitle')"/>
+                <p t-esc="t('swMotionBody')"/>
+                <span class="lrn-set-where in">
+                  <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-lock"/></svg>
+                  <t t-esc="t('swMotionWhere')"/>
+                </span>
+              </div>
+              <div class="lrn-set-ctl">
+                <button type="button" role="switch" class="lrn-set-tog" id="lrn-set-motion"
+                        t-att-aria-checked="state.motion ? 'true' : 'false'"
+                        t-att-aria-label="t('swMotionTitle')"
+                        t-on-click="() => this.toggleMotion()"/>
+                <span class="lrn-set-state" t-esc="state.motion ? t('swOn') : t('swOff')"/>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </t>
+    </div>
+  </t>
+
+</templates>

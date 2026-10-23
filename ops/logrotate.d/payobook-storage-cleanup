@@ -1,0 +1,8 @@
+/var/log/payobook-storage-cleanup.log {
+    weekly
+    rotate 4
+    missingok
+    notifempty
+    compress
+    create 0640 root adm
+}

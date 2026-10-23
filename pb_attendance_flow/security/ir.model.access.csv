@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_attendance_rule_officer,pb.attendance.rule officer,model_pb_attendance_rule,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_attendance_rule_payroll,pb.attendance.rule payroll mgr,model_pb_attendance_rule,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_attendance_rule_hr,pb.attendance.rule hr mgr,model_pb_attendance_rule,hr.group_hr_manager,1,1,1,1
+access_pb_attendance_rule_system,pb.attendance.rule system,model_pb_attendance_rule,base.group_system,1,1,1,1
+access_hr_attendance_correction_user,hr.attendance.correction user,model_hr_attendance_correction,base.group_user,1,1,1,0
+access_hr_attendance_correction_officer,hr.attendance.correction officer,model_hr_attendance_correction,hr_attendance.group_hr_attendance_officer,1,1,1,0
+access_hr_attendance_correction_att_mgr,hr.attendance.correction att mgr,model_hr_attendance_correction,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_hr_attendance_correction_payroll,hr.attendance.correction payroll mgr,model_hr_attendance_correction,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_hr_attendance_correction_hr,hr.attendance.correction hr mgr,model_hr_attendance_correction,hr.group_hr_manager,1,1,1,1
+access_hr_attendance_correction_system,hr.attendance.correction system,model_hr_attendance_correction,base.group_system,1,1,1,1
+access_pb_attendance_import_wizard_user,pb.attendance.import.wizard user,model_pb_attendance_import_wizard,base.group_user,1,1,1,1

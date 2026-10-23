@@ -1,0 +1,1826 @@
+// =====================================================================
+//  The Decision Room — .dr-*
+//
+//  Built on the shared kit: `--pbim-*` tokens, `.pbim-*` primitives, root
+//  class "pbim pbim-page dr". Every colour here is either a token or one
+//  of the STAGE literals, and the stage is the only place a literal is
+//  allowed, because a <canvas> cannot read a custom property.
+//
+//  FLAT FILLS ONLY. The concept painted the stage with a radial gradient;
+//  the product does not use gradients, so the stage is one deep indigo
+//  with the concept's dot texture over it — which is what actually made
+//  it feel like a room.
+//
+//  THE STAGE IS DARK BY DESIGN and the cards around it are light. Every
+//  colour on both is written here rather than inherited, so a platform
+//  dark mode cannot invert half of one section and leave the other half.
+// =====================================================================
+
+$dr-stage:      #241F52;
+$dr-stage-2:    #2D2760;
+$dr-plan:       #D7C6FF;
+$dr-plan-soft:  #B9ADEE;
+$dr-onstage:    #C6C0DC;
+$dr-onstage-2:  #E7E3F5;
+$dr-good:       #2E7D4F;
+$dr-rose:       #DC2668;
+$dr-amber:      #D97706;
+$dr-teal:       #0F766E;
+
+.pbim.dr {
+    background: var(--pbim-bg, #F4F5FB);
+    color: var(--pbim-text, #1B1733);
+
+    // Inside the Plan lens the launcher hands over the whole canvas, so the
+    // room supplies its own frame rather than sitting inside a second one.
+    &.dr--embedded { padding: 20px 22px 26px; }
+
+    .dr-wrap { max-width: 1640px; }
+
+    // ------------------------------------------------------- the heading
+    .dr-head {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 18px; margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .dr-head-id { min-width: 0; }
+    .dr-h1 {
+        font-size: 30px; font-weight: 600; letter-spacing: -.9px;
+        line-height: 1.15; margin: 8px 0 6px;
+        color: var(--pbim-ink, #1B1733);
+    }
+    .dr-sub { font-size: 13px; color: var(--pbim-muted, #64748B); margin: 0; }
+    .dr-head-actions {
+        display: flex; align-items: center; gap: 8px; flex: none;
+        flex-wrap: wrap; justify-content: flex-end;
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+
+    // ------------------------------------------------------- the keyboard
+    // A visible focus ring on EVERY control, in both places the room lives:
+    // indigo on the light cards, and the pale plan colour on the dark stage,
+    // where indigo on indigo would be no ring at all. `:focus-visible` and
+    // not `:focus`, so a mouse click does not leave a ring behind it.
+    button, input, select, summary, a, [tabindex] {
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: 2px; border-radius: 4px;
+        }
+    }
+    .dr-stage, .dr-sheet-head {
+        button, input, select, [tabindex] {
+            &:focus-visible { outline-color: #CBC2EE; }
+        }
+    }
+
+    // ------------------------------------------------- the phone sheet
+    // Above 720px none of this exists: `.dr-controls` is the sticky column
+    // it has always been, and the bar and its backdrop are not rendered at
+    // all (the component only paints them when the media query matches).
+    .dr-sheet-head { display: none; }
+    .dr-sheetbar { display: none; }
+    .dr-sheetscrim { display: none; }
+
+    // -------------------------------------------------------- the layout
+    .dr-layout {
+        display: grid; grid-template-columns: 282px minmax(0, 1fr);
+        gap: 20px; align-items: start;
+    }
+    .dr-controls {
+        position: sticky; top: 10px; display: grid; gap: 12px; min-width: 0;
+    }
+    // `minmax(0, 1fr)` and not `1fr`: a grid track sized `auto`/`1fr` takes its
+    // MIN-CONTENT from its children, so one wide table in the dock made the
+    // whole story column refuse to shrink and pushed the page off the right
+    // edge inside the hub. The track has to be told it may be narrower than
+    // what is in it.
+    .dr-story {
+        min-width: 0; display: grid; gap: 18px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    // --------------------------------------------------- the goal invite
+    .dr-invite {
+        background: var(--pbim-soft, #EDEAF8);
+        border: 1px solid var(--pbim-soft2, #DDD6F2);
+        border-radius: var(--pbim-r, 14px); padding: 14px 16px;
+    }
+    .dr-invite-btn {
+        background: transparent; border: 0; padding: 10px 0 0; width: 100%;
+        display: flex; align-items: center; gap: 10px; text-align: left;
+        cursor: pointer; color: var(--pbim-ink, #1B1733);
+    }
+    .dr-invite-ic { color: var(--pbim-primary, #5A4BB0); flex: none; display: flex; }
+    .dr-invite-tx { flex: 1; min-width: 0; }
+    .dr-invite-l { display: block; font-size: 14px; font-weight: 600; }
+    .dr-invite-s {
+        display: block; font-size: 11px; margin-top: 3px;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ------------------------------------------------- the control panel
+    .dr-panel { padding: 18px 17px; }
+    .dr-panel-top {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 8px;
+    }
+    .dr-live {
+        font-size: 10px; color: var(--pbim-muted, #64748B);
+        display: inline-flex; align-items: center; gap: 5px;
+        i {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: var(--pbim-primary, #5A4BB0); display: inline-block;
+        }
+    }
+    .dr-panel-h {
+        font-size: 22px; font-weight: 600; letter-spacing: -.6px;
+        margin: 10px 0 12px; color: var(--pbim-ink, #1B1733);
+    }
+    .dr-presets {
+        display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px;
+        .dr-preset {
+            font-size: 10px; font-weight: 600; padding: 7px 9px;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); cursor: pointer;
+            background: #fff; color: var(--pbim-text, #1B1733);
+            transition: background .14s, border-color .14s;
+            &:hover {
+                background: var(--pbim-soft, #EDEAF8);
+                border-color: var(--pbim-primary-light, #CBC2EE);
+            }
+        }
+    }
+
+    // ------------------------------------------------- the revenue target
+    .dr-target {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); padding: 13px 14px;
+        margin-bottom: 14px; background: #fff;
+        > label {
+            display: block; font-size: 12px; font-weight: 600;
+            margin-bottom: 9px;
+        }
+        &.dr-target--empty {
+            border-color: var(--pbim-amber, #D97706);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, .12);
+        }
+    }
+    .dr-money {
+        display: flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); padding: 8px 11px;
+        background: var(--pbim-line-2, #F1F5F9);
+        &:focus-within {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 3px var(--pbim-ring, rgba(90, 75, 176, .18));
+        }
+        input {
+            flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+            font: inherit; font-size: 16px; font-weight: 700;
+            color: var(--pbim-primary, #5A4BB0);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+    .dr-money-sym {
+        font-size: 15px; font-weight: 700;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .dr-hint {
+        font-size: 10px; line-height: 1.6; margin: 7px 0 0;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // -------------------------------------------------------- the levers
+    .dr-block { margin: 14px 0; }
+    .dr-label {
+        display: block; font-size: 11px; margin: 10px 0 6px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-select {
+        width: 100%; max-width: 100%; font: inherit; font-size: 12px;
+        padding: 8px 10px; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-line-2, #F1F5F9);
+        color: var(--pbim-text, #1B1733);
+        &.dr-select--sm { width: auto; min-width: 108px; font-size: 11px; }
+    }
+    .dr-inline {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 8px; margin: 10px 0;
+        label { font-size: 11px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-lever { margin: 16px 0; }
+    .dr-lever-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 8px;
+        label { font-size: 12px; font-weight: 600; }
+    }
+    .dr-lever-num {
+        display: flex; align-items: center; gap: 4px; font-size: 10px;
+        color: var(--pbim-muted, #64748B);
+        input {
+            width: 58px; text-align: center; padding: 5px 4px; font: inherit;
+            font-size: 13px; font-weight: 700;
+            color: var(--pbim-primary, #5A4BB0);
+            border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 7px;
+            background: var(--pbim-soft, #EDEAF8);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+    .dr-track {
+        position: relative; margin-top: 9px; height: 20px;
+        display: flex; align-items: center;
+    }
+    .dr-tick {
+        position: absolute; left: 0; width: 2px; height: 14px; top: 2px;
+        background: var(--pbim-muted, #64748B); border-radius: 3px;
+        z-index: 1; pointer-events: none;
+    }
+    input[type="range"] {
+        appearance: none; -webkit-appearance: none; width: 100%; height: 5px;
+        margin: 0; border-radius: 20px; cursor: pointer; position: relative;
+        z-index: 2;
+        background:
+            linear-gradient(to right,
+                var(--pbim-primary, #5A4BB0) 0%,
+                var(--pbim-primary, #5A4BB0) var(--dr-fill, 0%),
+                #E1DFEB var(--dr-fill, 0%), #E1DFEB 100%);
+        &::-webkit-slider-thumb {
+            appearance: none; -webkit-appearance: none;
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 3px solid #fff; background: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 1px 5px rgba(36, 31, 82, .28); cursor: grab;
+        }
+        &::-moz-range-thumb {
+            width: 13px; height: 13px; border-radius: 50%;
+            border: 3px solid #fff; background: var(--pbim-primary, #5A4BB0);
+        }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: 4px;
+        }
+    }
+    .dr-lever-note {
+        display: flex; justify-content: space-between; gap: 8px;
+        font-size: 10px; line-height: 1.6; margin-top: 4px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-was { white-space: nowrap; font-weight: 600; }
+    .dr-tiny {
+        font-size: 10px; line-height: 1.7; color: var(--pbim-muted, #64748B);
+        margin: 6px 0 0;
+    }
+    .dr-fold {
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        margin-top: 13px; padding-top: 11px;
+        > summary {
+            font-size: 11px; font-weight: 600; cursor: pointer;
+            list-style: none; color: var(--pbim-text, #1B1733);
+            &::-webkit-details-marker { display: none; }
+            &:before { content: "▸ "; color: var(--pbim-muted, #64748B); }
+        }
+        &[open] > summary:before { content: "▾ "; }
+    }
+    .dr-switch {
+        display: flex; align-items: center; gap: 8px; font-size: 11px;
+        margin: 10px 0; cursor: pointer;
+        input { accent-color: var(--pbim-primary, #5A4BB0); width: 15px; height: 15px; }
+    }
+    .dr-lines { margin-top: 8px; }
+    .dr-line {
+        display: flex; justify-content: space-between; gap: 10px;
+        font-size: 11px; padding: 5px 0;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        span { color: var(--pbim-muted, #64748B); }
+        b { font-weight: 600; white-space: nowrap; }
+    }
+    .dr-note {
+        display: flex; align-items: flex-start; gap: 8px;
+        color: var(--pbim-muted, #64748B); padding: 0 4px;
+        > span { margin-top: 9px; flex: none; display: flex; }
+        p { font-size: 10px; line-height: 1.7; margin: 8px 0; }
+    }
+    .dr-link {
+        border: 0; background: none; padding: 0; font: inherit; font-size: 10px;
+        color: var(--pbim-primary, #5A4BB0); text-decoration: underline;
+        cursor: pointer;
+    }
+
+    // ------------------------------------------------------ goal compass
+    .dr-compass { padding: 17px 19px; }
+    .dr-compass-h {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 14px; margin-bottom: 14px; flex-wrap: wrap;
+        h2 {
+            font-size: 18px; font-weight: 650; letter-spacing: -.4px;
+            margin: 6px 0 0; color: var(--pbim-ink, #1B1733);
+        }
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+    .dr-pills {
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 9px;
+    }
+    .dr-pill {
+        text-align: left; padding: 11px 12px; min-width: 0; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); background: #FAFAFE;
+        transition: background .14s, border-color .14s;
+        &:hover {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            background: var(--pbim-soft, #EDEAF8);
+        }
+        strong {
+            display: block; font-size: 19px; font-weight: 650;
+            letter-spacing: -.5px; margin: 6px 0 4px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        small {
+            font-size: 9px; color: var(--pbim-muted, #64748B); line-height: 1.5;
+            display: block;
+        }
+        &.dr-pill--missed {
+            background: #FFF9FB; border-color: #F2DBE5;
+            .dr-pill-n i { color: $dr-rose; }
+            .dr-pill-track i { background: #DC7CA0; }
+        }
+    }
+    .dr-pill-n {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 5px; font-size: 10px; color: var(--pbim-muted, #64748B);
+        i { color: $dr-good; display: flex; }
+    }
+    .dr-pill-track {
+        display: block; height: 3px; border-radius: 3px; margin-top: 8px;
+        background: #E7E5EF; overflow: hidden;
+        i { display: block; height: 100%; background: #9E93CA; transition: width .3s; }
+    }
+
+    // ======================================================== THE STAGE
+    .dr-stage {
+        position: relative; isolation: isolate; overflow: hidden;
+        border-radius: var(--pbim-r-lg, 18px);
+        background: $dr-stage; color: $dr-onstage-2;
+        padding: 20px 24px 0;
+        box-shadow: 0 14px 34px rgba(36, 31, 82, .12);
+        &:before {
+            content: ""; position: absolute; inset: 0; z-index: -1;
+            background-image: radial-gradient(rgba(255, 255, 255, .08) .8px,
+                                              transparent .8px);
+            background-size: 17px 17px;
+        }
+    }
+    .dr-stage-top {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 10px; flex-wrap: wrap;
+    }
+    .dr-scene {
+        display: flex; gap: 8px; align-items: center; font-size: 11px;
+        color: $dr-onstage;
+    }
+    .dr-dot {
+        width: 6px; height: 6px; border-radius: 50%; background: $dr-plan-soft;
+        box-shadow: 0 0 0 4px rgba(167, 152, 237, .12);
+    }
+    .dr-stage-tools {
+        display: flex; gap: 7px;
+        button {
+            font-size: 10px; padding: 6px 10px; cursor: pointer;
+            border-radius: var(--pbim-r-sm, 10px);
+            border: 1px solid rgba(199, 192, 232, .28);
+            background: rgba(244, 241, 255, .05); color: $dr-onstage;
+            &:hover { background: rgba(244, 241, 255, .12); }
+            &.is-on { background: $dr-plan-soft; color: $dr-stage; font-weight: 600; }
+        }
+    }
+    .dr-stage-head {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        gap: 18px; margin: 24px 0 4px; flex-wrap: wrap;
+    }
+    .dr-stage-id { min-width: 0; }
+    .dr-overline {
+        font-size: 9px; letter-spacing: 1.4px; color: #AFAAC4; font-weight: 700;
+    }
+    .dr-hero {
+        display: flex; align-items: center; gap: 14px; margin: 7px 0;
+        flex-wrap: wrap;
+        > strong {
+            font-size: 52px; font-weight: 400; line-height: 1.08;
+            letter-spacing: -2px; font-variant-numeric: tabular-nums;
+            color: #fff;
+        }
+    }
+    .dr-delta {
+        display: inline-flex; align-items: center; font-size: 12px;
+        white-space: nowrap; border-radius: 30px; padding: 8px 12px;
+        color: #CFC6FF; background: rgba(166, 151, 236, .10);
+        border: 1px solid rgba(163, 150, 222, .22);
+        &.dr-delta--bad {
+            color: #FFC5DD; background: rgba(220, 38, 104, .16);
+            border-color: rgba(220, 38, 104, .3);
+        }
+    }
+    .dr-before {
+        font-size: 11px; color: #A9A3BE; margin: 8px 0 0; line-height: 1.6;
+    }
+    .dr-tabs {
+        display: flex; gap: 1px; padding: 3px; flex: none;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: rgba(12, 7, 34, .3);
+        border: 1px solid rgba(90, 84, 117, .3);
+        button {
+            font-size: 10px; padding: 7px 11px; border: 0; cursor: pointer;
+            background: transparent; color: #B2AEC4; border-radius: 7px;
+            &.is-on { background: var(--pbim-primary-light, #CBC2EE);
+                      color: $dr-stage; font-weight: 700; }
+        }
+    }
+    .dr-horizon {
+        height: 232px; position: relative; margin-top: 6px;
+        canvas { display: block; width: 100%; height: 100%; }
+    }
+    .dr-callout {
+        position: absolute; top: 14px; right: 4px; pointer-events: none;
+        font-size: 9px; line-height: 1.7; max-width: 190px; padding: 8px 11px;
+        border-radius: 8px; color: $dr-onstage;
+        border: 1px solid rgba(124, 117, 157, .32);
+        background: rgba(34, 27, 66, .88);
+        b { display: block; color: #E6E3F3; font-size: 12px; font-weight: 600; }
+        span { display: block; }
+    }
+    .dr-chartfoot {
+        display: flex; justify-content: space-between; gap: 12px;
+        font-size: 10px; color: #CAC4E6; margin: 6px 0 8px; flex-wrap: wrap;
+    }
+    .dr-goalnote { color: #F7A6C3; }
+    .dr-key {
+        display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 6px;
+        > span {
+            display: flex; align-items: center; gap: 5px; font-size: 9px;
+            color: #B4B0C4;
+        }
+        i { display: inline-block; width: 13px; height: 3px; border-radius: 2px; }
+        .dr-k-plan { background: $dr-plan; }
+        .dr-k-base {
+            background: repeating-linear-gradient(90deg, #8C86A6 0, #8C86A6 3px,
+                                                  transparent 3px, transparent 5px);
+        }
+        .dr-k-band { height: 7px; background: rgba(142, 130, 194, .3); }
+    }
+    .dr-timeline {
+        display: flex; align-items: center; gap: 14px;
+        border-top: 1px solid rgba(173, 168, 197, .14);
+        padding: 14px 0;
+        input[type="range"] {
+            flex: 1; height: 3px; background: rgba(108, 102, 136, .4);
+            &::-webkit-slider-thumb {
+                width: 13px; height: 13px; background: $dr-plan-soft;
+                border: 2px solid $dr-stage;
+            }
+            &::-moz-range-thumb { background: $dr-plan-soft; border: 2px solid $dr-stage; }
+        }
+    }
+    .dr-play {
+        width: 29px; height: 29px; padding: 0; flex: none; cursor: pointer;
+        border-radius: 50%; display: grid; place-items: center;
+        color: #C5BEE7; border: 1px solid rgba(121, 113, 158, .4);
+        background: rgba(166, 151, 236, .08);
+        &[aria-pressed="true"] { background: $dr-plan-soft; color: $dr-stage; }
+    }
+    .dr-stamp {
+        font-size: 11px; letter-spacing: 1px; color: #BFB7E5; min-width: 32px;
+        text-align: right;
+    }
+    .dr-tiles {
+        margin: 0 -24px; display: grid; grid-template-columns: repeat(3, 1fr);
+        background: rgba(10, 5, 30, .28);
+        border-top: 1px solid rgba(173, 168, 197, .12);
+    }
+    .dr-tile {
+        padding: 15px 22px; border-right: 1px solid rgba(173, 168, 197, .12);
+        min-width: 0;
+        &:last-child { border-right: 0; }
+        > span { font-size: 9px; letter-spacing: .5px; color: #B2AEC4; }
+        > div {
+            display: flex; align-items: baseline; gap: 10px; margin-top: 7px;
+            flex-wrap: wrap;
+        }
+        strong {
+            font-size: 22px; font-weight: 400; letter-spacing: -.6px;
+            font-variant-numeric: tabular-nums; color: #fff;
+        }
+        small { font-size: 10px; color: #ABA0DF; }
+        .dr-worse { color: #EFB294; }
+    }
+
+    // --------------------------------------------------------- year lens
+    .dr-year { padding: 18px 20px; }
+    .dr-year-h {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        gap: 16px; margin-bottom: 14px; flex-wrap: wrap;
+        h2 {
+            font-size: 19px; font-weight: 600; letter-spacing: -.5px;
+            margin: 6px 0 0; color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .dr-months {
+        display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 5px;
+    }
+    .dr-month {
+        padding: 10px 3px 8px; min-width: 0; text-align: center; cursor: pointer;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); background: #FAFAFE;
+        transition: background .14s, border-color .14s;
+        > span {
+            display: block; font-size: 9px; font-weight: 600;
+            color: var(--pbim-muted, #64748B);
+        }
+        strong {
+            display: block; font-size: 10px; margin: 7px 0 6px;
+            letter-spacing: -.3px; color: var(--pbim-ink, #1B1733);
+        }
+        i {
+            display: block; margin: auto; width: 5px; height: 5px;
+            border-radius: 50%; background: $dr-teal;
+        }
+        &.is-watch i { background: $dr-amber; }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            > span { color: var(--pbim-primary, #5A4BB0); font-weight: 800; }
+        }
+        &:hover { border-color: var(--pbim-primary-light, #CBC2EE); }
+        // The month you just chose says so, once. Not a loop, not a glow —
+        // one beat, the length of an eye blink, and then it is a card again.
+        &.dr-pulse { animation: dr-beat .24s ease-out; }
+    }
+    .dr-year-note {
+        font-size: 11px; line-height: 1.7; margin: 12px 0 0;
+        color: var(--pbim-muted, #64748B);
+    }
+
+    // ----------------------------------------------------- story caption
+    .dr-caption {
+        display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px;
+        border-radius: var(--pbim-r, 14px);
+        border: 1px solid #DDD7F0; background: #ECE8F6;
+        strong {
+            font-size: 13px; line-height: 1.6; font-weight: 600;
+            color: var(--pbim-ink, #1B1733);
+        }
+        p {
+            font-size: 11px; line-height: 1.7; margin: 5px 0 0;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-caption-ic {
+        width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+        border-radius: 50%; background: #DEDBED; border: 1px solid #D6D3E6;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .dr-warn {
+        display: flex; gap: 6px; align-items: flex-start; margin-top: 7px !important;
+        span:first-child { flex: none; margin-top: 2px; display: flex; }
+        &.dr-warn--bad { color: $dr-rose !important; }
+        &.dr-warn--watch { color: $dr-amber !important; }
+    }
+
+    // --------------------------------------------------- impact journey
+    .dr-impact { min-width: 0; }
+    .dr-journey {
+        display: grid; align-items: stretch;
+        grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr);
+    }
+    .dr-card {
+        background: #fff; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px); padding: 16px 18px; min-width: 0;
+        position: relative; overflow: hidden;
+        box-shadow: 0 5px 16px rgba(36, 31, 82, .05);
+        p {
+            font-size: 11px; line-height: 1.65; margin: 8px 0 0;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-card-top {
+        display: flex; align-items: center; gap: 8px; font-size: 8px;
+        letter-spacing: .7px; color: var(--pbim-muted, #64748B);
+        font-weight: 700;
+    }
+    .dr-step {
+        font-size: 9px; letter-spacing: 0; height: 20px; width: 20px;
+        display: grid; place-items: center; border-radius: 50%;
+        background: var(--pbim-soft, #EDEAF8);
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .dr-card-v {
+        display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+        strong {
+            font-size: 24px; font-weight: 400; letter-spacing: -.8px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        span { font-size: 9px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-dots {
+        height: 66px; margin: 16px 0 10px; display: grid;
+        grid-template-columns: repeat(20, 1fr); gap: 3px; align-content: center;
+        .dr-dotm {
+            display: block; aspect-ratio: 1; width: 100%; max-height: 11px;
+            border-radius: 3px; background: #CAC6DA;
+            &.added { background: var(--pbim-primary, #5A4BB0); }
+            &.gone { background: #E8C0AB; }
+        }
+    }
+    .dr-ring {
+        height: 80px; display: flex; align-items: center; justify-content: center;
+        margin: 4px 0 10px; position: relative;
+        canvas { height: 86px; width: 112px; }
+        > span {
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%); font-size: 18px;
+            letter-spacing: -.5px; color: var(--pbim-primary, #5A4BB0);
+            font-weight: 600;
+        }
+    }
+    .dr-bars {
+        height: 66px; display: flex; gap: 4px; align-items: flex-end;
+        margin: 16px 0 10px;
+        > span {
+            flex: 1; height: 100%; display: flex; align-items: flex-end; gap: 2px;
+        }
+        i {
+            width: 50%; min-height: 2px; border-radius: 3px 3px 0 0;
+            background: #D3CFE3; transition: height .35s ease;
+            &:last-child { background: var(--pbim-primary, #5A4BB0); }
+            &.dr-bar--neg { background: $dr-rose; }
+        }
+    }
+    .dr-link-l {
+        height: 1px; position: relative; align-self: center;
+        background: var(--pbim-primary-light, #CBC2EE);
+        > span {
+            position: absolute; left: 50%; bottom: 6px;
+            transform: translateX(-50%); font-size: 6px; letter-spacing: .3px;
+            color: var(--pbim-muted, #64748B);
+        }
+        i {
+            width: 5px; height: 5px; border-radius: 50%; position: absolute;
+            top: -2px; left: 0; opacity: 0;
+            background: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .dr-ripple {
+        .dr-link-l i { animation: dr-travel .9s ease-out; }
+        .dr-link-l:nth-of-type(4) i { animation-delay: .35s; }
+        .dr-card { animation: dr-glow .9s ease-out; }
+        .dr-card:nth-child(3) { animation-delay: .15s; }
+        .dr-card:nth-child(5) { animation-delay: .3s; }
+    }
+
+    // ------------------------------------------------------------- dock
+    .dr-dock { padding: 18px 20px; }
+    .dr-dock-controls {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        font-size: 11px; margin-bottom: 14px;
+        > label { color: var(--pbim-muted, #64748B); }
+        .dr-select { width: auto; min-width: 200px; }
+    }
+    // The kit's table wrapper clips rather than scrolls, which on a narrow hub
+    // canvas hid the LAST column — the one holding Open, Compare and Remove.
+    // A control you cannot reach is worse than a control that is not there, so
+    // the wrapper scrolls and the actions column is pinned to the right edge:
+    // the numbers slide under it, the buttons never leave.
+    //
+    // GROUP P7: pinning is the answer at a DESK width. Below 1200px the same
+    // nine columns are a table nobody can read sideways, so the dock stops
+    // being a table at all — see "the dock as cards" at the foot of this file.
+    .dr-dock .pbim-tablewrap { overflow-x: auto; }
+    .dr-table {
+        td, th { white-space: nowrap; padding: 10px 9px; }
+        @media (min-width: 1200px) {
+            th:last-child, td:last-child {
+                position: sticky; right: 0;
+                background: var(--pbim-surface, white);
+                box-shadow: -8px 0 8px -8px rgba(30, 27, 46, .18);
+            }
+            .dr-row--now td:last-child {
+                background: var(--pbim-soft, #EDEAF8);
+            }
+        }
+        .dr-tag { font-size: 9px; color: var(--pbim-muted, #64748B); }
+        .dr-neg { color: $dr-rose; }
+        .dr-row--now { background: var(--pbim-soft, #EDEAF8); }
+        // GROUP P4, and WF6 all over again. A plan now carries five verbs —
+        // open, compare, propose, price exactly, remove — and a single row of
+        // them is wider than the money columns it is pinned in front of, so
+        // the profit a person came to read sat UNDER the buttons. The column
+        // wraps to two short rows and is capped, so the numbers stay visible
+        // and the wrapper scrolls the rest under a control that never leaves.
+        .dr-row-actions { display: flex; gap: 4px; }
+        // The verbs of a DECISION live in the column about the decision,
+        // under the chip that says where it stands. Five buttons pinned to
+        // the right edge of a row covered the very numbers a person opened
+        // the dock to read (WF6 again, at twice the width).
+        .dr-standscell { white-space: normal; min-width: 140px; }
+        // GROUP P4 added two columns to a table that was already as wide as
+        // its card. The wrapper scrolls (WF6) but a reader must not have to
+        // scroll to see the two numbers they came for, so the two widest
+        // TEXT columns are capped and truncate with their full text on hover.
+        th:first-child, td:first-child { max-width: 170px; }
+        .dr-scopecell {
+            display: block; max-width: 160px; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
+        }
+        .dr-verbs {
+            display: flex; flex-direction: column; align-items: flex-start;
+            gap: 1px; margin-top: 4px;
+            button {
+                padding: 1px 0; border: 0; background: none; cursor: pointer;
+                font: inherit; font-size: 10px; text-align: left;
+                color: var(--pbim-primary, #5A4BB0);
+                text-decoration: underline;
+                text-underline-offset: 2px;
+                &:hover { color: var(--pbim-ink, #1B1733); }
+                &.is-good { color: $dr-good; font-weight: 600; }
+            }
+        }
+        // A person's NAME is not a label: the uppercase treatment the
+        // scope word gets would shout it.
+        .dr-decided {
+            display: block; margin-top: 3px; font-size: 9px;
+            text-transform: none; letter-spacing: 0;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-dock-foot { margin-top: 12px; }
+
+    // =================================================================
+    //  GROUP P4 — scope, a group on the stage, and what actually happened
+    // =================================================================
+
+    // ---- the approvals chip, on the room the reader already opens
+    .dr-await {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin: 0 0 14px; padding: 11px 15px; font-size: 12px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid #C9E3D4; background: #EEF7F1; color: $dr-good;
+        > span:first-child { display: inline-flex; }
+        > span:nth-child(2) { flex: 1 1 auto; font-weight: 600; }
+    }
+
+    // ---- the chip. It sits ON the stage, so its colours are the stage's.
+    .dr-scope {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 11px; cursor: pointer; max-width: 100%;
+        border-radius: 999px; font: inherit; font-size: 11px;
+        border: 1px solid rgba(199, 192, 232, .34);
+        background: rgba(244, 241, 255, .07); color: $dr-onstage-2;
+        transition: background .16s ease, border-color .16s ease;
+        &:hover, &:focus-visible {
+            background: rgba(244, 241, 255, .16);
+            border-color: rgba(199, 192, 232, .6);
+        }
+        .dr-scope-ic { display: inline-flex; color: $dr-plan; }
+        .dr-scope-k {
+            text-transform: uppercase; letter-spacing: .8px; font-size: 8px;
+            color: $dr-onstage; white-space: nowrap;
+        }
+        .dr-scope-n {
+            font-weight: 620; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; max-width: 320px;
+        }
+        .dr-scope-m {
+            font-size: 9px; color: $dr-onstage; padding: 2px 6px;
+            border-radius: 999px; background: rgba(244, 241, 255, .1);
+        }
+    }
+
+    // ---- the picker. A tree, one row per node, indented by depth.
+    .dr-scrim--top { align-items: start; padding-top: 8vh; }
+    .dr-dialog--tree { width: 620px; }
+    .dr-tree {
+        margin: 16px 0 12px; max-height: 52vh; overflow: auto;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); background: #fff;
+    }
+    .dr-scope-row {
+        display: flex; align-items: center; gap: 8px; cursor: pointer;
+        padding: 8px 12px 8px 10px; font-size: 12px;
+        border-bottom: 1px solid #F1EFF7;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: -2px;
+        }
+        &.is-current {
+            background: var(--pbim-soft, #EDEAF8); font-weight: 620;
+            box-shadow: inset 3px 0 0 var(--pbim-primary, #5A4BB0);
+        }
+        .dr-tl { flex: 1 1 auto; min-width: 0; }
+        .dr-tk {
+            font-size: 9px; text-transform: uppercase; letter-spacing: .6px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-tp {
+            font-size: 10px; color: var(--pbim-muted, #64748B);
+            white-space: nowrap;
+        }
+    }
+    .dr-tw {
+        width: 20px; height: 20px; flex: 0 0 20px; padding: 0; border: 0;
+        border-radius: var(--pbim-r-sm, 10px); cursor: pointer;
+        display: grid; place-items: center; background: transparent;
+        color: var(--pbim-muted, #64748B);
+        &:hover { background: #ECE9F6; }
+        &.dr-tw--none { cursor: default; }
+    }
+
+    // ---- what actually happened
+    .dr-actual {
+        display: flex; align-items: flex-start; gap: 8px; margin: 6px 0 2px;
+        font-size: 11px; line-height: 1.65; color: #D8F0E5;
+        > span:first-child { flex: 0 0 auto; padding-top: 1px; }
+    }
+    .dr-key .dr-k-entity { background: rgba(199, 184, 237, .5); }
+    .dr-key .dr-k-actual { background: #8ED9C0; }
+
+    // ---- a group on the stage
+    .dr-group {
+        margin: 14px 0 4px; padding: 13px 14px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid rgba(199, 192, 232, .2);
+        background: rgba(244, 241, 255, .04);
+    }
+    .dr-group-h {
+        display: flex; justify-content: space-between; gap: 12px;
+        align-items: flex-start; flex-wrap: wrap;
+    }
+    .dr-group-note {
+        font-size: 10px; line-height: 1.6; color: $dr-onstage;
+        max-width: 620px;
+    }
+    .dr-mini {
+        font-size: 10px; padding: 5px 9px; cursor: pointer; white-space: nowrap;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid rgba(199, 192, 232, .28);
+        background: rgba(244, 241, 255, .05); color: $dr-onstage;
+        &:hover { background: rgba(244, 241, 255, .12); }
+        &.is-on { background: $dr-plan-soft; color: $dr-stage; font-weight: 600; }
+    }
+    .dr-grouprows { margin-top: 10px; display: grid; gap: 2px; }
+    .dr-grouprow {
+        display: grid; gap: 10px; align-items: baseline;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr)
+                               minmax(0, 1fr) minmax(0, 1fr);
+        padding: 6px 0; font-size: 11px; color: $dr-onstage-2;
+        border-bottom: 1px solid rgba(173, 168, 197, .12);
+        &:last-child { border-bottom: 0; }
+        &.dr-grouprow--unknown { color: #CBBFD6; }
+        .dr-gr-n {
+            font-weight: 600; overflow: hidden; text-overflow: ellipsis;
+            small {
+                margin-left: 6px; font-weight: 400; font-size: 9px;
+                color: $dr-onstage;
+            }
+        }
+        .dr-gr-p, .dr-gr-c { color: $dr-onstage; }
+        .dr-gr-f { font-weight: 600; }
+    }
+    .dr-rate {
+        margin: 9px 0 0; font-size: 10px; color: $dr-onstage;
+        letter-spacing: .2px;
+    }
+    .dr-unknown {
+        margin-top: 10px; padding: 9px 11px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: rgba(247, 166, 195, .09);
+        border: 1px solid rgba(247, 166, 195, .26);
+        strong {
+            display: block; font-size: 10px; letter-spacing: .7px;
+            text-transform: uppercase; color: #F7C7D8; margin-bottom: 4px;
+        }
+        p { margin: 0 0 4px; font-size: 10px; line-height: 1.65;
+            color: $dr-onstage-2; &:last-child { margin-bottom: 0; } }
+    }
+
+    // ---- whose rules these are
+    .dr-rules {
+        margin: 14px 0 6px; padding: 13px 15px;
+        border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid #E1DCEF; background: #F4F1FA;
+    }
+    .dr-rules-h {
+        display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
+        > div { flex: 1 1 220px; min-width: 0; }
+        strong { display: block; font-size: 13px; }
+        small {
+            display: block; font-size: 10px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-rules-ic {
+        display: grid; place-items: center; width: 30px; height: 30px;
+        border-radius: 50%; background: #fff;
+        color: var(--pbim-primary, #5A4BB0);
+    }
+    .dr-rules-n {
+        margin: 9px 0 0; font-size: 11px; line-height: 1.7;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-rules-w {
+        margin: 7px 0 0; font-size: 11px; line-height: 1.7; color: $dr-amber;
+    }
+    .dr-warn {
+        margin: 10px 0 0; font-size: 11px; line-height: 1.7; color: $dr-amber;
+    }
+
+    // ---- the dock's new columns
+    .dr-table {
+        .dr-scopecell { display: block; }
+        td small {
+            font-size: 9px; text-transform: uppercase; letter-spacing: .5px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-exact {
+            display: block; font-size: 9px; margin-top: 2px; color: $dr-teal;
+            white-space: normal; max-width: 320px;
+        }
+        .dr-status {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 9px; font-weight: 600; background: #EEECF6;
+            color: var(--pbim-muted, #64748B);
+            &.dr-status--proposed { background: #FDF0DC; color: $dr-amber; }
+            &.dr-status--approved { background: #DFF1E6; color: $dr-good; }
+            &.dr-status--rejected { background: #FCE4EC; color: $dr-rose; }
+        }
+    }
+
+    // ---- versions
+    .dr-versions { display: grid; gap: 9px; margin-top: 16px; }
+    .dr-version {
+        padding: 12px 14px; border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+    }
+    .dr-version-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        align-items: baseline; flex-wrap: wrap;
+        small { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-version-b {
+        display: flex; gap: 16px; flex-wrap: wrap; margin-top: 7px;
+        font-size: 11px; color: var(--pbim-muted, #64748B);
+    }
+    .dr-none--inline {
+        padding: 26px 10px; margin-top: 14px;
+        border: 1px dashed var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px);
+    }
+
+    // ---------------------------------------------------------- dialogs
+    .dr-scrim {
+        position: fixed; inset: 0; z-index: 1060; display: grid;
+        place-items: center; padding: 20px;
+        background: rgba(25, 20, 46, .42); backdrop-filter: blur(6px);
+    }
+    .dr-dialog {
+        position: relative; width: 460px; max-width: 100%; max-height: 88vh;
+        overflow: auto; padding: 28px 26px; background: #FCFCFF;
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-lg, 18px);
+        box-shadow: 0 24px 80px rgba(16, 11, 41, .25);
+        &.dr-dialog--wide { width: 940px; }
+        h2 {
+            font-size: 25px; font-weight: 650; letter-spacing: -.8px;
+            margin: 12px 0; color: var(--pbim-ink, #1B1733);
+        }
+        > label {
+            display: block; font-size: 11px; margin: 16px 0 7px;
+            color: var(--pbim-muted, #64748B);
+        }
+        > input {
+            width: 100%; padding: 11px 12px; font: inherit; font-size: 13px;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); background: #fff;
+            color: var(--pbim-text, #1B1733);
+        }
+    }
+    .dr-x {
+        position: absolute; right: 14px; top: 13px; width: 28px; height: 28px;
+        padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+        display: grid; place-items: center; background: #EAE8F3;
+        color: var(--pbim-text, #1B1733);
+    }
+    .dr-dialog-actions {
+        display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px;
+    }
+    .dr-error { color: $dr-rose; }
+    .dr-goals {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px; margin: 20px 0 16px;
+    }
+    .dr-goal {
+        padding: 14px; border-radius: var(--pbim-r-sm, 10px);
+        border: 1px solid #E1DCEF; background: #F4F1FA;
+        &.dr-goal--off { background: #F7F8FB; border-color: #E5E7ED; }
+    }
+    .dr-goal-h {
+        display: flex; gap: 8px; align-items: center; font-size: 11px;
+        font-weight: 600; margin-bottom: 11px; cursor: pointer;
+        input { accent-color: var(--pbim-primary, #5A4BB0); width: 15px; height: 15px; }
+    }
+    .dr-goal-entry {
+        display: flex; align-items: center; gap: 7px; font-size: 10px;
+        color: var(--pbim-muted, #64748B); flex-wrap: wrap;
+        input {
+            min-width: 0; width: 118px; padding: 6px 9px; font: inherit;
+            font-size: 15px; font-weight: 650;
+            color: var(--pbim-primary, #5A4BB0);
+            border: 1px solid #DCD5EE; border-radius: 7px; background: #fff;
+        }
+    }
+    .dr-goal-s {
+        font-size: 10px; line-height: 1.6; margin: 8px 0 0;
+        color: var(--pbim-muted, #64748B);
+        &.dr-goal-s--missed { color: $dr-rose; }
+    }
+    .dr-asof {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin: 2px 0 14px; font-size: 11px;
+        color: var(--pbim-muted, #64748B);
+        .dr-link { display: inline-flex; align-items: center; gap: 4px; }
+        // GROUP P5 — a fact about the roster, in the roster's own line.
+        .dr-splitnote { flex-basis: 100%; }
+    }
+    .dr-assume {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+        margin: 18px 0 14px;
+    }
+    .dr-assume-i {
+        background: #F0EDF8; padding: 15px 16px;
+        border-radius: var(--pbim-r-sm, 10px);
+        h3 { font-size: 12px; margin: 0 0 8px; font-weight: 650; }
+        p {
+            font-size: 11px; line-height: 1.75; margin: 0;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+
+    // ------------------------------------------------------------ chrome
+    .dr-none {
+        display: grid; place-items: center; gap: 10px; text-align: center;
+        padding: 70px 20px; color: var(--pbim-muted, #64748B);
+    }
+    .dr-none-ic { color: var(--pbim-primary, #5A4BB0); }
+    .dr-none-t {
+        font-size: 16px; font-weight: 650; color: var(--pbim-ink, #1B1733);
+    }
+    .dr-none-s { font-size: 12px; max-width: 460px; line-height: 1.7; }
+    .dr-toast {
+        position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+        z-index: 1080; max-width: 90vw; padding: 12px 18px; font-size: 12px;
+        line-height: 1.55; border-radius: var(--pbim-r-sm, 10px);
+        background: $dr-stage; color: #EBE9F5;
+        border: 1px solid rgba(127, 112, 181, .6);
+        box-shadow: 0 8px 30px rgba(41, 36, 61, .22);
+    }
+
+    // =================================================================
+    //  PHASE 2 — the detail workspace, the finder, stress and the brief
+    // =================================================================
+
+    // ----------------------------------------------- the money box
+    .dr-money--big input { font-size: 17px; }
+    // The compact value carries its own symbol, so the box holds one control
+    // and the number starts at the left edge where a number belongs.
+    .dr-money input { text-align: left; }
+    .dr-money--shake { animation: dr-shake .42s ease; }
+
+    .dr-pos { color: $dr-good; }
+    .dr-neg { color: $dr-rose; }
+    .dr-strong { font-weight: 700; }
+
+    // -------------------------------------------- one small experiment
+    .dr-next {
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        border-radius: var(--pbim-r, 14px); padding: 14px 15px;
+        background: #F6F4FD;
+        .pbim-eyebrow { display: flex; align-items: center; gap: 5px; }
+        strong {
+            display: block; font-size: 13px; line-height: 1.5; margin: 8px 0 0;
+            color: var(--pbim-ink, #1B1733); font-weight: 600;
+        }
+        p {
+            font-size: 10px; line-height: 1.7; margin: 6px 0 10px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-next-btn {
+        display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+        font-size: 11px; font-weight: 600; padding: 8px 11px;
+        border-radius: var(--pbim-r-sm, 10px); background: #fff;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        color: var(--pbim-primary, #5A4BB0);
+        &:hover { background: var(--pbim-soft, #EDEAF8); }
+        &:disabled { opacity: .5; cursor: not-allowed; }
+    }
+
+    // ------------------------------------------- trying a possibility
+    .dr-preview {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 14px 18px; border-radius: var(--pbim-r, 14px);
+        background: #FFF7EC; border: 1px solid #F0D5AC;
+        animation: dr-drop .28s ease-out;
+    }
+    .dr-preview-ic {
+        width: 36px; height: 36px; flex: none; display: grid;
+        place-items: center; border-radius: 50%; background: #FBE9CE;
+        color: $dr-amber;
+    }
+    .dr-preview-tx {
+        flex: 1; min-width: 200px;
+        .pbim-eyebrow { color: $dr-amber; }
+        strong {
+            display: block; font-size: 14px; font-weight: 600; margin: 5px 0 0;
+            color: var(--pbim-ink, #1B1733);
+        }
+        p { font-size: 11px; line-height: 1.65; margin: 4px 0 0; color: #8A6A3A; }
+    }
+    .dr-preview-actions { display: flex; gap: 8px; flex: none; }
+
+    // ---------------------------------------- the cards became doors
+    .dr-card {
+        text-align: left; cursor: pointer; font: inherit;
+        display: block; width: 100%;
+        transition: border-color .16s, box-shadow .16s;
+        &:hover {
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            box-shadow: 0 8px 22px rgba(36, 31, 82, .10);
+        }
+        &.is-picked {
+            border-color: var(--pbim-primary, #5A4BB0);
+            box-shadow: 0 0 0 2px var(--pbim-ring, rgba(90, 75, 176, .16));
+        }
+    }
+    .dr-card-go { margin-left: auto; color: var(--pbim-primary, #5A4BB0); }
+
+    // ------------------------------------------- the detail workspace
+    .dr-work { padding: 0; overflow: hidden; }
+    .dr-tabstrip {
+        display: flex; gap: 2px; padding: 8px 10px 0; overflow-x: auto;
+        border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        background: #FAFAFE;
+        button {
+            display: inline-flex; align-items: center; gap: 6px; flex: none;
+            font-size: 11px; font-weight: 600; padding: 10px 14px;
+            border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+            background: transparent; color: var(--pbim-muted, #64748B);
+            white-space: nowrap;
+            &:hover { color: var(--pbim-ink, #1B1733); }
+            &.is-on {
+                color: var(--pbim-primary, #5A4BB0);
+                border-bottom-color: var(--pbim-primary, #5A4BB0);
+            }
+        }
+    }
+    .dr-panel-detail { padding: 20px 22px 22px; animation: dr-slide .24s ease-out; }
+    .dr-detail-h {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+        h3 {
+            font-size: 19px; font-weight: 600; letter-spacing: -.5px;
+            margin: 6px 0 4px; color: var(--pbim-ink, #1B1733);
+        }
+        p { font-size: 11px; margin: 0; color: var(--pbim-muted, #64748B); }
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+
+    // ------------------------------------------------ 1 · work & shifts
+    .dr-demand {
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-sm, 10px); padding: 14px 16px;
+        background: #FCFCFF;
+    }
+    .dr-demand-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        flex-wrap: wrap; font-size: 11px; color: var(--pbim-muted, #64748B);
+        strong { font-size: 12px; color: var(--pbim-ink, #1B1733); }
+    }
+    .dr-demand-c {
+        height: 208px; margin-top: 8px;
+        canvas { display: block; width: 100%; height: 100%; }
+    }
+    .dr-legend {
+        display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+        > span {
+            display: flex; align-items: center; gap: 5px; font-size: 9px;
+            color: var(--pbim-muted, #64748B);
+        }
+        i { display: inline-block; width: 13px; height: 3px; border-radius: 2px; }
+        .dr-l-demand { background: $dr-rose; }
+        .dr-l-cap { background: $dr-teal; }
+        .dr-l-served { background: var(--pbim-primary, #5A4BB0); }
+        .dr-l-met { background: $dr-teal; height: 7px; width: 7px;
+                    border-radius: 50%; }
+        .dr-l-miss { background: $dr-rose; height: 7px; width: 7px;
+                     border-radius: 50%; }
+    }
+    .dr-shifts {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px; margin: 16px 0;
+    }
+    .dr-shift {
+        border: 1px solid var(--pbim-line, #E2E8F0); min-width: 0;
+        border-radius: var(--pbim-r-sm, 10px); padding: 13px 14px;
+        background: #fff;
+    }
+    .dr-shift-h {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 12px; font-weight: 650; color: var(--pbim-ink, #1B1733);
+    }
+    .dr-shift-ic { color: var(--pbim-primary, #5A4BB0); display: flex; }
+    .dr-shift-band {
+        font-size: 9px; margin-top: 4px; color: var(--pbim-muted, #64748B);
+    }
+    .dr-shift-n {
+        display: flex; align-items: baseline; gap: 7px; margin: 11px 0 9px;
+        flex-wrap: wrap;
+        strong {
+            font-size: 24px; font-weight: 400; letter-spacing: -.7px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        small { font-size: 9px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-cap {
+        position: relative; height: 20px; border-radius: 6px;
+        background: #EEECF5; overflow: hidden;
+        > i {
+            position: absolute; inset: 0 auto 0 0; display: block;
+            background: var(--pbim-primary, #5A4BB0); border-radius: 6px;
+            transition: width .3s ease;
+            &.dr-cap--thin { background: $dr-amber; }
+        }
+        > b {
+            position: absolute; top: 0; bottom: 0; width: 2px;
+            background: rgba(30, 27, 46, .45); z-index: 2;
+        }
+        > span {
+            position: absolute; inset: 0; display: flex; align-items: center;
+            justify-content: flex-end; padding: 0 8px; font-size: 9px;
+            font-weight: 600; color: var(--pbim-ink, #1B1733); z-index: 3;
+        }
+    }
+    .dr-shift-s {
+        font-size: 10px; line-height: 1.6; margin: 8px 0 0;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-shift-levers {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 22px;
+    }
+
+    // ------------------------------------------ 2 · why profit changed
+    .dr-bridge-total {
+        text-align: right; flex: none;
+        span { display: block; font-size: 9px; letter-spacing: .5px;
+               color: var(--pbim-muted, #64748B); }
+        strong { font-size: 24px; font-weight: 400; letter-spacing: -.7px;
+                 color: var(--pbim-ink, #1B1733); }
+    }
+    // WF6: a wide picture SCROLLS inside its own box. It never widens the page.
+    .dr-bridge {
+        overflow-x: auto; overflow-y: hidden;
+        canvas { display: block; width: 100%; min-width: 620px; height: 260px; }
+    }
+    .dr-bridge-list {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 22px; margin-top: 12px;
+    }
+    .dr-bridge-i {
+        display: flex; justify-content: space-between; gap: 12px;
+        align-items: flex-start; padding: 9px 0;
+        border-bottom: 1px solid var(--pbim-line-2, #F1F5F9);
+        > span { font-size: 11px; font-weight: 600; min-width: 0; }
+        small {
+            display: block; font-size: 10px; font-weight: 400; margin-top: 3px;
+            line-height: 1.5; color: var(--pbim-muted, #64748B);
+        }
+        strong {
+            font-size: 12px; white-space: nowrap; flex: none;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // ---------------------------------------------- 3 · people & pay
+    .dr-people-grid {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        h4 {
+            font-size: 11px; font-weight: 650; margin: 0 0 14px;
+            color: var(--pbim-ink, #1B1733);
+        }
+    }
+    .dr-team-row { margin-bottom: 13px; min-width: 0; }
+    .dr-team-h {
+        display: flex; justify-content: space-between; gap: 10px;
+        font-size: 11px; margin-bottom: 5px; align-items: baseline;
+        > span:first-child { min-width: 0; overflow: hidden;
+                             text-overflow: ellipsis; white-space: nowrap; }
+        strong { font-size: 13px; font-weight: 650; }
+        small { font-size: 9px; margin-left: 6px;
+                color: var(--pbim-muted, #64748B); }
+    }
+    .dr-team-track {
+        position: relative; height: 14px; border-radius: 5px;
+        background: #F2F1F7; overflow: hidden;
+        i {
+            position: absolute; inset: 0 auto 0 0; height: 8px; top: 0;
+            border-radius: 5px 5px 0 0;
+            background: var(--pbim-primary, #5A4BB0);
+        }
+        b {
+            position: absolute; left: 0; bottom: 0; height: 5px;
+            border-radius: 0 0 5px 5px; background: #CFCADF;
+        }
+    }
+    .dr-pay { min-width: 0; }
+    .dr-strip {
+        display: flex; height: 30px; border-radius: 7px; overflow: hidden;
+        margin-bottom: 14px;
+        > span {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 650; overflow: hidden;
+            white-space: nowrap;
+        }
+        .dr-strip-take { background: var(--pbim-primary, #5A4BB0); color: #fff; }
+        .dr-strip-ded { background: #DED9EF; color: #4A4363; }
+    }
+    .dr-employer {
+        margin-top: 12px; padding: 4px 12px 6px;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8);
+    }
+
+    // ------------------------------------------------ 4 · room to hire
+    .dr-room-pick {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        flex: none;
+        label { font-size: 10px; color: var(--pbim-muted, #64748B); }
+    }
+    .dr-room-result {
+        padding: 13px 16px; border-radius: var(--pbim-r-sm, 10px);
+        background: #EEF6F4; border: 1px solid #CFE5E0; margin-bottom: 14px;
+        strong {
+            display: block; font-size: 16px; font-weight: 650;
+            letter-spacing: -.4px; color: #0E4F49;
+        }
+        span {
+            display: block; font-size: 11px; line-height: 1.65; margin-top: 5px;
+            color: #4A6B67;
+        }
+    }
+    .dr-room-chart {
+        height: 220px;
+        canvas { display: block; width: 100%; height: 100%; }
+    }
+    .dr-room-try {
+        display: flex; gap: 7px; flex-wrap: wrap; margin: 14px 0 4px;
+        .pbim-btn { display: inline-flex; align-items: center; gap: 5px; }
+    }
+
+    // -------------------------------------------- the reality check
+    .dr-stress { padding: 18px 20px; }
+    .dr-stress-opts {
+        display: flex; gap: 7px; flex-wrap: wrap; flex: none;
+        button {
+            padding: 9px 14px; cursor: pointer; text-align: center;
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); background: #fff;
+            color: var(--pbim-text, #1B1733);
+            span { display: block; font-size: 13px; font-weight: 650; }
+            small { display: block; font-size: 9px; margin-top: 2px;
+                    color: var(--pbim-muted, #64748B); }
+            &:hover { border-color: var(--pbim-primary-light, #CBC2EE); }
+            &.is-on {
+                background: var(--pbim-primary, #5A4BB0); border-color: transparent;
+                span, small { color: #fff; }
+            }
+        }
+    }
+    .dr-stress-out {
+        font-size: 12px; line-height: 1.8; margin: 4px 0 0;
+        color: var(--pbim-text, #1B1733);
+    }
+
+    // ------------------------------------------------ the goal finder
+    .dr-find {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 14px; flex-wrap: wrap; padding: 14px 0 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px;
+                    flex: none; }
+    }
+    .dr-find-note {
+        font-size: 10px; line-height: 1.7; flex: 1; min-width: 200px;
+        color: var(--pbim-muted, #64748B);
+    }
+    .dr-find-empty {
+        display: grid; place-items: center; gap: 6px; text-align: center;
+        padding: 26px 20px; border-radius: var(--pbim-r-sm, 10px);
+        background: #F6F5FC; border: 1px dashed #D9D3EE;
+        color: var(--pbim-primary, #5A4BB0);
+        strong { font-size: 14px; color: var(--pbim-ink, #1B1733); }
+        p {
+            font-size: 11px; line-height: 1.7; margin: 0; max-width: 480px;
+            color: var(--pbim-muted, #64748B);
+        }
+    }
+    .dr-paths {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        &.dr-paths--one { grid-template-columns: minmax(0, 1fr); }
+    }
+    .dr-path {
+        border: 1px solid #DDD7F0; border-radius: var(--pbim-r-sm, 10px);
+        padding: 15px 16px; background: #FAF9FE; min-width: 0;
+        display: flex; flex-direction: column;
+        h3 {
+            display: flex; align-items: center; gap: 7px; margin: 6px 0 9px;
+            font-size: 16px; font-weight: 650; letter-spacing: -.4px;
+            color: var(--pbim-ink, #1B1733);
+        }
+        > p {
+            font-size: 10px; line-height: 1.65; margin: 10px 0 12px; flex: 1;
+            color: var(--pbim-muted, #64748B);
+        }
+        &.dr-path--miss { background: #FFFAFB; border-color: #F0DCE3; }
+    }
+    .dr-path-st {
+        display: inline-flex; align-items: center; gap: 5px; font-size: 10px;
+        font-weight: 600; color: $dr-good;
+        i { display: flex; }
+        &.dr-path-st--miss { color: $dr-rose; }
+    }
+    .dr-path-n {
+        margin: 11px 0 12px;
+        strong {
+            display: block; font-size: 23px; font-weight: 400;
+            letter-spacing: -.7px; color: var(--pbim-ink, #1B1733);
+        }
+        small { font-size: 9px; color: var(--pbim-muted, #64748B); }
+        b { font-weight: 650; }
+    }
+    .dr-path-s {
+        display: flex; justify-content: space-between; gap: 10px;
+        font-size: 10px; padding: 5px 0;
+        border-bottom: 1px solid #EBE8F4;
+        span { color: var(--pbim-muted, #64748B); }
+        b { font-weight: 600; text-align: right; }
+    }
+
+    // ------------------------------------------ editable assumptions
+    .dr-edit {
+        margin-top: 6px; padding-top: 16px;
+        border-top: 1px solid var(--pbim-line, #E2E8F0);
+        .pbim-eyebrow { display: inline-flex; align-items: center; gap: 5px; }
+    }
+    .dr-edit-h { margin-bottom: 12px; }
+    .dr-edit-g {
+        margin-bottom: 16px;
+        h3 {
+            font-size: 11px; font-weight: 650; margin: 0 0 9px;
+            color: var(--pbim-primary, #5A4BB0);
+        }
+    }
+    .dr-edit-rows {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .dr-edit-f {
+        min-width: 0;
+        label {
+            display: block; font-size: 10px; font-weight: 600; margin-bottom: 5px;
+            color: var(--pbim-text, #1B1733);
+        }
+        input[type="number"] {
+            width: 100%; padding: 8px 10px; font: inherit; font-size: 13px;
+            font-weight: 650; color: var(--pbim-primary, #5A4BB0);
+            border: 1px solid var(--pbim-line, #E2E8F0);
+            border-radius: var(--pbim-r-sm, 10px); background: #fff;
+        }
+        small {
+            display: block; font-size: 9px; line-height: 1.55; margin-top: 5px;
+            color: var(--pbim-muted, #64748B);
+        }
+        .dr-money { background: #fff; }
+    }
+    .dr-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .dr-chip {
+        display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+        font-size: 10px; padding: 5px 9px; border-radius: 30px;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: #fff;
+        color: var(--pbim-muted, #64748B);
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            border-color: var(--pbim-primary-light, #CBC2EE);
+            color: var(--pbim-primary, #5A4BB0); font-weight: 600;
+        }
+    }
+
+    // ------------------------------------------------- the dock foot
+    .dr-dock-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; flex-wrap: wrap; margin-top: 12px;
+        p { margin: 0; }
+        .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
+    }
+}
+
+@keyframes dr-travel {
+    0% { left: 0; opacity: 0; }
+    20% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+}
+@keyframes dr-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    45% { transform: translateX(4px); }
+    70% { transform: translateX(-2px); }
+}
+@keyframes dr-drop {
+    from { opacity: 0; transform: translateY(-9px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dr-slide {
+    from { opacity: 0; transform: translateX(7px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes dr-beat {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+@keyframes dr-glow {
+    0%, 100% { box-shadow: 0 5px 16px rgba(36, 31, 82, .05); }
+    40% { box-shadow: 0 0 0 3px rgba(137, 119, 217, .28),
+                      0 5px 16px rgba(36, 31, 82, .05); }
+}
+
+// ---------------------------------------------------------------- widths
+@media (max-width: 1400px) {
+    .pbim.dr .dr-pills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pbim.dr .dr-goals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pbim.dr .dr-edit-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1100px) {
+    .pbim.dr {
+        .dr-layout { grid-template-columns: minmax(0, 1fr); }
+        .dr-controls { position: static; }
+        .dr-pills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dr-months { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        .dr-journey { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+        .dr-link-l { display: none; }
+        .dr-hero > strong { font-size: 44px; }
+        .dr-assume { grid-template-columns: 1fr; }
+        .dr-people-grid { grid-template-columns: minmax(0, 1fr); }
+        .dr-bridge-list { grid-template-columns: minmax(0, 1fr); }
+        .dr-paths { grid-template-columns: minmax(0, 1fr); }
+    }
+}
+
+@media (max-width: 720px) {
+    .pbim.dr {
+        .dr-h1 { font-size: 24px; }
+        .dr-stage { padding: 17px 16px 0; }
+        .dr-tiles { margin: 0 -16px; grid-template-columns: 1fr; }
+        .dr-tile { border-right: 0;
+                   border-bottom: 1px solid rgba(173, 168, 197, .12); }
+        // The hero number stays big enough to read from across a desk, even
+        // on a phone: it is the whole point of the stage.
+        .dr-hero > strong { font-size: 42px; }
+        .dr-horizon { height: 200px; }
+        .dr-callout { font-size: 8px; max-width: 140px; padding: 6px 8px;
+                      b { font-size: 10px; } }
+        .dr-pills { grid-template-columns: 1fr; }
+        .dr-months { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .dr-goals { grid-template-columns: 1fr; }
+        .dr-dialog { padding: 24px 18px; width: 100%; }
+        .dr-dialog h2 { font-size: 21px; }
+        // GROUP P4 on a phone: the chip keeps its whole name but wraps, the
+        // group rows become two lines rather than four squeezed columns, and
+        // the picker fills the screen because a tree in a 320px box is a list
+        // of truncated words.
+        .dr-scope { width: 100%; justify-content: flex-start; }
+        .dr-scope .dr-scope-n { max-width: none; }
+        .dr-scrim--top { padding-top: 4vh; }
+        .dr-grouprow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        .dr-tree { max-height: 60vh; }
+        .dr-version-b { gap: 10px; }
+        .dr-head-actions { width: 100%; justify-content: flex-start; }
+        &.dr--embedded { padding: 14px 12px 22px; }
+        .dr-dock-controls .dr-select { width: 100%; min-width: 0; }
+        .dr-dock-controls .pbim-btn { width: 100%; }
+        // A twelve-digit target does not fit a phone at 16px, and a number
+        // that runs out of its own box is a number nobody trusts.
+        .dr-money input { font-size: 13px; }
+        .dr-goal-entry input { width: 100%; }
+
+        // Phase 2 surfaces on a phone: one column everywhere, the tab strip
+        // scrolls sideways inside itself (it never widens the page), and the
+        // bridge keeps its own scroller (WF6).
+        .dr-panel-detail { padding: 16px 14px 18px; }
+        .dr-shifts { grid-template-columns: minmax(0, 1fr); }
+        .dr-shift-levers { grid-template-columns: minmax(0, 1fr); }
+        .dr-edit-rows { grid-template-columns: minmax(0, 1fr); }
+        .dr-demand-c { height: 180px; }
+        .dr-room-chart { height: 180px; }
+        .dr-detail-h { gap: 10px; }
+        .dr-detail-h .pbim-btn { width: 100%; justify-content: center; }
+        .dr-bridge-total { text-align: left; }
+        .dr-preview-actions { width: 100%; }
+        .dr-preview-actions .pbim-btn { flex: 1; justify-content: center; }
+        .dr-stress-opts { width: 100%; }
+        .dr-stress-opts button { flex: 1; }
+        .dr-find .pbim-btn { width: 100%; justify-content: center; }
+        .dr-dock-foot .pbim-btn { width: 100%; justify-content: center; }
+        .dr-goal-entry .dr-money { width: 100%; }
+    }
+}
+
+// =====================================================================
+//  THE PHONE  (<= 720px)
+//
+//  The hero of Phase 3. The stage comes FIRST — the big number, the line,
+//  the month strip — and the nine levers move into a sheet that a thumb
+//  pulls up from the bottom of the screen. It is the SAME markup: the
+//  control room is not duplicated, it is repositioned, because two copies
+//  of nine levers is two places for them to drift apart.
+// =====================================================================
+@media (max-width: 720px) {
+    .pbim.dr.dr--phone {
+        // The story column is the page; the control room has left the flow.
+        .dr-layout { display: block; }
+        .dr-story { padding-bottom: 74px; }
+
+        .dr-controls {
+            position: fixed; z-index: 1200; left: 0; right: 0; bottom: 0;
+            top: auto; width: auto; max-height: 85vh; height: 85vh;
+            display: block; overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 0 14px 22px; margin: 0;
+            background: var(--pbim-bg, #F4F5FB);
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -12px 40px rgba(20, 16, 48, .26);
+            transform: translateY(100%);
+            transition: transform .26s cubic-bezier(.22, .8, .3, 1);
+            visibility: hidden;
+        }
+        &.dr--sheet .dr-controls { transform: translateY(0); visibility: visible; }
+
+        // ------------------------------------------------ the sheet head
+        .dr-sheet-head {
+            position: sticky; top: 0; z-index: 2; display: block;
+            padding: 10px 2px 12px; margin: 0 -14px 12px;
+            padding-left: 16px; padding-right: 16px;
+            background: $dr-stage; color: $dr-onstage-2;
+            border-radius: 20px 20px 0 0;
+        }
+        .dr-sheet-grab {
+            display: block; width: 38px; height: 4px; margin: 0 auto 10px;
+            border-radius: 3px; background: rgba(215, 198, 255, .35);
+        }
+        .dr-sheet-hero {
+            display: block; min-width: 0;
+        }
+        .dr-sheet-ov {
+            display: block; font-size: 8px; letter-spacing: 1.4px;
+            font-weight: 700; color: #A79FD0;
+        }
+        .dr-sheet-n {
+            display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+            margin-top: 3px;
+            strong {
+                font-size: 24px; letter-spacing: -1px; color: #fff;
+                font-variant-numeric: tabular-nums;
+            }
+            small { font-size: 11px; font-weight: 600; color: #A6E0BE; }
+            .dr-worse { color: #EFB294; }
+        }
+        .dr-sheet-done {
+            position: absolute; right: 14px; top: 22px; padding: 6px 14px;
+        }
+
+        // -------------------------------------------------- the thumb bar
+        .dr-sheetbar {
+            position: fixed; z-index: 1150; left: 10px; right: 10px;
+            bottom: 10px; display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; cursor: pointer; text-align: left;
+            border: 0; border-radius: 14px; color: #EFECFA;
+            background: $dr-stage;
+            box-shadow: 0 8px 24px rgba(20, 16, 48, .3);
+            .dr-sheetbar-ic { display: flex; color: $dr-plan; flex: none; }
+            .dr-sheetbar-tx { flex: 1; min-width: 0; }
+            strong { display: block; font-size: 13px; font-weight: 650; }
+            small {
+                display: block; font-size: 10px; color: #A79FD0;
+                white-space: nowrap; overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        &.dr--sheet .dr-sheetbar { display: none; }
+
+        .dr-sheetscrim {
+            position: fixed; inset: 0; z-index: 1190; display: block;
+            background: rgba(21, 17, 44, .5);
+        }
+
+        // ------------------------------------- the year strip, scrollable
+        // Twelve cards do not fit a 390px screen as a grid, and three rows
+        // of four is not a year. One strip, snapping, with the month you
+        // are exploring brought to the middle.
+        .dr-months {
+            display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+            scroll-snap-type: x mandatory; scroll-padding: 0 50%;
+            -webkit-overflow-scrolling: touch;
+        }
+        .dr-month { flex: 0 0 78px; scroll-snap-align: center; }
+    }
+}
+
+// =====================================================================
+//  THE DOCK AS CARDS  (< 1200px)
+//
+//  GROUP P7. Nine columns — plan, scope, where it stands, people, cost,
+//  demand, profit, movement, and five verbs — are a desk-width table. On
+//  anything narrower the reader had to drag sideways to reach the numbers
+//  they came for, and WF6 says a wrapper that clips loses the last column
+//  entirely. So below 1200px the dock stops being a table: one CARD per
+//  plan, every figure carrying its own label (written in the component so
+//  it can be translated), the actions in a row of their own under a
+//  hairline. Nothing scrolls sideways and nothing is out of reach.
+//
+//  At 1200px and above the table is back and the actions column is pinned
+//  to the right edge (see `.dr-table` above), so the money slides under the
+//  buttons rather than the buttons off the screen.
+// =====================================================================
+@media (max-width: 1199px) {
+    .pbim.dr {
+        // The kit's wrapper clips and rounds; a stack of cards wants neither.
+        .dr-dock .pbim-tablewrap {
+            overflow: visible; border: 0; border-radius: 0;
+        }
+        .dr-table {
+            display: block;
+            // The headings are said again on every card, so the row of them
+            // is hidden from the eye and kept for a screen reader.
+            thead {
+                position: absolute; width: 1px; height: 1px; margin: -1px;
+                padding: 0; border: 0; overflow: hidden;
+                clip-path: inset(50%); white-space: nowrap;
+            }
+            tbody, tr, td { display: block; }
+            tr {
+                margin-bottom: 10px; padding: 13px 15px;
+                border: 1px solid var(--pbim-line, #E2E8F0);
+                border-radius: var(--pbim-r-sm, 10px);
+                background: var(--pbim-surface, white);
+            }
+            tr:last-child { margin-bottom: 0; }
+            .dr-row--now {
+                border-color: var(--pbim-primary-light, #CBC2EE);
+            }
+            td { padding: 0; border: 0; white-space: normal; }
+            td + td { margin-top: 9px; }
+            // The title already carries the gap under its own hairline.
+            td:first-child + td { margin-top: 0; }
+            // A cell that says nothing on this row is not an empty label.
+            .dr-cardhide { display: none; }
+            // The plan's own name is the card's title, not a labelled figure.
+            th:first-child, td:first-child { max-width: none; }
+            td:first-child {
+                font-size: 15px; font-weight: 650;
+                color: var(--pbim-ink, #1B1733);
+                padding-bottom: 10px; margin-bottom: 10px;
+                border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+            }
+            td[data-label]::before {
+                content: attr(data-label); display: block;
+                margin-bottom: 2px; font-size: 9px; font-weight: 700;
+                letter-spacing: .5px; text-transform: uppercase;
+                color: var(--pbim-muted, #64748B);
+            }
+            .dr-scopecell { max-width: none; white-space: normal; }
+            .dr-standscell { min-width: 0; }
+            .dr-exact { max-width: none; }
+            .dr-row-actions {
+                flex-wrap: wrap; gap: 6px; padding-top: 11px; margin-top: 11px;
+                border-top: 1px solid var(--pbim-line, #E2E8F0);
+            }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbim.dr * { transition: none !important; animation: none !important; }
+}

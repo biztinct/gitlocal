@@ -1,0 +1,20 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_asset_category_user,asset category user,model_pb_asset_category,pb_assets.group_assets_user,1,0,0,0
+access_pb_asset_category_manager,asset category manager,model_pb_asset_category,pb_assets.group_assets_manager,1,1,1,1
+access_pb_asset_category_all,asset category read for everyone,model_pb_asset_category,base.group_user,1,0,0,0
+access_pb_asset_category_portal,asset category read portal,model_pb_asset_category,base.group_portal,1,0,0,0
+access_pb_asset_category_system,asset category system,model_pb_asset_category,base.group_system,1,1,1,1
+access_pb_asset_user,asset user,model_pb_asset,pb_assets.group_assets_user,1,0,0,0
+access_pb_asset_manager,asset manager,model_pb_asset,pb_assets.group_assets_manager,1,1,1,0
+access_pb_asset_own,asset own read,model_pb_asset,base.group_user,1,0,0,0
+access_pb_asset_portal,asset own read portal,model_pb_asset,base.group_portal,1,0,0,0
+access_pb_asset_system,asset system,model_pb_asset,base.group_system,1,1,1,1
+access_pb_asset_assignment_user,asset handover user,model_pb_asset_assignment,pb_assets.group_assets_user,1,0,0,0
+access_pb_asset_assignment_manager,asset handover manager,model_pb_asset_assignment,pb_assets.group_assets_manager,1,1,1,0
+access_pb_asset_assignment_own,asset handover own read,model_pb_asset_assignment,base.group_user,1,0,0,0
+access_pb_asset_assignment_portal,asset handover own read portal,model_pb_asset_assignment,base.group_portal,1,0,0,0
+access_pb_asset_assignment_system,asset handover system,model_pb_asset_assignment,base.group_system,1,1,1,1
+access_pb_asset_request_user,asset request user,model_pb_asset_request,pb_assets.group_assets_user,1,1,1,0
+access_pb_asset_request_manager,asset request manager,model_pb_asset_request,pb_assets.group_assets_manager,1,1,1,1
+access_pb_asset_request_own,asset request own,model_pb_asset_request,base.group_user,1,1,0,0
+access_pb_asset_request_system,asset request system,model_pb_asset_request,base.group_system,1,1,1,1

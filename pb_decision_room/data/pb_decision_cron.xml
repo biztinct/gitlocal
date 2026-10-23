@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE EXACT-COST QUEUE.
+
+         No job-queue module is assumed on this build, so the queue is a
+         table and this is the thing that empties it. `start()` triggers it
+         directly, so in practice a job begins within a second of the button;
+         the interval below is only the safety net for a trigger that was
+         lost to a restart.
+
+         It stays ACTIVE because the platform's runner only looks at active
+         crons — a triggered inactive one is never picked up — and an empty
+         queue costs one indexed query every half hour.
+
+         It is deliberately NOT `noupdate`: this is plumbing, not a setting
+         anybody tunes, and a fix to it has to reach a database that already
+         has yesterday's version.
+
+         GR25 — WHY THIS CRON NAMES `pb.decision.plan` AND NOT ITS OWN QUEUE.
+         An `ir.cron` row lands in the database the moment the module
+         installs, and a web worker that is already running does not have the
+         new code yet. Odoo builds a server action's eval context by doing
+         `self.env[model_name]` BEFORE a single line of ours runs, so a cron
+         pointing at a model that only exists after this upgrade throws
+         `KeyError` inside the platform, where no guard of ours can reach it.
+         Naming a model every worker has had since Phase 1 moves the check
+         back into our own code, where `'pb.decision.exact.job' in env` is a
+         question that cannot throw. (GR14 is the same trap one layer up.)
+         ================================================================== -->
+
+    <record id="cron_decision_exact" model="ir.cron">
+        <field name="name">Decision Room: work out an exact cost</field>
+        <field name="model_id" ref="model_pb_decision_plan"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.decision.exact.job']._cron_run() if 'pb.decision.exact.job' in env else None</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

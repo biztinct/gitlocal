@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PayAI Dashboard Action (client action) -->
+    <record id="action_payai_dashboard" model="ir.actions.client">
+        <field name="name">PayAI Dashboard</field>
+        <field name="tag">payai_dashboard</field>
+    </record>
+</odoo>

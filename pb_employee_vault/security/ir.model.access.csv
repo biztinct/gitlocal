@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_employee_document_category_user,document category user,model_pb_employee_document_category,base.group_user,1,0,0,0
+access_pb_employee_document_category_payroll_mgr,document category payroll mgr,model_pb_employee_document_category,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_employee_document_category_hr_mgr,document category hr mgr,model_pb_employee_document_category,hr.group_hr_manager,1,1,1,1
+access_pb_employee_document_category_system,document category system,model_pb_employee_document_category,base.group_system,1,1,1,1
+access_pb_employee_document_user,employee document user,model_pb_employee_document,base.group_user,1,0,0,0
+access_pb_employee_document_hr_user,employee document hr officer,model_pb_employee_document,om_hr_payroll.group_hr_payroll_user,1,1,1,0
+access_pb_employee_document_hr_core,employee document hr core,model_pb_employee_document,hr.group_hr_user,1,1,1,0
+access_pb_employee_document_payroll_mgr,employee document payroll mgr,model_pb_employee_document,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_employee_document_hr_mgr,employee document hr mgr,model_pb_employee_document,hr.group_hr_manager,1,1,1,1
+access_pb_employee_document_system,employee document system,model_pb_employee_document,base.group_system,1,1,1,1

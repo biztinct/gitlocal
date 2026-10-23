@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Coaching Session Form View -->
+    <record id="view_hr_coaching_session_form" model="ir.ui.view">
+        <field name="name">hr.coaching.session.form</field>
+        <field name="model">hr.coaching.session</field>
+        <field name="arch" type="xml">
+            <form string="Coaching Session">
+                <header>
+                    <button name="action_start_session" string="Start Session" type="object" class="oe_highlight" invisible="state != 'scheduled'"/>
+                    <button name="action_complete_session" string="Complete Session" type="object" class="oe_highlight" invisible="state != 'in_progress'"/>
+                    <button name="action_generate_ai_summary" string="Generate AI Summary" type="object" invisible="state != 'completed'"/>
+                    <button name="action_capture_kpi_context" string="Capture KPI Context" type="object" icon="fa-camera" invisible="state not in ['in_progress', 'completed']"/>
+                    <button name="action_generate_action_items_ai" string="Generate Action Items (AI)" type="object" icon="fa-magic" class="btn-success" invisible="state not in ['in_progress', 'completed'] or action_plan_id"/>
+                    <button name="action_create_action_plan" string="Action Plan" type="object" icon="fa-tasks" invisible="state not in ['in_progress', 'completed']"/>
+                    <button name="action_cancel_session" string="Cancel" type="object" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="scheduled,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Session Title..."/>
+                        </h1>
+                        <h3>
+                            <field name="employee_id" string="Coachee"/>
+                            <span invisible="session_type == 'ai'"> with </span>
+                            <field name="coach_id" invisible="session_type == 'ai'"/>
+                        </h3>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="clipboard-list"/>
+                            <div>
+                                <span>Session Overview</span>
+                                <small class="text-muted d-block">Session details, type, and outcomes</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                    <span>Session Details</span>
+                                </div>
+                                <group col="2">
+                                    <field name="session_type"/>
+                                    <field name="topic"/>
+                                    <field name="session_date"/>
+                                    <field name="duration"/>
+                                    <field name="coaching_strategy_id" domain="[('banker_id', '=', employee_id)]" options="{'no_create': True}"/>
+                                </group>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="activity"/>
+                                    <span>Outcomes</span>
+                                </div>
+                                <group col="2">
+                                    <field name="outcome"/>
+                                    <field name="employee_satisfaction"/>
+                                    <field name="next_session_date"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                    <span>Session Description</span>
+                                </div>
+                                <field name="description" placeholder="What will be discussed in this session..."/>
+                            </div>
+                        </page>
+                        <page string="AI Coaching Guide" name="ai_coaching_guide" groups="hr_development_ai.group_bfsi_branch_manager">
+                            <div class="vu-section">
+                                <div class="vu-section__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <div>
+                                        <span>AI Coaching Guide</span>
+                                        <small class="text-muted d-block">AI-generated questions and coaching strategy for this session</small>
+                                    </div>
+                                </div>
+                                <div class="vu-section-grid">
+                                    <div class="vu-card">
+                                        <div class="vu-card__title">
+                                            <span class="vu-section__icon" data-icon="activity"/>
+                                            <span>Generate Questions</span>
+                                        </div>
+                                        <group>
+                                            <button name="action_suggest_questions"
+                                                    type="object"
+                                                    string="✨ Suggest Coaching Questions"
+                                                    class="btn-primary w-100"
+                                                    icon="fa-magic"
+                                                    help="AI generates contextual coaching questions based on banker's KPIs"/>
+                                        </group>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vu-card" invisible="not ai_suggested_questions">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="timeline"/>
+                                    <span>AI Suggested Questions</span>
+                                </div>
+                                <field name="ai_suggested_questions" nolabel="1" readonly="1"/>
+                            </div>
+
+                            <div class="vu-section" invisible="not coaching_strategy_id">
+                                <div class="vu-section__title">
+                                    <span class="vu-section__icon" data-icon="shield-check"/>
+                                    <div>
+                                        <span>Strategy Questions</span>
+                                        <small class="text-muted d-block">Pre-generated questions with AI-powered coaching suggestions</small>
+                                    </div>
+                                </div>
+
+                                <!-- Opening Questions -->
+                                <div class="vu-section-grid">
+                                    <div class="vu-card">
+                                        <div class="vu-card__title d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="vu-section__icon" data-icon="file-text"/>
+                                                <span>Opening Questions</span>
+                                            </div>
+                                            <button name="action_ai_suggest_opening"
+                                                    type="object"
+                                                    string="💡 AI Suggest"
+                                                    class="btn btn-outline-primary btn-sm"/>
+                                        </div>
+                                        <field name="strategy_opening_questions" string="Questions" readonly="1"/>
+                                        <div invisible="not ai_suggestion_opening" class="mt-2 p-3 rounded" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid rgba(79,70,229,0.15);">
+                                            <field name="ai_suggestion_opening" nolabel="1" readonly="1"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Probing Questions -->
+                                    <div class="vu-card">
+                                        <div class="vu-card__title d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="vu-section__icon" data-icon="activity"/>
+                                                <span>Probing Questions</span>
+                                            </div>
+                                            <button name="action_ai_suggest_probing"
+                                                    type="object"
+                                                    string="💡 AI Suggest"
+                                                    class="btn btn-outline-primary btn-sm"/>
+                                        </div>
+                                        <field name="strategy_probing_questions" string="Questions" readonly="1"/>
+                                        <div invisible="not ai_suggestion_probing" class="mt-2 p-3 rounded" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid rgba(79,70,229,0.15);">
+                                            <field name="ai_suggestion_probing" nolabel="1" readonly="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Closing Questions + Tips -->
+                                <div class="vu-section-grid">
+                                    <div class="vu-card">
+                                        <div class="vu-card__title d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="vu-section__icon" data-icon="clipboard-list"/>
+                                                <span>Closing Questions</span>
+                                            </div>
+                                            <button name="action_ai_suggest_closing"
+                                                    type="object"
+                                                    string="💡 AI Suggest"
+                                                    class="btn btn-outline-primary btn-sm"/>
+                                        </div>
+                                        <field name="strategy_closing_questions" string="Questions" readonly="1"/>
+                                        <div invisible="not ai_suggestion_closing" class="mt-2 p-3 rounded" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid rgba(79,70,229,0.15);">
+                                            <field name="ai_suggestion_closing" nolabel="1" readonly="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="vu-card">
+                                        <div class="vu-card__title d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="vu-section__icon" data-icon="book-open"/>
+                                                <span>Coaching Tips</span>
+                                            </div>
+                                            <button name="action_ai_suggest_tips"
+                                                    type="object"
+                                                    string="💡 AI Suggest"
+                                                    class="btn btn-outline-primary btn-sm"/>
+                                        </div>
+                                        <field name="strategy_coaching_tips" string="Tips" readonly="1"/>
+                                        <div invisible="not ai_suggestion_tips" class="mt-2 p-3 rounded" style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid rgba(79,70,229,0.15);">
+                                            <field name="ai_suggestion_tips" nolabel="1" readonly="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vu-card" invisible="not coaching_strategy_id">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>Session Guide</span>
+                                </div>
+                                <field name="strategy_session_guide" string="Guide" readonly="1" nolabel="1"/>
+                            </div>
+                        </page>
+                        <page string="Discussion Notes" name="notes">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="clipboard-list"/>
+                                    <span>Coaching Conversation Notes</span>
+                                </div>
+                                <field name="discussion_notes" placeholder="Notes from the coaching conversation..."/>
+                            </div>
+                        </page>
+                        <page string="AI Coaching Chat" name="ai_chat" invisible="session_type not in ['ai', 'hybrid']">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="timeline"/>
+                                    <span>AI Coaching Chat</span>
+                                </div>
+                                <group>
+                                    <group>
+                                        <button name="action_open_ai_chat"
+                                                type="object"
+                                                string="Open AI Chat"
+                                                class="btn-primary"
+                                                icon="fa-comments"/>
+                                    </group>
+                                    <group>
+                                        <field name="ai_chat_history"
+                                               widget="html"
+                                               readonly="1"
+                                               string="Chat Transcript"
+                                               nolabel="1"
+                                               class="w-100"
+                                               options="{'collaborative': false, 'codeview': false}"/>
+                                    </group>
+                                </group>
+                            </div>
+                        </page>
+                        <page string="AI Session Summary" name="actions">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>AI-Generated Session Summary</span>
+                                </div>
+                                <field name="action_items" placeholder="AI-generated session summary will appear here after clicking Generate AI Summary..."/>
+                            </div>
+                        </page>
+                        <page string="Skills Discussed" name="skills">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="book-open"/>
+                                    <span>Skills Covered in Session</span>
+                                </div>
+                                <field name="skill_ids" domain="[('skill_type_id.name', 'in', ['Soft Skills', 'Marketing'])]">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="skill_type_id"/>
+                                    </list>
+                                </field>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Coaching Session List View -->
+    <record id="view_hr_coaching_session_list" model="ir.ui.view">
+        <field name="name">hr.coaching.session.list</field>
+        <field name="model">hr.coaching.session</field>
+        <field name="arch" type="xml">
+            <list string="Coaching Sessions" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'">
+                <field name="session_date"/>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="coach_id" optional="show"/>
+                <field name="session_type"/>
+                <field name="topic"/>
+                <field name="duration" optional="hide"/>
+                <field name="outcome" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Coaching Session Calendar View -->
+    <record id="view_hr_coaching_session_calendar" model="ir.ui.view">
+        <field name="name">hr.coaching.session.calendar</field>
+        <field name="model">hr.coaching.session</field>
+        <field name="arch" type="xml">
+            <calendar string="Coaching Sessions" date_start="session_date" color="session_type" mode="month">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="coach_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Coaching Session Search View -->
+    <record id="view_hr_coaching_session_search" model="ir.ui.view">
+        <field name="name">hr.coaching.session.search</field>
+        <field name="model">hr.coaching.session</field>
+        <field name="arch" type="xml">
+            <search string="Search Coaching Sessions">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="coach_id"/>
+                <field name="session_type"/>
+                <field name="topic"/>
+                <separator/>
+                <filter name="scheduled" string="Scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <group>
+                    <filter name="group_by_session_month" string="Session Month" context="{'group_by': 'session_date:month'}"/>
+                    <filter name="group_by_employee" string="Coachee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_coach" string="Coach" context="{'group_by': 'coach_id'}"/>
+                    <filter name="group_by_type" string="Type" context="{'group_by': 'session_type'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Coaching Session Action -->
+    <record id="action_hr_coaching_session" model="ir.actions.act_window">
+        <field name="name">Coaching Sessions</field>
+        <field name="res_model">hr.coaching.session</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="context">{'search_default_group_by_employee': 1, 'search_default_group_by_session_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule a Coaching Session
+            </p>
+            <p>
+                Create coaching sessions for employees with AI or human coaches to support their development.
+            </p>
+        </field>
+    </record>
+
+    <!-- My Coaching Sessions Action (Banker Self-Coaching) -->
+    <record id="action_hr_coaching_session_my" model="ir.actions.act_window">
+        <field name="name">My Coaching Sessions</field>
+        <field name="res_model">hr.coaching.session</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'default_session_type': 'ai', 'default_is_bfsi_session': True, 'search_default_group_by_session_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Start an AI Coaching Session
+            </p>
+            <p>
+                Create a new coaching session to get personalized AI coaching on your performance and development.
+            </p>
+        </field>
+    </record>
+
+    <!-- Coaching Nudge Form View -->
+    <record id="view_hr_coaching_nudge_form" model="ir.ui.view">
+        <field name="name">hr.coaching.nudge.form</field>
+        <field name="model">hr.coaching.nudge</field>
+        <field name="arch" type="xml">
+            <form string="Coaching Nudge">
+                <header>
+                    <button name="action_mark_read" string="Mark as Read" type="object" invisible="state != 'sent'"/>
+                    <button name="action_mark_acted" string="Mark as Acted Upon" type="object" class="oe_highlight" invisible="state not in ['sent', 'read']"/>
+                    <button name="action_dismiss" string="Dismiss" type="object" invisible="state in ['acted', 'dismissed']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="sent,read,acted"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Priority: </strong>
+                        <field name="priority" widget="priority" nolabel="1"/>
+                        <span class="ms-2"><field name="situation"/></span>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title" class="o_text_overflow"/>
+                        </h1>
+                        <h3>
+                            For: <field name="employee_id"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="AI Details">
+                            <field name="ai_provider" readonly="1"/>
+                            <field name="ai_confidence" widget="progressbar" readonly="1"/>
+                        </group>
+                        <group string="Response Tracking">
+                            <field name="read_date" readonly="1"/>
+                            <field name="acted_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Coaching Message" name="message">
+                            <field name="message" readonly="1"/>
+                        </page>
+                        <page string="Suggested Actions" name="actions">
+                            <field name="action_items" readonly="1"/>
+                        </page>
+                        <page string="Related Items" name="related">
+                            <group>
+                                <field name="task_id"/>
+                                <field name="goal_id"/>
+                                <field name="skill_gap_id"/>
+                            </group>
+                        </page>
+                        <page string="Feedback" name="feedback">
+                            <field name="employee_feedback" placeholder="How helpful was this coaching nudge?"/>
+                        </page>
+                        <page string="Context Data" name="context">
+                            <field name="context_data" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Coaching Nudge List View -->
+    <record id="view_hr_coaching_nudge_list" model="ir.ui.view">
+        <field name="name">hr.coaching.nudge.list</field>
+        <field name="model">hr.coaching.nudge</field>
+        <field name="arch" type="xml">
+            <list string="Coaching Nudges" decoration-danger="priority == 'critical'" decoration-warning="priority == 'high'" decoration-info="state == 'sent'">
+                <field name="create_date"/>
+                <field name="employee_id"/>
+                <field name="title"/>
+                <field name="situation"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge" decoration-success="state == 'acted'" decoration-info="state == 'read'"/>
+                <field name="ai_provider" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Coaching Nudge Kanban View -->
+    <record id="view_hr_coaching_nudge_kanban" model="ir.ui.view">
+        <field name="name">hr.coaching.nudge.kanban</field>
+        <field name="model">hr.coaching.nudge</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="priority">
+                <field name="employee_id"/>
+                <field name="title"/>
+                <field name="situation"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="title"/></div>
+                                    <div class="o_secondary"><field name="employee_id"/></div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="mb-2">
+                                    <span class="badge" t-att-class="record.situation.raw_value == 'skill_gap_detected' ? 'text-bg-warning' : record.situation.raw_value == 'recognition' ? 'text-bg-success' : 'text-bg-info'">
+                                        <field name="situation"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_footer">
+                                <field name="state" widget="label" decoration-success="state == 'acted'" decoration-info="state == 'read'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Coaching Nudge Action -->
+    <record id="action_hr_coaching_nudge" model="ir.actions.act_window">
+        <field name="name">Coaching Nudges</field>
+        <field name="res_model">hr.coaching.nudge</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No coaching nudges yet
+            </p>
+            <p>
+                AI-generated coaching nudges will appear here based on employee performance and development needs.
+            </p>
+        </field>
+    </record>
+
+    <!-- AI Chat Dialog Form View -->
+    <record id="view_coaching_session_ai_chat_dialog" model="ir.ui.view">
+        <field name="name">hr.coaching.session.ai.chat.dialog</field>
+        <field name="model">hr.coaching.session</field>
+        <field name="priority">1000</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <form string="AI Coaching Chat">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-robot me-2" style="color: #7c7bad;"/>
+                            AI Coaching Chat
+                        </h1>
+                        <p class="text-muted">
+                            Session: <field name="name" readonly="1" nolabel="1" class="fw-bold"/>
+                        </p>
+                    </div>
+
+                    <div class="alert alert-info mb-3" role="alert">
+                        <i class="fa fa-info-circle me-2"/>
+                        <strong>How to use:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Type your message in the <strong>Your Message</strong> field below</li>
+                            <li>Click <strong>Send to AI</strong> to get a coaching response</li>
+                            <li>View your conversation history in the <strong>Chat History</strong> area</li>
+                            <li>Click <strong>Generate Summary</strong> to create a session summary</li>
+                        </ul>
+                    </div>
+
+                    <field name="is_self_coaching" invisible="1"/>
+
+                    <!-- ═══ COACH Questions (when coaching someone else) ═══ -->
+                    <div invisible="is_self_coaching" style="position: sticky; top: 0; z-index: 10; background: white; padding-bottom: 8px;">
+                        <div style="border: 1px solid #B8D0E4; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(74,125,170,0.12);">
+                            <details open="">
+                                <summary style="background: linear-gradient(135deg, #4A7DAA, #3A6D94); color: white; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; list-style: none; user-select: none;">
+                                    <i class="fa fa-graduation-cap" style="font-size: 14px;"/>
+                                    Coaching Questions — Click to ask AI
+                                    <span style="margin-left: auto; font-size: 0.72rem; opacity: 0.8;">▾ collapse</span>
+                                </summary>
+                                <div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; background: #D4E4F2;">
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-bar-chart" style="color: #4A7DAA; margin-right: 4px;"/> Performance
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What are this banker\'s key strengths and how can I reinforce them during coaching?'}">Banker's key strengths</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'Which KPI areas need the most improvement for this banker and what coaching approach should I use?'}">KPI gaps &amp; approach</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How should I open the coaching conversation about their underperforming metrics?'}">Open the conversation</button>
+                                    </div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-comments" style="color: #4A7DAA; margin-right: 4px;"/> Techniques
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What probing questions should I ask to uncover the root causes of low performance?'}">Probing for root causes</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How can I give constructive feedback on their conversion rate without demotivating them?'}">Constructive feedback</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'Suggest a roleplay scenario I can use to help this banker practice objection handling'}">Roleplay scenario</button>
+                                    </div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-list-ol" style="color: #4A7DAA; margin-right: 4px;"/> Action Planning
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'Help me create a SMART action plan for this banker to improve their performance'}">SMART action plan</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What follow-up commitments should I set with this banker for the next session?'}">Follow-up commitments</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How should I close this coaching session on a motivating note?'}">Motivating close</button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- ═══ COACHEE Questions (self-coaching) ═══ -->
+                    <div invisible="not is_self_coaching" style="position: sticky; top: 0; z-index: 10; background: white; padding-bottom: 8px;">
+                        <div style="border: 1px solid #B8D0E4; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(74,125,170,0.12);">
+                            <details open="">
+                                <summary style="background: linear-gradient(135deg, #4A7DAA, #3A6D94); color: white; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; list-style: none; user-select: none;">
+                                    <i class="fa fa-lightbulb-o" style="font-size: 14px;"/>
+                                    Quick Questions — Click to ask AI
+                                    <span style="margin-left: auto; font-size: 0.72rem; opacity: 0.8;">▾ collapse</span>
+                                </summary>
+                                <div style="padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; background: #D4E4F2;">
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-bar-chart" style="color: #4A7DAA; margin-right: 4px;"/> Performance
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What are my key strengths based on current KPIs?'}">My key strengths</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'Which KPI areas need the most improvement?'}">KPI improvement areas</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What specific actions can improve my conversion rate?'}">Improve conversion rate</button>
+                                    </div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-bullseye" style="color: #4A7DAA; margin-right: 4px;"/> Sales
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How can I improve my meeting-to-conversion ratio?'}">Meeting-to-conversion ratio</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What techniques help in handling client objections?'}">Handle objections</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How do I increase my connect rate on calls?'}">Connect rate on calls</button>
+                                    </div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-tasks" style="color: #4A7DAA; margin-right: 4px;"/> Goals
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'Help me create a SMART goal for this month'}">SMART goal for this month</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What should be my top 3 priorities this week?'}">Top 3 priorities</button>
+                                    </div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #3A6D94;">
+                                        <i class="fa fa-graduation-cap" style="color: #4A7DAA; margin-right: 4px;"/> Skills
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'What skills should I focus on developing?'}">Skills to develop</button>
+                                        <button name="action_send_quick_question" type="object" class="btn btn-sm" style="background: #E8F0F8; color: #2C5F85; border: 1px solid #B8D0E4; border-radius: 20px; font-size: 0.73rem; padding: 3px 10px;" context="{'quick_question': 'How can I improve my leadership abilities?'}">Leadership abilities</button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <field name="ai_chat_history"
+                           widget="html"
+                           readonly="1"
+                           nolabel="1"
+                           class="w-100"
+                           options="{'collaborative': false, 'codeview': false}"
+                           style="min-height: 300px;"/>
+
+                    <!-- ═══ Sticky message input at bottom ═══ -->
+                    <div style="position: sticky; bottom: 0; z-index: 10; background: white; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                        <separator string="Type Your Message"/>
+                        <field name="ai_chat_input"
+                               widget="text"
+                               nolabel="1"
+                               placeholder="Type your message here...&#10;&#10;Example: What skills should I focus on developing?"
+                               style="min-height: 80px;"/>
+                    </div>
+                </sheet>
+                <footer>
+                    <button string="Send to AI"
+                            name="action_send_ai_message_from_dialog"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-paper-plane"/>
+                    <button string="Generate Summary"
+                            name="action_generate_ai_summary"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-magic"/>
+                    <button string="Close"
+                            special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

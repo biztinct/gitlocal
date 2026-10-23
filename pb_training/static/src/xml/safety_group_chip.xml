@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- LEARNING L2: the safety group and the site, on the People drawer. -->
+  <t t-name="pb_training.SafetyGroupChip">
+    <t t-if="state.data.found">
+      <span t-if="state.data.label" class="pbim-chip" t-att-title="state.data.tooltip">
+        <t t-out="ic('shield',13)"/>
+        <t t-esc="state.data.label"/>
+      </span>
+      <span t-if="state.data.site" class="pbim-chip" title="Site">
+        <t t-out="ic('mapPin',13)"/>
+        <t t-esc="state.data.site"/>
+      </span>
+    </t>
+  </t>
+
+</templates>

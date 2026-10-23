@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_payslip_review.PayslipReview">
+    <div class="psr-root" t-att-class="{ 'psr-root--embedded': props.embedded }">
+        <t t-if="state.loaded and state.run">
+            <!-- Header -->
+            <div class="psr-head">
+                <!-- W17: `embedded` suppresses ONLY the chrome the hub already
+                     owns. The run SELECTOR beside this is not chrome - it is the
+                     surface's one scope control - so it stays. -->
+                <div t-if="!props.embedded">
+                    <h1>Payslip review</h1>
+                    <div class="psr-sub" t-esc="state.run.period"/>
+                </div>
+                <div class="psr-head-r">
+                    <select class="psr-runsel" data-coach="ps-runsel" t-on-change="onRunChange">
+                        <t t-foreach="state.runs" t-as="r" t-key="r.id">
+                            <option t-att-value="r.id" t-att-selected="r.id === state.runId" t-esc="r.name"/>
+                        </t>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ============ the numbers ============
+                 QUIET BY DEFAULT: one slim line, grey at zero, a colour only
+                 when a person has to act. Same markup and classes as the kit's
+                 pb_import_kit.QuietGlance / QuietSteps (the CSS is global);
+                 copied because this module does not depend on the kit. -->
+            <div class="pbim-glance" role="group" aria-label="Numbers at a glance" data-coach="ps-kpis">
+                <t t-foreach="glance" t-as="gl" t-key="gl.key">
+                    <button type="button" class="pbim-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.filter === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-aria-pressed="gl.run ? (state.filter === gl.key ? 'true' : 'false') : undefined" t-on-click="() =&gt; gl.run and gl.run()">
+                        <span t-if="gl.tone" class="pbim-gl-dot"/>
+                        <span class="pbim-gl-n" t-esc="gl.n"/>
+                        <span class="pbim-gl-l" t-esc="gl.label"/>
+                    </button>
+                </t>
+            </div>
+
+            <!-- ============ the steps ============
+                 A payslip is at EXACTLY one step (its state; the two old
+                 approval rungs read as "Waiting for approval"), so the counts
+                 add up. A cancelled payslip is at no step. Pressing the lit
+                 step again, or "Show all", shows every payslip. -->
+            <nav class="pbim-steps" t-att-style="'--pbim-steps:' + steps.length" aria-label="Where every payslip is" data-coach="ps-chips">
+                <button t-foreach="steps" t-as="st" t-key="st.key" type="button" class="pbim-st" t-att-class="(st.on ? 'on ' : '') + (st.count ? 'has ' : '') + (st.flag ? 'wait' : '')" t-att-aria-pressed="st.on ? 'true' : 'false'" t-on-click="() =&gt; this.pickStep(st.key)">
+                    <span class="pbim-st-heat"/>
+                    <span class="pbim-st-top">
+                        <span class="pbim-st-n" t-esc="st.n"/>
+                        <span class="pbim-st-t" t-esc="st.title"/>
+                        <span class="pbim-st-c" t-esc="st.countLabel"/>
+                    </span>
+                    <span t-if="st.flag" class="pbim-st-flag">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <t t-esc="st.flag"/>
+                    </span>
+                    <span class="pbim-st-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </span>
+                </button>
+            </nav>
+            <div class="pbim-showing">
+                <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
+                <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
+                    <button type="button" class="pbim-showall" t-on-click="() =&gt; this.setFilter('all')">Show all</button></t>
+            </div>
+
+            <!-- Split -->
+            <div class="psr-split">
+                <div class="psr-list" data-coach="ps-list">
+                    <t t-foreach="filteredSlips" t-as="s" t-key="s.id">
+                        <div t-attf-class="psr-card #{s.id===state.selId?'sel':''}" t-on-click="() => this.select(s.id)">
+                            <span class="psr-av" t-attf-style="background:{{s.color}}" t-esc="initials(s.emp)"/>
+                            <div class="psr-card-main">
+                                <div class="psr-card-nm" t-esc="s.emp"/>
+                                <div class="psr-card-meta" t-esc="s.title"/>
+                                <div t-if="s.flag and s.why" class="psr-card-why" data-coach="ps-why" t-esc="s.why"/>
+                            </div>
+                            <div class="psr-card-r">
+                                <div class="psr-card-net" t-esc="vnd(s.net)"/>
+                                <span t-attf-class="psr-badge #{cls(s.state)}" t-esc="label(s.state)"/>
+                            </div>
+                            <span t-if="s.flag" class="psr-flagdot" t-att-title="s.why">!</span>
+                        </div>
+                    </t>
+                    <t t-if="!filteredSlips.length"><div class="psr-empty">No payslips in this filter.</div></t>
+                </div>
+
+                <!-- Detail -->
+                <div class="psr-detail" data-coach="ps-detail" t-if="state.detail">
+                    <div class="psr-detail-hero">
+                        <span class="psr-av lg" t-attf-style="background:{{state.detail.color}}" t-esc="initials(state.detail.emp)"/>
+                        <div>
+                            <div class="psr-detail-nm" t-esc="state.detail.emp"/>
+                            <div class="psr-detail-sub"><t t-esc="state.detail.structure"/> · <t t-esc="state.detail.period"/></div>
+                        </div>
+                        <div class="psr-detail-net">
+                            <div class="cap">Net pay</div>
+                            <div class="amt" t-esc="full(state.detail.net)"/>
+                        </div>
+                    </div>
+
+                    <!-- statusbar -->
+                    <div class="psr-status" data-coach="ps-status">
+                        <t t-foreach="statusFlow" t-as="f" t-key="f[0]">
+                            <div t-attf-class="psr-st #{flowIdx(state.detail.state) &gt; f_index ? 'done' : ''} #{flowIdx(state.detail.state) === f_index ? 'cur' : ''}" t-esc="f[1]"/>
+                        </t>
+                    </div>
+
+                    <!-- breakdown -->
+                    <div class="psr-bk" data-coach="ps-breakdown">
+                        <div class="psr-bk-h">Salary breakdown</div>
+                        <t t-foreach="state.detail.lines" t-as="l" t-key="l_index">
+                            <div class="psr-bk-row">
+                                <span class="psr-bk-nm" t-esc="l.name"/>
+                                <span class="psr-bk-code" t-esc="l.code"/>
+                                <span t-attf-class="psr-bk-amt #{l.total &lt; 0 ? 'neg':''}" t-esc="full(l.total)"/>
+                            </div>
+                        </t>
+                        <t t-if="!state.detail.lines.length"><div class="psr-empty">No computed lines yet.</div></t>
+                    </div>
+
+                    <div class="psr-actions">
+                        <t t-if="nextLabel(state.detail.state)">
+                            <button class="psr-btn primary" t-on-click="() => this.advance(state.detail.id)" t-esc="nextLabel(state.detail.state)"/>
+                        </t>
+                        <t t-else="">
+                            <div class="psr-done-tag" t-if="state.detail.state==='done'">✓ Fully approved</div>
+                        </t>
+                    </div>
+                </div>
+                <div class="psr-detail empty" t-else=""><div class="psr-empty">Select a payslip to review.</div></div>
+            </div>
+        </t>
+        <t t-elif="state.loaded"><div class="psr-empty" style="margin-top:60px">No pay runs found yet.</div></t>
+        <t t-else=""><div class="psr-empty" style="margin-top:60px">Loading…</div></t>
+    </div>
+</t>
+
+</templates>

@@ -2,45 +2,49 @@
 <odoo>
     <data noupdate="0">
         
-        <!-- Update salary rules with accounting information -->
+        <!-- Update salary rules with accounting information
+             Using base chart of accounts:
+               - account.1_expense_salary (630000 Salary Expenses) for expense rules
+               - account.1_salary_payable (230000 Salary Payable) for payable rules
+        -->
         <record id="om_hr_payroll.hr_rule_basic" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_salaries"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_taxable" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_salaries"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_hra" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_allowances"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_da" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_allowances"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_travel" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_allowances"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_meal" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_allowances"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_medical" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_allowances"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
         <record id="om_hr_payroll.hr_rule_net" model="hr.salary.rule">
-            <field name="account_debit" ref="om_hr_payroll.account_payroll_clearing"/>
-            <field name="account_credit" ref="om_hr_payroll.account_salary_payable"/>
+            <field name="account_debit" ref="account.1_expense_salary"/>
+            <field name="account_credit" ref="account.1_salary_payable"/>
         </record>
 
     </data>

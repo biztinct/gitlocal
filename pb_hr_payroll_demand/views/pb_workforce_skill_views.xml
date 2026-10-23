@@ -5,12 +5,12 @@
             <field name="name">pb.workforce.skill.tree</field>
             <field name="model">pb.workforce.skill</field>
             <field name="arch" type="xml">
-                <tree default_order="name">
+                <list default_order="name">
                     <field name="name"/>
                     <field name="category" widget="selection"/>
                     <field name="description" optional="hide"/>
                     <field name="color" optional="hide"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -54,7 +54,7 @@
                     <filter name="filter_category_technical" string="Technical" domain="[('category', '=', 'technical')]"/>
                     <filter name="filter_category_business" string="Business" domain="[('category', '=', 'business')]"/>
                     <filter name="filter_category_leadership" string="Leadership" domain="[('category', '=', 'leadership')]"/>
-                    <group expand="0" string="Group By">
+                    <group name="group_by">
                         <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
                         <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
                     </group>

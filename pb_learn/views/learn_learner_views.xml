@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The three tables that are left, and they are all LEARNER STATE.
+
+         Phase 1a deleted views/learn_content_views.xml with the content models
+         it inspected. There is nothing to inspect any more: the spine is
+         pb_learn/static/content/learn_content.json, authored in
+         docs/tutorial_poc/author/ and read with a text editor and a diff.
+         What survives here is the measurement surface, which was always the
+         useful half of that file — and the question triage table, which exists
+         to be emptied. -->
+
+    <record id="view_learn_progress_list" model="ir.ui.view">
+        <field name="name">learn.progress.list</field>
+        <field name="model">learn.progress</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="user_id"/>
+                <field name="key"/>
+                <field name="state"/>
+                <field name="step_index"/>
+                <field name="attempts"/>
+                <field name="first_try_correct"/>
+                <field name="completed_at"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_learn_progress" model="ir.actions.act_window">
+        <field name="name">Learner progress</field>
+        <field name="res_model">learn.progress</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_learn_event_list" model="ir.ui.view">
+        <field name="name">learn.event.list</field>
+        <field name="model">learn.event</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="occurred_at"/>
+                <field name="user_id"/>
+                <field name="kind"/>
+                <field name="station_key"/>
+                <field name="screen"/>
+                <field name="detail"/>
+                <field name="lang"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_learn_event" model="ir.actions.act_window">
+        <field name="name">Learning events</field>
+        <field name="res_model">learn.event</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- ================================================================
+         Phase D2 — stored questions (opt-in)
+         ================================================================
+         The triage surface. Grouped by screen because that is the unit of
+         content: twelve unanswered questions on one screen is a lesson to
+         write, and the same twelve spread over twelve screens is not.
+    -->
+    <record id="view_learn_question_list" model="ir.ui.view">
+        <field name="name">learn.question.list</field>
+        <field name="model">learn.question</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="occurred_at"/>
+                <field name="screen"/>
+                <field name="question"/>
+                <field name="matched"/>
+                <field name="lang"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_learn_question_search" model="ir.ui.view">
+        <field name="name">learn.question.search</field>
+        <field name="model">learn.question</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="question"/>
+                <field name="screen"/>
+                <!-- The filter the table exists for. A question the Coach
+                     could not answer is the next piece of content; one it
+                     could is only a popularity signal. -->
+                <filter name="misses_only" string="Misses only"
+                        domain="[('matched', '=', False)]"/>
+                <separator/>
+                <filter name="last_30" string="Last 30 days"
+                        domain="[('occurred_at', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <!-- Odoo 19: group-by filters sit directly in &lt;search&gt;.
+                     A &lt;group expand="..."&gt; wrapper is invalid here. -->
+                <filter name="group_screen" string="Screen"
+                        context="{'group_by': 'screen'}"/>
+                <filter name="group_matched" string="Answered"
+                        context="{'group_by': 'matched'}"/>
+                <filter name="group_lang" string="Language"
+                        context="{'group_by': 'lang'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_learn_question" model="ir.actions.act_window">
+        <field name="name">Stored questions</field>
+        <field name="res_model">learn.question</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_learn_question_search"/>
+        <field name="context">{'search_default_misses_only': 1, 'search_default_group_screen': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing stored.</p>
+            <p>Question mining is off unless BOTH the system parameter
+               <code>pb_learn.collect_questions</code> is true AND the learner
+               has agreed in the Coach drawer. With either one missing this
+               table stays empty, which is the default and the intended
+               state.</p>
+        </field>
+    </record>
+
+</odoo>

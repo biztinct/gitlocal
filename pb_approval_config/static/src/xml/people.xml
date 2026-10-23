@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People & backups, and History.
+
+       Comments are ruled with `=`, never a doubled hyphen. `t-if` / `t-elif`
+       / `t-else` are ADJACENT siblings. No expression says `not`; every
+       negation is `!`.
+
+       No loop variable is named lt / gt / lte / gte / and / or / not / in:
+       the role loop is `rl`, the cell loop is `cl`, the scope loop is `sc`,
+       the person loop is `pn`, the hand-over loop is `hv`, the event loop is
+       `ev`, the filter loop is `fl`.
+       ==================================================================== -->
+
+  <t t-name="pb_approval_config.PeopleTab">
+    <div class="pbam-people">
+
+      <div t-if="state.loading" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading who fills each responsibility…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pbim-empty pbam-empty">
+        <div class="pbam-empty-ic"><t t-out="ic('alert',30)"/></div>
+        <h3>This could not be read</h3>
+        <p t-esc="state.failed"/>
+        <button class="pbim-btn ghost" t-on-click="() => this.load()">Try again</button>
+      </div>
+
+      <t t-else="">
+
+        <div t-if="gaps.length" class="pbam-attn">
+          <t t-out="ic('alert',18)"/>
+          <span>
+            <t t-esc="gaps.length"/> seat(s) have nobody in them: <t t-esc="gapSentence"/>. Requests from those places cannot be sent in until somebody is named.
+          </span>
+          <span class="pbam-sp"/>
+          <button class="pbim-btn ghost pbim-btn-sm"
+                  t-on-click="() => this.openAssign(gaps[0].role_key, gaps[0].scope_key)">
+            Name somebody
+          </button>
+        </div>
+
+        <div t-else="" class="pbam-attn pbam-attn-green">
+          <t t-out="ic('checkCircle',18)"/>
+          <span>Every seat has somebody in it. Changing a person here affects new requests only; anything already under way keeps the people it was given.</span>
+        </div>
+
+        <div class="pbim-panel">
+          <div class="pbim-panel-h">
+            <div>
+              <h2 class="pbim-h2">Who fills each responsibility, where</h2>
+              <p class="pbim-sub">A responsibility is a job, not a permission. Naming somebody here never gives them access; the picker says when a person still needs it.</p>
+            </div>
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.openHandover()">
+              <t t-out="ic('plane',14)"/> <span>Arrange cover</span>
+            </button>
+          </div>
+
+          <div class="pbam-tablewrap">
+            <div class="pbam-tablex">
+              <table class="pbam-resp">
+                <thead>
+                  <tr>
+                    <th class="pbam-col-role">Responsibility</th>
+                    <th t-foreach="data.scopes" t-as="sc" t-key="sc.key" t-esc="sc.label"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="data.roles" t-as="rl" t-key="rl.key">
+                    <td class="pbam-role">
+                      <div class="pbam-mt" t-esc="rl.name"/>
+                      <div class="pbam-ms">
+                        <span t-esc="rl.description"/> · <span t-esc="rl.rule"/>
+                      </div>
+                    </td>
+                    <td t-foreach="rl.cells" t-as="cl" t-key="cl.scope_key">
+                      <div class="pbam-cell">
+
+                        <t t-if="cl.state === 'held'">
+                          <div class="pbam-person">
+                            <span class="pbam-av pbam-av-sm" t-esc="initials(cl.name)"/>
+                            <div>
+                              <div class="pbam-pname">
+                                <span t-esc="cl.name"/>
+                                <span t-if="cl.cover" class="pbim-badge pbam-warn">
+                                  <t t-out="ic('plane',10)"/> <span><t t-esc="cl.cover"/> covering</span>
+                                </span>
+                              </div>
+                              <div t-if="cl.since" class="pbam-pvia">since <t t-esc="day(cl.since)"/></div>
+                            </div>
+                          </div>
+                          <div t-if="cl.backup" class="pbam-bk">
+                            <t t-out="ic('repeat',11)"/> <span>Backup: <t t-esc="cl.backup"/></span>
+                          </div>
+                          <div t-else="" class="pbam-bk pbam-bk-quiet">
+                            <t t-out="ic('repeat',11)"/> <span>No backup</span>
+                          </div>
+                          <div class="pbam-cellacts">
+                            <button class="pbim-btn ghost pbim-btn-sm"
+                                    t-on-click="() => this.openAssign(rl.key, cl.scope_key)">Change</button>
+                            <button class="pbim-btn ghost pbim-btn-sm"
+                                    t-on-click="() => this.clear(rl.key, cl.scope_key)">Empty it</button>
+                          </div>
+                        </t>
+
+                        <t t-elif="cl.state === 'pool'">
+                          <div class="pbam-person">
+                            <span class="pbam-av pbam-av-sm" t-esc="cl.pool_names.length"/>
+                            <div>
+                              <div class="pbam-pname">Any one of <t t-esc="cl.pool_names.join(', ')"/></div>
+                              <div class="pbam-pvia">A group — any one of them may decide</div>
+                            </div>
+                          </div>
+                          <div class="pbam-cellacts">
+                            <button class="pbim-btn ghost pbim-btn-sm"
+                                    t-on-click="() => this.openAssign(rl.key, cl.scope_key)">Change</button>
+                          </div>
+                        </t>
+
+                        <t t-elif="cl.state === 'inherited'">
+                          <span class="pbam-inh" t-esc="cl.text"/>
+                          <div class="pbam-cellacts">
+                            <button class="pbim-btn ghost pbim-btn-sm"
+                                    t-on-click="() => this.openAssign(rl.key, cl.scope_key)">Give it its own</button>
+                          </div>
+                        </t>
+
+                        <t t-elif="cl.state === 'gap'">
+                          <span class="pbim-badge pbam-err">
+                            <t t-out="ic('userX',11)"/> <span>Needs a person</span>
+                          </span>
+                          <div class="pbam-cellacts">
+                            <button class="pbim-btn primary pbim-btn-sm"
+                                    t-on-click="() => this.openAssign(rl.key, cl.scope_key)">Name somebody</button>
+                          </div>
+                        </t>
+
+                        <t t-else="">
+                          <span class="pbam-inh" t-esc="cl.text"/>
+                          <div class="pbam-cellacts">
+                            <button class="pbim-btn ghost pbim-btn-sm"
+                                    t-on-click="() => this.openAssign(rl.key, cl.scope_key)">Name somebody</button>
+                          </div>
+                        </t>
+
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbim-panel">
+          <div class="pbim-panel-h">
+            <div>
+              <h2 class="pbim-h2">Cover while somebody is away</h2>
+              <p class="pbim-sub">Time-boxed, and it ends by itself. Every card says "covering for", and the decision is recorded under both names.</p>
+            </div>
+          </div>
+          <div t-if="data.delegations.length" class="pbam-deleg">
+            <div t-foreach="data.delegations" t-as="hv" t-key="hv.id" class="pbam-delrow">
+              <span class="pbam-av" t-esc="initials(hv.delegate)"/>
+              <div>
+                <div class="pbam-mt">
+                  <t t-esc="hv.delegate"/> covers for <t t-esc="hv.principal"/>
+                </div>
+                <div class="pbam-ms">
+                  <t t-esc="day(hv.date_from)"/> to <t t-esc="day(hv.date_to)"/> · <t t-esc="hv.reason"/>
+                </div>
+              </div>
+              <div class="pbam-delacts">
+                <span t-if="hv.live" class="pbim-badge pbam-ok">In force now</span>
+                <span t-elif="hv.state === 'active'" class="pbim-badge pbam-info">Not started yet</span>
+                <span t-else="" class="pbim-badge pbam-muted">Finished</span>
+                <button t-if="hv.state === 'active'" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="() => this.endHandover(hv.id)">Stop it</button>
+              </div>
+            </div>
+          </div>
+          <p t-else="" class="pbim-sub">Nobody is covering for anybody at the moment.</p>
+        </div>
+      </t>
+
+      <!-- ================================================ assign -->
+      <t t-if="state.assign">
+        <div class="pbam-scrim" t-on-click="() => this.closeAssign()"/>
+        <aside class="pbam-drawer">
+          <div class="pbam-dh">
+            <div>
+              <h2>Who is the <t t-esc="state.assign.roleName"/> for <t t-esc="state.assign.scopeLabel"/>?</h2>
+              <p class="pbim-sub">Choosing somebody here changes new requests only. It gives them no access of any kind.</p>
+            </div>
+            <button class="pbam-x" aria-label="Close" t-on-click="() => this.closeAssign()">
+              <t t-out="ic('x',18)"/>
+            </button>
+          </div>
+          <div class="pbam-db">
+            <label class="pbam-search">
+              <t t-out="ic('search',15)"/>
+              <input type="search" placeholder="Search people"
+                     t-att-value="state.search" t-on-input="onSearch"/>
+            </label>
+            <div class="pbam-plist">
+              <div t-foreach="state.candidates" t-as="pn" t-key="pn.id"
+                   class="pbam-prow"
+                   t-att-class="{ 'is-on': state.assign.picked.includes(pn.id) }"
+                   t-on-click="() => this.pick(pn.id)">
+                <span class="pbam-av" t-esc="initials(pn.name)"/>
+                <div>
+                  <div class="pbam-mt" t-esc="pn.name"/>
+                  <div class="pbam-ms" t-esc="pn.title"/>
+                </div>
+                <span t-if="!pn.eligible" class="pbim-badge pbam-warn">Needs permission</span>
+                <span class="pbam-cb" t-att-class="{ 'is-on': state.assign.picked.includes(pn.id) }">
+                  <t t-if="state.assign.picked.includes(pn.id)" t-out="ic('check',12)"/>
+                </span>
+              </div>
+            </div>
+            <div t-if="!state.assign.pool" class="pbam-field">
+              <label>Backup, for when they are away</label>
+              <select class="pbam-input" t-on-change="setBackup">
+                <option value="0">Nobody</option>
+                <option t-foreach="state.candidates" t-as="pn" t-key="pn.id"
+                        t-att-value="pn.id" t-esc="pn.name"/>
+              </select>
+            </div>
+            <div class="pbim-note pbam-note">
+              <t t-out="ic('info',13)"/>
+              <span>Somebody marked "Needs permission" can still be named. They will not be able to open this kind of request until an administrator gives them the access, and the request will say so rather than go silently to the wrong person.</span>
+            </div>
+          </div>
+          <div class="pbam-df">
+            <button class="pbim-btn ghost" t-on-click="() => this.closeAssign()">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canAssign or state.busy"
+                    t-on-click="() => this.saveAssign()">Save</button>
+          </div>
+        </aside>
+      </t>
+
+      <!-- ============================================== hand-over -->
+      <t t-if="state.handover">
+        <div class="pbam-scrim" t-on-click="() => this.closeHandover()"/>
+        <aside class="pbam-drawer">
+          <div class="pbam-dh">
+            <div>
+              <h2>Arrange cover</h2>
+              <p class="pbim-sub">Somebody holds another person's seats for a while. It shows on every card, and it ends by itself.</p>
+            </div>
+            <button class="pbam-x" aria-label="Close" t-on-click="() => this.closeHandover()">
+              <t t-out="ic('x',18)"/>
+            </button>
+          </div>
+          <div class="pbam-db">
+            <div class="pbam-field">
+              <label>Who is away</label>
+              <select class="pbam-input" t-on-change="(ev) => this.setHandover('principal', ev)">
+                <option value="0">Me</option>
+                <option t-foreach="state.candidates" t-as="pn" t-key="pn.id"
+                        t-att-value="pn.id" t-esc="pn.name"/>
+              </select>
+            </div>
+            <div class="pbam-field">
+              <label>Who covers</label>
+              <select class="pbam-input" t-on-change="(ev) => this.setHandover('delegate', ev)">
+                <option value="0">Choose somebody</option>
+                <option t-foreach="state.candidates" t-as="pn" t-key="pn.id"
+                        t-att-value="pn.id" t-esc="pn.name"/>
+              </select>
+            </div>
+            <div class="pbam-form2">
+              <div class="pbam-field">
+                <label>From</label>
+                <input class="pbam-input" type="date"
+                       t-on-change="(ev) => this.setHandover('from', ev)"/>
+              </div>
+              <div class="pbam-field">
+                <label>To</label>
+                <input class="pbam-input" type="date"
+                       t-on-change="(ev) => this.setHandover('to', ev)"/>
+              </div>
+            </div>
+            <div class="pbam-field">
+              <label>Why (kept in the record)</label>
+              <input class="pbam-input" placeholder="Annual leave"
+                     t-on-change="(ev) => this.setHandover('reason', ev)"/>
+            </div>
+            <div class="pbim-note pbam-note">
+              <t t-out="ic('info',13)"/>
+              <span>Cover cannot be passed on again: if somebody is already covering, they cannot hand it to a third person. That keeps it possible to say who really decided.</span>
+            </div>
+          </div>
+          <div class="pbam-df">
+            <button class="pbim-btn ghost" t-on-click="() => this.closeHandover()">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canHandover or state.busy"
+                    t-on-click="() => this.saveHandover()">Save</button>
+          </div>
+        </aside>
+      </t>
+
+    </div>
+  </t>
+
+  <!-- ==================================================================== -->
+
+  <t t-name="pb_approval_config.HistoryTab">
+    <div class="pbam-history">
+      <div class="pbim-panel">
+        <div class="pbim-panel-h">
+          <div>
+            <h2 class="pbim-h2">What changed, and who did it</h2>
+            <p class="pbim-sub">Published routes, decisions, exceptions, cover and moves. The same record feeds the audit console, and none of it can be changed afterwards.</p>
+          </div>
+          <div class="pbim-chips">
+            <button t-foreach="filters" t-as="fl" t-key="fl.key"
+                    class="pbim-fchip" t-att-class="{ 'is-on': state.kind === fl.key }"
+                    t-on-click="() => this.setKind(fl.key)" t-esc="fl.label"/>
+          </div>
+        </div>
+
+        <div t-if="state.loading" class="pbim-busy">
+          <div class="pbim-spin"/><span>Reading the record…</span>
+        </div>
+
+        <div t-elif="state.failed" class="pbim-empty pbam-empty">
+          <div class="pbam-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h3>This could not be read</h3>
+          <p t-esc="state.failed"/>
+        </div>
+
+        <div t-elif="!state.rows.length" class="pbim-empty pbam-empty">
+          <div class="pbam-empty-ic"><t t-out="ic('history',26)"/></div>
+          <h3>Nothing has happened yet</h3>
+          <p>Every publish, decision and change of cover will be listed here, in plain words.</p>
+        </div>
+
+        <t t-else="">
+          <div class="pbam-hist">
+            <div t-foreach="state.rows" t-as="ev" t-key="ev.id" class="pbam-hrow">
+              <div class="pbam-when" t-esc="when(ev.when)"/>
+              <span class="pbam-av pbam-av-sm" t-att-title="ev.who" t-esc="initials(ev.who)"/>
+              <div>
+                <div class="pbam-mt" t-esc="ev.summary"/>
+                <div class="pbam-ms" t-esc="ev.kind_label"/>
+              </div>
+            </div>
+          </div>
+          <button t-if="state.more" class="pbim-btn ghost pbim-btn-sm"
+                  t-on-click="() => this.loadMore()">Show more</button>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

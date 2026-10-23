@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+# The static content plane first: every other model below reads it.
+from . import learn_content
+# Read-only window onto the running system — live values and the capstone
+# predicates. Before learn_intent, whose answers interpolate live values.
+from . import learn_live
+from . import learn_intent
+# ONECHAT OC1 — the helper's router. Reads learn_intent's resolver, so after it.
+from . import learn_helper
+from . import learn_tenant_override
+from . import learn_progress
+# Phase D2. learn.question.record delegates the scrub to learn.intent.
+#
+# LEARNOS Phase 6 MOVED THIS ABOVE learn_runtime, which now imports the
+# tenant-flag helper from it. The alternative was a third copy of a
+# three-line "is this parameter truthy" reader, and the ledger's rule about
+# conventions broken three times applies to helpers as well as to prose.
+from . import learn_question
+from . import learn_runtime
+# LEARNOS Phase 4. The one screen that can switch the composer on; imports
+# COMPOSE_FLAG from learn_intent, so it comes after it.
+from . import learn_companion
+# LEARN v3. Every learning switch on one card; reads the flags the modules
+# above define, so it comes last.
+from . import learn_settings
+# LEARN v3. Role paths, month-end, milestones, team readiness. Read by
+# learn_runtime at call time, so its place in this list does not matter.
+from . import learn_path
+# LEARNREV P1 — the content engine: one Guide per screen, read from the
+# product's own fields and the screen's manifest. Reads learn.content.
+from . import learn_guide
+# LEARNREV P5a — what people asked and rated (Learn > Settings report).
+from . import learn_feedback
+# LEARNREV P4 — a walkthrough's Try, checked against what the person did
+# (read-only, demo-world sessions only). Reads learn.guide's manifests.
+from . import learn_scenario

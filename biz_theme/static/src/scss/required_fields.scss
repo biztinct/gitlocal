@@ -1,0 +1,10 @@
+.biz-required-list { padding-left: 1.4rem; margin: 1rem 0; }
+.biz-required-list li { padding: .25rem 0; font-weight: 600; }
+.biz-required-invalid {
+    outline: 3px solid var(--vu-field-required-accent, #c77816) !important;
+    outline-offset: 2px;
+    border-radius: 5px;
+}
+.biz-required-invalid:focus, .biz-required-invalid:focus-within {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--vu-field-required-accent, #c77816) 16%, transparent) !important;
+}

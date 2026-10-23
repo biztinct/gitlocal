@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Payobook 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-16 02:50+0000\n"
 "PO-Revision-Date: 2026-01-16 02:50+0000\n"
@@ -109,7 +109,7 @@ msgstr ""
 "Available variables:\n"
 "- value: The source value\n"
 "- record: The full source record (dict)\n"
-"- env: Odoo environment\n"
+"- env: the server environment\n"
 "\n"
 "Example: value * 1.1 if value > 1000 else value\n"
 "        "
@@ -2566,7 +2566,7 @@ msgstr "Chia cho hệ số"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__division
 msgid "Division"
-msgstr "Phép chia"
+msgstr "Khối"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -5430,8 +5430,8 @@ msgstr "Tùy chọn default journal to use when creating payslips from this conf
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__salary_rule_id
-msgid "Optional link to standard Odoo salary rule"
-msgstr "Tùy chọn link to standard Odoo Quy tắc lương"
+msgid "Optional link to a standard salary rule"
+msgstr "Liên kết tùy chọn tới một quy tắc lương chuẩn"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
@@ -7848,7 +7848,9 @@ msgid "✓ All formulas are valid and evaluate correctly!"
 msgstr "✓ Tất cả formulas are Hợp lệ and evaluate correctly!"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
 #, python-format
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 msgid "%d rules imported from Excel"
 msgstr "%d quy tắc được nhập từ Excel"
 
@@ -7875,6 +7877,8 @@ msgid "Auto-assigned Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
 msgstr "Tự động gán ký tự cột kiểu Excel (A, B, C...Z, AA, AB, v.v.)"
 
 #. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/views/formula_rule_views.xml:0
 msgid "Converted Python"
 msgstr "Python đã chuyển đổi"
 
@@ -7897,14 +7901,20 @@ msgid "General Manager Pending"
 msgstr "Chờ Tổng Giám đốc"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_rule_composer.py:0
 msgid "Rejected"
 msgstr "Đã từ chối"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/tests/test_rule_composer.py:0
 msgid "Reject"
 msgstr "Từ chối"
 
 #. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 msgid "Download Excel"
 msgstr "Tải xuống Excel"
 

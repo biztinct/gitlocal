@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Rize Learning Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Layout: one reading column (1080px) in the Payobook design-doc series; sticky jump chips; the rail mock is the hero. */
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-hov:#4A3D96;
+    --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --side:#1B1830; --side-ink:#D9D6EA; --side-dim:#8E89AE;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --display:"Sora",system-ui,sans-serif; --body:"Public Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+      --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --side:#0F0D1C; --side-ink:#D9D6EA; --side-dim:#7E79A0;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-hov:#BCB1EE;
+    --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --side:#0F0D1C; --side-ink:#D9D6EA; --side-dim:#7E79A0;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance}
+  p{margin:0 0 12px}
+  a{color:var(--brand)}
+  .wrap{max-width:1080px;margin:0 auto;padding-block:44px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  svg.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:7px 14px;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+  .lede{font-size:18px;color:var(--muted);max-width:66ch;margin:0 0 8px}
+  .lede strong{color:var(--ink)}
+  .meta{font-size:13px;color:var(--faint);margin-top:6px}
+  .scorestrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+  .score{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+  .score .n{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .score .l{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .score.good .n{color:var(--good)} .score.warn .n{color:var(--warn)} .score.bad .n{color:var(--bad)} .score.brand .n{color:var(--brand)}
+
+  .toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;padding:10px 0;background:var(--bg)}
+  .toc a{text-decoration:none;color:var(--muted);border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600}
+  .toc a:hover{color:var(--brand);border-color:var(--brand-mid)}
+
+  section{margin-top:56px}
+  .sechead{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px}
+  .secnum{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:8px;padding:5px 9px;margin-top:4px;flex:none}
+  .sechead h2{font-size:25px;font-weight:700;letter-spacing:-.01em}
+  .secsub{color:var(--muted);max-width:72ch;margin:6px 0 22px;font-size:15.5px}
+  .secsub b{color:var(--ink)}
+  h3{font-size:17px;font-weight:700;margin:26px 0 10px}
+  h4{font-size:14.5px;font-weight:700;margin:16px 0 6px}
+  .prose{max-width:72ch}
+  ul{margin:0 0 12px;padding-left:20px} li{margin:0 0 6px}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .grid2>*,.grid3>*{min-width:0}
+  .callout{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:10px;padding:14px 18px;margin:16px 0}
+  .callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+  .callout.good{border-color:var(--good);background:var(--good-soft)}
+  .callout b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  .tbl{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface2);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.k{font-weight:600;white-space:nowrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+  .pill.have{background:var(--good-soft);color:var(--good)}
+  .pill.part{background:var(--warn-soft);color:var(--warn)}
+  .pill.miss{background:var(--bad-soft);color:var(--bad)}
+  .pill.new{background:var(--info-soft);color:var(--info)}
+  .pill.ts{background:var(--brand-soft);color:var(--brand)}
+  .pill.gray{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+  .pill svg.ic{width:13px;height:13px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+
+  /* rail mock */
+  .mock{display:grid;grid-template-columns:168px 72px 1fr;min-height:420px;border:1px solid var(--border2);border-radius:16px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+  .side{background:var(--side);color:var(--side-ink);padding:16px 12px;font-size:12.5px}
+  .side .sec{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--side-dim);margin:14px 6px 6px}
+  .side .it{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;color:var(--side-ink)}
+  .side .it.on{background:rgba(169,156,230,.22);color:#fff;font-weight:700}
+  .side .it.dim{color:var(--side-dim)}
+  .side .it.new::after{content:"new";margin-left:auto;font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--brand);color:#fff;border-radius:6px;padding:1px 5px}
+  .side .it.ren::after{content:"renamed";margin-left:auto;font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:#6B6594;color:#fff;border-radius:6px;padding:1px 5px}
+  .rail{background:var(--surface2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px}
+  .rail button{width:60px;height:60px;border:0;background:transparent;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--muted);font-family:var(--body);padding:0}
+  .rail button span{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1.1;text-align:center}
+  .rail button svg.ic{width:18px;height:18px}
+  .rail button.on{background:var(--brand-soft);color:var(--brand)}
+  .rail button:hover{color:var(--brand)}
+  .rail button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .rail button.later{opacity:.45}
+  .rail button .q{position:relative}
+  .rail button .q i{position:absolute;top:-6px;right:-10px;background:var(--warn);color:#fff;font-style:normal;font-size:9px;font-weight:700;border-radius:999px;padding:0 5px;line-height:14px}
+  .stage{padding:22px 26px;min-width:0}
+  .stage h3{margin:0 0 4px;font-size:19px}
+  .stage .vi{font-size:12.5px;color:var(--faint);margin-bottom:12px;font-family:var(--mono)}
+  .stage .who{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+  .stage .hero-moment{border:1px dashed var(--brand-mid);border-radius:10px;padding:10px 14px;background:var(--brand-soft);font-size:13.5px;margin-bottom:12px}
+  .stage ul{font-size:14px}
+  .stage .ph{font-size:12px;color:var(--faint);margin-top:10px}
+  @media (max-width:720px){
+    .mock{grid-template-columns:1fr}
+    .side{display:flex;flex-wrap:wrap;gap:4px;padding:10px}
+    .side .sec{width:100%;margin:4px 6px}
+    .rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--border);padding:8px}
+    .rail button{flex:none}
+  }
+
+  /* phases */
+  .phase{display:grid;grid-template-columns:64px 1fr;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .phase .id{font-family:var(--mono);font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:10px;height:44px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .phase h3{margin:4px 0 6px;font-size:16.5px}
+  .phase .get{color:var(--muted);font-size:14px}
+  .phase .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .phase>div{min-width:0}
+  @media (max-width:520px){.phase{grid-template-columns:1fr}.phase .id{width:64px}}
+
+  .decision{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .decision .q{font-weight:700;font-size:15px;margin-bottom:6px}
+  .decision .rec{color:var(--good);font-weight:600;font-size:13.5px}
+  .decision .why{color:var(--muted);font-size:13.5px}
+
+  code,.mono{font-family:var(--mono);font-size:12.5px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+  .app{font-size:13.5px}
+  .app td{font-size:13px}
+  footer{margin-top:60px;color:var(--faint);font-size:12.5px;border-top:1px solid var(--border);padding-top:18px}
+  @media (prefers-reduced-motion:no-preference){.rail button{transition:background .15s,color .15s}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dash" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+</svg>
+
+<div class="wrap">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <span class="eyebrow"><svg class="ic"><use href="#i-cap"/></svg> Rize HRMS · Learning &amp; Development · design for decision</span>
+  <h1>Learning, as its own menu</h1>
+  <p class="lede">Rize asked for a <strong>Learning</strong> area with seven parts: Overview, Course Library, Learning Paths, My Learning, Assessments, Certifications and Reports. Today the pieces we have live as one <strong>Training</strong> tab inside Talent. This page shows what is already there, what is missing against Rize's list and against the best learning software on the market, and the design to close the gap, phase by phase.</p>
+  <p class="meta">Written 21 Oct 2026 · Sources: the LnD sheet of the Must-Have traceability matrix (7 lines, all marked Yes), a full read of the Training module as built, and a 2025–26 survey of Workday, SAP SuccessFactors, Cornerstone, Docebo, 360Learning, TalentLMS, Absorb, Rippling, HiBob, Keka, Zoho People, Axonify and SC Training.</p>
+
+  <div class="scorestrip">
+    <div class="score good"><div class="n">7 / 7</div><div class="l">Rize Must-Have lines delivered (LnD sheet)</div></div>
+    <div class="score warn"><div class="n">7 · 7 · 7</div><div class="l">of the 21 items on Rize's new menu: have · partly · missing</div></div>
+    <div class="score bad"><div class="n">6 / 23</div><div class="l">market table-stakes we fully meet today</div></div>
+    <div class="score brand"><div class="n">8 phases</div><div class="l">to a best-in-class Learning area, each one shippable</div></div>
+  </div>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#menu">1 · The menu</a>
+    <a href="#have">2 · What we have</a>
+    <a href="#gaps">3 · Gaps vs Rize's list</a>
+    <a href="#market">4 · What the best do</a>
+    <a href="#design">5 · The design</a>
+    <a href="#blocks">6 · New building blocks</a>
+    <a href="#phases">7 · Phases</a>
+    <a href="#decisions">8 · Decisions</a>
+    <a href="#eng">9 · Engineering notes</a>
+  </nav>
+</header>
+
+<!-- ============ 1. MENU ============ -->
+<section id="menu">
+  <div class="sechead"><span class="secnum">1</span><h2>The menu: Rize's tree becomes one Learning rail</h2></div>
+  <p class="secsub">Every area in Payobook uses the same second-level menu: a narrow sticky rail of icons with a one-word label under each, ten items by design, twelve at most. Rize's seven groups and 21 sub-items fold cleanly into <b>eleven rail items</b>. Click an item below to see what the screen is for and who sees it.</p>
+
+  <div class="mock" id="mock">
+    <div class="side" aria-label="Left menu (mock)">
+      <div class="sec">Overview</div>
+      <div class="it dim"><svg class="ic"><use href="#i-home"/></svg> Home</div>
+      <div class="sec">Operate</div>
+      <div class="it dim"><svg class="ic"><use href="#i-users"/></svg> People</div>
+      <div class="it dim"><svg class="ic"><use href="#i-brief"/></svg> Hiring</div>
+      <div class="sec">Grow</div>
+      <div class="it dim"><svg class="ic"><use href="#i-target"/></svg> Talent</div>
+      <div class="it on new"><svg class="ic"><use href="#i-cap"/></svg> Learning</div>
+      <div class="it dim ren"><svg class="ic"><use href="#i-compass"/></svg> Guide</div>
+      <div class="sec">Understand</div>
+      <div class="it dim"><svg class="ic"><use href="#i-chart"/></svg> Insights</div>
+    </div>
+    <div class="rail" role="tablist" aria-label="Learning rail (mock)">
+      <button class="on" data-k="overview" role="tab"><svg class="ic"><use href="#i-dash"/></svg><span>Overview</span></button>
+      <button data-k="mine" role="tab"><svg class="ic"><use href="#i-user"/></svg><span>My learning</span></button>
+      <button data-k="courses" role="tab"><svg class="ic"><use href="#i-book"/></svg><span>Courses</span></button>
+      <button data-k="paths" role="tab"><svg class="ic"><use href="#i-route"/></svg><span>Paths</span></button>
+      <button data-k="assigned" role="tab"><span class="q"><svg class="ic"><use href="#i-users"/></svg><i>4</i></span><span>Assigned</span></button>
+      <button data-k="required" role="tab"><svg class="ic"><use href="#i-shield"/></svg><span>Required</span></button>
+      <button data-k="tests" role="tab"><svg class="ic"><use href="#i-clip"/></svg><span>Tests</span></button>
+      <button data-k="certs" role="tab"><span class="q"><svg class="ic"><use href="#i-award"/></svg><i>12</i></span><span>Certificates</span></button>
+      <button data-k="skills" role="tab" class="later"><svg class="ic"><use href="#i-spark"/></svg><span>Skills</span></button>
+      <button data-k="claims" role="tab"><span class="q"><svg class="ic"><use href="#i-receipt"/></svg><i>2</i></span><span>Claims</span></button>
+      <button data-k="numbers" role="tab"><svg class="ic"><use href="#i-chart"/></svg><span>Numbers</span></button>
+    </div>
+    <div class="stage" id="stage" aria-live="polite"></div>
+  </div>
+
+  <div class="callout" style="margin-top:18px"><b>Counts on the rail only where someone must act</b> (people past their date, certificates expiring, claims waiting). The Skills item is shown dimmed because it ships in a later phase and stays hidden until then, so the rail launches with ten items. Employees see a shorter rail: My learning, Courses, Certificates.</div>
+
+  <h3>How Rize's 21 items map onto the rail</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Rize's group</th><th>Rize's sub-items</th><th>Where it lands</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Overview</td><td>Learning Dashboard · Training Completion · Certification Status</td><td><b>Overview</b> (one home page with completion, overdue, expiring certificates and the queue of things waiting on HR)</td></tr>
+      <tr><td class="k">Course Library</td><td>Internal Courses · External Courses · Job-Specific Training</td><td><b>Courses</b> (filters: Ours · Classroom · Outside · By job)</td></tr>
+      <tr><td class="k">Learning Paths</td><td>Role-Based · Career-Based · Manufacturing Skills Paths</td><td><b>Paths</b> (one path builder; a path is tagged role, career or skills)</td></tr>
+      <tr><td class="k">My Learning</td><td>Assigned Courses · In Progress · Completed Courses</td><td><b>My learning</b> (the employee's own page, also on the phone; three filters)</td></tr>
+      <tr><td class="k">Assessments</td><td>Tests and Quizzes · Assessment Results · Retakes</td><td><b>Tests</b> (tests, question bank, results per test, retake policy, practical sign-offs)</td></tr>
+      <tr><td class="k">Certifications</td><td>Employee Certifications · Expiry Tracking · Renewal Reminders</td><td><b>Certificates</b> (one register of every certificate and licence, with expiry and renewal)</td></tr>
+      <tr><td class="k">Reports</td><td>Training Completion · Training Costs · Learning Effectiveness</td><td><b>Numbers</b> (the existing Training numbers page, extended with cost, hours and effectiveness)</td></tr>
+      <tr><td class="k">Not on Rize's list, added</td><td>Who is on what, due when · Who must have what · Allowance claims</td><td><b>Assigned</b> · <b>Required</b> · <b>Claims</b> (all three exist today inside Talent → Training and must not be lost)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn"><b>One naming decision before anything is built.</b> The left menu already has an entry called <b>Learn</b>. It is not employee training: it is the built-in guide that teaches people how to use Payobook itself (lessons, tours, practice copies). Putting "Learning" next to "Learn" will confuse everyone. The recommendation is to rename that entry <b>Guide</b> and give the new area the name <b>Learning</b>. See decision 1.</div>
+</section>
+
+<!-- ============ 2. HAVE ============ -->
+<section id="have">
+  <div class="sechead"><span class="secnum">2</span><h2>What we already have</h2></div>
+  <p class="secsub">All seven Rize Must-Have lines for L&amp;D are live on payobook.com. The pieces sit in three places today: the <b>Training</b> tab under Talent (HR side), the <b>Training</b> tab under Insights (numbers), and the employee's own <b>My training</b> pages, which internal staff can only reach through the search bar.</p>
+
+  <div class="grid3">
+    <div class="card"><h4>Courses and lessons</h4><p class="app">Courses with video, document, article, picture and quiz lessons, drawn on our own pages. New courses are private and invitation-only. Lessons are marked done one by one and the progress bar moves at once.</p></div>
+    <div class="card"><h4>Tests and the question bank</h4><p class="app">A test at the end of a course that stays locked until every lesson is done. Pass mark 70, three attempts, score shown at once, certificate on a pass. A question bank lists every question written.</p></div>
+    <div class="card"><h4>Putting people on courses</h4><p class="app">Assign a course to one person, a department, a job or everyone, with a due date and a reason (day one, trial period, leadership programme, compliance, one-off). Only one open assignment per person per course.</p></div>
+    <div class="card"><h4>Reminders and chasing</h4><p class="app">Email to the employee and manager at the start; reminders 3 days before, 1 day before, on the day, then every 3 days; manager warned 2 days late, HR lead 5 days late. "Ask for more time" with a reason, decided by the manager.</p></div>
+    <div class="card"><h4>Comes round again, day one, trial period</h4><p class="app">Recurring schedules (every N months, by department or job) that never double-assign. Day-one rules for joiners by department or job. A trial-period course blocks probation confirmation until done.</p></div>
+    <div class="card"><h4>Allowance and claims</h4><p class="app">A yearly training allowance per company with personal overrides. Employees claim an outside course back with receipt and certificate; HR agrees; it becomes a one-off amount the pay team adds to a pay run.</p></div>
+    <div class="card"><h4>Certificates on the record</h4><p class="app">A passed test files the certificate PDF in the person's own document folder. The standard résumé line for a certification is written too.</p></div>
+    <div class="card"><h4>Numbers</h4><p class="app">For any date range: finished, passed, past their date, still to do, average score, more time agreed; by department, course and reason; week-by-week trend; spreadsheet download; weekly or monthly emailed pack (built, switched off).</p></div>
+    <div class="card"><h4>Manager view</h4><p class="app">"My team's training" shows a manager their direct reports' courses and progress. The new Home → Team page (live 21 Oct) also lists training requests.</p></div>
+  </div>
+</section>
+
+<!-- ============ 3. GAPS ============ -->
+<section id="gaps">
+  <div class="sechead"><span class="secnum">3</span><h2>Gaps against Rize's 21 items</h2></div>
+  <p class="secsub">Scored against what Rize's new menu asks for, item by item. <b>Have</b> means it works today and only moves. <b>Partly</b> means the seed exists but the screen or the rule Rize named does not. <b>Missing</b> means nothing to build on.</p>
+  <div class="legend"><span class="pill have"><svg class="ic"><use href="#i-check"/></svg> Have · 7</span><span class="pill part"><svg class="ic"><use href="#i-minus"/></svg> Partly · 7</span><span class="pill miss"><svg class="ic"><use href="#i-x"/></svg> Missing · 7</span></div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Rize item</th><th>Status</th><th>What is true today</th><th>What closes it</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Learning Dashboard</td><td><span class="pill part">Partly</span></td><td>KPI tiles sit on the HR board and the numbers live under Insights. There is no single home that shows completion, expiring certificates and the queue together.</td><td>Overview page (phase L0 shell, L1 and L6 fill it)</td></tr>
+      <tr><td class="k">Training Completion (overview)</td><td><span class="pill have">Have</span></td><td>Finished %, past date, still to do, by department and course, any period.</td><td>Moves to Overview and Numbers</td></tr>
+      <tr><td class="k">Certification Status</td><td><span class="pill miss">Missing</span></td><td>Certificates are filed, but nothing knows when they expire or who is about to lapse.</td><td>Certificate register with expiry (L1)</td></tr>
+      <tr><td class="k">Internal Courses</td><td><span class="pill have">Have</span></td><td>Course library with lessons and tests.</td><td>Moves to Courses</td></tr>
+      <tr><td class="k">External Courses</td><td><span class="pill miss">Missing</span></td><td>An outside course exists only as free text on a claim. No catalogue, no link, no cost, no approval before the money is spent.</td><td>Outside-course catalogue + "Ask to take a course" (L5)</td></tr>
+      <tr><td class="k">Job-Specific Training</td><td><span class="pill part">Partly</span></td><td>Day-one rules and recurring schedules can target a job, but no screen answers "what must a forklift operator at the Long An plant hold?"</td><td>Required training matrix by job, site and country (L2)</td></tr>
+      <tr><td class="k">Role-Based Learning</td><td><span class="pill miss">Missing</span></td><td>No learning paths at all: no ordering, no prerequisites, no auto-enrol into a sequence.</td><td>Paths (L3)</td></tr>
+      <tr><td class="k">Career-Based Learning</td><td><span class="pill miss">Missing</span></td><td>Growth plans exist in Talent but do not point at courses.</td><td>Paths tagged "career", linked from a growth plan (L3)</td></tr>
+      <tr><td class="k">Manufacturing Skills Paths</td><td><span class="pill miss">Missing</span></td><td>No skills on courses; no practical sign-off on the floor.</td><td>Paths with sign-off steps (L3 + L4), skills tie-in (L5)</td></tr>
+      <tr><td class="k">Assigned Courses</td><td><span class="pill have">Have</span></td><td>"My training" lists every course the person is on, with due date and reason.</td><td>My learning, now in the menu for staff too (L0)</td></tr>
+      <tr><td class="k">In Progress</td><td><span class="pill have">Have</span></td><td>Progress bar per course, lessons left, test locked/unlocked.</td><td>Filter on My learning</td></tr>
+      <tr><td class="k">Completed Courses</td><td><span class="pill part">Partly</span></td><td>"Show finished ones too" on the HR board; the employee sees certificates but no learning history with hours.</td><td>Learning record per person: history, hours, certificates (L1, L6)</td></tr>
+      <tr><td class="k">Tests and Quizzes</td><td><span class="pill have">Have</span></td><td>Scored tests with pass mark and attempt limit; in-lesson quizzes.</td><td>Moves to Tests</td></tr>
+      <tr><td class="k">Assessment Results</td><td><span class="pill part">Partly</span></td><td>A score per person per course, and an average. No per-test results page, no "which question did most people get wrong".</td><td>Results page per test (L5)</td></tr>
+      <tr><td class="k">Retakes</td><td><span class="pill have">Have</span></td><td>Three attempts by default, attempts left shown to the learner.</td><td>Retake policy editable per test on the Tests page</td></tr>
+      <tr><td class="k">Employee Certifications</td><td><span class="pill part">Partly</span></td><td>Internal passes are filed as PDFs; outside certificates arrive only on a claim. No one list of what a person holds.</td><td>Certificate register (L1)</td></tr>
+      <tr><td class="k">Expiry Tracking</td><td><span class="pill miss">Missing</span></td><td>Nothing stores a valid-until date.</td><td>Validity months per course or test; expiring in 30/60/90 (L1)</td></tr>
+      <tr><td class="k">Renewal Reminders</td><td><span class="pill miss">Missing</span></td><td>Recurring schedules re-assign on a calendar, not on a person's expiry date.</td><td>Expiry-driven reminder ladder and re-assignment (L1)</td></tr>
+      <tr><td class="k">Training Completion (report)</td><td><span class="pill have">Have</span></td><td>Any period, breakdowns, spreadsheet, emailed pack.</td><td>Moves to Numbers</td></tr>
+      <tr><td class="k">Training Costs</td><td><span class="pill part">Partly</span></td><td>Claims total only. No cost on internal courses or sessions, no budget line against spend.</td><td>Cost per course and session; spend vs allowance and budget (L5, L6)</td></tr>
+      <tr><td class="k">Learning Effectiveness</td><td><span class="pill miss">Missing</span></td><td>No feedback after a course, no manager follow-up, no before/after.</td><td>Feedback survey, manager follow-up at 30/60 days, before/after test (L5, L6)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn" style="margin-top:18px"><b>One gap Rize did not list but will feel first:</b> an internal staff member (not a portal employee) has no menu entry for their own training today. They must type "My training" into the search bar. Phase L0 fixes this on day one.</div>
+</section>
+
+<!-- ============ 4. MARKET ============ -->
+<section id="market">
+  <div class="sechead"><span class="secnum">4</span><h2>What the best learning software does</h2></div>
+  <p class="secsub">Surveyed in October 2026 across the enterprise suites, the mid-market HR platforms, and the two frontline specialists that plants and farms actually buy. Features are graded <b>table-stakes</b> (every serious product has it) or <b>differentiator</b> (would make Rize stop and look).</p>
+
+  <h3>Table-stakes checklist and where we stand</h3>
+  <div class="legend"><span class="pill have">Have · 6</span><span class="pill part">Partly · 9</span><span class="pill miss">Missing · 8</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Every serious product has</th><th>Us today</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>In-house course builder (video, slides, PDF, text, quiz)</td><td><span class="pill have">Have</span></td><td>—</td></tr>
+      <tr><td>2</td><td>Import of packaged courses (SCORM) bought from outside</td><td><span class="pill miss">Missing</span></td><td>L7 (decision 5)</td></tr>
+      <tr><td>3</td><td>At least one outside course catalogue (Go1, LinkedIn Learning, Udemy)</td><td><span class="pill miss">Missing</span></td><td>L5 own list; connector later (decision 5)</td></tr>
+      <tr><td>4</td><td>AI draft of a course and quiz from an uploaded document</td><td><span class="pill miss">Missing</span></td><td>L7 via PayAI</td></tr>
+      <tr><td>5</td><td>Multilingual learner screens and content translation</td><td><span class="pill part">Partly</span> screens EN/VI; content single-language</td><td>L7</td></tr>
+      <tr><td>6</td><td>Phone-friendly learner pages (offline is the frontline bar)</td><td><span class="pill part">Partly</span> phone-tested; no offline</td><td>L7 (decision 6)</td></tr>
+      <tr><td>7</td><td>Learning paths with order and prerequisites</td><td><span class="pill miss">Missing</span></td><td>L3</td></tr>
+      <tr><td>8</td><td>Auto-assignment by role, department, site, tenure</td><td><span class="pill part">Partly</span> day-one and recurring by department/job</td><td>L2</td></tr>
+      <tr><td>9</td><td>Classroom sessions: date, place, trainer, capacity, attendance, calendar invite</td><td><span class="pill miss">Missing</span></td><td>L4</td></tr>
+      <tr><td>10</td><td>Tests with pass mark, attempt limit, random draw from a pool</td><td><span class="pill part">Partly</span> no random pool</td><td>L5</td></tr>
+      <tr><td>11</td><td>Certificates with expiry, recurring re-assignment, reminder ladder</td><td><span class="pill part">Partly</span> recurring yes, expiry no</td><td>L1</td></tr>
+      <tr><td>12</td><td>Upload of outside licences and certificates with expiry</td><td><span class="pill part">Partly</span> only on a claim</td><td>L1</td></tr>
+      <tr><td>13</td><td>Manager team view with overdue and one-tap nudge</td><td><span class="pill have">Have</span> (nudge missing)</td><td>L0 adds the nudge</td></tr>
+      <tr><td>14</td><td>Approval before a paid course is taken</td><td><span class="pill part">Partly</span> approval only after the spend, on the claim</td><td>L5</td></tr>
+      <tr><td>15</td><td>Feedback survey after a course</td><td><span class="pill miss">Missing</span></td><td>L5</td></tr>
+      <tr><td>16</td><td>Personal learner home with "next for you"</td><td><span class="pill part">Partly</span> assigned list only</td><td>L0 shell, L7 recommendations</td></tr>
+      <tr><td>17</td><td>Badges or points</td><td><span class="pill miss">Missing</span> (stock leaderboard pages deliberately blocked)</td><td>L7 (decision 7)</td></tr>
+      <tr><td>18</td><td>Reminders by email and phone push</td><td><span class="pill have">Have</span> email</td><td>—</td></tr>
+      <tr><td>19</td><td>Completion and compliance dashboards by department, exportable</td><td><span class="pill have">Have</span></td><td>—</td></tr>
+      <tr><td>20</td><td>Training hours per employee per period</td><td><span class="pill miss">Missing</span></td><td>L6</td></tr>
+      <tr><td>21</td><td>Scheduled reports by email</td><td><span class="pill have">Have</span> (switched off)</td><td>—</td></tr>
+      <tr><td>22</td><td>Audit trail of completions (who, when, score, course version)</td><td><span class="pill part">Partly</span> no course version</td><td>L5</td></tr>
+      <tr><td>23</td><td>Spreadsheet and BI export</td><td><span class="pill have">Have</span> spreadsheet</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Differentiators that would make a plant or estate manager stop</h3>
+  <div class="grid2">
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-phone"/></svg> Practical sign-off on a phone</h4><p class="app">Absorb and SC Training let a supervisor open a checklist on their phone, watch the worker do the task, tick each step, add a photo and press Pass. The result counts as a completion like any test. This is the one feature that fits a factory floor or a field better than any video.</p><span class="pill new">Phase L4</span></div>
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-shield"/></svg> Live training matrix by site and job</h4><p class="app">A grid: people down the side, required courses and licences across the top, each cell green (valid), amber (expiring) or red (missing). Drillable and printable for an auditor. Only the frontline specialists ship this as a real grid; the big suites make you build it from reports.</p><span class="pill new">Phase L2</span></div>
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-globe"/></svg> Country compliance packs</h4><p class="app">Vietnam's safety-training decree sorts every worker into six groups with set hours and a yearly or two-yearly refresher; India requires a regular harassment-awareness session for everyone; Indonesia tracks named safety officers and operator licences; Singapore funds training by the hour. No product surveyed models the Vietnam rule natively. We can.</p><span class="pill new">Phase L2</span></div>
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-book"/></svg> A changed procedure re-trains everyone</h4><p class="app">Publish version 2 of a safety procedure and every person who passed version 1 gets a short re-read and a three-question check. Rare in the market, cheap to build, exactly what a safety manager wants.</p><span class="pill new">Phase L5</span></div>
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-cal"/></svg> Toolbox talks and classroom sessions</h4><p class="app">A ten-minute on-site talk logged by the supervisor with attendance, counting toward hours and compliance. Classroom sessions with a QR code at the door for attendance.</p><span class="pill new">Phase L4</span></div>
+    <div class="card"><h4><svg class="ic" style="vertical-align:-3px"><use href="#i-target"/></svg> Did it work? Asked 30 days later</h4><p class="app">After a course: a two-minute feedback survey. Thirty days later: the manager is asked whether behaviour changed. Only SAP and Docebo attempt this; most HR platforms stop at completion.</p><span class="pill new">Phases L5, L6</span></div>
+  </div>
+
+  <h3>What we deliberately leave out, and why</h3>
+  <ul class="prose">
+    <li><b>Outside catalogue connectors (Go1, Udemy, LinkedIn Learning).</b> Paid outside services; the standing rule is outside services off unless Rize asks. We build our own outside-course list with links and costs first.</li>
+    <li><b>Leaderboards.</b> Rejected by the quiet-board rule: colour and competition only where someone must act. Badges on certificates are fine; a ranking of colleagues is not (decision 7).</li>
+    <li><b>Gating the clock-in on training</b> (Rippling's "cannot clock in until certified"). Powerful but it stops people being paid. Listed as a later option, not in these eight phases.</li>
+    <li><b>Full offline app.</b> Needs a native app. Phase L7 gives phone-first pages that survive a dropped signal mid-lesson; a true offline mode is a later decision (decision 6).</li>
+  </ul>
+</section>
+
+<!-- ============ 5. DESIGN ============ -->
+<section id="design">
+  <div class="sechead"><span class="secnum">5</span><h2>The design, screen by screen</h2></div>
+  <p class="secsub">Every screen below follows the Payobook rules: the quiet-board pattern (grey at zero, colour only where someone must act), plain words on every label, Lucide icons, a named hero moment, and no dead ends. Each screen is also designed for a phone, because most of Rize's learners hold a phone, not a laptop.</p>
+
+  <h3>Overview (HR, training manager)</h3>
+  <div class="card prose">
+    <p><b>Hero moment:</b> one sentence at the top in plain words, for example "92% of required training is in date. 12 certificates expire within 30 days. 4 people are past their due date." Below it, three quiet rows:</p>
+    <ul>
+      <li><b>Waiting on you:</b> claims to agree, more-time requests, course requests, sessions to confirm. Each opens a drawer; nothing leaves the page.</li>
+      <li><b>Compliance at a glance:</b> required training in date by site, department and country, with the gap count. Click a tile to open the Required matrix filtered to it.</li>
+      <li><b>This month:</b> sessions coming up, courses due, certificates expiring, renewals sent.</li>
+    </ul>
+    <p><b>States:</b> empty (no courses yet: a single "Create your first course" card with three starter templates); nothing waiting (grey tick, "All clear"); large (counts cap at 99+ and link to the full list).</p>
+  </div>
+
+  <h3>My learning (everyone)</h3>
+  <div class="card prose">
+    <p><b>Hero moment:</b> the next thing to do, as one big card: the lesson name, how long it takes, one button "Continue". On a phone this fills the screen. Below: filters Assigned · In progress · Done, then my path (where I am on it), my certificates and licences with valid-until dates, my allowance and claims.</p>
+    <ul>
+      <li>"Done" is the person's learning record: every course, session and sign-off with the date, hours and score. Downloadable as one PDF for a job move or an audit.</li>
+      <li>A certificate about to expire shows an amber "Renew by 14 Nov" chip and a "Start renewal" button that opens the refresher course.</li>
+      <li>"Ask to take a course" opens a short form: course or link, cost, why, when. The manager decides; HR sees the budget effect before agreeing.</li>
+      <li>Managers get a "My team" tab here: each report, their status, one-tap "Remind".</li>
+    </ul>
+  </div>
+
+  <h3>Courses</h3>
+  <div class="card prose">
+    <p>The library as cards with a cover, length, lessons, test, who it is for and a tag: <b>Ours</b> (online), <b>Classroom</b> (a course delivered in sessions), <b>Outside</b> (a provider course with link and cost). Filters by job, department, country and skill. Opening a course shows its lessons, test, sessions, versions, who is on it, and the feedback score.</p>
+    <ul>
+      <li><b>Versions:</b> "Publish a new version" marks every holder as needing a re-read; the course page shows how many are still on the old one.</li>
+      <li><b>Sessions tab</b> on a classroom course: dates, place, trainer, seats, waitlist, attendance.</li>
+      <li><b>Outside course:</b> provider, cost, link, hours; "Ask to take it" for an employee, "Put someone on it" for HR, which pre-books the allowance.</li>
+    </ul>
+  </div>
+
+  <h3>Paths</h3>
+  <div class="card prose">
+    <p><b>Hero moment:</b> the path drawn as a line of stations, like a rail map, each station a course, session, sign-off or outside course, with the share of people at each station. A path has a purpose tag: <b>Role</b> (new agronomist, line supervisor), <b>Career</b> (operator to team leader), <b>Skills</b> (forklift, boiler, pesticide handling). Steps can be "must finish before" or "any order". A path can be auto-given to a job or department on day one, and linked from a growth plan in Talent.</p>
+  </div>
+
+  <h3>Assigned</h3>
+  <div class="card prose">
+    <p>The existing assignments board, kept as is: who is on what, due when, why, how far; More time requests; bulk assign by person, department, job or everyone; "Send the reminders now". Adds: one-tap nudge per row, and a path column so a step inside a path reads the same as a one-off course.</p>
+  </div>
+
+  <h3>Required</h3>
+  <div class="card prose">
+    <p><b>Hero moment:</b> the training matrix. Rows are people, columns are required items, cells are green, amber or red. Filter by site, department, job, country, safety group. Click a red cell: "Assign now". Print or download for an auditor. Behind it, the rules: "Everyone in job X at site Y must hold course C, valid N months" plus the country packs (Vietnam safety groups 1–6 with hours and refresher cadence; India annual awareness session; Indonesia licence register; Singapore hours). Day-one rules and "Comes round again" schedules move here as two kinds of rule.</p>
+  </div>
+
+  <h3>Tests</h3>
+  <div class="card prose">
+    <p>Tests, question bank, and <b>practical sign-offs</b> (checklists). A test gets a results page: pass rate, score spread, the questions most people get wrong, retake policy. Random draw from a question pool: "ask 10 of these 30". A sign-off checklist is a list of steps with Pass / Fail per step, a photo and a note, done on the supervisor's phone by scanning the worker's QR code or picking the name.</p>
+  </div>
+
+  <h3>Certificates</h3>
+  <div class="card prose">
+    <p>One register of every certificate and licence a person holds: from our tests, from classroom sessions, from outside providers (uploaded with a photo), and statutory cards. Each has issued-on, valid-until, issuer and the file. Filters: expiring in 30 / 60 / 90 days, expired, by site and job. Renewal reminders go to the person at 60, 30 and 7 days, the manager at 14 days, HR at expiry, and the refresher course is assigned automatically when one exists.</p>
+  </div>
+
+  <h3>Skills (later phase)</h3>
+  <div class="card prose">
+    <p>A course or sign-off grants a skill at a level. A job requires skills at levels. The page shows each person's skills against their job, the gap, and the course that closes it. Feeds the manufacturing skills paths and the workforce-planning gap view that already reads skills.</p>
+  </div>
+
+  <h3>Claims</h3>
+  <div class="card prose">
+    <p>Unchanged from today: allowance, claims waiting, agreed, refused, paid. Adds the pre-approved course request on the claim so the receipt arrives against something already agreed.</p>
+  </div>
+
+  <h3>Numbers</h3>
+  <div class="card prose">
+    <p>The existing Training numbers page, extended with: training hours per person per period, cost (course and session costs plus claims against the allowance and the budget line), compliance by site and country, feedback scores and the 30-day manager follow-up, and the statutory exports (Vietnam renewal list due in 30 days; India attendance register; Singapore hours by course). The weekly or monthly pack carries the same.</p>
+  </div>
+</section>
+
+<!-- ============ 6. BLOCKS ============ -->
+<section id="blocks">
+  <div class="sechead"><span class="secnum">6</span><h2>The new building blocks, in plain words</h2></div>
+  <p class="secsub">Seven things the system cannot say today and will be able to say after the build. Each is one new record type or one new rule engine, described by the question it answers.</p>
+  <div class="grid2">
+    <div class="card"><h4>A certificate record</h4><p class="app">"What does this person hold, who issued it, and until when?" One row per certificate or licence, however it was earned. Expiry drives reminders and re-assignment.</p></div>
+    <div class="card"><h4>A requirement rule</h4><p class="app">"Who must hold what?" Job, department, site, country or safety group, maps to a course, path or licence with a validity. The matrix is the rules evaluated against the people.</p></div>
+    <div class="card"><h4>A learning path</h4><p class="app">"In what order?" An ordered list of steps with prerequisites, a purpose tag, and progress per person.</p></div>
+    <div class="card"><h4>A session</h4><p class="app">"When, where, with whom?" Date, place, trainer, seats, waitlist, attendance, hours. A toolbox talk is a short session logged after the fact.</p></div>
+    <div class="card"><h4>A practical sign-off</h4><p class="app">"Can they actually do it?" A checklist template and a signed result on a phone with a photo.</p></div>
+    <div class="card"><h4>An outside course and a course request</h4><p class="app">"What can people take elsewhere, and did we agree before the money went?" A catalogue entry and an approval that pre-books the allowance.</p></div>
+    <div class="card"><h4>A feedback and follow-up survey</h4><p class="app">"Was it any good, and did it change anything?" Sent at completion and 30 days later to the manager; scores land on the course and in Numbers.</p></div>
+  </div>
+</section>
+
+<!-- ============ 7. PHASES ============ -->
+<section id="phases">
+  <div class="sechead"><span class="secnum">7</span><h2>Eight phases, each one usable on its own</h2></div>
+  <p class="secsub">Ordered so that the menu change lands first (small, visible, no data risk), then the compliance pieces Rize will be audited on, then the richer learning features. Every phase ships live on payobook.com with its own tests, lessons updated in the same phase, and the Access screens showing the new menu.</p>
+
+  <div class="phase"><div class="id">L0</div><div><h3>The Learning menu</h3><p class="get">You get: "Learning" in the left menu with its own rail; Training leaves Talent; My learning reachable by every staff member from the menu; "Learn" renamed (decision 1); Overview page as a shell with today's tiles and the waiting queue; one-tap Remind on the team view. Nothing is rebuilt, everything is re-homed.</p><div class="tags"><span class="pill gray">Looks and moves</span><span class="pill gray">Normal deploy tier</span><span class="pill gray">Needs decisions 1, 2</span></div></div></div>
+  <div class="phase"><div class="id">L1</div><div><h3>Certificates and expiry</h3><p class="get">You get: the certificate register; validity months on a course or test; uploaded outside certificates and licences; expiring in 30 / 60 / 90; renewal reminder ladder; automatic re-assignment of the refresher; the employee's certificate wallet and learning record PDF; Certification status on Overview.</p><div class="tags"><span class="pill gray">Normal tier</span><span class="pill gray">Builds on the standard résumé lines already written</span></div></div></div>
+  <div class="phase"><div class="id">L2</div><div><h3>Required training and country packs</h3><p class="get">You get: requirement rules by job, department, site, country and safety group; the live matrix with print and download; day-one and recurring rules folded in; the Vietnam safety-group pack (six groups, hours, yearly or two-yearly refresher, 30-day renewal list); India annual awareness session; Indonesia licence register; Singapore hours by course.</p><div class="tags"><span class="pill gray">Normal tier</span><span class="pill gray">Needs decision 3</span></div></div></div>
+  <div class="phase"><div class="id">L3</div><div><h3>Learning paths</h3><p class="get">You get: the path builder with ordered steps and prerequisites; role, career and skills tags; auto-give on day one by job; the station-line view with progress; the path on My learning; a growth plan in Talent can point at a path.</p><div class="tags"><span class="pill gray">Normal tier</span></div></div></div>
+  <div class="phase"><div class="id">L4</div><div><h3>Sessions and practical sign-off</h3><p class="get">You get: classroom and on-site sessions with seats, waitlist, calendar invite, QR attendance and hours; toolbox-talk logging; sign-off checklists done on the supervisor's phone with photo; both count as completions for paths and the matrix.</p><div class="tags"><span class="pill gray">Normal tier</span><span class="pill gray">Needs decision 4</span></div></div></div>
+  <div class="phase"><div class="id">L5</div><div><h3>Courses: outside, requests, versions, results, feedback</h3><p class="get">You get: the outside-course catalogue; "Ask to take a course" with approval that pre-books the allowance and pre-fills the claim; course versions that re-train holders; results page per test and random question pools; feedback survey after a course and the 30-day manager follow-up; skills granted by a course and the Skills page.</p><div class="tags"><span class="pill gray">Normal tier</span><span class="pill gray">Needs decision 5</span></div></div></div>
+  <div class="phase"><div class="id">L6</div><div><h3>Numbers and the Overview, finished</h3><p class="get">You get: hours per person, cost against allowance and budget, compliance by site and country, effectiveness scores, statutory exports, the emailed pack carrying all of it; Overview filled in with every tile live.</p><div class="tags"><span class="pill gray">Looks and numbers</span></div></div></div>
+  <div class="phase"><div class="id">L7</div><div><h3>The learner's phone</h3><p class="get">You get: a lesson player built for a phone that keeps its place if the signal drops; micro-lessons; "next for you" recommendations; badges on certificates (if agreed); bilingual content side by side; PayAI drafts a course and quiz from an uploaded procedure; optional SCORM import.</p><div class="tags"><span class="pill gray">Needs decisions 6, 7, 8</span></div></div></div>
+
+  <div class="callout good"><b>What you can show Rize after each phase:</b> L0 the new menu · L1 "who is about to lapse" · L2 the matrix for one plant · L3 the new-agronomist path · L4 a sign-off done on a phone in the field · L5 an employee asking for an outside course and the budget answering · L6 the audit pack · L7 a lesson on a phone with the signal off.</div>
+</section>
+
+<!-- ============ 8. DECISIONS ============ -->
+<section id="decisions">
+  <div class="sechead"><span class="secnum">8</span><h2>Decisions needed from you</h2></div>
+  <p class="secsub">Eight questions, each with a recommendation. Decisions 1 and 2 block phase L0; the rest can be answered when their phase comes up.</p>
+
+  <div class="decision"><div class="q">1. What do we call the two menu entries?</div><div class="rec">Recommended: the new area is "Learning" (Vietnamese "Học tập"); the existing how-to-use-Payobook entry is renamed "Guide" (Vietnamese "Hướng dẫn").</div><div class="why">Alternatives: call the new area "Training" and leave "Learn" alone (cheapest, but Rize asked for Learning and the word Training will sit on a rail item anyway); or rename the guide "Help". Renaming touches the lessons and tours that mention "Learn", which the standing rule says we update in the same phase.</div></div>
+  <div class="decision"><div class="q">2. Does Training leave Talent completely?</div><div class="rec">Recommended: yes. Talent keeps Goals, Growth and Praise. A growth plan links to a learning path, so the two areas still meet.</div><div class="why">Alternative: keep a "Training" shortcut on Talent that jumps to Learning. It costs a rail slot on Talent and two places to look for one thing.</div></div>
+  <div class="decision"><div class="q">3. Which country packs first?</div><div class="rec">Recommended: Vietnam safety groups first (Rize's largest workforce and the most prescriptive law), then India's annual awareness session, then the Indonesia licence register, then Singapore hours.</div><div class="why">Each pack is rules plus a report. The Vietnam one needs Rize to tell us each worker's safety group, or a rule that derives it from the job.</div></div>
+  <div class="decision"><div class="q">4. Practical sign-off on a phone: in this build?</div><div class="rec">Recommended: yes, in L4. It is the feature that makes Learning real on a factory floor and no mid-market HR platform has it.</div><div class="why">It needs supervisors to have the app open on a phone. If Rize's supervisors do not carry phones at work, it becomes a tablet at the line, which still works.</div></div>
+  <div class="decision"><div class="q">5. Outside courses: our own list, or a paid catalogue connector?</div><div class="rec">Recommended: our own list with links and costs now; a connector to a paid catalogue only if Rize asks and pays for the subscription.</div><div class="why">Connectors (Go1, Udemy, LinkedIn Learning) are outside services with their own contracts. SCORM import, the way bought courses arrive as a file, is cheaper and is listed under L7.</div></div>
+  <div class="decision"><div class="q">6. How far do we go on the phone?</div><div class="rec">Recommended: phone-first pages that keep their place when the signal drops (L7). A true offline app is a later, separate decision.</div><div class="why">A real offline mode means a native app and a sync engine. Rize's field agronomists would benefit, but it is a product of its own.</div></div>
+  <div class="decision"><div class="q">7. Badges and points?</div><div class="rec">Recommended: a badge on each certificate and a completion streak on My learning; no leaderboards.</div><div class="why">Leaderboards rank colleagues and break the quiet-board rule. Frontline specialists use them heavily, so this is a taste call.</div></div>
+  <div class="decision"><div class="q">8. PayAI drafts courses from a document?</div><div class="rec">Recommended: yes, in L7: upload a procedure, get an outline, lessons and a ten-question quiz to edit. Every product surveyed added this in 2025.</div><div class="why">It only drafts; a trainer always edits and publishes. Uses the PayAI engine already live.</div></div>
+</section>
+
+<!-- ============ 9. ENGINEERING ============ -->
+<section id="eng">
+  <div class="sechead"><span class="secnum">9</span><h2>Engineering notes</h2></div>
+  <p class="secsub">For the handover writer and the implementing agents. Verified against the repository on 21 Oct 2026. Plain-English rules above bind every user-visible string; this section is the only place with internal names.</p>
+
+  <h3>Standing rules that bind every phase</h3>
+  <ul class="app">
+    <li><b>White label:</b> no "Odoo" in any user-visible string (labels, help, selection values, mail, .po). Technical identifiers untouched.</li>
+    <li><b>Rail standard (NAV ledger R1/R2):</b> 72 px sticky rail, 60 px buttons, 18 px icon over a 9 px uppercase label, ≤2 lines EN and VI, ten items target, twelve hard max, counts only on queue items, no hover-widening.</li>
+    <li><b>NAV ledger R7/R8:</b> Learn lessons, coaching, tours and training replicas updated in the same phase as any menu change (bump <code>pb_learn</code>); Access and delegation screens show the new menu after every phase.</li>
+    <li><b>Design mandate:</b> hero moment named per screen, zero dead ends, Lucide icons only, motion with purpose, quiet-board pattern, browser validation with Chrome before "done".</li>
+    <li><b>Deploy:</b> one addons directory, tiered deploy rule, payobook-first, check <code>/opt/deploy-notes.md</code>, announce restarts to peer sessions, warm asset bundles after restart.</li>
+    <li><b>Money:</b> nothing in Learning writes a payslip. Agreed claims and pre-approved requests become <code>pb.incentive</code> awards on the one-off lane, as today.</li>
+  </ul>
+
+  <h3>Seams and precedents (do not re-derive)</h3>
+  <div class="tbl"><table class="app">
+    <thead><tr><th>Need</th><th>Fact</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Top-level entry</td><td>A <code>pb.sidebar.item</code> in the owning module's <code>data/pb_sidebar.xml</code>; Grow section is <code>pb_learn/data/learn_sidebar_item.xml:9</code> (seq 40) holding <code>pb_talent_hub.item_talent</code> (5) and <code>pb_learn.item_learn_journey</code> (10). Icon must exist in the closed map <code>pb_sidebar/static/src/js/pb_sidebar.js:16</code> (<code>graduation-cap</code> at :77). Add the action tag to <code>FEATURE_BY_TAG</code> in <code>pb_tenancy/models/pb_sidebar.py:62</code> and gates to <code>SCREEN_GATES</code> in <code>pb_vendor_access/hooks.py:778</code> plus a migration. Update <code>pb_sidebar/tests/test_ia_c5.py:31-53</code> (<code>TARGET_RAIL</code>).</td></tr>
+      <tr><td class="k">Hub to clone</td><td><code>pb_talent_hub</code> (~10 files): <code>talent_hub.js</code> exports a lens registry and <code>HUB_LENS_GATES</code>; <code>talent_hub.xml</code> is one <code>HubShell</code>; action in <code>views/pb_talent_hub_action.xml:8</code>. New module <code>pb_learning_hub</code> with registry <code>LEARNING_LENSES = "pb_learning_hub_lens"</code>.</td></tr>
+      <tr><td class="k">Move Training lens</td><td><code>pb_training/static/src/js/training_palette.js:56-63</code> registers key <code>training</code> into <code>TALENT_LENSES</code> seq 30. Re-point to the Learning registry; split the six-tab board (Courses · Assignments · More time · Comes round again · Day one · Claims, <code>training_board.xml:84-122</code>) into rail lenses: Courses, Assigned (assignments + more time), Required (day one + schedules + new rules), Claims. Insights tab (<code>training_palette.js:158-164</code>) stays; Numbers lens on the Learning rail opens the same client action.</td></tr>
+      <tr><td class="k">Command bar</td><td>Existing rows at seq 3900–3970 in <code>training_palette.js</code>; next free block per memory is 4000. Keep old names as keywords (R10).</td></tr>
+      <tr><td class="k">My learning for staff</td><td>Portal routes exist under <code>/my/training…</code> (<code>pb_training/controllers/portal.py:109-415</code>) and work for internal users; the Learning rail's "My learning" lens embeds the same facade (<code>pb.my.training</code>, <code>pb_my_training.py:52</code>) in a backend OWL view. Manager probe pattern: <code>pb.my.training.i_manage_people</code>.</td></tr>
+      <tr><td class="k">Certificates</td><td>Today: <code>pb.training.certificate</code> (<code>certificate.py:56</code>) files PDFs into the vault under "Degree / Certificate"; stock <code>hr_skills_survey</code> writes a certification résumé line with <code>expiration_status</code> and <code>survey.survey</code> carries validity months. L1 adds a stored <code>pb.training.credential</code> (employee, source: test / session / upload / statutory, issued_on, valid_until, issuer, attachment, course or requirement link) and a daily cron for the reminder ladder; <code>pb.training.schedule</code> stays for calendar recurrence, expiry recurrence is new.</td></tr>
+      <tr><td class="k">Requirement rules</td><td>New <code>pb.training.requirement</code> (audience: job / department / site / country / safety group; target: course, path or credential type; validity months; grace days). Matrix = requirements × employees, computed read-model with a cached daily snapshot for the grid. Fold <code>pb.training.rule</code> (day one, <code>schedule.py:36</code>) and <code>pb.training.schedule</code> (<code>schedule.py:100</code>) in as rule kinds; keep their tables, add a kind column.</td></tr>
+      <tr><td class="k">Assignments</td><td><code>pb.training.assignment</code> (<code>assignment.py:51</code>): one open per person per course (<code>_guard_one_open</code> :328), state recomputed from course and test progress (<code>_refresh_one</code> :244), bulk <code>assign_many</code> :586. Paths add <code>path_id</code> and <code>step_id</code>; sessions and sign-offs create assignments of a new <code>kind</code> so reminders, escalation and numbers work unchanged.</td></tr>
+      <tr><td class="k">Reminders</td><td><code>pb.training.automation._cron_daily</code> (<code>automation.py:51</code>, chase rules :171-230, cap 400). Add expiry chasing as a second leg with its own cap; settings <code>manager_escalate_days</code> 2 and <code>hr_escalate_days</code> 5 exist.</td></tr>
+      <tr><td class="k">Sessions</td><td>Do not install <code>event</code>. New <code>pb.training.session</code> (course, start, end, place, trainer, seats, waitlist, hours) + <code>pb.training.attendance</code>; QR = signed token per session rendered on the trainer's screen; ICS invite via <code>pb_lifecycle/models/ics.py build_ics()</code>.</td></tr>
+      <tr><td class="k">Practical sign-off</td><td>New <code>pb.training.checklist</code> (template, steps) and <code>pb.training.signoff</code> (employee, assessor, per-step pass/fail, photo attachments, note, result). Phone page under <code>/my/training/signoff/&lt;token&gt;</code>; assessor must be the employee's manager or hold the Trainer group.</td></tr>
+      <tr><td class="k">Outside courses and requests</td><td><code>slide.channel</code> with <code>channel_type='training'</code> is the course table; add an <code>outside</code> flag, provider, cost, link, hours. New <code>pb.training.request</code> routed through <code>biz_approval_workflow</code> (clone <code>claim_approval.py</code>, process key <code>training_request</code>); approval pre-books against <code>pb.training.allowance</code>; <code>pb.training.claim.request_id</code> pre-fills the claim.</td></tr>
+      <tr><td class="k">Surveys</td><td><code>survey</code> is installed. Feedback = a non-certification survey linked from the course, sent by the completion leg; follow-up = same, to <code>parent_id.user_id</code> 30 days after completion via the daily cron.</td></tr>
+      <tr><td class="k">Skills</td><td>Stock <code>hr_skills</code> family is installed; no <code>pb_*</code> module inherits <code>hr.skill</code> / <code>hr.employee.skill</code>; <code>pb_hr_workforce_planning/models/planning_scenario.py:1278</code> already reads employee skills for its gap view. L5: course → skill grants on <code>slide.channel</code>, job → required skills already on <code>hr.job</code>.</td></tr>
+      <tr><td class="k">Numbers</td><td><code>pb.training.analytics.get_numbers</code> (<code>analytics.py:129</code>), tiles :233, splits :277, trend :311, <code>export_xlsx</code> :399; pack in <code>pack.py</code>. Extend the payload; one test must keep "breakdowns add up to the total".</td></tr>
+      <tr><td class="k">Security</td><td>Groups Trainer / Training manager / Head of training in <code>security/pb_training_security.xml:26-63</code>; record rules give employees their own and their direct reports' rows. New models follow the same three-tier plus a "my companies" rule.</td></tr>
+      <tr><td class="k">Statutory sources</td><td>Vietnam Decree 44/2016/ND-CP (amended 140/2018, 04/2023): groups 1–6; initial hours G1/G4 16 h, G2 48 h, G3 24 h, G5 56 h; refresher every 2 years at ≥50% of initial hours (G4 yearly); certificates and the G3 safety card valid 2 years; employer lists renewals due 30 days ahead. India POSH Act 2013 s.19(c): awareness sessions at regular intervals, all workers incl. contractors, attendance feeds the annual report due 31 January. Singapore SSG absentee payroll S$4.50 per training hour, S$100k cap per employer per year. Indonesia: Ahli K3 Umum and operator licences (SIO) with expiry; verify validity periods with Rize before coding.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Open items carried from the Wave 2 closeout</h3>
+  <ul class="app">
+    <li>The real training allowance (5,000,000 ₫ is a demo figure) and whether claims above it are allowed.</li>
+    <li>Where the weekly or monthly pack goes; it ships switched off.</li>
+    <li>Which courses are day-one for joiners and which come round yearly (becomes requirement rules in L2).</li>
+    <li>Survey 6 "MyCompany Vendor Certification" still listed under Tests; delete.</li>
+    <li>Stale comments say Training is a Learn lens; L0 corrects them.</li>
+    <li>Searching "training" in the command bar returns seven rows; L0 consolidates under the new area.</li>
+  </ul>
+
+  <h3>Non-goals for this programme</h3>
+  <ul class="app">
+    <li>No native mobile app or offline sync engine.</li>
+    <li>No paid catalogue connectors unless the owner contracts one.</li>
+    <li>No clock-in gating on training status.</li>
+    <li>No change to how a claim becomes money: the one-off award lane stays the only door.</li>
+    <li>The product guide (<code>pb_learn</code>) keeps its content and behaviour; only its menu label changes.</li>
+  </ul>
+</section>
+
+<footer>Rize Learning Blueprint · docs/design/rize-learning-blueprint.html · Payobook design-doc series · 21 October 2026</footer>
+</div>
+
+<script>
+(function(){
+  var S = {
+    overview:{t:"Overview",vi:"Tổng quan",who:["HR lead","Training manager","Head of training"],hero:"One sentence in plain words: how much required training is in date, how many certificates expire within 30 days, how many people are past their due date.",pts:["Waiting on you: claims, more-time requests, course requests, sessions to confirm (each opens a drawer).","Compliance at a glance by site, department and country, with gap counts.","This month: sessions, due dates, expiring certificates, renewals sent."],ph:"Shell in L0 · filled by L1, L2, L6"},
+    mine:{t:"My learning",vi:"Của tôi",who:["Every employee","Every staff member","Managers (team tab)"],hero:"The next thing to do as one big card: lesson, how long, one button that says Continue. Fills a phone screen.",pts:["Filters: Assigned · In progress · Done (the learning record with hours, downloadable).","My path, my certificates and licences with valid-until, my allowance and claims.","Ask to take a course. Managers: My team with one-tap Remind."],ph:"In the menu from L0 (today only via the search bar for staff)"},
+    courses:{t:"Courses",vi:"Khóa học",who:["Trainer","Training manager","Employees (browse what is open to them)"],hero:"The library as cards with cover, length and who it is for; tags Ours · Classroom · Outside.",pts:["Lessons, test, sessions, versions, who is on it, feedback score on each course.","Publish a new version and every holder gets a short re-read.","Outside course: provider, cost, link, hours; Ask to take it."],ph:"Exists today · outside, versions, feedback in L5"},
+    paths:{t:"Paths",vi:"Lộ trình",who:["Trainer","Training manager"],hero:"The path drawn as a line of stations, each a course, session, sign-off or outside course, with the share of people at each one.",pts:["Purpose tag: Role, Career or Skills.","Steps in order with prerequisites, or any order.","Auto-given on day one by job; linked from a growth plan in Talent."],ph:"New in L3"},
+    assigned:{t:"Assigned",vi:"Đã giao",who:["Trainer","Training manager"],hero:"Who is on what, due when, why, how far. The count on the rail is people past their date.",pts:["Assign by person, department, job or everyone; bulk; Send the reminders now.","More time requests with reason, decided by the manager.","One-tap nudge; a path step reads the same as a one-off course."],ph:"Exists today (Assignments + More time tabs) · nudge in L0"},
+    required:{t:"Required",vi:"Bắt buộc",who:["Training manager","Head of training","Site managers (their site)"],hero:"The training matrix: people down the side, required items across, cells green, amber, red. Click a red cell: Assign now.",pts:["Rules: who must hold what, valid for how long, by job, department, site, country, safety group.","Day-one rules and Comes round again move here as two kinds of rule.","Country packs: Vietnam safety groups 1–6, India awareness session, Indonesia licences, Singapore hours."],ph:"New in L2 (day-one and recurring exist today)"},
+    tests:{t:"Tests",vi:"Kiểm tra",who:["Trainer","Training manager","Supervisors (sign-offs)"],hero:"A results page per test: pass rate, score spread, the questions most people get wrong.",pts:["Question bank; ask 10 of these 30 at random; retake policy per test.","Practical sign-off checklists done on a phone with a photo.","In-lesson quizzes stay as they are."],ph:"Exists today · results and pools in L5 · sign-offs in L4"},
+    certs:{t:"Certificates",vi:"Chứng chỉ",who:["Training manager","HR lead","Employees (their own)"],hero:"One register of everything a person holds, with issued-on and valid-until. The rail count is certificates expiring within 30 days.",pts:["From our tests, from sessions, uploaded from outside providers, statutory cards.","Filters: expiring in 30 / 60 / 90 days, expired, by site and job.","Renewal reminders at 60, 30, 7 days; refresher course assigned automatically."],ph:"New in L1"},
+    skills:{t:"Skills",vi:"Kỹ năng",who:["Training manager","Managers (their team)"],hero:"Each person's skills against their job, the gap, and the course that closes it.",pts:["A course or sign-off grants a skill at a level.","Feeds the manufacturing skills paths and workforce planning.","Hidden on the rail until it ships."],ph:"Later · L5"},
+    claims:{t:"Claims",vi:"Hoàn tiền",who:["HR lead","Training manager"],hero:"Claims waiting, agreed, refused, paid, against the yearly allowance. Rail count is claims waiting.",pts:["Receipt and certificate required; refusal needs a reason.","An agreed claim becomes a one-off amount for the pay team; never a payslip change on its own.","Pre-approved course requests pre-fill the claim."],ph:"Exists today · requests in L5"},
+    numbers:{t:"Numbers",vi:"Số liệu",who:["Training manager","Head of training","Insights users"],hero:"Any period: finished, passed, past date, hours, cost, compliance, effectiveness. One spreadsheet, one emailed pack.",pts:["By department, course, reason, site and country.","Training hours per person; cost against allowance and budget.","Statutory exports: Vietnam renewals due, India attendance register, Singapore hours."],ph:"Exists today · hours, cost, effectiveness, exports in L6"}
+  };
+  var stage=document.getElementById('stage');
+  var btns=document.querySelectorAll('#mock .rail button');
+  function pills(a){return a.map(function(w){return '<span class="pill gray">'+w+'</span>'}).join('')}
+  function show(k){
+    var s=S[k]; if(!s) return;
+    stage.innerHTML='<h3>'+s.t+'</h3><div class="vi">VI · '+s.vi+'</div><div class="who">'+pills(s.who)+'</div><div class="hero-moment"><b>Hero moment.</b> '+s.hero+'</div><ul>'+s.pts.map(function(p){return '<li>'+p+'</li>'}).join('')+'</ul><div class="ph">'+s.ph+'</div>';
+    btns.forEach(function(b){var on=b.getAttribute('data-k')===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false')});
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-k'))})});
+  show('overview');
+})();
+</script>
+</body>
+</html>

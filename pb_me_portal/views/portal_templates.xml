@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs for the new ESS pages                             -->
+  <!-- ============================================================= -->
+  <template id="portal_my_home_menu_ess" name="ESS portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="35">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'profile'" class="breadcrumb-item active">My Profile</li>
+      <li t-if="page_name == 'documents'" class="breadcrumb-item active">My Documents</li>
+      <li t-if="page_name == 'taxsheet'" class="breadcrumb-item active">Tax Sheet</li>
+      <li t-if="page_name == 'my_requests'" class="breadcrumb-item active">My requests</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The employee home (/my) — MEHOME                              -->
+  <!-- ============================================================= -->
+  <!-- Everything of ours on /my is gated on `pbme_home` (the controller sets
+       it only for a person with an employee record, and only on the home
+       route). Anyone else — customer, supplier, agency — gets the stock page
+       exactly as the platform draws it: the "My account" heading, the
+       contact column, the stock tiles.
+
+       For an employee: no "My account" heading and no contact column
+       (`my_details` is what draws both, M10), no breadcrumb bar, the new top
+       line before the tiles, and the bento + sections after them. The tiles
+       themselves are the fifteen modules' own (M-R2); `portal_docs_entry_pbme`
+       gives each one its badge and section, and the Interaction moves it. -->
+  <template id="portal_my_home_ess" name="ESS home cards"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="20">
+    <xpath expr="//t[@t-set='my_details']" position="attributes">
+      <attribute name="t-value">not pbme_home</attribute>
+    </xpath>
+    <xpath expr="//t[@t-set='my_details']" position="after">
+      <t t-set="no_breadcrumbs" t-value="no_breadcrumbs or bool(pbme_home)"/>
+    </xpath>
+    <xpath expr="//div[hasclass('o_portal_my_home')]" position="attributes">
+      <attribute name="t-att-class">' '.join(c for c in ('o_portal_my_home', pbme_home and 'pbme-home', pbme_employee_only and 'pbme-employee') if c)</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+      <t t-if="pbme_home" t-call="pb_me_portal.pbme_top"/>
+    </xpath>
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Profile</t>
+        <t t-set="text">View your details and request a change</t>
+        <t t-set="url" t-value="'/my/profile'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'profile_request_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Documents</t>
+        <t t-set="text">Your certificates, IDs and permits</t>
+        <t t-set="url" t-value="'/my/documents'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'document_count'"/>
+      </t>
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">My requests</t>
+        <t t-set="text">Everything you asked for, and where it is</t>
+        <t t-set="url" t-value="'/my/requests'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Tax Sheet</t>
+        <t t-set="text">Your PIT summary per period</t>
+        <t t-set="url" t-value="'/my/taxsheet'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="after">
+      <t t-if="pbme_home" t-call="pb_me_portal.pbme_bento"/>
+    </xpath>
+  </template>
+
+  <!-- Every tile on the employee home wears a coloured Lucide badge and says
+       which section it belongs to. The registry (`pb.me.home.tile_meta`) is
+       keyed by URL, so the fifteen tile-owning modules are never edited
+       (M-R2); a wrong word on a tile is fixed there. Off the employee home
+       (`pbme_home` unset) nothing changes: the stock picture and layout.
+
+       A hidden tile (its door is a card: Payslips, the pay explainer, Leave)
+       is still RENDERED — the stock counters script holds a reference to
+       every tile's counter — and is hidden by CSS on `data-pbme-hidden`. -->
+  <template id="portal_docs_entry_pbme" name="Employee home tile"
+            inherit_id="portal.portal_docs_entry" priority="20">
+    <xpath expr="//t[@t-set='force_show']" position="before">
+      <t t-set="pbme_tile" t-value="pbme_home and env['pb.me.home'].tile_meta(url)"/>
+      <t t-if="pbme_tile and pbme_tile.get('title')" t-set="title" t-value="pbme_tile['title']"/>
+      <t t-if="pbme_tile and pbme_tile.get('text')" t-set="text" t-value="pbme_tile['text']"/>
+      <t t-if="pbme_tile and pbme_tile.get('always')" t-set="config_card" t-value="True"/>
+      <t t-set="pbme_docs" t-value="pbme_tile and pbme_tile.get('path') == '/my/documents' and pbme_home.get('docs')"/>
+      <t t-if="pbme_docs and pbme_docs.get('expired') == 1" t-set="text">1 expired, upload the renewal</t>
+      <t t-elif="pbme_docs and pbme_docs.get('expired')" t-set="text"><t t-out="pbme_docs['expired']"/> expired, upload the renewals</t>
+      <t t-elif="pbme_docs and pbme_docs.get('expiring') == 1" t-set="text">1 expiring soon</t>
+      <t t-elif="pbme_docs and pbme_docs.get('expiring')" t-set="text"><t t-out="pbme_docs['expiring']"/> expiring soon</t>
+    </xpath>
+    <xpath expr="//div[contains(@t-att-class, 'o_portal_index_card')]" position="attributes">
+      <attribute name="t-att-data-pbme-group">pbme_tile and pbme_tile['group']</attribute>
+      <attribute name="t-att-data-pbme-seq">pbme_tile and pbme_tile['seq']</attribute>
+      <attribute name="t-att-data-pbme-hidden">pbme_tile and pbme_tile.get('hidden') and '1'</attribute>
+      <attribute name="t-att-style">pbme_tile and ('order: %s !important' % pbme_tile['seq'])</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('o_portal_icon')]" position="replace">
+      <div t-if="pbme_tile" t-attf-class="pbme-badge pbme-badge--#{pbme_tile['tone']}" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="pbme_tile['icon']"/></t></div>
+      <div t-elif="icon" class="o_portal_icon d-block align-self-start">
+        <img t-attf-src="#{icon}"/>
+      </div>
+    </xpath>
+  </template>
+
+  <!-- The top line: eyebrow (brand read as `ess_hero` does, never a literal
+       product name) + date, the greeting, ONE sentence built from facts, the
+       "who" pill. Words live here (M-R5); the payload carries numbers only.
+       Separators are drawn by CSS so no lone "·" becomes a translation term. -->
+  <template id="pbme_top" name="Employee home: top line">
+    <t t-set="pbme_p" t-value="pbme_home['person']"/>
+    <t t-set="pbme_pay" t-value="pbme_home.get('pay') or {}"/>
+    <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
+    <t t-set="pbme_days" t-value="pbme_pay.get('next_pay_days')"/>
+    <t t-set="pbme_brand"
+       t-value="request and (request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name') or request.env.company.name)"/>
+    <header class="pbme-top">
+      <div class="pbme-top-main">
+        <div class="pbme-eyebrow"><span t-esc="(pbme_brand and ('My %s' % pbme_brand)) or 'My workspace'"/><span class="pbme-eyebrow-date" t-out="pbme_p['date']" t-options='{"widget": "date", "format": "EEEE d MMMM"}'/></div>
+        <h1 class="pbme-greet"><t t-if="pbme_p['daypart'] == 'morning'">Morning,</t><t t-elif="pbme_p['daypart'] == 'afternoon'">Afternoon,</t><t t-else="">Evening,</t> <em t-out="pbme_p['short_name']"/></h1>
+        <p class="pbme-line">
+          <t t-if="pbme_days is not None and pbme_days &gt;= 2">Your next pay lands in <b><t t-out="pbme_days"/> days.</b></t>
+          <t t-elif="pbme_days == 1">Your next pay lands <b>tomorrow.</b></t>
+          <t t-elif="pbme_days == 0">Your next pay lands <b>today.</b></t>
+          <span t-if="pbme_days is not None" class="visually-hidden" t-out="' · '"/>
+          <t t-if="len(pbme_needs) &gt;= 2"><b><t t-out="len(pbme_needs)"/> things</b> need you.</t>
+          <t t-elif="pbme_needs" t-call="pb_me_portal.pbme_need_sentence"><t t-set="it" t-value="pbme_needs[0]"/></t>
+          <t t-elif="pbme_days is not None">Nothing needs you right now.</t>
+          <t t-else="">Your payslips, time off and documents, all in one place.</t>
+        </p>
+      </div>
+      <div class="pbme-who">
+        <img class="pbme-who-av" t-att-src="pbme_p['avatar_url']" alt="" loading="lazy"/>
+        <div class="pbme-who-txt">
+          <div class="pbme-who-n" t-out="pbme_p['name']"/>
+          <div class="pbme-who-r"><span t-if="pbme_p['job']" class="pbme-who-job" t-out="pbme_p['job']"/><span t-if="pbme_p['company']" class="pbme-who-co" t-out="pbme_p['company']"/></div>
+        </div>
+      </div>
+    </header>
+  </template>
+
+  <!-- One waiting thing, said as one plain sentence (`it` = a needs_you row). -->
+  <template id="pbme_need_sentence" name="Employee home: one thing that needs you">
+    <t t-set="n" t-value="it['n']"/>
+    <t t-if="it['key'] == 'shifts_to_confirm' and n == 1"><b>1 shift</b> is waiting for your OK.</t>
+    <t t-elif="it['key'] == 'shifts_to_confirm'"><b><t t-out="n"/> shifts</b> are waiting for your OK.</t>
+    <t t-elif="it['key'] == 'doc_expired' and n == 1">A document has <b>expired.</b></t>
+    <t t-elif="it['key'] == 'doc_expired'"><b><t t-out="n"/> documents</b> have expired.</t>
+    <t t-elif="it['key'] == 'doc_expiring' and n == 1">A document <b>needs renewing.</b></t>
+    <t t-elif="it['key'] == 'doc_expiring'"><b><t t-out="n"/> documents</b> need renewing.</t>
+    <t t-elif="it['key'] == 'timesheet_missing' and n == 1"><b>1 day</b> is missing on your timesheet.</t>
+    <t t-elif="it['key'] == 'timesheet_missing'"><b><t t-out="n"/> days</b> are missing on your timesheet.</t>
+    <t t-elif="it['key'] == 'overtime_pending' and n == 1">Your overtime request is <b>waiting with your manager.</b></t>
+    <t t-elif="it['key'] == 'overtime_pending'"><b><t t-out="n"/> overtime requests</b> are waiting with your manager.</t>
+    <t t-elif="it['key'] == 'training_overdue' and n == 1"><b>A course</b> is past its date.</t>
+    <t t-elif="it['key'] == 'training_overdue'"><b><t t-out="n"/> courses</b> are past their date.</t>
+    <t t-elif="it['key'] == 'training_due_soon' and n == 1"><b>A course</b> is due within a week.</t>
+    <t t-elif="it['key'] == 'training_due_soon'"><b><t t-out="n"/> courses</b> are due within a week.</t>
+    <t t-elif="it['key'] == 'goals_to_set'">Your goals are <b>waiting to be set.</b></t>
+    <t t-elif="it['key'] == 'profile_waiting'">Your profile change is <b>with HR.</b></t>
+    <t t-elif="it['key'] == 'profile_approved'">HR <b>approved</b> your profile change.</t>
+    <t t-elif="it.get('sentence') or it.get('label')" t-out="it.get('sentence') or it['label']"/>
+    <t t-else=""><b>1 thing</b> needs you.</t>
+  </template>
+
+  <!-- The bento and the sections below it. Slots in reading order: Pay,
+       Leave, This week, Needs you, the Me strip (the grid places them; on a
+       phone CSS reorders to Pay, Needs you, This week, Leave, Me). Leave and
+       This week are not drawn when their source is absent (`None`); the
+       no-leave / no-week modifier classes on the grid tell it which
+       fallback placement to use, so auto-placement can never leave a hole.
+       Section bodies start empty: the Interaction moves each tile in by its
+       data-pbme-group, and an empty section is never drawn. -->
+  <template id="pbme_bento" name="Employee home: cards and sections">
+    <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
+    <t t-set="pbme_extra" t-value="pbme_home.get('extra_cards') or []"/>
+    <div t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week', pbme_extra and 'pbme-bento--extra') if c)">
+      <t t-call="pb_me_portal.pbme_card_pay"/>
+      <t t-call="pb_me_portal.pbme_card_leave"/>
+      <t t-call="pb_me_portal.pbme_card_week"/>
+      <section class="pbme-b pbme-b-needs" data-pbme-slot="needs" aria-labelledby="pbme-needs-h">
+        <h2 class="pbme-lab" id="pbme-needs-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="15"/></t>Needs you<span t-if="pbme_needs" class="pbme-count" t-out="len(pbme_needs)"/></h2>
+        <div t-if="pbme_needs" class="pbme-needs">
+          <t t-foreach="pbme_needs" t-as="it">
+            <a class="pbme-need" t-att-href="it['url']">
+              <t t-call="pb_me_portal.pbme_need_row"/>
+              <span class="pbme-need-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+            </a>
+          </t>
+        </div>
+        <p t-else="" class="pbme-quiet"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>Nothing needs you right now</p>
+      </section>
+      <t t-foreach="pbme_extra" t-as="card"><t t-call="{{ card['template'] }}"/></t>
+      <section class="pbme-b pbme-b-me" data-pbme-slot="me" aria-labelledby="pbme-me-h">
+        <h2 class="visually-hidden" id="pbme-me-h">Me</h2>
+        <div class="pbme-me-body" data-pbme-section="me"/>
+      </section>
+    </div>
+    <section class="pbme-sec" aria-labelledby="pbme-sec-time">
+      <h2 class="pbme-sec-h" id="pbme-sec-time">Time</h2>
+      <div class="pbme-sec-body" data-pbme-section="time"/>
+    </section>
+    <section class="pbme-sec" aria-labelledby="pbme-sec-growth">
+      <h2 class="pbme-sec-h" id="pbme-sec-growth">Growth</h2>
+      <div class="pbme-sec-body" data-pbme-section="growth"/>
+    </section>
+    <section class="pbme-sec" aria-labelledby="pbme-sec-people">
+      <h2 class="pbme-sec-h" id="pbme-sec-people">People</h2>
+      <div class="pbme-sec-body" data-pbme-section="people"/>
+    </section>
+    <section class="pbme-sec" aria-labelledby="pbme-sec-more">
+      <h2 class="pbme-sec-h" id="pbme-sec-more">More</h2>
+      <div class="pbme-sec-body" data-pbme-section="more"/>
+    </section>
+  </template>
+
+  <!-- PAY (M2) — the hero card: the last net figure, a NEUTRAL delta against
+       the slip before it (grey, no arrow colour — M-R6), six bars for the
+       paid months (heights set here, server-side, as the bar height property; the newest
+       solid), the next pay day, and the two doors. Always drawn: with no slip
+       it says what will appear. Money only through the monetary widget, never
+       counted up in the browser (the locale's formatting stays here). -->
+  <template id="pbme_card_pay" name="Employee home: pay card">
+    <t t-set="pbme_pay" t-value="pbme_home.get('pay') or {'count': 0}"/>
+    <t t-set="pbme_last" t-value="pbme_pay.get('count') and pbme_pay.get('last') or None"/>
+    <t t-set="pbme_list_url" t-value="pbme_pay.get('list_url') or '/my/payslips'"/>
+    <section t-att-class="'pbme-b pbme-b-pay' + ('' if pbme_last else ' is-empty')" data-pbme-slot="pay" aria-labelledby="pbme-pay-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbme-pay-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'banknote'"/><t t-set="isz" t-value="15"/></t><t t-if="pbme_last">Last pay<span class="pbme-lab-sub"><span class="visually-hidden" t-out="' · '"/><t t-out="pbme_last['period_date']" t-options="{'widget': 'date', 'format': 'MMMM'}"/></span></t><t t-else="">Pay</t></h2>
+        <a class="pbme-lab-link" t-att-href="pbme_list_url">All payslips</a>
+      </div>
+      <t t-if="pbme_last">
+        <t t-set="pbme_cur" t-value="pbme_last['currency']"/>
+        <t t-set="pbme_net" t-value="pbme_last['net']"/>
+        <t t-set="pbme_prev" t-value="pbme_pay.get('previous_net')"/>
+        <t t-set="pbme_trend" t-value="pbme_pay.get('trend') or []"/>
+        <div t-if="pbme_net is not None" class="pbme-pay-big" t-out="pbme_net" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/>
+        <t t-if="pbme_prev is not None and pbme_net is not None and len(pbme_trend) &gt;= 2">
+          <t t-set="pbme_diff" t-value="pbme_net - pbme_prev"/>
+          <t t-set="pbme_prev_month" t-value="pbme_trend[-2]['month_date']"/>
+          <p t-if="pbme_cur.is_zero(pbme_diff)" class="pbme-pay-delta">Same as <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+          <p t-elif="pbme_diff &gt; 0" class="pbme-pay-delta"><span class="pbme-num" t-out="abs(pbme_diff)" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/> more than <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+          <p t-else="" class="pbme-pay-delta"><span class="pbme-num" t-out="abs(pbme_diff)" t-options="{'widget': 'monetary', 'display_currency': pbme_cur}"/> less than <span t-out="pbme_prev_month" t-options="{'widget': 'date', 'format': 'MMMM'}"/></p>
+        </t>
+        <t t-if="pbme_trend">
+          <t t-set="pbme_max" t-value="max([t['net'] for t in pbme_trend] + [0])"/>
+          <div class="pbme-bars" aria-hidden="true">
+            <t t-foreach="pbme_trend" t-as="t"><i t-att-class="'pbme-bar is-cur' if t_last else 'pbme-bar'" t-att-style="'--pbme-h: %g' % (round(max(t['net'], 0) * 100.0 / pbme_max, 1) if pbme_max &gt; 0 else 0) + '%'"/></t>
+          </div>
+          <div class="pbme-bars-x" aria-hidden="true">
+            <t t-foreach="pbme_trend" t-as="t"><span t-out="t['month_date']" t-options="{'widget': 'date', 'format': 'MMM'}"/></t>
+          </div>
+        </t>
+      </t>
+      <div t-else="" class="pbme-empty-card">
+        <span class="pbme-badge pbme-badge--indigo" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/></t></span>
+        <p class="pbme-empty-h">No payslips yet</p>
+        <p class="pbme-empty-d">Your first payslip appears here once payroll runs</p>
+      </div>
+      <div class="pbme-pay-foot">
+        <div class="pbme-pay-next">
+          <t t-if="pbme_pay.get('next_pay_date')">Next pay<b t-out="pbme_pay['next_pay_date']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM'}"/></t>
+          <t t-elif="pbme_last and pbme_last.get('paid_on')">Paid on<b t-out="pbme_last['paid_on']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM'}"/></t>
+        </div>
+        <div t-if="pbme_last" class="pbme-pay-act">
+          <a t-if="pbme_pay.get('explain_url')" class="pbme-btn pbme-btn--out" t-att-href="pbme_pay['explain_url']">Explain my pay</a>
+          <a t-if="pbme_last.get('pdf_url')" class="pbme-btn pbme-btn--pri" t-att-href="pbme_last['pdf_url']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>Payslip PDF</a>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <!-- LEAVE (M2) — days left as a ring. The ring is the page's ONE two-tone
+       (a conic-gradient of two flat colours, a chart — M-R1); its share is
+       left / allocated, set here as the ring share property. Never a full ring: when
+       nothing is taken yet the ring is all soft colour and says so. Green,
+       amber when the balance is low (never rose). Balances are not
+       year-bound (M3): "of N allocated", never "this year". Not drawn when
+       the workforce module is absent (`leave` is None). -->
+  <template id="pbme_card_leave" name="Employee home: leave card">
+    <t t-set="pbme_lv" t-value="pbme_home.get('leave')"/>
+    <section t-if="pbme_lv" t-att-class="'pbme-b pbme-b-leave' + ('' if pbme_lv['allocated'] &gt; 0 else ' is-empty')" data-pbme-slot="leave" aria-labelledby="pbme-leave-h">
+      <h2 class="pbme-lab" id="pbme-leave-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'umbrella'"/><t t-set="isz" t-value="15"/></t>Leave</h2>
+      <t t-if="pbme_lv['allocated'] &gt; 0">
+        <t t-set="pbme_full" t-value="pbme_lv['left'] &gt;= pbme_lv['allocated']"/>
+        <t t-set="pbme_pct" t-value="0 if pbme_full else max(0.0, min(100.0, pbme_lv['left'] * 100.0 / pbme_lv['allocated']))"/>
+        <div t-att-class="'pbme-ring is-low' if pbme_lv['low'] else 'pbme-ring'" t-att-style="'--pbme-pct: %g' % round(pbme_pct, 1) + '%'">
+          <span class="pbme-ring-in"><b class="pbme-num" t-out="env['pb.me.home'].fmt_num(pbme_lv['left'])"/><small t-if="pbme_lv['left'] == 1">day left</small><small t-else="">days left</small></span>
+        </div>
+        <p class="pbme-leave-cap">
+          <t t-if="pbme_full">None taken yet</t>
+          <t t-else="">of <t t-out="env['pb.me.home'].fmt_num(pbme_lv['allocated'])"/> allocated</t>
+          <span t-if="pbme_lv['booked_pending'] == 1" class="pbme-leave-wait"><span class="visually-hidden" t-out="' · '"/>1 request waiting</span>
+          <span t-elif="pbme_lv['booked_pending']" class="pbme-leave-wait"><span class="visually-hidden" t-out="' · '"/><t t-out="pbme_lv['booked_pending']"/> requests waiting</span>
+        </p>
+        <a class="pbme-btn pbme-btn--out pbme-leave-go" t-att-href="pbme_lv['url']">Request time off</a>
+      </t>
+      <div t-else="" class="pbme-empty-card">
+        <span class="pbme-badge pbme-badge--slate" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'umbrella'"/></t></span>
+        <p class="pbme-empty-h">No leave allocated yet</p>
+        <p class="pbme-empty-d">Your balance appears here once HR allocates your days</p>
+        <a class="pbme-lab-link" t-att-href="pbme_lv['url']">Open My Leave</a>
+      </div>
+    </section>
+  </template>
+
+  <!-- THIS WEEK (M2) — seven day cells from the schedule facade: a shift's
+       hours (indigo once confirmed, amber while it waits for the person),
+       approved leave green, a day off grey; today outlined. The day name is
+       formatted from the date in the reader's language (the facade's own
+       label is an English abbreviation). Not drawn when the workforce module
+       is absent (`week` is None). -->
+  <template id="pbme_card_week" name="Employee home: this week card">
+    <t t-set="pbme_wk" t-value="pbme_home.get('week')"/>
+    <section t-if="pbme_wk" class="pbme-b pbme-b-week" data-pbme-slot="week" aria-labelledby="pbme-week-h">
+      <h2 class="pbme-lab" id="pbme-week-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="15"/></t>This week<span t-if="pbme_wk['pending']" class="pbme-pill pbme-pill--amber"><t t-out="pbme_wk['pending']"/> to confirm</span></h2>
+      <t t-set="pbme_clock" t-value="pbme_wk.get('clock')"/>
+      <div t-if="pbme_clock" t-att-class="'pbme-clock is-%s' % pbme_clock['state']" data-pbew-live=""
+           t-att-data-state="pbme_clock['state']"
+           t-att-data-since-ms="pbme_clock.get('since_ms') or 0"
+           t-att-data-server-now-ms="pbme_clock.get('server_now_ms') or 0"
+           t-att-data-today-closed="pbme_clock.get('today_closed_minutes') or 0"
+           t-att-data-since-today="'1' if pbme_clock.get('since_days_ago', 0) == 0 else '0'">
+        <t t-set="pbme_open_m" t-value="pbme_clock.get('open_minutes') or 0"/>
+        <span class="pbme-clock-dot" aria-hidden="true"/>
+        <span class="pbme-clock-txt">
+          <t t-if="pbme_clock['state'] == 'in'">
+            <b>Clocked in since <t t-out="pbme_clock.get('since_label')"/></b>
+            <span class="pbme-clock-el"><span t-att-class="'' if pbme_open_m &gt;= 60 else 'd-none'" data-pbew-hwrap=""><span data-pbew-h="" t-out="pbme_open_m // 60"/> h </span><span data-pbew-m="" t-out="pbme_open_m % 60"/> m</span>
+          </t>
+          <t t-else="">
+            <b>Not clocked in</b>
+            <span t-if="pbme_clock.get('today_minutes', 0) &gt;= 60" class="pbme-clock-el">Today <t t-out="env['pb.me.home'].fmt_num(pbme_clock['today_minutes'] / 60.0)"/> h</span>
+            <span t-elif="pbme_clock.get('today_minutes')" class="pbme-clock-el">Today <t t-out="pbme_clock['today_minutes']"/> m</span>
+          </t>
+        </span>
+        <form action="/my/work/clock/toggle" method="post" class="pbme-clock-form" data-pbew-clock-form=""
+              t-att-data-tracking="'1' if pbme_clock.get('tracking') else '0'">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <input type="hidden" name="lat" value=""/>
+          <input type="hidden" name="lng" value=""/>
+          <input type="hidden" name="accuracy" value=""/>
+          <input type="hidden" name="nonce" value=""/>
+          <button t-if="pbme_clock['state'] == 'in'" type="submit" class="pbme-btn pbme-btn--out pbme-clock-btn"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-out'"/><t t-set="isz" t-value="15"/></t>Clock out</button>
+          <button t-else="" type="submit" t-att-class="'pbme-btn pbme-clock-btn %s' % ('pbme-btn--out' if pbme_wk['pending'] else 'pbme-btn--pri')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-in'"/><t t-set="isz" t-value="15"/></t>Clock in</button>
+        </form>
+      </div>
+      <ol class="pbme-week">
+        <t t-foreach="pbme_wk['days']" t-as="d">
+          <li t-att-class="'pbme-day is-%s%s' % (d['state'], ' is-today' if d['is_today'] else '')" t-att-title="d.get('shift') or None">
+            <span t-if="d.get('date')" class="pbme-day-d" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEE'}"/>
+            <span t-else="" class="pbme-day-d" t-out="d.get('label') or ''"/>
+            <span class="pbme-day-n" t-out="d.get('day_num') or ''"/>
+            <span t-if="d['state'] in ('acked', 'pending')" class="pbme-day-s"><t t-out="d.get('shift_short') or d.get('shift') or ''"/><t t-if="d.get('shifts', 0) &gt; 1" t-out="' +%s' % (d['shifts'] - 1)"/></span>
+            <span t-elif="d['state'] == 'leave'" class="pbme-day-s">On leave</span>
+            <span t-else="" class="pbme-day-s">off</span>
+          </li>
+        </t>
+      </ol>
+      <t t-set="pbme_has_shift" t-value="any(d['state'] in ('acked', 'pending') for d in pbme_wk['days'])"/>
+      <div class="pbme-week-foot">
+        <span class="pbme-week-h">
+          <t t-if="pbme_has_shift"><t t-out="env['pb.me.home'].fmt_num(pbme_wk.get('scheduled_h') or 0)"/> h scheduled<span t-if="pbme_wk.get('worked_h') is not None" class="pbme-week-worked"><span class="visually-hidden" t-out="' · '"/><t t-out="env['pb.me.home'].fmt_num(pbme_wk['worked_h'])"/> h worked so far</span></t>
+          <t t-else="">No shifts scheduled this week</t>
+        </span>
+        <a t-if="pbme_wk['pending']" class="pbme-btn pbme-btn--pri" t-att-href="pbme_wk['url']">Confirm shifts</a>
+        <a t-else="" class="pbme-btn pbme-btn--out" t-att-href="pbme_wk['url']">Open schedule</a>
+      </div>
+    </section>
+  </template>
+
+  <!-- One "Needs you" row: badge · what · grey detail (the chevron and the
+       link are the caller's). Colour per M-R6: amber = waiting on you, rose =
+       expired or late, green = approved, indigo/blue = with someone else.
+       TIERS T3a: a row another module adds (`_pbme_needs_extra`) carries its
+       own words and badge (`label`, `sub`, `icon`, `tone`) and is drawn by
+       the generic branch before the last fallback. -->
+  <template id="pbme_need_row" name="Employee home: needs-you row">
+    <t t-set="n" t-value="it['n']"/>
+    <t t-if="it['key'] == 'shifts_to_confirm'">
+      <span class="pbme-badge pbme-badge--amber"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">Confirm 1 shift</b><b t-else="">Confirm <t t-out="n"/> shifts</b><span class="pbme-need-d">For this week and next</span></span>
+    </t>
+    <t t-elif="it['key'] == 'doc_expired'">
+      <span class="pbme-badge pbme-badge--rose"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">1 document expired</b><b t-else=""><t t-out="n"/> documents expired</b><span class="pbme-need-d">Upload the renewal for HR</span></span>
+    </t>
+    <t t-elif="it['key'] == 'doc_expiring'">
+      <span class="pbme-badge pbme-badge--amber"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1 and it.get('days') == 0">A document expires today</b><b t-elif="n == 1 and it.get('days') == 1">A document expires tomorrow</b><b t-elif="n == 1">A document expires in <t t-out="it.get('days')"/> days</b><b t-else=""><t t-out="n"/> documents expire soon</b><span class="pbme-need-d">Upload the renewal so HR can verify it</span></span>
+    </t>
+    <t t-elif="it['key'] == 'timesheet_missing'">
+      <span class="pbme-badge pbme-badge--blue"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">1 day missing on your timesheet</b><b t-else=""><t t-out="n"/> days missing on your timesheet</b><span class="pbme-need-d">Fill in the hours</span></span>
+    </t>
+    <t t-elif="it['key'] == 'overtime_pending'">
+      <span class="pbme-badge pbme-badge--indigo"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'timer'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">1 overtime request waiting</b><b t-else=""><t t-out="n"/> overtime requests waiting</b><span class="pbme-need-d">With your manager</span></span>
+    </t>
+    <t t-elif="it['key'] == 'training_overdue'">
+      <span class="pbme-badge pbme-badge--rose"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'graduation-cap'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">1 course past its date</b><b t-else=""><t t-out="n"/> courses past their date</b><span class="pbme-need-d">Finish them to stay compliant</span></span>
+    </t>
+    <t t-elif="it['key'] == 'training_due_soon'">
+      <span class="pbme-badge pbme-badge--amber"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'graduation-cap'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-if="n == 1">1 course due within a week</b><b t-else=""><t t-out="n"/> courses due within a week</b><span class="pbme-need-d">Open My training to carry on</span></span>
+    </t>
+    <t t-elif="it['key'] == 'goals_to_set'">
+      <span class="pbme-badge pbme-badge--amber"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'target'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b>Your goals are waiting to be set</b><span class="pbme-need-d">Agree them with your manager</span></span>
+    </t>
+    <t t-elif="it['key'] == 'profile_waiting'">
+      <span class="pbme-badge pbme-badge--indigo"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b>Profile change with HR</b><span class="pbme-need-d">They will confirm it shortly</span></span>
+    </t>
+    <t t-elif="it['key'] == 'profile_approved'">
+      <span class="pbme-badge pbme-badge--green"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b>Profile change approved</b><span class="pbme-need-d">HR updated your details</span></span>
+    </t>
+    <t t-elif="it.get('label')">
+      <span t-att-class="'pbme-badge pbme-badge--%s' % (it.get('tone') or 'slate')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="it.get('icon') or 'bell'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b t-out="it['label']"/><span t-if="it.get('sub')" class="pbme-need-d" t-out="it['sub']"/></span>
+    </t>
+    <t t-else="">
+      <span class="pbme-badge pbme-badge--slate"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbme-need-body"><b>Something needs you</b><span class="pbme-need-d">Open it to see what</span></span>
+    </t>
+  </template>
+
+  <!-- Inline Lucide icons for the portal (no Font Awesome, no emoji — C11).
+       Call with `icon` set to the name; `isz` optional.
+
+       W87: pass the name with t-value="'name'", NEVER as a t-set BODY. A body
+       is rendered QWeb, and on a `website=True` page the editor's
+       inherit_branding wraps rendered text in `data-oe-*` markup — so
+       `<t t-set="icon">download</t>` arrives here as Markup carrying branding
+       attributes, every `icon == '...'` comparison is False, and every call
+       site falls through to the else-branch. This module shipped that way from
+       the start and it was invisible precisely because the else-branch is a
+       plausible document glyph: the download / alert / calculator / verified
+       icons all rendered as the same file sheet, which reads as a design
+       choice rather than a defect. A t-value is a plain string and cannot be
+       branded.
+
+       The else-branch is a generic document sheet, which is also exactly what
+       the 'file' name asks for, so the document rows deliberately have no
+       branch of their own. (W23: nothing may sit between a t-elif and its
+       t-else, not even a comment, which is why this note lives up here.) -->
+  <template id="ess_icon" name="ESS icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pbme-ic">
+      <t t-if="icon == 'file-text'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M16 13H8M16 17H8M10 9H8"/></t>
+      <t t-elif="icon == 'download'"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></t>
+      <t t-elif="icon == 'calculator'"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8M8 10h8M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'check-circle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'user'"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></t>
+      <t t-elif="icon == 'laptop'"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></t>
+      <t t-elif="icon == 'gift'"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></t>
+      <t t-elif="icon == 'calendar'"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'timer'"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></t>
+      <t t-elif="icon == 'sun'"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></t>
+      <t t-elif="icon == 'umbrella'"><path d="M22 12a10.06 10.06 1 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/></t>
+      <t t-elif="icon == 'target'"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></t>
+      <t t-elif="icon == 'trending-up'"><path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></t>
+      <t t-elif="icon == 'graduation-cap'"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></t>
+      <t t-elif="icon == 'wallet'"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></t>
+      <t t-elif="icon == 'banknote'"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></t>
+      <t t-elif="icon == 'award'"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></t>
+      <t t-elif="icon == 'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></t>
+      <t t-elif="icon == 'user-check'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></t>
+      <t t-elif="icon == 'user-plus'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></t>
+      <t t-elif="icon == 'route'"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></t>
+      <t t-elif="icon == 'briefcase'"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></t>
+      <t t-elif="icon == 'shield'"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></t>
+      <t t-elif="icon == 'map-pin'"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></t>
+      <t t-elif="icon == 'log-out'"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></t>
+      <t t-elif="icon == 'bell'"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></t>
+      <t t-elif="icon == 'chevron-right'"><path d="m9 18 6-6-6-6"/></t>
+      <t t-elif="icon == 'message-circle-question'"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></t>
+      <t t-elif="icon == 'list-checks'"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></t>
+      <t t-elif="icon == 'paperclip'"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></t>
+      <t t-elif="icon == 'send'"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'rotate-ccw'"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14"/><path d="M12 5v14"/></t>
+      <t t-elif="icon == 'heart'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></t>
+      <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></t>
+      <t t-elif="icon == 'megaphone'"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></t>
+      <t t-elif="icon == 'log-in'"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></t>
+      <t t-elif="icon == 'image'"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></t>
+      <t t-elif="icon == 'arrow-right'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></t>
+      <t t-elif="icon == 'inbox'"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></t>
+      <t t-elif="icon == 'receipt'"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></t>
+      <t t-elif="icon == 'plane'"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></t>
+      <t t-elif="icon == 'clipboard-list'"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></t>
+      <t t-else=""><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></t>
+    </svg>
+  </template>
+
+  <!-- Shared ESS page hero (t-call with `hero_title` / `hero_sub` set)
+
+       ERRORS E4-5. The eyebrow's default used to be the literal "My Payobook",
+       written INSIDE a t-esc expression — and the debranding walker must never
+       enter a t- attribute (ER1), because rewriting an expression would break
+       the render. So that one word was the last place on the employee portal
+       where a Rize employee was told they were looking at our product. A
+       literal in an expression cannot be fixed by a rule; it has to READ the
+       brand, which is what it does now: the configured brand first, then the
+       company's own name, which is a required field and so always answers.
+       No product name is written down here at all.
+
+       The last fallback is a NEUTRAL word, and it is reachable: `request` is
+       None when this template is rendered outside an HTTP request (a report, a
+       mail layout), and `None.env` would be a QWebException rather than a
+       missing eyebrow. A branding flourish must never be able to take a page
+       down. -->
+  <template id="ess_hero" name="ESS hero">
+    <div class="pbme-hero">
+      <div>
+        <t t-set="pbme_brand"
+           t-value="request and (request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name') or request.env.company.name)"/>
+        <div class="pbme-eyebrow"><t t-esc="hero_eyebrow or (pbme_brand and ('My %s' % pbme_brand)) or 'My workspace'"/></div>
+        <h1 class="pbme-h1"><t t-esc="hero_title"/></h1>
+        <p t-if="hero_sub" class="pbme-hero-sub"><t t-esc="hero_sub"/></p>
+      </div>
+      <div t-if="hero_actions" class="pbme-hero-actions">
+        <t t-out="hero_actions"/>
+      </div>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Payslips — WOW card grid                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_payslips" name="My Payslips (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Payslips</t>
+          <t t-set="hero_sub">Every pay period, with a themed PDF to download.</t>
+        </t>
+
+        <t t-if="not cards">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>No payslips yet</h3>
+            <p>Your payslips will appear here once payroll is run.</p>
+          </div>
+        </t>
+
+        <div t-else="" class="pbme-grid">
+          <t t-foreach="cards" t-as="c">
+            <div class="pbme-pay-card">
+              <div class="pbme-pay-top">
+                <div class="pbme-pay-period"><t t-esc="c['period']"/></div>
+                <span t-attf-class="pbme-badge pbme-badge--#{c['state']}"><t t-esc="c['state']"/></span>
+              </div>
+              <div class="pbme-pay-range"><t t-esc="c['range']"/></div>
+              <div class="pbme-pay-net" t-if="c['net'] is not None">
+                <span class="pbme-pay-net-l">Net pay</span>
+                <span class="pbme-pay-net-v" t-out="c['net']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </div>
+              <div class="pbme-pay-act">
+                <a class="pbme-btn pbme-btn--ghost" t-att-href="c['url']">View</a>
+                <a class="pbme-btn pbme-btn--primary" t-att-href="c['pdf']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>PDF</a>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div t-if="pager" class="pbme-pager">
+          <t t-call="portal.pager"/>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Payslip detail — themed                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_payslip_page" name="Payslip detail (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Payslip</t>
+          <t t-set="hero_title" t-value="period"/>
+        </t>
+
+        <div class="pbme-detail">
+          <div class="pbme-detail-main">
+            <div class="pbme-card">
+              <table class="pbme-lines">
+                <thead><tr><th>Component</th><th class="pbme-num">Amount</th></tr></thead>
+                <tbody>
+                  <t t-foreach="lines" t-as="l">
+                    <tr t-attf-class="pbme-line pbme-line--#{l['category']}">
+                      <td><t t-esc="l['name']"/></td>
+                      <td class="pbme-num" t-out="l['total']" t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'/>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pbme-detail-side">
+            <div class="pbme-card pbme-netcard" t-if="net is not None">
+              <div class="pbme-netcard-l">Net pay</div>
+              <div class="pbme-netcard-v" t-out="net" t-options='{"widget": "monetary", "display_currency": payslip.company_id.currency_id}'/>
+              <div class="pbme-netcard-p"><t t-esc="period"/></div>
+            </div>
+            <a class="pbme-btn pbme-btn--primary pbme-btn--block" t-att-href="pdf_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>Download PDF</a>
+            <a class="pbme-btn pbme-btn--ghost pbme-btn--block" href="/my/payslips">Back to payslips</a>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Profile — view + change request                              -->
+  <!-- ============================================================= -->
+  <template id="portal_my_profile" name="My Profile (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Profile</t>
+          <t t-set="hero_sub">Your details on file. Bank changes go through a separate secure flow.</t>
+        </t>
+
+        <div class="pbme-detail">
+          <!-- current card -->
+          <div class="pbme-detail-main">
+            <div class="pbme-card pbme-profile">
+              <div class="pbme-profile-head">
+                <img class="pbme-avatar" t-att-src="profile['avatar_url']" alt=""/>
+                <div>
+                  <div class="pbme-profile-name"><t t-esc="profile['name']"/></div>
+                  <div class="pbme-profile-job"><t t-esc="profile['job']"/><t t-if="profile['department']"> · <t t-esc="profile['department']"/></t></div>
+                </div>
+              </div>
+              <div class="pbme-kv-grid">
+                <div class="pbme-kv"><span>Work Email</span><b><t t-esc="profile['work_email'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Work Phone</span><b><t t-esc="profile['work_phone'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Private Phone</span><b><t t-esc="profile['private_phone'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Private Email</span><b><t t-esc="profile['private_email'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Address</span><b><t t-esc="profile['address'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Emergency Contact</span><b><t t-esc="profile['emergency_contact'] or '—'"/></b></div>
+                <div class="pbme-kv"><span>Emergency Phone</span><b><t t-esc="profile['emergency_phone'] or '—'"/></b></div>
+              </div>
+            </div>
+
+            <!-- change request form -->
+            <div class="pbme-card pbme-reqform">
+              <h3 class="pbme-card-title">Request a change</h3>
+              <p class="pbme-muted">Edit any field below and submit for HR review. Blank fields are left unchanged.</p>
+              <form action="/my/profile/request" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="pbme-form-grid">
+                  <label t-if="'x_phone' in editable_fields"><span>Private Phone</span>
+                    <input type="text" name="x_phone" t-att-value="profile['private_phone']"/></label>
+                  <label t-if="'x_private_email' in editable_fields"><span>Private Email</span>
+                    <input type="email" name="x_private_email" t-att-value="profile['private_email']"/></label>
+                  <label t-if="'x_address' in editable_fields" class="pbme-form-wide"><span>Address</span>
+                    <input type="text" name="x_address" t-att-value="profile['address']"/></label>
+                  <label t-if="'x_emergency_contact' in editable_fields"><span>Emergency Contact</span>
+                    <input type="text" name="x_emergency_contact" t-att-value="profile['emergency_contact']"/></label>
+                  <label t-if="'x_emergency_phone' in editable_fields"><span>Emergency Phone</span>
+                    <input type="text" name="x_emergency_phone" t-att-value="profile['emergency_phone']"/></label>
+                  <label class="pbme-form-wide"><span>Note to HR (optional)</span>
+                    <textarea name="note" rows="2"/></label>
+                </div>
+                <button type="submit" class="pbme-btn pbme-btn--primary">Preview &amp; submit</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- request history + stepper -->
+          <div class="pbme-detail-side">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">My requests</h3>
+              <t t-if="not pcr_requests">
+                <p class="pbme-muted">No change requests yet.</p>
+              </t>
+              <div t-else="" class="pbme-req-list">
+                <t t-foreach="pcr_requests" t-as="r">
+                  <a t-att-href="'/my/profile/request/%s' % r['id']" class="pbme-req-row">
+                    <span class="pbme-req-name"><t t-esc="r['name']"/></span>
+                    <span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state']"/></span>
+                  </a>
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- Profile change request review (diff preview + stepper + submit) -->
+  <template id="portal_profile_request" name="Profile request review (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_eyebrow">Profile change</t>
+          <t t-set="hero_title" t-value="req['name']"/>
+        </t>
+
+        <div class="pbme-detail">
+          <div class="pbme-detail-main">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">Proposed changes</h3>
+              <table class="pbme-diff">
+                <thead><tr><th>Field</th><th>Current</th><th>Proposed</th></tr></thead>
+                <tbody>
+                  <t t-foreach="req['diff']" t-as="d">
+                    <tr t-att-class="d['changed'] and 'is-changed' or ''">
+                      <td class="pbme-diff-f"><t t-esc="d['label']"/></td>
+                      <td class="pbme-diff-cur"><t t-esc="d['current'] or '—'"/></td>
+                      <td class="pbme-diff-new">
+                        <t t-if="d['changed']"><span class="pbme-diff-arrow">→</span> <b><t t-esc="d['proposed']"/></b></t>
+                        <t t-else=""><span class="pbme-muted">no change</span></t>
+                      </td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+              <div t-if="req['note']" class="pbme-req-note"><b>Note:</b> <t t-esc="req['note']"/></div>
+
+              <form t-if="can_submit" t-attf-action="/my/profile/request/#{req['id']}/submit" method="post" class="pbme-mt">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn pbme-btn--primary">Submit for approval</button>
+                <a href="/my/profile" class="pbme-btn pbme-btn--ghost">Back</a>
+              </form>
+              <div t-else="" class="pbme-mt">
+                <a href="/my/profile" class="pbme-btn pbme-btn--ghost">Back to profile</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbme-detail-side">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">Approval</h3>
+              <t t-call="pb_me_portal.ess_stepper">
+                <t t-set="stepper_steps" t-value="req['steps']"/>
+                <t t-set="stepper_refused" t-value="req['refused']"/>
+              </t>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <template id="portal_profile_error" name="Profile error (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic pbme-empty-ic--err"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We couldn't process that</h3>
+          <p><t t-esc="error"/></p>
+          <a href="/my/profile" class="pbme-btn pbme-btn--primary">Back to profile</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- Read-only stepper — steps precomputed in the controller. `refused` shows
+       the chain as stopped. -->
+  <template id="ess_stepper" name="ESS approval stepper">
+    <div t-attf-class="pbme-stepper #{stepper_refused and 'is-refused' or ''}">
+      <t t-foreach="stepper_steps" t-as="s">
+        <div t-attf-class="pbme-step pbme-step--#{s['status']}">
+          <span class="pbme-step-dot"/>
+          <span class="pbme-step-lab"><t t-esc="s['label']"/></span>
+        </div>
+      </t>
+      <div t-if="stepper_refused" class="pbme-step pbme-step--refused">
+        <span class="pbme-step-dot"/><span class="pbme-step-lab">Refused</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Documents — own vault + upload                               -->
+  <!-- ============================================================= -->
+  <template id="portal_my_documents" name="My Documents (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Documents</t>
+          <t t-set="hero_sub">Upload your certificates and IDs. HR verifies each one.</t>
+        </t>
+
+        <div class="pbme-detail">
+          <div class="pbme-detail-main">
+            <div class="pbme-card">
+              <t t-if="not documents">
+                <p class="pbme-muted">You haven't uploaded any documents yet.</p>
+              </t>
+              <div t-else="" class="pbme-doc-list">
+                <t t-foreach="documents" t-as="d">
+                  <div class="pbme-doc-row">
+                    <div class="pbme-doc-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file'"/></t></div>
+                    <div class="pbme-doc-main">
+                      <div class="pbme-doc-name"><t t-esc="d['name']"/></div>
+                      <div class="pbme-doc-meta">
+                        <span class="pbme-doc-cat"><t t-esc="d['category']"/></span>
+                        <t t-if="d['expiry_date']"><span t-attf-class="pbme-exp pbme-exp--#{d['expiry_state']}">expires <t t-esc="d['expiry_date']"/></span></t>
+                      </div>
+                    </div>
+                    <div class="pbme-doc-side">
+                      <span t-if="d['verified']" class="pbme-verified"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="14"/></t>Verified</span>
+                      <span t-else="" class="pbme-pending">Pending</span>
+                      <a t-if="d['download']" class="pbme-icon-btn" t-att-href="d['download']" title="Download"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="16"/></t></a>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbme-detail-side">
+            <div class="pbme-card">
+              <h3 class="pbme-card-title">Upload a document</h3>
+              <form action="/my/documents/upload" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <label class="pbme-flabel">Category
+                  <select name="category_id" required="required">
+                    <t t-foreach="categories" t-as="cat">
+                      <option t-att-value="cat.id"><t t-esc="cat.name"/></option>
+                    </t>
+                  </select>
+                </label>
+                <label class="pbme-flabel">Title
+                  <input type="text" name="title" placeholder="e.g. Degree certificate"/></label>
+                <label class="pbme-flabel">Expiry date (if any)
+                  <input type="date" name="expiry_date"/></label>
+                <label class="pbme-flabel">File (PDF, JPG, PNG)
+                  <input type="file" name="document" accept="image/png,image/jpeg,application/pdf" required="required"/></label>
+                <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">Upload</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Tax sheet — PIT summary                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_my_taxsheet" name="Tax Sheet (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Tax Sheet</t>
+          <t t-set="hero_sub">Your personal income tax summary, period by period.</t>
+        </t>
+
+        <t t-if="not rows">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'calculator'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>No tax data yet</h3>
+            <p>Your PIT summary appears once you have finalized payslips.</p>
+          </div>
+        </t>
+
+        <t t-else="">
+          <!-- YTD tiles -->
+          <div class="pbme-tiles">
+            <t t-foreach="codes" t-as="c">
+              <div class="pbme-tile">
+                <div class="pbme-tile-l"><t t-esc="labels[c_index]"/></div>
+                <div class="pbme-tile-v" t-out="ytd[c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                <div class="pbme-tile-y" t-if="ytd_year">YTD <t t-esc="ytd_year"/></div>
+              </div>
+            </t>
+          </div>
+
+          <div class="pbme-card pbme-tablewrap">
+            <table class="pbme-taxtable">
+              <thead>
+                <tr>
+                  <th>Period</th>
+                  <t t-foreach="codes" t-as="c"><th class="pbme-num"><t t-esc="labels[c_index]"/></th></t>
+                </tr>
+              </thead>
+              <tbody>
+                <t t-foreach="rows" t-as="row">
+                  <tr>
+                    <td><a t-att-href="row['url']"><t t-esc="row['period']"/></a></td>
+                    <t t-foreach="codes" t-as="c">
+                      <td class="pbme-num">
+                        <t t-if="row['cells'][c] is not None" t-out="row['cells'][c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                        <t t-else="">—</t>
+                      </td>
+                    </t>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  TIERS T3a — My requests: everything the person asked for      -->
+  <!-- ============================================================= -->
+  <!-- One timeline, newest first, grouped by month. Each row: the kind's
+       badge, the title, the kind and date in grey, and a status pill in the
+       quiet-board palette — the pill is coloured ONLY when the person has to
+       do something (`act`); a request with somebody else wears a quiet amber
+       dot (`wait`); a finished one is grey. Rows come from
+       `pb.me.home.get_my_requests` (soft sources, one savepoint each); the
+       words of a row (kind, title, status) are the source's own. -->
+  <template id="portal_my_requests" name="My requests (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbme-rq">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My requests</t>
+          <t t-set="hero_sub">Everything you have asked for, in one place, with where it is now.</t>
+          <t t-if="ask_hr_url" t-set="hero_actions"><a class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="16"/></t>Ask HR</a></t>
+        </t>
+
+        <t t-if="counts['all']">
+          <p class="pbme-rq-strip" aria-live="polite">
+            <span t-att-class="'pbme-rq-stat is-act' if counts['act'] else 'pbme-rq-stat'"><b t-out="counts['act']"/> waiting on you</span>
+            <span class="pbme-rq-stat"><b t-out="counts['wait']"/> with someone</span>
+            <span class="pbme-rq-stat"><b t-out="counts['done']"/> done</span>
+          </p>
+          <nav class="pbme-chips" aria-label="Show">
+            <a t-att-class="'pbme-chip is-on' if bucket == 'all' else 'pbme-chip'" href="/my/requests" t-att-aria-current="'page' if bucket == 'all' else None">All<span class="pbme-chip-n" t-out="counts['all']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'act' else 'pbme-chip'" href="/my/requests?filter=act" t-att-aria-current="'page' if bucket == 'act' else None">Waiting on you<span class="pbme-chip-n" t-out="counts['act']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'wait' else 'pbme-chip'" href="/my/requests?filter=wait" t-att-aria-current="'page' if bucket == 'wait' else None">With someone<span class="pbme-chip-n" t-out="counts['wait']"/></a>
+            <a t-att-class="'pbme-chip is-on' if bucket == 'done' else 'pbme-chip'" href="/my/requests?filter=done" t-att-aria-current="'page' if bucket == 'done' else None">Done<span class="pbme-chip-n" t-out="counts['done']"/></a>
+          </nav>
+        </t>
+
+        <div t-if="not counts['all']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nothing asked yet</h3>
+          <p>Leave, a timesheet fix, a profile change, a question for HR: everything you ask for lands here, with where it is now.</p>
+          <a t-if="ask_hr_url" class="pbme-btn pbme-btn--primary" t-att-href="ask_hr_url">Ask HR a question</a>
+        </div>
+        <div t-elif="not months" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3 t-if="bucket == 'act'">Nothing is waiting on you</h3>
+          <h3 t-elif="bucket == 'wait'">Nothing is with anyone right now</h3>
+          <h3 t-else="">Nothing finished yet</h3>
+          <p t-if="bucket == 'act'">When something needs your answer, it shows here first.</p>
+          <p t-elif="bucket == 'wait'">A request you send stays here until somebody decides.</p>
+          <p t-else="">A request moves here once it is decided.</p>
+          <a class="pbme-btn pbme-btn--ghost" href="/my/requests">Show everything</a>
+        </div>
+        <div t-else="" class="pbme-rq-timeline" data-pbme-rows="">
+          <section t-foreach="months" t-as="m" class="pbme-rq-month">
+            <h2 class="pbme-rq-month-h" t-out="m['month']" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/>
+            <ol class="pbme-rq-list">
+              <li t-foreach="m['rows']" t-as="r" class="pbme-rq-li">
+                <a t-att-href="r['url'] or None" t-att-class="'pbme-rq-row is-%s%s' % (r['tone'], '' if r['url'] else ' is-static')">
+                  <span t-att-class="'pbme-rq-ic is-act' if r['tone'] == 'act' else 'pbme-rq-ic'" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="r['icon']"/><t t-set="isz" t-value="16"/></t></span>
+                  <span class="pbme-rq-body">
+                    <b class="pbme-rq-title" t-out="r['title']"/>
+                    <span class="pbme-rq-meta"><span class="pbme-rq-kind" t-out="r['kind']"/><span class="pbme-rq-date" t-out="r['date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></span>
+                  </span>
+                  <span t-att-class="'pbme-rq-pill pbme-rq-pill--%s' % r['tone']"><i class="pbme-rq-dot" aria-hidden="true"/><t t-out="r['state_label']"/></span>
+                  <span t-if="r['url']" class="pbme-rq-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+                </a>
+              </li>
+            </ol>
+          </section>
+          <div t-if="more_url" class="pbme-rq-more">
+            <a class="pbme-btn pbme-btn--ghost" t-att-href="more_url">Show earlier</a>
+          </div>
+          <p class="pbme-rq-keys" aria-hidden="true">Tip: use the arrow keys to move between requests, and Enter to open one.</p>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  TIERS T1 — the fence: no "Apps" link for portal-only people  -->
+  <!-- ============================================================= -->
+  <!-- The account menu's "Apps" entry (desktop and mobile dropdown, on every
+       portal and website page) is a door into the backend. A portal-only
+       person (`res.users._pb_portal_only()`: employee-only, no role, no
+       direct report, no open approval seat — ledger T-R8) does not get it
+       drawn. Everyone else sees it exactly as before. The web-client route
+       bounce in controllers/ess_landing.py is the real block; this only
+       stops offering a link that would bounce.
+
+       biz_deroute_website patches the same anchor's `href` (to /bizapp);
+       both are `attributes` patches on one node and both apply. The method
+       is exception-safe (ledger T-R2/T5), so the page can never 500 on it. -->
+  <template id="portal_user_dropdown_portal_only"
+            inherit_id="portal.user_dropdown"
+            name="Account menu: no Apps link for portal-only employees">
+    <xpath expr="//a[@id='o_backend_user_dropdown_link']" position="attributes">
+      <attribute name="t-if">not user_id._pb_portal_only()</attribute>
+    </xpath>
+  </template>
+
+</odoo>

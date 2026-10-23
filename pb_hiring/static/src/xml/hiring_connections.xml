@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_hiring.Connections">
+    <div class="pb-hiring-connect">
+      <header class="hc-header">
+        <div><span class="hc-eyebrow" t-esc="state.company"/><h1>Hiring connections</h1><p>Bring the next step closer. Connect once, check it here, use it where you hire.</p></div>
+        <button class="btn btn-outline-secondary" t-on-click="back">Back to hiring setup</button>
+      </header>
+      <div t-if="state.error" class="alert alert-danger" role="alert" t-esc="state.error"/>
+      <div class="hc-grid">
+        <section t-foreach="state.cards" t-as="card" t-key="card.key" class="hc-card">
+          <div class="hc-card-top"><span class="hc-mark" t-esc="card.title.slice(0,1)"/><span class="hc-status" t-att-class="{'hc-on': card.enabled}" t-esc="card.status"/></div>
+          <h2 t-esc="card.title"/><p t-esc="card.description"/>
+          <small t-if="card.checked_at">Last checked <t t-esc="card.checked_at"/> UTC</small>
+          <button class="btn btn-primary" t-on-click="() => this.select(card)"><t t-if="card.check_ok">Manage connection</t><t t-else="">Set up connection</t><span aria-hidden="true"> →</span></button>
+        </section>
+      </div>
+      <section class="hc-native">
+        <div><span class="hc-eyebrow">Your hiring rules</span><h2>Keep the decisions in Payobook</h2><p>Choose who sees what, who approves cover and how an offer’s employer cost is calculated.</p></div>
+        <div class="hc-native-actions">
+          <button class="btn btn-outline-primary" t-on-click="() => this.openAction('pb_hiring.action_visibility_policy')">Stage visibility</button>
+          <button class="btn btn-outline-primary" t-on-click="() => this.openAction('pb_hiring.action_pb_hiring_country_rule')">Cover approvers</button>
+          <button class="btn btn-outline-primary" t-on-click="() => this.openAction('pb_hiring.action_offer_cost_profile')">Country offer setup</button>
+        </div>
+      </section>
+      <section class="hc-board-note"><h2>Job boards</h2><p>Careers applications, referrals and agency submissions already arrive in Payobook. LinkedIn, JobStreet and VietnamWorks currently use tracked links and posting packs. Direct posting and applications made on a board need that board’s approved API access and connector. They are not activated by these connection settings.</p></section>
+      <div t-if="state.selected" class="hc-overlay" t-on-keydown="onDialogKey">
+        <section class="hc-wizard" t-ref="dialog" role="dialog" aria-modal="true" aria-labelledby="hc-title">
+          <header><div><span class="hc-eyebrow">Connection guide</span><h2 id="hc-title" t-esc="state.selected.title"/></div><button class="btn btn-light" aria-label="Close" t-on-click="close" t-att-disabled="state.busy">×</button></header>
+          <ol class="hc-steps"><li t-foreach="['Overview', 'Configure', 'Check', 'Finish']" t-as="step" t-key="step" t-att-class="{'current': state.step === step_index, 'done': state.step > step_index}"><span t-esc="step_index + 1"/><t t-esc="step"/></li></ol>
+          <div class="hc-wizard-body">
+            <div t-if="state.error" class="alert alert-danger" role="alert" t-esc="state.error"/>
+            <t t-if="state.step === 0"><h3>What this makes possible</h3><p class="hc-intro" t-esc="state.selected.description"/><div class="hc-help"><b>Before you start</b><p t-esc="state.selected.help"/></div></t>
+            <t t-if="state.step === 1">
+              <p t-esc="state.selected.help"/>
+              <label t-foreach="state.selected.fields" t-as="fld" t-key="fld.key" class="hc-field"><span t-esc="fld.label"/><select t-if="state.selected.key === 'docusign' and fld.key === 'environment'" class="form-control" t-model="state.values[fld.key]"><option value="">Choose an environment</option><option value="demo">Demo (test signatures)</option><option value="production">Production</option></select><textarea t-elif="fld.key === 'private_key'" class="form-control" rows="5" t-model="state.values[fld.key]" autocomplete="off" spellcheck="false" style="-webkit-text-security: disc;" t-att-placeholder="fld.stored ? 'Already stored — leave blank to keep' : 'Paste the PEM private key, including BEGIN and END lines'"/><input t-else="" class="form-control" t-att-type="fld.secret ? 'password' : 'text'" t-model="state.values[fld.key]" autocomplete="off" t-att-placeholder="fld.stored ? 'Already stored — leave blank to keep' : ''"/><small t-if="fld.secret">Stored securely. The saved value is never displayed.</small></label>
+              <div t-if="!state.selected.fields.length" class="hc-help">Use the existing Calendar or Email settings to authorise the account, then check the connection here. Your administrator supplies the application credentials; organisers connect their own calendars.</div>
+            </t>
+            <t t-if="state.step === 2"><h3>Check before switching on</h3><p>The check reads the connection. It does not send an offer or message to a candidate.</p><div class="hc-result" t-att-class="{'passed': state.selected.check_ok}" role="status"><b t-esc="state.selected.check_ok ? 'Connection check passed' : 'Next action'"/><p t-esc="state.selected.note || 'Run the check to see what is ready and what still needs attention.'"/></div><div t-if="['docusign','documenso','whatsapp'].includes(state.selected.key)" class="hc-help"><b>Provider webhook address</b><p>Use the matching provider secret. DocuSign callbacks are attached automatically to new envelopes; enable Connect HMAC in the DocuSign account first.</p><code t-esc="state.selected.callback"/></div></t>
+            <t t-if="state.step === 3"><h3 t-esc="state.selected.enabled ? 'Connection enabled' : 'Connection paused'"/><p t-esc="state.selected.note"/><p>Complete a controlled end-to-end test before using this with real candidates.</p></t>
+          </div>
+          <footer><button t-if="state.step > 0 and state.step &lt; 3" class="btn btn-outline-secondary" t-on-click="() => this.state.step--" t-att-disabled="state.busy">Back</button><span class="hc-grow"/><span t-if="state.busy" role="status">Working…</span><button t-if="state.step === 0" class="btn btn-primary" t-on-click="() => this.state.step = 1">Get started →</button><button t-if="state.step === 1" class="btn btn-primary" t-on-click="save" t-att-disabled="state.busy">Save and continue →</button><button t-if="state.step === 2" class="btn btn-outline-primary" t-on-click="check" t-att-disabled="state.busy">Run connection check</button><button t-if="state.step === 2 and state.selected.check_ok" class="btn btn-primary" t-on-click="enable" t-att-disabled="state.busy"><t t-if="state.selected.enabled">Pause connection</t><t t-else="">Enable connection →</t></button><button t-if="state.step === 3" class="btn btn-primary" t-on-click="close">Done</button></footer>
+        </section>
+      </div>
+    </div>
+  </t>
+</templates>

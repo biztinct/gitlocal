@@ -1,0 +1,3392 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_payai_actions
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid " (sign-off %(i)s of %(n)s)"
+msgstr " (bước duyệt %(i)s trên %(n)s)"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "\"%(name)s\" is %(state)s now, so it cannot be undone here."
+msgstr "\"%(name)s\" hiện đang ở trạng thái %(state)s, nên không thể hoàn tác ở đây."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "\"%(what)s\" is waiting for %(who)s at \"%(step)s\". It comes to you at \"%(mine)s\" after that."
+msgstr "\"%(what)s\" đang chờ %(who)s ở bước \"%(step)s\". Sau đó yêu cầu sẽ đến bạn ở bước \"%(mine)s\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "\"%(what)s\" is waiting for %(who)s at \"%(step)s\". You are not the one who decides it, so I cannot do it for you."
+msgstr "\"%(what)s\" đang chờ %(who)s ở bước \"%(step)s\". Bạn không phải người quyết định việc này, nên tôi không thể làm thay bạn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "\"%(what)s\" now waits for %(who)s at \"%(step)s\"."
+msgstr "\"%(what)s\" hiện đang chờ %(who)s ở bước \"%(step)s\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(a)s to %(b)s %(month)s"
+msgstr "%(a)s đến %(b)s %(month)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(field)s is already %(value)s."
+msgstr "%(field)s đã là %(value)s rồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(first)s and %(last)s"
+msgstr "%(first)s và %(last)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(first)s or %(last)s"
+msgstr "%(first)s hoặc %(last)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(n)s payslip(s) need a look before this goes for approval. Open the run to see them."
+msgstr "%(n)s phiếu lương cần xem lại trước khi gửi duyệt. Mở đợt lương để xem."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(n)s payslips already made for this month are taken into the run instead of being made again."
+msgstr "%(n)s phiếu lương đã lập cho tháng này được đưa vào đợt lương, không lập lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(n)s people in this company are not covered by this scheme and stay out of this run."
+msgstr "%(n)s người trong công ty không thuộc chương trình lương này và không nằm trong đợt lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(n)s people this scheme pays are called \"%(name)s\". Type more of the name, or open the screen to pick them."
+msgstr "Có %(n)s người được trả theo chương trình lương này tên là \"%(name)s\". Hãy gõ thêm tên, hoặc mở màn hình để chọn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(n)s people · %(net)s net"
+msgstr "%(n)s người · thực nhận %(net)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(n)s people · %(which)s"
+msgstr "%(n)s người · %(which)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(name)s is %(state)s."
+msgstr "%(name)s đang ở trạng thái %(state)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(name)s is marked %(status)s, which a usual run leaves out. They are in this run because you named them."
+msgstr "%(name)s đang ở tình trạng %(status)s, thường không có trong đợt lương. Người này có trong đợt lương vì bạn đã nêu tên."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(name)s left on %(date)s (marked %(status)s). They are in this run because you named them."
+msgstr "%(name)s đã nghỉ việc ngày %(date)s (tình trạng %(status)s). Người này có trong đợt lương vì bạn đã nêu tên."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(names)s (%(n)s of %(all)s)"
+msgstr "%(names)s (%(n)s trên %(all)s)"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%(scheme)s already has a run for %(month)s"
+msgstr "%(scheme)s đã có đợt lương %(month)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(step)s, %(i)s of %(n)s"
+msgstr "%(step)s, bước %(i)s trên %(n)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/gate.py:0
+msgid "%(subject)s is for payroll staff. Your sign-in does not have the %(right)s right. Ask your administrator to change this under Settings › Access and delegations."
+msgstr "%(subject)s dành cho nhân viên tính lương. Tài khoản của bạn chưa có quyền %(right)s. Hãy nhờ quản trị viên thay đổi trong Cài đặt › Quyền truy cập & bàn giao."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(who)s asked PayAI to remind %(whom)s about \"%(step)s\" on \"%(what)s\""
+msgstr "%(who)s nhờ PayAI nhắc %(whom)s về bước \"%(step)s\" của \"%(what)s\""
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%(who)s, covering for %(whose)s"
+msgstr "%(who)s, đang làm thay %(whose)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%s gets a note on the request and a to-do."
+msgstr "%s nhận một ghi chú trên yêu cầu và một việc cần làm."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%s gets a note on the request and a to-do. Recorded."
+msgstr "%s nhận một ghi chú trên yêu cầu và một việc cần làm. Đã ghi lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "%s is not among the people this scheme pays."
+msgstr "%s không có trong số người được trả theo chương trình lương này."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%s still has to approve this step too"
+msgstr "%s cũng vẫn phải duyệt bước này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%s was already reminded about this today."
+msgstr "Hôm nay %s đã được nhắc về việc này rồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "%s was picked before this change and no longer fits."
+msgstr "%s đã được chọn trước thay đổi này và không còn phù hợp."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%s were changed by somebody else since and were left alone"
+msgstr "%s giá trị đã được người khác sửa sau đó nên được giữ nguyên"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "%s were sent before; those people are not emailed again."
+msgstr "%s phiếu đã được gửi trước đó; những người này không nhận email lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "%s · nobody can decide it yet"
+msgstr "%s · chưa ai quyết định được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "(not set)"
+msgstr "(chưa đặt)"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "1 person in this company is not covered by this scheme and stays out of this run."
+msgstr "1 người trong công ty không thuộc chương trình lương này và không nằm trong đợt lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "1 person · %(net)s net"
+msgstr "1 người · thực nhận %(net)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "1 was changed by somebody else since and was left alone"
+msgstr "1 giá trị đã được người khác sửa sau đó nên được giữ nguyên"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "A change made here counts from today. For a change that starts on %s, ask me again in that month."
+msgstr "Thay đổi làm ở đây tính từ hôm nay. Nếu muốn bắt đầu từ %s, hãy hỏi lại tôi vào tháng đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "A few more words, please: say what should change."
+msgstr "Bạn viết thêm vài chữ nhé: cần sửa gì."
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "A person who asked by voice may confirm a prepare request by saying go ahead."
+msgstr "Người hỏi bằng giọng nói có thể xác nhận một việc chuẩn bị bằng cách nói \"tiến hành\"."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__payai_voice_go_ahead
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__payai_voice_go_ahead
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "A spoken 'go ahead' counts for prepare requests"
+msgstr "Câu nói \"tiến hành\" được tính cho việc chuẩn bị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "A spoken go-ahead is switched off here, so I did nothing. Tap Do it on the plan card if it is right."
+msgstr "Ở đây không dùng lời nói để xác nhận, nên tôi chưa làm gì. Nếu kế hoạch đúng, hãy bấm Thực hiện trên thẻ."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__action_key
+msgid "Action"
+msgstr "Hành động"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "After you it stops at %s: nobody can decide that step yet, so it waits there until whoever looks after approvals sets it up."
+msgstr "Sau bạn, yêu cầu dừng ở %s: chưa ai quyết định được bước đó, nên yêu cầu chờ ở đó cho đến khi người phụ trách phê duyệt thiết lập xong."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "After you, it goes to %(step)s%(who)s."
+msgstr "Sau bạn, yêu cầu chuyển đến %(step)s%(who)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "All %(n)s covered by this scheme"
+msgstr "Toàn bộ %(n)s người thuộc chương trình lương này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Already gone"
+msgstr "Không còn nữa"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Already sent"
+msgstr "Đã gửi rồi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Already set to this"
+msgstr "Đã là giá trị này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Already waiting"
+msgstr "Đang chờ rồi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Another request of yours is still running. Wait for it to finish, then press Do it again."
+msgstr "Một yêu cầu khác của bạn vẫn đang chạy. Chờ yêu cầu đó xong rồi bấm Thực hiện lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approve"
+msgstr "Duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approve %s"
+msgstr "Duyệt %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approve something waiting for you"
+msgstr "Duyệt việc đang chờ bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approve the June Retail run"
+msgstr "Duyệt đợt lương tháng 6 Bán lẻ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved at %(step)s. It moves to %(next)s%(who)s."
+msgstr "Đã duyệt ở bước %(step)s. Yêu cầu chuyển sang %(next)s%(who)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved at %(step)s. That was the last step, so it goes ahead."
+msgstr "Đã duyệt ở bước %(step)s. Đó là bước cuối, nên yêu cầu được thực hiện."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved at %(step)s. That was the last step: the run is approved. Nobody has been paid yet."
+msgstr "Đã duyệt ở bước %(step)s. Đó là bước cuối: đợt lương đã được duyệt. Chưa ai được trả lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Approved straight away"
+msgstr "Được duyệt ngay"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved, but it could not be carried out yet: %s"
+msgstr "Đã duyệt, nhưng chưa thực hiện được: %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved. It moves to %(next)s%(who)s."
+msgstr "Đã duyệt. Yêu cầu chuyển sang %(next)s%(who)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved. That was the last step, so it goes ahead."
+msgstr "Đã duyệt. Đó là bước cuối, nên yêu cầu được thực hiện."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approved. That was the last step: the run is approved. Nobody has been paid yet."
+msgstr "Đã duyệt. Đó là bước cuối: đợt lương đã được duyệt. Chưa ai được trả lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Approved. The Excel can be downloaded."
+msgstr "Đã duyệt. Có thể tải Excel."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Approving"
+msgstr "Việc duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "As the scheme is set up"
+msgstr "Theo thiết lập của chương trình lương"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/payai_palette.js:0
+msgid "Ask PayAI to…"
+msgstr "Nhờ PayAI…"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Ask a payroll manager to delete it, or leave it as a draft."
+msgstr "Hãy nhờ quản lý lương xoá, hoặc để nguyên ở dạng nháp."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__user_id
+msgid "Asked by"
+msgstr "Người hỏi"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_pb_audit_console
+msgid "Audit & Compliance Console"
+msgstr "Bảng điều khiển kiểm toán & tuân thủ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Back to %s"
+msgstr "Trả về cho %s"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__undo_until
+msgid "Can be undone until"
+msgstr "Có thể hoàn tác đến"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__plan_json
+msgid "Card shown"
+msgstr "Thẻ đã hiển thị"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "Change %s"
+msgstr "Đổi %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Change Lan's role"
+msgstr "Đổi vai trò của Lan"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Change a pay value"
+msgstr "Đổi một giá trị lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Change access or roles"
+msgstr "Đổi quyền truy cập hoặc vai trò"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Changed"
+msgstr "Đã đổi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Changing pay values"
+msgstr "Việc đổi giá trị lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Coming in the next release"
+msgstr "Có trong bản phát hành tới"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Coming soon"
+msgstr "Sắp có"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Compliance"
+msgstr "Tuân thủ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Computing payslips…"
+msgstr "Đang tính phiếu lương…"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_res_config_settings
+msgid "Config Settings"
+msgstr "Cài đặt cấu hình"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__confirmed
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__confirmed_at
+msgid "Confirmed at"
+msgstr "Xác nhận lúc"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__confirm_kind
+msgid "Confirmed by"
+msgstr "Xác nhận bằng"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Confirmed by %(who)s by voice, %(when)s."
+msgstr "%(who)s xác nhận bằng giọng nói, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Confirmed by %(who)s with a tap, %(when)s."
+msgstr "%(who)s xác nhận bằng một lần bấm, %(when)s."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__session_id
+msgid "Conversation"
+msgstr "Cuộc trò chuyện"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__tier__decide
+msgid "Decide"
+msgstr "Quyết định"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Decide · your decision at %(step)s · PayAI cannot undo it"
+msgstr "Quyết định · lựa chọn của bạn ở bước %(step)s · PayAI không thể hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Decide · your decision · PayAI cannot undo it"
+msgstr "Quyết định · lựa chọn của bạn · PayAI không thể hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Delete or clear records"
+msgstr "Xoá hoặc dọn dữ liệu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Delete the May run"
+msgstr "Xoá đợt lương tháng 5"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Deleting pay runs or payslips is never done through PayAI."
+msgstr "PayAI không bao giờ xoá đợt lương hay phiếu lương."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__params_json
+msgid "Details understood"
+msgstr "Chi tiết đã hiểu"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__failed
+msgid "Did not work"
+msgstr "Không thành công"
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.payai_can_act_form
+msgid "Discard"
+msgstr "Huỷ bỏ"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_conversation__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_engine__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_message__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_pb_audit_console__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_pb_payruns__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Divisions are not set up here."
+msgstr "Ở đây chưa thiết lập khối."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Do it"
+msgstr "Thực hiện"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Do you mean June or next month? Without its marks, \"%s\" can be either. Write the month as a number, for example 6."
+msgstr "Bạn muốn nói tháng 6 hay tháng sau? Khi không có dấu, \"%s\" có thể là cả hai. Hãy ghi tháng bằng số, ví dụ 6."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__done
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Download %s"
+msgstr "Tải %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Download Excel"
+msgstr "Tải Excel"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Download again"
+msgstr "Tải lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Download an approved run's Excel"
+msgstr "Tải Excel của đợt lương đã duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Download the June run"
+msgstr "Tải Excel tháng 6"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Draft · %(scheme)s · %(month)s"
+msgstr "Nháp · %(scheme)s · %(month)s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Emails cannot be called back, so this cannot be undone."
+msgstr "Email đã gửi không thu hồi được, nên việc này không thể hoàn tác."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Every payslip in the run, one row per person."
+msgstr "Mọi phiếu lương trong đợt, mỗi người một dòng."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Every running contract"
+msgstr "Mọi hợp đồng đang hiệu lực"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Excel for the May Retail run"
+msgstr "Tải Excel đợt lương tháng 5 Bán lẻ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Figures"
+msgstr "Số liệu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Files are not sent through chat. To load this month's file or change where the values come from, tap Open in the screen instead."
+msgstr "Tệp không gửi qua khung trò chuyện. Để tải tệp tháng này hoặc đổi nguồn giá trị, hãy bấm Mở trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Filing"
+msgstr "Tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Filing prepared"
+msgstr "Đã chuẩn bị tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Filings for this country are prepared on the Government filings screen."
+msgstr "Tờ khai của quốc gia này được chuẩn bị trên màn hình Tờ khai."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "From %s, as usual"
+msgstr "Từ %s, như thường lệ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Give Linh an allowance of 500,000 from July"
+msgstr "Cho Linh phụ cấp 500.000 từ tháng 7"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Go to Payslips"
+msgstr "Mở Phiếu lương"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__expires_at
+msgid "Good until"
+msgstr "Còn hiệu lực đến"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Help"
+msgstr "Trợ giúp"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Here is the Excel for %s."
+msgstr "Đây là tệp Excel của %s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Here is what I can do for you"
+msgstr "Đây là những việc tôi làm được cho bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "I can do these now"
+msgstr "Tôi làm được ngay"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I can remind them: they get a note on the request and a to-do."
+msgstr "Tôi có thể nhắc họ: họ nhận một ghi chú trên yêu cầu và một việc cần làm."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I cannot do that for you yet"
+msgstr "Tôi chưa làm được việc này cho bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I cannot find that request any more."
+msgstr "Tôi không còn tìm thấy yêu cầu đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I cannot see any scheme you may run."
+msgstr "Tôi không thấy chương trình lương nào bạn được chạy."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not find \"%s\" among the people this scheme pays, and a run can only be narrowed to people or an employment status."
+msgstr "Tôi không tìm thấy \"%s\" trong số người được trả theo chương trình lương này, và đợt lương chỉ thu hẹp được theo người hoặc theo tình trạng làm việc."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not find \"%s\" among the people this scheme pays."
+msgstr "Tôi không tìm thấy \"%s\" trong số người được trả theo chương trình lương này."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I could not find \"%s\" among the things waiting for your decision. These are:"
+msgstr "Tôi không tìm thấy \"%s\" trong các việc đang chờ bạn quyết định. Các việc đang chờ là:"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not find \"%s\" on this person's scheme. These are the closest pay values they have — pick one, or open Records."
+msgstr "Tôi không tìm thấy \"%s\" trong chương trình lương của người này. Đây là các giá trị lương gần nhất của họ — hãy chọn một, hoặc mở Hồ sơ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I could not find \"%s\" waiting for your decision, and nothing else is waiting for you right now."
+msgstr "Tôi không tìm thấy \"%s\" đang chờ bạn quyết định, và hiện không có việc nào khác chờ bạn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not find a filing called \"%s\"."
+msgstr "Tôi không tìm thấy tờ khai nào tên \"%s\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I could not find a scheme called \"%(words)s\". The schemes you can run are: %(names)s."
+msgstr "Tôi không tìm thấy chương trình lương nào tên \"%(words)s\". Các chương trình bạn được chạy là: %(names)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I could not find a screen called \"%s\"."
+msgstr "Tôi không tìm thấy màn hình nào tên \"%s\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I could not find anybody called \"%s\" that you can see."
+msgstr "Tôi không tìm thấy ai tên \"%s\" mà bạn xem được."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I could not find that"
+msgstr "Tôi không tìm thấy"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "I could not hear back from the server, so I cannot tell yet whether it went through. Press the button again to see what happened. It will not be done twice."
+msgstr "Tôi chưa nhận được phản hồi từ máy chủ, nên chưa biết việc đã thực hiện hay chưa. Hãy bấm nút lần nữa để xem kết quả. Việc sẽ không bị làm hai lần."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not read \"%s\" as a date."
+msgstr "Tôi không đọc được \"%s\" là một ngày."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I could not read \"%s\" as an amount."
+msgstr "Tôi không đọc được \"%s\" là một số tiền."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I could not read that"
+msgstr "Tôi không đọc được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I could not remind %s: their sign-in cannot receive reminders. Nothing was sent."
+msgstr "Tôi không nhắc được %s: tài khoản của họ không nhận được lời nhắc. Chưa gửi gì cả."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I could not tell which month \"%s\" is. Name the month and the year, for example June 2031."
+msgstr "Tôi không rõ \"%s\" là tháng nào. Hãy ghi cả tháng và năm, ví dụ tháng 6 năm 2031."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I could not work out the new %s."
+msgstr "Tôi chưa hiểu %s mới."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I could not work out which %s you mean."
+msgstr "Tôi chưa hiểu bạn muốn nói %s nào."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I could not work out which request you mean."
+msgstr "Tôi chưa hiểu bạn muốn nói yêu cầu nào."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/gate.py:0
+msgid "I do not do this, even when asked clearly. You can do it yourself on the screen if you have the right."
+msgstr "Tôi không làm việc này, kể cả khi được yêu cầu rõ ràng. Nếu có quyền, bạn tự làm trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "I found %(n)s people called \"%(name)s\". Which one?"
+msgstr "Tôi thấy %(n)s người tên \"%(name)s\". Bạn muốn nói ai?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I found no pay run for %(period)s that you can see."
+msgstr "Tôi không thấy đợt lương nào của %(period)s mà bạn xem được."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "I found pay runs for %(period)s, but none matching \"%(words)s\"."
+msgstr "Tôi thấy các đợt lương của %(period)s, nhưng không có đợt nào khớp với \"%(words)s\"."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "I lost touch with the server at the end. Open the Runs board to see the run."
+msgstr "Tôi mất kết nối với máy chủ ở bước cuối. Hãy mở Các đợt lương để xem đợt lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I never clear or re-run payroll that already exists. Open it on the Runs board: a draft can be fixed or deleted there, and an approved run can be sent back."
+msgstr "Tôi không bao giờ xoá hay chạy lại lương đã có. Hãy mở đợt lương đó trong Các đợt lương: bản nháp có thể sửa hoặc xoá ở đó, còn đợt đã duyệt có thể trả lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I prepare the file for you to check. Nothing is sent to the authority."
+msgstr "Tôi chuẩn bị tệp để bạn kiểm tra. Không có gì được gửi tới cơ quan nhà nước."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I will change %(field)s for %(who)s to %(value)s."
+msgstr "Tôi sẽ đổi %(field)s của %(who)s thành %(value)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I will email %(n)s payslips for %(name)s."
+msgstr "Tôi sẽ gửi email %(n)s phiếu lương của %(name)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I will prepare the %(filing)s for %(month)s."
+msgstr "Tôi sẽ chuẩn bị %(filing)s cho %(month)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I will run %(month)s payroll for %(scheme)s, %(n)s people."
+msgstr "Tôi sẽ chạy lương %(month)s cho %(scheme)s, %(n)s người."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "I will send %s for approval."
+msgstr "Tôi sẽ gửi duyệt %s."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_conversation__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_engine__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_message__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_pb_audit_console__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_pb_payruns__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__id
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "If filings need approval here, it goes to the approver first."
+msgstr "Nếu tờ khai ở đây cần duyệt, tờ khai sẽ đến người duyệt trước."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "If pay changes here need approval, I send it to the approver and nothing changes until they say yes."
+msgstr "Nếu thay đổi lương ở đây cần duyệt, tôi gửi đến người duyệt và chưa có gì thay đổi cho đến khi họ đồng ý."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "It comes to you after this step"
+msgstr "Đến lượt bạn sau bước này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "It ends here"
+msgstr "Dừng tại đây"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "It goes back to %s with your reason, to change and send again."
+msgstr "Yêu cầu trả về %s kèm lý do của bạn, để sửa và gửi lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It goes to %s first."
+msgstr "Đợt lương sẽ đến %s trước."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It goes to the approvers set up for this kind of run."
+msgstr "Đợt lương sẽ đến những người duyệt được thiết lập cho loại này."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It goes to the approvers set up for this kind of run. If this route needs nobody's approval, the run is approved as soon as it is sent, and that cannot be withdrawn."
+msgstr "Đợt lương sẽ đến những người duyệt được thiết lập cho loại này. Nếu quy trình này không cần ai duyệt, đợt lương được duyệt ngay khi gửi và không thể thu hồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "It has moved on"
+msgstr "Việc này đã chuyển bước"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "It is turned down and ends here. %s is told, with your reason."
+msgstr "Yêu cầu bị từ chối và dừng tại đây. %s được báo, kèm lý do của bạn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It is waiting for its approval now."
+msgstr "Đợt lương hiện đang chờ duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It is waiting for its approval."
+msgstr "Tờ khai đang chờ duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "It is with %s now."
+msgstr "Hiện %s đang xử lý."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__tier
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật lần cuối"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Learn to do this yourself"
+msgstr "Học cách tự làm"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Learn to read a pay run"
+msgstr "Học cách đọc một đợt lương"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__tier__look
+msgid "Look"
+msgstr "Xem"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Looking only, so there is nothing to confirm."
+msgstr "Chỉ xem thôi, nên không cần xác nhận."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "More than one person here is called \"%s\". Ask for one person at a time, or open the screen to pick them."
+msgstr "Có nhiều người tên \"%s\". Hãy hỏi từng người một, hoặc mở màn hình để chọn."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__tier__never
+msgid "Never"
+msgstr "Không bao giờ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "New amount"
+msgstr "Số tiền mới"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "No %(month)s run exists for %(scheme)s yet."
+msgstr "Chưa có đợt lương %(month)s cho %(scheme)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "No approval route is set up for this run."
+msgstr "Đợt lương này chưa có quy trình duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "No approval route is set up for this."
+msgstr "Việc này chưa có quy trình duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "No approved run for %(period)s yet."
+msgstr "Chưa có đợt lương đã duyệt nào cho %(period)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nobody can decide this yet"
+msgstr "Chưa ai quyết định được việc này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nobody could be found to decide it."
+msgstr "Không tìm được ai để quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nobody has been paid yet."
+msgstr "Chưa ai được trả lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nobody is paid by approving."
+msgstr "Duyệt chưa phải là trả lương."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nobody: approving finishes it"
+msgstr "Không ai: duyệt là xong"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "None of the pay runs for %(period)s matching \"%(words)s\" is approved yet."
+msgstr "Chưa có đợt lương nào cho %(period)s khớp với \"%(words)s\" được duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not allowed yet"
+msgstr "Chưa được phép"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__expired
+msgid "Not answered in time"
+msgstr "Không trả lời kịp"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not approved yet"
+msgstr "Chưa được duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not from here"
+msgstr "Không làm từ đây"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__confirm_kind__none
+msgid "Not needed"
+msgstr "Không cần"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Not ready to download yet"
+msgstr "Chưa tải được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Not something you can do here"
+msgstr "Bạn không làm được việc này ở đây"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not stated"
+msgstr "Không ghi rõ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Not through PayAI"
+msgstr "Không qua PayAI"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not what you meant? Undo deletes the draft run and its %(n)s payslips."
+msgstr "Không đúng ý bạn? Hoàn tác sẽ xoá đợt lương nháp và %(n)s phiếu lương trong đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Not what you meant? Undo puts the old value back."
+msgstr "Không đúng ý bạn? Hoàn tác sẽ đặt lại giá trị cũ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Nothing could be put back."
+msgstr "Không đặt lại được giá trị nào."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Nothing has been done yet. This plan is good for ten minutes."
+msgstr "Chưa làm gì cả. Kế hoạch này có hiệu lực trong mười phút."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nothing is waiting for your decision right now."
+msgstr "Hiện không có việc nào chờ bạn quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Nothing on %s can be changed from here yet: Records has no pay value on it that you may change. Open People › Records to see what you can change."
+msgstr "Hiện chưa đổi được gì của %s từ đây: Hồ sơ không có giá trị lương nào thuộc chương trình này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Nothing on this person's scheme can be changed from here yet: Records has no pay value on it that you may change. Open People › Records to see what you can change."
+msgstr "Hiện chưa đổi được gì trong chương trình lương của người này từ đây: Hồ sơ không có giá trị lương nào thuộc chương trình này mà bạn được đổi. Mở Con người › Hồ sơ để xem bạn đổi được gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nothing to decide"
+msgstr "Không có gì để quyết định"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Nothing to undo"
+msgstr "Không có gì để hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Nothing was done."
+msgstr "Chưa làm gì cả."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "Nothing was done. %s"
+msgstr "Chưa làm gì cả. %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nothing was sent"
+msgstr "Chưa gửi gì"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "One thing at a time"
+msgstr "Mỗi lần một việc"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Only a draft run can be sent for approval. \"%(name)s\" is %(state)s."
+msgstr "Chỉ đợt lương nháp mới gửi duyệt được. \"%(name)s\" đang ở trạng thái %(state)s."
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "Only for the approver's own decision, confirmed by typing the word. A spoken yes never counts."
+msgstr "Chỉ cho quyết định của chính người duyệt, xác nhận bằng cách gõ từ xác nhận. Nói \"có\" không bao giờ được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Open %s"
+msgstr "Mở %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Government filings"
+msgstr "Mở Tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Government filings instead"
+msgstr "Mở Tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Pay & Deliver"
+msgstr "Mở Chi trả & gửi phiếu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Pay & Deliver instead"
+msgstr "Mở Chi trả & gửi phiếu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open People › Records"
+msgstr "Mở Con người › Hồ sơ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Records"
+msgstr "Mở Hồ sơ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open Run payroll"
+msgstr "Mở Chạy lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Open a screen"
+msgstr "Mở một màn hình"
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "Open any screen the person can already reach, show where a pay run is, download an approved run's Excel. Nothing changes."
+msgstr "Mở mọi màn hình người dùng đã vào được, xem đợt lương đang ở đâu, tải Excel của đợt lương đã duyệt. Không thay đổi gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open in Records instead"
+msgstr "Mở trong Hồ sơ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open in the screen instead"
+msgstr "Mở trên màn hình"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open it"
+msgstr "Mở"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Open my approvals"
+msgstr "Mở mục Phê duyệt của tôi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Open my approvals instead"
+msgstr "Mở mục Phê duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Open the Runs board"
+msgstr "Mở Các đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Open the run"
+msgstr "Mở đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Open the run instead"
+msgstr "Mở đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Opening %s."
+msgstr "Đang mở %s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "Opening or changing access, roles and delegations is never done through PayAI."
+msgstr "PayAI không bao giờ mở hay thay đổi quyền truy cập, vai trò và bàn giao quyền."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Opening that screen"
+msgstr "Việc mở màn hình đó"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Optional. It goes on the record."
+msgstr "Không bắt buộc. Ghi chú được lưu vào hồ sơ duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Pay & Deliver"
+msgstr "Chi trả & gửi phiếu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Payroll"
+msgstr "Lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Pay changes here need no approval: it is saved as soon as you press Do it, and you can undo it for 10 minutes."
+msgstr "Thay đổi lương ở đây không cần duyệt: thay đổi được lưu ngay khi bạn bấm Thực hiện, và bạn có thể hoàn tác trong 10 phút."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Pay data"
+msgstr "Dữ liệu lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Pay data is changed in the screen"
+msgstr "Dữ liệu lương được đổi trên màn hình"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Pay run"
+msgstr "Đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Pay runs for %s"
+msgstr "Các đợt lương %s"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/payai_palette.js:0
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__hr_payslip_run__pb_prepared_via__payai
+msgid "PayAI"
+msgstr "PayAI"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_payroll_ai_conversation
+msgid "PayAI Conversation"
+msgstr "Cuộc trò chuyện PayAI"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_payroll_ai_engine
+msgid "PayAI Engine"
+msgstr "Bộ máy PayAI"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_payroll_ai_message
+msgid "PayAI Message"
+msgstr "Tin nhắn PayAI"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/settings_card.js:0
+#: model:ir.actions.act_window,name:pb_payai_actions.action_payai_can_act
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.payai_can_act_form
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "PayAI can act"
+msgstr "PayAI được làm"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/gate.py:0
+msgid "PayAI can look, but is not allowed to do this here yet. An administrator can switch it on under Settings › PayAI can act."
+msgstr "PayAI được xem, nhưng ở đây chưa được làm việc này. Quản trị viên có thể bật trong Cài đặt › PayAI được làm."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "PayAI does not open or change access, so it does not decide or chase requests about access. Decide it yourself on the Approvals screen."
+msgstr "PayAI không mở hay thay đổi quyền truy cập, nên không quyết định hay nhắc các yêu cầu về quyền truy cập. Hãy tự quyết định trong mục Phê duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_stubs.py:0
+msgid "PayAI does not open or change access. Go to Settings › Access and delegations yourself."
+msgstr "PayAI không mở hay thay đổi quyền truy cập. Hãy tự vào Cài đặt › Quyền truy cập & bàn giao."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "PayAI is not allowed to do this here"
+msgstr "Ở đây PayAI không được làm việc này"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__payai_tier_decide
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__payai_tier_decide
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "PayAI may decide (approve, send back, reject)"
+msgstr "PayAI được quyết định (duyệt, trả lại, từ chối)"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__payai_tier_look
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__payai_tier_look
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "PayAI may look (open screens, show figures)"
+msgstr "PayAI được xem (mở màn hình, xem số liệu)"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_res_company__payai_tier_look
+#: model:ir.model.fields,help:pb_payai_actions.field_res_config_settings__payai_tier_look
+msgid "PayAI may open any screen the person can already reach, show where a pay run is and download an approved run's Excel. It never changes anything."
+msgstr "PayAI được mở mọi màn hình người dùng đã vào được, xem đợt lương đang ở đâu và tải Excel của đợt lương đã duyệt. PayAI không bao giờ thay đổi gì."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_company__payai_tier_prepare
+#: model:ir.model.fields,field_description:pb_payai_actions.field_res_config_settings__payai_tier_prepare
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "PayAI may prepare (draft runs, send for approval, change values)"
+msgstr "PayAI được chuẩn bị (đợt lương nháp, gửi duyệt, đổi giá trị)"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_res_company__payai_tier_prepare
+#: model:ir.model.fields,help:pb_payai_actions.field_res_config_settings__payai_tier_prepare
+msgid "PayAI may prepare work for a person after they tap Do it: a draft pay run, a request for approval, a changed value that still goes through the normal approval route."
+msgstr "PayAI được chuẩn bị việc cho người dùng sau khi họ bấm Thực hiện: một đợt lương nháp, một yêu cầu duyệt, một giá trị đã đổi vẫn đi qua quy trình duyệt thông thường."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_res_company__payai_tier_decide
+#: model:ir.model.fields,help:pb_payai_actions.field_res_config_settings__payai_tier_decide
+msgid "PayAI may record an approver's own decision after they type the word to confirm it. A spoken yes never counts here."
+msgstr "PayAI được ghi lại quyết định của chính người duyệt sau khi họ gõ từ xác nhận. Ở đây nói \"có\" không bao giờ được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "PayAI never uses an exception: open your approvals to use it there."
+msgstr "PayAI không bao giờ dùng ngoại lệ: hãy mở mục Phê duyệt để dùng ngoại lệ ở đó."
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_payai_task
+msgid "PayAI request"
+msgstr "Yêu cầu PayAI"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_pb_payruns
+msgid "Payobook Pay Runs board data"
+msgstr "Dữ liệu Các đợt lương của Payobook"
+
+#. module: pb_payai_actions
+#: model:ir.model,name:pb_payai_actions.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Payslips go out once the run is approved. \"%(name)s\" is %(state)s now."
+msgstr "Phiếu lương chỉ được gửi khi đợt lương đã duyệt. \"%(name)s\" hiện đang ở trạng thái %(state)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Payslips sent"
+msgstr "Đã gửi phiếu lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "People"
+msgstr "Nhân viên"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Period"
+msgstr "Kỳ lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Pick one to see it on its own."
+msgstr "Chọn một đợt để xem riêng."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__planned
+msgid "Planned"
+msgstr "Đã lên kế hoạch"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Plans are good for ten minutes. Ask me again and I will show you a fresh one."
+msgstr "Kế hoạch có hiệu lực trong mười phút. Hãy hỏi lại, tôi sẽ đưa kế hoạch mới."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__tier__prepare
+msgid "Prepare"
+msgstr "Chuẩn bị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare a government filing"
+msgstr "Chuẩn bị một tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare it again"
+msgstr "Chuẩn bị lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare the June tax filing"
+msgstr "Lập tờ khai thuế TNCN tháng 6"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · creates a draft run · a payroll manager can delete it"
+msgstr "Chuẩn bị · tạo một đợt lương nháp · quản lý lương có thể xoá"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · creates a draft run · can be undone for 10 minutes"
+msgstr "Chuẩn bị · tạo một đợt lương nháp · có thể hoàn tác trong 10 phút"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · emails the payslips · cannot be undone"
+msgstr "Chuẩn bị · gửi email phiếu lương · không thể hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · goes through the normal approval route · can be reverted"
+msgstr "Chuẩn bị · đi qua quy trình duyệt thông thường · có thể hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · makes a file to check · nothing is sent"
+msgstr "Chuẩn bị · tạo tệp để kiểm tra · không gửi gì"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · sends the run for approval"
+msgstr "Chuẩn bị · gửi duyệt đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Prepare · sends the run for approval · can be withdrawn for 10 minutes"
+msgstr "Chuẩn bị · gửi duyệt đợt lương · có thể thu hồi trong 10 phút"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/models/hr_payslip_run.py:0
+msgid "Prepared by %s through PayAI"
+msgstr "%s đã chuẩn bị qua PayAI"
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.res_config_settings_view_form_payai_actions
+msgid "Prepared only after the person taps Do it, and always through the normal approval route."
+msgstr "Chỉ chuẩn bị sau khi người dùng bấm Thực hiện, và luôn đi qua quy trình duyệt thông thường."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_hr_payslip_run__pb_prepared_via
+msgid "Prepared through"
+msgstr "Chuẩn bị qua"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/models/hr_payslip_run.py:0
+msgid "Prepared through PayAI"
+msgstr "Chuẩn bị qua PayAI"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Preparing filings"
+msgstr "Việc chuẩn bị tờ khai"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Preparing the run…"
+msgstr "Đang chuẩn bị đợt lương…"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Preparing this filing needs the Government Reports permission. Ask your administrator to give it to you."
+msgstr "Chuẩn bị tờ khai này cần quyền Báo cáo chính phủ. Hãy nhờ quản trị viên cấp quyền cho bạn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Put %s values back"
+msgstr "Đặt lại %s giá trị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Put 1 value back"
+msgstr "Đặt lại 1 giá trị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Questions and plans are good for ten minutes."
+msgstr "Câu hỏi và kế hoạch có hiệu lực trong mười phút."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Recorded: %(did)s by %(who)s via PayAI, typed confirmation, %(when)s."
+msgstr "Đã ghi lại: %(who)s %(did)s qua PayAI, xác nhận bằng cách gõ, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Recorded: cancelled by %(who)s, %(when)s. Nothing was done."
+msgstr "Đã ghi lại: %(who)s đã hủy, %(when)s. Chưa làm gì cả."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Recorded: did not work for %(who)s, %(when)s."
+msgstr "Đã ghi lại: không thành công cho %(who)s, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Recorded: done for %(who)s, %(when)s."
+msgstr "Đã ghi lại: đã làm cho %(who)s, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Recorded: refused for %(who)s, %(when)s."
+msgstr "Đã ghi lại: từ chối thực hiện cho %(who)s, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Recorded: run %(id)s prepared by PayAI for %(who)s, %(when)s, from the words \"%(words)s\"."
+msgstr "Đã ghi lại: đợt lương %(id)s do PayAI chuẩn bị cho %(who)s, %(when)s, từ câu \"%(words)s\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Recorded: undone by %(who)s, %(when)s."
+msgstr "Đã ghi lại: %(who)s đã hoàn tác, %(when)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Records"
+msgstr "Hồ sơ"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__refused
+msgid "Refused"
+msgstr "Từ chối thực hiện"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Rejected"
+msgstr "Đã từ chối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Remind %s"
+msgstr "Nhắc %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Reminded %s"
+msgstr "Đã nhắc %s"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__action_title
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__result_json
+msgid "Result"
+msgstr "Kết quả"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Route"
+msgstr "Quy trình duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run"
+msgstr "Đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run June payroll for Retail"
+msgstr "Chạy lương tháng 6 cho Bán lẻ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run payroll"
+msgstr "Chạy lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run payroll for this month"
+msgstr "Chạy lương tháng này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run prepared: %s"
+msgstr "Đã chuẩn bị đợt lương: %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Run without the file"
+msgstr "Chạy không có tệp"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__running
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Running payroll"
+msgstr "Việc chạy lương"
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.payai_can_act_form
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Saved as %s. It is on the Records history."
+msgstr "Đã lưu là %s. Thay đổi có trong lịch sử Hồ sơ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Screen"
+msgstr "Màn hình"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payroll_ai_conversation__payai_doors_json
+msgid "Screens this person may open"
+msgstr "Các màn hình người này được mở"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Seeing pay runs"
+msgstr "Việc xem đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Send a pay run for approval"
+msgstr "Gửi duyệt một đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Send back"
+msgstr "Trả lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Send back %s"
+msgstr "Trả lại %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Send payslips"
+msgstr "Gửi phiếu lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Send something back"
+msgstr "Trả lại một việc"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Send the June Retail run back because the overtime is missing"
+msgstr "Trả lại đợt lương tháng 6 Bán lẻ vì thiếu tăng ca"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Send the June payslips"
+msgstr "Gửi phiếu lương tháng 6"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Send the June run for approval"
+msgstr "Gửi duyệt đợt lương tháng 6"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sending a pay run for approval"
+msgstr "Việc gửi duyệt đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Sending back"
+msgstr "Việc trả lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sending payslips"
+msgstr "Việc gửi phiếu lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sending these payslips needs approval first."
+msgstr "Gửi các phiếu lương này cần được duyệt trước."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sending these payslips needs approval. It is with %s now."
+msgstr "Gửi các phiếu lương này cần được duyệt. Hiện %s đang xử lý."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Sent back to %s with your reason."
+msgstr "Đã trả về cho %s kèm lý do của bạn."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Sent back to %s with your reason. The run is a draft again."
+msgstr "Đã trả về cho %s kèm lý do của bạn. Đợt lương trở lại dạng nháp."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sent for approval"
+msgstr "Đã gửi duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sent the wrong run? Withdrawing makes it a draft again."
+msgstr "Gửi nhầm đợt lương? Thu hồi sẽ đưa đợt lương về dạng nháp."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Sent to %(who)s for approval. %(name)s's pay does not change until they approve."
+msgstr "Đã gửi %(who)s duyệt. Lương của %(name)s chưa thay đổi cho đến khi được duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Set the meal allowance of An Nguyen to 600,000"
+msgstr "Đổi phụ cấp ăn trưa của An Nguyễn thành 600.000"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Show the June run"
+msgstr "Xem đợt lương tháng 6"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Show where a pay run is"
+msgstr "Xem đợt lương đang ở đâu"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Some emails did not go. Pay & Deliver lists who, and why."
+msgstr "Một số email chưa gửi được. Chi trả & gửi phiếu cho biết người nào và vì sao."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Somebody else has to decide this"
+msgstr "Người khác phải quyết định việc này"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__confirm_kind__voice
+msgid "Spoken"
+msgstr "Bằng giọng nói"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Status of this month's payroll"
+msgstr "Tình hình đợt lương tháng này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Step"
+msgstr "Bước"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Still a draft. Nobody has sent it for approval yet."
+msgstr "Vẫn là bản nháp. Chưa ai gửi duyệt."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/settings_card.js:0
+msgid "Switch what PayAI may do here, by kind: look, prepare, decide."
+msgstr "Bật những việc PayAI được làm ở đây, theo loại: xem, chuẩn bị, quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Take me to my approvals"
+msgstr "Đưa tôi đến mục Phê duyệt"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__confirm_kind__tap
+msgid "Tap"
+msgstr "Bấm nút"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap Do it or say go ahead."
+msgstr "Bấm Thực hiện hoặc nói \"tiến hành\"."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap Do it — I heard a name or an amount, so I need your tap."
+msgstr "Hãy bấm Thực hiện — tôi nghe thấy một cái tên hoặc một số tiền, nên cần bạn bấm để xác nhận."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap Do it to go ahead"
+msgstr "Bấm Thực hiện để tiếp tục"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap Do it to go ahead."
+msgstr "Bấm Thực hiện để tiếp tục."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Tap an example to try it. I only ever do what you could do yourself on the screen."
+msgstr "Bấm một ví dụ để thử. Tôi chỉ làm những gì bạn tự làm được trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Tap one, or type it below. I will show you the plan again before anything is done."
+msgstr "Bấm chọn một, hoặc gõ bên dưới. Tôi sẽ cho bạn xem lại kế hoạch trước khi làm bất cứ điều gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Ten minutes have passed."
+msgstr "Đã quá mười phút."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Ten minutes have passed. The change is on the Records history, where it can still be undone."
+msgstr "Đã quá mười phút. Thay đổi có trong lịch sử Hồ sơ, ở đó vẫn có thể hoàn tác."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Ten minutes have passed. The draft run is still on the Runs board; a payroll manager can delete it there."
+msgstr "Đã quá mười phút. Đợt lương nháp vẫn có trong Các đợt lương; quản lý lương có thể xoá ở đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Ten minutes have passed. You can still withdraw it from your approvals while nobody has decided."
+msgstr "Đã quá mười phút. Bạn vẫn có thể thu hồi trong mục Phê duyệt khi chưa ai quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That button was not offered here."
+msgstr "Nút đó không có ở đây."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That choice could not be read."
+msgstr "Không đọc được lựa chọn đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That choice was not offered here."
+msgstr "Lựa chọn đó không có ở đây."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That could not be undone"
+msgstr "Không hoàn tác được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "That could not be undone."
+msgstr "Không hoàn tác được."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "That date is still ahead"
+msgstr "Ngày đó chưa tới"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "That did not finish"
+msgstr "Việc đó chưa xong"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "That did not go through on the server. Nothing was done; try again in a moment."
+msgstr "Máy chủ chưa thực hiện được. Chưa làm gì cả; hãy thử lại sau giây lát."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "That did not reach the server. Nothing was done; try again in a moment."
+msgstr "Yêu cầu chưa đến được máy chủ. Chưa làm gì cả; hãy thử lại sau giây lát."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That did not work"
+msgstr "Việc đó không thành công"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "That draft run has already been deleted."
+msgstr "Đợt lương nháp đó đã bị xoá rồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That is not the word"
+msgstr "Chưa đúng từ xác nhận"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "That is not the word yet. Type %s."
+msgstr "Chưa đúng từ xác nhận. Hãy gõ %s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That plan is not the last thing I showed you, so I did nothing. Tap Do it on the plan card if it is still right."
+msgstr "Kế hoạch đó không phải điều tôi đưa ra gần nhất, nên tôi chưa làm gì. Nếu vẫn đúng, hãy bấm Thực hiện trên thẻ kế hoạch."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That question has expired, ask me again"
+msgstr "Câu hỏi đó đã hết hạn, hãy hỏi lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That request belongs to another conversation."
+msgstr "Yêu cầu đó thuộc một cuộc trò chuyện khác."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/models/payai_conversation.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That request belongs to somebody else."
+msgstr "Yêu cầu đó là của người khác."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That request is not run from here."
+msgstr "Yêu cầu đó không chạy từ đây."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That request is not running."
+msgstr "Yêu cầu đó không chạy."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "That screen could not be opened. Try it from the left menu."
+msgstr "Không mở được màn hình đó. Hãy thử từ menu bên trái."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "That screen is not switched on for you"
+msgstr "Màn hình đó chưa được bật cho bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/gate.py:0
+msgid "That screen is not switched on for you, so I cannot do this for you. Ask your administrator to change this under Settings › Access and delegations."
+msgstr "Màn hình đó chưa được bật cho bạn, nên tôi không làm việc này cho bạn được. Hãy nhờ quản trị viên thay đổi trong Cài đặt › Quyền truy cập & bàn giao."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "The Excel could not be prepared. Open the run and try from there."
+msgstr "Không chuẩn bị được tệp Excel. Hãy mở đợt lương và thử từ đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "The Excel is available once the run is approved. It is %(state)s now."
+msgstr "Chỉ tải được Excel khi đợt lương đã duyệt. Hiện đợt lương đang ở trạng thái %(state)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The change was refused."
+msgstr "Thay đổi bị từ chối."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The draft run and its %(n)s payslips were deleted. Nothing was sent anywhere."
+msgstr "Đợt lương nháp và %(n)s phiếu lương trong đó đã bị xoá. Không có gì được gửi đi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The file is ready to check."
+msgstr "Tệp đã sẵn sàng để kiểm tra."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The new value counts from now on. Pay for earlier months is not worked out again; use Pay Run › Adjust for that."
+msgstr "Giá trị mới tính từ bây giờ. Lương các tháng trước không được tính lại; hãy dùng Đợt lương › Điều chỉnh cho việc đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "The next step"
+msgstr "Bước tiếp theo"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_payai_task__utterance
+msgid "The person's words, with names taken out."
+msgstr "Lời của người dùng, đã bỏ tên riêng."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The request was withdrawn. Nothing changed."
+msgstr "Yêu cầu đã được thu hồi. Không có gì thay đổi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "The run goes back to draft with your reason, so %s can fix it and send it again."
+msgstr "Đợt lương trở về dạng nháp kèm lý do của bạn, để %s sửa và gửi lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The run is a draft again and nobody is asked to approve it."
+msgstr "Đợt lương trở lại dạng nháp và không ai được yêu cầu duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "The run is turned down and every payslip in it is cancelled. It cannot be sent again; a new run has to be prepared."
+msgstr "Đợt lương bị từ chối và mọi phiếu lương trong đó bị hủy. Không gửi lại được; phải chuẩn bị một đợt lương mới."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The run stopped before anything was created. Nothing has changed."
+msgstr "Đợt lương dừng trước khi tạo ra gì. Không có gì thay đổi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "The run stopped part-way: %(done)s of %(total)s payslips were made. The draft run is on the Runs board; open it to finish it."
+msgstr "Đợt lương dừng giữa chừng: đã lập %(done)s trên %(total)s phiếu lương. Đợt lương nháp có trong Các đợt lương; hãy mở để làm tiếp."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__hr_payslip_run__pb_prepared_via__screen
+msgid "The screen"
+msgstr "Màn hình"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "The ten minutes are up. It can still be changed on the screen."
+msgstr "Đã hết mười phút. Vẫn có thể đổi trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Then"
+msgstr "Tiếp theo"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "There is no request to withdraw."
+msgstr "Không có yêu cầu nào để thu hồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "There is nothing to confirm on that request."
+msgstr "Yêu cầu đó không có gì để xác nhận."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "These payslips are already waiting to be approved, with %s."
+msgstr "Các phiếu lương này đang chờ %s duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "These runs pay in more than one currency, so there is no single total."
+msgstr "Các đợt lương này trả bằng nhiều loại tiền, nên không có một tổng chung."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "They are no longer the one deciding it, so I sent nothing."
+msgstr "Họ không còn là người quyết định việc này, nên tôi không gửi gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Things changed since I showed you this plan, so nothing was done. This is where it stands now."
+msgstr "Mọi thứ đã thay đổi từ lúc tôi đưa kế hoạch này, nên chưa làm gì cả. Đây là hiện trạng."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Things changed since I showed you this plan. Here it is as it stands now; nothing was done."
+msgstr "Mọi thứ đã thay đổi từ lúc tôi đưa kế hoạch này. Đây là kế hoạch theo hiện trạng; chưa làm gì cả."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This change cannot be made"
+msgstr "Không thể thực hiện thay đổi này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This change needs approval. It goes to %s first, and nothing changes until they say yes."
+msgstr "Thay đổi này cần duyệt. Yêu cầu sẽ đến %s trước, và chưa có gì thay đổi cho đến khi họ đồng ý."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This change needs approval. It goes to the approver set up for pay changes, and nothing changes until they say yes."
+msgstr "Thay đổi này cần duyệt. Yêu cầu sẽ đến người duyệt được thiết lập cho thay đổi lương, và chưa có gì thay đổi cho đến khi họ đồng ý."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This change was already approved. Undo it from the Records history."
+msgstr "Thay đổi này đã được duyệt. Hãy hoàn tác từ lịch sử Hồ sơ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This change was approved by %s. Undo it from the Records history."
+msgstr "Thay đổi này đã được %s duyệt. Hãy hoàn tác từ lịch sử Hồ sơ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "This is a decision. I need you to type the word %s on the card; voice cannot confirm it."
+msgstr "Đây là một quyết định. Bạn cần gõ từ %s trên thẻ; giọng nói không xác nhận được."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "This is no longer waiting for a decision (%s)."
+msgstr "Việc này không còn chờ quyết định (%s)."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "This is not waiting for you"
+msgstr "Việc này không chờ bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "This one is confirmed only by typing %s in the box on the card. A go-ahead typed in the chat never counts."
+msgstr "Việc này chỉ được xác nhận bằng cách gõ %s vào ô trên thẻ. Gõ đồng ý trong khung chat không bao giờ được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "This one is confirmed only by typing %s in the box on the card. A spoken go-ahead never counts."
+msgstr "Việc này chỉ được xác nhận bằng cách gõ %s vào ô trên thẻ. Nói đồng ý không bao giờ được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "This one is confirmed only by typing %s in the box on the card. Pressing a button never counts."
+msgstr "Việc này chỉ được xác nhận bằng cách gõ %s vào ô trên thẻ. Bấm nút không bao giờ được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "This one needs typing"
+msgstr "Việc này cần gõ để xác nhận"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "This one needs typing: a spoken yes never confirms a decision."
+msgstr "Việc này cần gõ để xác nhận: nói \"có\" không bao giờ xác nhận được một quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "This request cannot be undone from here."
+msgstr "Yêu cầu này không hoàn tác được từ đây."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This request is already finished (%s). Nothing was withdrawn; see the Records history."
+msgstr "Yêu cầu này đã kết thúc (%s). Không có gì được thu hồi; xem lịch sử Hồ sơ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This route needs nobody's approval, so the run is approved. That is recorded."
+msgstr "Quy trình này không cần ai duyệt, nên đợt lương đã được duyệt. Việc này đã được ghi lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This route needs nobody's approval: the run is approved as soon as it is sent, and that cannot be withdrawn."
+msgstr "Quy trình này không cần ai duyệt: đợt lương được duyệt ngay khi gửi và không thể thu hồi."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This run cannot be sent yet"
+msgstr "Đợt lương này chưa gửi được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "This run was rejected."
+msgstr "Đợt lương này đã bị từ chối."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This scheme covers nobody yet, so the run would be empty. Open it in the screen to see who the scheme is mapped to."
+msgstr "Chương trình lương này chưa áp dụng cho ai, nên đợt lương sẽ trống. Hãy mở trên màn hình để xem chương trình được gán cho ai."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "This scheme expects a pay data file for %(n)s value(s). Files are not sent through chat, so if I run it now those values use their usual amounts. To load the file, open it in the screen instead."
+msgstr "Chương trình lương này cần tệp dữ liệu lương cho %(n)s giá trị. Tệp không gửi qua khung trò chuyện, nên nếu chạy bây giờ các giá trị đó dùng số tiền thường lệ. Để tải tệp, hãy mở trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/models/payai_conversation.py:0
+msgid "This stopped when the page was closed. Open the Runs board to see what was made."
+msgstr "Việc này dừng khi trang bị đóng. Hãy mở Các đợt lương để xem đã tạo ra gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Too late to undo here"
+msgstr "Đã quá hạn hoàn tác ở đây"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Too late to withdraw here"
+msgstr "Đã quá hạn thu hồi ở đây"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turn down"
+msgstr "Từ chối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turn down %s"
+msgstr "Từ chối %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turn down the May bonus run because it was paid twice"
+msgstr "Từ chối đợt lương thưởng tháng 5 vì đã trả hai lần"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turn something down"
+msgstr "Từ chối một việc"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turned down"
+msgstr "Đã từ chối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turned down. %s is told why."
+msgstr "Đã từ chối. %s được báo lý do."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turned down. The run and its payslips are cancelled, and %s is told why."
+msgstr "Đã từ chối. Đợt lương và các phiếu lương trong đó bị hủy, và %s được báo lý do."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Turning down"
+msgstr "Việc từ chối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Type %s exactly as shown (capitals do not matter). Nothing was done."
+msgstr "Hãy gõ đúng %s như hiển thị (chữ hoa hay dấu không quan trọng). Chưa làm gì cả."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Type %s to confirm. A spoken yes does not count here."
+msgstr "Gõ %s để xác nhận. Ở đây nói \"có\" không được tính."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Type it again."
+msgstr "Hãy gõ lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Type it below. I will show you the plan again before anything is done."
+msgstr "Hãy gõ bên dưới. Tôi sẽ cho bạn xem lại kế hoạch trước khi làm bất cứ điều gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Type it below. The person who sent it in reads exactly these words. I will show you the plan before anything is done."
+msgstr "Hãy gõ bên dưới. Người gửi sẽ đọc đúng những lời này. Tôi sẽ cho bạn xem kế hoạch trước khi làm bất cứ điều gì."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/models/pb_audit_console.py:0
+msgid "Typed confirmation"
+msgstr "Xác nhận bằng cách gõ"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__confirm_kind__typed
+msgid "Typed word"
+msgstr "Gõ từ xác nhận"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Typing it does not count. Tap Do it on the plan card if it is right."
+msgstr "Gõ không được tính ở đây. Nếu kế hoạch đúng, hãy bấm Thực hiện trên thẻ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__undone
+msgid "Undone"
+msgstr "Đã hoàn tác"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Waiting for %(who)s%(step)s."
+msgstr "Đang chờ %(who)s%(step)s."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__clarify
+msgid "Waiting for a choice"
+msgstr "Đang chờ lựa chọn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Waiting for approval."
+msgstr "Đang chờ phê duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_payai_actions
+#: model_terms:ir.ui.view,arch_db:pb_payai_actions.payai_can_act_form
+msgid "What PayAI may do for people in this company when they ask it in words. It only ever does what the person could do themselves on the screen."
+msgstr "Những việc PayAI được làm cho mọi người trong công ty này khi họ nhờ bằng lời. PayAI chỉ làm những gì người đó tự làm được trên màn hình."
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/settings_card.js:0
+msgid "What PayAI may do for people when they ask it in words: look, prepare, decide."
+msgstr "Những việc PayAI được làm khi mọi người nhờ bằng lời: xem, chuẩn bị, quyết định."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+#: code:addons/pb_payai_actions/payai/cards.py:0
+msgid "What can you do?"
+msgstr "Bạn làm được gì?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "What it said: %s"
+msgstr "Thông báo: %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "What should change? Type the reason."
+msgstr "Cần sửa gì? Hãy gõ lý do."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "What should it be instead?"
+msgstr "Bạn muốn đổi thành gì?"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__utterance
+msgid "What was asked"
+msgstr "Nội dung đã hỏi"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_res_company__payai_voice_go_ahead
+#: model:ir.model.fields,help:pb_payai_actions.field_res_config_settings__payai_voice_go_ahead
+msgid "When on, a person who asked by voice may confirm a prepare request by saying go ahead. Decisions always need typing."
+msgstr "Khi bật, người hỏi bằng giọng nói có thể xác nhận việc chuẩn bị bằng cách nói \"tiến hành\". Quyết định luôn phải gõ."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "Where is the May Retail run?"
+msgstr "Đợt lương tháng 5 Bán lẻ đang ở đâu?"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,help:pb_payai_actions.field_hr_payslip_run__pb_prepared_via
+msgid "Where this run was prepared: on the Run payroll screen, or by PayAI after the person confirmed the plan."
+msgstr "Nơi đợt lương này được chuẩn bị: trên màn hình Chạy lương, hoặc bởi PayAI sau khi người dùng xác nhận kế hoạch."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which %s do you mean?"
+msgstr "Bạn muốn nói %s nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which %s scheme do you mean?"
+msgstr "Bạn muốn nói chương trình lương %s nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which filing do you mean?"
+msgstr "Bạn muốn nói tờ khai nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which pay run do you mean?"
+msgstr "Bạn muốn nói đợt lương nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which pay value do you mean?"
+msgstr "Bạn muốn nói giá trị lương nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Which pay value should I change?"
+msgstr "Tôi nên đổi giá trị lương nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which person do you mean?"
+msgstr "Bạn muốn nói người nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which request do you mean?"
+msgstr "Bạn muốn nói yêu cầu nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which scheme do you mean?"
+msgstr "Bạn muốn nói chương trình lương nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which screen do you mean?"
+msgstr "Bạn muốn nói màn hình nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "Which screen should I open?"
+msgstr "Tôi nên mở màn hình nào?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "Who is this for? Name the person."
+msgstr "Việc này cho ai? Hãy nêu tên người đó."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Whoever sent it in"
+msgstr "Người gửi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Why is it turned down? Type the reason."
+msgstr "Vì sao từ chối? Hãy gõ lý do."
+
+#. module: pb_payai_actions
+#: model:ir.model.fields,field_description:pb_payai_actions.field_payai_task__error
+msgid "Why it stopped"
+msgstr "Lý do dừng"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Withdraw"
+msgstr "Thu hồi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Withdraw the request?"
+msgstr "Thu hồi yêu cầu?"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Withdrawn"
+msgstr "Đã thu hồi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Withdrawn through PayAI"
+msgstr "Đã thu hồi qua PayAI"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "Without this month's file"
+msgstr "Không có tệp tháng này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "You are the last step: approving lets it go ahead."
+msgstr "Bạn là bước cuối: duyệt là yêu cầu được thực hiện."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "You are the last step: the run is approved. Nobody is paid until the payment is released."
+msgstr "Bạn là bước cuối: đợt lương sẽ được duyệt. Chưa ai được trả lương cho đến khi tiền lương được chi trả."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "You cannot see employee records, so I cannot find this person."
+msgstr "Bạn không xem được hồ sơ nhân viên, nên tôi không tìm được người này."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "You do not have the permission this needs. Ask your administrator."
+msgstr "Bạn chưa có quyền cần cho việc này. Hãy hỏi quản trị viên."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "You have already approved your part"
+msgstr "Bạn đã duyệt phần của mình"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "You hold %(n)s seats on this step. This approval counts for one; ask me again to approve the one you hold for %(whose)s."
+msgstr "Bạn giữ %(n)s vị trí ở bước này. Lần duyệt này chỉ tính cho một vị trí; hãy nhờ tôi lần nữa để duyệt vị trí bạn giữ thay %(whose)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your approval at %(step)s is recorded. The step still waits for %(who)s."
+msgstr "Phê duyệt của bạn ở bước %(step)s đã được ghi lại. Bước này vẫn chờ %(who)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your approval is recorded, but it cannot move on: %s"
+msgstr "Phê duyệt của bạn đã được ghi lại, nhưng yêu cầu chưa đi tiếp được: %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your approval is recorded."
+msgstr "Phê duyệt của bạn đã được ghi lại."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your approval is recorded. The step still waits for %(who)s."
+msgstr "Phê duyệt của bạn đã được ghi lại. Bước này vẫn chờ %(who)s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your approval is recorded; the step waits for %s as well."
+msgstr "Phê duyệt của bạn đã được ghi lại; bước này còn chờ cả %s."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Your seat for %s still waits on this step"
+msgstr "Vị trí bạn giữ thay %s vẫn chờ ở bước này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "as sent in"
+msgstr "lúc gửi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "as the scheme is set up"
+msgstr "theo thiết lập chương trình"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "assumed"
+msgstr "tôi tự chọn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "current company"
+msgstr "công ty hiện tại"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "default"
+msgstr "mặc định"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "every employment status"
+msgstr "mọi trạng thái làm việc"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "failed"
+msgstr "không gửi được"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "from the route"
+msgstr "theo quy trình"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/xml/cards.xml:0
+msgid "left"
+msgstr "còn lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "need a look"
+msgstr "cần xem lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "net pay"
+msgstr "thực nhận"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "net to pay"
+msgstr "thực nhận phải trả"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "nobody could be found to decide the next step."
+msgstr "không tìm được ai để quyết định bước tiếp theo."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "not set"
+msgstr "chưa đặt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "now %s"
+msgstr "hiện là %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "payslips in draft"
+msgstr "phiếu lương nháp"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "runs"
+msgstr "đợt lương"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "screen"
+msgstr "màn hình"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "sent"
+msgstr "đã gửi"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "sent back"
+msgstr "đã trả lại"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "skipped"
+msgstr "bỏ qua"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_green.py:0
+msgid "stage"
+msgstr "giai đoạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "the approver"
+msgstr "người duyệt"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "the connected system"
+msgstr "hệ thống kết nối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "the employee records"
+msgstr "hồ sơ nhân viên"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "the next step"
+msgstr "bước tiếp theo"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "their approver"
+msgstr "người duyệt của họ"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "this payroll"
+msgstr "chương trình lương này"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "turned down"
+msgstr "đã từ chối"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+msgid "via PayAI"
+msgstr "qua PayAI"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "whoever sent it in"
+msgstr "người gửi"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "you chose"
+msgstr "bạn chọn"
+
+#. module: pb_payai_actions
+#. odoo-javascript
+#: code:addons/pb_payai_actions/static/src/js/chat_patch.js:0
+msgid "you said"
+msgstr "bạn nói"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "you, for %s"
+msgstr "bạn, thay %s"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_amber.py:0
+#: code:addons/pb_payai_actions/payai/resolve.py:0
+msgid "your division"
+msgstr "khối của bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "your seat"
+msgstr "lượt của bạn"
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "Nothing was recorded: your decision did not go through, and the request still waits for you. Decide it on the Approvals screen."
+msgstr "Chưa có gì được ghi nhận: quyết định của bạn chưa được thực hiện, và yêu cầu vẫn đang chờ bạn. Hãy quyết định trong mục Phê duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/actions_red.py:0
+msgid "I could not find \"%s\" waiting for your decision. Only requests about access are waiting for you, and PayAI does not decide those: decide them yourself on the Approvals screen."
+msgstr "Tôi không tìm thấy \"%s\" đang chờ bạn quyết định. Chỉ có các yêu cầu về quyền truy cập đang chờ bạn, và PayAI không quyết định những yêu cầu đó: hãy tự quyết định trong mục Phê duyệt."
+
+#. module: pb_payai_actions
+#. odoo-python
+#: code:addons/pb_payai_actions/payai/runner.py:0
+msgid "the word"
+msgstr "từ xác nhận"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__replaced
+msgid "Replaced by a newer request"
+msgstr "Đã được thay bằng một yêu cầu mới hơn"
+
+#. module: pb_payai_actions
+#: model:ir.model.fields.selection,name:pb_payai_actions.selection__payai_task__state__replanned
+msgid "Changed before it was done"
+msgstr "Đã thay đổi trước khi kịp làm"

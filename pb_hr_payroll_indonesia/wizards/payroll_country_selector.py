@@ -105,7 +105,7 @@ class PayrollCountrySelector(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': f'Create {dict(self._fields["payroll_country"].selection)[self.payroll_country]} Payslips',
             'res_model': 'hr.payslip',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('struct_id', '=', structure.id)],
             'context': {
                 'default_struct_id': structure.id,

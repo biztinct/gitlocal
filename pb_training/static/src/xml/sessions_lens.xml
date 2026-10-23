@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Courses › SESSIONS (LEARNING L4). Section comments use `=`
+       rules, never a doubled hyphen (R35). Loop variables avoid OWL's
+       reserved words (R1): `wd`, `dt`, `ses`, `row`, `emp`, `crs`, `kd`,
+       `dp`, `jb`, `tr`. Every translatable text node is on one line (LN13).
+       Every scrim is a direct child of the root (R114).
+       ==================================================================== -->
+  <t t-name="pb_training.PbSessionsLens">
+    <div class="pbim pbss pbss-vars" t-att-class="{ 'pbss--embedded': props.embedded }">
+      <div class="pbss-wrap">
+
+        <div t-if="!state.loaded" class="pbss-hero pbss-skel" aria-busy="true">
+          <div class="pbss-skel-line pbss-skel-line--s"/>
+          <div class="pbss-skel-line"/>
+        </div>
+
+        <div t-elif="state.failed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The sessions could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Sessions are run by the training team</h2>
+          <p>Your own sessions are on My learning.</p>
+        </div>
+
+        <!-- ================= one session ================= -->
+        <t t-elif="page">
+          <button class="pbim-btn ghost pbss-back" t-on-click="closePage"><t t-out="ic('back',15)"/> Every session</button>
+          <div t-if="page.loading" class="pbss-hero pbss-skel"><div class="pbss-skel-line"/></div>
+          <t t-else="">
+            <section class="pbss-hero">
+              <div class="pbss-hero-top">
+                <div class="pbss-hero-id">
+                  <div class="pbss-eyebrow"><t t-out="ic(page.kind === 'toolbox' ? 'megaphone' : 'calendar',13)"/> <t t-esc="page.kind_word"/></div>
+                  <h1 class="pbss-title" t-esc="page.course"/>
+                  <div class="pbss-meta">
+                    <span><t t-out="ic('calendarClock',14)"/> <t t-esc="page.when_words"/></span>
+                    <span><t t-out="ic('mapPin',14)"/> <t t-esc="page.where_words"/></span>
+                    <span t-if="page.trainer"><t t-out="ic('user',14)"/> <t t-esc="page.trainer"/></span>
+                    <span><t t-out="ic('users',14)"/> <t t-esc="page.seats_words"/></span>
+                    <span t-if="page.cost_words" title="What it cost"><t t-out="ic('coins',14)"/> <t t-esc="page.cost_words"/></span>
+                    <a t-if="page.join_url" t-att-href="page.join_url" target="_blank" rel="noopener"><t t-out="ic('video',14)"/> Join link</a>
+                  </div>
+                </div>
+                <span class="pbss-state" t-att-class="stateClass(page)" t-esc="page.state_word"/>
+              </div>
+              <div class="pbss-actions">
+                <button t-if="page.can_write and page.editable" class="pbim-btn primary" t-on-click="openBook"><t t-out="ic('userPlus',15)"/> Book people</button>
+                <button t-if="page.can_write and page.can_invite" class="pbim-btn ghost" t-att-disabled="state.acting === 'send_invites'" t-on-click="() => this.pageVerb('send_invites')"><t t-out="ic('send',15)"/> Send the invitations</button>
+                <button t-if="page.can_write and (page.can_start or page.can_close)" class="pbim-btn primary" t-on-click="startScreen"><t t-out="ic('scan',15)"/> <t t-if="page.can_start">Start the session</t><t t-else="">Show the code</t></button>
+                <button t-if="page.can_write and page.can_close" class="pbim-btn ghost" t-att-disabled="state.acting === 'close_session'" t-on-click="() => this.pageVerb('close_session')"><t t-out="ic('checkCheck',15)"/> Close the session</button>
+                <button t-if="page.can_reopen" class="pbim-btn ghost" t-on-click="() => this.pageVerb('reopen_session')"><t t-out="ic('rotate',15)"/> Open it again</button>
+                <button t-if="page.can_write and page.editable" class="pbim-btn ghost" t-on-click="editSession"><t t-out="ic('pencil',15)"/> Edit</button>
+                <button class="pbim-btn ghost" t-att-disabled="state.acting === 'xlsx'" t-on-click="downloadSheet"><t t-out="ic('fileSpreadsheet',15)"/> Attendance spreadsheet</button>
+                <button class="pbim-btn ghost" t-on-click="printSheet"><t t-out="ic('printer',15)"/> Sign-in sheet</button>
+                <a t-if="page.photo_url" class="pbim-btn ghost" t-att-href="page.photo_url"><t t-out="ic('camera',15)"/> Photo of the sheet</a>
+                <button t-if="page.can_write and page.can_cancel" class="pbim-btn ghost pbss-danger" t-att-disabled="state.acting === 'cancel_session'" t-on-click="() => this.pageVerb('cancel_session')"><t t-out="ic('ban',15)"/> Cancel the session</button>
+              </div>
+              <p t-if="page.state === 'planned'" class="pbss-next"><t t-out="ic('info',14)"/> Next: book people, then send the invitations. Each person gets an email with a calendar file.</p>
+              <p t-elif="page.state === 'open'" class="pbss-next"><t t-out="ic('info',14)"/> Invitations are out. On the day, press Start the session and show the code.</p>
+              <p t-elif="page.state === 'held'" class="pbss-next"><t t-out="ic('info',14)"/> Under way. Close it when it ends: anybody booked and not marked counts as not coming.</p>
+              <p t-elif="page.state === 'closed'" class="pbss-next is-ok"><t t-out="ic('checkCircle',14)"/> Closed. Everybody who attended has the course marked finished and the hours on their record.</p>
+              <p t-elif="page.state === 'cancelled'" class="pbss-next is-bad"><t t-out="ic('ban',14)"/> Cancelled. The people who had an invitation were told.</p>
+            </section>
+
+            <section class="pbss-panel">
+              <div class="pbss-sec-h">
+                <h3>People <span class="pbss-n" t-esc="page.roster.length"/></h3>
+              </div>
+              <div t-if="!page.roster.length" class="pbss-calm"><t t-out="ic('info',14)"/> Nobody is booked yet. Press Book people.</div>
+              <div t-else="" class="pbss-scroll">
+                <table class="pbss-table">
+                  <thead>
+                    <tr><th>Name</th><th>Department</th><th>Where they stand</th><th>Checked in</th><th>Hours</th><th class="pbss-th-act"/></tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="page.roster" t-as="row" t-key="row.id">
+                      <td><b class="pbss-who" t-esc="row.name"/><span t-if="!row.has_login" class="pbss-dim">No login — counts on their record only</span></td>
+                      <td t-esc="row.department"/>
+                      <td><span class="pbss-state" t-att-class="attClass(row)" t-esc="row.state_word"/></td>
+                      <td t-esc="row.checked_in"/>
+                      <td t-esc="row.hours"/>
+                      <td class="pbss-act">
+                        <t t-if="page.can_write and page.editable">
+                          <button t-if="row.state !== 'attended'" class="pbim-btn ghost" t-att-disabled="state.acting === 'row' + row.id" t-on-click="() => this.mark(row, 'attended')"><t t-out="ic('check',14)"/> Mark attended</button>
+                          <button t-if="row.state === 'booked' or row.state === 'attended'" class="pbim-btn ghost" t-att-disabled="state.acting === 'row' + row.id" t-on-click="() => this.mark(row, 'no_show')"><t t-out="ic('userX',14)"/> Did not come</button>
+                          <button class="pbim-btn ghost" t-att-disabled="state.acting === 'row' + row.id" t-on-click="() => this.remove(row)" title="Take them off this session"><t t-out="ic('x',14)"/></button>
+                        </t>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </t>
+        </t>
+
+        <!-- ================= the board ================= -->
+        <t t-else="">
+          <section class="pbss-hero">
+            <div class="pbss-hero-top">
+              <div class="pbss-hero-id">
+                <div class="pbss-eyebrow"><t t-out="ic('calendar',13)"/> Sessions</div>
+                <p class="pbss-headline" t-esc="data.headline"/>
+              </div>
+              <div t-if="data.can_write" class="pbss-hero-act">
+                <button class="pbim-btn ghost" t-on-click="openToolbox"><t t-out="ic('megaphone',15)"/> Log a toolbox talk</button>
+                <button class="pbim-btn primary" t-on-click="() => this.newSession(0)"><t t-out="ic('plus',15)"/> New session</button>
+              </div>
+            </div>
+            <div class="pbss-week" role="group" aria-label="The next seven days">
+              <button t-foreach="week" t-as="wd" t-key="wd.date" type="button" class="pbss-day" t-att-class="{ 'is-today': wd.today, 'is-on': wd.on, 'has': wd.count }" t-att-aria-pressed="wd.on ? 'true' : 'false'" t-on-click="() => this.pickDay(wd)">
+                <span class="pbss-day-w" t-esc="wd.weekday"/>
+                <span class="pbss-day-n" t-esc="wd.day"/>
+                <span class="pbss-dots"><span t-foreach="dots(wd)" t-as="dt" t-key="dt" class="pbss-dot"/><span t-if="wd.count > 4" class="pbss-more" t-esc="'+' + (wd.count - 4)"/></span>
+              </button>
+            </div>
+          </section>
+
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="state.f.state === 'to_close' ? 'to_close' : ''"/>
+          </t>
+
+          <div class="pbss-bar">
+            <label class="pbss-search"><t t-out="ic('search',14)"/><input type="search" placeholder="Find a course, a place or a trainer" t-att-value="state.f.q" t-on-input="onSearch"/></label>
+            <span t-if="state.f.day" class="pbss-chip is-go"><t t-out="ic('calendar',12)"/> <t t-esc="dayLabel(state.f.day)"/></span>
+            <span t-if="state.f.state === 'to_close'" class="pbss-chip is-warn"><t t-out="ic('hourglass',12)"/> Ended, still to close</span>
+            <button t-if="anyFilter" class="pbim-btn ghost" t-on-click="clearFilters"><t t-out="ic('x',14)"/> Show everything</button>
+          </div>
+
+          <div t-if="!upcoming.length and !past.length and !anyFilter" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('calendar',26)"/></div>
+            <h2>No sessions yet</h2>
+            <p>A session is a course taught in a room or on site: a date, a place, a trainer and seats. People scan a code to be marked as there, and attending finishes the course for them. A toolbox talk is a short session logged after it happened.</p>
+            <div t-if="data.can_write" class="pbss-empty-act">
+              <button class="pbim-btn primary" t-on-click="() => this.newSession(0)"><t t-out="ic('plus',15)"/> Plan the first session</button>
+              <button class="pbim-btn ghost" t-on-click="openToolbox"><t t-out="ic('megaphone',15)"/> Log a toolbox talk</button>
+            </div>
+          </div>
+          <div t-elif="!upcoming.length and !past.length" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('search',26)"/></div>
+            <h2>No session matches that</h2>
+            <button class="pbim-btn ghost" t-on-click="clearFilters">Show everything</button>
+          </div>
+
+          <t t-else="">
+            <section t-if="upcoming.length">
+              <h3 class="pbss-list-h"><t t-if="state.f.state === 'to_close'">Ended, still to close</t><t t-else="">Coming up</t></h3>
+              <div class="pbss-grid">
+                <t t-foreach="upcoming" t-as="ses" t-key="ses.id"><t t-call="pb_training.PbSessionCard"/></t>
+              </div>
+            </section>
+            <section t-if="past.length">
+              <h3 class="pbss-list-h">The last 30 days</h3>
+              <div class="pbss-grid">
+                <t t-foreach="past" t-as="ses" t-key="ses.id"><t t-call="pb_training.PbSessionCard"/></t>
+              </div>
+            </section>
+          </t>
+        </t>
+      </div>
+
+      <!-- ================= the session drawer ================= -->
+      <div t-if="state.drawer === 'session'" class="pbim-modal-scrim pbss-scrim" t-on-click="closeDrawer">
+        <div class="pbss-drawer" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow"><t t-if="state.form.id">Edit the session</t><t t-else="">New session</t></div>
+              <h2 class="pbss-drawer-title">When, where, who runs it, how many seats</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <div class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Course</span>
+              <div t-if="!state.form.id" class="pbss-modes" role="group">
+                <button t-if="lists.courses.length" class="pbss-filter" t-att-class="{ 'is-on': state.courseMode === 'course' }" t-on-click="() => this.setCourseMode('course')">A classroom course</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.courseMode === 'new' }" t-on-click="() => this.setCourseMode('new')">A new classroom course</button>
+              </div>
+              <select t-if="state.courseMode === 'course'" class="pbss-in" t-att-disabled="!!state.form.id" t-on-change="(ev) => this.setField('channel_id', ev, 'int')">
+                <option value="0">Pick the course</option>
+                <t t-foreach="lists.courses" t-as="crs" t-key="crs.id"><option t-att-value="crs.id" t-att-selected="state.form.channel_id === crs.id" t-esc="crs.name"/></t>
+              </select>
+              <input t-else="" class="pbss-in" type="text" placeholder="For example: Site safety walk" t-att-value="state.form.new_course" t-on-input="(ev) => this.setField('new_course', ev)"/>
+              <p class="pbss-note">Only courses taught in a room or on site are listed. To add one, set "How it is taught" on the course, or name a new one here.</p>
+            </div>
+            <label class="pbss-f">
+              <span class="pbss-f-l">Kind</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setField('kind', ev)">
+                <t t-foreach="lists.kinds" t-as="kd" t-key="kd.key"><option t-att-value="kd.key" t-att-selected="state.form.kind === kd.key" t-esc="kd.label"/></t>
+              </select>
+            </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">Starts</span>
+              <input class="pbss-in" type="datetime-local" t-att-value="state.form.start" t-on-change="(ev) => this.setField('start', ev)"/>
+            </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">Minutes</span>
+              <input class="pbss-in pbss-in--s" type="number" min="1" t-att-value="state.form.minutes" t-on-change="(ev) => this.setField('minutes', ev, 'int')"/>
+            </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">Seats (0 = as many as come)</span>
+              <input class="pbss-in pbss-in--s" type="number" min="0" t-att-value="state.form.seats" t-on-change="(ev) => this.setField('seats', ev, 'int')"/>
+            </label>
+            <label class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Where</span>
+              <input class="pbss-in" type="text" placeholder="For example: Training room 2, Building A" t-att-value="state.form.place" t-on-input="(ev) => this.setField('place', ev)"/>
+            </label>
+            <div class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Trainer</span>
+              <input class="pbss-in" type="search" placeholder="Type a name, or an outside trainer's name" t-att-value="state.trainerTerm" t-on-input="onTrainerTerm"/>
+              <div t-if="state.trainers.length" class="pbss-picklist">
+                <button t-foreach="state.trainers" t-as="tr" t-key="tr.id" class="pbss-pick" t-on-click="() => this.pickTrainer(tr)"><b t-esc="tr.name"/><span class="pbss-dim-i" t-esc="tr.department"/></button>
+              </div>
+              <p class="pbss-note"><t t-if="state.form.trainer_id">One of your people.</t><t t-elif="state.form.trainer_name">An outside trainer.</t><t t-else="">Optional.</t></p>
+            </div>
+            <label class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Join link (optional)</span>
+              <input class="pbss-in" type="text" placeholder="For people joining from somewhere else" t-att-value="state.form.join_url" t-on-input="(ev) => this.setField('join_url', ev)"/>
+            </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">Hours it counts for</span>
+              <input class="pbss-in pbss-in--s" type="number" min="0" step="0.25" t-att-value="state.form.hours" t-on-change="(ev) => this.setField('hours', ev, 'float')"/>
+            </label>
+            <label class="pbss-f">
+              <span class="pbss-f-l">What it cost (optional)</span>
+              <input class="pbss-in pbss-in--s" type="number" min="0" step="1" t-att-value="state.form.cost" t-on-change="(ev) => this.setField('cost', ev, 'float')"/>
+            </label>
+            <p class="pbss-note pbss-f--wide">The cost of the trainer, the room and materials, in the company's money. It shows in Numbers › Cost.</p>
+            <p class="pbss-note pbss-f--wide">Empty hours = the length of the session. Changing the time or the place of a session whose invitations are out sends everybody the new time.</p>
+          </div>
+          <div class="pbss-drawer-foot">
+            <span t-if="sessionHint" class="pbss-hint" t-esc="sessionHint"/>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canSaveSession" t-on-click="saveSession"><t t-out="ic('check',15)"/> Save the session</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= the book drawer ================= -->
+      <div t-if="state.drawer === 'book' and page" class="pbim-modal-scrim pbss-scrim" t-on-click="closeDrawer">
+        <div class="pbss-drawer" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Book people</div>
+              <h2 class="pbss-drawer-title" t-esc="page.course"/>
+              <p class="pbss-note" t-esc="page.when_words"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <div class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Who</span>
+              <div class="pbss-modes" role="group">
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.book.mode === 'people' }" t-on-click="() => this.setBookMode('people')">People</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.book.mode === 'department' }" t-on-click="() => this.setBookMode('department')">A department</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.book.mode === 'job' }" t-on-click="() => this.setBookMode('job')">A job</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.book.mode === 'on_course' }" t-on-click="() => this.setBookMode('on_course')">Everybody who owes this course</button>
+              </div>
+            </div>
+            <div t-if="state.book.mode === 'people'" class="pbss-f pbss-f--wide">
+              <input class="pbss-in" type="search" placeholder="Type a name — accents do not matter" t-att-value="state.peopleTerm" t-on-input="onPeopleTerm"/>
+              <div t-if="state.book.picked.length" class="pbss-chips">
+                <span t-foreach="state.book.picked" t-as="emp" t-key="emp.id" class="pbss-chip is-go"><t t-esc="emp.name"/> <button class="pbss-x" t-on-click="() => this.togglePerson(emp)" title="Remove"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <div class="pbss-picklist">
+                <button t-foreach="state.people" t-as="emp" t-key="emp.id" class="pbss-pick" t-att-class="{ 'is-on': isPicked(emp) }" t-on-click="() => this.togglePerson(emp)">
+                  <span class="pbss-pick-box"><t t-if="isPicked(emp)"><t t-out="ic('check',12)"/></t></span>
+                  <b t-esc="emp.name"/>
+                  <span class="pbss-dim-i"><t t-esc="emp.department"/><t t-if="!emp.has_login"> · no login</t></span>
+                </button>
+                <p t-if="!state.people.length" class="pbss-note">Nobody matches that.</p>
+              </div>
+            </div>
+            <label t-if="state.book.mode === 'department'" class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Department (with every department under it)</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setBook('department_id', ev)">
+                <option value="0">Pick a department</option>
+                <t t-foreach="lists.departments" t-as="dp" t-key="dp.id"><option t-att-value="dp.id" t-esc="dp.name"/></t>
+              </select>
+            </label>
+            <label t-if="state.book.mode === 'job'" class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Job</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setBook('job_id', ev)">
+                <option value="0">Pick a job</option>
+                <t t-foreach="lists.jobs" t-as="jb" t-key="jb.id"><option t-att-value="jb.id" t-esc="jb.name"/></t>
+              </select>
+            </label>
+            <p t-if="state.book.mode === 'on_course'" class="pbss-note pbss-f--wide">Everybody who has this course to do and has not finished it.</p>
+            <p class="pbss-note pbss-f--wide">Beyond the seats, people wait for a seat and are booked in turn when somebody drops out. Somebody not on the course yet is put on it, due the day of the session. People with no login still count on their record.</p>
+          </div>
+          <div class="pbss-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canBook" t-on-click="saveBook"><t t-out="ic('check',15)"/> Book them</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= the toolbox drawer ================= -->
+      <PbToolboxDrawer t-if="state.drawer === 'toolbox'" onClose="() => this.closeDrawer()" onSaved="() => this.afterToolbox()"/>
+
+      <!-- ================= the attendance screen ================= -->
+      <div t-if="state.screen and page" class="pbss-screen" role="dialog" aria-modal="true">
+        <div class="pbss-screen-top">
+          <div>
+            <div class="pbss-eyebrow"><t t-out="ic('scan',13)"/> Scan to be marked as here</div>
+            <h1 class="pbss-screen-title" t-esc="page.course"/>
+            <p class="pbss-screen-sub"><t t-esc="page.when_words"/> · <t t-esc="page.where_words"/></p>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="closeScreen"><t t-out="ic('x',16)"/> Back to the session</button>
+        </div>
+        <div class="pbss-screen-body">
+          <div class="pbss-qr">
+            <img t-att-src="page.qr_src" alt="Attendance code" width="400" height="400"/>
+            <div class="pbss-count">
+              <b t-esc="state.screen.here_words"/>
+              <span class="pbss-bar-line"><span t-attf-style="width: {{ screenPercent }}%;"/></span>
+            </div>
+          </div>
+          <div class="pbss-screen-roster">
+            <div class="pbss-screen-act">
+              <button class="pbim-btn ghost" t-att-disabled="state.acting === 'all'" t-on-click="everyoneHere"><t t-out="ic('checkCheck',15)"/> Everyone is here</button>
+              <button class="pbim-btn primary" t-att-disabled="state.acting === 'close'" t-on-click="closeFromScreen"><t t-out="ic('check',15)"/> Close the session</button>
+            </div>
+            <div class="pbss-screen-list">
+              <button t-foreach="state.screen.roster || []" t-as="row" t-key="row.id" class="pbss-tick" t-att-class="{ 'is-here': row.state === 'attended' }" t-att-disabled="state.acting === 'row' + row.id" t-on-click="() => this.mark(row, row.state === 'attended' ? 'booked' : 'attended')">
+                <span class="pbss-pick-box"><t t-if="row.state === 'attended'"><t t-out="ic('check',12)"/></t></span>
+                <b t-esc="row.name"/>
+                <span class="pbss-dim-i"><t t-if="row.checked_in" t-esc="row.checked_in"/><t t-if="row.how === 'qr'"> · scanned</t></span>
+              </button>
+              <p t-if="!(state.screen.roster || []).length" class="pbss-note">Nobody is booked. People who scan the code can join if there are seats.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ================= one session card ================= -->
+  <t t-name="pb_training.PbSessionCard">
+    <button type="button" class="pbss-card" t-att-class="{ 'is-amber': ses.tone === 'amber', 'is-rose': ses.tone === 'rose' }" t-on-click="() => this.openSession(ses.id)">
+      <span class="pbss-card-top">
+        <b class="pbss-card-name" t-esc="ses.course"/>
+        <span class="pbss-state" t-att-class="stateClass(ses)"><t t-if="ses.to_close">Ended, still to close</t><t t-else="" t-esc="ses.state_word"/></span>
+      </span>
+      <span class="pbss-chip"><t t-out="ic(ses.kind === 'toolbox' ? 'megaphone' : 'calendar',12)"/> <t t-esc="ses.kind_word"/></span>
+      <span class="pbss-card-line"><t t-out="ic('calendarClock',13)"/> <t t-esc="ses.when_words"/></span>
+      <span class="pbss-card-line"><t t-out="ic('mapPin',13)"/> <t t-esc="ses.where_words"/></span>
+      <span t-if="ses.trainer" class="pbss-card-line"><t t-out="ic('user',13)"/> <t t-esc="ses.trainer"/></span>
+      <span class="pbss-card-line pbss-card-seats"><t t-out="ic('users',13)"/> <t t-if="ses.state === 'closed'"><t t-esc="ses.attended"/> attended<t t-if="ses.no_show"> · <t t-esc="ses.no_show"/> did not come</t></t><t t-else="" t-esc="ses.seats_words"/></span>
+    </button>
+  </t>
+
+</templates>

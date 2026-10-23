@@ -8,20 +8,19 @@
         <field name="arch" type="xml">
             <form string="Payroll Analytics Dashboard" 
                   create="false" 
-                  edit="false" 
-                  js_class="payroll_analytics_dashboard">
+                  edit="false">
                 <header>
                     <button name="action_approve_payroll" 
                             type="object" 
                             string="Final Approve" 
                             class="oe_highlight btn-success"
-                            states="ready"
+                            invisible="state not in ('ready')"
                             confirm="Are you sure you want to approve this payroll? This action cannot be undone."/>
                     <button name="action_export_bank_file" 
                             type="object" 
                             string="Export Bank File" 
                             class="oe_highlight btn-primary"
-                            states="approved"/>
+                            invisible="state not in ('approved')"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 
@@ -78,7 +77,7 @@
                                         </div>
                                         <div class="metric-content">
                                             <h3 class="metric-value">
-                                                <field name="variance_percentage" readonly="1" widget="percentage"/>
+                                                <field name="variance_percentage" readonly="1"/>
                                             </h3>
                                             <p class="metric-label">Variance vs Last Month</p>
                                         </div>
@@ -87,36 +86,31 @@
                             </div>
                         </div>
                         
-                        <!-- Charts Section -->
+                        <!-- Charts Section
+                             The "Salary Components" and "Month over Month"
+                             canvases that used to sit here were orphaned in
+                             Phase M: their renderer (payroll_charts_v19.js,
+                             which pulled Chart.js 3.9.1 from a CDN) was
+                             deleted and the view arch was left untouched, so
+                             the page showed two permanently blank boxes with
+                             headings above them. Charting now lives in the
+                             Insights cockpit and the Analytics Explorer, which
+                             read the same data live. -->
                         <div class="charts-section">
                             <div class="row">
-                                <!-- Component Comparison Chart -->
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <div class="chart-card">
                                         <div class="chart-header">
-                                            <h4><i class="fa fa-bar-chart"/> Salary Components</h4>
-                                            <p>Total amounts by component</p>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="componentsChart" width="400" height="300"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Month over Month Comparison -->
-                                <div class="col-md-6">
-                                    <div class="chart-card">
-                                        <div class="chart-header">
-                                            <h4><i class="fa fa-line-chart"/> Month over Month</h4>
-                                            <p>Comparison with previous month</p>
-                                        </div>
-                                        <div class="chart-container">
-                                            <canvas id="comparisonChart" width="400" height="300"></canvas>
+                                            <h4>Charts moved</h4>
+                                            <p>Component breakdown and month-over-month
+                                               comparison are live in Insights and the
+                                               Analytics Explorer, where they are
+                                               filterable and drillable.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Variance Analysis Chart -->
                             <div class="row">
                                 <div class="col-md-12">

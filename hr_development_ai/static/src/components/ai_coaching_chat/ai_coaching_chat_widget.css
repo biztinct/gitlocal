@@ -1,0 +1,250 @@
+/* AI Coaching Chat Widget Styles */
+
+.ai-coaching-chat-widget {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: var(--hr-dev-radius-lg);
+    box-shadow: var(--hr-dev-shadow-md);
+    overflow: hidden;
+    height: 500px;
+    transition: var(--hr-dev-transition);
+}
+
+.ai-coaching-chat-widget.expanded {
+    height: 700px;
+}
+
+/* Chat Header */
+.ai-coaching-chat-widget .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--hr-dev-space-md);
+    background: linear-gradient(135deg, var(--hr-dev-primary) 0%, var(--hr-dev-primary-dark) 100%);
+    color: white;
+    box-shadow: var(--hr-dev-shadow-sm);
+}
+
+.ai-coaching-chat-widget .chat-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.ai-coaching-chat-widget .chat-actions {
+    display: flex;
+    gap: var(--hr-dev-space-xs);
+}
+
+.ai-coaching-chat-widget .chat-actions .btn {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ai-coaching-chat-widget .chat-actions .btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Chat Messages Area */
+.ai-coaching-chat-widget .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--hr-dev-space-md);
+    background-color: var(--hr-dev-gray-50);
+}
+
+/* Empty State */
+.ai-coaching-chat-widget .chat-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--hr-dev-gray-400);
+    text-align: center;
+}
+
+.ai-coaching-chat-widget .chat-empty-state i {
+    color: var(--hr-dev-gray-300);
+}
+
+.ai-coaching-chat-widget .chat-empty-state p {
+    margin-bottom: var(--hr-dev-space-xs);
+}
+
+/* Chat Messages */
+.ai-coaching-chat-widget .chat-message {
+    display: flex;
+    margin-bottom: var(--hr-dev-space-md);
+    align-items: flex-start;
+}
+
+.ai-coaching-chat-widget .chat-message.user {
+    flex-direction: row-reverse;
+}
+
+.ai-coaching-chat-widget .message-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--hr-dev-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.125rem;
+}
+
+.ai-coaching-chat-widget .chat-message.user .message-avatar {
+    background-color: var(--hr-dev-primary);
+    color: white;
+    margin-left: var(--hr-dev-space-sm);
+}
+
+.ai-coaching-chat-widget .chat-message.assistant .message-avatar {
+    background-color: var(--hr-dev-gray-300);
+    color: var(--hr-dev-gray-700);
+    margin-right: var(--hr-dev-space-sm);
+}
+
+.ai-coaching-chat-widget .message-content {
+    flex: 1;
+    max-width: 75%;
+}
+
+.ai-coaching-chat-widget .chat-message.user .message-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.ai-coaching-chat-widget .message-bubble {
+    padding: var(--hr-dev-space-sm) var(--hr-dev-space-md);
+    border-radius: var(--hr-dev-radius-lg);
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.ai-coaching-chat-widget .chat-message.user .message-bubble {
+    background-color: var(--hr-dev-primary);
+    color: white;
+    border-bottom-right-radius: var(--hr-dev-radius-sm);
+}
+
+.ai-coaching-chat-widget .chat-message.assistant .message-bubble {
+    background-color: white;
+    color: var(--hr-dev-gray-800);
+    border: 1px solid var(--hr-dev-gray-200);
+    border-bottom-left-radius: var(--hr-dev-radius-sm);
+}
+
+.ai-coaching-chat-widget .message-time {
+    font-size: 0.75rem;
+    color: var(--hr-dev-gray-500);
+    margin-top: var(--hr-dev-space-xs);
+    padding: 0 var(--hr-dev-space-sm);
+}
+
+/* Typing Indicator */
+.ai-coaching-chat-widget .typing-indicator {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem 0;
+}
+
+.ai-coaching-chat-widget .typing-indicator span {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--hr-dev-gray-400);
+    border-radius: var(--hr-dev-radius-full);
+    animation: typing-bounce 1.4s infinite ease-in-out;
+}
+
+.ai-coaching-chat-widget .typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.ai-coaching-chat-widget .typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing-bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Chat Input */
+.ai-coaching-chat-widget .chat-input {
+    display: flex;
+    gap: var(--hr-dev-space-sm);
+    padding: var(--hr-dev-space-md);
+    background-color: white;
+    border-top: 1px solid var(--hr-dev-gray-200);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ai-coaching-chat-widget .chat-input textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--hr-dev-gray-300);
+    border-radius: var(--hr-dev-radius-md);
+    padding: var(--hr-dev-space-sm);
+    font-size: 0.875rem;
+}
+
+.ai-coaching-chat-widget .chat-input textarea:focus {
+    outline: none;
+    border-color: var(--hr-dev-primary);
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+}
+
+.ai-coaching-chat-widget .chat-input button {
+    align-self: flex-end;
+    min-width: 3rem;
+    height: 2.5rem;
+}
+
+/* Scrollbar Styling */
+.ai-coaching-chat-widget .chat-messages::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+.ai-coaching-chat-widget .chat-messages::-webkit-scrollbar-track {
+    background: var(--hr-dev-gray-100);
+}
+
+.ai-coaching-chat-widget .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--hr-dev-gray-300);
+    border-radius: var(--hr-dev-radius-sm);
+}
+
+.ai-coaching-chat-widget .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--hr-dev-gray-400);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .ai-coaching-chat-widget {
+        height: 400px;
+    }
+
+    .ai-coaching-chat-widget.expanded {
+        height: 600px;
+    }
+
+    .ai-coaching-chat-widget .message-content {
+        max-width: 85%;
+    }
+
+    .ai-coaching-chat-widget .chat-title {
+        font-size: 1rem;
+    }
+}

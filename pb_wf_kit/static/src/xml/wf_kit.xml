@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================== shared context bar -->
+  <t t-name="pb_wf_kit.WfContextBar">
+    <div class="wfctx" t-att-class="props.className">
+
+      <!-- department -->
+      <div class="wfctx-seg" t-if="features.department and !state.deptDenied">
+        <span class="wfctx-seg__ic" t-out="ic('layers', 14)"/>
+        <select class="wfctx-select" t-ref="dept" t-on-change="onDeptChange"
+                t-att-class="{ 'is-pinned': ctx.departmentId }"
+                aria-label="Department">
+          <option value="">All departments</option>
+          <t t-foreach="state.departments" t-as="dep" t-key="dep.id">
+            <option t-att-value="dep.id" t-esc="dep.name"/>
+          </t>
+        </select>
+      </div>
+
+      <!-- week -->
+      <div class="wfctx-seg wfctx-week" t-if="features.week">
+        <button class="wfctx-nav" t-on-click="() => this.prevWeek()"
+                title="Previous week" aria-label="Previous week">
+          <span t-out="ic('chevron', 14)" class="wfctx-flip"/>
+        </button>
+        <span class="wfctx-weeklabel" t-esc="weekLabel"/>
+        <button class="wfctx-today" t-on-click="() => this.goToday()">Today</button>
+        <button class="wfctx-nav" t-on-click="() => this.nextWeek()"
+                title="Next week" aria-label="Next week">
+          <span t-out="ic('chevron', 14)"/>
+        </button>
+      </div>
+
+      <!-- focused day (opt-in) — always inside the week above, by invariant -->
+      <div class="wfctx-seg wfctx-day" t-if="features.day">
+        <button class="wfctx-nav" t-on-click="() => this.prevDay()"
+                title="Previous day" aria-label="Previous day">
+          <span t-out="ic('chevron', 14)" class="wfctx-flip"/>
+        </button>
+        <span class="wfctx-daylabel" t-esc="dayLabel"/>
+        <button class="wfctx-nav" t-on-click="() => this.nextDay()"
+                title="Next day" aria-label="Next day">
+          <span t-out="ic('chevron', 14)"/>
+        </button>
+      </div>
+
+      <!-- person typeahead -->
+      <div class="wfctx-seg wfctx-person" t-if="features.person and !state.personDenied">
+        <t t-if="ctx.personId">
+          <span class="wfctx-chip is-pinned">
+            <span t-out="ic('user', 13)"/>
+            <span t-esc="state.personLabel"/>
+            <button class="wfctx-chip__x" t-on-click="() => this.clearPerson()"
+                    title="Clear person" aria-label="Clear person">
+              <span t-out="ic('x', 12)"/>
+            </button>
+          </span>
+        </t>
+        <t t-else="">
+          <span class="wfctx-seg__ic" t-out="ic('search', 14)"/>
+          <input class="wfctx-input" type="text"
+                 placeholder="Find a person…" aria-label="Find a person"
+                 t-att-value="state.personQuery"
+                 t-on-input="onPersonInput" t-on-blur="onPersonBlur"/>
+          <div class="wfctx-menu" t-if="state.open">
+            <t t-foreach="state.matches" t-as="m" t-key="m.id">
+              <button class="wfctx-menu__item" t-on-click="() => this.pickPerson(m)">
+                <span t-out="ic('user', 13)"/><span t-esc="m.name"/>
+              </button>
+            </t>
+          </div>
+        </t>
+      </div>
+
+      <!-- optional free-text search -->
+      <div class="wfctx-seg" t-if="features.search">
+        <span class="wfctx-seg__ic" t-out="ic('filter', 14)"/>
+        <input class="wfctx-input" type="text" placeholder="Filter…" aria-label="Filter"
+               t-att-value="ctx.search" t-on-input="onSearchInput"/>
+      </div>
+
+    </div>
+  </t>
+
+  <!-- ========================================================= right drawer -->
+  <t t-name="pb_wf_kit.WfDrawer">
+    <div class="wfdr-scrim" t-on-click="() => props.onClose()">
+      <!-- .stop so a click inside the panel does not reach the scrim's close -->
+      <aside class="wfdr" role="dialog" aria-modal="true" t-on-click.stop="() => {}">
+        <header class="wfdr-head">
+          <div class="wfdr-head__txt">
+            <h3 class="wfdr-title" t-esc="props.title"/>
+            <p class="wfdr-sub" t-if="props.subtitle" t-esc="props.subtitle"/>
+          </div>
+          <button class="wfdr-x" t-on-click="() => props.onClose()"
+                  title="Close" aria-label="Close">
+            <span t-out="ic('x', 16)"/>
+          </button>
+        </header>
+        <div class="wfdr-body">
+          <t t-slot="default"/>
+        </div>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ================================================ person-week drawer body -->
+  <!-- Moved here from pb_time_hub in P1b so the Today board and the Time hub
+       mount ONE panel instead of two copies (W6). Markup unchanged; the class
+       prefix is the kit's (`wfpw-`) because the styles travelled with it. -->
+  <t t-name="pb_wf_kit.WfPersonWeek">
+    <div class="wfpw-load" t-if="!p">
+      <span t-out="ic('loader', 22)"/><span>Loading…</span>
+    </div>
+
+    <t t-else="">
+      <!-- who -->
+      <div class="wfpw-who">
+        <img class="wfpw-av" t-att-src="p.employee.avatar_url" alt=""/>
+        <div class="wfpw-who__txt">
+          <div class="n" t-esc="p.employee.name"/>
+          <div class="s" t-esc="subtitle"/>
+        </div>
+        <span class="wfpw-pill wfpw-pill--green" t-if="p.employee.on_shift_now">On shift</span>
+      </div>
+
+      <!-- week summary chips -->
+      <div class="wfpw-wksum">
+        <span><i>Scheduled</i><b t-esc="fmt(p.totals.sched)"/></span>
+        <span><i>Actual</i><b t-esc="fmt(p.totals.actual)"/></span>
+        <span><i>Δ week</i><b t-attf-class="d-{{ deltaTone(p.totals.delta) }}"
+                              t-esc="fmtDelta(p.totals.delta)"/></span>
+      </div>
+
+      <!-- the named pain point: one person's week as a table -->
+      <table class="wfpw-dt">
+        <thead>
+          <tr><th>Day</th><th>Sched</th><th>Actual</th><th>Entered</th><th>Δ</th></tr>
+        </thead>
+        <tbody>
+          <tr t-foreach="p.days" t-as="d" t-key="d.date"
+              t-att-class="{ 'is-today': d.is_today }">
+            <td>
+              <span t-esc="d.label"/>
+              <span class="wfpw-flag" t-if="d.flags.includes('trip')" title="Business trip">·T</span>
+              <span class="wfpw-flag" t-if="d.flags.includes('holiday')" title="Public holiday">·H</span>
+            </td>
+            <td t-esc="fmt(d.sched, d.planned)"/>
+            <td t-esc="fmt(d.actual, d.planned or d.actual)"/>
+            <td>
+              <span t-attf-class="wfpw-din {{ dayTone(d) }}"
+                    t-esc="d.entered ? fmt(d.entered) : '—'"/>
+            </td>
+            <td t-attf-class="{{ deltaTone(d.delta) }}"
+                t-esc="d.planned ? fmtDelta(d.delta) : '—'"/>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- overtime + compliance chips -->
+      <div class="wfpw-chips">
+        <span t-foreach="p.ot" t-as="o" t-key="o.type"
+              t-attf-class="wfpw-pill wfpw-pill--{{ o.tone }}">
+          <t t-esc="o.label"/> · <t t-esc="fmt(o.hours)"/>h
+        </span>
+        <span class="wfpw-pill wfpw-pill--green" t-if="p.compliance">
+          On time <t t-esc="p.compliance.pct"/>%
+        </span>
+        <span class="wfpw-chips__empty" t-if="!p.ot.length and !p.compliance">
+          No overtime or shift compliance recorded this week.
+        </span>
+      </div>
+
+      <!-- every drawer is a door onwards, never a dead end (W5) -->
+      <div class="wfpw-acts">
+        <button class="wfpw-btn wfpw-btn--ghost" t-if="props.onFileCorrection"
+                t-att-disabled="props.filing"
+                t-on-click="() => props.onFileCorrection()">
+          <span t-out="ic('fileText', 14)"/><span>File correction</span>
+        </button>
+        <button class="wfpw-btn wfpw-btn--out" t-if="props.onOpenProfile"
+                t-on-click="() => props.onOpenProfile()">
+          <span t-out="ic('external', 14)"/><span>Full profile</span>
+        </button>
+      </div>
+    </t>
+  </t>
+
+  <!-- ========================================================= command palette
+       Mounted by the HOST through the Odoo overlay service, so this markup
+       lives in `.o-overlay-container` and never inside a workspace — which is
+       what keeps the shell's z-discipline intact (W37). -->
+  <t t-name="pb_wf_kit.WfCommandPalette">
+    <div class="wfcp-scrim" t-on-click="() => props.onClose()">
+      <!-- .stop so a click inside the panel does not reach the scrim's close -->
+      <div class="wfcp" role="dialog" aria-modal="true" aria-label="Command palette"
+           t-on-click.stop="() => {}">
+
+        <div class="wfcp-search">
+          <span class="wfcp-search__ic" t-out="ic('search', 16)"/>
+          <input class="wfcp-input" type="text" t-ref="input"
+                 placeholder="Search people, lenses, actions…"
+                 aria-label="Search people, lenses, actions"
+                 t-att-value="state.q"
+                 t-on-input="onInput" t-on-keydown="onKeydown"/>
+          <span class="wfcp-esc">ESC</span>
+        </div>
+
+        <div class="wfcp-list">
+          <div class="wfcp-grp" t-foreach="groups" t-as="g" t-key="g.name">
+            <div class="wfcp-grp__h" t-esc="g.name"/>
+            <button t-foreach="g.items" t-as="row" t-key="row.row.kind + ':' + row.row.id"
+                    class="wfcp-row"
+                    t-att-class="{ 'is-on': state.active === row.idx }"
+                    t-on-mouseenter="() => this.setActive(row.idx)"
+                    t-on-click="() => this.run(row.row)">
+              <span class="wfcp-row__ic" t-out="ic(row.row.icon || 'chevron', 14)"/>
+              <span class="wfcp-row__l" t-esc="row.row.label"/>
+              <span class="wfcp-row__s" t-if="row.row.sublabel" t-esc="row.row.sublabel"/>
+            </button>
+          </div>
+
+          <div class="wfcp-empty" t-if="state.searching">
+            <span t-out="ic('loader', 16)"/><span>Searching…</span>
+          </div>
+
+          <!-- §2a, measured live: this database has NO `unaccent`, so
+               "Bui Anh" matches nothing while "Bùi Anh" matches. Folding
+               client-side would only lie about what the server can find. -->
+          <div class="wfcp-empty wfcp-empty--hint" t-if="showAccentHint">
+            <span t-out="ic('alert', 16)"/>
+            <span>Nobody matched. Names are matched exactly, accents included —
+              try "Bùi Anh" rather than "Bui Anh".</span>
+          </div>
+
+          <!-- one empty state at a time: the diacritics hint IS the empty state
+               when a person search came back empty, so the generic line stands
+               down for it -->
+          <div class="wfcp-empty" t-if="!count and !state.searching and !showAccentHint">
+            <span t-out="ic('search', 16)"/><span>Nothing matches that.</span>
+          </div>
+        </div>
+
+        <div class="wfcp-foot">
+          <span><b>↑↓</b> move</span>
+          <span><b>↵</b> open</span>
+          <span><b>esc</b> close</span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- ====================================================== exception ribbon -->
+  <t t-name="pb_wf_kit.WfRibbon">
+    <div class="wfrb" t-attf-class="wfrb--{{ tone }}">
+      <span class="wfrb-ic" t-out="ic(icon, 15)"/>
+      <span class="wfrb-txt" t-esc="props.text"/>
+      <button class="wfrb-act" t-if="props.actionLabel and props.onAction"
+              t-on-click="() => props.onAction()" t-esc="props.actionLabel"/>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Expenses hub (NAV P2). Declared as a RECORD rather than reached by
+         bare tag, so anything returning through a breadcrumb sees a named
+         action instead of "Unnamed" (W98).
+
+         Test URL: /bizapp/action-pb_expenses_hub -->
+    <record id="action_pb_expenses_hub" model="ir.actions.client">
+        <field name="name">Expenses</field>
+        <field name="tag">pb_expenses_hub</field>
+    </record>
+</odoo>

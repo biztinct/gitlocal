@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Companion settings (LEARNOS Phase 4).
+
+         One switch, two facts and a sentence. Not res.config.settings: that
+         screen is company-wide Odoo configuration with a Save button over
+         dozens of unrelated fields, and the whole point of this one is that
+         somebody stopped and read before pressing.
+
+         The flag ships OFF and stays off until this is used. Both gates are
+         re-asked in learn.companion.settings.apply(), because a menu is a
+         hint and a method is reachable over RPC. -->
+    <record id="view_learn_companion_settings_form" model="ir.ui.view">
+        <field name="name">learn.companion.settings.form</field>
+        <field name="model">learn.companion.settings</field>
+        <field name="arch" type="xml">
+            <form string="Companion settings">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Payobook Coach</h1>
+                        <h3>Composed answers</h3>
+                    </div>
+                    <group>
+                        <field name="company_id"/>
+                        <field name="provider_ready"/>
+                        <field name="provider_note" nolabel="1" colspan="2"/>
+                    </group>
+                    <group>
+                        <field name="compose_enabled"/>
+                    </group>
+                    <div class="text-muted">
+                        <p>
+                            With this off — the state every database ships in —
+                            the Coach answers only from written content. Nothing
+                            it says has ever left this server.
+                        </p>
+                        <p>
+                            With it on, a question no written answer covers may
+                            be answered by the configured AI provider, using
+                            this module's own tutorial text as its only
+                            material. No employee, payslip, contract or pay-run
+                            record is ever sent. Composed answers are badged, so
+                            a reader can always tell which kind they are holding.
+                        </p>
+                        <p>
+                            Questions about tax or contribution minimisation are
+                            refused before any of this, whichever way the switch
+                            is set.
+                        </p>
+                        <field name="scope_note" nolabel="1" readonly="1"/>
+                    </div>
+                </sheet>
+                <footer>
+                    <button string="Apply" name="apply" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_learn_companion_settings" model="ir.actions.act_window">
+        <field name="name">Companion settings</field>
+        <field name="res_model">learn.companion.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_learn_companion_settings_form"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FLEET P6 — the page at the end of a support link that did not work,
+         and at the end of a session that has finished.
+
+         STANDALONE, like the paused page and for the same reason: it has to
+         render for somebody who is not logged in, on a database whose whole web
+         client is behind a door. No login box, no navigation, no stack trace,
+         and not one word of the framework's vocabulary — the reader is either a
+         Payobook engineer who clicked a stale link or a customer who found one
+         in a chat window, and both of them need one sentence and a way out. -->
+    <template id="support_gone_page" name="Support access">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Payobook — support access</title>
+                <style>
+                    * { box-sizing: border-box; }
+                    body { margin:0; min-height:100vh; display:flex; align-items:center;
+                           justify-content:center; padding:24px;
+                           background:#F7F6FB; color:#1E1B2E;
+                           font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+                    .pbs-card { width:100%; max-width:470px; background:#fff;
+                                border:1px solid #E6E4F0; border-radius:18px;
+                                padding:38px 34px 30px; box-shadow:0 18px 46px rgba(30,27,46,.09);
+                                animation:pbs-in .34s cubic-bezier(.2,.7,.3,1) both; }
+                    @keyframes pbs-in { from { opacity:0; transform:translateY(10px); }
+                                        to { opacity:1; transform:none; } }
+                    @media (prefers-reduced-motion: reduce) { .pbs-card { animation:none; } }
+                    .pbs-brand { font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+                                 color:#5A4BB0; font-weight:800; margin-bottom:22px; }
+                    .pbs-ic { width:52px; height:52px; border-radius:14px;
+                              display:flex; align-items:center; justify-content:center;
+                              background:#FCEDF3; color:#DC2668; margin-bottom:18px; }
+                    .pbs-ic.done { background:#E7F3EC; color:#2E7D4F; }
+                    h1 { font-size:22px; margin:0 0 10px; letter-spacing:-.3px; }
+                    p { font-size:15px; line-height:1.6; margin:0 0 12px; color:#3B3752; }
+                    .pbs-quiet { font-size:13px; color:#6B6880; }
+                    .pbs-note { border-left:3px solid #5A4BB0; background:#F6F5FB;
+                                padding:11px 14px; border-radius:0 10px 10px 0;
+                                font-size:14px; margin:18px 0 20px; }
+                    .pbs-acts { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+                    a.pbs-btn { display:inline-flex; align-items:center; gap:7px;
+                                padding:9px 15px; border-radius:9px; font-size:14px;
+                                font-weight:600; text-decoration:none;
+                                border:1px solid #E6E4F0; color:#3B3752; background:#fff; }
+                    a.pbs-btn.primary { background:#5A4BB0; border-color:#5A4BB0; color:#fff; }
+                </style>
+            </head>
+            <body>
+                <div class="pbs-card">
+                    <div class="pbs-brand">Payobook</div>
+                    <div t-attf-class="pbs-ic {{ 'done' if finished else '' }}">
+                        <t t-if="finished">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/>
+                            </svg>
+                        </t>
+                        <t t-else="">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 8v4"/>
+                                <path d="M12 16h.01"/>
+                            </svg>
+                        </t>
+                    </div>
+                    <h1 t-if="finished">The support session has finished</h1>
+                    <h1 t-else="">This support link cannot be used</h1>
+                    <p t-esc="text"/>
+                    <div class="pbs-note" t-if="finished">
+                        Everything that was opened during the session is written down on
+                        your own Payobook, under <b>Settings → About Payobook → Support
+                        access</b>, where anyone who manages permissions for your company
+                        can read it.
+                    </div>
+                    <p class="pbs-quiet" t-else="">
+                        A support link is good for one minute and for one use. If Payobook
+                        support still needs to look at something, ask them for a new one.
+                    </p>
+                    <div class="pbs-acts">
+                        <a class="pbs-btn primary" href="/">Open Payobook</a>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <!-- The customer's own page. A client action, opened from the Settings hub;
+         the record exists so the hub can probe that the door leads somewhere. -->
+    <record id="action_support_access" model="ir.actions.client">
+        <field name="name">Support access</field>
+        <field name="tag">pb_tenancy_support</field>
+        <field name="target">current</field>
+    </record>
+</odoo>

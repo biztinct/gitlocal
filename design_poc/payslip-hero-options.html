@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Payslip hero — 3 Indigo options · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  body { background:var(--bg); }
+  .wrap { max-width:1100px; margin:0 auto; padding:26px 24px 70px; }
+  .lead { text-align:center; margin-bottom:6px; }
+  .lead h1 { font-size:24px; font-weight:800; margin:0; }
+  .lead p { color:var(--muted); font-size:14px; margin:7px 0 0; }
+
+  .opt { margin-top:30px; }
+  .opt-cap { display:flex; align-items:baseline; gap:12px; margin-bottom:11px; }
+  .opt-cap .n { font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--i); background:var(--i-soft); border-radius:999px; padding:4px 11px; }
+  .opt-cap .t { font-size:16px; font-weight:800; }
+  .opt-cap .d { font-size:12.5px; color:var(--muted); }
+
+  /* ---- refined action bar: ONE solid primary, rest outline/ghost ---- */
+  .ab2 { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:13px; padding:9px 13px; box-shadow:none; margin-bottom:12px; }
+  .ab2 .sp { flex:1; } .ab2 .div { width:1px; height:20px; background:var(--line); margin:0 3px; }
+  .b2 { border:1px solid var(--line); background:#fff; color:#475569; border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:700; font-family:inherit; cursor:pointer; transition:.14s; }
+  .b2:hover { border-color:var(--i-border); }
+  .b2.primary { background:var(--i); border-color:var(--i); color:#fff; }
+  .b2.primary:hover { background:var(--i600); }
+  .b2.outline { color:var(--i); border-color:var(--i-border); background:#fff; }
+  .b2.outline:hover { background:var(--i-soft); }
+  .b2.ghost { background:var(--bg); }
+  .b2.danger { color:var(--rose); }
+
+  /* ---- shared hero internals ---- */
+  .hero3 { border-radius:18px; padding:20px 24px; display:flex; align-items:center; gap:20px; }
+  .hero3 .av { width:62px; height:62px; border-radius:17px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:21px; flex:none; }
+  .hero3 .id { flex:1; min-width:0; }
+  .hero3 .nm { font-size:20px; font-weight:800; }
+  .hero3 .jt { font-size:13px; margin-top:2px; }
+  .hero3 .chips { display:flex; gap:8px; margin-top:11px; flex-wrap:wrap; }
+  .hero3 .chip { font-size:11.5px; font-weight:700; border-radius:999px; padding:5px 12px; }
+  .hero3 .net { text-align:right; flex:none; }
+  .hero3 .net .k { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .hero3 .net .v { font-size:30px; font-weight:800; letter-spacing:-.02em; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .hero3 .pl { margin-top:13px; }
+  /* mini pipeline reuse */
+  .pl .pipe .dot { width:19px; height:19px; }
+
+  /* ===== OPTION 1 — Light indigo tint (airy) ===== */
+  .h1tint { background:#EEF0FF; border:1px solid #D6DBFF; color:var(--ink); }
+  .h1tint .av { background:#fff; color:var(--i); box-shadow:0 2px 8px rgba(79,70,229,.12); }
+  .h1tint .jt { color:#6B6FA8; }
+  .h1tint .chip { background:#fff; border:1px solid #D6DBFF; color:#4338CA; }
+  .h1tint .net .k { color:#6B6FA8; }
+  .h1tint .net .v { color:var(--i); }
+
+  /* ===== OPTION 2 — White + indigo accent rail (most neutral) ===== */
+  .h2rail { background:#fff; border:1px solid var(--line); border-left:5px solid var(--i); box-shadow:var(--shadow); color:var(--ink); }
+  .h2rail .av { background:var(--i-soft); color:var(--i); }
+  .h2rail .jt { color:var(--muted); }
+  .h2rail .chip { background:var(--bg); border:1px solid var(--line); color:#475569; }
+  .h2rail .net .k { color:var(--muted); }
+  .h2rail .net .v { color:var(--i); }
+
+  /* ===== OPTION 3 — Flat deep indigo, single tone (calm, no gradient) ===== */
+  .h3flat { background:#312E81; border:1px solid #312E81; color:#fff; }
+  .h3flat .av { background:rgba(255,255,255,.14); color:#fff; }
+  .h3flat .jt { color:#B9BCEC; }
+  .h3flat .chip { background:rgba(255,255,255,.12); color:#EEF0FF; }
+  .h3flat .net .k { color:#B9BCEC; }
+  .h3flat .net .v { color:#fff; }
+  /* dark pipeline */
+  .h3flat .pipe .lbl { color:#9aa0d6; } .h3flat .pipe .dot { background:#5b5fab; border-color:#5b5fab; }
+  .h3flat .pipe .bar { background:rgba(255,255,255,.18); } .h3flat .pipe .bar.done { background:#34D399; }
+  .h3flat .pipe .step.done .dot { background:#34D399; border-color:#34D399; } .h3flat .pipe .step.done .lbl { color:#A7F3D0; }
+  .h3flat .pipe .step.cur .dot { background:#fff; border-color:#fff; color:#312E81; box-shadow:0 0 0 4px rgba(255,255,255,.22); } .h3flat .pipe .step.cur .lbl { color:#fff; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html">① Pay Runs landing</a>
+  <a href="payslip-statement.html">② Payslip statement</a>
+  <a href="payslip-hero-options.html" class="on">⌗ Hero options</a>
+  <a href="payrun-batch.html">③ Batch form</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">single-tone · calmer indigo</span>
+</div>
+
+<div class="wrap">
+  <div class="lead">
+    <h1>Payslip header — three calmer Indigo options</h1>
+    <p>No dual-tone gradient. One solid primary button; the rest outline/ghost. Pick a hero — it sets the tone for every screen.</p>
+  </div>
+
+  <!-- OPTION 1 -->
+  <div class="opt">
+    <div class="opt-cap"><span class="n">Option 1</span><span class="t">Light tint</span><span class="d">— airy; indigo only as a soft tint + accent. The most toned-down.</span></div>
+    <div class="ab2">
+      <button class="b2 primary">✓ Confirm</button>
+      <button class="b2 outline">▶ Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost">🖨 Print</button>
+      <button class="b2 ghost">✉ Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost">↩ Refund</button>
+      <button class="b2 ghost danger">✕ Cancel</button>
+    </div>
+    <div class="hero3 h1tint">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div>
+        <div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip">📅 01 Apr – 30 Apr 2026</span><span class="chip">📐 Vietnam Standard Payroll</span><span class="chip">🔖 SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe">
+          <span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span>
+          <span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span>
+        </span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge done" style="margin-top:7px;"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="opt">
+    <div class="opt-cap"><span class="n">Option 2</span><span class="t">White + accent rail</span><span class="d">— enterprise-clean white card; indigo only on the left rail, net value &amp; pipeline.</span></div>
+    <div class="ab2">
+      <button class="b2 primary">✓ Confirm</button>
+      <button class="b2 outline">▶ Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost">🖨 Print</button>
+      <button class="b2 ghost">✉ Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost">↩ Refund</button>
+      <button class="b2 ghost danger">✕ Cancel</button>
+    </div>
+    <div class="hero3 h2rail">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div>
+        <div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip">📅 01 Apr – 30 Apr 2026</span><span class="chip">📐 Vietnam Standard Payroll</span><span class="chip">🔖 SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe">
+          <span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span>
+          <span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span>
+        </span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge done" style="margin-top:7px;"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div class="opt">
+    <div class="opt-cap"><span class="n">Option 3</span><span class="t">Flat deep indigo</span><span class="d">— a single calm deep-indigo tone (no gradient). Still bold, but one colour only.</span></div>
+    <div class="ab2">
+      <button class="b2 primary">✓ Confirm</button>
+      <button class="b2 outline">▶ Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost">🖨 Print</button>
+      <button class="b2 ghost">✉ Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost">↩ Refund</button>
+      <button class="b2 ghost danger">✕ Cancel</button>
+    </div>
+    <div class="hero3 h3flat">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div>
+        <div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip">📅 01 Apr – 30 Apr 2026</span><span class="chip">📐 Vietnam Standard Payroll</span><span class="chip">🔖 SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe">
+          <span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span>
+          <span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span>
+          <span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span>
+        </span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge" style="margin-top:7px;background:rgba(52,211,153,.22);color:#A7F3D0;"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;">The earnings/deductions cards, waterfall and power tabs below stay exactly as in screen ② — only this header treatment changes. Whichever you pick becomes the system tone (landing KPI tiles, batch hero, buttons).</p>
+</div>
+</body>
+</html>

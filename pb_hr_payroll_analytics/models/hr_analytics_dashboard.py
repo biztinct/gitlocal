@@ -8,6 +8,20 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+def _demo_world(env):
+    """True only where `pb_demo` is installed.
+
+    LEARNOS ledger rule 1: fabricated figures are allowed in a demo world and
+    nowhere else. Every sample-data path in this module asks this first.
+    """
+    try:
+        return bool(env['ir.module.module'].sudo().search_count([
+            ('name', '=', 'pb_demo'), ('state', '=', 'installed'),
+        ]))
+    except Exception:  # pragma: no cover — a registry without the model
+        return False
+
+
 class HrAnalyticsDashboard(models.Model):
     """Main Analytics Dashboard - Integration point for all analytics"""
 
@@ -175,69 +189,68 @@ class HrAnalyticsDashboard(models.Model):
                 ('code', 'in', ['VN', 'ID', 'IN', 'SG', 'TH', 'KH', 'MY'])
             ])
 
-    @api.depends('selected_country')
+    @api.depends('company_id')
     def _compute_dashboard_stats(self):
-        """Compute quick stats with sample data based on country"""
-        # Sample data by country
-        sample_data = {
-            'VN': {
-                'headcount': 245,
-                'personnel_cost': 5200000.00,
-                'contributions': 850000.00,
-                'average_salary': 21224.49
-            },
-            'ID': {
-                'headcount': 180,
-                'personnel_cost': 3600000.00,
-                'contributions': 620000.00,
-                'average_salary': 20000.00
-            },
-            'IN': {
-                'headcount': 320,
-                'personnel_cost': 8500000.00,
-                'contributions': 1200000.00,
-                'average_salary': 26562.50
-            },
-            'SG': {
-                'headcount': 95,
-                'personnel_cost': 2800000.00,
-                'contributions': 450000.00,
-                'average_salary': 29473.68
-            },
-            'TH': {
-                'headcount': 150,
-                'personnel_cost': 3200000.00,
-                'contributions': 520000.00,
-                'average_salary': 21333.33
-            },
-            'KH': {
-                'headcount': 110,
-                'personnel_cost': 1800000.00,
-                'contributions': 280000.00,
-                'average_salary': 16363.64
-            },
-            'MY': {
-                'headcount': 130,
-                'personnel_cost': 2900000.00,
-                'contributions': 470000.00,
-                'average_salary': 22307.69
-            },
-            'ALL': {
-                'headcount': 1230,
-                'personnel_cost': 28000000.00,
-                'contributions': 4390000.00,
-                'average_salary': 22764.23
-            }
-        }
+        """The four headline stats, read from the payslips themselves.
+
+        These used to be a per-country dict of invented constants, whose
+        global row leaked onto every brand-new tenant's home dashboard through
+        `pb_dashboard`'s fallback. (Do not restate those figures here: the
+        phase's verification greps this file for them.) The aggregate is now
+        exactly the one `pb.dashboard.get_dashboard_data` runs: the latest
+        `date_from` month, company-scoped, GROSS for payroll, the INSCO/COMP
+        categories for contributions, distinct employees for headcount, and
+        END-cycle payslips only (with a Mid+End cycle both slips carry the full
+        GROSS, so counting both would double everything).
+
+        `selected_country` is deliberately ignored: it was never anything but a
+        key into the sample dict.
+        """
+        # A database without the formula engine has no `hr_formula_config`
+        # table, and a failed statement poisons the whole transaction — so ask
+        # the registry before writing the JOIN.
+        has_cfg = 'hr.formula.config' in self.env
+        cycle_clause = (
+            "AND (fc.cycle_type = 'end_cycle' OR fc.id IS NULL)" if has_cfg else "")
+        cfg_join = (
+            "LEFT JOIN hr_formula_config fc ON fc.id = p.formula_config_id" if has_cfg else "")
 
         for record in self:
-            country = record.selected_country or 'ALL'
-            data = sample_data.get(country, sample_data['ALL'])
+            company = record.company_id or self.env.company
+            headcount = 0
+            payroll = contributions = 0.0
+            try:
+                # Savepoint so a failed statement cannot leave the whole request
+                # transaction in InFailedSqlTransaction — "zeros" must really
+                # mean zeros, not a poisoned cursor.
+                with self.env.cr.savepoint():
+                    self.env.cr.execute(
+                        "SELECT max(date_from) FROM hr_payslip WHERE company_id = %s",
+                        (company.id,))
+                    ref = (self.env.cr.fetchone() or [None])[0]
+                    if ref:
+                        self.env.cr.execute("""
+                            SELECT count(DISTINCT p.employee_id),
+                                   coalesce(sum(CASE WHEN pl.code='GROSS' THEN pl.total ELSE 0 END), 0),
+                                   coalesce(sum(CASE WHEN cat.code IN ('INSCO', 'COMP') THEN pl.total ELSE 0 END), 0)
+                            FROM hr_payslip p
+                            JOIN hr_payslip_line pl ON pl.slip_id = p.id
+                            JOIN hr_salary_rule_category cat ON cat.id = pl.category_id
+                            %s
+                            WHERE p.company_id = %%s AND p.date_from = %%s
+                              %s
+                        """ % (cfg_join, cycle_clause), (company.id, ref))
+                        row = self.env.cr.fetchone() or (0, 0.0, 0.0)
+                        headcount, payroll, contributions = row[0] or 0, row[1] or 0.0, row[2] or 0.0
+            except Exception:
+                _logger.exception('Analytics dashboard stats failed; reporting zeros.')
+                headcount = 0
+                payroll = contributions = 0.0
 
-            record.total_headcount = data['headcount']
-            record.total_personnel_cost = data['personnel_cost']
-            record.total_contributions = data['contributions']
-            record.average_salary = data['average_salary']
+            record.total_headcount = headcount
+            record.total_personnel_cost = payroll
+            record.total_contributions = contributions
+            record.average_salary = (payroll / headcount) if headcount else 0.0
 
     # ============================================================================
     # CHANGE HANDLERS
@@ -300,8 +313,49 @@ class HrAnalyticsDashboard(models.Model):
                     _logger.warning(f'Onload generation failed: {str(e)}')
         return True
 
+    # ------------------------------------------------------------------
+    # RETIRED (Sudima Phase N). This action created FOUR analytics records —
+    # personnel costs, statutory contributions, headcount and a budget
+    # variance seeded with a literal 500,000 — on every dashboard open, and it
+    # was called from `create()`, from `action_onload_generate_data()` and from
+    # the Refresh/Apply buttons. Merely LOOKING at the dashboard therefore grew
+    # the database by four rows, which is where the stray draft records users
+    # kept finding came from.
+    #
+    # The records it produced were not usable anyway: the statutory total sums
+    # a dict containing a string and swallows the resulting TypeError
+    # (hr_analytics_statutory_contrib.py:244), generation reads the removed
+    # `address_home_id` field (:405), and the budget figure was invented.
+    #
+    # The generator is kept behind an explicit opt-in so nothing that calls it
+    # crashes, but the automatic path is closed. The live replacement is the
+    # Analytics Explorer (pb_explorer), which derives everything from payslip
+    # truth and writes no analytics records at all.
+    # ------------------------------------------------------------------
     def action_refresh_all_analytics(self):
-        """Refresh all analytics data"""
+        """Retired: no longer generates records unless explicitly forced."""
+        self.ensure_one()
+        if not self.env.context.get('pb_allow_legacy_analytics_generation'):
+            _logger.info(
+                'pb_hr_payroll_analytics: legacy generation is retired; '
+                'use the Analytics Explorer instead.')
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Replaced by the Analytics Explorer'),
+                    'message': _(
+                        'This legacy dashboard no longer generates data. Open '
+                        'Insights > Analytics Explorer for live figures read '
+                        'straight from your payslips.'),
+                    'type': 'warning',
+                    'sticky': False,
+                },
+            }
+        return self._legacy_refresh_all_analytics()
+
+    def _legacy_refresh_all_analytics(self):
+        """The original generator, retained for explicit/manual use only."""
         self.ensure_one()
 
         try:
@@ -459,15 +513,21 @@ class HrAnalyticsDashboard(models.Model):
             }
         }
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Create dashboard - only one per company"""
-        # Check if dashboard already exists for this company
-        existing = self.search([
-            ('company_id', '=', vals.get('company_id', self.env.company.id))
-        ], limit=1)
+        results = self.env['hr.analytics.dashboard']
+        
+        for vals in vals_list:
+            # Check if dashboard already exists for this company
+            company_id = vals.get('company_id', self.env.company.id)
+            existing = self.search([
+                ('company_id', '=', company_id)
+            ], limit=1)
 
-        if existing:
-            return existing
-
-        return super().create(vals)
+            if existing:
+                results |= existing
+            else:
+                results |= super().create([vals])
+        
+        return results

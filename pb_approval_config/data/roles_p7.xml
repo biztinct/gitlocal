@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         PHASE 7: two more organisational jobs.
+
+         Both are jobs that already exist and had nowhere to be named. The
+         finance controller is the second pair of eyes on an exchange rate or
+         a budget — the person who owns the numbers rather than the payment.
+         A platform owner is one of the people who may suspend, delete or
+         re-plan a customer: the only default route in the whole product that
+         asks for two of them, because those presses cannot be undone.
+
+         Both fall back to the company: one seat for the whole business, not
+         one per part of it.
+         ================================================================== -->
+
+    <record id="role_finance_controller" model="biz.approval.role">
+        <field name="key">finance_controller</field>
+        <field name="name">Finance controller</field>
+        <field name="description">Owns the numbers behind the money — exchange rates, budgets and the policies that shape them.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">120</field>
+    </record>
+
+    <record id="role_platform_owner" model="biz.approval.role">
+        <field name="key">platform_owner</field>
+        <field name="name">Platform owner</field>
+        <field name="description">Decides what happens to a customer's own space — suspending it, closing it, changing what they pay for.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">130</field>
+    </record>
+
+</odoo>

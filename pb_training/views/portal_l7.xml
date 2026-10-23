@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       LEARNING L7 — the learner's phone.
+
+       * `tr_pwa_head`: "My training" can go on a phone's home screen
+         (manifest, theme colour, icon). NO service worker (owner decision
+         LD7): nothing is cached for offline use.
+       * `tr_phone_kit`: the words the phone layer (`portal_lesson.js`) says,
+         written here so they are translated with the page, and the quiet
+         banner it fills. Hidden until the script uses them; a page without
+         the script never shows them.
+       * Next for you, Three minutes today and the on-time streak on
+         `/my/training`; a badge on every certificate in the wallet.
+
+       Rules from the main file hold here: `t-attf-class`, never a dict
+       `t-att-class` (R42); icon names by `t-value` (W87); every translatable
+       text node on ONE line (LN13).
+       ================================================================== -->
+
+  <template id="tr_pwa_head" name="Training home-screen icon">
+    <link rel="manifest" href="/my/training/manifest.webmanifest"/>
+    <meta name="theme-color" content="#1E1B2E"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <link rel="apple-touch-icon" href="/pb_training/static/src/img/pwa-180.png"/>
+  </template>
+
+  <template id="tr_phone_kit" name="Training phone words">
+    <div class="pbtr-offline" role="status" aria-live="polite" hidden="hidden">
+      <span class="pbtr-offline-ic pbtr-offline-ic--wait">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="'wifiOff'"/>
+          <t t-set="isz" t-value="16"/>
+        </t>
+      </span>
+      <span class="pbtr-offline-ic pbtr-offline-ic--ok">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="'checkCircle'"/>
+          <t t-set="isz" t-value="16"/>
+        </t>
+      </span>
+      <span class="pbtr-offline-say"/>
+    </div>
+    <div class="pbtr-words" hidden="hidden" aria-hidden="true">
+      <div data-w="saved">Saved on your phone. It will send when you are back online.</div>
+      <div data-w="quiz_saved">Your answers are saved on your phone. They are checked when you are back online.</div>
+      <div data-w="saved_button">Saved on your phone</div>
+      <div data-w="offline">You are offline. Your place in this lesson is kept.</div>
+      <div data-w="sending">Sending what was saved on your phone…</div>
+      <div data-w="sent_head">Sent while you were offline:</div>
+      <div data-w="out_done">done</div>
+      <div data-w="out_passed">passed</div>
+      <div data-w="out_failed">not quite yet, open it to try again</div>
+      <div data-w="out_refused">not saved, open it and try again</div>
+      <div data-w="checking">Checking…</div>
+      <div data-w="next_lesson">Next lesson</div>
+    </div>
+  </template>
+
+  <!-- ============ the certificate badge (LD8) ============
+       A medal: the course initials on the brand colour, two ribbon tails
+       (Lucide's award, drawn larger). Amber when it needs renewing, grey once
+       it has run out. Called with `bdg` = {initials, hex} and `bsz`. -->
+  <template id="tr_badge" name="Training certificate badge">
+    <t t-set="bsz" t-value="bsz or 46"/>
+    <svg t-att-width="bsz" t-att-height="int(bsz * 56 / 48)" viewBox="0 0 48 56" class="pbtr-badge" role="img" t-att-aria-label="bdg['initials']">
+      <path d="M15 34 10.5 53 17.5 49.5 22.5 54 23 39Z" t-att-fill="bdg['hex']" opacity="0.72"/>
+      <path d="M33 34 37.5 53 30.5 49.5 25.5 54 25 39Z" t-att-fill="bdg['hex']" opacity="0.72"/>
+      <circle cx="24" cy="22" r="19" t-att-fill="bdg['hex']"/>
+      <circle cx="24" cy="22" r="15" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="24" y="26.5" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff" font-family="Inter, Helvetica, Arial, sans-serif" letter-spacing="0.5"><t t-esc="bdg['initials']"/></text>
+    </svg>
+  </template>
+
+  <!-- ============ /my/training: next for you, three minutes, streak ============ -->
+  <template id="portal_my_training_l7" inherit_id="pb_training.portal_my_training" name="My training — next for you">
+    <xpath expr="//t[@t-set='additional_title']" position="after">
+      <t t-set="head"><t t-call="pb_training.tr_pwa_head"/></t>
+    </xpath>
+    <xpath expr="//t[@t-call='pb_training.tr_notices']" position="after">
+      <t t-call="pb_training.tr_phone_kit"/>
+    </xpath>
+    <xpath expr="//t[@t-call='pb_me_portal.ess_hero']" position="after">
+      <t t-set="nb" t-value="me.get('next')"/>
+      <div t-if="nb and nb['kind'] != 'none'" t-attf-class="pbme-card pbtr-next pbtr-next--#{nb['kind']}">
+        <div class="pbtr-next-main">
+          <div class="pbtr-next-eyebrow">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="nb['kind'] in ('overdue', 'renewal') and 'alert' or 'compass'"/>
+              <t t-set="isz" t-value="13"/>
+            </t>
+            <span>Next for you</span>
+          </div>
+          <h2 class="pbtr-next-title" t-esc="nb['title']"/>
+          <p class="pbtr-next-line"><span t-esc="nb['line']"/><t t-if="nb['duration']"> · <span t-esc="nb['duration']"/></t></p>
+          <p t-if="nb['reason']" class="pbtr-next-why" t-esc="nb['reason']"/>
+          <div t-if="nb['channel_id'] and nb['percent']" class="pbtr-bar">
+            <div class="pbtr-bar-fill" t-attf-style="width: #{nb['percent']}%;"/>
+          </div>
+        </div>
+        <a t-att-href="nb['url']" class="pbme-btn pbtr-btn--primary pbtr-btn--big pbtr-next-go">
+          <span t-esc="nb['button']"/>
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'arrowRight'"/>
+            <t t-set="isz" t-value="16"/>
+          </t>
+        </a>
+      </div>
+      <div t-elif="nb and me['courses']" class="pbme-card pbtr-next pbtr-next--none">
+        <div class="pbtr-next-main">
+          <div class="pbtr-next-eyebrow">
+            <t t-call="pb_training.tr_icon">
+              <t t-set="icon" t-value="'checkCircle'"/>
+              <t t-set="isz" t-value="13"/>
+            </t>
+            <span>Next for you</span>
+          </div>
+          <h2 class="pbtr-next-title" t-esc="nb['title']"/>
+          <p class="pbtr-next-line" t-esc="nb['line']"/>
+        </div>
+      </div>
+
+      <t t-set="tm" t-value="me.get('three')"/>
+      <a t-if="tm and (not nb or nb['kind'] != 'three')" t-att-href="tm['url']" class="pbme-card pbtr-three">
+        <span class="pbtr-three-ic">
+          <t t-call="pb_training.tr_icon">
+            <t t-set="icon" t-value="'timer'"/>
+            <t t-set="isz" t-value="18"/>
+          </t>
+        </span>
+        <span class="pbtr-three-main">
+          <span class="pbtr-three-l">Three minutes today</span>
+          <b class="pbtr-three-name" t-esc="tm['name']"/>
+          <span class="pbtr-muted"><span t-esc="tm['course']"/><t t-if="tm['duration']"> · <span t-esc="tm['duration']"/></t></span>
+        </span>
+        <span class="pbtr-three-go">Start</span>
+      </a>
+
+      <p t-if="(me.get('streak') or {}).get('count')" class="pbtr-streak">
+        <t t-call="pb_training.tr_icon">
+          <t t-set="icon" t-value="'calendarCheck'"/>
+          <t t-set="isz" t-value="15"/>
+        </t>
+        <span t-esc="me['streak']['words']"/>
+      </p>
+    </xpath>
+  </template>
+
+  <!-- ============ one course: the home-screen icon and the replay banner ============ -->
+  <template id="portal_training_course_l7" inherit_id="pb_training.portal_training_course" name="A course — phone">
+    <xpath expr="//t[@t-set='additional_title']" position="after">
+      <t t-set="head"><t t-call="pb_training.tr_pwa_head"/></t>
+    </xpath>
+    <xpath expr="//t[@t-call='pb_training.tr_notices']" position="after">
+      <t t-call="pb_training.tr_phone_kit"/>
+    </xpath>
+  </template>
+
+  <!-- ============ the wallet: the home-screen icon (the badge is in the card itself) ============ -->
+  <template id="portal_training_certificates_l7" inherit_id="pb_training.portal_training_certificates" name="My certificates — phone">
+    <xpath expr="//t[@t-set='additional_title']" position="after">
+      <t t-set="head"><t t-call="pb_training.tr_pwa_head"/></t>
+    </xpath>
+  </template>
+
+</odoo>

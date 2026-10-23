@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="workforce_rule_employee_own_ot" model="ir.rule">
+        <field name="name">Own OT Requests</field>
+        <field name="model_id" ref="model_hr_overtime_request"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="workforce_rule_manager_all_ot" model="ir.rule">
+        <field name="name">Manager: All OT Requests</field>
+        <field name="model_id" ref="model_hr_overtime_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_manager'))]"/>
+    </record>
+
+    <record id="workforce_rule_employee_own_shifts" model="ir.rule">
+        <field name="name">Own Shift Assignments</field>
+        <field name="model_id" ref="model_hr_shift_planning"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="workforce_rule_manager_all_shifts" model="ir.rule">
+        <field name="name">Manager: All Shift Assignments</field>
+        <field name="model_id" ref="model_hr_shift_planning"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_manager'))]"/>
+    </record>
+
+    <!-- ==================================================================
+         A SEAT IS ALSO A READ (approval matrix, ledger AM60).
+
+         Overtime travels a published route now, and the route's first step is
+         the person's own line manager — who is an attendance OFFICER at best
+         and often holds nothing at all, while reading somebody else's
+         overtime needs the attendance MANAGER role. The engine re-checks that
+         a decider can read the record before it accepts their decision, so
+         without this the step would be handed to somebody the ORM then
+         refuses.
+
+         READ ONLY. Being asked to decide overtime has never been permission
+         to change it: the hours are sealed fields, written only by the
+         model's own actions.
+         ================================================================== -->
+
+    <record id="workforce_rule_ot_seat" model="ir.rule">
+        <field name="name">Overtime: the people a route asked to decide it</field>
+        <field name="model_id" ref="model_hr_overtime_request"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,497 @@
+<title>Pay Scales Blueprint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --ground:#F7F7FB; --card:#FFFFFF; --ink:#1E1B2E; --sub:#5C5A72; --faint:#83809A;
+    --line:#E4E2EF; --line2:#EFEEF6; --brand:#5A4BB0; --deep:#241F52; --soft:#EDEAF8;
+    --good:#2E7D4F; --goodbg:#E9F4ED; --warn:#B4700A; --warnbg:#FBF1E1; --stop:#C21F5B; --stopbg:#FCEBF1; --teal:#0F766E; --tealbg:#E6F3F1;
+    --money:#1F6B45; --floor:#C21F5B;
+    --shadow:0 1px 2px rgba(36,31,82,.05), 0 8px 24px rgba(36,31,82,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB; --line:#302C4A; --line2:#282443;
+      --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450; --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F;
+      --stop:#F58BB0; --stopbg:#37172A; --teal:#5FC7BC; --tealbg:#12312D; --money:#7FD1A0; --floor:#F58BB0;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141225; --card:#1D1A32; --ink:#EDEBF7; --sub:#B6B2CC; --faint:#918DAB; --line:#302C4A; --line2:#282443;
+    --brand:#B0A2F0; --deep:#CFC6F5; --soft:#2A2450; --good:#7FD1A0; --goodbg:#1B3227; --warn:#E4A94F; --warnbg:#33280F;
+    --stop:#F58BB0; --stopbg:#37172A; --teal:#5FC7BC; --tealbg:#12312D; --money:#7FD1A0; --floor:#F58BB0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px 90px}
+  header.top{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin:0 0 14px}
+  h1{font-size:clamp(30px,5.2vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0 0 14px;text-wrap:balance}
+  .standfirst{font-size:17px;color:var(--sub);margin:0;max-width:66ch}
+  .stamp{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .stamp span{font-size:12px;font-weight:600;color:var(--sub);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb, var(--ground) 92%, transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -22px 40px;padding:10px 22px}
+  nav.toc ol{display:flex;gap:4px;list-style:none;margin:0;padding:0;overflow-x:auto;scrollbar-width:thin}
+  nav.toc a{display:block;white-space:nowrap;font-size:12.5px;font-weight:700;color:var(--sub);text-decoration:none;padding:7px 11px;border-radius:8px}
+  nav.toc a:hover,nav.toc a:focus-visible{background:var(--soft);color:var(--brand);outline:none}
+  section{margin:0 0 56px;scroll-margin-top:64px}
+  .snum{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--faint)}
+  h2{font-size:clamp(22px,3.2vw,29px);font-weight:800;letter-spacing:-.025em;line-height:1.18;margin:6px 0 8px;text-wrap:balance}
+  h3{font-size:17px;font-weight:800;letter-spacing:-.015em;margin:30px 0 8px}
+  h4{font-size:14.5px;font-weight:800;margin:18px 0 6px}
+  p{margin:0 0 14px;max-width:70ch}
+  ul,ol.body{margin:0 0 16px;padding-left:20px;max-width:70ch}
+  li{margin:0 0 7px}
+  strong{font-weight:800}
+  em{font-style:italic}
+  .lead{font-size:16.5px;color:var(--sub)}
+  .num{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;font-weight:500}
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 18px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:600px}
+  th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:11px 14px;border-bottom:1px solid var(--line2);color:var(--sub);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td:first-child{color:var(--ink);font-weight:700}
+  .matrix td:not(:first-child){text-align:center;white-space:nowrap}
+  .matrix th:not(:first-child){text-align:center}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .p-yes{background:var(--goodbg);color:var(--good)} .p-part{background:var(--warnbg);color:var(--warn)} .p-no{background:var(--stopbg);color:var(--stop)} .p-new{background:var(--tealbg);color:var(--teal)} .p-brand{background:var(--soft);color:var(--brand)}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 20px;box-shadow:var(--shadow)}
+  .note.risk{background:var(--stopbg);border-color:color-mix(in srgb, var(--stop) 30%, transparent)}
+  .note.win{background:var(--goodbg);border-color:color-mix(in srgb, var(--good) 30%, transparent)}
+  .note.idea{background:var(--soft);border-color:color-mix(in srgb, var(--brand) 30%, transparent)}
+  .note h4{margin:0 0 7px;font-size:14.5px}
+  .note p{margin:0;font-size:14.5px;max-width:none}
+  .note p + p{margin-top:10px}
+  .grid2{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 20px}
+  @media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+  .grid3{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 20px}
+  @media(min-width:760px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .col h4{margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .col ul{margin:0;padding-left:18px;max-width:none;font-size:14px;color:var(--sub)}
+  .col p{font-size:14px;color:var(--sub);margin:0;max-width:none}
+  .screen{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 16px;box-shadow:var(--shadow)}
+  .screen h4{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+  .screen .where{font-size:12px;color:var(--faint);font-weight:700;margin:0 0 12px}
+  .screen .hero{font-size:14.5px;margin:0 0 10px;padding:12px 14px;background:var(--soft);border-radius:10px;max-width:none}
+  .screen .hero b{color:var(--brand)}
+  .screen ul{margin:0;padding-left:18px;font-size:14px;color:var(--sub);max-width:none}
+  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+  ol.steps li{counter-increment:s;position:relative;padding:0 0 22px 44px;margin:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--brand);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  ol.steps li::after{content:"";position:absolute;left:13.5px;top:32px;bottom:0;width:1px;background:var(--line)}
+  ol.steps li:last-child::after{display:none}
+  ol.steps b{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.015em;margin-bottom:3px}
+  ol.steps p{margin:0;font-size:14.5px;color:var(--sub)}
+  details.eng{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin:0 0 16px}
+  details.eng summary{cursor:pointer;padding:16px 20px;font-size:14px;font-weight:800;list-style:none}
+  details.eng summary::-webkit-details-marker{display:none}
+  details.eng summary::before{content:"▸ ";color:var(--brand)}
+  details.eng[open] summary::before{content:"▾ "}
+  details.eng summary:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+  details.eng .in{padding:0 20px 18px;font-size:13.5px;color:var(--sub)}
+  details.eng code{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--soft);color:var(--ink);padding:1px 5px;border-radius:5px}
+
+  /* the ladder mock */
+  .ladder-wrap{overflow-x:auto;margin:0 0 10px}
+  .ladder{min-width:620px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px 14px}
+  .ladder .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px;font-size:12.5px;color:var(--sub)}
+  .ladder .bar b{color:var(--ink);font-size:14px}
+  .ladder .chip{font-size:11.5px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--ground);color:var(--sub)}
+  .ladder .chip.on{background:var(--soft);color:var(--brand);border-color:transparent}
+  .lg{display:grid;grid-template-columns:170px repeat(4,1fr) 92px;gap:6px;align-items:stretch}
+  .lg .h{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:0 8px 4px}
+  .lg .h.r{text-align:right}
+  .lg .g{padding:10px 8px;font-size:13px;font-weight:800;line-height:1.25}
+  .lg .g small{display:block;font-weight:600;color:var(--faint);font-size:11px;margin-top:2px}
+  .lg .c{position:relative;border:1px solid var(--line2);border-radius:9px;padding:9px 10px 8px;background:var(--ground)}
+  .lg .c .v{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;font-size:13.5px;font-weight:700;color:var(--ink)}
+  .lg .c .n{font-size:11px;color:var(--faint);margin-top:2px}
+  .lg .c.me{border-color:var(--brand);background:var(--soft)}
+  .lg .c.me::after{content:"you";position:absolute;top:-8px;right:8px;font-size:10px;font-weight:800;color:#fff;background:var(--brand);border-radius:999px;padding:1px 7px}
+  .lg .c.low{border-color:var(--floor);background:var(--stopbg)}
+  .lg .c.low .v{color:var(--stop)}
+  .lg .c.low .n{color:var(--stop);font-weight:700}
+  .lg .grow{display:flex;align-items:center;justify-content:flex-end}
+  .lg .grow span{font-size:11.5px;font-weight:800;color:var(--brand);border:1px dashed color-mix(in srgb, var(--brand) 45%, transparent);border-radius:8px;padding:6px 8px;white-space:nowrap}
+  .ladder .floor{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:12px 0 0;padding:10px 12px;border-radius:9px;border:1px dashed color-mix(in srgb, var(--floor) 45%, transparent);font-size:12.5px;color:var(--sub)}
+  .ladder .floor b{color:var(--floor)}
+  .cap{font-size:12.5px;color:var(--faint);margin:0 0 22px}
+
+  /* the policy sentences mock */
+  .policy{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 10px}
+  .policy .t{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
+  .policy p{font-size:15px;line-height:1.9;margin:0 0 6px;max-width:none}
+  .policy .k{display:inline-block;background:var(--soft);color:var(--brand);font-weight:800;border-radius:7px;padding:0 7px;border-bottom:2px solid color-mix(in srgb, var(--brand) 50%, transparent)}
+  .policy .test{margin-top:12px;padding:10px 12px;border-radius:9px;background:var(--goodbg);color:var(--good);font-size:13.5px;font-weight:700}
+
+  .kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 0 20px}
+  @media(min-width:640px){.kpi{grid-template-columns:repeat(4,1fr)}}
+  .kpi div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kpi b{display:block;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:18px;font-weight:700;letter-spacing:-.02em}
+  .kpi span{font-size:12px;color:var(--faint);font-weight:700}
+  @media (prefers-reduced-motion: no-preference){
+    .screen,.col,.note{transition:transform .18s ease}
+  }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Payobook design study · 9 September 2026</p>
+  <h1>Pay scales that set the number, and policies that keep it right</h1>
+  <p class="standfirst">You asked for one thing: a pay scale per role, so a new joiner starts on it and a percentage rise reaches everyone. This document takes that idea, tests it against how Workday, Oracle, SAP, the Silicon Valley band tools and the Asian payroll products do it, keeps what is good, corrects what would hurt you, and adds what nobody else offers. It ends with the screens, the build plan and the decisions only you can make.</p>
+  <div class="stamp"><span>Builds on Pay Bands, Pay Review and Pay changes</span><span>People → Pay gets two new tabs</span><span>Seven countries' wage floors inside</span><span>Nothing rewrites pay silently</span></div>
+</header>
+
+<nav class="toc"><ol>
+  <li><a href="#a">A · Your brief</a></li>
+  <li><a href="#b">B · What exists</a></li>
+  <li><a href="#c">C · The model</a></li>
+  <li><a href="#d">D · The screens</a></li>
+  <li><a href="#e">E · Wage floors</a></li>
+  <li><a href="#f">F · Versus the best</a></li>
+  <li><a href="#g">G · Only here</a></li>
+  <li><a href="#h">H · Build plan</a></li>
+  <li><a href="#i">I · Your decisions</a></li>
+</ol></nav>
+
+<!-- ================= A ================= -->
+<section id="a">
+  <p class="snum">PART A</p>
+  <h2>Your brief, and the three places I push back</h2>
+  <p class="lead">Your instinct is right in the parts that matter: a company should be able to say "a store associate is paid this" once, and have that fact flow into every new contract and every rise. Three details of the brief would cause real harm in a payroll product, and every serious tool on the market avoids them. Here they are side by side.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>You said</th><th>What the best tools do, and why</th><th>What this design does</th></tr></thead>
+    <tbody>
+      <tr><td>Set the wage for each role so a new joiner automatically gets it as basic</td><td>Universal. Workday calls it defaulting from the grade, Oracle from the grade ladder, SAP from the pay scale level. The number is a starting point the recruiter can still change.</td><td>Kept, and made explainable. The hire screen opens with the wage already filled from the scale, with a chip that says where it came from. Change it and the chip records why.</td></tr>
+      <tr><td>A change to the scale flows to <em>all</em> employees automatically</td><td>Nobody applies a scale change to live pay without a review step. Oracle proposes step moves and waits for a person to confirm; Workday holds every proposal until the review event closes. Silent rewrites break labour law (Vietnam needs a signed contract appendix for a wage change), payroll (a mid-month change needs proration), and trust.</td><td>Automatic in <strong>effort</strong>, never in <strong>consequence</strong>. Change the scale and Payobook prepares the whole change set in seconds: every affected person, the new pay, the true payroll cost, the letters. One person presses Apply. A 24-hour undo stays behind it.</td></tr>
+      <tr><td>Everyone follows the scale unless specifically asked otherwise</td><td>Right, with one refinement: every product distinguishes people paid <em>on</em> the scale from people who have been deliberately placed off it (a retention deal, an offer match, someone red-circled above the top). Off-scale people must not be silently pulled back.</td><td>Every contract shows one of three states: <strong>On scale</strong>, <strong>Pinned</strong> (off scale, with a reason), or <strong>Drifted</strong> (was on scale, now differs, nobody decided). Scale changes move the first group, respect the second, and ask about the third.</td></tr>
+      <tr><td>A percentage increase flows through all or selected employees</td><td>Two different things hide in this sentence. A <em>scale revision</em> lifts the rule and everyone on it. A <em>merit or budget round</em> gives different people different rises against a budget. Payobook already has the second one, called Pay Review.</td><td>Scale revisions are new and built here. A selective percentage round stays in Pay Review, which now knows about scales, so a review can say "guidance is two steps up" instead of a raw percentage.</td></tr>
+      <tr><td>The pay scale sets the basic wage</td><td>In Vietnam, Indonesia and India a grade often sets more than basic: a position allowance, a housing allowance, a meal allowance, all tied to grade. Oracle and SAP model this as a package per grade.</td><td>A scale point is a <strong>package</strong>: basic, plus any grade-linked allowances you choose. Each flows into the matching contract component. If you want basic only, the package is one line.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note idea">
+    <h4>Scale and band are two different tools, and you need both</h4>
+    <p>A <strong>band</strong> is a range (lowest to highest) used for judgement: is this person paid reasonably for the job? Payobook shipped bands last week. A <strong>scale</strong> is a point (grade 3, step 2 = this exact amount) used as a rule: this is what the job pays. Every large employer in this region runs on a scale; every start-up runs on bands; a group with both a factory and a head office has both. The design keeps them as two tabs that know about each other: a scale's steps sit inside a band, and the band picture shows the steps as ticks.</p>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section id="b">
+  <p class="snum">PART B</p>
+  <h2>What Payobook already has, so nothing is built twice</h2>
+  <p class="lead">I checked the live modules before designing. A lot of the machinery a scale needs already exists, which is why this can be a focused build rather than a new programme.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Piece</th><th>Today</th><th>What the scale work reuses or changes</th></tr></thead>
+    <tbody>
+      <tr><td>Pay Bands</td><td>Job family, level, country, currency, lowest / middle / highest, dated. Health cards, band picture, a "place a new hire" calculator that suggests an offer but writes nothing.</td><td>Scales attach to the same job family and level. The band picture gains the scale's steps as ticks. "Place a new hire" becomes the engine behind the hire screen's default wage.</td></tr>
+      <tr><td>Pay Review</td><td>Guidance grid, worksheet, calibration, limits, four-step approval, apply with 24-hour undo, letters, employee portal page.</td><td>The apply-with-undo and the letters are reused as-is for scale revisions. The guidance grid learns "steps" as a unit.</td></tr>
+      <tr><td>Pay changes</td><td>One-off promotion or correction with approval and a letter.</td><td>A promotion now says "to grade 4, step 1" and the amount follows.</td></tr>
+      <tr><td>Hire screen</td><td>The wage box is empty. Whatever is typed becomes the contract wage, no suggestion, no check.</td><td>Pre-filled from the scale, explained, checked against the wage floor.</td></tr>
+      <tr><td>Contract drawer</td><td>Shows the wage, the band and the position in band. Editable in place.</td><td>Gains the On scale / Pinned / Drifted chip and a "move to step" action.</td></tr>
+      <tr><td>Wage floors</td><td>One hard-coded Vietnam figure from 2022 (₫4,680,000 for Region I). The legal floor today is ₫5,310,000. Nothing for any other country.</td><td>Replaced by a dated floor table for all seven countries, maintained as data, checked live in the scale.</td></tr>
+      <tr><td>Scheme map and "Paid by"</td><td>Department or division → scheme, per kind of run. The answer is stored on every employee as Paid by (and Advance paid by), searchable and groupable, refreshed nightly and on demand.</td><td>Becomes the scope of every pay policy. No second scoping ladder is built.</td></tr>
+      <tr><td>Group and currencies</td><td>Group, divisions, exchange-rate service, presentation currency, scope picker in the Decision Room.</td><td>Scales are compared across countries in the group's currency; a revision's cost lands in the Decision Room and the Budget board.</td></tr>
+      <tr><td>Wage into the payslip</td><td>A pay rule named BASIC reads the contract wage. Whether it wins over a file feed depends on the scheme's source order.</td><td>Unchanged. The scale writes the contract; the scheme decides, as it does today. The design adds a check that warns when a scheme would ignore the contract wage.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note risk">
+    <h4>One finding worth acting on regardless of this design</h4>
+    <p>The only minimum-wage check in the product uses Vietnam's 2022 figures. Two decrees have passed since (July 2024 and January 2026). A contract at ₫5,000,000 in Ho Chi Minh City passes the check today and is illegal. Part E fixes this properly; if you want, the figures alone can be corrected in an afternoon before anything else.</p>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section id="c">
+  <p class="snum">PART C</p>
+  <h2>The model: five ideas that carry everything</h2>
+  <p class="lead">Five plain ideas. Every screen in Part D is a view of one or two of them.</p>
+
+  <div class="grid2">
+    <div class="col"><h4>1 · Job ladder</h4><p>Job family → grade → step. A grade is a rung (Store associate, Senior associate, Shift lead). A step is a position on the rung, usually earned by time. Steps are optional: a scale can be grades only.</p></div>
+    <div class="col"><h4>2 · Pay scale</h4><p>The table of amounts: one per grade and step, in one currency, for one country, for one or more companies, in force from a date. Two ways to write it: an amount, or a coefficient times a base rate (the Vietnamese "ngạch, bậc" style). Every past version is kept.</p></div>
+    <div class="col"><h4>3 · Pay policy, attached to the pay scheme</h4><p>The sentences that say how the scale is used: which scale each job family uses, where joiners start, who follows the scale, when steps move, what happens above the top. A policy belongs to a <strong>pay scheme</strong>, because the scheme is already the one map that says who is paid how, and the scheme's formulas are what the policy's wage has to reach. Written and read as sentences, tested against real people before saving.</p></div>
+    <div class="col"><h4>4 · Scale status on every contract</h4><p>On scale (grade and step known, pay equals the scale), Pinned (deliberately different, with a reason), Drifted (was on scale, now differs, needs a decision). Nothing is ever pulled back without someone choosing to.</p></div>
+    <div class="col" style="grid-column:1/-1"><h4>5 · Revision</h4><p>A dated change to the scale. Editing a scale never touches anyone's pay directly; it produces a revision, and the revision becomes a change set: who follows, what it costs through the real payroll, who approves, apply, arrears if backdated, letters. One trail per person, shared with reviews and one-off changes.</p></div>
+  </div>
+
+  <div class="note idea">
+    <h4>Why the policy lives on the scheme, not on a country or a division</h4>
+    <p>Payobook already answers "who pays this person" once, through the scheme map: department or division → scheme, per kind of run, and the answer is written on every employee as <strong>Paid by</strong>. A scheme already carries a country, a company, a currency and a kind of run. Giving policies a second scoping ladder of their own (country, company, division, job family, most specific wins) would mean two maps that can disagree. So the design has one rule: <strong>a person's pay policy is the policy of the scheme that pays them.</strong> The advance scheme never carries a policy; it pays an advance on the same pay.</p>
+    <p>Three things fall out of this for free. The policy can read the scheme's formulas and warn when the scheme's BASIC comes from a file rather than the contract, so a scale would be ignored. The grade package can only offer the components that scheme actually has. And the true cost of a revision is computed through the scheme's own formulas, which is the number payroll will produce. A person the map has not placed shows "nobody pays this person yet" today; the policy screen shows the same gap, honestly, instead of inventing a fallback.</p>
+    <p>Two refinements keep it practical. A policy can be <strong>shared</strong> by several schemes (six divisions with the same rules point at one policy; a division with its own rules gets its own). And a scheme without a policy of its own falls back to the company's <strong>house rules</strong>: approval chain, employee visibility, rounding, wage-floor region, and a default scale. Two rungs, always visible: "Linh · paid by Retail end-month · Retail policy" or "· house rules, this scheme has no policy of its own".</p>
+  </div>
+
+  <h3>How the pieces talk to each other</h3>
+  <ol class="steps">
+    <li><b>The scheme names the policy, the policy names the scales</b><p>Each scheme points at one policy (its own or a shared one). Inside the policy, a small table says which scale each job family uses: store jobs on the Retail store scale, office jobs on the Retail office scale. A scale can be used by many schemes' policies, so two divisions with the same jobs share one ladder.</p></li>
+    <li><b>A job points at a grade</b><p>Every job in the organisation is linked to one grade of its family's scale (it already links to a band). A person's grade is their job's grade unless someone sets it differently on the contract.</p></li>
+    <li><b>A new contract reads the scale</b><p>Department → paid-by scheme → policy → the job family's scale → the job's grade → the joiner rule → step → amount. The hire screen shows the amount and the sentence that produced it, naming the scheme. Editing the amount pins the person with a reason, or keeps them on scale if the amount still equals a step.</p></li>
+    <li><b>The scale changes, the revision does the work</b><p>Every person On scale gets a proposed new pay. Pinned people are listed with their reason and left alone unless the policy says otherwise. Drifted people are shown with both numbers and a choice.</p></li>
+    <li><b>Apply writes the contract, payroll takes it from there</b><p>The same apply engine Pay Review uses: contract updated, 24-hour undo, letter generated. If the effective date is in the past, the difference is queued into the next pay run as a separate arrears line.</p></li>
+    <li><b>Time moves people up the ladder</b><p>The policy's step rule (for example, one step every 12 months after probation, manager confirms) creates a monthly queue of due step-ups on Home. Confirm all, confirm some, or skip with a reason.</p></li>
+  </ol>
+</section>
+
+<!-- ================= D ================= -->
+<section id="d">
+  <p class="snum">PART D</p>
+  <h2>The screens, and where they live</h2>
+  <p class="lead">Everything sits under <strong>People → Pay</strong>, which already exists. Its tabs become <strong>Scales · Bands · Policies · Fairness · Review · Changes</strong>. No new menu, no new settings category: the one-door rule holds. Four existing screens gain a small, well-placed touch. Every screen below names its hero moment, because that is the bar for this product: a screen should make someone stop.</p>
+
+  <div class="screen">
+    <h4>Scales: the ladder you can see and feel</h4>
+    <p class="where">People → Pay → Scales · new</p>
+    <p class="hero"><b>The hero: the ladder with people on it.</b> A grade-by-step grid where every cell shows the amount and how many people stand there. Click a cell to edit it. Type <em>+5%</em> on a row, a column, or the whole table and every cell moves, the people counts stay, and a cost line at the bottom says what the change would cost this month through the real payroll, including the employer's insurance. The wage floor is a dashed line; any cell that falls under it turns rose before you can save.</p>
+    <div class="ladder-wrap"><div class="ladder">
+      <div class="bar"><b>Retail store scale</b><span class="chip on">Vietnam · VND</span><span class="chip">In force 1 Jan 2026</span><span class="chip">Version 3 of 3</span><span class="chip">4 grades · 4 steps · 1,212 people</span></div>
+      <div class="lg">
+        <div class="h">Grade</div><div class="h">Step 1</div><div class="h">Step 2</div><div class="h">Step 3</div><div class="h">Step 4</div><div class="h r">Grow</div>
+        <div class="g">Store associate<small>412 people</small></div>
+        <div class="c"><div class="v">5,500,000</div><div class="n">168 people</div></div>
+        <div class="c"><div class="v">5,800,000</div><div class="n">131 people</div></div>
+        <div class="c"><div class="v">6,100,000</div><div class="n">79 people</div></div>
+        <div class="c"><div class="v">6,450,000</div><div class="n">34 people</div></div>
+        <div class="grow"><span>+ %</span></div>
+        <div class="g">Senior associate<small>388 people</small></div>
+        <div class="c"><div class="v">6,900,000</div><div class="n">140 people</div></div>
+        <div class="c me"><div class="v">7,300,000</div><div class="n">122 people</div></div>
+        <div class="c"><div class="v">7,700,000</div><div class="n">88 people</div></div>
+        <div class="c"><div class="v">8,150,000</div><div class="n">38 people</div></div>
+        <div class="grow"><span>+ %</span></div>
+        <div class="g">Shift lead<small>296 people</small></div>
+        <div class="c"><div class="v">9,200,000</div><div class="n">110 people</div></div>
+        <div class="c"><div class="v">9,750,000</div><div class="n">94 people</div></div>
+        <div class="c"><div class="v">10,300,000</div><div class="n">61 people</div></div>
+        <div class="c"><div class="v">10,900,000</div><div class="n">31 people</div></div>
+        <div class="grow"><span>+ %</span></div>
+        <div class="g">Trainee<small>116 people</small></div>
+        <div class="c low"><div class="v">5,100,000</div><div class="n">Under floor by 210,000</div></div>
+        <div class="c"><div class="v">5,400,000</div><div class="n">42 people</div></div>
+        <div class="c"><div class="v">5,600,000</div><div class="n">0 people</div></div>
+        <div class="c"><div class="v">5,800,000</div><div class="n">0 people</div></div>
+        <div class="grow"><span>+ %</span></div>
+      </div>
+      <div class="floor"><b>Wage floor · Region I · ₫5,310,000</b><span>Decree 293/2025, in force 1 Jan 2026</span><span>1 cell below · 74 people affected · fix costs ₫15,540,000 a month</span></div>
+    </div></div>
+    <p class="cap">Example figures for the demo Retail scheme. "You" marks the viewer's own cell when an employee opens their portal page; on the HR screen it marks the person selected in the drawer.</p>
+    <ul>
+      <li><strong>Two ways to write a scale.</strong> Amounts, as above; or a coefficient per cell and one base rate at the top (2.34 × ₫2,340,000), the way Vietnamese state-linked companies and many Indonesian groups write theirs. Switch the base rate and the whole table follows.</li>
+      <li><strong>Grade packages.</strong> Open a grade and add grade-linked allowances: position allowance, housing, meals, phone. Each one names the contract component it fills. Basic-only scales simply have one line.</li>
+      <li><strong>Versions with a time scrubber.</strong> Drag along the top to see the scale as it was on any date, with the people who stood where. Every past version is kept for audit, arrears and letters.</li>
+      <li><strong>Start from what you already pay.</strong> An empty scale offers a proposal built from the median wage per job, rounded to your rounding rule, so nobody starts from a blank grid. Or paste a grid from a spreadsheet; the import previews every cell.</li>
+      <li><strong>Drift radar.</strong> Health cards above the grid: On scale, Pinned, Drifted, Below floor, Above top. Each card opens the people and offers the bulk fix with its cost.</li>
+      <li><strong>Group view.</strong> Switch to the group and see the Vietnam, Singapore and Malaysia scales side by side in the group currency, with the rate and date shown. Missing rates are refused honestly, never guessed.</li>
+      <li><strong>Bulk ergonomics.</strong> Block select, shift-range, paste a column, arrow keys between cells, undo. Everything the grid does with one cell it does with a block.</li>
+    </ul>
+  </div>
+
+  <div class="screen">
+    <h4>Policies: rules you can read aloud</h4>
+    <p class="where">People → Pay → Policies · new</p>
+    <p class="hero"><b>The hero: a policy is a paragraph, not a form.</b> Every rule is a sentence with the changeable words highlighted. Click a highlighted word to change it. Under the paragraph, a live line says what the policy would do to real people today: "This policy puts 212 joiners this year at step 1 and moves 96 people one step next month. Show me." Nothing is saved until you have seen who it touches.</p>
+    <div class="policy">
+      <p class="t">Retail policy · used by 2 schemes: Retail end-month, Logistics end-month · Vietnam · VND</p>
+      <p>Store jobs are paid on the <span class="k">Retail store scale</span>; office jobs on the <span class="k">Retail office scale</span>.</p>
+      <p>New joiners start on <span class="k">step 1</span> of their job's grade, or <span class="k">a higher step if the recruiter records prior experience</span>.</p>
+      <p>Pay follows the scale <span class="k">unless the contract is pinned</span>. When the scale rises, pinned people <span class="k">keep their pay</span>; people paid above their new step <span class="k">keep their pay</span>; people below it <span class="k">move up to it</span>.</p>
+      <p>A person moves up one step <span class="k">every 12 months</span> after probation, <span class="k">when their manager confirms</span>. At the top step, a rise becomes <span class="k">a one-time payment</span> instead of a change to basic.</p>
+      <p>Amounts round to the nearest <span class="k">₫10,000</span>. No cell may sit below the <span class="k">Region I</span> wage floor; a floor change <span class="k">proposes a revision</span> automatically.</p>
+      <p>Scale changes are applied after <span class="k">HR review and Finance sign-off</span>. Employees can see <span class="k">their own grade, step and next step date</span> in the portal.</p>
+      <div class="test">Tested just now on the 1,212 people these two schemes pay: 1,138 on scale, 41 pinned, 33 drifted. 96 step-ups due in October. Nothing below floor after the pending revision. Both schemes read basic pay from the contract, so the scale will reach the payslip.</div>
+    </div>
+    <p class="cap">Every highlighted word is a choice with a short list behind it. The paragraph is also what the audit trail and the letters quote.</p>
+    <ul>
+      <li><strong>Scope is the scheme.</strong> The tab opens as a list of the company's schemes, each with its policy chip: its own, a shared one, or "house rules". A person's policy is the policy of the scheme that pays them; the search box answers "which policy governs Linh" with the scheme, the policy and the two-rung path. The scheme's own page in Mapping shows the same chip, read-only, and opens here (one door).</li>
+      <li><strong>Inside a policy, scales by job family.</strong> One policy can send store jobs to one ladder and office jobs to another. A scheme with one job family has one line.</li>
+      <li><strong>House rules per company.</strong> Approval chain, employee visibility, rounding, wage-floor region, and the default scale, used by any scheme with no policy of its own. Edited on the first card of the tab.</li>
+      <li><strong>The wire check.</strong> The policy reads the scheme's formulas and says whether basic pay comes from the contract. If the scheme takes basic from a file or a feed, the card says so in plain words and offers the fix, because a scale nobody reads is a spreadsheet with extra steps.</li>
+      <li><strong>People in two places.</strong> Someone paid partly by two companies follows the policy of their home scheme, the same rule split pay already uses.</li>
+      <li><strong>Joiner rule.</strong> Step 1; or step by recorded experience; or step by the previous employer's pay matched to the nearest step; or "recruiter decides within the band".</li>
+      <li><strong>Follow rule.</strong> What a revision does to people below, at and above their step, and to pinned people. Never a pay cut: the only options are keep, move up, or a one-time payment.</li>
+      <li><strong>Step rule.</strong> Time in step, after probation, on anniversary or on a fixed date, automatic or manager-confirmed, blocked by an open performance plan if you choose.</li>
+      <li><strong>Above the top.</strong> Freeze, or pay the rise as a one-time amount (the practice most companies use for people above the highest step).</li>
+      <li><strong>Floors and rounding.</strong> Which country and region floor, the trained-worker uplift where an existing contract grants it, rounding unit, and what to do when the government moves the floor.</li>
+      <li><strong>Approval and visibility.</strong> Who signs a revision, and what employees see of their own position. Nobody ever sees another person's pay here.</li>
+    </ul>
+  </div>
+
+  <div class="screen">
+    <h4>A revision, from the first edit to the letters</h4>
+    <p class="where">Starts from any scale edit · a full-screen stepped flow, never a pop-up</p>
+    <p class="hero"><b>The hero: the cost is the real cost.</b> Before anyone approves, the revision shows this month's payroll cost of the change computed through the real pay rules, per company and in the group currency: basic, the allowances that ride on basic, the employer's insurance and the tax effect. Not "1,212 people × 5%". Next to the total, a "show me one payslip" button opens any person's next payslip as it would print.</p>
+    <ol class="steps">
+      <li><b>Change the scale</b><p>Edit cells, grow by a percentage, or apply a queued increase (a collective agreement's "+6% on 1 January 2027" sits here waiting). Pick the effective date. The floor check runs as you type.</p></li>
+      <li><b>Who follows</b><p>Three lists from the policy: moves (on scale), left alone (pinned, with reasons), needs a decision (drifted, with both numbers). Tick, untick, or bulk-decide. Add a person by name to include an exception.</p></li>
+      <li><b>What it costs</b><p>The true monthly cost, the yearly cost, and the arrears if the date is in the past, split by company in local money and rolled up in the group currency. Sends itself to the Decision Room as a plan line and to the Budget board as a forecast, so the numbers match everywhere.</p></li>
+      <li><b>Approve</b><p>The approval steps the policy names, as a timeline with a nudge button; each step is a task on the approver's Home. Rejection returns the revision with the reason on it.</p></li>
+      <li><b>Apply</b><p>Every contract updated in one go; the 24-hour undo; the next pay run prepared. Backdated? The difference for the closed months becomes an arrears line in the next run, visible on the payslip as its own row.</p></li>
+      <li><b>Tell people</b><p>Letters from the existing letter templates, batched; a contract appendix where the country requires one; the portal page updates the same minute.</p></li>
+    </ol>
+  </div>
+
+  <h3>The four existing screens that gain a touch</h3>
+  <div class="grid2">
+    <div class="col"><h4>Hire screen</h4><p><strong>The wage box is filled before you reach it.</strong> "₫6,900,000 · Senior associate, step 1 of the Retail store scale, because Retail end-month pays this department." Slide "prior experience" and the step changes. Type a different number and a small line asks why, with a short list (offer match, retention, other), and the contract is pinned with that reason.</p></div>
+    <div class="col"><h4>Contract drawer</h4><p><strong>One chip beside the wage:</strong> On scale · grade 3, step 2, next step 1 March 2027. Or Pinned · offer match, since 12 May. Or Drifted · scale says ₫7,300,000, paid ₫7,000,000, with a "bring to step" button that opens a Pay change pre-filled.</p></div>
+    <div class="col"><h4>Home</h4><p>Three new items in the needs-you dock when they apply: "96 step-ups due in October, confirm", "Revision awaiting your sign-off", and "The Region I wage floor rose on 1 January, 74 people are now below it". Each opens the right screen at the right row.</p></div>
+    <div class="col"><h4>Employee portal</h4><p><strong>"Your pay on the scale."</strong> The person's own grade and step drawn as a small ladder with their cell marked, the amount, the date of their next step, and the last change with its letter. Only their own row, ever. Switched on per policy.</p></div>
+  </div>
+
+  <h3>Also touched, lightly</h3>
+  <ul>
+    <li><strong>Pay Review</strong> learns "steps" as a unit of guidance, so a review can propose "one step" instead of "4.1%", and shows the scale ticks on each row's band bar.</li>
+    <li><strong>Pay changes</strong> gains "to grade and step" as the first way to describe a promotion; the amount follows.</li>
+    <li><strong>Bands</strong> draw the scale's steps as ticks inside the band, so the two pictures agree.</li>
+    <li><strong>Decision Room</strong> can start a plan from a draft revision, and the Budget board receives the forecast lines.</li>
+    <li><strong>Command bar</strong> gets entries for Scales, Policies, New revision, Step-ups due, and "Where does this person sit on the scale".</li>
+    <li><strong>Vietnamese</strong> for every new word, day one, tested the way the Pay area already is.</li>
+  </ul>
+</section>
+
+<!-- ================= E ================= -->
+<section id="e">
+  <p class="snum">PART E</p>
+  <h2>Wage floors: seven countries, dated, kept as data</h2>
+  <p class="lead">A scale that can fall below the legal floor is a liability, and the government moves the floor every year or two. The design keeps floors as dated rows, per country and region, editable by you and shipped with the figures below. The scale editor, the hire screen and the contract drawer all check against the floor in force on the effective date.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Country</th><th>How the floor works</th><th>Figures in force (2026)</th></tr></thead>
+    <tbody>
+      <tr><td>Vietnam</td><td>Monthly floor by Region I to IV, set by decree. The 7% uplift for trained workers is no longer mandatory for new contracts but is preserved where an existing contract or agreement grants it. Social insurance is paid on a base capped at 20 times the reference level.</td><td>From 1 Jan 2026: I ₫5,310,000 · II ₫4,730,000 · III ₫4,140,000 · IV ₫3,700,000. Reference level ₫2,340,000, insurance cap ₫46,800,000, expected to rise 1 Jul 2026.</td></tr>
+      <tr><td>Singapore</td><td>No general floor. Sector ladders under the Progressive Wage Model, and a Local Qualifying Salary that decides how a local counts toward the foreign-worker quota.</td><td>Local Qualifying Salary S$1,800 from 1 Jul 2026. Cleaning entry S$2,080 from 1 Jul 2026. Security officer S$1,550.</td></tr>
+      <tr><td>Malaysia</td><td>One national monthly floor, reviewed every two years.</td><td>RM1,700 for all employers since 1 Aug 2025. Review under way; RM3,000 stated target by 2030.</td></tr>
+      <tr><td>India</td><td>By state, zone and skill level, with a cost-of-living component revised twice a year. The new Wage Code requires basic plus dearness allowance to be at least half of total pay.</td><td>Delhi unskilled ₹18,456 a month from 1 Apr 2025; ₹19,846 from 1 Apr 2026. Skilled ₹22,411.</td></tr>
+      <tr><td>Indonesia</td><td>Provincial and city floors set each January by formula.</td><td>Jakarta Rp5,729,876 for 2026. Bekasi city Rp5,999,443.</td></tr>
+      <tr><td>Thailand</td><td>A daily rate by province, sometimes by district and sector.</td><td>337 to 400 baht a day since 1 Jul 2025. Bangkok, Phuket and Chonburi at 400.</td></tr>
+      <tr><td>Cambodia</td><td>A monthly floor for garment, footwear and travel goods, set each year.</td><td>US$210 a month from 1 Jan 2026, US$208 on probation.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid2">
+    <div class="col"><h4>Where the floor shows up</h4><ul><li>The scale editor: a dashed floor line, rose cells, the cost to fix.</li><li>The hire screen: a wage below floor is refused with the figure and the region named.</li><li>The contract drawer: a chip when a contract sits below the floor in force.</li><li>Home: a nudge when a new floor takes effect and people fall under it.</li></ul></div>
+    <div class="col"><h4>What the floor never does</h4><ul><li>It never changes a wage by itself. It proposes a revision; a person applies it.</li><li>It never guesses a region. A company or a work location names its region; if none is set, the check says so instead of passing.</li><li>It never silently stays stale. Each row carries its source and date, and a row older than 18 months shows an "is this still current" nudge.</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= F ================= -->
+<section id="f">
+  <p class="snum">PART F</p>
+  <h2>Measured against the best</h2>
+  <p class="lead">Eight products stand in for the market: the two enterprise suites that do scales best (Oracle, SAP), the enterprise leader (Workday), the modern band tools (Pave, Lattice, Carta, Deel, Rippling as one column), the Indian payroll leaders (Zoho, Keka, greytHR as one column), and the Vietnamese payroll incumbent (MISA). The last column is this design.</p>
+
+  <div class="tw"><table class="matrix">
+    <thead><tr><th>Capability</th><th>Workday</th><th>Oracle</th><th>SAP</th><th>Band tools</th><th>Indian payroll</th><th>MISA (VN)</th><th>Payobook</th></tr></thead>
+    <tbody>
+      <tr><td>Grade × step scale as a rule</td><td><span class="pill p-part">Grades, no steps</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">Templates only</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Coefficient × base rate style</td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Both styles</span></td></tr>
+      <tr><td>Bands (ranges) beside scales</td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes, shipped</span></td></tr>
+      <tr><td>New-hire wage defaults from the scale</td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Suggests</span></td><td><span class="pill p-part">Template</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes, explained</span></td></tr>
+      <tr><td>Scale change proposes pay for everyone on it</td><td><span class="pill p-part">Via review</span></td><td><span class="pill p-yes">Rate sync</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-part">Bulk revise</span></td><td><span class="pill p-part">Table only</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>On scale / pinned / drifted on every contract</td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Step-ups by time, queued for confirmation</td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">Manual</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Grade-linked allowance package</td><td><span class="pill p-yes">Plans</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Templates</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Policy written as sentences, tested on real people</td><td><span class="pill p-no">Rules engine</span></td><td><span class="pill p-no">Rules engine</span></td><td><span class="pill p-no">Config</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Cost of a change through the real payroll</td><td><span class="pill p-no">Base only</span></td><td><span class="pill p-no">Base only</span></td><td><span class="pill p-no">Base only</span></td><td><span class="pill p-no">Base only</span></td><td><span class="pill p-no">After the run</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Next payslip preview before approval</td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Backdated change pays arrears automatically</td><td><span class="pill p-yes">Retro</span></td><td><span class="pill p-yes">Retro</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Manual</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Wage floor inside the scale, dated, 7 countries</td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-part">US only</span></td><td><span class="pill p-part">India only</span></td><td><span class="pill p-part">VN only</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Scale versions with a time scrubber</td><td><span class="pill p-part">Dated</span></td><td><span class="pill p-part">Dated</span></td><td><span class="pill p-part">Dated</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-new">New</span></td></tr>
+      <tr><td>Scales side by side across countries in one currency</td><td><span class="pill p-part">Reports</span></td><td><span class="pill p-part">Reports</span></td><td><span class="pill p-part">Reports</span></td><td><span class="pill p-part">Benchmarks</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Approval chain with tasks on the approver's Home</td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-yes">Yes, shipped</span></td></tr>
+      <tr><td>One pay history per person across scale, review and one-offs</td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-part">Partly</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Employee sees own grade, step and next step</td><td><span class="pill p-part">Pay only</span></td><td><span class="pill p-part">Pay only</span></td><td><span class="pill p-part">Pay only</span></td><td><span class="pill p-yes">Place in band</span></td><td><span class="pill p-part">Letter</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-yes">Yes</span></td></tr>
+      <tr><td>Market benchmark data built in</td><td><span class="pill p-no">Partner</span></td><td><span class="pill p-no">Partner</span></td><td><span class="pill p-no">Partner</span></td><td><span class="pill p-yes">Yes</span></td><td><span class="pill p-part">Some</span></td><td><span class="pill p-no">No</span></td><td><span class="pill p-no">Not in scope</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <h4>Honest reading of the matrix</h4>
+    <p>Oracle is the strongest on scales today: it has grade ladders, time-in-step progression and rate synchronisation, and this design borrows those three ideas openly. SAP has the cleanest split between "grade with a range" and "scale with steps", also borrowed. The band tools are ahead on market data, which this design deliberately leaves out: a benchmark feed is a licensing decision, not a design one. Everything marked New in the last column is something none of the eight does, and Part G says what each one is worth to you.</p>
+  </div>
+</section>
+
+<!-- ================= G ================= -->
+<section id="g">
+  <p class="snum">PART G</p>
+  <h2>What only Payobook will do</h2>
+  <p class="lead">Every "New" in the matrix comes from one advantage the others do not have: the scale lives in the same product as the payroll that pays it. Here is each one, with the moment it pays off.</p>
+
+  <div class="grid2">
+    <div class="col"><h4>The true cost, before anyone signs</h4><p>A 5% scale rise in Vietnam is not 5% of basic. It moves the insurance base, the allowances that ride on basic, overtime rates and the 13th month. Payobook prices the revision through the real pay rules, per company, in the group currency. A finance director signs a number that will match the pay run.</p></div>
+    <div class="col"><h4>See the payslip before it exists</h4><p>From any revision, open any person's next payslip as it would print. The question "what will Linh actually take home" is answered before approval, not after the run.</p></div>
+    <div class="col"><h4>Three honest states on every contract</h4><p>On scale, Pinned with a reason, Drifted. The reasons (offer match, retention, above the top, legacy) feed the Fairness page, which is exactly what the new European transparency rules ask employers to be able to explain.</p></div>
+    <div class="col"><h4>A policy you can read to a labour inspector</h4><p>The rules are sentences, the sentences are what the audit trail quotes, and the "tested just now" line proves the policy against real people before it is saved. No product in the matrix lets HR read its own pay policy aloud.</p></div>
+    <div class="col"><h4>The floor is inside the scale</h4><p>Seven countries, dated, with the region on the company or location. The government moves the floor; Home tells you who is now below it and what fixing it costs. Nobody else keeps the floor and the scale in the same picture.</p></div>
+    <div class="col"><h4>Backdated means arrears, automatically</h4><p>A revision effective 1 July applied in September puts the July and August difference on the September payslip as its own line, through the same "this run only" lane the product already has. No spreadsheet, no manual line.</p></div>
+    <div class="col"><h4>The scale has a past</h4><p>Drag the scrubber to any date and see the scale and the people as they were. Letters, arrears and audits read from the version in force on the day, never from today's table.</p></div>
+    <div class="col"><h4>Start from what you pay</h4><p>An empty scale offers itself from the median wage per job, rounded to your rule. The first version takes minutes, not a workshop. The same trick already fills empty Pay Bands.</p></div>
+    <div class="col"><h4>Both ways of writing a scale</h4><p>Amounts for a retail chain, coefficient times base rate for a state-linked manufacturer. One group can hold both, and compare them in one currency.</p></div>
+    <div class="col"><h4>Steps that show up as work, not as a report</h4><p>Due step-ups arrive on the manager's Home as a small list to confirm, respecting probation and any open performance plan. Time on the ladder becomes a monthly habit, not an annual clean-up.</p></div>
+  </div>
+</section>
+
+<!-- ================= H ================= -->
+<section id="h">
+  <p class="snum">PART H</p>
+  <h2>Build plan: four phases, each usable on its own</h2>
+  <p class="lead">Each phase ships to all databases, is tested against the demo Retail world, and leaves the product better even if the next phase never happens. Numbers are what you will see, not engineering size.</p>
+
+  <ol class="steps">
+    <li><b>Phase 1 · The ladder and the floor</b><p>The Scales tab with the grid, versions, both writing styles, grade packages, import and proposal-from-wages; the wage floor table for seven countries with the checks in the scale editor, hire screen and contract drawer; the On scale / Pinned / Drifted chip. Result: you can define a scale, see who stands where, and the 2022 Vietnam floor is gone.</p></li>
+    <li><b>Phase 2 · Joiners and the policy paragraph</b><p>The Policies tab with the sentence composer and the "tested just now" line; the hire screen pre-filled and explained; Pay changes speaking in grades and steps; the employee portal page. Result: every new contract starts on the scale with a reason for any exception.</p></li>
+    <li><b>Phase 3 · Revisions</b><p>The full-screen revision flow: who follows, true payroll cost, payslip preview, approval, apply with undo, arrears, letters; Decision Room and Budget board receive the numbers; queued future increases. Result: a percentage rise for everyone on the scale is one flow with a real cost and a real undo.</p></li>
+    <li><b>Phase 4 · Steps, group view and polish</b><p>Time-based step-ups with the Home queue; scales side by side across countries; scale ticks in the band picture and in Pay Review; the command bar entries; the Vietnamese sweep; the closeout with what to decide next. Result: the ladder moves people by itself, with a person confirming.</p></li>
+  </ol>
+
+  <div class="note">
+    <h4>Safety rails that hold in every phase</h4>
+    <p>No pay is ever changed without a person pressing Apply, and every apply has a 24-hour undo. No wage is ever cut by a scale rule. Nothing a person can see is another person's pay. Every new word ships in Vietnamese. Every phase is rehearsed on a copy of the database before it touches the live one, as the last three programmes were.</p>
+  </div>
+</section>
+
+<!-- ================= I ================= -->
+<section id="i">
+  <p class="snum">PART I</p>
+  <h2>The decisions only you can make</h2>
+  <p class="lead">I have chosen a default for each so the build can start without waiting; say the word if you want a different answer. Each is written as what changes on screen and what it costs you.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Question</th><th>My default</th><th>The other way</th></tr></thead>
+    <tbody>
+      <tr><td>When the scale rises, what happens to someone already paid above their new step?</td><td>They keep their pay. Their chip says Pinned, above step. No cut, no rise.</td><td>They get the same percentage as everyone else. Costs more, keeps distance between people, and is what many collective agreements require. Can be set per policy either way.</td></tr>
+      <tr><td>Does a scale change need approval before it is applied?</td><td>Yes: HR review, then Finance sign-off, as tasks on Home. An administrator can shorten the chain in the policy.</td><td>An administrator applies directly with only the 24-hour undo behind them. Faster, less defensible.</td></tr>
+      <tr><td>If a revision is backdated, should the difference go into the next pay run by itself?</td><td>Yes, as its own arrears line on the payslip, with the months it covers named.</td><td>Show the arrears amount and let payroll add it by hand. Safer for a first month, slower every month after.</td></tr>
+      <tr><td>Do you want steps, or grades only?</td><td>Steps are available and optional. The demo Retail scale uses four; a scale with one step is just a grade table.</td><td>Grades only. Simpler screen, but no time-based progression, which most Vietnamese and Indonesian employers expect.</td></tr>
+      <tr><td>Should the scale set allowances as well as basic?</td><td>Yes, as an optional package per grade, each line filling a named contract component.</td><td>Basic only. Allowances stay on the contract, edited by hand. Smaller build, more manual work for HR.</td></tr>
+      <tr><td>Should employees see their own grade, step and next step date?</td><td>Yes, own row only, switched on per policy. It is the cheapest trust you can buy.</td><td>Off. Some owners prefer not to promise a next step date.</td></tr>
+      <tr><td>Should each division be able to have its own pay policy?</td><td>Yes, through its scheme: a policy belongs to a scheme, several schemes may share one, and a scheme without one uses the company's house rules. This is my firm recommendation after your question; it uses the one map the product already has.</td><td>A separate scoping ladder (country, company, division, job family). Two maps that can disagree, and a policy that cannot see whether the scheme will read its wage.</td></tr>
+      <tr><td>Which region is each company in for the Vietnam floor?</td><td>Region on the company, overridable per work location. Companies without one show "region not set" instead of passing the check.</td><td>Region on every employee. Exact, heavy to maintain.</td></tr>
+      <tr><td>Market benchmark data?</td><td>Out of scope. Bands and scales are yours; no licensed survey feed.</td><td>Add a benchmark partner later; the band picture has a slot for a market line.</td></tr>
+      <tr><td>How do we build it?</td><td>The phased way used on the last four programmes: I design each phase, an implementation agent builds and tests it in the same session, back to back, and reports.</td><td>Build directly without the handover documents. Faster to start, harder to audit, and not how the Pay area was built.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note win">
+    <h4>What to say to start</h4>
+    <p>"Go with the defaults" starts Phase 1 today. Or answer any row above differently and I fold it in before the first handover is written.</p>
+  </div>
+
+  <h3>For the engineers, collapsed</h3>
+  <details class="eng">
+    <summary>Reuse map and seams the handovers will cite</summary>
+    <div class="in">
+      <p>Scale = new child records under the existing band family/level: add <code>pb.pay.scale</code> (country, currency, company_ids, date_from, mode amount|coefficient, base_rate) with <code>pb.pay.scale.cell</code> (grade = <code>pb.pay.band</code> level or a new grade row, step_no, amount or coefficient) and <code>pb.pay.scale.package</code> lines naming an <code>hr.contract.advantage</code> template. Reuse the no-overlap date constraint pattern from <code>pb.pay.band</code>. Job → grade via the existing <code>pb.pay.band.job</code>, extended with a scale grade.</p>
+      <p>Contract status: three new fields on <code>hr.contract</code> (scale_state on|pinned|drifted, scale_cell_id, pin_reason), recomputed in the same precommit rebuild as <code>pb.pay.position</code> (ctx <code>pb_pay_no_rebuild</code> honoured). Hire defaulting: call the <code>place_hire</code> engine from <code>pb.people.contract.wizard.create_contract</code>, the only wage-writing hire path; Zoho inbound and onboarding never write wage and stay that way.</p>
+      <p>Revision = <code>pb.pay.revision</code> on <code>biz.approval.chain.mixin</code> (clone the transitions in <code>pb.pay.change</code>), producing <code>pb.pay.apply</code> rows so undo, letters and position rebuild come free; apply stays the single writer of <code>hr.contract.wage</code>. True cost = the Decision Room exact-cost job (employer_cost_calculator port) over the scope triple + <code>pb.fx.convert_many</code>; forecast lines into <code>pb.budget.line</code>. Arrears = the "this run only" lane from pb_records, one line per closed month. Floors = <code>pb.pay.floor</code> (country, region_code, amount, currency, date_from, source, hourly optional); region on <code>res.company</code> with a work-location override; retire the hard-coded dict in <code>pb_hr_payroll_vietnam</code> in favour of the table.</p>
+      <p>Policy = <code>pb.pay.policy</code> keyed by scheme: <code>hr.formula.config.pb_pay_policy_id</code> (M2O, many schemes → one policy), resolved per person from the stored <code>hr.employee.pb_paid_by_id</code> (pb_scheme_map; never the advance scheme), falling back to <code>pb.pay.settings</code> house rules per company. Policy lines <code>pb.pay.policy.scale</code> (family_id → scale_id), scale currency/country must match the scheme's. Wire check reads the scheme's BASIC/WAGE/BASE rule <code>declared_sources()</code> and <code>_source_kind_rank</code>. Rules rendered as sentences (precedent: the Rule Composer's sentence lanes); the "tested just now" line is a dry-run over <code>pb.pay.position</code> joined on <code>pb_paid_by_id</code>; a stale <code>pb_paid_by_stale</code> row is reported as "not worked out yet", not guessed. Step-ups = a monthly cron producing <code>pb.pay.change</code> drafts of kind step, surfaced through the Home dock registry. Lens tabs extend <code>pay_hub.js</code>; ⌘K block starts at 3460; People lens seq 45 already taken by Pay, no new lens. Vietnamese completeness test pattern from <code>test_p7_vietnamese.py</code>. Wage-to-payslip wire unchanged: BASIC/WAGE/BASE read <code>contract.wage</code>; add a scheme-level warning when the records lane cannot win.</p>
+    </div>
+  </details>
+</section>
+</div>

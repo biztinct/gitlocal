@@ -1,0 +1,1054 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_me_trip
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 00:00+0000\n"
+"PO-Revision-Date: 2026-10-16 11:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "%s trip requests refused — fix and resend"
+msgstr "%s đề xuất công tác bị từ chối — sửa và gửi lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "%s trip requests sent back — fix and resend"
+msgstr "%s đề xuất công tác bị trả lại — sửa và gửi lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "%s trip requests were refused. Fix them and send them again."
+msgstr "%s đề xuất công tác đã bị từ chối. Hãy sửa và gửi lại."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "%s trip requests were sent back to you. Fix them and send them again."
+msgstr "%s đề xuất công tác đã được trả lại cho bạn. Hãy sửa và gửi lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "). The trip can still go ahead; HR sorts out the overlap."
+msgstr "). Chuyến đi vẫn có thể diễn ra; Nhân sự sẽ xử lý phần trùng."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "1 trip request refused — fix and resend"
+msgstr "1 đề xuất công tác bị từ chối — sửa và gửi lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "1 trip request sent back — fix and resend"
+msgstr "1 đề xuất công tác bị trả lại — sửa và gửi lại"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>Authorised. Have a good trip.</b>"
+msgstr "<b>Đã phê duyệt. Chúc bạn chuyến đi tốt đẹp.</b>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid ""
+"<b>It is a major city</b><small>The biggest cities have a higher daily "
+"allowance.</small>"
+msgstr ""
+"<b>Đây là thành phố lớn</b><small>Các thành phố lớn nhất có công tác phí "
+"theo ngày cao hơn.</small>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>Nobody is set up to approve this yet.</b> HR can fix the route."
+msgstr ""
+"<b>Chưa có ai được giao phê duyệt đề xuất này.</b> Nhân sự có thể sửa quy "
+"trình duyệt."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>Not sent yet.</b> When you send it, your manager sees it at once."
+msgstr "<b>Chưa gửi.</b> Khi bạn gửi, quản lý của bạn sẽ thấy ngay."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>Taken back from Approvals.</b> Nobody is deciding it any more."
+msgstr "<b>Đã rút khỏi mục Phê duyệt.</b> Không còn ai xem xét đề xuất này."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_alert
+msgid "<b>That did not go through.</b>"
+msgstr "<b>Chưa thực hiện được.</b>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>Waiting for approval.</b>"
+msgstr "<b>Đang chờ duyệt.</b>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<b>You took this trip back.</b> Nothing more happens with it."
+msgstr "<b>Bạn đã rút lại chuyến đi này.</b> Sẽ không có gì xảy ra thêm."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-kbd\">Ctrl + Enter sends</span>"
+msgstr "<span class=\"pbtr-kbd\">Ctrl + Enter để gửi</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-label\">City</span>"
+msgstr "<span class=\"pbtr-label\">Thành phố</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-label\">Country</span>"
+msgstr "<span class=\"pbtr-label\">Quốc gia</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-label\">First day</span>"
+msgstr "<span class=\"pbtr-label\">Ngày đầu tiên</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-label\">Last day</span>"
+msgstr "<span class=\"pbtr-label\">Ngày cuối cùng</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "<span class=\"pbtr-next-eyebrow\">Your next trip</span>"
+msgstr "<span class=\"pbtr-next-eyebrow\">Chuyến đi sắp tới</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-sec-n\">1</span>Where are you going?"
+msgstr "<span class=\"pbtr-sec-n\">1</span>Bạn đi đâu?"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-sec-n\">2</span>When?"
+msgstr "<span class=\"pbtr-sec-n\">2</span>Khi nào?"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"pbtr-sec-n\">3</span>Why are you going?"
+msgstr "<span class=\"pbtr-sec-n\">3</span>Vì sao bạn đi?"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid ""
+"<span class=\"pbtr-sec-n\">4</span>What will it cost? <span class=\"pbtr-"
+"opt\">optional</span>"
+msgstr ""
+"<span class=\"pbtr-sec-n\">4</span>Chi phí dự kiến? <span class=\"pbtr-"
+"opt\">không bắt buộc</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid ""
+"<span class=\"pbtr-sec-n\">5</span>Do you need cash before you go? <span "
+"class=\"pbtr-opt\">optional</span>"
+msgstr ""
+"<span class=\"pbtr-sec-n\">5</span>Bạn có cần tạm ứng trước khi đi không? "
+"<span class=\"pbtr-opt\">không bắt buộc</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<span class=\"visually-hidden\">Amount</span>"
+msgstr "<span class=\"visually-hidden\">Số tiền</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"visually-hidden\">Cash advance</span>"
+msgstr "<span class=\"visually-hidden\">Tạm ứng</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<span class=\"visually-hidden\">Kind of cost</span>"
+msgstr "<span class=\"visually-hidden\">Loại chi phí</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "<span class=\"visually-hidden\">Purpose of the trip</span>"
+msgstr "<span class=\"visually-hidden\">Mục đích chuyến đi</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<span class=\"visually-hidden\">Remove this cost</span>"
+msgstr "<span class=\"visually-hidden\">Xóa chi phí này</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+msgid "<span class=\"visually-hidden\">Remove this line</span>"
+msgstr "<span class=\"visually-hidden\">Xóa dòng này</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "<span class=\"visually-hidden\">What it is for</span>"
+msgstr "<span class=\"visually-hidden\">Dùng cho việc gì</span>"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid ""
+"<span>Your attendance is marked automatically while you are away.</span>"
+msgstr ""
+"<span>Chấm công của bạn được ghi tự động trong thời gian đi công tác.</span>"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "A cost cannot be below zero."
+msgstr "Chi phí không thể nhỏ hơn 0."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "A trip can have up to %s cost lines."
+msgstr "Một chuyến đi có tối đa %s dòng chi phí."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid ""
+"A trip that needs your answer, or one you have not sent yet, shows here "
+"first."
+msgstr "Chuyến đi cần bạn trả lời, hoặc chưa được gửi, sẽ hiện ở đây trước."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "A trip you send stays here until it is authorised."
+msgstr "Chuyến đi bạn đã gửi sẽ ở đây cho đến khi được phê duyệt."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Add a cost"
+msgstr "Thêm chi phí"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Add a line"
+msgstr "Thêm dòng"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Add the city you are going to."
+msgstr "Hãy thêm thành phố bạn sẽ đến."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "All countries"
+msgstr "Tất cả quốc gia"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "All my trips"
+msgstr "Tất cả chuyến đi của tôi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Amounts are numbers only, for example 250000."
+msgstr "Số tiền chỉ gồm chữ số, ví dụ 250000."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "An authorised trip cannot be taken back here. Ask HR to cancel it."
+msgstr ""
+"Không thể rút lại chuyến đi đã được phê duyệt tại đây. Hãy nhờ Nhân sự hủy "
+"giúp."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "An authorised trip, or one you took back, moves here."
+msgstr "Chuyến đi đã được phê duyệt, hoặc bạn đã rút lại, sẽ chuyển sang đây."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Ask HR"
+msgstr "Hỏi Nhân sự"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Ask HR to cancel an authorised trip"
+msgstr "Nhờ Nhân sự hủy chuyến đi đã được phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Ask HR to cancel an authorised trip."
+msgstr "Nhờ Nhân sự hủy chuyến đi đã được phê duyệt."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Ask again with these details"
+msgstr "Đề xuất lại với các thông tin này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Ask for a business trip"
+msgstr "Đề xuất chuyến công tác"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Ask for a trip"
+msgstr "Đề xuất chuyến đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Ask for a trip, follow its approval, and see what it pays."
+msgstr "Đề xuất chuyến đi, theo dõi phê duyệt và xem khoản được chi trả."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbme_card_next_trip
+msgid "Attendance is marked automatically"
+msgstr "Chấm công được ghi tự động"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Authorised"
+msgstr "Đã phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Back to draft. Fix what is needed, then send it again."
+msgstr "Đã chuyển về nháp. Sửa những gì cần thiết rồi gửi lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_missing
+msgid "Back to my trips"
+msgstr "Quay lại chuyến đi của tôi"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Business trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_breadcrumbs_trips
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_home_trips
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Business trips"
+msgstr "Công tác"
+
+#. module: pb_me_trip
+#: model:ir.model,name:pb_me_trip.model_pb_me_trip
+msgid "Business trips on the employee pages"
+msgstr "Công tác trên trang nhân viên"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Cash advance"
+msgstr "Tạm ứng"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_breadcrumbs_trips
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Change the details"
+msgstr "Thay đổi thông tin"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Change your trip"
+msgstr "Thay đổi chuyến đi"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Choose the country you are going to."
+msgstr "Hãy chọn quốc gia bạn sẽ đến."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Claim receipts for this trip"
+msgstr "Kê khai hóa đơn cho chuyến đi này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Claimed as an expense after the trip"
+msgstr "Kê khai như một khoản chi phí sau chuyến đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Cost added."
+msgstr "Đã thêm chi phí."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Cost removed."
+msgstr "Đã xóa chi phí."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Costs"
+msgstr "Chi phí"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Daily allowance"
+msgstr "Công tác phí theo ngày"
+
+#. module: pb_me_trip
+#: model:ir.model.fields,field_description:pb_me_trip.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_me_trip.field_pb_me_trip__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_steps
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Each cost line needs an amount. Add one, or remove the line."
+msgstr "Mỗi dòng chi phí cần có số tiền. Hãy thêm số tiền, hoặc xóa dòng đó."
+
+#. module: pb_me_trip
+#: model:ir.model,name:pb_me_trip.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Enter in a line adds the next one"
+msgstr "Nhấn Enter trong một dòng để thêm dòng tiếp theo"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Estimated total"
+msgstr "Tổng dự kiến"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Five quick questions. Your trip card fills itself in as you type."
+msgstr "Năm câu hỏi nhanh. Thẻ chuyến đi tự điền khi bạn nhập."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Fix and resend"
+msgstr "Sửa và gửi lại"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Fix it and send it again when you are ready."
+msgstr "Hãy sửa và gửi lại khi bạn sẵn sàng."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Fix what is needed and send it again."
+msgstr "Sửa những gì cần thiết rồi gửi lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "For example: meet the client team and run the quarterly review."
+msgstr "Ví dụ: gặp đội ngũ khách hàng và họp đánh giá quý."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "For example: Đà Nẵng"
+msgstr "Ví dụ: Đà Nẵng"
+
+#. module: pb_me_trip
+#: model:ir.model.fields,field_description:pb_me_trip.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_me_trip.field_pb_me_trip__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_missing
+msgid "It may have been removed, or the link belongs to somebody else."
+msgstr "Có thể chuyến đi đã bị xóa, hoặc đường dẫn thuộc về người khác."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "It stops waiting for approval and nobody decides it."
+msgstr "Đề xuất sẽ ngừng chờ duyệt và không ai xem xét nữa."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+msgid "Kind of cost"
+msgstr "Loại chi phí"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Leave blank if you do not need money up front."
+msgstr "Để trống nếu bạn không cần tiền trước."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Most used"
+msgstr "Dùng nhiều nhất"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_breadcrumbs_trips
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "New trip"
+msgstr "Chuyến đi mới"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "No daily allowance is set for this place"
+msgstr "Chưa có công tác phí theo ngày cho nơi này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "No other costs. The daily allowance is worked out for you."
+msgstr "Không có chi phí khác. Công tác phí theo ngày được tính sẵn cho bạn."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "No trips yet"
+msgstr "Chưa có chuyến đi nào"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Nobody to approve yet"
+msgstr "Chưa có người duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_steps
+msgid "Nobody to decide this step"
+msgstr "Chưa có ai quyết định bước này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_steps
+msgid "Not yet"
+msgstr "Chưa đến"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Nothing finished yet"
+msgstr "Chưa có gì hoàn tất"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Nothing is waiting on you"
+msgstr "Không có gì đang chờ bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Nothing is with anyone right now"
+msgstr "Hiện không có gì đang chờ người khác"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "One of the costs is too large. Check the number."
+msgstr "Một khoản chi phí quá lớn. Hãy kiểm tra lại số."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Only a refused trip can be fixed and sent again."
+msgstr "Chỉ chuyến đi bị từ chối mới có thể sửa và gửi lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbme_card_next_trip
+msgid "Open the trip"
+msgstr "Mở chuyến đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Other costs, estimated"
+msgstr "Chi phí khác, dự kiến"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Paid to you before you go"
+msgstr "Được chi cho bạn trước khi đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Paid with your salary"
+msgstr "Trả cùng lương của bạn"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Pick the first and the last day of the trip."
+msgstr "Hãy chọn ngày đầu tiên và ngày cuối cùng của chuyến đi."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Pick the first and the last day; the number of days counts itself."
+msgstr "Chọn ngày đầu tiên và ngày cuối cùng; số ngày sẽ tự tính."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Pick your dates"
+msgstr "Chọn ngày đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Plans changed? An authorised trip cannot be cancelled here."
+msgstr "Kế hoạch thay đổi? Không thể hủy chuyến đi đã được phê duyệt tại đây."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Refused — your turn"
+msgstr "Bị từ chối — đến lượt bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Remove this cost"
+msgstr "Xóa chi phí này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+msgid "Remove this line"
+msgstr "Xóa dòng này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_home_trips
+msgid "Request a trip and follow its approval"
+msgstr "Đề xuất chuyến công tác và theo dõi phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Rough numbers are fine. Your daily allowance is added for you."
+msgstr "Số ước tính là được. Công tác phí theo ngày được cộng sẵn cho bạn."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Save as draft"
+msgstr "Lưu nháp"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Saved as a draft. Send it when you are ready."
+msgstr "Đã lưu nháp. Hãy gửi khi bạn sẵn sàng."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Say why you are travelling, in a sentence or two."
+msgstr "Hãy cho biết lý do chuyến đi, trong một hai câu."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Send for approval"
+msgstr "Gửi để duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Sent back to you"
+msgstr "Đã trả lại cho bạn"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Sent back — your turn"
+msgstr "Bị trả lại — đến lượt bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Sent for approval. Your manager sees it now."
+msgstr "Đã gửi để duyệt. Quản lý của bạn đã thấy đề xuất."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Sent in"
+msgstr "Đã gửi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Show all trips"
+msgstr "Hiện tất cả chuyến đi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_steps
+msgid "Stopped here"
+msgstr "Dừng tại đây"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Take it back"
+msgstr "Rút lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Taken back"
+msgstr "Đã rút lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Taken back from Approvals"
+msgstr "Đã rút khỏi mục Phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_toast
+msgid "Taken back. It is no longer waiting for approval."
+msgstr "Đã rút lại. Đề xuất không còn chờ duyệt."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "That cash advance is too large. Check the number."
+msgstr "Khoản tạm ứng quá lớn. Hãy kiểm tra lại số."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "That is not your record."
+msgstr "Đây không phải hồ sơ của bạn."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "That is not your trip."
+msgstr "Đây không phải chuyến đi của bạn."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "The cash advance cannot be below zero."
+msgstr "Khoản tạm ứng không thể nhỏ hơn 0."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "The trip cannot end before it starts. Check the two dates."
+msgstr ""
+"Chuyến đi không thể kết thúc trước khi bắt đầu. Hãy kiểm tra hai ngày."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "These days overlap your approved leave ("
+msgstr "Những ngày này trùng với kỳ nghỉ đã được duyệt của bạn ("
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "This trip has already been sent."
+msgstr "Chuyến đi này đã được gửi."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid ""
+"This trip has been sent, so it cannot be changed here. Take it back first, "
+"then change it."
+msgstr ""
+"Chuyến đi đã được gửi nên không thể thay đổi tại đây. Hãy rút lại trước, rồi"
+" thay đổi."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "This trip has been sent, so its costs cannot be changed here."
+msgstr "Chuyến đi đã được gửi nên không thể thay đổi chi phí tại đây."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid ""
+"This trip is not waiting for approval, so there is nothing to take back."
+msgstr "Chuyến đi này không chờ duyệt nên không có gì để rút lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Tip: use the arrow keys to move between trips, and Enter to open one."
+msgstr ""
+"Mẹo: dùng phím mũi tên để di chuyển giữa các chuyến đi, và Enter để mở."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "Trip · %(where)s · %(when)s"
+msgstr "Công tác · %(where)s · %(when)s"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Update the card"
+msgstr "Cập nhật thẻ"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "Waiting approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Waiting at"
+msgstr "Đang chờ ở bước"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Waiting for"
+msgstr "Đang chờ"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_steps
+msgid "Waiting here now"
+msgstr "Đang chờ tại đây"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_missing
+msgid "We could not find that trip"
+msgstr "Không tìm thấy chuyến đi này"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "What for"
+msgstr "Dùng cho việc gì"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_row
+msgid "What for, for example: hotel, 2 nights"
+msgstr "Dùng cho việc gì, ví dụ: khách sạn, 2 đêm"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid ""
+"When you need to travel for work, ask here and your manager sees it at once."
+msgstr ""
+"Khi cần đi công tác, hãy đề xuất tại đây và quản lý của bạn sẽ thấy ngay."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Where to?"
+msgstr "Đi đâu?"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Who approves it"
+msgstr "Ai phê duyệt"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "With HR"
+msgstr "Đang ở Nhân sự"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid "With finance"
+msgstr "Đang ở Tài chính"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "With someone"
+msgstr "Đang ở người khác"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "Yes, take it back"
+msgstr "Đồng ý, rút lại"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid ""
+"You already have a trip waiting for approval on some of these days: "
+"%(where)s, %(when)s. Pick other dates, or take that trip back first."
+msgstr ""
+"Bạn đã có một chuyến đi đang chờ duyệt trùng một số ngày này: %(where)s, "
+"%(when)s. Hãy chọn ngày khác, hoặc rút lại chuyến đi đó trước."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+msgid ""
+"You already have an authorised trip on some of these days: %(where)s, "
+"%(when)s. Pick other dates, or ask HR to cancel that trip."
+msgstr ""
+"Bạn đã có một chuyến đi được phê duyệt trùng một số ngày này: %(where)s, "
+"%(when)s. Hãy chọn ngày khác, hoặc nhờ Nhân sự hủy chuyến đi đó."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "You can take it back until it is authorised."
+msgstr "Bạn có thể rút lại cho đến khi được phê duyệt."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/me_trip.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "Your attendance is marked automatically for every trip day."
+msgstr "Chấm công của bạn được ghi tự động cho mọi ngày công tác."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbme_card_next_trip
+msgid "Your next trip"
+msgstr "Chuyến đi sắp tới"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+msgid "Your trip"
+msgstr "Chuyến đi của bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "Your trip card"
+msgstr "Thẻ chuyến đi của bạn"
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "Your trip request was refused. Fix it and send it again."
+msgstr "Đề xuất công tác của bạn đã bị từ chối. Hãy sửa và gửi lại."
+
+#. module: pb_me_trip
+#. odoo-python
+#: code:addons/pb_me_trip/models/pb_me_home.py:0
+msgid "Your trip request was sent back to you. Fix it and send it again."
+msgstr "Đề xuất công tác của bạn đã được trả lại. Hãy sửa và gửi lại."
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_page
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbme_card_next_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "day"
+msgstr "ngày"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "day away, counting both ends"
+msgstr "ngày đi công tác, tính cả ngày đầu và ngày cuối"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbme_card_next_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_card
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_when
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_trip_form
+msgid "days away, counting both ends"
+msgstr "ngày đi công tác, tính cả ngày đầu và ngày cuối"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_when
+msgid "in"
+msgstr "sau"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "next trip"
+msgstr "chuyến đi tới"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_when
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_when
+msgid "tomorrow"
+msgstr "ngày mai"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.pbtr_when
+msgid "under way, until"
+msgstr "đang diễn ra, đến"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "waiting on you"
+msgstr "đang chờ bạn"
+
+#. module: pb_me_trip
+#: model_terms:ir.ui.view,arch_db:pb_me_trip.portal_my_trips
+msgid "with someone"
+msgstr "đang ở người khác"

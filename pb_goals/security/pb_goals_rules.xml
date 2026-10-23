@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE RULES THAT MAKE THE PERMISSIONS SAFE. Three things govern all of
+         them and each one was learned the hard way somewhere in this
+         codebase.
+
+         1. SHIP THE PAIR, ALWAYS (R60/R65). `ir.rule` group rules are ORed
+            over the rules that APPLY, so a narrow rule shipped alone is a
+            NARROWING of anybody who holds both groups: a lifecycle manager
+            who is also given a goals group would hold exactly ONE applicable
+            rule — the narrow one — and lose sight of everything else. Every
+            "only my own" rule below therefore has a wide "everything in my
+            companies" rule beside it for the goals tiers, in the same file,
+            and the two are never separated.
+
+         2. A SEAT IS A READ **AND A WRITE** (ledger AM60, corrected in E3,
+            R193). A published route asks somebody to decide a goal sheet who
+            holds no goals permission at all — the person's own line manager
+            is the everyday case and is the whole point of the route. The
+            engine re-checks that the decider can READ the record and then
+            WRITES the record's own status AS THAT PERSON. A seat rule that
+            grants only read produces the worst outcome there is: the route
+            records the approval and the record does not move, with nothing on
+            any screen to say why. The narrowing is the DOMAIN —
+            `seat_user_ids` is written by the engine and holds only the people
+            it asked about this one record — never the permission. Create and
+            delete stay shut.
+
+         3. THE MANAGER'S WRITE IS NARROWED BY A GUARD AND NOT BY A RULE. A
+            record rule is a domain and cannot say "this field but not that
+            one", so the manager's rule grants write on the sheet and on its
+            goals, and `pb.goal.write` refuses a locked goal while
+            `pb.goals.set_weights` is the only door that writes a weight. A
+            rule and a guard, because neither alone says the whole thing.
+
+         `noupdate="1"` freezes these on a database that already has them, so
+         any correction travels in a migration and by xmlid (R193).
+         ================================================================== -->
+
+    <!-- ========================= the goal year ========================= -->
+    <record id="rule_cycle_company" model="ir.rule">
+        <field name="name">Goal year: my companies</field>
+        <field name="model_id" ref="model_pb_goal_cycle"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <!-- ========================= the goal sheet ========================= -->
+    <record id="rule_set_company" model="ir.rule">
+        <field name="name">Goal sheet: my companies</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_set_mine" model="ir.rule">
+        <field name="name">Goal sheet: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_set_portal" model="ir.rule">
+        <field name="name">Goal sheet: my own</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_set_seat" model="ir.rule">
+        <field name="name">Goal sheet: the ones a route asked me to decide</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="domain_force">[('seat_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- The wide half of the pair. -->
+    <record id="rule_set_hr" model="ir.rule">
+        <field name="name">Goal sheet: the HR team sees them all</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_goals_user')), (4, ref('group_goals_manager')), (4, ref('group_goals_admin'))]"/>
+    </record>
+
+    <!-- ============================ the goal ============================ -->
+    <record id="rule_goal_company" model="ir.rule">
+        <field name="name">Goal: my companies</field>
+        <field name="model_id" ref="model_pb_goal"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_goal_mine" model="ir.rule">
+        <field name="name">Goal: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_goal"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_goal_portal" model="ir.rule">
+        <field name="name">Goal: my own</field>
+        <field name="model_id" ref="model_pb_goal"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_goal_seat" model="ir.rule">
+        <field name="name">Goal: the ones on a sheet a route asked me to decide</field>
+        <field name="model_id" ref="model_pb_goal"/>
+        <field name="domain_force">[('set_id.seat_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_goal_hr" model="ir.rule">
+        <field name="name">Goal: the HR team sees them all</field>
+        <field name="model_id" ref="model_pb_goal"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_goals_user')), (4, ref('group_goals_manager')), (4, ref('group_goals_admin'))]"/>
+    </record>
+
+    <!-- ========================= the key result ========================= -->
+    <record id="rule_kr_company" model="ir.rule">
+        <field name="name">Key result: my companies</field>
+        <field name="model_id" ref="model_pb_goal_kr"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_kr_mine" model="ir.rule">
+        <field name="name">Key result: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_goal_kr"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_kr_portal" model="ir.rule">
+        <field name="name">Key result: my own</field>
+        <field name="model_id" ref="model_pb_goal_kr"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="rule_kr_seat" model="ir.rule">
+        <field name="name">Key result: the ones on a sheet a route asked me to decide</field>
+        <field name="model_id" ref="model_pb_goal_kr"/>
+        <field name="domain_force">[('set_id.seat_user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_kr_hr" model="ir.rule">
+        <field name="name">Key result: the HR team sees them all</field>
+        <field name="model_id" ref="model_pb_goal_kr"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_goals_user')), (4, ref('group_goals_manager')), (4, ref('group_goals_admin'))]"/>
+    </record>
+
+    <!-- ============================ the trail ============================ -->
+    <record id="rule_history_company" model="ir.rule">
+        <field name="name">Key result history: my companies</field>
+        <field name="model_id" ref="model_pb_goal_kr_history"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_history_mine" model="ir.rule">
+        <field name="name">Key result history: my own, and my team's</field>
+        <field name="model_id" ref="model_pb_goal_kr_history"/>
+        <field name="domain_force">['|', ('set_id.employee_id.user_id', '=', user.id), ('set_id.employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_history_hr" model="ir.rule">
+        <field name="name">Key result history: the HR team sees them all</field>
+        <field name="model_id" ref="model_pb_goal_kr_history"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_goals_user')), (4, ref('group_goals_manager')), (4, ref('group_goals_admin'))]"/>
+    </record>
+
+    <!-- ========================== the templates ========================== -->
+    <record id="rule_template_company" model="ir.rule">
+        <field name="name">Goal template: my companies</field>
+        <field name="model_id" ref="model_pb_goal_template"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+</data>
+</odoo>

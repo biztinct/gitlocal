@@ -8,8 +8,8 @@
         <field name="arch" type="xml">
             <form string="Payroll Comparison Analysis">
                 <header>
-                    <button name="action_regenerate_analysis" type="object" string="Regenerate Analysis" class="btn-primary" states="done"/>
-                    <button name="action_export_report" type="object" string="Export Report" class="btn-secondary" states="done"/>
+                    <button name="action_regenerate_analysis" type="object" string="Regenerate Analysis" class="btn-primary" invisible="state not in ('done')"/>
+                    <button name="action_export_report" type="object" string="Export Report" class="btn-secondary" invisible="state not in ('done')"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 
@@ -85,7 +85,7 @@
                             <field name="analysis_results" widget="text" readonly="1"/>
                         </page>
                         
-                        <page string="Charts &amp; Visualizations" name="charts" attrs="{'invisible': [('include_charts', '=', False)]}">
+                        <page string="Charts &amp; Visualizations" name="charts" invisible="[('include_charts', '=', False)]">
                             <div class="alert alert-info">
                                 <p><i class="fa fa-info-circle"/> Charts and visualizations are embedded in the detailed dashboard view. Click "Open Dashboard" to view interactive charts.</p>
                             </div>
@@ -107,11 +107,7 @@
                     </notebook>
                 </sheet>
                 
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="activity_ids" widget="mail_activity"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -121,7 +117,7 @@
         <field name="name">payroll.comparison.tree</field>
         <field name="model">payroll.comparison</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Comparisons" 
+            <list string="Payroll Comparisons" 
                   decoration-success="payroll_variance &lt; 5 and payroll_variance &gt; -5"
                   decoration-warning="payroll_variance &gt;= 5 or payroll_variance &lt;= -5"
                   decoration-danger="payroll_variance &gt;= 15 or payroll_variance &lt;= -15">
@@ -135,7 +131,7 @@
                 <field name="average_salary_variance" widget="percentage"/>
                 <field name="state" widget="badge"/>
                 <button name="action_open_dashboard" string="Dashboard" type="object" icon="fa-dashboard"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -155,7 +151,7 @@
                         domain="[('payroll_variance', '&lt;=', 5), ('payroll_variance', '&gt;=', -5)]"/>
                 <filter string="This Month" name="this_month" 
                         domain="[('current_period_from', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
                     <filter string="Comparison Type" name="group_type" context="{'group_by': 'comparison_type'}"/>
                     <filter string="Month" name="group_month" context="{'group_by': 'current_period_from:month'}"/>
@@ -168,7 +164,7 @@
     <record id="action_payroll_comparison" model="ir.actions.act_window">
         <field name="name">Payroll Comparisons</field>
         <field name="res_model">payroll.comparison</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_payroll_comparison_search"/>
         <field name="context">{
             'search_default_this_month': 1
@@ -217,17 +213,8 @@
                             <div class="col-md-4">
                                 <div class="metric-card salary-card">
                                     <h3>Average Salary</h3>
-                                    <div class="current-value">
-                                        <t t-if="current_total_employees">
-                                            <t t-esc="'{:,.0f}'.format(current_total_payroll / current_total_employees)"/>
-                                        </t>
-                                    </div>
-                                    <div class="previous-value">
-                                        Previous: 
-                                        <t t-if="previous_total_employees">
-                                            <t t-esc="'{:,.0f}'.format(previous_total_payroll / previous_total_employees)"/>
-                                        </t>
-                                    </div>
+                                    <div class="current-value"><field name="current_average_salary" widget="monetary"/></div>
+                                    <div class="previous-value">Previous: <field name="previous_average_salary" widget="monetary"/></div>
                                     <div class="variance"><field name="average_salary_variance" widget="percentage"/></div>
                                 </div>
                             </div>

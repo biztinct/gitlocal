@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60/AM96). The second platform owner
+         is by definition an administrator, so the wide rule is what they read
+         through; the narrow one exists so that a person given the platform
+         owner responsibility WITHOUT being an administrator can still see the
+         thing they are being asked about — and nothing else. -->
+
+    <record id="rule_tenant_proposal_seat" model="ir.rule">
+        <field name="name">Platform change: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_tenant_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_tenant_proposal_system" model="ir.rule">
+        <field name="name">Platform change: administrators</field>
+        <field name="model_id" ref="model_pb_tenant_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

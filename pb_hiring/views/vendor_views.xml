@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The agency's own card gains the two numbers that answer "was it
+         worth it".
+
+         BY INHERITANCE AND NOT BY EDITING `pb_vendor_access`. The vendor
+         register knows nothing about hiring and should not have to: the
+         module that owns the pointer owns the screen it appears on, which is
+         this one. `pb_vendor_access` is untouched.
+
+         VIEW INHERITANCE MAY NOT SELECT BY `[@string=...]` on Odoo 19, so
+         the anchor is the title block by CLASS. The vendor form has no
+         button box of its own, so this adds one — which is additive and
+         correct: any later module wanting a stat button on a supplier now
+         has somewhere to put it.
+
+         The stat button is invisible for a vendor that is not a recruitment
+         agency — an insurer with "People they found: 0" on its card is a
+         number that means nothing and invites somebody to wonder why.
+         ================================================================== -->
+
+    <record id="view_pb_vendor_form_hiring" model="ir.ui.view">
+        <field name="name">pb.vendor.form.hiring</field>
+        <field name="model">pb.vendor</field>
+        <field name="inherit_id" ref="pb_vendor_access.view_pb_vendor_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <!-- RECRUIT P7: the agency's OWN submissions, not the
+                         filled count of the roles it was on. -->
+                    <button name="action_open_submissions" type="object"
+                            class="oe_stat_button" icon="fa-user-plus"
+                            invisible="vendor_type != 'recruitment'">
+                        <field name="hiring_submitted" widget="statinfo"
+                               string="Put forward"/>
+                    </button>
+                    <button name="action_open_submissions" type="object"
+                            class="oe_stat_button" icon="fa-comments"
+                            invisible="vendor_type != 'recruitment' or hiring_interviewed == 0">
+                        <field name="hiring_interviewed" widget="statinfo"
+                               string="Reached an interview"/>
+                    </button>
+                    <button name="action_open_submissions" type="object"
+                            class="oe_stat_button" icon="fa-check"
+                            invisible="vendor_type != 'recruitment'">
+                        <field name="hiring_count" widget="statinfo"
+                               string="Joined"/>
+                    </button>
+                    <button name="action_open_hiring" type="object"
+                            class="oe_stat_button" icon="fa-briefcase"
+                            invisible="vendor_type != 'recruitment'">
+                        <field name="hiring_open_count" widget="statinfo"
+                               string="Roles open"/>
+                    </button>
+                    <button name="action_open_hiring" type="object"
+                            class="oe_stat_button" icon="fa-clock-o"
+                            invisible="vendor_type != 'recruitment' or hiring_avg_days == 0">
+                        <field name="hiring_avg_days" widget="statinfo"
+                               string="Days to fill, average"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- ============ RECRUIT P7: who an agency put forward ============ -->
+    <record id="view_pb_hiring_agency_submission_list" model="ir.ui.view">
+        <field name="name">pb.hiring.agency.submission.list</field>
+        <field name="model">pb.hiring.agency.submission</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="submitted_on"/>
+                <field name="vendor_id"/>
+                <field name="requisition_id"/>
+                <field name="candidate_name"/>
+                <field name="candidate_email"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'accepted'"
+                       decoration-danger="state == 'refused_rule'"/>
+                <field name="coarse_label" string="Where they are now"/>
+                <field name="refusal_reason" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_agency_submission_form" model="ir.ui.view">
+        <field name="name">pb.hiring.agency.submission.form</field>
+        <field name="model">pb.hiring.agency.submission</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <sheet>
+                    <div class="oe_title"><h1><field name="candidate_name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="vendor_id"/>
+                            <field name="requisition_id"/>
+                            <field name="applicant_id"/>
+                            <field name="submitted_on"/>
+                            <field name="submitted_by_user_id"/>
+                        </group>
+                        <group>
+                            <field name="candidate_email"/>
+                            <field name="candidate_phone"/>
+                            <field name="candidate_location"/>
+                            <field name="state"/>
+                            <field name="coarse_label" string="Where they are now"/>
+                            <field name="refusal_reason" invisible="state != 'refused_rule'"/>
+                        </group>
+                    </group>
+                    <field name="note" readonly="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

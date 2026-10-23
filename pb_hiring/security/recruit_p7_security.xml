@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RECRUIT P7: the company boundary on every new table (global rules),
+         and the agency's own read: a portal sign-in reads only the
+         submissions of the agency it signs in for. The portal pages read as
+         the system after the route has resolved the agency (the ACL row is
+         defence in depth, never the gate). -->
+    <record id="rule_channel_company" model="ir.rule">
+        <field name="name">Hiring channel: company</field>
+        <field name="model_id" ref="model_pb_hiring_channel"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_role_channel_company" model="ir.rule">
+        <field name="name">Role on a channel: company</field>
+        <field name="model_id" ref="model_pb_hiring_role_channel"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_agency_submission_company" model="ir.rule">
+        <field name="name">Agency submission: company</field>
+        <field name="model_id" ref="model_pb_hiring_agency_submission"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_agency_submission_portal_own" model="ir.rule">
+        <field name="name">Agency submission: the agency's own</field>
+        <field name="model_id" ref="model_pb_hiring_agency_submission"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('vendor_id.portal_user_ids', 'in', [user.id])]</field>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

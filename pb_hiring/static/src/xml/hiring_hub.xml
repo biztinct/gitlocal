@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ the Hiring hub
+       NAV P2. The whole surface is the kit's shell. Section comments use `=`
+       rules and never a doubled hyphen, which is a parse error inside an XML
+       comment and takes every t-name in the file down with it (W22/W72). -->
+  <t t-name="pb_hiring.PbHiringHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+</templates>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+  <t t-name="pb_formula_studio.PayslipDocumentDesigner">
+    <div class="ps-document-editor" role="dialog" aria-modal="true" aria-label="Visual payslip designer" t-on-keydown="keyDown" tabindex="0">
+      <header><div><b>Visual payslip designer</b><small>Place live values over the original artwork. Drag fields; resize from the corner. Arrow keys move by 1 point.</small></div>
+        <button class="ps-secondary" t-att-disabled="state.busy" t-on-click="props.onClose">Cancel</button>
+        <button class="ps-primary" t-att-disabled="state.busy" t-on-click="save"><t t-if="state.busy">Saving…</t><t t-else="">Save design</t></button>
+      </header>
+      <div class="ps-document-toolbar">
+        <select aria-label="Document page" t-on-change="setPage"><option t-foreach="state.document.pages" t-as="p" t-key="p_index" t-att-value="p_index">Page <t t-esc="p_index + 1"/></option></select>
+        <span><t t-esc="Math.round(page.width)"/> × <t t-esc="Math.round(page.height)"/> pt</span>
+        <button t-on-click="() =&gt; this.add('blank')">＋ Live field</button><button t-on-click="() =&gt; this.add('text')">＋ Text</button><button t-on-click="() =&gt; this.add('cover')">＋ Cover area</button>
+        <button t-att-disabled="!state.historyIndex" t-on-click="() =&gt; this.undo(-1)">Undo</button><button t-att-disabled="state.historyIndex === state.historyCount - 1" t-on-click="() =&gt; this.undo(1)">Redo</button>
+        <select aria-label="Document zoom" t-on-change="setZoom"><option value="0.7">70%</option><option value="1" selected="selected">100%</option><option value="1.3">130%</option><option value="1.6">160%</option></select>
+        <label><input type="checkbox" t-att-checked="state.preview" t-on-change="(ev) =&gt; state.preview = ev.target.checked"/> Preview values</label>
+        <span t-if="state.dirty" class="ps-document-unsaved">Unsaved changes</span>
+      </div>
+      <div t-if="state.error" class="ps-import-alert danger" t-esc="state.error"/>
+      <div class="ps-document-workspace">
+        <aside class="ps-document-field-list"><b>Fields · <t t-esc="page.fields.length"/></b>
+          <button t-foreach="page.fields" t-as="field" t-key="field.id" t-att-class="field.id === state.selected ? 'selected' : ''" t-on-click="() =&gt; state.selected = field.id"><span t-esc="field.label"/><small t-esc="field.binding === 'blank' ? 'Needs a source' : value(field)"/></button>
+          <details t-if="issues.length" class="ps-document-issues"><summary><t t-esc="issues.length"/> fields to review</summary><p t-foreach="issues" t-as="issue" t-key="issue_index" t-esc="issue"/></details>
+          <p class="ps-document-hint">Original artwork stays in the template. Use a blank or redacted sample, and cover any source values that must change for each employee.</p>
+        </aside>
+        <div class="ps-document-stage"><div t-attf-class="ps-document-sheet {{ state.preview ? 'preview' : '' }}" t-att-style="'width:' + page.width * state.zoom + 'px;height:' + page.height * state.zoom + 'px'" tabindex="0">
+          <img t-att-src="page.image" alt="Original payslip artwork" draggable="false"/>
+          <div t-foreach="page.fields" t-as="field" t-key="field.id" t-attf-class="ps-document-field {{ field.id === state.selected ? 'selected' : '' }} {{ field.binding === 'blank' ? 'unbound' : '' }}" t-att-style="fieldStyle(field)" t-att-title="field.label" t-on-pointerdown="(ev) =&gt; this.pointerDown(field, ev)">
+            <span t-esc="fit(field).value"/>
+            <i t-if="field.id === state.selected and !state.preview" class="ps-document-resize" t-on-pointerdown="(ev) =&gt; this.pointerDown(field, ev, true)"/>
+          </div>
+        </div></div>
+        <aside class="ps-document-properties">
+          <t t-if="selected">
+            <b>Field properties</b><label>Label<input aria-label="Field label" t-att-value="selected.label" t-on-change="(ev) =&gt; this.change('label', ev)"/></label>
+            <label>Find a component<input placeholder="Search components…" t-att-value="state.query" t-on-input="(ev) =&gt; state.query = ev.target.value"/></label>
+            <label>Live source<select aria-label="Live source" t-att-value="source(selected)" t-on-change="setSource"><option value="blank" t-att-selected="selected.binding === 'blank'">Unbound / blank</option><option value="text" t-att-selected="selected.binding === 'text'">Text / period title</option>
+              <optgroup label="Employee and period"><option t-foreach="metaFields" t-as="m" t-key="m.key" t-att-value="'meta:' + m.key" t-att-selected="selected.binding === 'meta' and selected.meta_key === m.key" t-esc="m.name"/></optgroup>
+              <optgroup label="Payroll components"><option t-foreach="components" t-as="c" t-key="c.id" t-att-value="'component:' + c.id" t-att-selected="selected.binding === 'component' and selected.rule_id === c.id"><t t-esc="c.col"/> · <t t-esc="c.name"/></option></optgroup></select></label>
+            <label t-if="selected.binding === 'text'">Text<textarea aria-label="Field text" t-att-value="selected.text" t-on-change="(ev) =&gt; this.change('text', ev)"/><small>Period tokens: {{pb_meta:month}}, {{pb_meta:month_name}}, {{pb_meta:year}}</small></label>
+            <div class="ps-document-grid"><label t-foreach="['x','y','w','h']" t-as="axis" t-key="axis"><t t-esc="axis.toUpperCase()"/> (pt)<input type="number" step="0.5" t-att-aria-label="'Field ' + axis" t-att-value="Math.round(selected[axis] * 10) / 10" t-on-change="(ev) =&gt; this.change(axis, ev, true)"/></label></div>
+            <label>Font<select aria-label="Field font" t-att-value="selected.font" t-on-change="(ev) =&gt; this.change('font', ev)"><option value="serif" t-att-selected="selected.font === 'serif'">Serif</option><option value="sans" t-att-selected="selected.font === 'sans'">Sans serif</option><option value="mono" t-att-selected="selected.font === 'mono'">Monospace</option></select></label>
+            <div class="ps-document-grid"><label>Size (pt)<input aria-label="Field font size" type="number" min="4" max="72" t-att-value="selected.font_size" t-on-change="(ev) =&gt; this.change('font_size', ev, true)"/></label><label>Align<select aria-label="Field alignment" t-att-value="selected.align" t-on-change="(ev) =&gt; this.change('align', ev)"><option value="left" t-att-selected="selected.align === 'left'">Left</option><option value="center" t-att-selected="selected.align === 'center'">Centre</option><option value="right" t-att-selected="selected.align === 'right'">Right</option></select></label></div>
+            <div class="ps-document-grid"><label><input type="checkbox" t-att-checked="selected.bold" t-on-change="(ev) =&gt; this.change('bold', ev)"/> Bold</label><label><input type="checkbox" t-att-checked="selected.italic" t-on-change="(ev) =&gt; this.change('italic', ev)"/> Italic</label></div>
+            <div class="ps-document-grid"><label>Text colour<input aria-label="Field text colour" type="color" t-att-value="selected.color" t-on-change="(ev) =&gt; this.change('color', ev)"/></label><label>Fill colour<input aria-label="Field fill colour" type="color" t-att-value="selected.background" t-on-change="(ev) =&gt; this.change('background', ev)"/></label></div>
+            <label><input type="checkbox" t-att-checked="selected.cover" t-on-change="(ev) =&gt; this.change('cover', ev)"/> Cover original content</label>
+            <t t-if="selected.binding === 'component'">
+              <label>Number format<select aria-label="Field number format" t-att-value="selected.format" t-on-change="(ev) =&gt; this.change('format', ev)"><option value="auto" t-att-selected="selected.format === 'auto'">Component format</option><option value="number" t-att-selected="selected.format === 'number'">Number</option><option value="integer" t-att-selected="selected.format === 'integer'">Whole number</option><option value="decimal" t-att-selected="selected.format === 'decimal'">Decimal</option><option value="currency" t-att-selected="selected.format === 'currency'">Currency</option><option value="percentage" t-att-selected="selected.format === 'percentage'">Percentage</option><option value="text" t-att-selected="selected.format === 'text'">Text</option></select></label>
+              <div class="ps-document-grid"><label>Decimals<input aria-label="Field decimal places" type="number" min="0" max="6" t-att-value="selected.decimals" t-on-change="(ev) =&gt; this.change('decimals', ev, true)"/></label><label>Currency prefix<input aria-label="Field currency prefix" maxlength="8" t-att-value="selected.currency" t-on-change="(ev) =&gt; this.change('currency', ev)"/></label></div>
+              <details><summary>Currency conversion</summary><p>Choose a saved rate component. No rate is assumed.</p>
+                <label>Rate source<select aria-label="Exchange rate source" t-att-value="selected.rate_rule_id || ''" t-on-change="(ev) =&gt; this.change('rate_rule_id', ev, true)"><option value="" t-att-selected="!selected.rate_rule_id">No conversion</option><option t-foreach="props.components" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name" t-att-selected="selected.rate_rule_id === c.id"/></select></label>
+                <label>Operation<select aria-label="Exchange rate operation" t-att-value="selected.rate_operation" t-on-change="(ev) =&gt; this.change('rate_operation', ev)"><option value="divide" t-att-selected="selected.rate_operation === 'divide'">Amount ÷ rate</option><option value="multiply" t-att-selected="selected.rate_operation === 'multiply'">Amount × rate</option></select></label>
+              </details>
+            </t>
+            <label>When missing<input aria-label="Missing value text" t-att-value="selected.empty" t-on-change="(ev) =&gt; this.change('empty', ev)"/></label>
+            <div class="ps-document-grid"><button t-on-click="duplicate">Duplicate</button><button class="danger" t-on-click="remove">Remove field</button></div>
+          </t>
+          <p t-else="">Select a field on the page or in the list to edit its source, position and appearance.</p>
+        </aside>
+      </div>
+    </div>
+  </t>
+</templates>

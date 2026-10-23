@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================================================================
+         RECRUIT P4 — private until shared.
+
+         Every screen reads these through the `pb.hiring` facade as the
+         system and decides from `parts_for`; the rules below are the second
+         lock, for anybody reaching the models directly.
+
+         A recruiter's private note is the author's and the talent lead's
+         (G-36) — and of the people a note was shared with. THE PAIR AGAIN
+         (R60/R65): the narrow Recruiter rule beside the wide Talent-lead one.
+         ================================================================== -->
+    <record id="rule_share_company" model="ir.rule">
+        <field name="name">Candidate share: company</field>
+        <field name="model_id" ref="model_pb_hiring_share"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_note_company" model="ir.rule">
+        <field name="name">Recruiter note: company</field>
+        <field name="model_id" ref="model_pb_hiring_note"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_note_own" model="ir.rule">
+        <field name="name">Recruiter note: mine, and the ones shared with me</field>
+        <field name="model_id" ref="model_pb_hiring_note"/>
+        <field name="groups" eval="[(4, ref('pb_hiring.group_hiring_user'))]"/>
+        <field name="domain_force">['|', ('author_id', '=', user.id), ('shared_user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_note_lead" model="ir.rule">
+        <field name="name">Recruiter note: the talent lead reads every one</field>
+        <field name="model_id" ref="model_pb_hiring_note"/>
+        <field name="groups" eval="[(4, ref('pb_hiring.group_hiring_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_retention_rule_company" model="ir.rule">
+        <field name="name">Retention rule: company</field>
+        <field name="model_id" ref="model_pb_hiring_retention_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

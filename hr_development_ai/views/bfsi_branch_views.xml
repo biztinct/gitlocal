@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- BFSI Region Views -->
+    <record id="view_bfsi_region_list" model="ir.ui.view">
+        <field name="name">bfsi.region.list</field>
+        <field name="model">bfsi.region</field>
+        <field name="arch" type="xml">
+            <list string="Regions">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="regional_manager_id" widget="many2one_avatar_employee"/>
+                <field name="branch_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bfsi_region_form" model="ir.ui.view">
+        <field name="name">bfsi.region.form</field>
+        <field name="model">bfsi.region</field>
+        <field name="arch" type="xml">
+            <form string="Region">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Region Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="code"/>
+                            <field name="regional_manager_id" widget="many2one_avatar_employee"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="branch_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Branches" name="branches">
+                            <field name="branch_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="manager_id" widget="many2one_avatar_employee"/>
+                                    <field name="banker_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- BFSI Branch Views -->
+    <record id="view_bfsi_branch_list" model="ir.ui.view">
+        <field name="name">bfsi.branch.list</field>
+        <field name="model">bfsi.branch</field>
+        <field name="arch" type="xml">
+            <list string="Branches">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="region_id"/>
+                <field name="manager_id" widget="many2one_avatar_employee"/>
+                <field name="banker_count"/>
+                <field name="bankers_needing_coaching" string="Need Coaching"/>
+                <field name="avg_performance_score" widget="progressbar"/>
+                <field name="action_plan_completion_rate" widget="progressbar"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bfsi_branch_kanban" model="ir.ui.view">
+        <field name="name">bfsi.branch.kanban</field>
+        <field name="model">bfsi.branch</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="banker_count"/>
+                <field name="bankers_needing_coaching"/>
+                <field name="avg_performance_score"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="manager_id" widget="many2one_avatar_employee"/>
+                        <div class="mt-2">
+                            <span class="badge text-bg-primary me-1"><field name="banker_count"/> Bankers</span>
+                            <span t-if="record.bankers_needing_coaching.raw_value" class="badge text-bg-warning">
+                                <field name="bankers_needing_coaching"/> Need Coaching
+                            </span>
+                        </div>
+                        <footer>
+                            <div class="d-flex align-items-center w-100">
+                                <span class="text-muted me-1">Performance:</span>
+                                <field name="avg_performance_score" widget="progressbar"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_bfsi_branch_form" model="ir.ui.view">
+        <field name="name">bfsi.branch.form</field>
+        <field name="model">bfsi.branch</field>
+        <field name="arch" type="xml">
+            <form string="Branch">
+                <header>
+                    <button name="action_start_coaching" type="object" string="Start Coaching" class="btn-primary" icon="fa-comments"/>
+                    <button name="action_view_performance" type="object" string="View Performance" icon="fa-line-chart"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bankers" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="banker_count" widget="statinfo" string="Bankers"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-exclamation-triangle" invisible="bankers_needing_coaching == 0">
+                            <field name="bankers_needing_coaching" widget="statinfo" string="Need Coaching"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-calendar">
+                            <field name="coaching_sessions_this_month" widget="statinfo" string="Sessions (MTD)"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Branch Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Branch Information">
+                            <field name="code"/>
+                            <field name="region_id"/>
+                            <field name="manager_id" widget="many2one_avatar_employee"/>
+                        </group>
+                        <group string="Performance Metrics">
+                            <field name="avg_performance_score" widget="progressbar"/>
+                            <field name="action_plan_completion_rate" widget="progressbar"/>
+                            <field name="bankers_coached_this_month"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bankers" name="bankers">
+                            <field name="banker_ids">
+                                <list decoration-danger="coaching_priority == 'critical'" decoration-warning="coaching_priority == 'high'">
+                                    <field name="name"/>
+                                    <field name="job_id"/>
+                                    <field name="latest_overall_score" widget="progressbar"/>
+                                    <field name="current_month_rank"/>
+                                    <field name="rank_movement"/>
+                                    <field name="coaching_priority" widget="badge" decoration-danger="coaching_priority == 'critical'" decoration-warning="coaching_priority == 'high'" decoration-info="coaching_priority == 'medium'" decoration-success="coaching_priority == 'low'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Location" name="location">
+                            <group>
+                                <group>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                </group>
+                                <group>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
+                                    <field name="zip"/>
+                                    <field name="phone"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bfsi_branch_search" model="ir.ui.view">
+        <field name="name">bfsi.branch.search</field>
+        <field name="model">bfsi.branch</field>
+        <field name="arch" type="xml">
+            <search string="Search Branches">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_bfsi_region" model="ir.actions.act_window">
+        <field name="name">Regions</field>
+        <field name="res_model">bfsi.region</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first region
+            </p>
+            <p>Regions help organize branches geographically.</p>
+        </field>
+    </record>
+
+    <record id="action_bfsi_branch" model="ir.actions.act_window">
+        <field name="name">Branches</field>
+        <field name="res_model">bfsi.branch</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first branch
+            </p>
+            <p>Branches are the organizational units where bankers work.</p>
+        </field>
+    </record>
+
+    <!-- Manager Dashboard Client Action -->
+    <record id="action_bfsi_manager_dashboard" model="ir.actions.client">
+        <field name="name">Manager Dashboard</field>
+        <field name="tag">bfsi_manager_dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+</odoo>

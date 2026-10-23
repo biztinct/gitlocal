@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The `<report>` shortcut tag is gone from the Odoo 19 data RNG — an
+         explicit ir.actions.report record is the only way to declare one, and
+         `binding_model_id` is what puts it on the record's Print menu. Cloned
+         from pb_hr_fullandfinal/report/full_and_final_report.xml. -->
+    <record id="action_report_hr_letter" model="ir.actions.report">
+        <field name="name">Letter</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_lifecycle.report_hr_letter_document</field>
+        <field name="report_file">pb_lifecycle.report_hr_letter_document</field>
+        <field name="print_report_name">'Letter - %s' % (object.employee_id.name or '')</field>
+        <field name="binding_model_id" ref="model_pb_hr_letter"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ONE wrapper for every letter type. The company header and footer come
+         from the standard external layout, so a tenant that has set its logo
+         and its address once has set them here too; the letter's own body is
+         whatever the template said after its placeholders were filled. -->
+    <template id="report_hr_letter_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 13px; line-height: 1.6;">
+
+                        <div style="text-align: right; color: #64748B; font-size: 12px;">
+                            <span t-esc="o.generated_at and o.generated_at.date() or ''"/>
+                        </div>
+
+                        <h3 style="margin: 14px 0 18px; font-weight: 700;">
+                            <span t-esc="o.subject or o.template_id.name or ''"/>
+                        </h3>
+
+                        <div t-out="o.rendered_html"/>
+
+                        <div style="margin-top: 42px;">
+                            <div style="height: 46px;"/>
+                            <div style="border-top: 1px solid #94A3B8; width: 240px; padding-top: 6px;">
+                                <strong t-esc="o.company_id.name or ''"/><br/>
+                                <span style="color: #64748B;">Authorised signatory</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

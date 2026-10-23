@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Regions                  -->
+    <!-- ========================================= -->
+
+    <record id="bfsi_region_north" model="bfsi.region">
+        <field name="name">North Region</field>
+        <field name="code">NORTH</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="bfsi_region_south" model="bfsi.region">
+        <field name="name">South Region</field>
+        <field name="code">SOUTH</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Branches                 -->
+    <!-- ========================================= -->
+
+    <record id="bfsi_branch_downtown" model="bfsi.branch">
+        <field name="name">Downtown Branch</field>
+        <field name="code">DT001</field>
+        <field name="region_id" ref="bfsi_region_north"/>
+        <field name="street">123 Main Street</field>
+        <field name="city">Ho Chi Minh City</field>
+        <field name="phone">+84 28 1234 5678</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="bfsi_branch_westside" model="bfsi.branch">
+        <field name="name">Westside Branch</field>
+        <field name="code">WS002</field>
+        <field name="region_id" ref="bfsi_region_north"/>
+        <field name="street">456 West Avenue</field>
+        <field name="city">Ho Chi Minh City</field>
+        <field name="phone">+84 28 2345 6789</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="bfsi_branch_central" model="bfsi.branch">
+        <field name="name">Central Branch</field>
+        <field name="code">CT003</field>
+        <field name="region_id" ref="bfsi_region_south"/>
+        <field name="street">789 Central Road</field>
+        <field name="city">Da Nang</field>
+        <field name="phone">+84 236 345 6789</field>
+        <field name="sequence">3</field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Employees (Bankers)      -->
+    <!-- ========================================= -->
+
+    <!-- Branch Manager - Downtown -->
+    <record id="employee_manager_john" model="hr.employee">
+        <field name="name">John Smith</field>
+        <field name="job_title">Branch Manager</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">branch_manager</field>
+        <field name="work_email">john.smith@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5001</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <!-- Update branch with manager -->
+    <record id="bfsi_branch_downtown" model="bfsi.branch">
+        <field name="manager_id" ref="employee_manager_john"/>
+    </record>
+
+    <!-- Bankers - Downtown Branch -->
+    <record id="employee_banker_alice" model="hr.employee">
+        <field name="name">Alice Johnson</field>
+        <field name="job_title">Relationship Manager</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">rm</field>
+        <field name="work_email">alice.johnson@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5002</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="employee_banker_bob" model="hr.employee">
+        <field name="name">Bob Williams</field>
+        <field name="job_title">Relationship Manager</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">rm</field>
+        <field name="work_email">bob.williams@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5003</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="employee_banker_carol" model="hr.employee">
+        <field name="name">Carol Davis</field>
+        <field name="job_title">Wealth Manager</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">wealth_manager</field>
+        <field name="work_email">carol.davis@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5004</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="employee_banker_david" model="hr.employee">
+        <field name="name">David Chen</field>
+        <field name="job_title">Loan Officer</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">loan_officer</field>
+        <field name="work_email">david.chen@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5005</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="employee_banker_emma" model="hr.employee">
+        <field name="name">Emma Wilson</field>
+        <field name="job_title">Telesales Agent</field>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="banker_type">telesales</field>
+        <field name="work_email">emma.wilson@bank.example.com</field>
+        <field name="work_phone">+84 28 1234 5006</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <!-- Branch Manager - Westside -->
+    <record id="employee_manager_frank" model="hr.employee">
+        <field name="name">Frank Miller</field>
+        <field name="job_title">Branch Manager</field>
+        <field name="branch_id" ref="bfsi_branch_westside"/>
+        <field name="banker_type">branch_manager</field>
+        <field name="work_email">frank.miller@bank.example.com</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="bfsi_branch_westside" model="bfsi.branch">
+        <field name="manager_id" ref="employee_manager_frank"/>
+    </record>
+
+    <!-- Bankers - Westside Branch -->
+    <record id="employee_banker_grace" model="hr.employee">
+        <field name="name">Grace Lee</field>
+        <field name="job_title">Relationship Manager</field>
+        <field name="branch_id" ref="bfsi_branch_westside"/>
+        <field name="banker_type">rm</field>
+        <field name="work_email">grace.lee@bank.example.com</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="employee_banker_henry" model="hr.employee">
+        <field name="name">Henry Brown</field>
+        <field name="job_title">Insurance Advisor</field>
+        <field name="branch_id" ref="bfsi_branch_westside"/>
+        <field name="banker_type">insurance_advisor</field>
+        <field name="work_email">henry.brown@bank.example.com</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <!-- Regional Manager -->
+    <record id="employee_regional_manager" model="hr.employee">
+        <field name="name">Michael Thompson</field>
+        <field name="job_title">Regional Manager</field>
+        <field name="banker_type">regional_manager</field>
+        <field name="work_email">michael.thompson@bank.example.com</field>
+        <field name="ai_coaching_enabled" eval="True"/>
+    </record>
+
+    <record id="bfsi_region_north" model="bfsi.region">
+        <field name="regional_manager_id" ref="employee_regional_manager"/>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - KPI Targets              -->
+    <!-- ========================================= -->
+
+    <record id="kpi_target_rm_monthly" model="bfsi.kpi.target">
+        <field name="name">RM Monthly Targets</field>
+        <field name="banker_type">rm</field>
+        <field name="period_type">monthly</field>
+        <field name="target_dials_per_hour">15</field>
+        <field name="target_meetings_scheduled">20</field>
+        <field name="target_calls_made">200</field>
+        <field name="target_script_adherence">85</field>
+        <field name="target_objection_handling">80</field>
+        <field name="target_need_analysis">75</field>
+        <field name="target_conversions">10</field>
+        <field name="target_products_sold">15</field>
+        <field name="target_appointments_set">25</field>
+        <field name="target_revenue">50000000</field>
+        <field name="target_aum">200000000</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="kpi_target_telesales_monthly" model="bfsi.kpi.target">
+        <field name="name">Telesales Monthly Targets</field>
+        <field name="banker_type">telesales</field>
+        <field name="period_type">monthly</field>
+        <field name="target_dials_per_hour">25</field>
+        <field name="target_meetings_scheduled">30</field>
+        <field name="target_calls_made">500</field>
+        <field name="target_script_adherence">90</field>
+        <field name="target_objection_handling">85</field>
+        <field name="target_need_analysis">70</field>
+        <field name="target_conversions">15</field>
+        <field name="target_products_sold">20</field>
+        <field name="target_appointments_set">40</field>
+        <field name="target_revenue">30000000</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Performance KPIs         -->
+    <!-- ========================================= -->
+
+    <!-- Alice - High Performer -->
+    <record id="kpi_alice_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_alice"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">18</field>
+        <field name="meetings_scheduled">25</field>
+        <field name="calls_made">220</field>
+        <field name="script_adherence">92</field>
+        <field name="objection_handling_score">88</field>
+        <field name="need_analysis_quality">85</field>
+        <field name="conversions">12</field>
+        <field name="products_sold">18</field>
+        <field name="appointments_set">28</field>
+        <field name="revenue">65000000</field>
+        <field name="aum">250000000</field>
+    </record>
+
+    <!-- Bob - Medium Performer (Needs Some Coaching) -->
+    <record id="kpi_bob_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_bob"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">12</field>
+        <field name="meetings_scheduled">15</field>
+        <field name="calls_made">160</field>
+        <field name="script_adherence">75</field>
+        <field name="objection_handling_score">70</field>
+        <field name="need_analysis_quality">68</field>
+        <field name="conversions">6</field>
+        <field name="products_sold">9</field>
+        <field name="appointments_set">18</field>
+        <field name="revenue">35000000</field>
+        <field name="aum">150000000</field>
+    </record>
+
+    <!-- Carol - High Performer -->
+    <record id="kpi_carol_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_carol"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">14</field>
+        <field name="meetings_scheduled">22</field>
+        <field name="calls_made">180</field>
+        <field name="script_adherence">88</field>
+        <field name="objection_handling_score">90</field>
+        <field name="need_analysis_quality">92</field>
+        <field name="conversions">11</field>
+        <field name="products_sold">16</field>
+        <field name="appointments_set">24</field>
+        <field name="revenue">75000000</field>
+        <field name="aum">350000000</field>
+    </record>
+
+    <!-- David - Low Performer (Needs Coaching) -->
+    <record id="kpi_david_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_david"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">8</field>
+        <field name="meetings_scheduled">10</field>
+        <field name="calls_made">100</field>
+        <field name="script_adherence">60</field>
+        <field name="objection_handling_score">55</field>
+        <field name="need_analysis_quality">50</field>
+        <field name="conversions">3</field>
+        <field name="products_sold">4</field>
+        <field name="appointments_set">12</field>
+        <field name="revenue">20000000</field>
+        <field name="aum">80000000</field>
+    </record>
+
+    <!-- Emma - Critical (Needs Urgent Coaching) -->
+    <record id="kpi_emma_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_emma"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">10</field>
+        <field name="meetings_scheduled">8</field>
+        <field name="calls_made">150</field>
+        <field name="script_adherence">50</field>
+        <field name="objection_handling_score">45</field>
+        <field name="need_analysis_quality">40</field>
+        <field name="conversions">2</field>
+        <field name="products_sold">3</field>
+        <field name="appointments_set">10</field>
+        <field name="revenue">12000000</field>
+        <field name="aum">50000000</field>
+    </record>
+
+    <!-- Grace - Medium Performer -->
+    <record id="kpi_grace_current" model="bfsi.performance.kpi">
+        <field name="employee_id" ref="employee_banker_grace"/>
+        <field name="date" eval="datetime.date.today()"/>
+        <field name="period_type">daily</field>
+        <field name="dials_per_hour">14</field>
+        <field name="meetings_scheduled">18</field>
+        <field name="calls_made">185</field>
+        <field name="script_adherence">80</field>
+        <field name="objection_handling_score">78</field>
+        <field name="need_analysis_quality">75</field>
+        <field name="conversions">8</field>
+        <field name="products_sold">12</field>
+        <field name="appointments_set">22</field>
+        <field name="revenue">45000000</field>
+        <field name="aum">180000000</field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Action Plans             -->
+    <!-- ========================================= -->
+
+    <record id="action_plan_bob" model="bfsi.action.plan">
+        <field name="name">Improve Script Adherence - Bob</field>
+        <field name="employee_id" ref="employee_banker_bob"/>
+        <field name="manager_id" ref="employee_manager_john"/>
+        <field name="state">in_progress</field>
+        <field name="deadline" eval="(datetime.date.today() + datetime.timedelta(days=14)).strftime('%Y-%m-%d')"/>
+        <field name="notes">Focus on following the sales script more consistently and improving objection handling techniques.</field>
+        <field name="progress_percentage">35</field>
+    </record>
+
+    <record id="action_plan_item_bob_1" model="bfsi.action.plan.item">
+        <field name="action_plan_id" ref="action_plan_bob"/>
+        <field name="name">Review and memorize sales script</field>
+        <field name="kpi_category">behavior</field>
+        <field name="success_criteria">Score 85% or higher on script adherence</field>
+        <field name="due_date" eval="(datetime.date.today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d')"/>
+        <field name="state">in_progress</field>
+        <field name="progress">50</field>
+    </record>
+
+    <record id="action_plan_item_bob_2" model="bfsi.action.plan.item">
+        <field name="action_plan_id" ref="action_plan_bob"/>
+        <field name="name">Complete objection handling training module</field>
+        <field name="kpi_category">behavior</field>
+        <field name="success_criteria">Complete all training modules and pass quiz</field>
+        <field name="due_date" eval="(datetime.date.today() + datetime.timedelta(days=10)).strftime('%Y-%m-%d')"/>
+        <field name="state">pending</field>
+        <field name="progress">0</field>
+    </record>
+
+    <record id="action_plan_item_bob_3" model="bfsi.action.plan.item">
+        <field name="name">Increase daily call volume to 200+</field>
+        <field name="action_plan_id" ref="action_plan_bob"/>
+        <field name="kpi_category">input</field>
+        <field name="success_criteria">Maintain 200+ calls per day for 2 weeks</field>
+        <field name="due_date" eval="(datetime.date.today() + datetime.timedelta(days=14)).strftime('%Y-%m-%d')"/>
+        <field name="state">pending</field>
+        <field name="progress">0</field>
+    </record>
+
+    <record id="action_plan_david" model="bfsi.action.plan">
+        <field name="name">Performance Improvement Plan - David</field>
+        <field name="employee_id" ref="employee_banker_david"/>
+        <field name="manager_id" ref="employee_manager_john"/>
+        <field name="state">committed</field>
+        <field name="deadline" eval="(datetime.date.today() + datetime.timedelta(days=30)).strftime('%Y-%m-%d')"/>
+        <field name="notes">Comprehensive performance improvement plan focusing on all KPI areas.</field>
+        <field name="progress_percentage">10</field>
+    </record>
+
+    <record id="action_plan_emma" model="bfsi.action.plan">
+        <field name="name">Critical Improvement - Emma</field>
+        <field name="employee_id" ref="employee_banker_emma"/>
+        <field name="manager_id" ref="employee_manager_john"/>
+        <field name="state">committed</field>
+        <field name="deadline" eval="(datetime.date.today() + datetime.timedelta(days=21)).strftime('%Y-%m-%d')"/>
+        <field name="notes">Urgent coaching intervention required. Focus on fundamentals.</field>
+        <field name="progress_percentage">5</field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Coaching Strategies      -->
+    <!-- ========================================= -->
+
+    <record id="coaching_strategy_bob" model="bfsi.coaching.strategy">
+        <field name="name">Sales Excellence Coaching - Bob Williams</field>
+        <field name="banker_id" ref="employee_banker_bob"/>
+        <field name="manager_id" ref="employee_manager_john"/>
+        <field name="branch_id" ref="bfsi_branch_downtown"/>
+        <field name="state">generated</field>
+        <field name="ai_confidence">85</field>
+        <field name="performance_summary">&lt;p&gt;Bob is a mid-level performer with potential for improvement. Current overall score: 68%. Main areas for development:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Script adherence: 75% (target: 85%)&lt;/li&gt;
+&lt;li&gt;Objection handling: 70% (target: 80%)&lt;/li&gt;
+&lt;li&gt;Conversion rate: Below target&lt;/li&gt;
+&lt;/ul&gt;</field>
+        <field name="root_cause_analysis">&lt;p&gt;Analysis indicates:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Tendency to deviate from script when customer asks unexpected questions&lt;/li&gt;
+&lt;li&gt;Lacks confidence in handling price objections&lt;/li&gt;
+&lt;li&gt;Good rapport building but struggles to close&lt;/li&gt;
+&lt;/ul&gt;</field>
+        <field name="strengths">Strong customer rapport
+Good product knowledge
+Consistent attendance and punctuality
+Positive attitude toward coaching</field>
+        <field name="improvement_areas">Script adherence
+Objection handling
+Closing techniques
+Time management on calls</field>
+        <field name="coaching_themes">Sales fundamentals
+Objection handling mastery
+Closing techniques</field>
+        <field name="ai_strategy">&lt;p&gt;&lt;strong&gt;Recommended Coaching Approach:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Use a supportive coaching style. Bob responds well to positive reinforcement. Focus on building confidence through role-play practice.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Key Focus Areas:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Script practice with scenario variations&lt;/li&gt;
+&lt;li&gt;Top 5 objection responses&lt;/li&gt;
+&lt;li&gt;Assumptive close techniques&lt;/li&gt;
+&lt;/ol&gt;</field>
+        <field name="session_guide">1. Start with wins - acknowledge recent improvements
+2. Review specific call recordings showing script deviation
+3. Practice the LAER objection handling method
+4. Role-play 3 common scenarios
+5. Set specific, measurable weekly goals
+6. Schedule follow-up check-in</field>
+        <field name="opening_questions">What do you feel went well in your sales calls this week?
+When you think about your most successful sale, what made it work?</field>
+        <field name="probing_questions">What typically happens when a customer raises a price objection?
+Walk me through your thought process when you deviate from the script.
+What would help you feel more confident in closing?</field>
+        <field name="closing_questions">What specific actions will you commit to this week?
+How can I best support you in reaching your targets?</field>
+        <field name="coaching_tips">Use call recordings as teaching moments
+Celebrate small wins to build confidence
+Practice makes perfect - schedule regular role-play sessions</field>
+        <field name="roleplay_scenarios">Customer says: "I need to think about it" - Practice the Feel, Felt, Found technique
+Customer says: "Your competitor is cheaper" - Practice value-based response
+Customer is ready but hesitant - Practice the assumptive close</field>
+        <field name="learning_recommendations">Complete Objection Handling Masterclass (online module)
+Review top performer call recordings
+Practice script variations with peer buddy</field>
+    </record>
+
+    <!-- ========================================= -->
+    <!-- BFSI Demo Data - Coaching Sessions        -->
+    <!-- ========================================= -->
+
+    <record id="coaching_session_bob_1" model="hr.coaching.session">
+        <field name="name">Weekly Coaching - Bob Williams</field>
+        <field name="employee_id" ref="employee_banker_bob"/>
+        <field name="coach_id" ref="employee_manager_john"/>
+        <field name="session_type">hybrid</field>
+        <field name="topic">performance</field>
+        <field name="session_date" eval="(datetime.datetime.now() - datetime.timedelta(days=7))"/>
+        <field name="state">completed</field>
+        <field name="coaching_strategy_id" ref="coaching_strategy_bob"/>
+        <field name="coached_by_type">ai_assisted</field>
+        <field name="is_bfsi_session" eval="True"/>
+        <field name="summary">&lt;p&gt;Productive session focusing on objection handling. Bob showed good engagement and commitment to improvement.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Key Outcomes:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Practiced LAER method for price objections&lt;/li&gt;
+&lt;li&gt;Reviewed 2 call recordings together&lt;/li&gt;
+&lt;li&gt;Set goal: 85% script adherence by end of month&lt;/li&gt;
+&lt;/ul&gt;</field>
+    </record>
+
+</odoo>

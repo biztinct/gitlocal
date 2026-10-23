@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The records behind the Group screen.
+
+         The screen is where a person sets a group up; these views exist so
+         the HISTORY has somewhere to be read. "Who changed the group
+         currency, and when" is a chatter question, and a chatter needs a
+         form. Nothing here appears on the rail or in a menu.
+         ================================================================== -->
+
+    <record id="view_pb_group_form" model="ir.ui.view">
+        <field name="name">pb.group.form</field>
+        <field name="model">pb.group</field>
+        <field name="arch" type="xml">
+            <form string="Group">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="What this group is called"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="presentation_currency_id"/>
+                            <field name="fx_policy"/>
+                            <field name="fiscal_start_month"/>
+                        </group>
+                        <group>
+                            <field name="company_count"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Companies">
+                            <field name="company_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="currency_id"/>
+                                    <field name="country_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note" placeholder="Anything worth remembering about this group"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_group_list" model="ir.ui.view">
+        <field name="name">pb.group.list</field>
+        <field name="model">pb.group</field>
+        <field name="arch" type="xml">
+            <list string="Groups">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="presentation_currency_id"/>
+                <field name="company_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_group_records" model="ir.actions.act_window">
+        <field name="name">Group history</field>
+        <field name="res_model">pb.group</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_pb_division_form" model="ir.ui.view">
+        <field name="name">pb.division.form</field>
+        <field name="model">pb.division</field>
+        <field name="arch" type="xml">
+            <form string="Division">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="What this part of the business is called"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="people_count"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="link_ids">
+                        <list editable="bottom">
+                            <field name="department_id"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Anything worth remembering about this division"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_division_list" model="ir.ui.view">
+        <field name="name">pb.division.list</field>
+        <field name="model">pb.division</field>
+        <field name="arch" type="xml">
+            <list string="Divisions">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="people_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_division_records" model="ir.actions.act_window">
+        <field name="name">Divisions</field>
+        <field name="res_model">pb.division</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

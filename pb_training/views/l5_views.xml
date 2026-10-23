@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         LEARNING L5 — the record forms behind the screens. The screens
+         (Courses › Outside, Claims › Requests, the course drawer) are where
+         people work; these exist so "Open the request" lands somewhere
+         readable and so an administrator can see the rows.
+         ================================================================== -->
+
+    <!-- ============ the course form: requests, version ============ -->
+    <record id="view_slide_channel_form_pb_l5" model="ir.ui.view">
+        <field name="name">slide.channel.form.pb.l5</field>
+        <field name="model">slide.channel</field>
+        <field name="inherit_id" ref="pb_training.view_slide_channel_form_pb_delivery"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='delivery']" position="before">
+                <field name="pb_requestable"/>
+                <field name="pb_version" readonly="1"/>
+                <field name="pb_reread_days"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============ outside courses ============ -->
+    <record id="view_pb_training_outside_course_list" model="ir.ui.view">
+        <field name="name">pb.training.outside.course.list</field>
+        <field name="model">pb.training.outside.course</field>
+        <field name="arch" type="xml">
+            <list string="Outside courses">
+                <field name="name"/>
+                <field name="provider"/>
+                <field name="kind"/>
+                <field name="cost"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="hours"/>
+                <field name="requests_count"/>
+                <field name="taken_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_outside_course_form" model="ir.ui.view">
+        <field name="name">pb.training.outside.course.form</field>
+        <field name="model">pb.training.outside.course</field>
+        <field name="arch" type="xml">
+            <form string="Outside course">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="What the provider calls it"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="provider"/>
+                            <field name="url" widget="url"/>
+                            <field name="kind"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="cost"/>
+                            <field name="currency_id"/>
+                            <field name="hours"/>
+                            <field name="issues_certificate"/>
+                            <field name="validity_months" invisible="not issues_certificate"/>
+                        </group>
+                    </group>
+                    <field name="blurb" placeholder="What it is, in a sentence or two"/>
+                    <group><field name="job_ids" widget="many2many_tags"/></group>
+                    <field name="skill_grant_ids">
+                        <list editable="bottom">
+                            <field name="skill_id"/>
+                            <field name="skill_type_id" column_invisible="1"/>
+                            <field name="skill_level_id"/>
+                        </list>
+                    </field>
+                    <field name="company_id" invisible="1"/>
+                    <field name="active" invisible="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============ course requests ============ -->
+    <record id="view_pb_training_request_list" model="ir.ui.view">
+        <field name="name">pb.training.request.list</field>
+        <field name="model">pb.training.request</field>
+        <field name="arch" type="xml">
+            <list string="Course requests">
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="course_name"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_request_form" model="ir.ui.view">
+        <field name="name">pb.training.request.form</field>
+        <field name="model">pb.training.request</field>
+        <field name="arch" type="xml">
+            <form string="Course request">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="submitted,approved,taken,claimed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="course_name" readonly="state != 'draft'"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state != 'draft'"/>
+                            <field name="kind" readonly="state != 'draft'"/>
+                            <field name="channel_id" invisible="kind != 'ours'" readonly="state != 'draft'"/>
+                            <field name="outside_course_id" invisible="kind != 'outside'" readonly="state != 'draft'"/>
+                            <field name="provider" readonly="state != 'draft'"/>
+                            <field name="url" widget="url" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="year" readonly="1"/>
+                            <field name="allowance_left_words"/>
+                            <field name="when_words" readonly="state != 'draft'"/>
+                            <field name="assignment_id" readonly="1" invisible="not assignment_id"/>
+                            <field name="claim_id" readonly="1" invisible="not claim_id"/>
+                            <field name="put_on_by_id" readonly="1" invisible="not put_on_by_id"/>
+                        </group>
+                    </group>
+                    <field name="why" readonly="state != 'draft'"/>
+                    <group invisible="state != 'refused'"><field name="refuse_note" readonly="1"/></group>
+                    <field name="company_id" invisible="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_requests" model="ir.actions.act_window">
+        <field name="name">Course requests</field>
+        <field name="res_model">pb.training.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_pb_training_outside_courses" model="ir.actions.act_window">
+        <field name="name">Outside courses</field>
+        <field name="res_model">pb.training.outside.course</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============ follow-ups ============ -->
+    <record id="view_pb_training_followup_list" model="ir.ui.view">
+        <field name="name">pb.training.followup.list</field>
+        <field name="model">pb.training.followup</field>
+        <field name="arch" type="xml">
+            <list string="Course follow-ups" create="0">
+                <field name="employee_id"/>
+                <field name="channel_id"/>
+                <field name="outside_course_id"/>
+                <field name="manager_id"/>
+                <field name="due_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         LEARNING L4 — the session mails. noupdate="1" like every template
+         here (a reworded template survives upgrades), sent with an explicit
+         `email_to` (R6). The four about one person are declared on the
+         ATTENDANCE (one person at one session); the trainer's on the
+         session. The calendar file is attached by the sender, never by the
+         template (handover F1/F9). No vendor word, brand colour #5A4BB0.
+         ================================================================== -->
+
+    <!-- ============ the person: you are booked on a session ============ -->
+    <record id="mail_template_session_invite" model="mail.template">
+        <field name="name">Training: you are booked on a session</field>
+        <field name="model_id" ref="model_pb_training_attendance"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">{{ object.session_id.channel_id.name }} — {{ object.session_id.when_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>You are booked on <strong><t t-out="object.session_id.channel_id.name or ''"/></strong>.</p>
+                <ul>
+                    <li>When: <strong><t t-out="object.session_id.when_words or ''"/></strong></li>
+                    <li>Where: <strong><t t-out="object.session_id.where_words or ''"/></strong></li>
+                    <li t-if="object.session_id.trainer_id or object.session_id.trainer_name">Trainer: <t t-out="object.session_id.trainer_id.name or object.session_id.trainer_name or ''"/></li>
+                    <li t-if="object.session_id.join_url">Join link: <a t-att-href="object.session_id.join_url"><t t-out="object.session_id.join_url"/></a></li>
+                </ul>
+                <p>The calendar file attached puts it in your diary. On the day, scan the code the trainer shows and you are marked as there.</p>
+                <p>
+                    <a t-attf-href="/my/training"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my training
+                    </a>
+                </p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the person: it is tomorrow ============ -->
+    <record id="mail_template_session_reminder" model="mail.template">
+        <field name="name">Training: your session is tomorrow</field>
+        <field name="model_id" ref="model_pb_training_attendance"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Tomorrow: {{ object.session_id.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>A reminder: <strong><t t-out="object.session_id.channel_id.name or ''"/></strong> is tomorrow.</p>
+                <ul>
+                    <li>When: <strong><t t-out="object.session_id.when_words or ''"/></strong></li>
+                    <li>Where: <strong><t t-out="object.session_id.where_words or ''"/></strong></li>
+                </ul>
+                <p>If you cannot come, tell the training team so somebody waiting can have your seat.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the person: a seat came free ============ -->
+    <record id="mail_template_session_seat_free" model="mail.template">
+        <field name="name">Training: a seat came free for you</field>
+        <field name="model_id" ref="model_pb_training_attendance"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">You have a seat: {{ object.session_id.channel_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>A seat came free and it is yours: <strong><t t-out="object.session_id.channel_id.name or ''"/></strong>.</p>
+                <ul>
+                    <li>When: <strong><t t-out="object.session_id.when_words or ''"/></strong></li>
+                    <li>Where: <strong><t t-out="object.session_id.where_words or ''"/></strong></li>
+                </ul>
+                <p>The calendar file attached puts it in your diary.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the person: it is called off ============ -->
+    <record id="mail_template_session_cancelled" model="mail.template">
+        <field name="name">Training: a session is cancelled</field>
+        <field name="model_id" ref="model_pb_training_attendance"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Cancelled: {{ object.session_id.channel_id.name }} — {{ object.session_id.when_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p><strong><t t-out="object.session_id.channel_id.name or ''"/></strong> on <t t-out="object.session_id.when_words or ''"/> is cancelled.</p>
+                <p>The calendar file attached takes it out of your diary. The course is still on your training page if you have it to do; the training team will book you on another session.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the trainer: your session ============ -->
+    <record id="mail_template_session_trainer" model="mail.template">
+        <field name="name">Training: you are running a session</field>
+        <field name="model_id" ref="model_pb_training_session"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.trainer_id.work_email or '' }}</field>
+        <field name="subject">You are running: {{ object.channel_id.name }} — {{ object.when_words }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.trainer_id.name or ''"/>,</p>
+                <p>The invitations for <strong><t t-out="object.channel_id.name or ''"/></strong> have gone out.</p>
+                <ul>
+                    <li>When: <strong><t t-out="object.when_words or ''"/></strong></li>
+                    <li>Where: <strong><t t-out="object.where_words or ''"/></strong></li>
+                    <li>Seats: <t t-out="object.seats_words or ''"/></li>
+                </ul>
+                <p>On the day, open the session in Learning and press "Start the session": the screen shows a code people scan with their phone, and you can tick anybody else by hand.</p>
+                <br/>
+                The training team
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

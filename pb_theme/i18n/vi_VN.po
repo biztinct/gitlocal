@@ -1,0 +1,80 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:14
+msgid "Chat"
+msgstr "Trò chuyện"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:10
+msgid "My Preferences"
+msgstr "Tùy chọn của tôi"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:12
+msgid "Offline"
+msgstr "Ngoại tuyến"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:11
+msgid "Online"
+msgstr "Trực tuyến"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:9
+msgid "Shortcuts"
+msgstr "Phím tắt"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:0
+#: code:addons/pb_theme/static/src/js/vi_translation_terms.js:13
+msgid "You will not receive any notifications"
+msgstr "Bạn sẽ không nhận được bất kỳ thông báo nào"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/language_switcher.js:53
+msgid "Change language. Current language: %s"
+msgstr "Đổi ngôn ngữ. Ngôn ngữ hiện tại: %s"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/js/language_switcher.js:66
+msgid "Could not change language. Please try again."
+msgstr "Không thể đổi ngôn ngữ. Vui lòng thử lại."
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/xml/language_switcher.xml:19
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_theme
+#. odoo-javascript
+#: code:addons/pb_theme/static/src/xml/language_switcher.xml:34
+msgid "Current language"
+msgstr "Ngôn ngữ hiện tại"

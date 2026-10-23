@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_application_source_settings" model="ir.ui.view">
+        <field name="name">hr.formula.config.application.sources</field>
+        <field name="model">hr.formula.config</field>
+        <field name="arch" type="xml">
+            <form string="Application payroll" create="0" delete="0">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <div class="alert alert-info" role="status">Choose how application records supply payroll when no spreadsheet is uploaded. Each run checks the selected employees and period, then retains the resolved values and source evidence.</div>
+                    <group>
+                        <group string="Calculation basis">
+                            <field name="company_id" readonly="1"/>
+                            <field name="application_data_enabled"/>
+                            <field name="application_effective_from" required="application_data_enabled"/>
+                            <field name="payroll_basis"/>
+                        </group>
+                        <group string="Standard month days">
+                            <field name="standard_day_basis"/>
+                            <field name="fixed_standard_days" invisible="standard_day_basis != 'fixed'" required="standard_day_basis == 'fixed'"/>
+                            <div colspan="2" class="text-muted">Contractual mode starts with the employee’s work calendar and adjusts for employment dates and unpaid leave. Timesheet mode uses manager-approved time reconciled to attendance, with paid leave credited once. A fixed divisor scales the same daily proportions.</div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Input sources" name="application_sources">
+                            <p>Bindings apply only to application-data runs. Existing spreadsheet columns and historical runs keep their original mappings. Blank bindings use the existing employee or contract mapping; missing pay inputs block computation.</p>
+                            <field name="application_input_rule_ids" context="{'default_column_type': 'input'}">
+                                <list editable="bottom" create="0" delete="0" limit="40">
+                                    <field name="config_id" column_invisible="True"/>
+                                    <field name="code" readonly="1"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="value_kind" readonly="1" optional="show"/>
+                                    <field name="application_source_key" widget="application_source"/>
+                                    <field name="application_source_owner" optional="show"/>
+                                    <field name="application_source_owner_model" optional="hide"/>
+                                    <field name="application_source_required" optional="show"/>
+                                    <field name="application_zero_allowed" optional="hide"/>
+                                    <field name="application_settlement_kind" optional="hide"/>
+                                    <field name="application_source_note" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_application_snapshot_list" model="ir.ui.view">
+        <field name="name">hr.payroll.application.snapshot.list</field>
+        <field name="model">hr.payroll.application.snapshot</field>
+        <field name="arch" type="xml"><list create="0" edit="0" delete="0"><field name="payslip_id"/><field name="config_id"/><field name="create_date"/><field name="fingerprint"/></list></field>
+    </record>
+    <record id="view_application_snapshot_form" model="ir.ui.view">
+        <field name="name">hr.payroll.application.snapshot.form</field>
+        <field name="model">hr.payroll.application.snapshot</field>
+        <field name="arch" type="xml"><form create="0" edit="0" delete="0"><sheet><group><field name="payslip_id"/><field name="config_id"/><field name="company_id"/><field name="create_date"/><field name="fingerprint"/></group><field name="payload_json" widget="text" nolabel="1"/></sheet></form></field>
+    </record>
+    <record id="view_payslip_application_snapshot" model="ir.ui.view">
+        <field name="name">hr.payslip.application.snapshot</field><field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml"><xpath expr="//notebook" position="inside"><page string="Application sources" invisible="not application_snapshot_id"><group><field name="application_snapshot_id" readonly="1" options="{'no_create': True}"/></group><p>Open the snapshot to inspect the exact values, coverage review and source records used in this computation.</p></page></xpath></field>
+    </record>
+    <record id="view_run_application_certification" model="ir.ui.view">
+        <field name="name">hr.payslip.run.application.certification</field><field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml"><xpath expr="//sheet" position="inside"><group string="Application data review" invisible="not application_data_mode"><field name="application_data_mode" readonly="1"/><field name="application_certified_by"/><field name="application_certified_at"/><field name="application_certification_json" widget="text"/></group></xpath></field>
+    </record>
+</odoo>

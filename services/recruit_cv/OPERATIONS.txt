@@ -1,0 +1,35 @@
+Payobook CV extraction service
+
+Build: docker build -t payobook-recruit-cv services/recruit_cv
+Run behind an HTTPS reverse proxy, on a separate service host. Supply a random
+RECRUIT_CV_KEY of at least 32 characters through the host's secret store. Mount
+a persistent model cache at /models owned by uid 10001. Do not expose port 8080
+directly to the Internet. Limit request bodies to 6 MB and rate-limit requests.
+Allow at least 4 GB RAM for initial evaluation; measure OCR peak use before
+accepting production load. One worker and one conversion at a time.
+
+Initial model downloads need network access. Prewarm with synthetic PDF,
+scanned PDF and DOCX examples. Then restrict outbound access as appropriate.
+The service does not retain CVs, access logs or extracted content. It uses
+Docling locally and a spaCy phrase matcher with Payobook's configured skills.
+Models have their own upstream licences in addition to the library licences.
+
+Enter the HTTPS URL and matching service key in Hiring connections > CV
+extraction. Check the connection, enable. New CV uploads queue extraction; use Extract CV for existing candidates.
+Recruiters review the suggestions before applying them. No automatic ranking.
+EN/VI/ID section headings are recognised; representative customer CV testing
+is required. Employment duration and employer/job-title splitting are not
+guessed when the source is ambiguous. The extracted evidence remains visible.
+
+The directly tested service packages are pinned in requirements.
+Record the resolved versions and image digest when deploying the service.
+
+Local unit tests: python -m unittest discover -s services/recruit_cv -v.
+Synthetic OCR/PDF/DOCX tests: set RECRUIT_CV_INTEGRATION=1 and install reportlab, python-docx, Pillow and httpx.
+Intel Mac testing also needs test-macos-constraints.txt. Linux container tests
+and a measured peak-memory check on the chosen production host remain required.
+
+23 Oct 2026 validation: six tests passed, including synthetic PDF, DOCX and
+scanned-image extraction. Intel Mac/Python 3.12 peak RSS was 2,095,153,152
+bytes (~2 GB) for this small synthetic run. This is not a Linux production
+capacity guarantee; larger/multicolumn/multilingual scans need acceptance tests.

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      One panel, shipped empty, so there is somewhere to press the button.
+
+      `noupdate` because this record carries STATE: once somebody has loaded a
+      demo world, an upgrade of this module must not reset the panel to "not
+      loaded" and orphan every record the register was holding.
+    -->
+    <data noupdate="1">
+        <record id="demo_seed_default" model="pb.demo.seed">
+            <field name="name">Demo data</field>
+            <field name="profile">rize_vn</field>
+            <field name="state">empty</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- noupdate="0" DELIBERATELY (W13), as every hub's own rail record is. -->
+<odoo noupdate="0">
+
+    <!-- GROW › Talent (NAV P2, 2026-10-21) — above Learning (7) and Help (10).
+         LEARNING L0: Training left Talent for its own entry, so the training
+         board's tag and models are claimed by `pb_learning_hub.item_learning`
+         now, and Talent's icon is `target` (Learning took the cap).
+
+         Gated on `hr.group_hr_user` (the permission lane); the role lane
+         (recognition, growth plans, goals and training roles) is written by
+         `pb_vendor_access` (SCREEN_GATES) and asked for again by this
+         module's install step. Inside, each tab asks its own question, so a
+         trainer sees Training and nothing else. The icon is in the closed
+         ICONS set of `pb_sidebar/static/src/js/pb_sidebar.js`. -->
+    <record id="item_talent" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_learn.sec_learn"/>
+        <field name="groups_id" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="name">Talent</field>
+        <field name="icon">target</field>
+        <field name="sequence">5</field>
+        <field name="action_xmlid">pb_talent_hub.action_pb_talent_hub</field>
+        <field name="action_tag">pb_talent_hub</field>
+        <field name="match_action_tags">pb_talent_hub,pb_goals_board,pb_pip_board,pb_rnr_board</field>
+        <field name="match_models">pb.goal,pb.goal.set,pb.goal.cycle,pb.pip.case,pb.rnr.nomination,pb.rnr.cycle</field>
+    </record>
+
+</odoo>

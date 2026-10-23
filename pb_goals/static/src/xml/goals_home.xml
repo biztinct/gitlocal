@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       "GOALS WAITING ON YOU" — the Home lens.
+
+       R1 — loop variables are `rw` and `sc`, never a reserved operator name.
+       R205 — no JavaScript global in here; every helper is a component
+       method.
+       ================================================================== -->
+
+  <t t-name="pb_goals.PbGoalsHome">
+    <div class="pbim pbim-page pbgh"
+         t-att-class="{ 'pbgh--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <span class="pbim-spin"/>
+      </div>
+
+      <t t-else="">
+        <div class="pbim-wrap pbgh-wrap">
+
+          <div class="pbgh-head">
+            <div class="pbgh-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Goals waiting on you</h1>
+            </div>
+            <div class="pbgh-head-id" t-else="">
+              <h2 class="pbgh-h2">Goals waiting on you</h2>
+            </div>
+            <div class="pbgh-head-actions">
+              <button class="pbim-btn ghost" t-on-click="() => this.load()"
+                      title="Read it again">
+                <t t-out="ic('refresh',15)"/>
+              </button>
+              <a class="pbim-btn ghost" href="/my/goals">
+                <t t-out="ic('user',15)"/> My goals
+              </a>
+              <button class="pbim-btn ghost" t-on-click="openBoard">
+                <t t-out="ic('target',15)"/> The board
+              </button>
+            </div>
+          </div>
+
+          <p class="pbgh-headline" t-esc="state.headline"/>
+
+          <div t-if="state.sections.length" class="pbgh-chips">
+            <t t-foreach="state.sections" t-as="sc" t-key="sc.key">
+              <span class="pbgl-chip on">
+                <strong t-esc="sc.count"/>
+                <span t-esc="sc.label"/>
+              </span>
+            </t>
+          </div>
+
+          <!-- ================== nothing waiting ==================
+               A DEAD END IS THE ONE THING THIS CARD MUST NOT BE. With
+               nothing owed it still says so and still offers the doors
+               somebody might have come here for. -->
+          <div t-if="!state.rows.length" class="pbgh-clear">
+            <t t-out="ic('checkCircle',26)"/>
+            <div>
+              <strong>Nothing about goals is waiting on you</strong>
+              <p>Your own goals, your team's and anything you have been asked
+                 to decide are all up to date.</p>
+            </div>
+          </div>
+
+          <div t-if="state.rows.length" class="pbgh-rows">
+            <t t-foreach="state.rows" t-as="rw" t-key="rw.kind + '-' + rw.id">
+              <button class="pbgh-row"
+                      t-att-class="{ 'pbgh-row--late': rw.late }"
+                      t-on-click="() => this.openRow(rw)">
+                <span class="pbgh-row-ic"><t t-out="ic(rw.icon,17)"/></span>
+                <span class="pbgh-row-id">
+                  <strong t-esc="rw.title"/>
+                  <span t-esc="rw.sub"/>
+                </span>
+                <span class="pbgh-row-go">
+                  <span t-esc="rw.word"/>
+                  <t t-out="ic('arrowRight',15)"/>
+                </span>
+              </button>
+            </t>
+          </div>
+
+          <p t-if="state.more" class="pbgh-more">
+            <t t-esc="state.more"/> more are waiting. The Goals board has all
+            of them.
+          </p>
+
+        </div>
+      </t>
+    </div>
+  </t>
+
+</templates>

@@ -2,8 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pb_workforce_capability_user,pb.workforce.capability user,model_pb_workforce_capability,pb_hr_payroll_demand.group_pb_workforce_user,1,0,0,0
 access_pb_workforce_capability_manager,pb.workforce.capability manager,model_pb_workforce_capability,pb_hr_payroll_demand.group_pb_workforce_manager,1,1,1,1
 access_pb_workforce_subactivity_manager,pb.workforce.subactivity manager,model_pb_workforce_subactivity,pb_hr_payroll_demand.group_pb_workforce_manager,1,1,1,1
-access_pb_workforce_skill_user,pb.workforce.skill user,model_pb_workforce_skill,pb_hr_payroll_demand.group_pb_workforce_user,1,0,0,0
-access_pb_workforce_skill_manager,pb.workforce.skill manager,model_pb_workforce_skill,pb_hr_payroll_demand.group_pb_workforce_manager,1,1,1,1
 access_pb_workforce_role_user,pb.workforce.role user,model_pb_workforce_role,pb_hr_payroll_demand.group_pb_workforce_user,1,0,0,0
 access_pb_workforce_role_manager,pb.workforce.role manager,model_pb_workforce_role,pb_hr_payroll_demand.group_pb_workforce_manager,1,1,1,1
 access_pb_workforce_role_focus_manager,pb.workforce.role.focus manager,model_pb_workforce_role_focus,pb_hr_payroll_demand.group_pb_workforce_manager,1,1,1,1

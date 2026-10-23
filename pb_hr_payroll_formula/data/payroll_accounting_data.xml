@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ==========================================
+             PAYROLL JOURNAL
+             ==========================================
+             A dedicated journal for payroll entries.
+             ========================================== -->
+
+        <record id="payroll_journal" model="account.journal">
+            <field name="name">Payroll Journal</field>
+            <field name="type">general</field>
+            <field name="code">PAY</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+    </data>
+</odoo>

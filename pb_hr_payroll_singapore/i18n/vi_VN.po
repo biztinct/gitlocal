@@ -1,0 +1,136 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_payroll_singapore
+#: model:ir.ui.view,string:pb_hr_payroll_singapore.view_payroll_dashboard_singapore
+msgid "Singapore Payroll Dashboard"
+msgstr "Bảng điều khiển bảng lương Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_dashboard
+msgid "Singapore Dashboard"
+msgstr "Trang tổng quan Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_cpf
+msgid "Singapore CPF Submission"
+msgstr "Đệ trình CPF của Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: field:hr.payslip,singapore_cpf_employee:0
+msgid "CPF - Employee"
+msgstr "CPF - Nhân viên"
+
+#. module: pb_hr_payroll_singapore
+#: field:hr.payslip,singapore_cpf_company:0
+msgid "CPF - Company"
+msgstr "CPF - Công ty"
+
+#. module: pb_hr_payroll_singapore
+#: field:hr.payslip,singapore_sdl:0
+msgid "Skills Development Levy"
+msgstr "Thuế phát triển kỹ năng"
+
+#. module: pb_hr_payroll_singapore
+#: field:hr.payslip,singapore_fwl:0
+msgid "Foreign Worker Levy"
+msgstr "Thuế công nhân nước ngoài"
+
+#. module: pb_hr_payroll_singapore
+#: button:hr.payslip,action_compute_singapore_tax:0
+msgid "Compute Singapore Tax"
+msgstr "Tính thuế Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: view:hr.payslip:0
+msgid "Singapore Payslip"
+msgstr "Phiếu lương Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: view:hr.payslip:0
+msgid "Singapore Salary Rules"
+msgstr "Quy định về lương của Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: view:hr.payslip:0
+msgid "Singapore CPF Components"
+msgstr "Thành phần CPF Singapore"
+
+#. module: pb_hr_payroll_singapore
+#. odoo-python
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:50
+msgid "Singapore tax computed successfully"
+msgstr "Thuế Singapore được tính thành công"
+
+#. module: pb_hr_payroll_singapore
+#. odoo-python
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:60
+msgid "Error computing Singapore tax: %s"
+msgstr "Lỗi tính thuế Singapore: %s"
+
+#. module: pb_hr_payroll_singapore
+#: help:hr.payslip,singapore_cpf_employee:0
+msgid "CPF contribution deducted from employee salary"
+msgstr "Khoản đóng góp CPF được khấu trừ từ lương của nhân viên"
+
+#. module: pb_hr_payroll_singapore
+#: help:hr.payslip,singapore_cpf_company:0
+msgid "CPF contribution paid by company"
+msgstr "Khoản đóng góp CPF do công ty chi trả"
+
+#. module: pb_hr_payroll_singapore
+#: help:hr.payslip,singapore_sdl:0
+msgid "0.25% Skills Development Levy (if payroll > S$30,000 annually)"
+msgstr "0,25% Skills Development Levy (nếu bảng lương > S$30.000 hàng năm)"
+
+#. module: pb_hr_payroll_singapore
+#: res.groups,name:pb_hr_payroll_singapore.group_singapore_payroll_officer
+msgid "Singapore Payroll Officer"
+msgstr "Cán bộ tiền lương Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: button:payroll.dashboard,action_process_singapore_payroll:0
+msgid "Process Singapore Payroll"
+msgstr "Quy trình tính lương Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: button:payroll.dashboard,action_submit_cpf:0
+msgid "Submit CPF"
+msgstr "Gửi CPF"
+
+#. module: pb_hr_payroll_singapore
+#: button:payroll.dashboard,action_export_singapore_data:0
+msgid "Export Singapore Data"
+msgstr "Xuất dữ liệu Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: dashboard.payroll:0
+msgid "Singapore Payroll Management System"
+msgstr "Hệ thống quản lý tiền lương Singapore"
+
+#. module: pb_hr_payroll_singapore
+#: dashboard.payroll:0
+msgid "CPF Management and Submission"
+msgstr "Quản lý và gửi CPF"
+
+#. module: pb_hr_payroll_singapore
+#: dashboard.payroll:0
+msgid "SDL and FWL Management"
+msgstr "Quản lý SDL và FWL"
+
+#. module: pb_hr_payroll_singapore
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "Xử lý bảng lương hàng tháng"

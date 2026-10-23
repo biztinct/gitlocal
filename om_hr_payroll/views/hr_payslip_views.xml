@@ -6,7 +6,7 @@
             <field name="name">hr.payslip.line.tree</field>
             <field name="model">hr.payslip.line</field>
             <field name="arch" type="xml">
-                <tree string="Salary Structure" editable="bottom" decoration-info="total == 0">
+                <list string="Salary Structure" editable="bottom" decoration-info="total == 0">
                     <field name="sequence" widget="handle"/>
                     <field name="category_id"/>
                     <field name="employee_id" invisible="1"/>
@@ -14,11 +14,11 @@
                     <field name="code"/>
                     <field name="quantity"/>
                     <field name="rate"/>
-                    <field name="amount"/>
-                    <field name="total"/>
+                    <field name="amount" widget="smart_float"/>
+                    <field name="total" widget="smart_float"/>
                     <field name="amount_select" invisible="1"/>
                     <field name="register_id" invisible="1"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -37,8 +37,8 @@
                         <group string="Calculations">
                             <field name="category_id"/>
                             <field name="amount_select"/>
-                            <field name="amount_fix" attrs="{'readonly':[('amount_select','!=','fix')]}"/>
-                            <field name="amount_percentage" attrs="{'readonly':[('amount_select','!=','percentage')]}"/>
+                            <field name="amount_fix" readonly="amount_select != 'fix'"/>
+                            <field name="amount_percentage" readonly="amount_select != 'percentage'"/>
 
                             <field name="sequence"/>
                         </group>
@@ -57,12 +57,11 @@
                            filter_domain="['|',('name','ilike',self),('code','ilike',self)]"/>
                     <field name="amount_select"/>
                     <field name="slip_id"/>
-                    <group col="8" colspan="4" expand="0" string="Group By">
-                        <filter string="Salary Rule Category" name="category_id" context="{'group_by':'category_id'}"/>
-                        <filter string="Contribution Register" name="register_id" context="{'group_by':'register_id'}"/>
-                        <filter string="Amount Type" name="amount_select" context="{'group_by':'amount_select'}"/>
-                        <filter string="Employees" name="employee_id" context="{'group_by':'employee_id'}"/>
-                    </group>
+                    <separator/>
+                    <filter string="Salary Rule Category" name="category_id" context="{'group_by':'category_id'}"/>
+                    <filter string="Contribution Register" name="register_id" context="{'group_by':'register_id'}"/>
+                    <filter string="Amount Type" name="amount_select" context="{'group_by':'amount_select'}"/>
+                    <filter string="Employees" name="employee_id" context="{'group_by':'employee_id'}"/>
                 </search>
             </field>
         </record>
@@ -73,7 +72,7 @@
             <field name="name">hr.payslip.tree</field>
             <field name="model">hr.payslip</field>
             <field name="arch" type="xml">
-                <tree decoration-info="state in ('done')"
+                <list decoration-info="state in ('done')"
                       decoration-muted="state == 'cancel'" string="Payslips">
                     <header>
                     <button name="action_send_email_tree" type="object" string="Email Payslips" class="oe_highlight"/> 
@@ -84,11 +83,11 @@
                     <field name="date_to"/>
                     <field name="state"/>
                     <button name="action_print_payslip" type="object" string="Print Payslip"
-                            class="btn btn-primary btn-sm" attrs="{'invisible': [('state', 'not in', ['done', 'verify'])]}"/>
+                            class="btn btn-primary btn-sm" invisible="state not in ('done', 'verify')"/>
                     <button name="action_send_email" type="object" string="Send E-Mail"
-                            class="btn btn-primary btn-sm" attrs="{'invisible': [('state', 'not in', ['done', 'verify'])]}"/>
+                            class="btn btn-primary btn-sm" invisible="state not in ('done', 'verify')"/>
                     <field name="payslip_run_id" invisible="1"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -97,36 +96,21 @@
             <field name="model">hr.payslip</field>
             <field name="arch" type="xml">
                 <kanban class="o_kanban_mobile">
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_content oe_kanban_global_click">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <strong>
-                                            <field name="employee_id"/>
-                                        </strong>
-                                    </div>
-                                    <div class="col-6">
-                                        <span class="float-right badge badge-secondary">
-                                            <field name="state"/>
-                                        </span>
-                                    </div>
-                                    <div class="col-12">
-                                        <span>
-                                            <field name="date_from"/>
-                                            -
-                                            <field name="date_to"/>
-                                        </span>
-                                    </div>
-                                    <div class="col-12">
-                                        <span>
-                                            <field name="name"/>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </t>
-                    </templates>
+                    <field name="employee_id"/>
+                    <field name="state"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="name"/>
+                    <card>
+                        <field name="employee_id" class="fw-bold"/>
+                        <div class="text-muted">
+                            <field name="date_from"/> - <field name="date_to"/>
+                        </div>
+                        <div><field name="name"/></div>
+                        <footer>
+                            <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'verify': 'info', 'done': 'success', 'cancel': 'danger'}}"/>
+                        </footer>
+                    </card>
                 </kanban>
             </field>
         </record>
@@ -143,21 +127,21 @@
             <field name="arch" type="xml">
                 <form string="Payslip">
                     <header>
-                        <button string="Confirm" name="action_payslip_done" type="object" states="draft"
+                        <button string="Confirm" name="action_payslip_done" type="object" invisible="state != 'draft'"
                                 class="oe_highlight"/>
-                        <button string="Refund" name="refund_sheet" states="confirm,done" type='object'/>
-                        <button string="Set to Draft" name="action_payslip_draft" type="object" states="cancel"/>
-                        <button string="Compute Sheet" name="compute_sheet" type="object" states="draft"
+                        <button string="Refund" name="refund_sheet" invisible="state not in ('confirm', 'done')" type='object'/>
+                        <button string="Set to Draft" name="action_payslip_draft" type="object" invisible="state != 'cancel'"/>
+                        <button string="Compute Sheet" name="compute_sheet" type="object" invisible="state != 'draft'"
                                 class="oe_highlight"/>
                         <button string="Cancel Payslip" name="action_payslip_cancel" type="object"
-                                states="draft,done,verify"/>
+                                invisible="state not in ('draft', 'done', 'verify')"/>
                         <button string="Send E-Mail" name="action_send_email" type="object"
-                                class="oe_highlight" states="done,verify"/>
-                        <button name="%(action_report_payslip)d" type="action" string="Print Payslip" class="oe_highlight" states="done,verify"/> 
+                                class="oe_highlight" invisible="state not in ('done', 'verify')"/>
+                        <button name="%(action_report_payslip)d" type="action" string="Print Payslip" class="oe_highlight" invisible="state not in ('done', 'verify')"/> 
                         <button string="Level 1 approve" name="action_payslip_level1_done" type="object"
-                                class="oe_highlight" states="level1"/>
+                                class="oe_highlight" invisible="state != 'level1'"/>
                         <button string="Level 2 approve" name="action_payslip_level2_done" type="object"
-                                class="oe_highlight" states="level2"/>
+                                class="oe_highlight" invisible="state != 'level2'"/>
 
 
                         <field name="state" widget="statusbar" statusbar_visible="draft,level1 , level2 , confirm, done" />
@@ -193,7 +177,7 @@
                                    domain="[('employee_id','=',employee_id),('date_start','&lt;=',date_to),'|',('date_end','&gt;=',date_from),('date_end','=',False)]"
                                    context="{'default_employee_id': employee_id}"/>
                             <field name="number"/>
-                            <field name="struct_id" attrs="{'required':[('contract_id','!=',False)]}"/>
+                            <field name="struct_id" required="contract_id"/>
                             <field name="name"/>
                             <field name="credit_note"/>
                             </group>
@@ -205,14 +189,14 @@
                             <page string="Worked Days &amp; Inputs">
                                 <separator string="Worked Days"/>
                                 <field name="worked_days_line_ids">
-                                    <tree string="Worked Days" editable="bottom">
+                                    <list string="Worked Days" editable="bottom">
                                         <field name="name"/>
                                         <field name="code"/>
                                         <!--<field name="number_of_days" sum="Total Working Days"/>-->
                                         <field name="number_of_hours"/>
                                         <!--<field name="contract_id"/>-->
                                         <!--<field name="sequence" invisible="True"/>-->
-                                    </tree>
+                                    </list>
                                     <form string="Worked Day">
                                         <group col="4">
                                             <field name="name"/>
@@ -228,13 +212,13 @@
                                 <!--
                                 <separator string="Other Inputs"/>
                                 <field name="input_line_ids" colspan="4" nolabel="1">
-                                    <tree string="Input Data" editable="bottom">
+                                    <list string="Input Data" editable="bottom">
                                         <field name="name"/>
                                         <field name="code"/>
                                         <field name="amount"/>
                                         <field name="contract_id"/>
                                         <field name="sequence" invisible="True"/>
-                                    </tree>
+                                    </list>
                                     <form string="Payslip Line">
                                         <group col="4">
                                             <field name="name"/>
@@ -249,7 +233,7 @@
                             </page>
                             <page string="Salary Computation">
                                 <field name="line_ids" colspan="4" nolabel="1">
-                                    <tree string="Salary Structure" editable="bottom" decoration-info="total == 0">
+                                    <list string="Salary Structure" editable="bottom" decoration-info="total == 0">
                                         <field name="name"/>
                                         <field name="code"/>
                                         <field name="category_id"/>
@@ -257,9 +241,9 @@
                                         <field name="quantity"/>
                                         <field name="rate"/>
                                         <field name="salary_rule_id"/>
-                                        <field name="amount"/>
-                                        <field name="total"/>
-                                    </tree>
+                                        <field name="amount" widget="smart_float"/>
+                                        <field name="total" widget="smart_float"/>
+                                    </list>
                                     <form string="Payslip Line">
                                         <group col="4">
                                             <field name="name"/>
@@ -279,12 +263,12 @@
                                 <field name="details_by_salary_rule_category"
                                        context="{'search_default_category_id':1}"
                                        domain="[('appears_on_payslip', '=', True)]">
-                                    <tree string="Payslip Lines" decoration-info="total == 0">
+                                    <list string="Payslip Lines" decoration-info="total == 0">
                                         <field name="category_id"/>
                                         <field name="name"/>
                                         <field name="code"/>
                                         <field name="total"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                             <page string="Accounting Information">
@@ -303,11 +287,7 @@
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" groups="base.group_user"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
+                    <chatter/>
                 </form>
             </field>
         </record>
@@ -324,13 +304,12 @@
                     <filter string="Done" name="done" domain="[('state','=','done')]" help="Done Slip"/>
                     <field name="employee_id"/>
                     <field name="payslip_run_id"/>
-                    <group expand="0" string="Group By">
-                        <filter string="Employees" name="employee_id" context="{'group_by':'employee_id'}"/>
-                        <filter string="PaySlip Batch" name="payslip_run_id" context="{'group_by':'payslip_run_id'}"/>
-                        <filter string="Companies" name="company_id" groups="base.group_multi_company"
-                                context="{'group_by':'company_id'}"/>
-                        <filter string="States" name="state" context="{'group_by':'state'}"/>
-                    </group>
+                    <separator/>
+                    <filter string="Employees" name="employee_id" context="{'group_by':'employee_id'}"/>
+                    <filter string="PaySlip Batch" name="payslip_run_id" context="{'group_by':'payslip_run_id'}"/>
+                    <filter string="Companies" name="company_id" groups="base.group_multi_company"
+                            context="{'group_by':'company_id'}"/>
+                    <filter string="States" name="state" context="{'group_by':'state'}"/>
                 </search>
             </field>
         </record>
@@ -339,7 +318,7 @@
         <record id="action_view_hr_payslip_form" model="ir.actions.act_window">
             <field name="name">Employee Payslips</field>
             <field name="res_model">hr.payslip</field>
-            <field name="view_mode">tree,kanban,form,pivot</field>
+            <field name="view_mode">list,kanban,form,pivot</field>
             <field name="search_view_id" ref="view_hr_payslip_filter"/>
         </record>
         -->
@@ -347,7 +326,7 @@
         <record id="action_view_hr_payslip_form" model="ir.actions.act_window">
             <field name="name">Employee Payslips</field>
             <field name="res_model">hr.payslip</field>
-            <field name="view_mode">tree,kanban,form,pivot</field>
+            <field name="view_mode">list,kanban,form,pivot</field>
             <field name="search_view_id" ref="view_hr_payslip_filter"/>
             <field name="context">{'group_by': 'date_to', 'order': 'date_to desc'}</field>
         </record>
@@ -359,12 +338,12 @@
         <field name="name">hr.payslip.line.tree</field>
         <field name="model">hr.payslip.line</field>
         <field name="arch" type="xml">
-            <tree default_order="date_to desc"> 
+            <list default_order="date_to desc"> 
             <field name="name"/>
             <field name="costcenter"/>
             <field name="date_from"/>
             <field name="date_to"/>
-            </tree>
+            </list>
         </field>
         </record>
 
@@ -386,7 +365,7 @@
         <record id="action_view_hr_payslip_line" model="ir.actions.act_window">
             <field name="name">Salary Components</field>
             <field name="res_model">hr.payslip.line</field>
-            <field name="view_mode">pivot,tree,form</field>
+            <field name="view_mode">pivot,list,form</field>
             <!--<field name="search_view_id" ref="view_hr_payslip_line_filter"/>-->
         </record>
 
@@ -401,7 +380,7 @@
         <record id="act_hr_employee_payslip_list" model="ir.actions.act_window">
             <field name="res_model">hr.payslip</field>
             <field name="name">Payslips</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="context">{'search_default_employee_id': [active_id], 'default_employee_id': active_id}</field>
         </record>
 
@@ -421,6 +400,7 @@ action = spreadsheet.open_spreadsheet()
 
 <!-- Following action to open Staging spreadsheetwhich has data impoted from Zoho-->
 
+<!-- Spreadsheet OCA actions disabled - spreadsheet_oca module not installed
 <record id="om_hr_payroll.action_open_staging_spreadsheet" model="ir.actions.server">
   <field name="name">Edit Spreadsheet</field>
   <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
@@ -433,7 +413,6 @@ action = spreadsheet.open_spreadsheet()
 </record>
 
 
-<!-- To be deleted
 <record id="action_import_payslip_json_data" model="ir.actions.server">
   <field name="name">Import Payslip Spreadsheet</field>
   <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
@@ -446,8 +425,6 @@ if not isinstance(action, bool):  # Check if action is not a boolean
     action['type'] = 'ir.actions.act_window_close'
   </field>
 </record>
-
--->
 
 
 <record id="action_import_staging_json_data" model="ir.actions.server">
@@ -500,6 +477,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
     action['type'] = 'ir.actions.act_window_close'
   </field>
 </record>
+-->
 
 
 
@@ -544,6 +522,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                     sequence="0" />
             -->
 
+<!-- Spreadsheet menus disabled - spreadsheet_oca module not installed
         <menuitem id="menu_integ_spreadsheet_root"
                   name = "Integrated payroll"
                   parent="menu_hr_payroll_root"
@@ -589,7 +568,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                 action="action_import_manual_json_data" 
                 parent="menu_manual_spreadsheet_root" 
                 sequence="20"/>
-        <!--
+        
         <menuitem id="menu_import_manual_json_data" 
                 name="Import Spreadsheet" 
                 action="action_import_staging_json_data" 
@@ -620,14 +599,14 @@ if not isinstance(action, bool):  # Check if action is not a boolean
             <field name="name">hr.payslip.run.tree</field>
             <field name="model">hr.payslip.run</field>
             <field name="arch" type="xml">
-                <tree string="Payslips Batches">
+                <list string="Payslips Batches">
                     <field name="name"/>
                     <!--<button name="export_payslip_lines_xlsx" string="Export Payslip Lines" type="object" icon="fa-file-excel-o"/>-->
                     <field name="date_start"/>
                     <field name="date_end"/>
                     <field name="credit_note"/>
                     <field name="state"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -639,7 +618,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
             <field name="arch" type="xml">
                 <kanban class="o_kanban_mobile" default_order="date_end desc">
                     <templates>
-                        <t t-name="kanban-box">
+                        <t t-name="card">
                             <div t-attf-class="oe_kanban_content oe_kanban_global_click">
                                 <div class="row">
                                     <div class="col-6">
@@ -686,89 +665,18 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                     <field name="date_end"/>
                     <field name="state"/>
                     <field name="credit_note"/>
-                    
                     <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click">
-                                <div class="oe_kanban_content">
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_record_headings">
-                                            <strong class="o_kanban_record_title">
-                                                <field name="name"/>
-                                            </strong>
-                                            <div class="o_kanban_record_subtitle">
-                                                <i class="fa fa-calendar"></i> <field name="date_start"/> to <field name="date_end"/>
-                                            </div>
-                                        </div>
-                                        <div class="o_dropdown_kanban dropdown">
-                                            <a class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" role="button" aria-label="Dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="fa fa-ellipsis-v" aria-hidden="true"/>
-                                            </a>
-                                            <div class="dropdown-menu" role="menu">
-                                                <a t-if="record.state.raw_value == 'draft'" 
-                                                   name="%(action_hr_payslip_by_employees)d" 
-                                                   type="action" 
-                                                   class="dropdown-item">Generate Payslips</a>
-                                                <a t-if="record.state.raw_value == 'draft'" 
-                                                   name="done_payslip_run" 
-                                                   type="object" 
-                                                   class="dropdown-item">Submit for Approval</a>
-                                                <a t-if="record.state.raw_value == 'level1'" 
-                                                   name="action_payslip_run_level1_done" 
-                                                   type="object" 
-                                                   class="dropdown-item">Level 1 Approve</a>
-                                                <a t-if="record.state.raw_value == 'level2'" 
-                                                   name="action_payslip_run_level2_done" 
-                                                   type="object" 
-                                                   class="dropdown-item">Level 2 Approve</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="o_kanban_record_body">
-                                        <div class="row" t-if="record.state.raw_value != 'draft'">
-                                            <div class="col-6">
-                                                <div class="o_field_widget">
-                                                    <strong>Payslips</strong>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="o_field_widget">
-                                                    <t t-if="record.credit_note.raw_value">
-                                                        <span class="badge badge-warning">Credit Note</span>
-                                                    </t>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="o_kanban_record_bottom mt-2">
-                                        <div class="oe_kanban_bottom_left">
-                                            <field name="state" widget="priority"/>
-                                        </div>
-                                        <div class="oe_kanban_bottom_right">
-                                            <button t-if="record.state.raw_value == 'draft'" 
-                                                    name="%(action_hr_payslip_by_employees)d" 
-                                                    type="action" 
-                                                    class="btn btn-primary btn-sm">
-                                                <i class="fa fa-plus"/> Generate
-                                            </button>
-                                            <button t-if="record.state.raw_value == 'level1'" 
-                                                    name="action_payslip_run_level1_done" 
-                                                    type="object" 
-                                                    class="btn btn-success btn-sm">
-                                                <i class="fa fa-check"/> Approve
-                                            </button>
-                                            <button t-if="record.state.raw_value == 'level2'" 
-                                                    name="action_payslip_run_level2_done" 
-                                                    type="object" 
-                                                    class="btn btn-success btn-sm">
-                                                <i class="fa fa-check-circle"/> Final Approve
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <t t-name="card">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <div class="text-muted">
+                                <i class="fa fa-calendar"/> <field name="date_start"/> to <field name="date_end"/>
                             </div>
+                            <div t-if="record.credit_note.raw_value" class="mt-2">
+                                <span class="badge text-bg-warning">Credit Note</span>
+                            </div>
+                            <footer>
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'level1': 'info', 'level2': 'warning', 'done': 'success', 'cancel': 'danger'}}"/>
+                            </footer>
                         </t>
                     </templates>
                 </kanban>
@@ -785,18 +693,18 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                 <form string="Payslips Batches">
                     <header>
                         <button string="Download Excel" name="action_download_payslip_xlsx" type="object" class="oe_highlight" icon="fa-download"/>
-                        <button name="%(action_hr_payslip_by_employees)d" type="action" states="draft"
+                        <button name="%(action_hr_payslip_by_employees)d" type="action" invisible="state != 'draft'"
                                 string="Generate Payslips" class="oe_highlight"/>
-                        <button string="Set to Draft" name="draft_payslip_run" type="object" states="done"/>
-                        <button string="Submit for HR Manager" name="done_payslip_run" type="object" states="draft"
+                        <button string="Set to Draft" name="draft_payslip_run" type="object" invisible="state != 'done'"/>
+                        <button string="Submit for HR Manager" name="done_payslip_run" type="object" invisible="state != 'draft'"
                                 class="oe_highlight"/>
-                        <button name="action_payslip_run_level1_done" type="object" string="HR Manager Approve" states="level1"
+                        <button name="action_payslip_run_level1_done" type="object" string="HR Manager Approve" invisible="state != 'level1'"
                             class="oe_highlight"/>
-                        <button name="action_payslip_run_level2_done" type="object" string="General Manager Approve" states="level2"
+                        <button name="action_payslip_run_level2_done" type="object" string="General Manager Approve" invisible="state != 'level2'"
                             class="oe_highlight"/>
-                        <button name="action_payslip_run_cancel" type="object" string="Reject" states="draft,level1,level2"/> 
-                        <!--<button name="close_payslip_run" type="object" string="Close" states="draft,done"/>-->
-                        <button string="Mail Batch Payslips" name="action_send_email_all" type="object" class="oe_highlight" states="done"/>
+                        <button name="action_payslip_run_cancel" type="object" string="Reject" invisible="state not in ('draft', 'level1', 'level2')"/> 
+                        <!--<button name="close_payslip_run" type="object" string="Close" invisible="state not in ('draft', 'done')"/>-->
+                        <button string="Mail Batch Payslips" name="action_send_email_all" type="object" class="oe_highlight" invisible="state != 'done'"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -814,7 +722,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                             <field name="credit_note"/>
                         </group>
                         <separator string="Payslips"/>
-                        <field name="slip_ids" attrs="{'invisible': [('slip_ids', '=', [])]}"/> 
+                        <field name="slip_ids" invisible="not slip_ids"/> 
                     </sheet>
                 </form>
             </field>
@@ -823,7 +731,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
         <record id="action_hr_payslip_run_tree" model="ir.actions.act_window">
             <field name="name">Batch Payslips</field>
             <field name="res_model">hr.payslip.run</field>
-            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_mode">list,kanban,form</field>
             <field name="search_view_id" ref="hr_payslip_run_filter"/>
         </record>
         -->
@@ -831,10 +739,10 @@ if not isinstance(action, bool):  # Check if action is not a boolean
         <record id="action_hr_payslip_run_tree" model="ir.actions.act_window">
             <field name="name">Batch Payslips</field>
             <field name="res_model">hr.payslip.run</field>
-            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_mode">kanban,list,form</field>
             <field name="search_view_id" ref="hr_payslip_run_filter"/>
             <field name="context">{
-                'group_by': ['date_end:year'],
+                'group_by': ['state'],
                 'order': 'date_end desc'
             }</field>
         </record>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Two generic responsibilities only. The Payobook catalogue (HR lead,
+         Finance approver, Country director…) belongs to the configuration
+         module, which knows the business; this engine must stay able to run
+         in a product that has never heard of payroll. -->
+
+    <record id="role_reviewer" model="biz.approval.role">
+        <field name="key">reviewer</field>
+        <field name="name">Reviewer</field>
+        <field name="description">Checks a request and passes it on.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="role_approver" model="biz.approval.role">
+        <field name="key">approver</field>
+        <field name="name">Approver</field>
+        <field name="description">Signs a request off.</field>
+        <field name="fallback_to_company" eval="True"/>
+        <field name="sequence">20</field>
+    </record>
+
+</odoo>
