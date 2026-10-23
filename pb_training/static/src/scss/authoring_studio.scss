@@ -1,6 +1,6 @@
 // Scoped to the learning editors, including dialogs. Native field components,
 // validation, keyboard handling and save/discard continue to own the workflow.
-.o_form_view .o_form_renderer.pb-authoring {
+.o_form_view.pb-authoring {
     --pa-ink: #202342;
     --pa-muted: #68738d;
     --pa-purple: #6551c4;
@@ -69,7 +69,7 @@
         th, td { padding-top: 13px; padding-bottom: 13px; }
         // Odoo pads short lists with empty rows; authors need a canvas, not a ledger.
         tbody tr:has(> td.o_list_number):not(.o_data_row) { display: none; }
-        tbody tr:not(.o_data_row):not(:has(.o_field_x2many_list_row_add)):not(:has(.o_group_name)):has(td[colspan]) { height: auto; }
+        tbody tr:not(.o_data_row):not(.o_group_header):not(:has(.o_field_x2many_list_row_add)):not(:has(.o_group_name)):has(> td:only-child[colspan]) { display: none; }
         .o_field_x2many_list_row_add { padding: 18px 14px; background: #faf9ff; }
         .o_field_x2many_list_row_add a { display: inline-block; padding: 8px 12px; margin: 3px 8px 3px 0; background: #fff; border: 1px solid #dcd6f3; border-radius: 8px; font-weight: 650; color: var(--pa-purple); }
     }
@@ -95,6 +95,12 @@
     > span { letter-spacing: 0; font-size: 11px; font-weight: 550; padding: 4px 9px; background: #ffffffba; border: 1px solid #e1dcf0; border-radius: 20px; }
 }
 .pb-author-facts { display: flex; gap: 10px 22px; flex-wrap: wrap; margin-top: 22px; color: #626681; font-size: 11px; i { margin-right: 5px; color: #7d6db4; } }
+.pb-author-actions { display: flex; gap: 10px; align-items: center; margin-top: 18px;
+    .btn { border-radius: 10px; padding: 10px 16px; font-size: 12px; font-weight: 650; }
+    .btn-primary { background: #6551c4; border-color: #6551c4; box-shadow: 0 4px 10px #6551c425; }
+    .btn-link { color: #655987; text-decoration: none; }
+    i { margin: 0 4px; }
+}
 .pb-author-checklist { padding: 18px 20px; background: #ffffffd9; border: 1px solid #e5e1f2; border-radius: 16px; box-shadow: 0 6px 20px #4e407a06;
     &__heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: #747b90; font-size: 10px; strong { color: #4a456b; letter-spacing: .08em; } }
     button { display: flex; align-items: center; gap: 9px; border: 0; background: transparent; padding: 8px 0; width: 100%; text-align: left; color: #646c84; font-size: 12px;
@@ -119,17 +125,17 @@
     h2 { font-size: 24px; color: #30294d; font-weight: 700; margin: 10px 0 8px; letter-spacing: -.025em; }
     p { font-size: 13px; color: #6d728a; margin: 0; line-height: 1.6; }
 }
-.modal .o_form_view .o_form_renderer.pb-authoring {
+.modal .o_form_view.pb-authoring {
     .o_form_sheet { width: 100%; margin: 0; border: 0; box-shadow: none; }
     &.pb-author-invite { padding: 20px; }
 }
 @media (max-width: 900px) {
     .pb-author-hero { grid-template-columns: 1fr; gap: 18px; padding: 24px; }
     .pb-author-checklist { padding: 15px; }
-    .o_form_view .o_form_renderer.pb-authoring .o_form_sheet { width: calc(100% - 24px); }
+    .o_form_view.pb-authoring .o_form_sheet { width: calc(100% - 24px); }
 }
 @media (max-width: 575px) {
-    .o_form_view .o_form_renderer.pb-authoring .o_form_sheet {
+    .o_form_view.pb-authoring .o_form_sheet {
         margin: 12px auto;
         > :not(.o_widget_pb_learning_authoring_guide):not(.pb-author-mini):not(.oe_button_box) { margin-left: 16px; margin-right: 16px; }
         > .oe_title { width: calc(100% - 110px) !important; h1 { font-size: 21px; } }

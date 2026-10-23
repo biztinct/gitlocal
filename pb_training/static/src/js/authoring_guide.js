@@ -1,14 +1,19 @@
 /** @odoo-module **/
-import { Component, useRef } from "@odoo/owl";
+import { Component, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
+import { useService } from "@web/core/utils/hooks";
 
 /** A guide over the native record, never a second copy of the editor's data. */
 export class LearningAuthoringGuide extends Component {
     static template = "pb_training.AuthoringGuide";
     static props = { ...standardWidgetProps };
-    setup() { this.root = useRef("root"); }
+    setup() {
+        this.root = useRef("root");
+        this.state = useState({ saving: false });
+        this.notification = useService("notification");
+    }
     get isCourse() { return this.props.record.resModel === "slide.channel"; }
     get data() { return this.props.record.data; }
     get title() { return this.isCourse ? _t("Create a course worth taking") : _t("Make every question count"); }
@@ -32,6 +37,18 @@ export class LearningAuthoringGuide extends Component {
         if (!this.props.record.resId) { return _t("Not saved yet"); }
         if (this.props.record.dirty) { return _t("Unsaved changes"); }
         return this.isCourse && this.data.website_published ? _t("Published course") : _t("Saved record");
+    }
+    get saveLabel() { return this.state.saving ? _t("Saving…") : (this.isCourse ? _t("Save course") : _t("Save test")); }
+    async save() {
+        if (this.state.saving) { return; }
+        this.state.saving = true;
+        try {
+            // Full-page records only; nested dialogs keep their native saveRecord
+            // callback, which also attaches the new record to its parent.
+            if (await this.props.record.save()) {
+                this.notification.add(_t("Your changes are saved."), { type: "success" });
+            }
+        } finally { this.state.saving = false; }
     }
     get audience() {
         if (this.isCourse) {
