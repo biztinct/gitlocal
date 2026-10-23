@@ -63,6 +63,7 @@ export class LearningAuthoringGuide extends Component {
     }
     clearDestination() {
         cancelAnimationFrame(this.navigationFrame);
+        this.navigationForm?.removeEventListener("click", this.onTabClick);
         for (const element of this.highlighted || []) {
             element.classList.remove("pb-author-spotlight", "pb-author-tab-target");
         }
@@ -76,6 +77,14 @@ export class LearningAuthoringGuide extends Component {
         this.state.destination = key;
         const tab = key !== "title" && form.querySelector(`.o_notebook_headers .nav-link[name="${key}"]`);
         if (tab) { tab.click(); }
+        this.navigationForm = form;
+        this.onTabClick = (event) => {
+            if (event.target.closest(".o_notebook_headers .nav-link")) {
+                this.clearDestination();
+                this.state.destination = "";
+            }
+        };
+        form.addEventListener("click", this.onTabClick);
         // Notebook pages mount asynchronously. Wait for the actual destination,
         // not just the tab, and cancel pending navigation on another click/unmount.
         let frames = 0;
@@ -84,14 +93,16 @@ export class LearningAuthoringGuide extends Component {
             const field = { description: "description", content: "slide_ids", questions: "question_and_page_ids" }[key];
             const target = key === "title" ? form.querySelector(".oe_title")
                 : (tab?.classList.contains("active") && (field ? page?.querySelector(`.o_field_widget[name="${field}"]`) : page));
-            if (!target || !target.getClientRects().length) {
+            if (!target || !target.getClientRects().length || (key === "description" && !target.querySelector("[contenteditable=true]"))) {
                 if (++frames < 120) { this.navigationFrame = requestAnimationFrame(reveal); }
                 return;
             }
             target.classList.add("pb-author-spotlight");
             this.highlighted.push(target);
             if (tab) { tab.classList.add("pb-author-tab-target"); this.highlighted.push(tab); }
-            const focus = target.querySelector("input:not([type=hidden]), textarea, [contenteditable=true], .o_field_x2many_list_row_add a, button");
+            const addButtons = target.querySelectorAll(".o_field_x2many_list_row_add a");
+            const focus = target.querySelector("input:not([type=hidden]), textarea, [contenteditable=true]")
+                || addButtons[key === "content" ? 1 : 0];
             focus?.focus({ preventScroll: true });
             target.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
         };
