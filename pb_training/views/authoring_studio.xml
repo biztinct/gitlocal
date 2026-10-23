@@ -151,15 +151,15 @@ Who is it for? What should learners know before starting?</attribute>
       </xpath>
       <xpath expr="//page[@name='options']/group" position="before">
         <group string="Ownership &amp; languages" name="pb_author_ownership">
-          <xpath expr="//sheet/group[1]" position="move"/>
-        </group>
+          </group>
       </xpath>
-      <xpath expr="//page[@name='options']/group[@name='pb_author_ownership']" position="before">
-        <group string="Assessment format">
-          <xpath expr="//sheet/field[@name='survey_type']" position="move"/>
-        </group>
+      <xpath expr="//group[@name='pb_author_ownership']" position="inside"><xpath expr="//sheet/group[1]" position="move"/>
+        </xpath><xpath expr="//page[@name='options']/group[@name='pb_author_ownership']" position="before">
+        <group string="Assessment format" name="pb_author_format">
+          </group>
       </xpath>
-      <xpath expr="//field[@name='description']" position="attributes">
+      <xpath expr="//group[@name='pb_author_format']" position="inside"><xpath expr="//sheet/field[@name='survey_type']" position="move"/>
+        </xpath><xpath expr="//field[@name='description']" position="attributes">
         <attribute name="placeholder">Explain what this test covers, how long it takes, and what learners need to do to pass.</attribute>
       </xpath>
       <xpath expr="//field[@name='description_done']" position="attributes">
