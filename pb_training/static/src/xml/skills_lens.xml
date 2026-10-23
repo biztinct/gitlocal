@@ -77,17 +77,17 @@
               <h2 t-else="">Nobody matches that</h2>
               <button class="pbim-btn ghost" t-on-click="clearFilters">Show everybody</button>
             </div>
-            <div t-else="" class="pbcl-people">
-              <div t-foreach="people" t-as="per" t-key="per.employee_id" class="pbss-panel pbcl-person" t-att-class="{ 'has-gap': per.gap_count }">
-                <div class="pbcl-person-id">
+            <div t-else="" class="pbsk-people">
+              <div t-foreach="people" t-as="per" t-key="per.employee_id" class="pbss-panel pbsk-person" t-att-class="{ 'has-gap': per.gap_count }">
+                <div class="pbsk-person-id">
                   <b t-esc="per.employee"/>
                   <span class="pbss-dim"><t t-esc="per.job"/><t t-if="per.department"> · <t t-esc="per.department"/></t></span>
                   <span class="pbss-state" t-att-class="per.gap_count ? 'is-warn' : 'is-ok'" t-esc="gapWords(per)"/>
                 </div>
-                <div class="pbcl-person-skills">
+                <div class="pbsk-person-skills">
                   <span t-foreach="per.required" t-as="rq" t-key="rq.skill_id" class="pbss-state pbcl-sk" t-att-class="chipClass(rq)" t-att-title="chipTitle(rq)"><t t-esc="rq.skill"/> · <t t-esc="rq.state === 'missing' ? '—' : rq.have_level"/></span>
                 </div>
-                <div t-if="gaps(per).length" class="pbcl-person-close">
+                <div t-if="gaps(per).length" class="pbsk-person-close">
                   <t t-foreach="gaps(per)" t-as="gp" t-key="gp.skill_id">
                     <div class="pbcl-close-row">
                       <span class="pbss-dim-i pbcl-close-need" t-esc="needWords(gp)"/>

@@ -128,18 +128,18 @@
 
 // ------------------------------------------------------------ skills
 .pbcl-views { margin-top: -4px; }
-.pbcl-people { display: flex; flex-direction: column; gap: 10px; }
-.pbcl-person {
+.pbsk-people { display: flex; flex-direction: column; gap: 10px; }
+.pbsk-person {
     padding: 14px 18px; display: grid; grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr); gap: 12px;
     &.has-gap { border-left: 3px solid var(--pbss-amber, #B45309); }
     @media (max-width: 760px) { grid-template-columns: 1fr; }
 }
-.pbcl-person-id {
+.pbsk-person-id {
     display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
     b { color: var(--pbss-ink, #1B1733); }
 }
-.pbcl-person-skills { display: flex; gap: 6px; flex-wrap: wrap; align-content: flex-start; }
-.pbcl-person-close { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--pbss-line, #E2E8F0); padding-top: 8px; }
+.pbsk-person-skills { display: flex; gap: 6px; flex-wrap: wrap; align-content: flex-start; }
+.pbsk-person-close { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--pbss-line, #E2E8F0); padding-top: 8px; }
 .pbcl-close-row {
     display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     .pbim-btn { display: inline-flex; align-items: center; gap: 6px; }
