@@ -18,15 +18,16 @@ export class QuestionBankPicker extends Component {
     static props = { close: Function, model: String, resId: Number, onAdded: Function };
     setup() {
         this.orm = useService("orm");
-        this.state = useState({ filters: { query: "", state: "approved", unused: true, sort: "recent" },
+        this.action = useService("action");
+        this.state = useState({ filters: { query: "", state: "active", unused: true, sort: "recent" },
             labels: {}, rows: [], total: 0, offset: 0, selected: {}, preview: null, sections: [], section: "",
-            loading: false, adding: false, error: "", mode: "specific", balanced: false,
+            loading: false, adding: false, reviewing: false, reviewCounts: {}, error: "", mode: "specific", balanced: false,
             draw: 5, basic: 0, intermediate: 0, advanced: 0, poolName: "Question pool", advancedFilters: false });
         this.generation = 0;
         this.previewGeneration = 0;
         this.timer = null;
         this.alive = true;
-        this.types = TYPES;
+        this.types = this.lesson ? TYPES.slice(0, 2) : TYPES;
         this.lookupActions = { create: false, createEdit: false, write: false };
         this.lookups = [
             { key: "topic", label: "Topic and subtopics", model: "pb.training.question.topic" },
@@ -77,7 +78,7 @@ export class QuestionBankPicker extends Component {
                 { ...this.state.filters }, this.state.offset, this.props.model, this.props.resId,
             ]);
             if (!this.alive || generation !== this.generation) { return; }
-            Object.assign(this.state, { rows: data.rows, total: data.total, sections: data.sections });
+            Object.assign(this.state, { rows: data.rows, total: data.total, sections: data.sections, reviewCounts: data.review_counts || {} });
         } catch (error) {
             if (this.alive && generation === this.generation) { this.state.error = error.data?.message || error.message; }
         } finally {
@@ -89,6 +90,7 @@ export class QuestionBankPicker extends Component {
         clearTimeout(this.timer);
         this.timer = setTimeout(() => this.search(true), 250);
     }
+    async reviewStatus(status) { this.state.filters.state = status; await this.search(true); }
     async filterChanged(key, ev) { this.state.filters[key] = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value; await this.search(true); }
     async lookupChanged(key, records) {
         this.state.filters[key] = records?.[0]?.id || "";
@@ -96,7 +98,7 @@ export class QuestionBankPicker extends Component {
         await this.search(true);
     }
     async reset() {
-        this.state.filters = { query: "", state: "approved", unused: true, sort: "recent" };
+        this.state.filters = { query: "", state: "active", unused: true, sort: "recent" };
         this.state.labels = {};
         await this.search(true);
     }
@@ -109,8 +111,35 @@ export class QuestionBankPicker extends Component {
     clearSelection() { this.state.selected = {}; }
     async preview(q) {
         const generation = ++this.previewGeneration;
-        const data = await this.orm.call("pb.training.question.bank", "preview", [q.id]);
-        if (this.alive && generation === this.previewGeneration) { this.state.preview = data; }
+        try {
+            const data = await this.orm.call("pb.training.question.bank", "preview", [q.id]);
+            if (this.alive && generation === this.previewGeneration) { this.state.preview = { ...data, used: q.used, problem: q.problem }; }
+        } catch (error) { if (this.alive) { this.state.error = error.data?.message || error.message; } }
+    }
+    async approveAndSelect() {
+        const q = this.state.preview;
+        if (!q || q.state !== "draft" || q.approval_problem || q.problem || q.used || this.state.reviewing) { return; }
+        this.state.reviewing = true;
+        this.state.error = "";
+        try {
+            await this.orm.call("survey.question", "action_bank_approve", [[q.id]]);
+            const approved = await this.orm.call("pb.training.question.bank", "preview", [q.id]);
+            this.state.selected[q.id] = approved;
+            this.state.preview = approved;
+            await this.search();
+        } catch (error) { this.state.error = error.data?.message || error.message; }
+        finally { this.state.reviewing = false; }
+    }
+    async editQuestion() {
+        const q = this.state.preview;
+        await this.action.doAction({ type: "ir.actions.act_window", res_model: "survey.question", res_id: q.id,
+            views: [[q.editor_view_id, "form"]], target: "new" }, { onClose: async () => {
+                if (!this.alive) { return; }
+                delete this.state.selected[q.id];
+                await this.search();
+                const row = this.state.rows.find(r => r.id === q.id);
+                await this.preview(row || q);
+            } });
     }
     async add() {
         if (!this.canAdd) { return; }

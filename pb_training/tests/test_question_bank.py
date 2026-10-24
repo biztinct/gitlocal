@@ -157,6 +157,33 @@ class TestQuestionBank(TransactionCase):
         self.add(q2)
         self.assertFalse(self.test.question_ids.filtered(lambda q: q.pb_bank_source_id == q2).page_id)
 
+    def test_first_use_shows_unapproved_library_without_allowing_unreviewed_reuse(self):
+        self.bank.action_bank_draft()
+        query = {'query': self.bank.pb_bank_code}
+        result = self.api.browse_bank(query, 0, 'survey.survey', self.test.id)
+        self.assertEqual(result['total'], 1)
+        self.assertEqual(result['rows'][0]['state'], 'draft')
+        self.assertEqual(result['review_counts'], {'draft': 1})
+        self.assertEqual(self.api.browse_bank(dict(query, state='approved'))['total'], 0)
+        with self.assertRaises(UserError):
+            self.add()
+        preview = self.api.preview(self.bank.id)
+        self.assertTrue(preview['can_edit'])
+        self.assertFalse(preview['approval_problem'])
+        self.bank.action_bank_approve()
+        self.add()
+        self.assertEqual(self.test.question_ids.pb_bank_source_id, self.bank)
+        self.bank.action_bank_archive()
+        self.assertEqual(self.api.browse_bank(query)['total'], 0)
+        self.assertEqual(self.api.browse_bank(dict(query, state='archived'))['total'], 1)
+
+    def test_preview_explains_why_imported_question_needs_changes(self):
+        self.bank.suggested_answer_ids.filtered('is_correct').answer_score = 0
+        self.assertTrue(self.api.preview(self.bank.id)['approval_problem'])
+        with self.assertRaises(UserError):
+            self.bank.action_bank_approve()
+        self.assertEqual(self.bank.pb_bank_state, 'draft')
+
     def test_search_pagination_and_filters(self):
         self.bank.pb_bank_topic_id = self.env['pb.training.question.topic'].create({'name': 'DEMO Safety'})
         result = self.api.browse_bank({'query': self.bank.pb_bank_code, 'difficulty': 'basic'})

@@ -250,9 +250,7 @@ class QuestionBank(models.AbstractModel):
         self._gate()
         filters = filters or {}
         domain = [('pb_bank', '=', True), ('is_page', '=', False)]
-        state = filters.get('state', 'approved')
-        if state:
-            domain.append(('pb_bank_state', '=', state))
+        state = filters.get('state', 'active')
         query = str(filters.get('query') or '').strip()[:200]
         if query:
             search = [('title', 'ilike', query)]
@@ -277,10 +275,15 @@ class QuestionBank(models.AbstractModel):
         if filters.get('scored'):
             domain.append(('is_scored_question', '=', True))
         questions = self.env['survey.question']
+        review_counts = dict(questions._read_group(domain, ['pb_bank_state'], ['__count']))
+        if state == 'active':
+            domain.append(('pb_bank_state', 'in', ['approved', 'draft']))
+        elif state:
+            domain.append(('pb_bank_state', '=', state))
         offset = max(0, int(offset))
         sort = {'recent': 'write_date desc, id desc', 'title': 'title, id', 'oldest': 'write_date, id'}.get(filters.get('sort'), 'write_date desc, id desc')
         records = questions.search(domain, limit=20, offset=offset, order=sort)
-        return {'total': questions.search_count(domain), 'rows': [self._summary(q, q.id in used, model == 'slide.slide') for q in records],
+        return {'review_counts': review_counts, 'total': questions.search_count(domain), 'rows': [self._summary(q, q.id in used, model == 'slide.slide') for q in records],
                 'sections': [{'id': p.id, 'name': p.title} for p in target.page_ids] if target and model == 'survey.survey' else []}
 
     def _summary(self, q, used=False, lesson=False):
@@ -309,7 +312,13 @@ class QuestionBank(models.AbstractModel):
         if not q or not q.pb_bank:
             raise UserError(_('That library question is unavailable.'))
         data = self._summary(q)
-        data.update(description=q.description or '', explanation=q.pb_bank_explanation or '',
+        try:
+            q.check_access('write')
+            can_edit = True
+        except AccessError:
+            can_edit = False
+        data.update(can_edit=can_edit, approval_problem=q._bank_problem(scored=q.is_scored_question),
+            editor_view_id=self.env.ref('pb_training.question_bank_form').id, description=q.description or '', explanation=q.pb_bank_explanation or '',
             answers=[{'id': a.id, 'text': a.value or '', 'image': bool(a.value_image), 'correct': a.is_correct, 'points': a.answer_score} for a in q.suggested_answer_ids],
             matrix_rows=q.matrix_row_ids.mapped('value'), score=q.answer_score,
             correct_answer=str(q['answer_'+q.question_type]) if q.question_type in ('numerical_box', 'date', 'datetime') and q.is_scored_question else '',

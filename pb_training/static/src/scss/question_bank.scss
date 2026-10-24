@@ -84,3 +84,7 @@
 @media (max-width: 575px) {
     .pb-bank-dialog { max-height: calc(100dvh - 16px); }
 }
+
+.pb-bank-review-summary { padding: 12px 14px; margin-bottom: 14px; background: #f4f0fc; border: 1px solid #e3dcf6; border-radius: 10px; font-size: 12px; p { margin: 7px 0 0; color: #69748b; line-height: 1.5; } }
+.pb-bank-status { display: inline-block; margin-top: 16px; padding: 4px 8px; background: #eeedf5; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.pb-bank-review-actions { display: flex; flex-wrap: wrap; gap: 10px; border-top: 1px solid #e5e1f0; padding-top: 16px; p { flex-basis: 100%; font-size: 12px; margin: 0; } .pb-bank-review-problem { color: #a44329; } }
