@@ -169,6 +169,20 @@ class TestQuestionBank(TransactionCase):
         with self.assertRaises(AccessError):
             self.bank.suggested_answer_ids.with_user(trainer).read(['value'])
 
+    def test_trainer_can_create_bank_and_native_answers(self):
+        trainer = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'DEMO bank author', 'login': 'bank-author@example.invalid',
+            'company_id': self.env.company.id, 'company_ids': [Command.set(self.env.company.ids)],
+            'group_ids': [Command.set([self.env.ref('pb_training.group_training_user').id])]})
+        bank = self.questions.with_user(trainer).create({'title': 'DEMO authored by trainer',
+            'pb_bank': True, 'pb_bank_company_id': self.env.company.id, 'question_type': 'simple_choice',
+            'suggested_answer_ids': [Command.create({'value': 'Yes', 'is_correct': True, 'answer_score': 1}),
+                                     Command.create({'value': 'No', 'is_correct': False, 'answer_score': 0})]})
+        bank.action_bank_approve()
+        self.assertEqual(len(bank.suggested_answer_ids.read(['value'])), 2)
+        self.api.with_user(trainer).add_questions('survey.survey', self.test.id, bank.ids)
+        self.assertEqual(len(self.test.with_user(trainer).question_ids.suggested_answer_ids.read(['value'])), 2)
+
     def test_save_to_bank_does_not_move_original(self):
         q = self.questions.create({'title': 'DEMO Existing source', 'survey_id': self.test.id, 'question_type': 'char_box'})
         q.action_save_to_bank()

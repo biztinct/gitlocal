@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <odoo>
   <!-- Global constraints apply only to bank entries; existing native question rules remain intact. -->
   <record id="question_bank_company_rule" model="ir.rule">
@@ -9,7 +9,7 @@
   <record id="question_bank_answer_rule" model="ir.rule">
     <field name="name">Library answers follow question visibility</field>
     <field name="model_id" ref="survey.model_survey_question_answer"/>
-    <field name="domain_force">['&amp;', '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else []), '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else [])] + ([] if user.has_group('pb_training.group_training_manager') else ['&amp;', '|', '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_restrict_ids', '=', False), ('question_id.pb_bank_restrict_ids', 'in', user.id), '|', '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_restrict_ids', '=', False), ('matrix_question_id.pb_bank_restrict_ids', 'in', user.id)])</field>
+    <field name="domain_force">['&amp;', '|', ('question_id', '=', False), '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else []), '|', ('matrix_question_id', '=', False), '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else [])] + ([] if user.has_group('pb_training.group_training_manager') else ['&amp;', '|', ('question_id', '=', False), '|', '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_restrict_ids', '=', False), ('question_id.pb_bank_restrict_ids', 'in', user.id), '|', ('matrix_question_id', '=', False), '|', '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_restrict_ids', '=', False), ('matrix_question_id.pb_bank_restrict_ids', 'in', user.id)])</field>
   </record>
   <record id="question_bank_list" model="ir.ui.view">
     <field name="name">Learning question library</field><field name="model">survey.question</field>
@@ -52,14 +52,13 @@
           <button name="action_save_to_bank" type="object" string="Save to question bank" invisible="pb_bank_source_id" class="btn btn-secondary"/>
           <widget name="pb_bank_refresh" invisible="not pb_bank_source_id"/>
         </div>
-        <div class="pb-bank-intro" invisible="not pb_bank"><strong>QUESTION LIBRARY</strong><p>Write once. Reuse with confidence. Edits create a new library version; existing test copies stay unchanged.</p></div>
-        <group string="Library details" invisible="not pb_bank">
+        </xpath>
+      <xpath expr="//notebook" position="inside"><page string="04 · Answer explanation"><field name="pb_bank_explanation" placeholder="Explain why the answer is correct. This feedback is also reused in lesson knowledge checks."/></page><page string="05 · Library details" invisible="not pb_bank"><group string="Library details" invisible="not pb_bank">
           <group><field name="pb_bank_code" readonly="1"/><field name="pb_bank_topic_id"/><field name="pb_bank_difficulty"/><field name="pb_bank_language_id"/><field name="pb_bank_owner_id"/></group>
           <group><field name="pb_bank_company_id" groups="base.group_multi_company"/><field name="pb_bank_skill_ids" widget="many2many_tags"/><field name="pb_bank_tag_ids" widget="many2many_tags"/><field name="pb_bank_origin_id" readonly="1"/><field name="pb_bank_origin_slide_id" readonly="1"/><field name="pb_bank_usage" readonly="1"/><field name="pb_bank_restrict_ids" widget="many2many_tags" groups="pb_training.group_training_manager"/></group>
           <field name="pb_bank_dependency_note" invisible="not pb_bank_dependency_note"/>
         </group>
-      </xpath>
-      <xpath expr="//notebook" position="inside"><page string="Answer explanation"><field name="pb_bank_explanation" placeholder="Explain why the answer is correct. This feedback is also reused in lesson knowledge checks."/></page></xpath>
+      </page></xpath>
     </field>
   </record>
   <record id="question_bank_form" model="ir.ui.view">
