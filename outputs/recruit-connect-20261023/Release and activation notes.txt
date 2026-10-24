@@ -1,12 +1,15 @@
 Recruitment integrations — updated 24 October 2026
 
+Job-board core integration commit: 380d41ddc
+Full provider acceptance is pending; no live board test or account creation is claimed.
+
 CV implementation and activation commit: 0edff751c
 Earlier CV profile commit: 850908163
 DocuSign integration commit: f7cd70ae0
 Earlier connection/UI commits: ae2ae077c, dd3aaaacf, e9a60a7d7
-pb_hiring: 19.0.2.15.0
+Hiring version: 19.0.2.16.2
 Server: Payobook19v2, static IP 3.104.113.197
-Custom addons: /odoo/odoo-server/addons
+Deployment preserves the server-supplied modules.
 Databases upgraded and verified: payobook, payobook_template, p0clone, rize.
 Retired ABM, its permanent archive and retired hostname were not changed.
 
@@ -15,10 +18,10 @@ CV parser: implemented, deployed and activated
   capacity is 4 GB RAM / 2 vCPU, Ubuntu 24.04 / Python 3.12.
 - CPU Docling + spaCy and Tesseract English/Vietnamese/Indonesian OCR installed
   in a separate virtualenv. Dedicated unprivileged service account; no changes
-  to Odoo's Python packages. Service enabled at boot and restart-on-failure.
+  to Payobook's Python packages. Service enabled at boot and restart-on-failure.
 - Private localhost worker behind authenticated HTTPS; external requests to
   the internal route receive 403, unauthenticated host requests receive 401.
-  Root-only generated service key; encrypted company configuration in Odoo.
+  Root-only generated service key; encrypted company configuration in Payobook.
 - CV connections checked/enabled for seven active company records across the
   four databases. All other providers retain their previous disabled state.
 - One CV conversion at a time, two CPU threads, 150% CPU quota. MemoryHigh
@@ -35,7 +38,7 @@ CV parser: implemented, deployed and activated
   anonymisation clears extracted text, skills, employment and review wizards.
 
 Completed validation
-- 52 isolated Odoo recruitment regression tests: zero failures/errors.
+- 52 isolated Payobook recruitment regression tests: zero failures/errors.
 - 12 Linux parser unit tests passed; the optional in-process integration case
   was skipped because the deployed service was tested separately below.
 - Nine live service cases: English, Vietnamese and Indonesian, each in DOCX,
@@ -46,8 +49,8 @@ Completed validation
 - Acceptance peak service memory 1,070,280,704 bytes (about 1.0 GiB).
   After existing-CV processing: 1.8 GiB host memory available, zero swap used.
   Cold startup/model prewarming previously reached about 1.3 GiB. These are
-  measured samples, not a guarantee for all document layouts or Odoo workloads.
-- Real Odoo upload -> extract -> review/correct -> apply -> anonymise passed
+  measured samples, not a guarantee for all document layouts or Payobook workloads.
+- Real Payobook upload -> extract -> review/correct -> apply -> anonymise passed
   in all four databases, using synthetic transactions rolled back afterwards.
 - Chrome DEMO Talent Lead: queued synthetic DOCX -> live Extract CV -> review
   Python skill, employer and month dates -> correct title to Senior Agronomist
@@ -61,7 +64,7 @@ Completed validation
 - All 145 installed custom module directories match the latest combined local
   state; all 560 installed custom-module/database versions match manifests.
 - Backups of all four databases were created and pg_restore catalogues verified
-  before upgrade. Standard Odoo addons were preserved.
+  before upgrade. Standard Payobook addons were preserved.
 
 Existing CVs: manual actions (amber in REC-015)
 18 previously unparsed active CV attachments were processed in payobook.
@@ -97,7 +100,7 @@ no universal extraction accuracy is claimed. No remaining CV code/hosting setup
 is deferred to the owner for this release. Monitor memory and queue delay under
 normal business load; add capacity or separate the parser if demand increases.
 
-Other integrations and earlier fixes (unchanged by CV activation)
+Other integrations and earlier fixes
 - Guided four-step setup draws on Health19 channel/credential patterns.
 - DocuSign draft/review/send/void/verify/archive integration is implemented,
   with completion certificate, encrypted JWT credentials, draft recovery,
@@ -110,21 +113,23 @@ Other integrations and earlier fixes (unchanged by CV activation)
   controlled live booking remain required.
 - Meta WhatsApp consent/template reminders and signed status callbacks are
   implemented; WABA/phone, approved template, token/app secret and controlled
-  delivery test remain required. Existing Odoo email/OAuth remains the email
+  delivery test remain required. Existing Payobook email/OAuth remains the email
   implementation. Mail and unrelated automation switches were not changed.
 - Native stage visibility, TA Lead/HR fallback routing, lead-assignment notices
   and country employer-cost profiles remain deployed. Owner/Finance must supply
   approved policies, formula/rate inputs, letters and counter-signatories.
-- LinkedIn, JobStreet and VietnamWorks direct publishing/native applications
-  still need provider API contracts and connector implementation. Tracked manual
-  posting packs remain available; credentials alone cannot close those items.
+- LinkedIn and JobStreet now have the core API workflows detailed below.
+  VietnamWorks still requires its current supported contract before coding
+  its adapter. Tracked posting packs remain available.
 - Branding/DNS, verified mail sender, real-user roles, retention/legal entities
   and historic source/policy decisions remain as identified in the workbook.
 
 Workbook
-The review copy retains all original client cells/results and 36 + 21 review
-rows. REC-015 now distinguishes completed live CV functionality from the amber
-source-file replacement work. The second sheet remains client-untested; no
+The review copy retains client results and 36 + 21 review rows. A new explicit
+Who must do what to pass completely column covers all 57 requirements.
+REC-014/MH-03 distinguish implemented board core workflows from remaining
+certification/adapter work and provider acceptance. REC-015 separates live CV
+functionality from the amber source-file replacement work. The second sheet remains client-untested; no
 client Pass was invented. Updated cells were rendered and visually verified.
 Current-run test/render screenshots were removed; existing user/product images
 were preserved.
@@ -134,9 +139,120 @@ services/recruit_cv/OPERATIONS.txt and ops/recruit_cv contain runtime setup,
 private proxy, per-company activation and synthetic acceptance scripts.
 Resolved Linux dependencies and cached model revisions are recorded there.
 Other provider instructions: ops/recruit_connections/DOCUSIGN.txt and OPERATIONS.txt.
-Current database backup: /odoo/backups/recruit-cv-activation-20261024-deploy
-Proxy backup: /odoo/backups/recruit-cv-activation-20261024-config
+Current board-release backup set: recruit-boards-20261024-deploy
+Earlier CV backup set: recruit-cv-activation-20261024-deploy
+Proxy backup set: recruit-cv-activation-20261024-config
 Earlier backup sets: recruit-connect-20261023-deploy, recruit-ui-20261023-deploy,
-recruit-cv-20261023-deploy and recruit-docusign-20261023-deploy under /odoo/backups.
+recruit-cv-20261023-deploy and recruit-docusign-20261023-deploy in the server backup archive.
 Rize backups are exempt from deletion. Nonproduction retention remains seven
 days while retaining the latest usable backup. No retention cleanup was run.
+
+Job-board core release — implemented, provider activation pending
+Runtime commits: 380d41ddc, 1120744f4, 7ce93ba63, 5d02af130 and add5077c3.
+Follow-up fixes cover browser request dispatch, setup guidance, review before
+a tenant has configured a connection and the visible confirmation label.
+- Scope remains Careers page, LinkedIn, JobStreet, VietnamWorks, employee
+  referrals and agencies. SEEK is JobStreet’s API operator, not an added board.
+- Payobook owns shared partner apps. Anita (anita@rize.farm) is Rize’s tenant
+  contact. Payobook’s legal app owner/contact details still need confirmation.
+- Server-owned partner credentials are shared across tenant databases.
+  Database/company bindings restrict each tenant to its authorized organization
+  or hirer. Tenant administrators cannot select another customer’s account.
+  Shared secrets never appear in tenant settings or connection responses.
+- LinkedIn customer-app provisioning uses the parent app, a stable tenant
+  reference, encrypted child credentials and explicit pending/reconciliation
+  states. Network ambiguity never triggers automatic duplicate provisioning.
+- Reviewed advert drafts, queued create/update/close requests, durable claims,
+  provider-confirmed listing state and background status checks are implemented.
+  Closing/unpublishing a role queues provider closure; an unsent creation is
+  cancelled. The UI does not claim remote closure before provider confirmation.
+- Signed application callbacks are acknowledged quickly and processed by a
+  background queue. Signatures, tenant/hirer identity, replay deduplication,
+  SEEK delivery expiry and provider CV download origins are checked.
+- Intake creates or reuses a candidate for the role/email, preserves existing
+  details and CVs, tags its source and queues supported CVs for the parser.
+  Raw intake is encrypted and erased after success, privacy deletion or expiry.
+  Unsupported/missing CVs require an original file. No assessment/ranking is
+  inferred from board data. Recruiters must review missing answers and consent.
+- New connections remain disabled. Production additionally requires operator-
+  recorded provider certification; this is not a substitute for completing it.
+
+Validation for this core release
+- 89 isolated hiring regression tests passed, zero failures/errors, including
+  24 new board tests. Provider responses are mocked; these are not live API tests.
+- Six JobStreet API queries/mutation inputs validated against SEEK’s published
+  GraphQL schema: hirer read, post, update, close, status and application read.
+- Final deployed version: Hiring 19.0.2.16.2 on Payobook19v2, databases payobook,
+  payobook_template, p0clone and rize. The application service is active.
+- Chrome with the authorized DEMO Talent Lead: connection guide and tenant
+  reference, saving disabled test setup, actionable missing-partner check,
+  unconfigured advert review, draft save/reopen, visible confirmation label,
+  mandatory confirmation and unpublished-careers-page guard all passed.
+  No advert or candidate message was sent. Demo draft restored, temporary
+  disabled connection removed, and the demo browser session signed out.
+- Final deployed synthetic workflow passed in every database: draft review,
+  queue, simulated provider confirmation, native contact intake, replay
+  deduplication, closure queue, privacy erasure and connection cards.
+  These transactions were rolled back and provider calls were simulated.
+- Combined-state audit: all 145 installed custom modules match repository
+  content; all 560 installed module/version pairs match. Unrelated work retained.
+- Workbook: original client values preserved; 57 explicit owner/action entries
+  across both sheets. Reviewed rendered wrapping; current-run preview PNGs removed.
+- The 89-test regression run covers all functional Python changes. The final
+  label-only view correction was then deployed and checked in Chrome; no claim
+  of live provider certification or client acceptance is made.
+
+Remaining work before full board acceptance (still amber/open)
+1. Payobook owner: complete shared partner registrations and provider agreements;
+   supply the legal business/contact details requested by their forms. Never
+   send passwords in chat. Account owner completes sign-in/password/verification.
+   No partner request or employer account has been submitted/created in this run.
+2. LinkedIn: approve the parent integration, provisioning rights, test organization
+   and customer resources. Payobook engineering must finish customer onboarding
+   and integration synchronization, required profile/highlight plugins,
+   application lifecycle notifications, parent resync handling and full question
+   parity to the approved certification contract. Core posting/intake tests do
+   not demonstrate certification or close that remaining engineering work.
+3. JobStreet (through SEEK): approve partner access, test hirer/relationship,
+   ad products and signed event subscription. Playground is read-only. Payobook
+   must validate native question/answer parity against the approved customer form
+   and complete provider acceptance; current core intake imports contacts/CV.
+4. VietnamWorks: confirm the current partner contract, posting/application APIs,
+   supported authentication, test employer and staging access. Payobook then
+   implements and tests that adapter. Legacy public examples were not treated
+   as a supported current API. A normal employer login is insufficient proof.
+5. Anita / Rize: authorize Rize’s employer accounts and provide the complete Zoho
+   board list and required application questions/consent. Payobook operator binds
+   the approved tenant identities. Rize accepts real test-board create/update,
+   application/CV/answers/source, duplicate replay and closure evidence.
+
+Platform operator setup once partner access is approved
+- Store partner secrets only in /etc/payobook/job-board-apps.json, owned by root
+  and readable by the application service group, mode 0640. Never commit keys.
+- A blank example is included in pb_hiring/data/job_board_apps.example.json.
+  Separate test/playground/production credentials; retain certified=false until
+  the provider’s full certification is complete. Production is blocked otherwise.
+- Add one enabled tenant binding per approved DATABASE:COMPANY_ID. Tenant
+  references are shown in Hiring connections after saving. LinkedIn bindings
+  contain organization_id and the approved HTTPS tenant domain; JobStreet
+  bindings contain hirer_id and the subscription’s random webhook_secret.
+- Tenant admins save matching environment/account settings. For LinkedIn,
+  provision the customer application or reuse approved child credentials.
+  Run access checks, register/verify callbacks and complete controlled live
+  acceptance before enabling real recruitment traffic.
+- Existing CV service and other provider switches are unchanged.
+
+Provider references checked 24 October 2026
+JobStreet API scope and approval process:
+https://developer.seek.com/introduction
+JobStreet partner registration:
+https://au.employer.seek.com/partners/integration-request/
+LinkedIn partner registration:
+https://business.linkedin.com/hire/ats-partners/partner-application
+LinkedIn per-tenant application requirements:
+https://learn.microsoft.com/en-us/linkedin/talent/apply-connect/create-configure-customer-application?view=li-lts-2026-04
+LinkedIn provisioning API:
+https://learn.microsoft.com/en-us/linkedin/talent/middleware-platform/provisioning-api?view=li-lts-2026-04
+VietnamWorks employer contact and signup:
+https://employer.vietnamworks.com/
+The official employer page lists Jobsupport@vietnamworks.com for support.
