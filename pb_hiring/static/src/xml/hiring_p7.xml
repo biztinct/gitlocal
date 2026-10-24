@@ -236,7 +236,7 @@
         <span class="pbhr-foot-gap"/>
         <button t-if="state.data.can_edit" class="pbim-btn primary" t-on-click="p7StartAdd"><t t-out="ic('plus',14)"/> Add a channel</button>
       </div>
-      <p class="pbhr-su-lede">Where a role can go. Each channel gives every role its own link, so an application through it is counted there. Tick the countries each one is used in: a role's Publish panel shows only the channels for its country. No job board is connected to this system — a recruiter pastes the advert and marks it as posted, or emails it to the board's contact below.</p>
+      <p class="pbhr-su-lede">Where a role can go. Each channel gives every role its own link, so an application through it is counted there. Tick the countries each one is used in: a role's Publish panel shows only the channels for its country. Set up approved LinkedIn and JobStreet access in Hiring connections, then review API publishing on the role. Manual posting and email packs remain available for channels without an active connection.</p>
 
       <div t-if="state.p7Add" class="pbhr-su-add" data-biz-validation-scope="true">
         <input required="required" data-biz-required-label="Channel name" class="pbhr-in" t-model="state.p7Add.name" placeholder="Glints, TopCV, a university board…" maxlength="80"/>

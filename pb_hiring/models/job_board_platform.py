@@ -24,7 +24,7 @@ SPECS["seek"]["help"] = (
     "Payobook owns the shared JobStreet partner app through SEEK. The platform operator authorizes each tenant’s hirer and callback signing secret centrally. Enter the matching hirer and posting contact here. SEEK must approve an unsearchable test hirer and ad product; Playground is read-only. No tenant receives the shared app secret."
 )
 SPECS["linkedin"]["help"] = (
-    "Payobook owns the approved parent integration. Each tenant gets its own customer application, organization binding and encrypted credentials. Save the test environment and organization, then provision the tenant application. Existing approved child credentials can be reused. LinkedIn partner approval and certification are required; a normal login is insufficient."
+    "Payobook manages the shared parent integration once approved. Each tenant gets its own customer application, organization binding and encrypted credentials. Save the test environment and organization, then provision the tenant application. Existing approved child credentials can be reused. LinkedIn partner approval and certification are required; a normal login is insufficient."
 )
 
 
