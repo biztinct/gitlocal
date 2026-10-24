@@ -107,3 +107,5 @@ from . import overview_l6
 # Vietnamese" on the course drawer. Extends the last link of every chain
 # (the catalogue's verb tuple, the learner's `home()`), so it comes last.
 from . import learner_l7
+
+from . import question_bank

@@ -53,3 +53,5 @@ access_pb_training_followup_admin,Course follow-up — head of training,model_pb
 access_pb_training_skill_grant_user,Skill a course gives — trainer,model_pb_training_skill_grant,pb_training.group_training_user,1,1,1,1
 access_pb_training_skill_grant_manager,Skill a course gives — training manager,model_pb_training_skill_grant,pb_training.group_training_manager,1,1,1,1
 access_pb_training_skill_grant_admin,Skill a course gives — head of training,model_pb_training_skill_grant,pb_training.group_training_admin,1,1,1,1
+access_question_topic_trainer,Question topics,model_pb_training_question_topic,pb_training.group_training_user,1,1,1,0
+access_question_topic_manager,Manage question topics,model_pb_training_question_topic,pb_training.group_training_manager,1,1,1,1

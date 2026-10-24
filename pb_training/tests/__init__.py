@@ -11,3 +11,5 @@ from . import test_sessions
 from . import test_l5
 from . import test_l6
 from . import test_l7
+
+from . import test_question_bank
