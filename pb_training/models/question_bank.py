@@ -146,12 +146,14 @@ class SurveyQuestion(models.Model):
         if self.pb_bank_source_id:
             bank = self.pb_bank_source_id
         else:
-            vals = self.copy_data()[0]
-            vals.update(pb_bank=True, survey_id=False, is_page=False, triggering_answer_ids=[Command.clear()],
+            vals = dict(pb_bank=True, survey_id=False, is_page=False, triggering_answer_ids=[Command.clear()],
                 pb_bank_company_id=self.env.company.id, pb_bank_origin_id=self.survey_id.id,
+                pb_bank_owner_id=self.create_uid.id,
                 pb_bank_restrict_ids=[Command.set(self.survey_id.restrict_user_ids.ids)],
                 pb_bank_dependency_note=_('Rewrite the source question without its conditional dependencies.') if self.triggering_answer_ids else False)
-            bank = self.create(vals)
+            bank = self.copy(vals)
+            # Native copy deliberately restores dependencies; library drafts carry a review note instead.
+            bank.triggering_answer_ids = [Command.clear()]
             self.write({'pb_bank_source_id': bank.id, 'pb_bank_source_revision': bank.pb_bank_revision})
         return {'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': bank.id,
                 'views': [(self.env.ref('pb_training.question_bank_form').id, 'form')], 'target': 'current'}
@@ -387,11 +389,10 @@ class QuestionBank(models.AbstractModel):
         return {'added': len(bank)}
 
     def _copy_to_test(self, q, target):
-        vals = q.copy_data()[0]
-        vals.update(survey_id=target.id, pb_bank=False, pb_bank_company_id=False,
+        vals = dict(survey_id=target.id, pb_bank=False, pb_bank_company_id=False,
                     pb_bank_source_id=q.id, pb_bank_source_revision=q.pb_bank_revision,
                     triggering_answer_ids=[Command.clear()])
-        return self.env['survey.question'].create(vals)
+        return q.copy(vals)
 
     @api.model
     def refresh_copy(self, model, question_id):
@@ -423,6 +424,8 @@ class QuestionBank(models.AbstractModel):
                 'sequence': a.sequence, 'is_correct': a.is_correct, 'comment': source.pb_bank_explanation}) for a in source.suggested_answer_ids]}
         vals['pb_bank_source_revision'] = source.pb_bank_revision
         q.write(vals)
+        if model == 'survey.question':
+            source.copy_translations(q)
         return True
 
 

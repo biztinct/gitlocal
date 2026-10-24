@@ -63,6 +63,20 @@ class TestQuestionBank(TransactionCase):
         with self.assertRaises(UserError):
             self.bank.action_bank_approve()
 
+    def test_direct_answer_edit_requires_review(self):
+        revision = self.bank.pb_bank_revision
+        self.bank.suggested_answer_ids[0].value = 'Review the area first'
+        self.assertEqual(self.bank.pb_bank_state, 'draft')
+        self.assertGreater(self.bank.pb_bank_revision, revision)
+
+    def test_translations_are_preserved(self):
+        language = self.env['res.lang'].with_context(active_test=False).search([('code', '=', 'vi_VN')], limit=1)
+        language.active = True
+        self.bank.with_context(lang='vi_VN').title = 'Kiểm tra khu vực trước'
+        self.bank.action_bank_approve()
+        self.add()
+        self.assertEqual(self.test.question_ids.with_context(lang='vi_VN').title, 'Kiểm tra khu vực trước')
+
     def test_conditional_source_is_not_silently_flattened(self):
         self.bank.pb_bank_dependency_note = 'Review the original condition.'
         with self.assertRaises(UserError):
