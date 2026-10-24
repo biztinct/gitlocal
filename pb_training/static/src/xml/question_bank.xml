@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
   <t t-name="pb_training.QuestionBankWidget">
     <div class="pb-bank-entry">
-      <div><strong>Bring in a question you already trust</strong><span>Find, preview and reuse approved questions. Each addition keeps its own copy.</span></div>
+      <div><strong>Bring in a question you already trust</strong><span>Find, review and reuse questions. Each addition keeps its own copy.</span></div>
       <button type="button" class="btn btn-primary" t-on-click="open" t-att-disabled="state.busy or props.readonly"><i class="fa fa-book me-2" aria-hidden="true"/><t t-if="needsSave">Save draft &amp; browse question bank</t><t t-else="">Add from question bank</t></button>
     </div>
   </t>
@@ -64,7 +64,7 @@
           <div t-if="state.mode === 'pool'" class="pb-bank-pool"><p>Each attempt draws from these fixed question copies. Future library additions will not change this pool.</p><label class="pb-bank-check"><input type="checkbox" t-model="state.balanced"/> Balance by difficulty</label><div t-if="state.balanced" class="pb-bank-pool-counts"><label t-foreach="['basic','intermediate','advanced']" t-as="difficulty" t-key="difficulty"><t t-out="difficulty"/> · <t t-out="poolCounts[difficulty]"/> selected<input type="number" min="0" t-att-max="poolCounts[difficulty]" class="form-control" t-model="state[difficulty]"/></label></div><div t-else="" class="pb-bank-destination"><label>Pool name<input class="form-control" t-model="state.poolName"/></label><label>Questions per attempt<input type="number" min="1" t-att-max="selectedCount" class="form-control" t-model="state.draw"/></label></div><p t-if="poolError" class="pb-bank-validation" role="status" t-out="poolError"/></div>
         </section>
       </div>
-      <t t-set-slot="footer"><span class="pb-bank-footer-note">Copies are saved to this draft. Learner results stay unchanged.</span><button type="button" class="btn btn-secondary" t-on-click="props.close" t-att-disabled="state.adding">Cancel</button><button type="button" class="btn btn-primary" t-on-click="add" t-att-disabled="!canAdd"><t t-if="state.adding">Adding…</t><t t-elif="state.mode === 'pool'">Create question pool</t><t t-else="">Add <t t-out="selectedCount"/> <t t-if="selectedCount === 1">question</t><t t-else="">questions</t></t></button></t>
+      <t t-set-slot="footer"><span class="pb-bank-footer-note">Copies are saved to this draft. Learner results stay unchanged.</span><button type="button" class="btn btn-secondary" t-on-click="props.close" t-att-disabled="state.adding">Cancel</button><button type="button" class="btn btn-primary" t-on-click="add" t-att-disabled="!canAdd"><t t-if="state.adding">Adding…</t><t t-elif="state.mode === 'pool'">Create question pool</t><t t-else="" t-out="'Add ' + selectedCount + (selectedCount === 1 ? ' question' : ' questions')"/></button></t>
     </Dialog>
   </t>
 </templates>

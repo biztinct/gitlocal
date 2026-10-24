@@ -200,10 +200,12 @@ class TestQuestionBank(TransactionCase):
         self.bank.pb_bank_company_id = company
         with self.assertRaises(AccessError):
             self.api.with_user(trainer).preview(self.bank.id)
+        self.assertEqual(self.api.with_user(trainer).browse_bank({'query': self.bank.pb_bank_code})['review_counts'], {})
         self.bank.pb_bank_company_id = self.env.company
         self.bank.pb_bank_restrict_ids = self.env.user
         with self.assertRaises(AccessError):
             self.api.with_user(trainer).preview(self.bank.id)
+        self.assertEqual(self.api.with_user(trainer).browse_bank({'query': self.bank.pb_bank_code})['review_counts'], {})
         with self.assertRaises(AccessError):
             self.bank.suggested_answer_ids.with_user(trainer).read(['value'])
 
