@@ -866,7 +866,7 @@ class BoardReview(models.TransientModel):
             )
             w.status = "%s · %s · %s" % (
                 rc.channel_id.name,
-                conn._config().get("environment", "Not configured"),
+                (conn._config() if conn else {}).get("environment", "Not configured"),
                 rc.board_note or "Provider approval and end-to-end acceptance required",
             )
             w.delivery_state = rc.board_state

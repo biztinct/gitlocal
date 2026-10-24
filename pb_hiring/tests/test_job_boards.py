@@ -201,6 +201,14 @@ class TestJobBoards(ChannelCase):
             with self.assertRaises(UserError):
                 self.conn._board_media("https://www.linkedin.com/ambry/?x=1")
 
+    def test_review_without_connection(self):
+        self.conn.unlink()
+        action = self.env["pb.hiring"].with_user(self.lead).board_open(self.rc.id)
+        wizard = self.env["pb.hiring.board.review"].with_user(self.lead).browse(action["res_id"])
+        result = wizard.web_read({"status": {}, "provider": {}, "delivery_state": {}, "intake_summary": {}})[0]
+        self.assertIn("Not configured", result["status"])
+        self.assertEqual(result["provider"], "linkedin")
+
     def test_setup_role_secret_and_identity_guards(self):
         facade = self.env["pb.hiring"].with_user(self.lead)
         card = call_kw(
