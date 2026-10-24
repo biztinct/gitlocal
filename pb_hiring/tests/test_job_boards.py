@@ -10,6 +10,7 @@ from unittest.mock import Mock, patch
 from odoo.http import Response
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import tagged
+from odoo.service.model import call_kw
 from .test_channels_p7 import ChannelCase
 from ..services import job_boards as contracts
 from ..services.connection_crypto import encrypt
@@ -202,7 +203,12 @@ class TestJobBoards(ChannelCase):
 
     def test_setup_role_secret_and_identity_guards(self):
         facade = self.env["pb.hiring"].with_user(self.lead)
-        card = facade.connection_save("linkedin", {"client_secret": "rotated-test"})
+        card = call_kw(
+            facade,
+            "connection_save",
+            ["linkedin", {"client_secret": "rotated-test"}],
+            {"context": dict(facade.env.context)},
+        )
         self.assertNotIn("rotated-test", str(card))
         self.assertIn("/hiring/boards/linkedin/", card["callback"])
         with self.assertRaises(AccessError):

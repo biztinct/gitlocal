@@ -302,6 +302,7 @@ class BoardConnection(models.Model):
 class BoardConnectionFacade(models.AbstractModel):
     _inherit = "pb.hiring"
 
+    @api.model
     def connection_save(self, provider, values):
         self._require_write()
         if provider in ("linkedin", "seek") and isinstance(values, dict):
