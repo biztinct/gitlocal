@@ -11,6 +11,21 @@
     <field name="model_id" ref="survey.model_survey_question_answer"/>
     <field name="domain_force">['&amp;', '|', ('question_id', '=', False), '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else []), '|', ('matrix_question_id', '=', False), '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else [])] + ([] if user.has_group('pb_training.group_training_manager') else ['&amp;', '|', ('question_id', '=', False), '|', '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_restrict_ids', '=', False), ('question_id.pb_bank_restrict_ids', 'in', user.id), '|', ('matrix_question_id', '=', False), '|', '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_restrict_ids', '=', False), ('matrix_question_id.pb_bank_restrict_ids', 'in', user.id)])</field>
   </record>
+  <!-- Native user rules traverse a survey. Independent library records have
+       no survey; the existing trainer role gets this new library surface only.
+       The global rules above still enforce company and source restrictions. -->
+  <record id="question_bank_trainer_rule" model="ir.rule">
+    <field name="name">Trainers author independent library questions</field>
+    <field name="model_id" ref="survey.model_survey_question"/>
+    <field name="groups" eval="[(4, ref('pb_training.group_training_user'))]"/>
+    <field name="domain_force">[('pb_bank', '=', True)]</field>
+  </record>
+  <record id="question_bank_answer_trainer_rule" model="ir.rule">
+    <field name="name">Trainers author answers to independent library questions</field>
+    <field name="model_id" ref="survey.model_survey_question_answer"/>
+    <field name="groups" eval="[(4, ref('pb_training.group_training_user'))]"/>
+    <field name="domain_force">['|', ('question_id.pb_bank', '=', True), ('matrix_question_id.pb_bank', '=', True)]</field>
+  </record>
   <record id="question_bank_list" model="ir.ui.view">
     <field name="name">Learning question library</field><field name="model">survey.question</field>
     <field name="arch" type="xml">
