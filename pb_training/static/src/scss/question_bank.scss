@@ -72,3 +72,15 @@
     .pb-bank-destination, .pb-bank-pool-counts { flex-direction: column; gap: 10px; }
     .pb-bank-dialog .modal-footer { flex-wrap: wrap; .pb-bank-footer-note { flex-basis: 100%; } }
 }
+
+// Keep the action footer visible on phones as well as desktop dialogs.
+.pb-bank-dialog {
+    max-height: calc(100dvh - 56px);
+    .modal-body { min-height: 0; overflow-y: auto; flex: 1 1 auto; }
+    .modal-header, .modal-footer { flex: 0 0 auto; }
+    .btn { width: auto !important; max-width: 100%; }
+    .pb-bank-filter-heading .btn { flex: 0 0 auto; }
+}
+@media (max-width: 575px) {
+    .pb-bank-dialog { max-height: calc(100dvh - 16px); }
+}

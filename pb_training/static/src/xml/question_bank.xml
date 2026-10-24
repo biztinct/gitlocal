@@ -3,7 +3,7 @@
   <t t-name="pb_training.QuestionBankWidget">
     <div class="pb-bank-entry">
       <div><strong>Bring in a question you already trust</strong><span>Find, preview and reuse approved questions. Each addition keeps its own copy.</span></div>
-      <button type="button" class="btn btn-primary" t-on-click="open" t-att-disabled="state.busy or props.readonly"><i class="fa fa-book me-2"/><t t-if="needsSave">Save draft &amp; browse question bank</t><t t-else="">Add from question bank</t></button>
+      <button type="button" class="btn btn-primary" t-on-click="open" t-att-disabled="state.busy or props.readonly"><i class="fa fa-book me-2" aria-hidden="true"/><t t-if="needsSave">Save draft &amp; browse question bank</t><t t-else="">Add from question bank</t></button>
     </div>
   </t>
   <t t-name="pb_training.QuestionBankRefresh">
