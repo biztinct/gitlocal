@@ -132,7 +132,7 @@ export class QuestionBankPicker extends Component {
     }
     async editQuestion() {
         const q = this.state.preview;
-        await this.action.doAction({ type: "ir.actions.act_window", res_model: "survey.question", res_id: q.id,
+        await this.action.doAction({ name: "Edit library question", type: "ir.actions.act_window", res_model: "survey.question", res_id: q.id,
             views: [[q.editor_view_id, "form"]], target: "new" }, { onClose: async () => {
                 if (!this.alive) { return; }
                 delete this.state.selected[q.id];
