@@ -15,7 +15,7 @@
           <div class="text-muted" colspan="2">Use identifiers supplied by SEEK for the configured hirer and market. Playground cannot publish. Your provider must approve the test hirer and ad product.</div>
         </group>
         <group string="Application intake"><field name="intake_summary" nolabel="1"/></group>
-        <field name="confirmed"/>
+        <group><field name="confirmed"/></group>
         <footer>
           <button name="action_save" type="object" string="Save advert draft" class="btn-secondary"/>
           <button name="action_submit" type="object" string="Queue advert" class="btn-primary" invisible="delivery_state != 'draft'"/>
