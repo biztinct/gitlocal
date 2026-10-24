@@ -170,7 +170,7 @@ class TestQuestionBank(TransactionCase):
         for kind in ('char_box', 'text_box', 'numerical_box', 'date', 'datetime', 'scale', 'matrix', 'multiple_choice'):
             q = self.bank.copy({'pb_bank': True, 'pb_bank_company_id': self.env.company.id, 'question_type': kind,
                 'answer_date': '2026-10-25', 'answer_datetime': '2026-10-25 10:00:00', 'answer_numerical_box': 5,
-                'answer_score': 2, 'matrix_row_ids': [Command.create({'value': 'Row'})] if kind == 'matrix' else []})
+                'answer_score': 2, 'is_scored_question': kind in ('numerical_box', 'date', 'datetime', 'multiple_choice'), 'matrix_row_ids': [Command.create({'value': 'Row'})] if kind == 'matrix' else []})
             q.action_bank_approve()
             self.add(q)
             copied = self.test.question_ids.filtered(lambda r: r.pb_bank_source_id == q)
