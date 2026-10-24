@@ -28,7 +28,7 @@ model here: every portal seam is `sudo()` after an explicit ownership guard,
 with a whitelist of the fields a form may set. `sudo()` keeps the user, so
 `create_uid`, the engine's submitter and the chatter author stay the employee.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Hidden/Tools',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
@@ -47,6 +47,7 @@ with a whitelist of the fields a form may set. `sudo()` keeps the user, so
         'data/ir_sequence_data.xml',
         'data/approval_process.xml',
         'views/expense_claim_views.xml',
+        'views/hr_expense_views.xml',
         'views/portal_templates.xml',
     ],
     'assets': {
