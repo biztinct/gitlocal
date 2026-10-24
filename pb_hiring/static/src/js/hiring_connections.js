@@ -48,6 +48,7 @@ export class HiringConnections extends Component {
         finally { this.state.busy = false; }
     }
     save() { return this.run("connection_save", [this.state.selected.key, this.state.values], 2); }
+    provision() { return this.run("board_provision_customer", [], 2); }
     check() { return this.run("connection_check", [this.state.selected.key], 2); }
     enable() { return this.run("connection_enable", [this.state.selected.key, !this.state.selected.enabled], 3); }
     openAction(xmlid) { return this.action.doAction(xmlid); }

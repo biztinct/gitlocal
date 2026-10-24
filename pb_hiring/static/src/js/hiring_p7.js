@@ -210,6 +210,15 @@ patch(PbHiringBoard.prototype, {
         }
     },
 
+    async p7BoardReview(r) {
+        try {
+            const action = await this.orm.call("pb.hiring", "board_open", [r.id]);
+            await this.action.doAction(action, { onClose: () => this.p7Load({ quiet: true }) });
+        } catch (error) {
+            this.notif.add(error.data?.message || error.message, { type: "danger" });
+        }
+    },
+
     async p7Copy(r) {
         if (!r.link) { return; }
         const ok = await copyText(r.link);

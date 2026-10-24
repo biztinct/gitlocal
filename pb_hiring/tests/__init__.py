@@ -17,3 +17,5 @@ from . import test_registers_p9
 from . import test_client_review
 from . import test_connections
 from . import test_docusign
+
+from . import test_job_boards

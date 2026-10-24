@@ -60,19 +60,21 @@
           <div t-elif="r7.state === 'closed'" class="pbhr-p7-meta"><t t-out="ic('minusCircle',13)"/> Taken down. Its link still counts anybody who applies through an old copy.</div>
           <div t-else="" class="pbhr-p7-hint">
             <t t-out="ic('info',13)"/>
-            <span><b>Not connected to <t t-esc="r7.name"/>.</b> <t t-if="r7.hint"><t t-esc="r7.hint"/> </t><t t-else="">Paste the advert there with this link. </t>Then press Mark as posted.</span>
+            <span t-if="!r7.api_managed"><b>Not connected to <t t-esc="r7.name"/>.</b> <t t-if="r7.hint"><t t-esc="r7.hint"/> </t><t t-else="">Paste the advert there with this link. </t>Then press Mark as posted.</span>
           </div>
+          <p t-if="r7.api_supported" class="pbhr-p7-meta" t-esc="r7.api_status"/>
           <div t-if="r7.sent_on" class="pbhr-p7-meta"><t t-out="ic('mail',13)"/> Advert emailed on <t t-esc="r7.sent_on"/> to <t t-esc="r7.contact_email"/>.</div>
           <div t-elif="!r7.contact_email and r7.state !== 'posted'" class="pbhr-p7-meta is-quiet">
             <t t-out="ic('mail',13)"/> No email contact yet<t t-if="state.p7.can_setup"> · <button type="button" class="pbhr-p7-linkbtn" t-on-click.stop="openSetup">add one in Channels</button></t>
           </div>
           <div class="pbhr-p7-acts">
-            <t t-if="r7.state !== 'posted'">
+            <button t-if="r7.api_supported" type="button" class="pbim-btn primary" t-on-click.stop="() => this.p7BoardReview(r7)">Review API publishing</button>
+            <t t-if="!r7.api_managed and r7.state !== 'posted'">
               <button type="button" class="pbim-btn primary" t-att-disabled="state.p7Busy or !state.p7.has_job" t-on-click.stop="() =&gt; this.p7StartMark(r7)"><t t-out="ic('checkCheck',14)"/> Mark as posted</button>
               <button t-if="r7.advert" type="button" class="pbim-btn ghost" t-on-click.stop="() =&gt; this.p7CopyAdvert(r7)"><t t-out="ic('fileText',13)"/> Copy the advert</button>
               <button t-if="r7.can_send" type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy or !r7.mail_on" t-att-title="r7.mail_on ? tr('Email the advert to %s', r7.contact_email) : tr('Emailing adverts is switched off in Hiring set-up, Channels')" t-on-click.stop="() =&gt; this.p7Send(r7)"><t t-out="ic('send',13)"/> Send the advert</button>
             </t>
-            <t t-else="">
+            <t t-elif="!r7.api_managed">
               <button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7TakeDown(r7)"><t t-out="ic('minusCircle',13)"/> Taken down</button>
               <button type="button" class="pbim-btn ghost" t-att-disabled="state.p7Busy" t-on-click.stop="() =&gt; this.p7Unmark(r7)"><t t-out="ic('undo',13)"/> Not posted after all</button>
             </t>

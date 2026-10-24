@@ -1,0 +1,30 @@
+{
+  "linkedin": {
+    "test": {
+      "client_id": "",
+      "client_secret": "",
+      "certified": false,
+      "tenants": {
+        "DATABASE:COMPANY_ID": {
+          "enabled": false,
+          "organization_id": "",
+          "domain": ""
+        }
+      }
+    }
+  },
+  "seek": {
+    "test": {
+      "client_id": "",
+      "client_secret": "",
+      "certified": false,
+      "tenants": {
+        "DATABASE:COMPANY_ID": {
+          "enabled": false,
+          "hirer_id": "",
+          "webhook_secret": ""
+        }
+      }
+    }
+  }
+}

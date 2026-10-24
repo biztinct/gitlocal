@@ -185,3 +185,6 @@ booking_slot_read,Interview booking slots read,model_pb_hiring_booking_slot,pb_h
 cv_review_user,CV review user,model_pb_hiring_cv_review,pb_hiring.group_hiring_user,1,1,1,1
 delivery_read,Reminder delivery read,model_pb_hiring_message_delivery,pb_hiring.group_hiring_user,1,0,0,0
 cv_employment_review_user,CV employment review user,model_pb_hiring_cv_employment_review,pb_hiring.group_hiring_user,1,1,1,1
+
+access_board_review,Board publishing review,model_pb_hiring_board_review,pb_hiring.group_hiring_user,1,1,1,1
+access_board_event_admin,Board intake administration,model_pb_hiring_board_event,base.group_system,1,0,0,0
