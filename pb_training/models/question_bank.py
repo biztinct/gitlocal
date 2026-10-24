@@ -116,6 +116,13 @@ class SurveyQuestion(models.Model):
                 raise UserError('%s: %s' % (q.title, problem))
         self.write({'pb_bank_state': 'approved'})
 
+    @api.constrains('pb_bank_state')
+    def _check_bank_approval(self):
+        for q in self.filtered(lambda r: r.pb_bank and r.pb_bank_state == 'approved'):
+            problem = q._bank_problem(scored=q.is_scored_question)
+            if problem:
+                raise ValidationError(problem)
+
     def action_bank_archive(self):
         self.filtered('pb_bank').write({'pb_bank_state': 'archived'})
 
@@ -124,7 +131,7 @@ class SurveyQuestion(models.Model):
 
     def write(self, vals):
         # Metadata changes don't alter assessment snapshots. Content edits reset approval.
-        content = set(vals) - {n for n in self._fields if n.startswith('pb_bank_')} - {'sequence'}
+        content = set(vals) - {n for n in self._fields if n.startswith('pb_bank_') and n != 'pb_bank_explanation'} - {'sequence'}
         bank = self.filtered('pb_bank') if content else self.browse()
         result = super().write(vals)
         for q in bank:
@@ -178,6 +185,29 @@ class SlideQuestion(models.Model):
             self.write({'pb_bank_source_id': bank.id, 'pb_bank_source_revision': bank.pb_bank_revision})
         return {'type': 'ir.actions.act_window', 'res_model': 'survey.question', 'res_id': bank.id,
                 'views': [(self.env.ref('pb_training.question_bank_form').id, 'form')], 'target': 'current'}
+
+
+class BankAnswerRevision(models.Model):
+    _inherit = 'survey.question.answer'
+
+    def _touch_library(self):
+        for q in (self.question_id | self.matrix_question_id).filtered('pb_bank'):
+            q.write({'pb_bank_state': 'draft', 'pb_bank_revision': q.pb_bank_revision + 1})
+
+    def write(self, vals):
+        result = super().write(vals)
+        self._touch_library()
+        return result
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        answers = super().create(vals_list)
+        answers._touch_library()
+        return answers
+
+    def unlink(self):
+        self._touch_library()
+        return super().unlink()
 
 
 class QuestionBank(models.AbstractModel):
