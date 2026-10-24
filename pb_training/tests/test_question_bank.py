@@ -97,6 +97,17 @@ class TestQuestionBank(TransactionCase):
         with self.assertRaises(UserError):
             self.api.add_questions('slide.slide', self.lesson.id, self.bank.ids)
 
+    def test_lesson_keeps_context_and_rejects_rich_context(self):
+        self.bank.description = '<p>Consider the weather before answering.</p>'
+        self.bank.action_bank_approve()
+        self.api.add_questions('slide.slide', self.lesson.id, self.bank.ids)
+        self.assertIn('Consider the weather before answering.', self.lesson.question_ids.question)
+        rich = self.bank.copy({'pb_bank': True, 'pb_bank_company_id': self.env.company.id,
+                              'description': '<table><tr><td>Required data</td></tr></table>'})
+        rich.action_bank_approve()
+        with self.assertRaises(UserError):
+            self.api.add_questions('slide.slide', self.lesson.id, rich.ids)
+
     def test_published_lesson_is_protected(self):
         self.lesson.is_published = True
         with self.assertRaises(UserError):

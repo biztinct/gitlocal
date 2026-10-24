@@ -1,7 +1,10 @@
 """Reusable questions over the native survey editor; assessment copies are snapshots."""
+import re
+
 from odoo import api, fields, models, Command, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
+from odoo.tools import html2plaintext
 
 
 class QuestionTopic(models.Model):
@@ -90,6 +93,8 @@ class SurveyQuestion(models.Model):
         if self.question_type == 'simple_choice' and len(choices.filtered('is_correct')) > 1:
             return _('A single-choice question can have only one correct answer.')
         if lesson:
+            if re.search(r'<(?:img|video|audio|iframe|table|svg)\b', self.description or '', re.I):
+                return _('This question includes rich context that a lesson quiz cannot display. Use it in a final test instead.')
             if self.question_type not in ('simple_choice', 'multiple_choice'):
                 return _('Lesson knowledge checks support choice questions only.')
             if any(not a.value or a.value_image for a in choices):
@@ -105,6 +110,11 @@ class SurveyQuestion(models.Model):
             elif self.question_type not in ('numerical_box', 'date', 'datetime') or not self.is_scored_question or self.answer_score <= 0:
                 return _('This question is not configured for automatic scoring.')
         return ''
+
+    def _bank_lesson_prompt(self):
+        self.ensure_one()
+        context = html2plaintext(self.description or '').strip()
+        return self.title + ('\n\n' + context if context else '')
 
     def action_bank_approve(self):
         self.env['pb.training']._require_write()
@@ -335,7 +345,7 @@ class QuestionBank(models.AbstractModel):
             seq = max(rows.mapped('sequence') or [0])
             for q in bank:
                 seq += 10
-                self.env['slide.question'].create({'slide_id': target.id, 'question': q.title, 'sequence': seq,
+                self.env['slide.question'].create({'slide_id': target.id, 'question': q._bank_lesson_prompt(), 'sequence': seq,
                     'pb_bank_source_id': q.id, 'pb_bank_source_revision': q.pb_bank_revision,
                     'answer_ids': [Command.create({'text_value': a.value, 'sequence': a.sequence, 'is_correct': a.is_correct,
                                                   'comment': q.pb_bank_explanation}) for a in q.suggested_answer_ids]})
@@ -420,7 +430,7 @@ class QuestionBank(models.AbstractModel):
             vals['suggested_answer_ids'] = [Command.clear()] + vals.get('suggested_answer_ids', [])
             vals['matrix_row_ids'] = [Command.clear()] + vals.get('matrix_row_ids', [])
         else:
-            vals = {'question': source.title, 'answer_ids': [Command.clear()] + [Command.create({'text_value': a.value,
+            vals = {'question': source._bank_lesson_prompt(), 'answer_ids': [Command.clear()] + [Command.create({'text_value': a.value,
                 'sequence': a.sequence, 'is_correct': a.is_correct, 'comment': source.pb_bank_explanation}) for a in source.suggested_answer_ids]}
         vals['pb_bank_source_revision'] = source.pb_bank_revision
         q.write(vals)

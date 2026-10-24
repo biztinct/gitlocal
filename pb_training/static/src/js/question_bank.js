@@ -56,7 +56,7 @@ export class QuestionBankPicker extends Component {
             let total = 0;
             for (const d of ["basic", "intermediate", "advanced"]) {
                 const count = Number(this.state[d]);
-                if (!Number.isInteger(count) || count < 0 || count > this.poolCounts[d]) { return "Each draw must fit the selected questions at that difficulty."; }
+                if (!Number.isInteger(count) || count < 0 || count > this.poolCounts[d] || (this.poolCounts[d] > 0 && count === 0)) { return "Choose at least one draw for each selected difficulty, up to the number selected."; }
                 total += count;
             }
             if (!total) { return "Choose how many questions to draw at each difficulty."; }
