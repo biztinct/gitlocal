@@ -33,7 +33,7 @@ class SurveyQuestion(models.Model):
     pb_bank = fields.Boolean('Library question', copy=False, index=True)
     pb_bank_company_id = fields.Many2one('res.company', string='Library company', copy=False, index=True, default=lambda self: self.env.company if self.env.context.get('default_pb_bank') else False)
     pb_bank_state = fields.Selection([('draft', 'Needs review'), ('approved', 'Approved'),
-                                      ('archived', 'Archived')], default='draft', copy=False, index=True)
+                                      ('archived', 'Archived')], string='Status', default='draft', copy=False, index=True)
     pb_bank_revision = fields.Integer('Library version', default=1, copy=False)
     pb_bank_source_id = fields.Many2one('survey.question', string='Library source', copy=False, ondelete='restrict', index=True)
     pb_bank_source_revision = fields.Integer('Copied version', copy=False)
@@ -162,9 +162,9 @@ class SurveyQuestion(models.Model):
     def _migrate_question_bank(self):
         # Idempotent metadata-only changes on source questions; no answers/results moved.
         for q in self.search([('pb_bank', '=', False), ('is_page', '=', False), ('survey_id', '!=', False), ('pb_bank_source_id', '=', False)]):
-            q.action_save_to_bank()
+            q.with_company(q.survey_id.user_id.company_id or self.env.company).action_save_to_bank()
         for q in self.env['slide.question'].search([('pb_bank_source_id', '=', False)]):
-            q.action_save_to_bank()
+            q.with_company(q.slide_id.channel_id.user_id.company_id or self.env.company).action_save_to_bank()
 
 
 class SlideQuestion(models.Model):

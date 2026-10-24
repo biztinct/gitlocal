@@ -90,11 +90,11 @@
   </record>
   <record id="view_test_bank_picker" model="ir.ui.view">
     <field name="name">Test question library picker</field><field name="model">survey.survey</field><field name="inherit_id" ref="pb_training.view_test_authoring_studio"/>
-    <field name="arch" type="xml"><xpath expr="//field[@name='question_and_page_ids']" position="before"><widget name="pb_question_bank"/></xpath></field>
+    <field name="arch" type="xml"><xpath expr="//field[@name='question_and_page_ids']" position="before"><widget name="pb_question_bank" colspan="2"/></xpath></field>
   </record>
   <record id="view_lesson_bank_picker" model="ir.ui.view">
     <field name="name">Lesson question library picker</field><field name="model">slide.slide</field><field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
-    <field name="arch" type="xml"><xpath expr="//field[@name='question_ids']" position="before"><widget name="pb_question_bank"/></xpath></field>
+    <field name="arch" type="xml"><xpath expr="//field[@name='question_ids']" position="before"><widget name="pb_question_bank" colspan="2"/></xpath></field>
   </record>
   <record id="view_lesson_bank_source" model="ir.ui.view">
     <field name="name">Lesson question library source</field><field name="model">slide.question</field><field name="inherit_id" ref="website_slides.slide_question_view_form"/>
