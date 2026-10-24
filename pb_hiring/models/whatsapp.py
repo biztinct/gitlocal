@@ -12,6 +12,8 @@ from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.modules.registry import Registry
 from odoo.exceptions import UserError
 
+from .connections import CVParserBusy
+
 
 class WhatsAppConnection(models.Model):
     _inherit = 'pb.hiring.connection'
@@ -111,11 +113,13 @@ class ConnectionJobs(models.AbstractModel):
 
     @api.model
     def _run(self):
-        applicants = self.env['hr.applicant'].sudo().search([('pb_cv_state', '=', 'queued')], limit=2)
+        applicants = self.env['hr.applicant'].sudo().search([('pb_cv_state', '=', 'queued')], order='write_date asc, id', limit=1)
         for applicant in applicants:
             try:
                 with self.env.cr.savepoint():
                     applicant._extract_cv()
+            except CVParserBusy:
+                applicant.write({'pb_cv_note': _('Parser busy; this CV remains queued for the next attempt.')})
             except Exception:
                 applicant.write({'pb_cv_state': 'failed', 'pb_cv_note': _('Extraction failed. Check the connection and CV, then use Extract CV to retry.')})
         # Separate cursor transactions make provider outcomes durable. There

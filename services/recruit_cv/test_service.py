@@ -22,6 +22,17 @@ class ExtractionContract(unittest.TestCase):
         result.pages[0].cells = list(reversed(cells))
         self.assertEqual(service.document_text(result), 'Experience Acme Education BSc')
 
+    def test_word_cells_rebuild_lines_without_joining_columns(self):
+        def cell(text, left, top, right, bottom):
+            return SimpleNamespace(text=text, to_bounding_box=lambda: SimpleNamespace(l=left,t=top,r=right,b=bottom))
+        cells = [cell('Work',0,0,35,12),cell('experience',40,1,105,12),
+                 cell('Engineer',0,25,50,37),cell('at',55,25,65,37),cell('Acme',70,25,100,37),
+                 cell('2021',0,50,30,62),cell('-',35,55,40,57),cell('2025',45,50,75,62),
+                 cell('Separate column',300,50,420,62)]
+        exported = 'Work experience Engineer at Acme 2021 - 2025 Separate column'
+        result = SimpleNamespace(document=SimpleNamespace(export_to_text=lambda **kw: exported), pages=[SimpleNamespace(cells=cells)])
+        self.assertEqual(service.document_text(result), 'Work experience\nEngineer at Acme\n2021 - 2025\nSeparate column')
+
     def test_skill_token_boundaries_and_sections(self):
         nlp = spacy.blank('xx')
         result = service.structure('Experience\nAcme 2021–2025\nSkills\nHR and Python\nEducation\nBSc 2020',
@@ -36,6 +47,11 @@ class ExtractionContract(unittest.TestCase):
             result = service.structure(text,[],spacy.blank('xx'))
             self.assertEqual(result['experience'],'Acme')
             self.assertEqual(result['education'],'University')
+
+    def test_ocr_headings_with_missing_accents_preserve_original_content(self):
+        result = service.structure('Kinh nghiem làm viec\nKỹ sư tại Acme\nKy nang\nPython\nHoc van\nĐại học 2020', [], spacy.blank('xx'))
+        self.assertEqual(result['experience'], 'Kỹ sư tại Acme')
+        self.assertEqual(result['education'], 'Đại học 2020')
 
     def test_missing_sections_are_blank(self):
         result=service.structure('No section headings here',[],spacy.blank('xx'))

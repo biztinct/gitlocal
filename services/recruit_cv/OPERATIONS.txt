@@ -1,33 +1,46 @@
-Payobook CV extraction service — 23 Oct 2026
+Payobook CV extraction service — 24 Oct 2026
 
-Activation is intentionally deferred until the owner increases RAM or supplies
-an adequately sized separate host. Source is staged at
-/odoo/services/recruit_cv on Payobook19v2; no container or model service is
-started on its existing 2 GB server. DocuSign runs outside Payobook and adds
-no local signing service requirement.
+Activated runtime: Payobook19v2, Ubuntu 24.04, Python 3.12, 4 GB RAM / 2 vCPU.
+DocuSign runs externally and requires no local signing process. This is a
+bounded single-conversion deployment, not a guarantee for unrestricted load.
+CPU Docling with Tesseract English/Vietnamese/Indonesian OCR uses an isolated
+virtualenv, dedicated unprivileged account and persistent model cache.
+Odoo's Python environment is unchanged.
 
-For a separate parser host, start with 8 GB RAM / 4 vCPU and one conversion at
-a time. 4 GB is a limited pilot allowance, not production acceptance. For
-co-hosting with Odoo and four databases, provision 16 GB as an initial planning
-allowance, then measure combined load. These are estimates, not guarantees.
-The previous small Intel Mac test peaked at 2,095,153,152 bytes (~2 GB).
-Large scans, multilingual layouts and Linux runtime behaviour need validation.
+Install/recover (root, authorised server):
+1. Stage services/recruit_cv at /odoo/services/recruit_cv, then run
+   ops/recruit_cv/install-runtime.sh. It generates a root-only service key once,
+   installs the CPU runtime and records resolved packages. Preserve the key.
+2. Install ops/recruit_cv/payobook-recruit-cv.service in /etc/systemd/system,
+   daemon-reload and start it. Wait for authenticated /health to report ready.
+   First start downloads models; later starts reuse /var/lib/recruit-cv/models.
+3. Install the private nginx snippet using ops/recruit_cv/install-proxy.py
+   (its staging and backup paths identify this release). Test nginx before reload.
+   Only localhost and this server's static IP may use the HTTPS endpoint;
+   bearer authentication is also required. External requests receive 403.
+4. Run ops/recruit_cv/verify-runtime.py with the key supplied from the protected
+   environment file. Acceptance dependencies additionally include reportlab.
+   It creates all test documents/images in memory. Enable the systemd unit
+   only after acceptance. Never print the key or put it in command arguments.
+5. Run ops/recruit_cv/activate-connections.py through an Odoo shell in each
+   installed database with the protected environment loaded. It checks/enables
+   CV only for each active company. Other integrations remain unchanged.
 
-After capacity is available:
-1. Build: docker build -t payobook-recruit-cv services/recruit_cv
-2. Supply a random RECRUIT_CV_KEY of at least 32 characters through the host's
-   secret store. Mount a persistent /models cache owned by uid 10001. Run one
-   worker. Bind port 8080 privately behind an HTTPS reverse proxy; do not expose
-   it directly to the Internet. Limit request bodies to 6 MB, rate-limit
-   requests, and allow at least 180 seconds for conversion responses.
-3. Prewarm models with synthetic PDF, DOCX and scanned images. Initial downloads
-   require network access. Restrict outbound traffic afterwards as appropriate.
-   Model licences are separate from library licences. Record resolved packages
-   and the image digest. Test peak memory on the chosen Linux host.
-4. In Hiring connections > CV extraction, enter HTTPS URL and the matching key,
-   Check, then Enable separately for each company that should use parsing.
-5. Test authorised representative CVs in English, Vietnamese and Indonesian.
-   Confirm search, skill facets, review, replacement and removal behaviour.
+Operational limits: one conversion, two CPU threads, 150% CPU quota,
+MemoryHigh 1900 MiB, MemoryMax 2300 MiB, swap max 256 MiB. HTTP 429/503 keeps
+jobs queued for retry; each database's cron handles one CV per run. Monitor
+systemctl show payobook-recruit-cv -p MemoryCurrent -p MemoryPeak -p NRestarts
+and host available memory under real concurrent Odoo use. Scale to a separate
+8 GB / 4 vCPU parser host or add capacity if queues or memory pressure grow.
+Partial/time-limited conversions fail visibly, never claim complete extraction.
+This release's measured acceptance results are in the release notes.
+
+Resolved Linux packages: requirements-linux.lock (CPU torch 2.13.0).
+Cached model revisions at deployment:
+- docling-project/docling-layout-heron: 8f39ad3c0b4c58e9c2d2c84a38465abf757272d8
+- docling-project/docling-models: fc0f2d45e2218ea24bce5045f58a389aed16dc23
+Preserve the model cache for reproducible recovery; model licences are separate
+from library licences. Revalidate if models or dependencies change.
 
 The service stores no CVs or extracted content and makes no external AI calls.
 Limits: 5 MB, 30 pages; one conversion at a time. Payobook stores the extracted

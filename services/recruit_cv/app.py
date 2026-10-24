@@ -7,7 +7,7 @@ import re
 import zipfile
 from contextlib import asynccontextmanager
 from threading import Lock
-from employment import employment_records
+from employment import employment_records, fold
 
 from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 
@@ -25,9 +25,16 @@ async def lifespan(app):
         raise RuntimeError('Set RECRUIT_CV_KEY to a random value of at least 32 characters')
     from docling.document_converter import DocumentConverter, PdfFormatOption, ImageFormatOption
     from docling.datamodel.base_models import InputFormat
-    from docling.datamodel.pipeline_options import PdfPipelineOptions
+    from docling.datamodel.pipeline_options import PdfPipelineOptions, TesseractCliOcrOptions
+    from docling.datamodel.accelerator_options import AcceleratorOptions, AcceleratorDevice
     import spacy
-    options = PdfPipelineOptions(do_ocr=True, generate_parsed_pages=True)
+    options = PdfPipelineOptions(do_ocr=True, generate_parsed_pages=True,
+        layout_batch_size=1, ocr_batch_size=1, table_batch_size=1, queue_max_size=2,
+        document_timeout=165,
+        accelerator_options=AcceleratorOptions(device=AcceleratorDevice.CPU,
+            num_threads=max(1, min(4, int(os.environ.get('RECRUIT_CV_THREADS', '2'))))))
+    if os.environ.get('RECRUIT_CV_OCR') == 'tesseract':
+        options.ocr_options = TesseractCliOcrOptions(lang=['eng', 'vie', 'ind'])
     _converter = DocumentConverter(allowed_formats=[InputFormat.PDF, InputFormat.DOCX, InputFormat.IMAGE],
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=options),
                         InputFormat.IMAGE: ImageFormatOption(pipeline_options=options)})
@@ -53,7 +60,32 @@ def document_text(result):
     the model's reading order when columns/tables make the two disagree.
     """
     text = result.document.export_to_text(traverse_pictures=True)
-    lines = '\n'.join(cell.text for page in result.pages for cell in page.cells if cell.text.strip())
+    physical_lines = []
+    for page in result.pages:
+        line, bounds = '', None
+        for cell in page.cells:
+            if not cell.text.strip():
+                continue
+            box = cell.to_bounding_box() if hasattr(cell, 'to_bounding_box') else None
+            current = (box.l, min(box.t, box.b), box.r, max(box.t, box.b)) if box else None
+            same_line = False
+            if bounds and current:
+                height = max(bounds[3] - bounds[1], current[3] - current[1], 1)
+                overlap = min(bounds[3], current[3]) - max(bounds[1], current[1])
+                smaller_height = max(min(bounds[3]-bounds[1], current[3]-current[1]), 1)
+                gap = current[0] - bounds[2]
+                same_line = overlap >= smaller_height * 0.5 and -height * 0.2 <= gap <= height * 3
+            if line and not same_line:
+                physical_lines.append(line)
+                line, bounds = '', None
+            line = (line + ' ' + cell.text).strip()
+            if bounds and current:
+                bounds = (bounds[0], min(bounds[1], current[1]), current[2], max(bounds[3], current[3]))
+            else:
+                bounds = current
+        if line:
+            physical_lines.append(line)
+    lines = '\n'.join(physical_lines)
     normalise = lambda value: re.sub(r'\s+', ' ', value).strip()
     return lines if lines and normalise(lines) == normalise(text) else text
 
@@ -74,15 +106,15 @@ def structure(text, skills, nlp):
     sections = {'experience': [], 'education': []}
     section = None
     headings = {
-        'experience': r'^(work experience|professional experience|employment(?: history)?|experience|kinh nghiệm(?: làm việc)?|pengalaman(?: kerja)?)\s*[:：]?$',
-        'education': r'^(education|qualifications|học vấn|trình độ học vấn|pendidikan)\s*[:：]?$',
+        'experience': r'^(work experience|professional experience|employment(?: history)?|experience|kinh nghiem(?: lam viec)?|pengalaman(?: kerja)?)\s*[:：]?$',
+        'education': r'^(education|qualifications|hoc van|trinh do hoc van|pendidikan)\s*[:：]?$',
     }
     for raw in text.splitlines():
         line = raw.strip(' #\t')
-        found = next((key for key, pattern in headings.items() if re.match(pattern, line, re.I)), None)
+        found = next((key for key, pattern in headings.items() if re.match(pattern, fold(line), re.I)), None)
         if found:
             section = found
-        elif re.match(r'^(skills|languages|references|certifications|kỹ năng|keahlian)\s*[:：]?$', line, re.I):
+        elif re.match(r'^(skills|languages|references|certifications|ky nang|keahlian)\s*[:：]?$', fold(line), re.I):
             section = None
         elif section and line:
             sections[section].append(line)
@@ -122,9 +154,11 @@ def extract(file: UploadFile = File(...), skills: str = Form('[]'), authorizatio
                 raise ValueError()
         except (ValueError, TypeError):
             raise HTTPException(422, 'Invalid skill vocabulary') from None
-        from docling.datamodel.base_models import DocumentStream
+        from docling.datamodel.base_models import DocumentStream, ConversionStatus
         result = _converter.convert(DocumentStream(name='cv' + suffix, stream=io.BytesIO(data)),
                                     max_num_pages=30, max_file_size=MAX_BYTES)
+        if result.status != ConversionStatus.SUCCESS:
+            raise HTTPException(422, 'The CV was only partially processed. Use a smaller or clearer document and retry.')
         text = document_text(result)
         if not text.strip():
             raise HTTPException(422, 'No readable text was found. Review the original document.')

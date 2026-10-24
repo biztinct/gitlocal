@@ -29,7 +29,7 @@ SPECS = {
         help='Run Documenso on a separate HTTPS service. Create a team API key and a webhook secret. Prepare an offer draft before sending it.',
         fields=[('url', 'Service URL', False), ('api_key', 'Team API key', True), ('webhook_secret', 'Webhook secret', True)]),
     'cv': dict(description='Read PDF, Word and scanned CVs, then review extracted skills and experience.',
-        help='Deploy the Payobook CV service with Docling and spaCy on a separate host. Enter its HTTPS address and service key.',
+        help='Use the private Payobook CV service with Docling and spaCy on a host with tested capacity. Enter its HTTPS address and service key.',
         fields=[('url', 'CV service URL', False), ('api_key', 'Service key', True)]),
     'google': dict(description='Find a time when the whole panel is available. Keep interviews in Google Calendar.',
         help='An administrator configures the Google OAuth app in Calendar settings. Each organiser connects their calendar. Panel calendars must be shared with that organiser.', fields=[]),
@@ -41,6 +41,10 @@ SPECS = {
     'email': dict(description='Use the existing outgoing email connection and recruitment templates.',
         help='An administrator verifies the outgoing mail server, sender domain and reply-to. A connection test does not prove inbox delivery. Enable candidate emails only after a controlled delivery test.', fields=[]),
 }
+
+
+class CVParserBusy(UserError):
+    """A single-worker parser is occupied; the background job must retry."""
 
 
 class HiringConnection(models.Model):
@@ -87,6 +91,8 @@ class HiringConnection(models.Model):
         try:
             response = requests.request(method, url + path, headers=headers,
                 timeout=kwargs.pop('timeout', (5, 45)), allow_redirects=False, **kwargs)
+            if self.provider == 'cv' and response.status_code in (429, 503):
+                raise CVParserBusy(_('Another CV is being processed. Your CV remains queued for retry.'))
             if response.status_code >= 300:
                 raise UserError(_('The service refused the request (HTTP %s). Check the connection and account permissions.', response.status_code))
             if len(response.content) > 15 * 1024 * 1024:

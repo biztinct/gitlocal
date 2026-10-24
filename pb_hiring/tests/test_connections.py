@@ -338,3 +338,23 @@ class TestCVProfile(OfferCase):
         for term, expected in [('Obsolete unique employer', False), ('Current unique employer', True)]:
             result = self.env['pb.hiring'].search_bank({'q': term, 'include_all': True})
             self.assertEqual(self.applicant.id in [r['id'] for r in result['rows']], expected)
+
+    def test_busy_parser_keeps_cv_queued_for_retry(self):
+        from ..models.connections import CVParserBusy
+        att, wizard = self._parsed()
+        self.applicant.pb_cv_state = 'queued'
+        # Isolate the CV leg; other providers are disabled in this fixture.
+        with patch.object(type(self.applicant), '_extract_cv', side_effect=CVParserBusy('Busy')):
+            self.env['pb.hiring.connection.jobs']._run()
+        self.assertEqual(self.applicant.pb_cv_state, 'queued')
+        self.assertIn('queued', self.applicant.pb_cv_note)
+
+    def test_busy_http_status_is_retryable_only_for_cv(self):
+        from ..models.connections import CVParserBusy
+        conn = self._connection('cv')
+        response = Mock(status_code=429, content=b'busy')
+        with patch('odoo.addons.pb_hiring.models.connections.requests.request', return_value=response):
+            with self.assertRaises(CVParserBusy): conn._http('POST', '/extract')
+        response.status_code = 503
+        with patch('odoo.addons.pb_hiring.models.connections.requests.request', return_value=response):
+            with self.assertRaises(CVParserBusy): conn._http('POST', '/extract')
