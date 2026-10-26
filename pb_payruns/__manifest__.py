@@ -13,7 +13,7 @@
     # 3.1.0: NAV P3b — readiness checklist with owners on every open card, the
     # month's cut-off and pay day on the hero (Payroll calendar, read softly:
     # pb_comp_ben and pb_close stay OUT of depends).
-    'version': '19.0.3.1.0',
+    'version': '19.0.3.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -24,7 +24,7 @@
     # biz_approval_workflow: the engine this run's approval is carried by.
     # pb_scheme_map / pb_group: a route is chosen per pay scheme and per
     # division, and those are the two modules that own those ideas.
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme',
+    'depends': ['pb_hub', 'web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme',
                 'pb_hr_workforce', 'pb_import_kit',
                 'biz_approval_workflow', 'pb_scheme_map', 'pb_group'],
     'data': [

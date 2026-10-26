@@ -24,12 +24,13 @@
  * same trail as everything else.
  */
 import {
-    Component, onMounted, onWillStart, onWillUnmount, useState,
+    Component, onMounted, onWillStart, onWillUnmount, useState, useRef,
 } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useNavigationState } from "@pb_hub/js/navigation_state";
 import { RequestDrawer } from "@pb_approval_config/js/request_drawer";
 import { initials, money, when } from "@pb_approval_config/js/sentence";
 
@@ -139,6 +140,21 @@ export class PbInbox extends Component {
             busy: false,
         });
 
+        this.navigationRoot = useRef("navigationRoot");
+        const savedNavigation = useNavigationState(this, "approvals", () => ({
+            tab: this.state.tab, scope: this.state.scope, area: this.state.area,
+            due: this.state.due, openId: this.state.openId,
+            scrollTop: this.navigationRoot.el?.scrollTop || 0,
+        }));
+        if (savedNavigation) {
+            const { scrollTop, ...controls } = savedNavigation;
+            Object.assign(this.state, controls);
+        }
+        onMounted(() => {
+            if (this.navigationRoot.el && savedNavigation) {
+                this.navigationRoot.el.scrollTop = savedNavigation.scrollTop || 0;
+            }
+        });
         this.onEscape = this.onEscape.bind(this);
         const arrival = inboxArrival(this.props);
         const focus = focusRequest(arrival);

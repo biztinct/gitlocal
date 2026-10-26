@@ -15,7 +15,7 @@
        ==================================================================== -->
 
   <t t-name="pb_approval_config.PbInbox">
-    <div class="pbim pbam-inbox" t-att-class="{ 'pbim-page': !props.embedded }">
+    <div t-ref="navigationRoot" class="pbim pbam-inbox" t-att-class="{ 'pbim-page': !props.embedded }">
       <div class="pbim-wrap">
 
         <!-- ============================================ the hero -->

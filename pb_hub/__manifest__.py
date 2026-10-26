@@ -43,7 +43,7 @@ registry, flat fills (W1/W2/W3).
     # the same upsell instead of navigating.
     # 19.0.1.11.0 — PAYAI P1: the palette service exposes `entries()` and
     # `run(id)`; a row may answer any typed text (`anyQuery` + `onRun`).
-    'version': '19.0.1.12.2',
+    'version': '19.0.1.13.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -61,6 +61,10 @@ registry, flat fills (W1/W2/W3).
             'pb_hub/static/src/scss/hub_shell.scss',
             'pb_hub/static/src/scss/hub_palette.scss',
             'pb_hub/static/src/js/hub_nav.js',
+            'pb_hub/static/src/js/navigation_state.js',
+            'pb_hub/static/src/js/navigation.js',
+            'pb_hub/static/src/xml/navigation.xml',
+            'pb_hub/static/src/scss/navigation.scss',
             'pb_hub/static/src/js/hub_place.js',
             'pb_hub/static/src/js/hub_features.js',
             'pb_hub/static/src/js/hub_feature_off.js',

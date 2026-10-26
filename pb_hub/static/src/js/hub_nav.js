@@ -27,6 +27,7 @@ import { ic } from "@pb_import_kit/js/import_icons";
 
 /** The context key a plain pb_hub shell reads its arrival lens from. */
 export const HUB_LENS_KEY = "pb_lens";
+const RETURN_SESSION = `${Date.now()}-${Math.random()}`;
 
 /**
  * Keyboard movement inside a lens rail (NAV P1, ledger R1).
@@ -101,6 +102,13 @@ export function openHub(actionService, opts = {}) {
         // would make the click look like a slow screen (W40: never catch{}).
         throw new Error("openHub: one of `tag` or `xmlid` is required");
     }
+    const controller = actionService.currentController;
+    const source = controller?.action;
+    // Only retain a controller when it actually is the declared return target.
+    const restoreSource = back && source && (
+        (back.tag && back.tag === source.tag) ||
+        (back.xmlid && back.xmlid === source.xml_id)
+    );
     const additionalContext = { ...context };
     if (lens) { additionalContext[lensKey] = lens; }
     if (focus) { additionalContext.pb_focus = focus; }
@@ -108,6 +116,8 @@ export function openHub(actionService, opts = {}) {
     if (back && (back.tag || back.xmlid)) {
         additionalContext.pb_back = {
             label: back.label || "",
+            controllerId: restoreSource ? controller.jsId : "",
+            returnSession: restoreSource ? RETURN_SESSION : "",
             tag: back.tag || "",
             xmlid: back.xmlid || "",
             lens: back.lens || "",
@@ -121,7 +131,7 @@ export function openHub(actionService, opts = {}) {
                 ? { ...back.context } : {},
         };
     }
-    return actionService.doAction(target, { additionalContext, clearBreadcrumbs });
+    return actionService.doAction(target, { additionalContext, clearBreadcrumbs: restoreSource ? false : clearBreadcrumbs });
 }
 
 /**
@@ -158,6 +168,10 @@ export function hubBack(props) {
 export function goBack(actionService, back) {
     if (!back || !(back.tag || back.xmlid)) {
         return null;
+    }
+    const crumbs = actionService.currentController?.config?.breadcrumbs || [];
+    if (back.returnSession === RETURN_SESSION && back.controllerId && crumbs.slice(0, -1).some(c => c?.jsId === back.controllerId)) {
+        return actionService.restore(back.controllerId);
     }
     return openHub(actionService, {
         tag: back.tag, xmlid: back.xmlid, lens: back.lens, lensKey: back.lensKey,
@@ -201,10 +215,10 @@ export class HubBackChip extends Component {
     get label() { return this.props.back.label || _t("Back"); }
 
     /** Translated here rather than interpolated in the template. */
-    get title() { return _t("Back to %s", this.label); }
+    get title() { return this.props.back.label ? _t("Back to %s", this.label) : _t("Back"); }
 
     /** A CLICK handler, never a lifecycle hook (W21). */
     goBack() {
-        goBack(this.actionService, this.props.back);
+        return goBack(this.actionService, this.props.back);
     }
 }

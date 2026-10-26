@@ -53,7 +53,7 @@
         <!-- The return door, when the caller passed one (hub_nav.js). It sits
              next to the brand because that is where a user looks for "where am
              I and how do I get out". -->
-        <HubBackChip t-if="back" back="back"/>
+
 
         <!-- The hub's own context segments. A SLOT, not a component: the kit
              has no opinion about whether a hub scopes by company, period,
@@ -80,6 +80,14 @@
         <span class="pbhub-user" t-att-title="userName" t-esc="userInitials"/>
       </header>
 
+      <nav class="pbhub-location" aria-label="Workspace location">
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+        <div class="pbhub-location__path">
+          <span t-esc="brand.label"/>
+          <span aria-hidden="true" t-out="ic('chevron', 12)"/>
+          <span class="pbhub-location__current" aria-current="page" t-esc="locationTitle"/>
+        </div>
+      </nav>
       <div class="pbhub-low">
 
         <!-- ========================= lens rail ========================= -->
@@ -177,9 +185,9 @@
   <t t-name="pb_hub.HubBackChip">
     <button t-attf-class="pbhub-back {{ lite ? 'pbhub-back--lite' : '' }}"
             t-on-click="() => this.goBack()"
-            t-att-title="title">
+            t-att-title="title" t-att-aria-label="title">
       <span class="pbhub-back__ic" t-out="ic('back', 12)"/>
-      <span class="pbhub-back__tx" t-esc="label"/>
+      <span class="pbhub-back__tx" t-esc="title"/>
     </button>
   </t>
 

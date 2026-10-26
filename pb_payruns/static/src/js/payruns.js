@@ -30,6 +30,7 @@ import { Component, useState, useRef, useEffect, onWillStart, onMounted,
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { useNavigationState } from "@pb_hub/js/navigation_state";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 // There is ONE action a card can take on the run itself now: send it in. What
@@ -143,11 +144,27 @@ export class PbPayruns extends Component {
             // the run the hub sent us to (arrival.focus), highlighted once
             focusId: this._arrivalFocus(),
         });
+        const savedNavigation = useNavigationState(this, "payruns", () => ({
+            q: this.state.q, division: this.state.division, step: this.state.step,
+            hero: this.state.hero, months: this.state.months, view: this.state.view,
+            sort: { ...this.state.sort }, openMonths: { ...this.state.openMonths },
+            showRejected: this.state.showRejected, cur: this.state.cur,
+            scrollTop: this.root.el?.scrollTop || 0,
+        }));
+        if (savedNavigation) {
+            const { scrollTop, ...controls } = savedNavigation;
+            Object.assign(this.state, controls);
+        }
         this._rects = {};
         this._onKey = this._onKey.bind(this);
         this._onDocClick = this._onDocClick.bind(this);
         onWillStart(async () => { await this.load(); });
         onMounted(() => {
+            if (savedNavigation && this.root.el) {
+                this.root.el.scrollTop = savedNavigation.scrollTop || 0;
+                const card = this.root.el.querySelector(`[data-card="${this.state.cur}"]`);
+                card?.focus({ preventScroll: true });
+            }
             document.addEventListener("keydown", this._onKey);
             document.addEventListener("click", this._onDocClick, true);
         });
@@ -787,6 +804,7 @@ export class PbPayruns extends Component {
         if (!id) return;
         this.state.peek = 0;
         this.state.menu = 0;
+        this.state.cur = id;
         // target:"current" WITHOUT clearBreadcrumbs — the breadcrumb is the way
         // back to the hub, and the run form is VU-skinned, so this is a real
         // door with a real return path (W5).

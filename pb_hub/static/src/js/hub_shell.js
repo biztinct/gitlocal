@@ -35,6 +35,8 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, HUB_LENS_KEY, railKeydown } from "@pb_hub/js/hub_nav";
+import { provideNavigationMemory } from "@pb_hub/js/navigation_state";
+import { hubLocationTitle } from "@pb_hub/js/navigation";
 import { HubTracker } from "@pb_hub/js/hub_tracker";
 import { featureGate, featuresState } from "@pb_hub/js/hub_features";
 import { HubFeatureOff } from "@pb_hub/js/hub_feature_off";
@@ -122,9 +124,10 @@ export class HubShell extends Component {
 
         // Read ONCE, in setup, from props. Never written back anywhere.
         this.arrival = this._arrival();
+        this.navigationMemory = provideNavigationMemory(this.props.action);
 
         this.state = useState({
-            lens: this.arrival.lens || this._restoreLens(),
+            lens: this.navigationMemory.lens || this.arrival.lens || this._restoreLens(),
             // key -> boolean; null while unresolved, which the rail reads as
             // "show everything" so the shell never flashes an empty rail
             allowed: null,
@@ -157,6 +160,9 @@ export class HubShell extends Component {
     }
 
     _publishPlace() {
+        this.navigationMemory.lens = this.state.lens;
+        const title = hubLocationTitle(this.config.key, this.lensDef);
+        if (title && this.env.config?.setDisplayName) { this.env.config.setDisplayName(title); }
         const tag = (this.props.action && this.props.action.tag) || "";
         if (!tag) { return; }
         publishPlace(this, {
@@ -179,6 +185,7 @@ export class HubShell extends Component {
     get brand() { return this.config.brand || { label: "", icon: "compass" }; }
     get tracker() { return this.config.tracker || null; }
     get back() { return this.arrival.back; }
+    get locationTitle() { return hubLocationTitle(this.config.key, this.lensDef); }
     get hasCog() { return typeof this.config.cog === "function"; }
 
     // --------------------------------------------------------------- arrival
