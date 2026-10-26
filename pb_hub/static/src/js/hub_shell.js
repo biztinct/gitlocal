@@ -34,7 +34,7 @@ import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
-import { HubBackChip, HUB_LENS_KEY, railKeydown } from "@pb_hub/js/hub_nav";
+import { HubBackChip, HUB_LENS_KEY, railKeydown, hubBack } from "@pb_hub/js/hub_nav";
 import { provideNavigationMemory } from "@pb_hub/js/navigation_state";
 import { hubLocationTitle } from "@pb_hub/js/navigation";
 import { HubTracker } from "@pb_hub/js/hub_tracker";
@@ -201,12 +201,11 @@ export class HubShell extends Component {
         const ctx = (this.props.action && this.props.action.context) || {};
         const keys = (this.config.lenses || []).map((l) => l.key);
         const asked = ctx[HUB_LENS_KEY];
-        const back = ctx.pb_back;
         return {
             lens: keys.includes(asked) ? asked : null,
             focus: ctx.pb_focus || "",
             // a back door with no destination is not a back door
-            back: back && (back.tag || back.xmlid) ? back : null,
+            back: hubBack(this.props),
         };
     }
 

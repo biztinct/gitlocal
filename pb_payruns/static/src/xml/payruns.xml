@@ -204,7 +204,7 @@
                 <th class="r"/>
               </tr></thead>
               <tbody>
-                <tr t-foreach="listRows" t-as="b" t-key="b.id" t-on-click="() => this.openPeek(b.id)">
+                <tr t-foreach="listRows" t-as="b" t-key="b.id" t-att-data-card="b.id" tabindex="-1" t-on-click="() => this.openPeek(b.id)">
                   <td><div class="pbr-tnm"><span t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/><span t-esc="b.name"/></div></td>
                   <td class="pbr-tpd" t-esc="b.period"/>
                   <td><span t-attf-class="pbr-pill {{ pill(b).cls }}"><i/><t t-esc="pill(b).text"/></span></td>
@@ -298,7 +298,7 @@
     <t t-set="rt" t-value="b.state === 'approval_pending' ? route(b) : null"/>
     <t t-set="dl" t-value="b.state === 'done' ? delivery(b) : null"/>
     <article t-attf-class="pbr-card {{ isSelected(b.id) ? 'sel' : '' }} {{ state.busy === b.id ? 'busy' : '' }} {{ b.awaiting_me ? 'me' : '' }} {{ state.cur === b.id ? 'cur' : '' }} {{ state.focusId === b.id ? 'focus' : '' }}"
-             t-att-data-card="b.id" data-coach="pk-card">
+             t-att-data-card="b.id" tabindex="-1" data-coach="pk-card">
       <button type="button" class="pbr-ck" t-att-aria-pressed="isSelected(b.id) ? 'true' : 'false'" aria-label="Select"
               t-on-click.stop="(ev) => this.toggleSelect(b, ev)"><span t-if="isSelected(b.id)" class="ic" t-out="ic('check', 11)"/></button>
       <div class="pbr-card-main" t-on-click="() => this.openPeek(b.id)">

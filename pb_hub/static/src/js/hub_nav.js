@@ -143,13 +143,15 @@ export function openHub(actionService, opts = {}) {
  * non-hub surface: the door that sent you says how to get back, and the surface
  * does not have to know who that was.
  *
- * Returns null for a `pb_back` with no destination, because a back door with
- * nowhere to go is not a back door — the chip must be ABSENT, never inert.
+ * Without an explicit destination, the chip uses the native action stack.
+ * Its template hides the control when there is no predecessor.
  */
 export function hubBack(props) {
     const b = (props && props.action && props.action.context
                && props.action.context.pb_back) || null;
-    return (b && (b.tag || b.xmlid)) ? b : null;
+    // Standalone client actions may have a native predecessor without an
+    // explicit hub descriptor. The chip hides itself on a root/direct entry.
+    return (b && (b.tag || b.xmlid)) ? b : { fromStack: true };
 }
 
 /**
@@ -166,9 +168,11 @@ export function hubBack(props) {
  * @param {object} back  exactly what `openHub()` wrote into `pb_back`
  */
 export function goBack(actionService, back) {
-    if (!back || !(back.tag || back.xmlid)) {
-        return null;
+    if (back?.fromStack) {
+        const previous = actionService.currentController?.config?.breadcrumbs?.filter(Boolean).at(-2);
+        return previous ? actionService.restore(previous.jsId) : null;
     }
+    if (!back || !(back.tag || back.xmlid)) { return null; }
     const crumbs = actionService.currentController?.config?.breadcrumbs || [];
     if (back.returnSession === RETURN_SESSION && back.controllerId && crumbs.slice(0, -1).some(c => c?.jsId === back.controllerId)) {
         return actionService.restore(back.controllerId);
@@ -212,10 +216,14 @@ export class HubBackChip extends Component {
 
     ic(n, s = 12) { return ic(n, s); }
 
-    get label() { return this.props.back.label || _t("Back"); }
+    get previous() { return this.env.config?.breadcrumbs?.filter(Boolean).at(-2); }
+    get hasDestination() {
+        return this.props.back.fromStack ? !!this.previous : !!(this.props.back.tag || this.props.back.xmlid);
+    }
+    get label() { return (this.props.back.fromStack ? this.previous?.name : this.props.back.label) || _t("previous page"); }
 
     /** Translated here rather than interpolated in the template. */
-    get title() { return this.props.back.label ? _t("Back to %s", this.label) : _t("Back"); }
+    get title() { return _t("Back to %s", this.label); }
 
     /** A CLICK handler, never a lifecycle hook (W21). */
     goBack() {

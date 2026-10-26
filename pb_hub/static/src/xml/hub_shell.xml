@@ -183,7 +183,7 @@
        documented-safe way to combine a base class with a computed one; a static
        `class` beside it would silently lose one of them (W23). -->
   <t t-name="pb_hub.HubBackChip">
-    <button t-attf-class="pbhub-back {{ lite ? 'pbhub-back--lite' : '' }}"
+    <button t-if="hasDestination" type="button" t-attf-class="pbhub-back {{ lite ? 'pbhub-back--lite' : '' }}"
             t-on-click="() => this.goBack()"
             t-att-title="title" t-att-aria-label="title">
       <span class="pbhub-back__ic" t-out="ic('back', 12)"/>
