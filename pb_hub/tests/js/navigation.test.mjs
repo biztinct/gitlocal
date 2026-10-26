@@ -10,7 +10,7 @@ function load(p,names,globals={}) {
     const source=read(p).replace(/^import[\s\S]*?from\s+["'][^"']+["'];\s*$/gm,'').replace(/\bexport /g,'');
     return vm.runInNewContext(source+'\n({'+names.join(',')+'})',{Component:class{},_t,...globals});
 }
-const {openHub,goBack}=load('pb_hub/static/src/js/hub_nav.js',['openHub','goBack']);
+const {openHub,goBack,returnCrumb}=load('pb_hub/static/src/js/hub_nav.js',['openHub','goBack','returnCrumb']);
 let opened,restored;
 const action={currentController:{jsId:'source-1',action:{tag:'pb_home_hub'},config:{breadcrumbs:[]}},doAction:async(target,options)=>opened={target,options},restore:async id=>restored=id};
 await openHub(action,{tag:'pb_pay_hub',back:{tag:'pb_home_hub',label:'Approval inbox',lens:'inbox'}});
@@ -30,9 +30,13 @@ await openHub(action,{tag:'pb_pay_hub'});assert.equal(opened.options.clearBreadc
 assert.equal(await goBack(action,null),null);
 action.currentController={config:{breadcrumbs:[{jsId:'inbox'},{jsId:'matrix'}]}};
 await goBack(action,{fromStack:true});assert.equal(restored,'inbox');
+const defaultBack={tag:'pb_settings_hub',label:'Settings'};
+action.currentController.config.breadcrumbs[0].name='Approval inbox';
+await goBack(action,defaultBack);assert.equal(restored,'inbox');
+assert.equal(returnCrumb(action.currentController.config.breadcrumbs,defaultBack).name,'Approval inbox');
 action.currentController={config:{breadcrumbs:[{jsId:'root'}]}};
 assert.equal(await goBack(action,{fromStack:true}),null);
-console.log('PASS: eight origin, restoration, stale-session and root-navigation checks');
+console.log('PASS: ten origin, restoration, stale-session and root-navigation checks');
 const {PayobookBreadcrumbs:B,modelLocation}=load('pb_hub/static/src/js/navigation.js',['PayobookBreadcrumbs','modelLocation'],{Breadcrumbs:class{},ControlPanel:{components:{}},patch:()=>{},registry:{category:()=>({contains:()=>true})},openHub,ic:()=>''});
 const b=Object.create(B.prototype);b.props={breadcrumbs:[{name:'Approval inbox',onSelected:()=>restored='inbox'},{name:'Maya',isFormView:true}]};b.env={model:{root:{resModel:'hr.payslip',data:{payslip_run_id:{id:42,display_name:'October payroll'}}}}};b.action=action;
 assert.equal(b.returnLabel,'Back to Approval inbox');assert.equal(b.parents.map(x=>x.name).join('/'),'Payroll/Payslips/October payroll');

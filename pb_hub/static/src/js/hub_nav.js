@@ -167,16 +167,22 @@ export function hubBack(props) {
  * @param {object} actionService
  * @param {object} back  exactly what `openHub()` wrote into `pb_back`
  */
+export function returnCrumb(crumbs, back) {
+    if (!back) { return null; }
+    const path = (crumbs || []).filter(Boolean).slice(0, -1);
+    if (back.returnSession || back.controllerId) {
+        return back.returnSession === RETURN_SESSION
+            ? path.find(c => c.jsId === back.controllerId) || null : null;
+    }
+    // XML action defaults describe a fallback parent. A live predecessor is
+    // the actual origin and takes precedence over that generic destination.
+    return path.at(-1) || null;
+}
+
 export function goBack(actionService, back) {
-    if (back?.fromStack) {
-        const previous = actionService.currentController?.config?.breadcrumbs?.filter(Boolean).at(-2);
-        return previous ? actionService.restore(previous.jsId) : null;
-    }
+    const previous = returnCrumb(actionService.currentController?.config?.breadcrumbs, back);
+    if (previous) { return actionService.restore(previous.jsId); }
     if (!back || !(back.tag || back.xmlid)) { return null; }
-    const crumbs = actionService.currentController?.config?.breadcrumbs || [];
-    if (back.returnSession === RETURN_SESSION && back.controllerId && crumbs.slice(0, -1).some(c => c?.jsId === back.controllerId)) {
-        return actionService.restore(back.controllerId);
-    }
     return openHub(actionService, {
         tag: back.tag, xmlid: back.xmlid, lens: back.lens, lensKey: back.lensKey,
         context: back.context || {},
@@ -216,11 +222,11 @@ export class HubBackChip extends Component {
 
     ic(n, s = 12) { return ic(n, s); }
 
-    get previous() { return this.env.config?.breadcrumbs?.filter(Boolean).at(-2); }
+    get previous() { return returnCrumb(this.env.config?.breadcrumbs, this.props.back); }
     get hasDestination() {
         return this.props.back.fromStack ? !!this.previous : !!(this.props.back.tag || this.props.back.xmlid);
     }
-    get label() { return (this.props.back.fromStack ? this.previous?.name : this.props.back.label) || _t("previous page"); }
+    get label() { return this.previous?.name || this.props.back.label || _t("previous page"); }
 
     /** Translated here rather than interpolated in the template. */
     get title() { return _t("Back to %s", this.label); }
