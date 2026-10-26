@@ -36,4 +36,26 @@
     .pbhub-navigation__parents { width: 100%; }
     .pbhub-location { padding: 4px 10px; }
 }
+// Odoo portals small-screen breadcrumbs into the dark global navbar.
+// Give that constrained slot one readable return target; the form owns its title.
+.o_main_navbar .pbhub-navigation--compact {
+    flex: 1 1 auto; align-self: center; overflow: hidden;
+    color: var(--NavBar-brand-color, #fff);
+    .pbhub-navigation__parents { display: none; }
+    .pbhub-navigation__row { flex-wrap: nowrap; }
+    .pbhub-navigation__return {
+        color: inherit; min-width: 0; max-width: 100%; white-space: nowrap;
+        span:last-child { overflow: hidden; text-overflow: ellipsis; }
+        &:hover { background: rgba(255, 255, 255, .12); }
+        &:focus-visible { outline-color: currentColor; outline-offset: -2px; }
+    }
+    .pbhub-navigation__current {
+        display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-size: 14px;
+    }
+    &.pbhub-navigation--has-return .pbhub-navigation__title {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip-path: inset(50%); white-space: nowrap;
+    }
+}
 @media print { .pbhub-navigation__row, .pbhub-location { display: none !important; } }

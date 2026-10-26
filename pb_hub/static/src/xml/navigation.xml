@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="pb_hub.ContextNavigation">
-    <div class="pbhub-navigation">
+    <div class="pbhub-navigation" t-att-class="{'pbhub-navigation--compact': env.isSmall, 'pbhub-navigation--has-return': returnLabel}">
       <nav t-if="returnLabel or parents.length" class="pbhub-navigation__row" aria-label="Page navigation">
-        <button t-if="returnLabel" type="button" class="pbhub-navigation__return" t-on-click="goBack" t-att-title="returnLabel">
+        <button t-if="returnLabel" type="button" class="pbhub-navigation__return" t-on-click="goBack" t-att-title="returnLabel" t-att-data-hotkey="previous ? 'b' : undefined">
           <span aria-hidden="true" t-out="ic('back')"/><span t-esc="returnLabel"/>
         </button>
         <nav t-if="parents.length" class="pbhub-navigation__parents" aria-label="Location">
