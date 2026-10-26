@@ -67,7 +67,7 @@ const ensureHomeIcon = (cp) => {
     if (!cp) cp = document.querySelector('.o_control_panel');
     if (!cp) return;
 
-    if (cp.querySelector('.pbhub-navigation')) {
+    if (cp.querySelector('.pbhub-navigation') || document.querySelector('.o_navbar_breadcrumbs .pbhub-navigation')) {
         cp.querySelector('.o_hr_flow_home_link')?.remove();
         return;
     }
