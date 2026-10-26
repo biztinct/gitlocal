@@ -11,12 +11,16 @@ HOST = "Payobook19v2"
 head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
                       capture_output=True, text=True, check=True).stdout.strip()
 paths = [HERE.parent / "access-delegation-poc.html", HERE / "nginx-location.conf"]
-for path in paths:
+sources = [HERE / "app.js", HERE / "build.py", HERE / "deploy.py"]
+for path in paths + sources:
     rel = str(path.relative_to(ROOT))
     committed = subprocess.run(["git", "-C", str(ROOT), "show", head + ":" + rel],
                                capture_output=True, check=True).stdout
     if committed != path.read_bytes():
         raise SystemExit("Commit the latest preview before deploying: " + rel)
+bundled = paths[0].read_text().split("<script>", 1)[1].split("</script>", 1)[0]
+if bundled != "\n" + (HERE / "app.js").read_text():
+    raise SystemExit("Rebuild the standalone HTML before committing and deploying")
 
 stage = "/tmp/access-delegation-poc-" + head[:12]
 subprocess.run(["ssh", HOST, "mkdir", "-p", stage], check=True)

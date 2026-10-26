@@ -1,48 +1,73 @@
-# Access and Delegation design review
+# Access and Delegation design review — revision 2
 
-Open `../access-delegation-poc.html` in a browser. It is a standalone document
-with three interactive concepts, a review of the current product, first-party
-research links, a comparison and a recommendation. No external dependencies
-or production API calls are used.
+Open `../access-delegation-poc.html` in a browser. The self-contained document
+contains three interactive concepts, a review of the existing product,
+first-party research links, a feature-preservation checklist, a comparison and
+recommendation. It has no external dependencies or production API calls.
 
-- **01 Access Studio (recommended):** role library, per-action record scopes,
-  record conditions, field controls with a live form preview, delegation and
-  local revision history.
-- **02 Guided Setup:** template, record scope, fields and review; individual
-  actions and rules remain available through focused editors.
-- **03 People Passport:** effective-access explanation, multiple grant sources,
-  source-role editing and temporary access visibility.
+- **01 Access Studio (recommended):** a module-specific workspace with scoped
+  roles, reusable profiles, CRUD scopes, record rules, form fields, Screens,
+  delegation and revision history.
+- **02 Guided Setup:** choose a profile, refine source-role policy, preview the
+  form and full menu, then review a local profile assignment.
+- **03 People Passport:** explain a person's assigned profile, source roles,
+  additional grants, menu and effective record/field access.
 
-All data is fictional. Concept state is independent and held in memory; reload
-resets it. A chosen design preference is stored locally when storage is
-available and can be downloaded as a text file. It does not constitute approval
-to implement or change live permissions.
+Hiring, People and Payroll use one central catalogue within each concept.
+Global Settings groups that catalogue by module. The Hiring access owner can
+manage only Hiring; a platform-owner demo mode exposes the other workspaces.
+Shared roles remain references controlled by their owning module.
 
-The demo models company boundaries, self/direct-report record ownership,
-department/status AND/OR conditions, field visibility/editability and separate
-input-on-create settings. The simulator tests employee View/Edit/Delete. It
-does not reproduce the complete Odoo authorization engine. Unsupported models,
-real user management, backend persistence, notification, exact-time expiry,
-masking and live enforcement are outside this design artifact.
+An **account type** is Staff/Employee/External. An **access profile** packages
+existing roles. A **role** carries policies; profiles do not duplicate those
+policies. The existing `pb.role.profile` technical model remains a role.
 
-## Scope and deployment
+Screens preserves the entire 12-item menu map, role/profile/person previews,
+visible/locked/hidden states, submenu ordering and visibility, and the path
+from submenu to form and resource. The preservation checklist distinguishes
+interactive examples from production features to retain (advanced role gates,
+audiences, orphan warnings, drag/keyboard ordering and revision restoration).
+Menu layout does not grant or revoke backend data access.
 
-Only the static design-review environment is in scope:
-`https://payobook.com/preview/access-delegation/`, served by nginx on
-`Payobook19v2`. The deployment publishes the latest committed combined state
-of the complete preview and its route, preserves existing server configuration,
-backs up previous preview files, validates nginx and reloads it. It does not
-deploy Odoo source or change databases, roles or permissions. Therefore no
-module upgrade or migration is in scope for `payobook`, `payobook_template`,
-`p0clone` or `rize`. Retired ABM is untouched.
+All identities, records and policies are fictional. Each concept has independent
+in-memory state and resets on reload. Only a design preference uses local
+storage and can be downloaded; it does not approve production implementation.
 
-After committing both the HTML and hosting files:
+The simplified policy evaluator covers per-action scope, mandatory Company A,
+AND/OR record conditions, field read/write and separate creation inputs.
+It is not the Odoo authorization engine. Fields/rules/simulator demonstrate the
+first resource in each module. Detailed menu mappings include illustrative
+adapters. Real persistence, enforcement, notifications, automatic expiry,
+masking and migrations are outside this artifact.
+
+## Editing and publishing
+
+Edit `app.js`, and edit the static content/CSS directly in the HTML, then run:
+
+```sh
+python3 docs/design/access-delegation-poc/build.py
+node --check docs/design/access-delegation-poc/app.js
+```
+
+After committing the preview sources and hosting files, re-check the latest
+branch/worktree and run:
 
 ```sh
 python3 docs/design/access-delegation-poc/deploy.py
 ```
 
-The script rejects uncommitted preview bytes. Re-check the branch and worktree
-immediately before running it. Exclude concurrent-session work from commits.
-Chrome checks and deployment evidence are recorded in `verification.md` after
-testing. Screenshots are viewed in memory; no test PNGs should be retained.
+The script rejects uncommitted preview source or deployment bytes and a stale
+JavaScript bundle. It publishes the complete preview from the latest committed
+combined branch state. Exclude unrelated concurrent-session work from commits.
+
+## Scope
+
+The only deployment target is the existing isolated static review environment:
+`https://payobook.com/preview/access-delegation/`, served by nginx on
+`Payobook19v2`. Deployment preserves existing configuration, backs up the
+previous preview, validates nginx and reloads it. It does not deploy Odoo source
+or alter databases, roles or permissions. No upgrade or migration is in scope
+for `payobook`, `payobook_template`, `p0clone` or `rize`. Retired ABM is untouched.
+
+See `verification.md` for deployed Chrome checks. Screenshots are viewed in
+memory; no test PNGs are retained.
