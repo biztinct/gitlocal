@@ -33,6 +33,7 @@ import { openHub } from "@pb_hub/js/hub_nav";
 import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 import { LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
 import { PbHiringBoard } from "@pb_hiring/js/hiring_board";
+import { PbHiringSetup } from "@pb_hiring/js/hiring_setup";
 
 /** Who is offered the board — unchanged from the old Lifecycle tab. */
 export const HIRING_HUB_GATE = LIFECYCLE_GATE.concat([
@@ -46,6 +47,10 @@ export const HIRING_HUB_GATE = LIFECYCLE_GATE.concat([
 
 /** The resume bank: the hiring team only (manager and admin imply user). */
 export const HIRING_BANK_GATE = ["pb_hiring.group_hiring_user"];
+
+const HIRING_SETUP_GATE = [
+    "pb_hiring.group_hiring_manager", "pb_hiring.group_hiring_admin", "base.group_system",
+];
 
 const PROBE = { model: "pb.hiring", method: "can_open" };
 
@@ -91,6 +96,9 @@ export class PbHiringHub extends Component {
                   title: _t("Talent pool (resume bank)"),
                   Component: PbHiringBoard, groups: HIRING_BANK_GATE, probe: PROBE,
                   props: { startTab: "bank", placeLens: "bank" } },
+                { key: "setup", icon: "sliders", label: _t("Set-up"),
+                  title: _t("Hiring set-up"), Component: PbHiringSetup,
+                  groups: HIRING_SETUP_GATE, probe: PROBE },
                 ...this.extraLenses(),
             ],
         };
@@ -117,6 +125,17 @@ export class PbHiringHub extends Component {
 
 registry.category("actions").add("pb_hiring_hub", PbHiringHub);
 
+// Keep bookmarks, Settings cards, palette entries and the board's existing
+// setup link working, with the SAME Hiring rail and permission checks.
+export class PbHiringSetupWorkspace extends PbHiringHub {
+    setup() {
+        super.setup();
+        this.config.defaultLens = "setup";
+        this.config.rememberLens = false;
+    }
+}
+registry.category("actions").add("pb_hiring_setup", PbHiringSetupWorkspace);
+
 // The tabs' gates, as the config above declares them, so a lesson and the
 // Access board can say "not for you" before anybody opens the hub.
 registry.category(HUB_LENS_GATES).add("pb_hiring_hub", () => [
@@ -125,5 +144,6 @@ registry.category(HUB_LENS_GATES).add("pb_hiring_hub", () => [
     { key: "offers", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "interviews", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "bank", groups: HIRING_BANK_GATE, probe: PROBE },
+    { key: "setup", groups: HIRING_SETUP_GATE, probe: PROBE },
     ...registry.category(HIRING_LENSES).getAll(),
 ].map((l) => ({ ...l, hubFeature: "lifecycle" })));

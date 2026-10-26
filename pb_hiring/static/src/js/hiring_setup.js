@@ -13,7 +13,6 @@
  * change anything; `can_edit` only decides what is OFFERED.
  */
 import { Component, useState, onWillStart, useRef, onWillUnmount } from "@odoo/owl";
-import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
@@ -388,4 +387,4 @@ export class PbHiringSetup extends Component {
     }
 }
 
-registry.category("actions").add("pb_hiring_setup", PbHiringSetup);
+// The legacy action is registered by hiring_hub.js so every entry keeps the rail.
