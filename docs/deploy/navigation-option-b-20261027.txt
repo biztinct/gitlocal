@@ -1,0 +1,75 @@
+Payobook Option B navigation — deployment and verification
+Date: 27 October 2026 (Australia/Sydney)
+
+Result
+Implemented compact canonical location plus a named return to the real origin.
+Native Odoo forms use their existing action-restoration callbacks and save/validation
+lifecycle. A direct pay-run link offers "View Pay runs" instead of pretending
+there is browser history. Mobile uses a readable, truncated named return in the
+Odoo navbar. Legacy duplicate Home controls are removed.
+
+Pay runs retains query, division, step, month, layout, sorting, expanded months,
+scroll position and selected-row focus across navigation. Approval inbox retains
+its selected tab, scope, area, due filter and scroll position. Memory is per action
+and in memory only; rows and business data reload from the server. An XML action's
+generic fallback parent no longer overrides its actual live origin.
+
+Commits
+abea7a783bb590c4e3183de3a8ae65fed9872e39 — main implementation and module versions
+b616364965b199776053278c5d8e58da63549e74 — standalone returns and row focus
+6dd9d6b3b322e61d25eb2aa9b912f9813b6288f7 — compact header
+f7a6301af8560a7f813659595abae9507788f3b5 — actual origin before fallback parent
+6b9b7da56b692ecb6d3b65faedf5ecce30acd052 — final deployed runtime commit
+
+Deployment
+SSH: Payobook19v2
+Only addon target: /odoo/odoo-server/addons
+Databases: payobook, payobook_template, p0clone, rize
+Upgraded installed modules on all four:
+  pb_hub 19.0.1.13.0
+  pb_payruns 19.0.3.2.0
+  pb_approval_config 19.0.1.6.7
+  pb_hr_payroll_base 19.0.1.4.2
+Every release rechecked server content and the latest combined branch state.
+All 154 custom addon tree hashes match the final combined release. Installed
+versions were verified across all four DBs. Standard server addons preserved.
+Concurrent unrelated files were excluded. ABM was not touched.
+
+Backups
+Nonproduction: /odoo/backups/navigation-option-b-20261026T202205Z/<database>
+Rize permanent: /odoo/archives/rize-navigation-option-b-20261026T202205Z
+Database dumps verified with pg_restore --list; filestore snapshots preserved.
+Original active cron IDs restored. Main upgrade outage: 336 seconds.
+Static followups used short service restarts and prior-file archives.
+
+Verification
+PASS — Node origin/restore/stale-session/root tests, canonical hierarchy and
+       direct-entry tests, per-action memory isolation.
+PASS — Actual Owl template compilation and mounted navigation interaction.
+PASS — Mounted Owl remount restores queue state and isolates new actions.
+PASS — SCSS compilation, JS syntax, XML parsing, dependency-cycle and diff checks.
+PASS — Final deployed p0clone TestHubKitStaticGates: 23 tests, zero failures/errors.
+       Test transactions rolled back; external email delivery disabled.
+PASS — Chrome on payobook.com: Payroll workspace location and full lens name.
+PASS — Chrome: filter Pay runs by Logistics, switch to List, open full run,
+       Back to Pay runs restores query, List layout and focused row.
+PASS — Chrome: direct pay-run URL shows View Pay runs and canonical Payroll link.
+PASS — Chrome: filtered Approval inbox -> Workflows -> Back to Approval inbox;
+       All I can see tab and Pay filter retained.
+PASS — Chrome: 390 x 844 compact header, white named return, no duplicate Home;
+       desktop viewport restored afterward. Existing form body responsiveness
+       is outside this navigation change.
+PASS — Chrome: payslip preview opens and closes without losing parent navigation.
+PASS — Chrome console: no warnings/errors in final checks.
+PASS — New-form navigation exercise created no payroll run (database verified).
+       Native validation callbacks are retained; no payroll approval or payment
+       action was executed. A validation-error dialog was not explicitly tested.
+PASS — HTTP 200: payobook.com, rize.payobook.com, p0clone.payobook.com.
+PASS — Final service active, all 154 deployed custom trees and module versions
+       independently compared after rollout.
+
+Evidence retained on server:
+/tmp/payobook-navigation-20261027/receipt.json
+/tmp/payobook-navigation-20261027-closeout/receipt.json
+Additional static-release receipts in matching -final, -mobile and -origin stages.
+Screenshots were inspected inline only; no test screenshots or PNG files remain.
