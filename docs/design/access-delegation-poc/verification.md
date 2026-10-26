@@ -1,3 +1,76 @@
+# Revision 2 verification — 27 October 2026 (Australia/Sydney)
+
+Implementation commit: `086768ce98089a9c9b9f072e8ceff2992a97be69`.
+The follow-up records this evidence and clarifies the comparison-table wording.
+
+## Review and design
+
+- Re-read the existing Screens template, including menu map, “See it as”,
+  visible/locked/hidden states, audience, role gates, orphan warnings and
+  keyboard/drag ordering. Inspected Hiring sidebar definitions and resource
+  models. Existing role and delegation review evidence remains below.
+- Consulted first-party Zoho profile/module permissions, Microsoft security
+  role editor, and Salesforce object access documentation. The HTML links the
+  sources and distinguishes documented patterns from proposed navigation.
+- All three options include module context, meaningful access profiles and
+  Screens. Account types are separated from profiles. Profiles reference the
+  current role definitions without duplicating policy controls.
+- No production access changes or notifications were made.
+
+## Deployed Chrome validation
+
+**36 checks passed against the hosted preview:**
+
+1. Global directory groups modules; local/global routes preserve a role edit.
+2. Review names affected profiles, requires a reason, and updates source-role
+   revision references in profiles.
+3. Hiring owner cannot edit People through shared-role navigation; no People
+   policy controls are rendered. Shared role package checkbox is disabled.
+4. Profile review lists added references and applies the four-role package.
+5. Shared directory role opens People in the profile menu; Recruiter alone
+   leaves People hidden.
+6. Actual-menu mode removes a hidden Candidates tile; hiding that tile leaves
+   candidate View permission unchanged. Submenu reorder updates the map.
+7. Hidden salary field removes the form input; hidden required name blocks
+   role publication.
+8. AND/OR conditions filter the sample records within the mandatory company.
+9. Delegation requires a reason, remains pending approval, and a Hiring
+   request does not appear in Payroll.
+10. Guided review uses the profile's combined menu; assignment changes the
+    selected person's preview. External account type blocks assignment of
+    the administrative profile.
+11. Passport denies outside-team access until an additional source grants it;
+    Company B remains blocked. Source-role editor opens from the profile.
+    Jordan's menu reflects the shared directory role in his own profile.
+12. All three concepts fit a 390 × 844 viewport without page-wide horizontal
+    overflow. Desktop and phone Screens layouts were inspected visually.
+13. Preference enables a local download, persists on reload and clears.
+
+Checks above group related assertions; the browser test log contained exactly
+36 successful assertions. Chrome warning/error log was empty. The viewport
+was reset, the test preference cleared, and demo state reset by reload.
+No screenshot or PNG files were written; screenshots were viewed in memory.
+
+JavaScript syntax, Python syntax, bundled-source consistency and git whitespace
+checks passed. The deployer validates committed preview sources, hosting files
+and the exact inline JavaScript bundle before uploading. Nginx configuration
+test and reload passed. Public HTML is checked byte-for-byte against the local
+artifact after the final deployment.
+
+## Deployment boundary
+
+Target: **https://payobook.com/preview/access-delegation/** on `Payobook19v2`.
+File: `/var/www/payobook-previews/access-delegation/index.html`.
+The complete current committed preview is deployed from the latest combined
+branch state. Concurrent commits and unrelated
+`outputs/komal-learning-2026-10-23/` content are preserved.
+
+This is the isolated static design-review environment. No Odoo source, module
+upgrade, database permission or migration is in scope for `payobook`,
+`payobook_template`, `p0clone` or `rize`. Retired ABM remains untouched.
+
+---
+
 # Verification — 27 October 2026 (Australia/Sydney)
 
 Implementation began with commit `c44eff8a55babaa60545ed2c3e107a594cde7029`.
