@@ -64,6 +64,56 @@ class TestAccessStudio(TransactionCase):
         with self.assertRaises(AccessError): self.access.studio_decide('people', result['id'], True, 'Self')
         self.assertEqual(self.env['pb.access.studio.request'].browse(result['id']).state, 'pending')
 
+    def test_existing_access_adoption_is_idempotent_and_removable(self):
+        self.person.write({'group_ids': [(4, self.group.id)]})
+        before = set(self.person.all_group_ids.ids)
+        access = self.env['pb.access'].with_user(1)
+        profile = access._studio_adopt_existing('test_studio_adoption', 'Existing team', 'people',
+            self.role, self.person, self.owner, 'Owner-authorized test setup')
+        again = access._studio_adopt_existing('test_studio_adoption', 'Existing team', 'people',
+            self.role, self.person, self.owner, 'Repeat setup')
+        self.assertEqual(profile, again)
+        member = self.env['pb.access.membership'].search([('profile_id', '=', profile.id)])
+        self.assertEqual(len(member), 1)
+        self.assertEqual(set(self.person.all_group_ids.ids) - set(self.role.membership_group_id.ids), before)
+        self.access.studio_review_assignment('people', member.id, member.revision, False, 'No longer needed')
+        self.assertNotIn(self.group, self.person.all_group_ids)
+        # Re-running setup after an explicit removal cannot recreate access.
+        self.person.write({'group_ids': [(4, self.group.id)]})
+        access._studio_adopt_existing('test_studio_adoption', 'Existing team', 'people',
+            self.role, self.person, self.owner, 'Repeat after removal')
+        self.assertFalse(member.active)
+
+    def test_existing_access_adoption_never_grants_or_accepts_rpc_owner(self):
+        with self.assertRaises(UserError):
+            self.env['pb.access'].with_user(1)._studio_adopt_existing('test_studio_adoption', 'New access', 'people',
+                self.role, self.person, self.owner, 'Not already held')
+        with self.assertRaises(AccessError):
+            self.access._studio_adopt_existing('test_studio_adoption', 'New access', 'people',
+                self.role, self.person, self.owner, 'Not maintenance')
+
+    def test_policy_defaults_follow_native_role_acl_and_field_readonly(self):
+        defaults = self.access.studio_role_policy('people', self.role.id)['defaults']
+        self.assertEqual(defaults['hr.employee']['write'], 'all')
+        self.assertEqual(defaults['hr.employee']['fields']['work_email'], 'edit')
+        self.assertEqual(defaults['hr.contract']['write'], 'none')
+        self.assertEqual(defaults['hr.contract']['fields']['wage'], 'view')
+        self.assertFalse(self.role.studio_policy, 'Reading defaults must never publish a policy')
+
+    def test_people_can_be_found_by_matrix_login(self):
+        result = self.access.studio_data('people', 'studio-regression-person')
+        self.assertEqual([p['id'] for p in result['people']], self.person.ids)
+
+    def test_role_preview_cannot_open_child_of_hidden_parent(self):
+        self.env['pb.access']._studio_sync_navigation()
+        sections, _ = self.access._rail_states(self.env['res.groups'])
+        for section in sections:
+            for item in section['items']:
+                if item['state'] != 'on':
+                    for child in item['children']:
+                        self.assertEqual(child['state'], item['state'])
+                        self.assertFalse(child['newly_lit'])
+
     def test_approval_required_before_grant(self):
         profile = self.publish_profile()
         result = self.access.studio_submit_assignment('people', profile.id, self.person.ids, False, 'Test')
@@ -138,11 +188,13 @@ class TestAccessStudio(TransactionCase):
                                   ('payroll', 'pb_payhub.item_pay_run')]:
             parent = self.env.ref(xmlid, raise_if_not_found=False)
             if parent:
-                item = self.env.ref('biz_access.item_studio_' + workspace)
-                self.assertEqual(item.parent_id, parent)
-                item_id = item.id
+                item = self.env.ref('biz_access.item_studio_' + workspace, raise_if_not_found=False)
+                self.assertFalse(item and item.active)
                 self.env['pb.access']._studio_sync_navigation()
-                self.assertEqual(self.env.ref('biz_access.item_studio_' + workspace).id, item_id)
+                self.assertFalse(self.env['pb.sidebar.item'].search_count([
+                    ('action_xmlid', '=', 'biz_access.action_studio_' + workspace)]))
+        _sections, items = self.env['pb.access']._rail_all()
+        self.assertFalse(items.filtered(lambda i: (i.action_xmlid or '').startswith('biz_access.action_studio_')))
 
     def test_scope_filters_search_and_direct_read(self):
         self.grant(); self.policy()

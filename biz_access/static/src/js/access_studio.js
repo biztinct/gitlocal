@@ -4,7 +4,6 @@ import { patch } from '@web/core/utils/patch';
 import { registry } from '@web/core/registry';
 import { _t } from '@web/core/l10n/translation';
 import { PbAccessBoard } from '@biz_access/js/access_board';
-import { PbSidebar } from '@pb_sidebar/js/pb_sidebar';
 
 const todayPlus = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -23,6 +22,7 @@ patch(PbAccessBoard.prototype, {
         this.state.studioError = '';
         this.state.studioBusy = false;
         this.state.studioSearch = '';
+        this.state.studioProfileSearch = '';
         this.state.studioPeopleFilter = 'module';
         this.state.studioStatus = 'active';
         this.state.studioSelected = [];
@@ -32,6 +32,9 @@ patch(PbAccessBoard.prototype, {
         this.state.studioPolicy = null;
         this.state.studioPolicyTab = 'permissions';
         this.state.studioResource = '';
+        this.state.studioRoleSearch = '';
+        this.state.studioResourceSearch = '';
+        this.studioPolicySeq = 0;
         onWillUnmount(() => { clearTimeout(this.studioTimer); this.studioSeq++; });
         useEffect(() => {
             if (!this.state.studioDialog) return;
@@ -55,6 +58,33 @@ patch(PbAccessBoard.prototype, {
     get lenses() { return tabs.map(([key, icon, label]) => ({ key, icon, label: _t(label) })); },
     get studio() { return this.state.studio || { profiles: [], roles: [], people: [], requests: [], history: [], resources: [], workspaces: [], departments: [], owners: [] }; },
     get studioCanManage() { return Boolean(this.studio.can_manage); },
+    setLens(key) {
+        super.setLens(key === 'policy' ? 'roles' : key);
+        if (key === 'roles' && this.studioCanManage && !this.state.studioPolicy && this.studioRoles.length) {
+            this.studioOpenPolicy(this.studioRoles[0]);
+        }
+    },
+    get studioRoleChoices() {
+        const needle = this.state.studioRoleSearch.trim().toLocaleLowerCase();
+        return this.studioRoles.filter(r => !needle || r.name.toLocaleLowerCase().includes(needle));
+    },
+    get studioResourceChoices() {
+        const needle = this.state.studioResourceSearch.trim().toLocaleLowerCase();
+        return this.studio.resources.filter(r => !needle || r.label.toLocaleLowerCase().includes(needle));
+    },
+    studioPolicyCell(resource, action) {
+        return this.state.studioPolicy?.policy[resource.key]?.[action] || '';
+    },
+    studioSetScope(resource, action, value) {
+        if (!this.state.studioPolicy.policy[resource.key]) {
+            this.state.studioPolicy.policy[resource.key] = clone(this.state.studioPolicy.defaults[resource.key]);
+        }
+        this.state.studioPolicy.policy[resource.key][action] = value;
+    },
+    studioSelectResource(resource, tab = 'fields') {
+        this.state.studioResource = resource.key;
+        this.state.studioPolicyTab = tab;
+    },
     get profiles() {
         const ids = this.studio.role_ids;
         return super.profiles.filter(r => !ids || ids.includes(r.id)).map(r => ({...r, area_label: this.studio.workspaces.find(w => w.key === this.state.workspace)?.label || r.area_label}));
@@ -81,6 +111,7 @@ patch(PbAccessBoard.prototype, {
             if (seq !== this.studioSeq) return;
             this.state.studio = data;
             this.state.studioError = '';
+            if (this.state.lens === 'roles' && !this.state.studioPolicy) this.setLens('roles');
         } catch (e) {
             if (seq === this.studioSeq) this.state.studioError = this._msg(e, _t('Access Studio could not be loaded.'));
         }
@@ -91,8 +122,14 @@ patch(PbAccessBoard.prototype, {
         this.state.search = '';
         this.state.studioSelected = [];
         this.state.studioPolicy = null;
+        this.state.studioSearch = '';
+        this.state.studioProfileSearch = '';
+        this.state.studioRoleSearch = '';
+        this.state.studioResourceSearch = '';
+        this.studioPolicySeq++;
         this.state.open = 0;
         await this.reload();
+        if (this.state.lens === 'roles') this.setLens('roles');
     },
     async studioSearch(ev) {
         this.state.studioSearch = ev.target.value;
@@ -106,7 +143,7 @@ patch(PbAccessBoard.prototype, {
             (this.state.studioPeopleFilter !== 'due' || p.assignments.some(a => a.due)));
     },
     get studioProfiles() {
-        const needle = this.state.studioSearch.toLocaleLowerCase();
+        const needle = this.state.studioProfileSearch.toLocaleLowerCase();
         return this.studio.profiles.filter(p => (this.state.studioStatus === 'all' || p.active === (this.state.studioStatus === 'active')) &&
             (!needle || `${p.name} ${p.description}`.toLocaleLowerCase().includes(needle)));
     },
@@ -174,19 +211,22 @@ patch(PbAccessBoard.prototype, {
         } catch (e) { d.error = this._msg(e, _t('Access could not be explained.')); }
     },
     async studioOpenPolicy(role) {
+        const seq = ++this.studioPolicySeq;
         try {
-            this.state.studioPolicy = await this.orm.call('pb.access', 'studio_role_policy', [this.state.workspace, role.id]);
+            const policy = await this.orm.call('pb.access', 'studio_role_policy', [this.state.workspace, role.id]);
+            if (seq !== this.studioPolicySeq) return;
+            this.state.studioPolicy = policy;
             this.state.studioResource = this.studio.resources[0]?.key || '';
             this.state.studioPolicyTab = 'permissions';
-            this.state.lens = 'policy';
+            this.state.lens = 'roles';
         } catch (e) { this.notif.add(this._msg(e, _t('Policy could not be opened.')), { type: 'danger' }); }
     },
     studioEnableResource() {
         const resource = this.studioCurrentResource;
-        this.state.studioPolicy.policy[resource.key] = { read: 'all', create: 'none', write: 'none', unlink: 'none',
+        this.state.studioPolicy.policy[resource.key] = clone(this.state.studioPolicy.defaults?.[resource.key] || { read: 'all', create: 'none', write: 'none', unlink: 'none',
             fields: Object.fromEntries(resource.fields.map(f => [f.key, 'view'])), create_fields: resource.fields.filter(f => !f.readonly).map(f => f.key),
             export: false, archive: false, reassign: false, approve: false, download: false, reveal: false,
-            department_ids: [], states: [], write_states: [], match: 'all' };
+            department_ids: [], states: [], write_states: [], match: 'all' });
     },
     studioRemoveResource() { delete this.state.studioPolicy.policy[this.state.studioResource]; },
     studioPolicyList(key, value) {
@@ -284,18 +324,3 @@ for (const [category, workspace, title] of [
         groups: ['base.group_user'], props: { embedded: true, workspace },
     });
 }
-
-// Adding an access submenu must not turn an existing workspace door into an
-// expansion-only control. Keep the workspace action and reveal its local doors.
-patch(PbSidebar.prototype, {
-    onItemClick(item) {
-        if (!item.restricted && (item.action_xmlid || item.action_tag) &&
-            item.children?.some(child => child.action_xmlid?.startsWith('biz_access.action_studio_'))) {
-            this.state.expandedItems = {...this.state.expandedItems, [item.id]: true};
-            this.navigateTo(item);
-            this.state.calm = false;
-            return;
-        }
-        super.onItemClick(item);
-    },
-});

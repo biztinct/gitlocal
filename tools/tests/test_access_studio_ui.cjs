@@ -9,10 +9,8 @@ const data={workspace:'hiring',workspaces:[{key:'hiring',label:'Hiring'},{key:'p
 const calls=[];const svc={call:async(m,method,args)=>{calls.push({method,args});if(method==='get_board')return{can_manage:true,me:user,profiles:[],areas:[],mine:[],delegations:[],kpis:{}};if(method==='studio_data')return structuredClone(data);if(method==='studio_role_policy')return{id:5,name:'Recruiter',revision:1,people:[],profiles:[],policy:{}};if(method==='studio_explain')return{allowed:false,sources:[],company:'Example company',note:'Application rules apply'};if(method==='people')return[];if(method==='screens')return{sections:[],rows:[]};return{message:'Submitted',sections:[],rows:[]}},add:()=>{},doAction:()=>{}};
 const source=read('biz_access/static/src/js/access_board.js').replace(/^import .*;$/gm,'').replaceAll('export ','');
 const C=w.Function('Component','useState','onWillStart','useExternalListener','useService','registry','_t','deserializeDateTime','formatDateTime','ic','HubBackChip','hubBack','PbMiniRail','railIcon',source+';return PbAccessBoard;')(o.Component,o.useState,o.onWillStart,o.useExternalListener,()=>svc,reg,s=>s,s=>s,s=>s,()=>o.markup(''),Dummy,()=>null,Dummy,()=>o.markup(''));
-class Sidebar { constructor(){this.state={expandedItems:{},calm:false};} onItemClick(item){this.original=item.id;} navigateTo(item){this.navigated=item.action_xmlid;this.state.calm=true;} }
 const extension=read('biz_access/static/src/js/access_studio.js').replace(/^import .*;$/gm,'');
-w.Function('patch','registry','_t','PbAccessBoard','useEffect','onWillUnmount','PbSidebar',extension)(patch,reg,s=>s,C,o.useEffect,o.onWillUnmount,Sidebar);
-const sidebar=new Sidebar();sidebar.onItemClick({id:1,action_xmlid:'hiring.hub',children:[{action_xmlid:'biz_access.action_studio_hiring'}]});assert.equal(sidebar.navigated,'hiring.hub');assert(sidebar.state.expandedItems[1]);assert.equal(sidebar.state.calm,false);sidebar.onItemClick({id:2,restricted:true,action_xmlid:'hiring.hub',children:[{action_xmlid:'biz_access.action_studio_hiring'}]});assert.equal(sidebar.original,2);
+w.Function('patch','registry','_t','PbAccessBoard','useEffect','onWillUnmount',extension)(patch,reg,s=>s,C,o.useEffect,o.onWillUnmount);
 const merged=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/access_board.xml'),'text/xml');
 const extensionDoc=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/access_studio.xml'),'text/xml');
 for(const xp of extensionDoc.documentElement.children[0].children){
@@ -20,6 +18,7 @@ for(const xp of extensionDoc.documentElement.children[0].children){
  assert(result.snapshotLength,'Extension XPath must match');
  for(let i=0;i<result.snapshotLength;i++){
   const target=result.snapshotItem(i),position=xp.getAttribute('position');
+  if(position==='attributes'){for(const a of xp.children)target.setAttribute(a.getAttribute('name'),a.textContent);continue;}
   for(const child of xp.children){const copy=merged.importNode(child,true);if(position==='inside')target.appendChild(copy);else if(position==='after')target.parentNode.insertBefore(copy,target.nextSibling);else target.parentNode.insertBefore(copy,target);}
   if(position==='replace')target.remove();
  }
@@ -35,7 +34,11 @@ button('Explain access').click();await tick();assert(w.document.querySelector('[
 button('Profiles').click();await tick();button('New profile').click();await tick();assert(button('Submit for review').disabled);assert(w.document.body.textContent.includes('Roles in this profile'));assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
 c.state.studioDialog.includeOtherModules=true;await tick();assert(w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
 c.state.studioDialog.roleSearch='Recruiter';await tick();assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));button('Close').click();await tick();
-await c.studioOpenPolicy({id:5});await tick();button('Add a policy').click();await tick();assert.equal(w.document.querySelector('[aria-label="View scope"]').value,'all');assert.equal(w.document.querySelector('[aria-label="Edit scope"]').value,'none');
-button('Form fields').click();await tick();assert(w.document.querySelector('[aria-label="Name permission"]'));button('Review & submit').click();await tick();assert(w.document.body.textContent.includes('Review policy changes'));button('Close').click();await tick();
+await c.studioOpenPolicy({id:5});await tick();assert(w.document.querySelector('[aria-label="Candidates View scope"]'));assert(!button('Manage roles'));assert(button('Abilities & menu preview'));
+button('Form fields').click();await tick();button('Add a policy').click();await tick();assert(w.document.querySelector('[aria-label="Name permission"]'));
+button('Actions & records').click();await tick();assert.equal(w.document.querySelector('[aria-label="Candidates View scope"]').value,'all');assert.equal(w.document.querySelector('[aria-label="Candidates Edit scope"]').value,'none');
+const scope=w.document.querySelector('[aria-label="Candidates Edit scope"]');scope.value='own';scope.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(c.state.studioPolicy.policy['hr.applicant'].write,'own');
+c.state.studioRoleSearch='Missing';await tick();assert(w.document.body.textContent.includes('No roles match'));c.state.studioRoleSearch='';
+button('Review & submit').click();await tick();assert(w.document.body.textContent.includes('Review policy changes'));button('Close').click();await tick();
 c.setLens('reviews');await tick();assert(w.document.body.textContent.includes('No requests in this view'));c.setLens('studio_history');await tick();assert(w.document.body.textContent.includes('No Studio changes yet'));c.setLens('screens');await tick();assert(w.document.body.textContent.includes('See it as'));
 app.destroy();w.close();console.log('PASS mounted full inherited Access Studio: people, explain drawer, profile editor, policy fields, review, history, preserved screens and preview control');})().catch(e=>{console.error(e);process.exitCode=1});

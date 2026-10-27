@@ -99,7 +99,7 @@ class AccessStudio(models.AbstractModel):
         users = visible_people(self.env['res.users'].sudo().search([
             ('share', '=', False), ('company_ids', 'in', self.env.company.id),
             ('active', '=', True)] + ([] if manage else [('id', '=', self.env.uid)]) +
-            ([('name', 'ilike', str(search)[:100])] if search else []), limit=201), self.env)
+            (['|', ('name', 'ilike', str(search)[:100]), ('login', 'ilike', str(search)[:100])] if search else []), limit=201), self.env)
         if not manage:
             users = users.filtered(lambda u: u.id == self.env.uid)
         sources = self.env['pb.role.assignment'].sudo().search([('active', '=', True), ('profile_id', 'in', local_roles.ids)])
@@ -333,7 +333,31 @@ class AccessStudio(models.AbstractModel):
         return {'id': role.id, 'name': role.name, 'revision': role.studio_policy_revision,
                 'role_revision': role.revision, 'policy': copy.deepcopy(role.sudo().studio_policy or {}),
                 'people': visible_people(users, self.env).mapped('name'), 'profiles': profiles.mapped('name'),
-                'resources': self._studio_resources(workspace)}
+                'resources': self._studio_resources(workspace),
+                'description': role.description or '',
+                'defaults': self._studio_policy_defaults(role, workspace)}
+
+    def _studio_policy_defaults(self, role, workspace):
+        """An explicit starting policy, bounded by this role's native ACLs.
+
+        This is a draft helper, never an implicit publication or a claim that
+        ACLs override the application's record rules.
+        """
+        groups = implied_closure(role.sudo().group_ids).ids
+        result = {}
+        for resource in self._studio_resources(workspace):
+            acls = self.env['ir.model.access'].sudo().search([
+                ('model_id.model', '=', resource['key']), ('active', '=', True),
+                '|', ('group_id', '=', False), ('group_id', 'in', groups)])
+            rule = {op: 'all' if any(acls.mapped('perm_' + op)) else 'none' for op in ACTIONS}
+            rule.update(fields={f['key']: 'edit' if rule['write'] != 'none' and not f['readonly'] else 'view' for f in resource['fields']},
+                create_fields=[f['key'] for f in resource['fields'] if not f['readonly']],
+                export=rule['read'] != 'none', download=rule['read'] != 'none',
+                archive=resource['can_archive'] and rule['write'] != 'none',
+                reassign=rule['write'] != 'none', approve=resource['can_approve'] and rule['write'] != 'none',
+                reveal=False, department_ids=[], states=[], write_states=[], match='all')
+            result[resource['key']] = rule
+        return result
 
     @api.model
     def studio_submit_policy(self, workspace, role_id, revision, policy, reason):
@@ -600,18 +624,20 @@ class AccessStudio(models.AbstractModel):
                     'context': repr({'pb_access_workspace': workspace})})
                 Data.create({'module': 'biz_access', 'name': action_key, 'model': action._name, 'res_id': action.id, 'noupdate': True})
             item_key = 'item_studio_' + workspace
-            item = self.env.ref('biz_access.' + item_key, raise_if_not_found=False)
-            if not item:
-                item = self.env['pb.sidebar.item'].sudo().create({'name': _('%s access & delegation', dict(WORKSPACES)[workspace]), 'section_id': parent.section_id.id,
-                    'parent_id': parent.id, 'sequence': 990, 'icon': 'shield', 'action_xmlid': 'biz_access.' + action_key,
-                    'groups_id': [(6, 0, self.env.ref('base.group_user').ids)]})
-                Data.create({'module': 'biz_access', 'name': item_key, 'model': item._name, 'res_id': item.id, 'noupdate': True})
-            else:
-                if item.parent_id != parent:
-                    item.write({'parent_id': parent.id, 'section_id': parent.section_id.id})
-                if item.name == _('Access & delegation'):
-                    item.write({'name': _('%s access & delegation', dict(WORKSPACES)[workspace])})
+            item = self.env.ref('biz_access.' + item_key, raise_if_not_found=False) or self.env['pb.sidebar.item']
+            # The module's standard inner rail is the single local entry point.
+            # Retain the retired records/bookmark actions, without adding a
+            # second submenu in the dark global sidebar.
+            duplicates = self.env['pb.sidebar.item'].sudo().with_context(active_test=False).search([
+                ('action_xmlid', '=', 'biz_access.' + action_key)]) | item
+            duplicates.filtered('active').write({'active': False})
         return True
+
+    def _rail_all(self):
+        sections, items = super()._rail_all()
+        if items is not None:
+            items = items.filtered(lambda i: not (i.action_xmlid or '').startswith('biz_access.action_studio_'))
+        return sections, items
 
     def _roles_of(self, user):
         rows = super()._roles_of(user)

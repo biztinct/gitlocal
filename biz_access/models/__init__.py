@@ -14,3 +14,4 @@ from . import account_type
 from . import studio_models
 from . import studio_service
 from . import studio_policy
+from . import studio_adoption

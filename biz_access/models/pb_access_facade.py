@@ -834,6 +834,11 @@ class PbAccess(models.AbstractModel):
                 kids = []
                 for kid in mine.filtered(lambda c, p=item: c.parent_id == p):
                     kstate, kgained = self._item_state(kid, held)
+                    # A child cannot open through a hidden or locked parent.
+                    # This preview describes a role contribution, so propagate
+                    # its parent result just as the live menu does.
+                    if state != 'on':
+                        kstate, kgained = state, False
                     lit += 1 if kgained else 0
                     kids.append({'id': kid.id, 'label': kid.name or '',
                                  'icon': kid.icon or 'circle',

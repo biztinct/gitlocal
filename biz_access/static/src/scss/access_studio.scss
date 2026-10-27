@@ -45,6 +45,20 @@
   .pbva-studio-panel summary, .pbva-studio-dialog summary { cursor:pointer; font-weight:600; margin-bottom:10px; }
   .pbva-studio-panel pre, .pbva-studio-dialog pre { white-space:pre-wrap; overflow-wrap:anywhere; background:#f6f8fa; padding:14px; border-radius:8px; max-height:320px; overflow:auto; font-size:12px; }
   .pbva-studio-policy-link { margin:15px; }
+  .pbva-studio-role-layout { display:grid; grid-template-columns:230px minmax(0,1fr); gap:26px; margin:24px 0; }
+  .pbva-studio-role-list { border-right:1px solid var(--pbim-line,#e3e7ed); padding-right:20px; }
+  .pbva-studio-role-list h3 { font-size:13px; color:var(--pbim-muted,#667085); margin-bottom:14px; }
+  .pbva-studio-role-list > input { margin-bottom:12px; }
+  .pbva-studio-role-choice { display:flex; flex-direction:column; gap:6px; text-align:left; width:100%; border:1px solid transparent; border-radius:10px; background:transparent; color:var(--pbim-ink,#182638); padding:15px 12px; margin:4px 0; }
+  .pbva-studio-role-choice small { color:var(--pbim-muted,#667085); }
+  .pbva-studio-role-choice.is-on { background:var(--pbim-accent-soft,#f0ecfb); border-color:#d9cff3; }
+  .pbva-studio-role-detail { min-width:0; }
+  .pbva-studio-role-detail label { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+  .pbva-studio-role-detail fieldset { border:1px solid #e3e7ed; border-radius:10px; padding:18px; margin:16px 0; }
+  .pbva-studio-role-detail fieldset label, .pbva-studio-role-detail .pbva-studio-checks label { flex-direction:row; }
+  .pbva-studio-permissions select { min-width:100px; }
+  .pbva-studio-permissions td:last-child { display:flex; flex-direction:column; gap:10px; }
+  @media(max-width:900px) { .pbva-studio-role-layout { grid-template-columns:1fr; } .pbva-studio-role-list { border:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; } .pbva-studio-role-list h3,.pbva-studio-role-list > input { width:100%; } .pbva-studio-role-choice { width:auto; flex:1 1 160px; } }
   .pbva-studio-backdrop { position:fixed; inset:0; z-index:1070; background:rgba(19,30,46,.38); display:flex; align-items:center; justify-content:center; padding:24px; }
   .pbva-studio-dialog { background:white; border-radius:16px; width:760px; max-width:100%; max-height:calc(100dvh - 48px); display:flex; flex-direction:column; box-shadow:0 20px 80px rgba(0,0,0,.2); }
   .pbva-studio-dialog header, .pbva-studio-dialog footer { padding:20px 24px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e3e7ed; flex-shrink:0; }

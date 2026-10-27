@@ -6,6 +6,9 @@ assert str(stage).startswith('/tmp/access-studio-')
 lock=open('/tmp/payobook-studio-deploy.lock','a+')
 fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
 plan=json.loads((stage/'release-final.json').read_text())
+setup_script=stage/'setup_traceability_access.py'
+if plan.get('traceability_setup_sha256'):
+ assert hashlib.sha256(setup_script.read_bytes()).hexdigest()==plan['traceability_setup_sha256'], 'Setup must match the committed release'
 addons=Path('/odoo/odoo-server/addons'); notes=Path('/opt/deploy-notes.md')
 dbs=['p0clone','payobook','payobook_template','rize']
 receipt={'commit':plan['commit'],'status':'preflight','databases':{}}
@@ -81,6 +84,14 @@ try:
    line=next(x for x in (logs/'p0clone-tests-output.txt').read_text().splitlines() if x.startswith('STUDIO_TEST_RESULT='))
    result=json.loads(line.split('=',1)[1]);assert result['successful'] and result['tests']>=31,result
    receipt['p0clone_tests']=result;print('P0CLONE_TESTS',result,flush=True)
+ if plan.get('traceability_setup_sha256'):
+  for db in dbs:
+   with setup_script.open() as source,(logs/(db+'-traceability-setup.txt')).open('w') as output:
+    run(['sudo','-u','odoo','env','APPLY_TRACEABILITY_ACCESS=owner-authorized-20261028','python3','/odoo/odoo-server/odoo-bin','shell','-c','/etc/odoo-server.conf','-d',db,'--no-http','--max-cron-threads=0','--logfile='+str(logs/(db+'-traceability-setup.log'))],stdin=source,stdout=output,stderr=subprocess.STDOUT)
+   line=next(x for x in (logs/(db+'-traceability-setup.txt')).read_text().splitlines() if x.startswith('TRACEABILITY_SETUP='))
+   setup=json.loads(line.split('=',1)[1]);assert setup['applied']
+   receipt['databases'][db]['traceability_setup']=setup
+   print('TRACEABILITY_SETUP',db,len(setup['profiles']),len(setup['accounts']),flush=True)
  for db in dbs:
   ids=receipt['databases'][db]['crons'];sql(db,'UPDATE ir_cron SET active=false WHERE active')
   if ids:sql(db,'UPDATE ir_cron SET active=true WHERE id IN ('+','.join(map(str,ids))+')')
