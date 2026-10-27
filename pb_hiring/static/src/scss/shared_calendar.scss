@@ -1,0 +1,37 @@
+.pbcal { color: #201d40; max-width: 1550px; margin: auto; padding: 12px 8px 28px; min-width: 0;
+ h1 { font-size: 25px; font-weight: 750; margin: 0 0 6px; } h2 { font-size: 21px; } p { line-height: 1.55; }
+ button, input, select { font: inherit; } button { cursor: pointer; } button:disabled { opacity: .55; cursor: wait; }
+ input[type=date],input[type=search],select { border: 1px solid #dce1ef; border-radius: 9px; background: white; padding: 9px 11px; max-width: 100%; }
+ .pbcal-muted { color: #657797; } .pbcal-heading,.pbcal-toolbar { display: flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+ .pbcal-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+ .pbcal-search { flex:1; min-width:180px; }
+ .pbcal-sources { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }
+ .pbcal-source { display:flex; align-items:center; gap:7px; background:white; padding:7px 12px; border:1px solid #dce1ef; border-radius:18px; cursor:pointer; } input { accent-color:#5b4bb7; }
+ .pbcal-source small { color:#64748b; }
+ .pbcal-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border:1px solid #dce1ef; border-radius:14px; overflow:hidden; background:white; }
+ .pbcal-grid.day { grid-template-columns:1fr; } .pbcal-day { min-width:0; border-right:1px solid #e5e9f3; border-bottom:1px solid #e5e9f3; min-height:165px; } .week .pbcal-day { min-height:420px; }
+ .pbcal-day h3 { margin:0; padding:13px 10px; font-size:12px; font-weight:700; color:#657797; border-bottom:1px solid #eef0f6; } .pbcal-day.today h3 { background:#eeeafb; color:#5742b7; } .pbcal-day.outside { background:#fafaff; }
+ .pbcal-day-events { padding:7px; display:flex; flex-direction:column; gap:7px; }
+ .pbcal-event { text-align:left; display:flex; flex-direction:column; gap:4px; align-items:flex-start; width:100%; min-width:0; border:0; border-left:3px solid #6a58bc; background:#efebfc; color:#362466; padding:9px 8px; border-radius:6px; }
+ .pbcal-event > * { min-width:0; max-width:100%; white-space:normal; overflow-wrap:anywhere; flex-shrink:0; } .pbcal-event small { font-size:10px; font-weight:600; } .pbcal-event b { font-size:12px; line-height:1.4; } .pbcal-event span { font-size:10px; opacity:.85; }
+ .payroll.pbcal-event { background:#e7f4f1; border-color:#178979; color:#145c52; } .google.pbcal-event { background:#eaf1fe; border-color:#3979d7; color:#26548b; } .microsoft.pbcal-event { background:#e8f4fc; border-color:#1084b4; color:#165d7b; } .leave.pbcal-event { background:#fff3dd; border-color:#c28e22; color:#77550d; }
+ .pbcal-event:hover { filter:brightness(.97); box-shadow:0 2px 5px #172b4d15; } .pbcal-free { color:#b1bbcb; padding:12px; }
+ .pbcal-agenda { border:1px solid #dce1ef; border-radius:14px; overflow:hidden; background:white; } .pbcal-agenda-row { width:100%; display:grid; grid-template-columns:190px 1fr 100px; text-align:left; gap:20px; padding:18px; border:0; border-bottom:1px solid #e5e9f3; background:white; } .pbcal-agenda-row:hover { background:#faf9ff; } .pbcal-agenda-row small { display:block; margin-top:4px; color:#657797; } .pbcal-empty { padding:35px; color:#657797; }
+ .pbcal-note { background:#f0f2f9; padding:16px; border-radius:10px; color:#657797; font-size:12px; margin-top:18px; }
+ .pbcal-shade { position:fixed; inset:0; background:#11132e55; z-index:1040; display:flex; justify-content:flex-end; } .pbcal-drawer { width:min(460px,100%); height:100%; overflow:auto; background:white; padding:32px; box-shadow:-8px 0 35px #11132e22; } .pbcal-close { float:right; } .pbcal-kicker { color:#6654bb; font-size:12px; font-weight:700; text-transform:uppercase; }
+ .pbcal-connections { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin:24px 0; } .pbcal-provider { border:1px solid #dce1ef; padding:25px; border-radius:15px; background:white; } .pbcal-provider button { margin:5px 6px 0 0; } .pbcal-provider-icon { display:grid; place-items:center; width:42px; height:42px; border-radius:11px; background:#eeeafb; color:#5b4bb7; font-size:24px; font-weight:750; margin-bottom:18px; }
+}
+.pbcal-views { display:inline-flex; padding:4px; border:1px solid #dce1ef; border-radius:10px; background:white; gap:3px; margin-bottom:8px; } .pbcal-views button { border:0; background:transparent; border-radius:7px; padding:8px 14px; color:#657797; font-weight:650; } .pbcal-views button.on { background:#5b4bb7; color:white; }
+@media(max-width:1000px) { .pbcal .pbcal-grid.week { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbcal .week .pbcal-day { min-height:160px; } .pbcal .pbcal-grid.month .pbcal-event span { display:none; } }
+@media(max-width:650px) { .pbcal { padding:10px 0; } .pbcal .pbcal-grid.month { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbcal .pbcal-grid.week,.pbcal .pbcal-grid.day,.pbcal .pbcal-connections { grid-template-columns:1fr; } .pbcal .pbcal-agenda-row { grid-template-columns:1fr; gap:8px; } .pbcal .pbcal-toolbar { align-items:stretch; } .pbcal .pbcal-heading h1 { font-size:22px; } .pbcal .pbcal-drawer { padding:24px; } }
+.pbcal-fullcalendar { background:white; border:1px solid #dce1ef; border-radius:12px; padding:12px; --fc-border-color:#e5e9f3; --fc-today-bg-color:#f6f3ff; }
+.pbcal-fullcalendar .fc-col-header-cell-cushion { color:#657797; padding:12px 4px; }
+.pbcal-fullcalendar .pbcal-fc-event { background:#eee9fc; border-color:#9a88d2; color:#32245c; }
+.pbcal-fullcalendar .pbcal-fc-event.payroll { background:#e7f4f1; border-color:#66ab9f; color:#145c52; }
+.pbcal-fullcalendar .pbcal-fc-event.google,.pbcal-fullcalendar .pbcal-fc-event.microsoft { background:#eaf1fe; border-color:#8caedc; color:#26548b; }
+.pbcal-fullcalendar .pbcal-fc-event.leave { background:#fff3dd; border-color:#d7b163; color:#77550d; }
+.pbcal-fullcalendar .fc-event-main { color:inherit; padding:3px 5px; min-width:0; }
+.pbcal-fullcalendar .fc-event-title { font-size:12px; font-weight:650; white-space:normal; overflow-wrap:anywhere; }
+.pbcal-fullcalendar .fc-event-time { font-size:10px; flex-shrink:0; }
+.pbcal-fullcalendar .fc-daygrid-event { white-space:normal; align-items:flex-start; }
+.pbcal-fullcalendar .fc-daygrid-event-dot { margin-top:7px; flex-shrink:0; }

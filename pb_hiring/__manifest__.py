@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.17.0',
+    'version': '19.0.2.18.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -247,6 +247,7 @@ WHAT THIS MODULE IS
         'report/hiring_offer_report.xml',
         'views/hiring_views.xml',
         'views/interview_views.xml',
+        'views/shared_calendar.xml',
         'views/offer_views.xml',
         'views/vendor_views.xml',
         'views/portal_templates.xml',
@@ -299,6 +300,9 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_registers_p9.js',  # NAV P3a: after every board patch
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_hub.js',
+            'pb_hiring/static/src/js/shared_calendar.js',
+            'pb_hiring/static/src/xml/shared_calendar.xml',
+            'pb_hiring/static/src/scss/shared_calendar.scss',
             'pb_hiring/static/src/js/job_boards.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/js/hiring_connections.js',

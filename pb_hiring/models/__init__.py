@@ -62,3 +62,4 @@ from . import docusign
 from . import job_boards
 from . import job_board_platform
 from . import job_board_workspace
+from . import shared_calendar

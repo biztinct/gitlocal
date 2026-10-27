@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_shared_calendar" model="ir.actions.client"><field name="name">Calendar</field><field name="tag">pb_shared_calendar</field></record>
+  <record id="item_shared_calendar" model="pb.sidebar.item">
+    <field name="name">Calendar</field><field name="section_id" ref="pb_sidebar.sec_overview"/>
+    <field name="sequence">20</field><field name="icon">calendar</field>
+    <field name="action_xmlid">pb_hiring.action_shared_calendar</field><field name="action_tag">pb_shared_calendar</field>
+    <field name="match_action_tags">pb_shared_calendar</field>
+    <field name="groups_id" eval="[(6,0,[ref('base.group_user')])]"/>
+  </record>
+  <record id="payroll_calendar_date_list" model="ir.ui.view">
+    <field name="name">Payroll calendar dates</field><field name="model">pb.payroll.calendar.date</field>
+    <field name="arch" type="xml"><list><field name="date"/><field name="name"/><field name="kind"/><field name="company_id"/><field name="company_wide"/><field name="user_ids" widget="many2many_tags"/></list></field>
+  </record>
+  <record id="payroll_calendar_date_form" model="ir.ui.view">
+    <field name="name">Payroll calendar deadline</field><field name="model">pb.payroll.calendar.date</field>
+    <field name="arch" type="xml"><form string="Payroll calendar deadline"><sheet>
+      <div class="alert alert-info">Only authorised payroll staff in the selected company can see this deadline. It is never copied to Google or Microsoft calendars.</div>
+      <group><field name="name"/><field name="date"/><field name="kind"/><field name="company_id"/><field name="company_wide"/><field name="user_ids" widget="many2many_tags" domain="[('share','=',False),('company_ids','in',[company_id])]" invisible="company_wide" required="not company_wide"/><field name="note"/><field name="active" invisible="1"/></group>
+    </sheet></form></field>
+  </record>
+  <record id="action_payroll_calendar_dates" model="ir.actions.act_window"><field name="name">Payroll dates</field><field name="res_model">pb.payroll.calendar.date</field><field name="view_mode">list,form</field></record>
+  <record id="calendar_date_company" model="ir.rule"><field name="name">Payroll dates: selected companies and audience</field><field name="model_id" ref="model_pb_payroll_calendar_date"/><field name="domain_force">[('company_id','in',company_ids), '|', ('company_wide','=',True), ('user_ids','in',[user.id])]</field></record>
+  <record id="calendar_event_shared_access" model="ir.rule"><field name="name">Calendar: organiser and explicitly invited people</field><field name="model_id" ref="calendar.model_calendar_event"/><field name="domain_force">['|',('user_id','=',user.id),('partner_ids','in',[user.partner_id.id])]</field><field name="perm_create" eval="False"/><field name="perm_write" eval="False"/><field name="perm_unlink" eval="False"/></record>
+  <record id="calendar_event_owner_write" model="ir.rule"><field name="name">Calendar: organiser changes meetings</field><field name="model_id" ref="calendar.model_calendar_event"/><field name="domain_force">[('user_id','=',user.id)]</field><field name="perm_read" eval="False"/></record>
+  <record id="calendar_attendee_shared_access" model="ir.rule"><field name="name">Calendar attendees: accessible meetings</field><field name="model_id" ref="calendar.model_calendar_attendee"/><field name="domain_force">['|',('event_id.user_id','=',user.id),('event_id.partner_ids','in',[user.partner_id.id])]</field><field name="perm_create" eval="False"/><field name="perm_write" eval="False"/><field name="perm_unlink" eval="False"/></record>
+</odoo>

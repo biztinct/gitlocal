@@ -19,3 +19,4 @@ from . import test_connections
 from . import test_docusign
 
 from . import test_job_boards
+from . import test_shared_calendar

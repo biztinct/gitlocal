@@ -42,13 +42,13 @@ class HiringSidebar(models.Model):
 
     def _state_for(self, item, is_admin, user_groups):
         user = self.env['res.users'].browse(self.env.context.get('pb_sidebar_uid') or self.env.uid)
-        if hiring_only(user) and item != self.env.ref('pb_hiring.item_hiring'):
+        if hiring_only(user) and item not in (self.env.ref('pb_hiring.item_hiring') | (self.env.ref('pb_hiring.item_shared_calendar', raise_if_not_found=False) or self.env['pb.sidebar.item'])):
             return False, False
         return super()._state_for(item, is_admin, user_groups)
 
     def _section_state_for(self, section, is_admin):
         user = self.env['res.users'].browse(self.env.context.get('pb_sidebar_uid') or self.env.uid)
-        if hiring_only(user) and section != self.env.ref('pb_hiring.item_hiring').section_id:
+        if hiring_only(user) and section not in (self.env.ref('pb_hiring.item_hiring').section_id | self.env.ref('pb_sidebar.sec_overview')):
             return False, False, ''
         return super()._section_state_for(section, is_admin)
 

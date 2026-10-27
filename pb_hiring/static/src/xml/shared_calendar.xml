@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="pb_hiring.CalendarGrid"><div class="pbcal-fullcalendar" t-ref="calendar"/></t>
+<t t-name="pb_hiring.CalendarHub"><HubShell config="config" action="props.action or {}"/></t>
+<t t-name="pb_hiring.FindInterviewTime"><div class="pbcal"><h1>Find a time for an interview</h1><p>Choose a candidate, then use <b>Find panel availability</b> on their profile. The scheduler checks the panel’s connected calendars and existing interviews before offering a time.</p><p class="pbcal-note">Connect your calendar first. If availability cannot be verified, the scheduler will ask you to check the connection. Display filters in Calendar do not change scheduling conflicts.</p><button class="pbim-btn primary" t-on-click="open">Choose a candidate</button></div></t>
+<t t-name="pb_hiring.CalendarAdmin"><div class="pbcal pbim"><h1>Calendar providers</h1><p>Configure Google and Microsoft application credentials at master Settings level. Employees grant access to their own accounts from Calendar → Connections.</p><p>Calendar access follows each source’s permissions. Payroll dates remain internal and are never published to an employee’s connected calendar.</p><button class="pbim-btn primary" t-on-click="open">Configure providers</button></div></t>
+<t t-name="pb_hiring.SharedCalendar">
+<div class="pbcal">
+  <div t-if="state.error" class="alert alert-danger" role="alert"><t t-esc="state.error"/> <button class="pbim-btn" t-on-click="load">Retry</button></div>
+  <t t-if="props.connectionsOnly">
+    <h1>Your calendar connections</h1><p class="pbcal-muted">Connect your primary Google or Microsoft calendar. Only meetings you organise or are invited to appear here. Payroll deadlines stay inside Payobook.</p>
+    <div class="pbcal-connections"><article class="pbcal-provider" t-foreach="providers" t-as="p" t-key="p.key">
+      <span class="pbcal-provider-icon" t-esc="p.key === 'google' ? 'G' : 'M'"/><h2 t-esc="p.label"/><p t-esc="providerStatus(p)"/>
+      <p class="pbcal-muted">Your primary calendar · two-way sync</p>
+      <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
+      <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>
+      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+    </article></div>
+    <p class="pbcal-note">One active synchronisation per person prevents meetings being copied between Google and Microsoft. Shared or secondary external calendars are not imported by this connector. Pause stops new synchronisation; existing meetings remain. Revoke access in your provider account to disconnect completely.</p>
+  </t>
+  <t t-else="">
+    <div class="pbcal-heading"><div><h1 t-esc="props.interviewsOnly ? 'Interview calendar' : props.payrollOnly ? 'Payroll calendar' : 'Your calendar'"/><p class="pbcal-muted">Your work, in one place. Only events you are permitted to see.</p></div><div class="pbcal-actions"><button t-if="state.caps.payroll and !props.interviewsOnly" class="pbim-btn" t-on-click="payrollDates">Manage payroll dates</button><button t-if="!props.interviewsOnly and !props.payrollOnly" class="pbim-btn primary" t-on-click="newEvent">+ New meeting</button></div></div>
+    <div class="pbcal-toolbar">
+      <div class="pbcal-actions"><button class="pbim-btn" t-on-click="today">Today</button><button class="pbim-btn" aria-label="Previous period" t-on-click="() => this.move(-1)">‹</button><button class="pbim-btn" aria-label="Next period" t-on-click="() => this.move(1)">›</button><strong t-esc="heading"/></div>
+      <div class="pbcal-actions"><input type="date" aria-label="Calendar date" t-model="state.date" t-on-change="load"/><select aria-label="Calendar timezone" t-model="state.zone" t-on-change="load"><option t-foreach="zones" t-as="zone" t-key="zone" t-att-value="zone" t-esc="zone"/></select><button class="pbim-btn" t-att-disabled="state.busy" t-on-click="load">Refresh</button></div>
+    </div>
+    <div class="pbcal-toolbar"><input class="pbcal-search" type="search" aria-label="Search calendar" placeholder="Search your visible events…" t-model="state.query"/><div class="pbcal-views" role="tablist" aria-label="Calendar view"><button t-foreach="views" t-as="view" t-key="view.key" role="tab" t-att-aria-selected="state.view === view.key ? 'true' : 'false'" t-att-class="state.view === view.key ? 'on' : ''" t-on-click="() => this.setView(view.key)" t-esc="view.label"/></div></div>
+    <div class="pbcal-sources"><label t-foreach="sources" t-as="s" t-key="s.key" t-att-class="'pbcal-source ' + s.key"><input type="checkbox" t-att-checked="s.on" t-on-change="() => this.toggle(s.key)"/><span t-esc="s.label"/><small t-esc="s.count"/></label></div>
+    <p t-if="state.truncated" class="alert alert-warning">This range contains more than 1,000 items in a source. Choose a shorter date range to see all events.</p>
+    <p t-if="state.busy" role="status">Loading your calendar…</p>
+    <t t-elif="!state.error">
+      <div t-if="state.view === 'agenda'" class="pbcal-agenda"><p t-if="!visible.length" class="pbcal-empty">No events match this date range and your filters.</p><button t-foreach="visible" t-as="event" t-key="event.key" t-att-class="'pbcal-agenda-row ' + event.source" t-on-click="() => { state.selected = event; }"><span><b t-esc="dateLabel(event)"/><small t-esc="when(event)"/></span><span><b t-esc="event.title"/><small t-esc="event.subtitle"/></span><span t-esc="source(event)"/></button></div>
+      <CalendarGrid t-else="" t-key="state.date + state.view + state.zone" events="visible" date="state.date" zone="state.zone" view="state.view" isWeekendVisible="true" onSelect="(event) => { state.selected = event; }"/>
+      <p class="pbcal-note" t-if="state.caps.payroll and !props.interviewsOnly">Payroll shows saved scheme cut-offs and paydays, plus deadlines shared with your payroll team. Add processing and approval dates using Manage payroll dates. A scheme without a saved calendar rule does not generate guessed dates.</p>
+    </t>
+  </t>
+  <div t-if="state.selected" class="pbcal-shade" t-on-click="() => { state.selected = null; }"><section class="pbcal-drawer" role="dialog" aria-modal="true" aria-label="Event details" t-on-click.stop="() => {}"><button class="pbcal-close pbim-btn" aria-label="Close event details" t-on-click="() => { state.selected = null; }">×</button><p class="pbcal-kicker" t-esc="source(state.selected)"/><h2 t-esc="state.selected.title"/><p t-esc="state.selected.subtitle"/><p><b t-esc="dateLabel(state.selected)"/><br/><t t-esc="when(state.selected)"/> · <t t-esc="state.zone"/></p><p t-if="state.selected.location" t-esc="state.selected.location"/><p t-if="state.selected.detail" class="pbcal-note" t-esc="state.selected.detail"/><p t-if="state.selected.source === 'payroll'" class="pbcal-note">Visible only to authorised payroll staff. Not synced to external calendars.</p><button class="pbim-btn primary" t-on-click="openSelected" t-esc="state.selected.source === 'interviews' ? 'Manage in Hiring' : state.selected.source === 'payroll' ? 'Open payroll source' : state.selected.editable ? 'Open / edit meeting' : 'View meeting'"/></section></div>
+</div>
+</t>
+<t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
+  <xpath expr="//div[contains(@class, 'pbhr-filters')][.//input[@t-model='state.ivQ']]" position="before"><div class="pbcal-views" role="tablist" aria-label="Interviews view"><button role="tab" t-att-aria-selected="!state.interviewCalendar ? 'true' : 'false'" t-att-class="!state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = false; }">List</button><button role="tab" t-att-aria-selected="state.interviewCalendar ? 'true' : 'false'" t-att-class="state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = true; }">Calendar</button></div><SharedCalendar t-if="state.interviewCalendar" interviewsOnly="true"/></xpath>
+  <xpath expr="//div[contains(@class, 'pbhr-filters')][.//input[@t-model='state.ivQ']]" position="attributes"><attribute name="t-if">!state.interviewCalendar</attribute></xpath>
+  <xpath expr="//div[@t-if='!state.interviews.length']" position="attributes"><attribute name="t-if">!state.interviewCalendar and !state.interviews.length</attribute></xpath>
+  <xpath expr="//div[@t-elif='!filteredInterviews.length']" position="attributes"><attribute name="t-elif">!state.interviewCalendar and !filteredInterviews.length</attribute></xpath>
+  <xpath expr="//t[@t-else][t[@t-call='pb_hiring.IvList']]" position="attributes"><attribute name="t-else"/><attribute name="t-elif">!state.interviewCalendar</attribute></xpath>
+</t>
+</templates>
