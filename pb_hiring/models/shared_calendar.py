@@ -94,14 +94,18 @@ class SharedCalendar(models.AbstractModel):
         # Exclude ALL Hiring event copies, even interviews not readable to this
         # user, without looking up their names or IDs with sudo.
         events = self.env['calendar.event'].search([
-            ('start', '<', last), ('stop', '>', first), ('applicant_id', '=', False),
-            '|', ('user_id', '=', self.env.uid), ('partner_ids', 'in', self.env.user.partner_id.ids)],
+            ('applicant_id', '=', False),
+            '|', ('user_id', '=', self.env.uid), ('partner_ids', 'in', self.env.user.partner_id.ids),
+            '|', '&', '&', ('allday', '=', False), ('start', '<', last), ('stop', '>', first),
+            '&', '&', ('allday', '=', True), ('start_date', '<', date_last), ('stop_date', '>=', date_first)],
             order='start,id', limit=1001)
         for rec in events[:1000]:
             own = rec.user_id == self.env.user
             source = 'google' if rec.google_id else 'microsoft' if rec.microsoft_id else 'meetings'
             out.append({'key': 'event:%s' % rec.id, 'source': source,
-                'title': rec.name or _('Meeting'), 'start': str(rec.start), 'stop': str(rec.stop),
+                'title': rec.name or _('Meeting'),
+                'start': str(rec.start_date) if rec.allday else str(rec.start),
+                'stop': str(rec.stop_date + timedelta(days=1)) if rec.allday else str(rec.stop),
                 'allday': rec.allday, 'subtitle': rec.user_id.name or '',
                 'location': rec.location or '', 'status': '',
                 'editable': own and not rec.recurrency,

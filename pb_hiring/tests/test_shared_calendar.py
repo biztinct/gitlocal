@@ -169,3 +169,11 @@ class TestSharedCalendar(InterviewCase):
         self.assertEqual(len(own),2)
         self.assertTrue(all(e['source']=='payroll' for e in own))
         self.assertFalse(any(e['key'].startswith('scheme:%s:'%config.id) for e in self._api(self.recruiter).events('2026-11-01','2026-12-01')['events']))
+
+    def test_all_day_end_is_exclusive_for_calendar_renderer(self):
+        event = self._meeting()
+        event.write({'allday':True,'start_date':self.start.date(),'stop_date':(self.start+timedelta(days=2)).date()})
+        row = next(e for e in self._events(self.employee) if e['key']=='event:%s'%event.id)
+        self.assertEqual(row['start'],str(self.start.date()))
+        self.assertEqual(row['stop'],str((self.start+timedelta(days=3)).date()))
+        self.assertTrue(row['allday'])
