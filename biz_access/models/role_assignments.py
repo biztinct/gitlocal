@@ -144,7 +144,9 @@ class AccessUser(models.Model):
         groups = baseline
         for source in self._pb_access_sources():
             if replace_profile and source.profile_id == replace_profile:
-                if source.source == 'role':
+                if not source._groups():
+                    continue
+                if source.source == 'role' or source.source.startswith(('package:', 'extra:')):
                     groups |= replace_groups
                 elif source.delegation_id.state == 'active':
                     approved = source.snapshot_ids & implied_closure(replace_groups)

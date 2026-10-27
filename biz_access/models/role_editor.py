@@ -1,6 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from .access_common import ACCESS_SURFACES, ROLE_MEMBERSHIP_XMLIDS, area_label, forbidden_in_closure, implied_closure
+from .access_common import ACCESS_SURFACES, ROLE_MEMBERSHIP_XMLIDS, area_label, forbidden_in_closure, implied_closure, visible_people
 from .role_assignments import INTERNAL
 
 
@@ -18,6 +18,17 @@ class RoleEditor(models.AbstractModel):
         if user:
             domain.append(('user_id', '=', user.id))
         return self.env['pb.role.assignment'].sudo().search(domain)
+
+    def _role_change_sources(self, role):
+        # Role definitions also affect profile members and independent grants.
+        # Keep _assignments direct-only: revoking a direct grant must not remove
+        # a person's profile or hand-over source.
+        sources = self.env['pb.role.assignment'].sudo().search([
+            ('profile_id', '=', role.id), ('active', '=', True)])
+        return sources.filtered(lambda row: bool(row._groups()))
+
+    def _role_change_users(self, role):
+        return visible_people(self._role_change_sources(role).user_id, self.env)
 
     def _assign_role(self, role, user, reason='', origin='grant', adopt=False, adopt_groups=None):
         self.env.cr.execute('SELECT id FROM pb_role_profile WHERE id=%s FOR UPDATE', [role.id])
@@ -167,7 +178,7 @@ class RoleEditor(models.AbstractModel):
         self._require_manage()
         role = self._safe_profile(profile_id)
         return dict(role._access_snapshot(), id=role.id, revision=role.revision,
-                    assigned=len(self._assignments(role)), equivalent=role.equivalent_count,
+                    assigned=len(self._role_change_users(role)), equivalent=role.equivalent_count,
                     options=self.composer_options())
 
     @api.model
@@ -183,7 +194,7 @@ class RoleEditor(models.AbstractModel):
         self._require_manage()
         role = self._safe_profile(profile_id)
         abilities = self._validated_abilities(ability_ids)
-        users = self._assignments(role).user_id
+        users = self._role_change_users(role)
         rows = []
         for user in users.sorted('id')[:100]:
             before = set(user.sudo().all_group_ids.ids)
@@ -197,8 +208,7 @@ class RoleEditor(models.AbstractModel):
                 'adds': (abilities - role.ability_ids).mapped('name'),
                 'drops': (role.ability_ids - abilities).mapped('name'),
                 'surfaces': self._surface_rows(abilities.group_ids, role),
-                'temporary': self.env['pb.role.assignment'].sudo().search_count([
-                    ('profile_id', '=', role.id), ('source', '!=', 'role'), ('active', '=', True)])}
+                'temporary': len(self._role_change_sources(role).filtered('delegation_id'))}
 
     def _validated_abilities(self, ids):
         abilities = self._abilities(ids)
@@ -224,7 +234,7 @@ class RoleEditor(models.AbstractModel):
             'name': name.strip(), 'description': (description or '').strip(),
             'area': area or self._dominant_area(abilities), 'ability_ids': [(6, 0, abilities.ids)]})
         return {'ok': True, 'id': role.id, 'revision': role.revision,
-                'message': _('Role saved. %s assigned users now follow the updated role; access from other sources is retained.', len(self._assignments(role)))}
+                'message': _('Role saved. %s assigned users now follow the updated role; access from other sources is retained.', len(self._role_change_users(role)))}
 
     @api.model
     def role_change_history(self, profile_id):

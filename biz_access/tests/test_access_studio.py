@@ -92,6 +92,35 @@ class TestAccessStudio(TransactionCase):
             self.access._studio_adopt_existing('test_studio_adoption', 'New access', 'people',
                 self.role, self.person, self.owner, 'Not maintenance')
 
+    def test_role_editor_impact_includes_profile_members_once(self):
+        profile = self.publish_profile()
+        member = self.assign(profile)
+        self.grant()  # Same person has two independent sources of this role.
+        editor = self.access.role_editor(self.role.id)
+        self.assertEqual(editor['assigned'], 1)
+        unchanged = self.access.preview_role_change(self.role.id, self.role.ability_ids.ids)
+        self.assertEqual(unchanged['assigned'], 1)
+        self.assertEqual(unchanged['temporary'], 0, 'A profile is not a hand-over')
+        self.assertEqual(unchanged['rows'][0]['added'], 0)
+        self.assertEqual(unchanged['rows'][0]['removed'], 0)
+        # Removing the direct source must leave the profile in the impact set.
+        self.access._assignments(self.role, self.person).with_context(_pb_access_internal=INTERNAL).write({'active': False})
+        replacement_group = self.env['res.groups'].create({'name': 'Studio impact replacement'})
+        replacement = self.env['pb.role.ability'].create({'name': 'Replacement capability',
+            'technical_key': 'studio-impact-replacement', 'area': 'people',
+            'group_ids': [(6, 0, replacement_group.ids)]})
+        impact = self.access.preview_role_change(self.role.id, replacement.ids)
+        self.assertEqual(impact['assigned'], 1)
+        self.assertEqual(impact['rows'][0]['id'], self.person.id)
+        self.assertEqual(impact['rows'][0]['added'], 1)
+        self.assertEqual(impact['rows'][0]['removed'], 1)
+        self.access.update_role(self.role.id, self.role.revision, self.role.name,
+            self.role.description, self.role.area, replacement.ids, 'Reviewed profile role change')
+        self.assertIn(replacement_group, self.person.all_group_ids)
+        self.assertNotIn(self.group, self.person.all_group_ids)
+        member.with_context(_pb_studio=STUDIO).write({'date_end': fields.Date.today() - timedelta(days=1)})
+        self.assertEqual(self.access.role_editor(self.role.id)['assigned'], 0)
+
     def test_policy_defaults_follow_native_role_acl_and_field_readonly(self):
         defaults = self.access.studio_role_policy('people', self.role.id)['defaults']
         self.assertEqual(defaults['hr.employee']['write'], 'all')
