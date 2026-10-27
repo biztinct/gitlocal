@@ -27,7 +27,7 @@ assert not set(plan['replace']) & set(inv['standard'])
 with tarfile.open(out/'addons-final.tar.gz','w:gz') as archive:
  for p,data in sorted(files.items(), key=lambda item: Path(item[0])):
   if p.split('/')[0] in plan['replace']:
-   entry=tarfile.TarInfo(p);entry.size=len(data);entry.mode=0o644
+   entry=tarfile.TarInfo(p);entry.size=len(data);entry.mode=0o644;entry.mtime=int(git('show','-s','--format=%ct','HEAD').decode().strip())
    archive.addfile(entry,io.BytesIO(data))
 (out/'release-final.json').write_text(json.dumps(plan,indent=2))
 print(json.dumps({'commit':head,'custom_trees':len(names),'replace':plan['replace']}))

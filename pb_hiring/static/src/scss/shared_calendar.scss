@@ -24,7 +24,7 @@
 .pbcal-views { display:inline-flex; padding:4px; border:1px solid #dce1ef; border-radius:10px; background:white; gap:3px; margin-bottom:8px; } .pbcal-views button { border:0; background:transparent; border-radius:7px; padding:8px 14px; color:#657797; font-weight:650; } .pbcal-views button.on { background:#5b4bb7; color:white; }
 @media(max-width:1000px) { .pbcal .pbcal-grid.week { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbcal .week .pbcal-day { min-height:160px; } .pbcal .pbcal-grid.month .pbcal-event span { display:none; } }
 @media(max-width:650px) { .pbcal { padding:10px 0; } .pbcal .pbcal-grid.month { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbcal .pbcal-grid.week,.pbcal .pbcal-grid.day,.pbcal .pbcal-connections { grid-template-columns:1fr; } .pbcal .pbcal-agenda-row { grid-template-columns:1fr; gap:8px; } .pbcal .pbcal-toolbar { align-items:stretch; } .pbcal .pbcal-heading h1 { font-size:22px; } .pbcal .pbcal-drawer { padding:24px; } }
-.pbcal-fullcalendar { background:white; border:1px solid #dce1ef; border-radius:12px; padding:12px; --fc-border-color:#e5e9f3; --fc-today-bg-color:#f6f3ff; }
+.pbcal-fullcalendar { background:white; border:1px solid #dce1ef; border-radius:12px; padding:12px; min-width:0; --fc-border-color:#e5e9f3; --fc-today-bg-color:#f6f3ff; }
 .pbcal-fullcalendar .fc-col-header-cell-cushion { color:#657797; padding:12px 4px; }
 .pbcal-fullcalendar .pbcal-fc-event { background:#eee9fc; border-color:#9a88d2; color:#32245c; }
 .pbcal-fullcalendar .pbcal-fc-event.payroll { background:#e7f4f1; border-color:#66ab9f; color:#145c52; }
