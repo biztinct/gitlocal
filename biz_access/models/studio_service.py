@@ -586,8 +586,8 @@ class AccessStudio(models.AbstractModel):
     @api.model
     def _studio_sync_navigation(self):
         """Idempotent module-local doors, all pointing at the same catalogue."""
-        parents = {'hiring': ['pb_hiring.item_hiring'], 'people': ['pb_sidebar.item_employees'],
-                   'payroll': ['pb_sidebar.item_run_payroll']}
+        parents = {'hiring': ['pb_hiring.item_hiring'], 'people': ['pb_people_hub.item_people', 'pb_sidebar.item_employees'],
+                   'payroll': ['pb_payhub.item_pay_run', 'pb_sidebar.item_run_payroll']}
         Data = self.env['ir.model.data'].sudo()
         for workspace, names in parents.items():
             parent = next((self.env.ref(n, raise_if_not_found=False) for n in names if self.env.ref(n, raise_if_not_found=False)), None)
@@ -606,8 +606,11 @@ class AccessStudio(models.AbstractModel):
                     'parent_id': parent.id, 'sequence': 990, 'icon': 'shield', 'action_xmlid': 'biz_access.' + action_key,
                     'groups_id': [(6, 0, self.env.ref('base.group_user').ids)]})
                 Data.create({'module': 'biz_access', 'name': item_key, 'model': item._name, 'res_id': item.id, 'noupdate': True})
-            elif item.name == _('Access & delegation'):
-                item.write({'name': _('%s access & delegation', dict(WORKSPACES)[workspace])})
+            else:
+                if item.parent_id != parent:
+                    item.write({'parent_id': parent.id, 'section_id': parent.section_id.id})
+                if item.name == _('Access & delegation'):
+                    item.write({'name': _('%s access & delegation', dict(WORKSPACES)[workspace])})
         return True
 
     def _roles_of(self, user):

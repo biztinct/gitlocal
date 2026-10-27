@@ -272,12 +272,18 @@ patch(PbAccessBoard.prototype, {
     },
 });
 
-// The same workspace appears inside Hiring's existing HubShell submenu.
-registry.category('pb_hiring_hub_lens').add('access_studio', {
-    key: 'access', icon: 'shield', label: _t('Access & delegation'),
-    title: _t('Hiring access'), Component: PbAccessBoard,
-    groups: ['base.group_user'], props: { embedded: true, workspace: 'hiring' },
-});
+// The local hubs share the same catalogue, focused on their own workspace.
+for (const [category, workspace, title] of [
+    ['pb_hiring_hub_lens', 'hiring', 'Hiring access'],
+    ['pb_people_hub_lens', 'people', 'People access'],
+    ['pb_payhub_lens', 'payroll', 'Payroll access'],
+]) {
+    registry.category(category).add('access_studio', {
+        key: 'access', icon: 'shield', label: _t('Access & delegation'),
+        title: _t(title), Component: PbAccessBoard,
+        groups: ['base.group_user'], props: { embedded: true, workspace },
+    });
+}
 
 // Adding an access submenu must not turn an existing workspace door into an
 // expansion-only control. Keep the workspace action and reveal its local doors.

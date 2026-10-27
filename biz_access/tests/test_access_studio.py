@@ -131,6 +131,19 @@ class TestAccessStudio(TransactionCase):
         data = self.env['pb.access'].with_user(self.person).studio_data('people')
         self.assertEqual([person['id'] for person in data['people']], self.person.ids)
 
+    def test_module_doors_use_current_workspaces(self):
+        self.env['pb.access']._studio_sync_navigation()
+        for workspace, xmlid in [('hiring', 'pb_hiring.item_hiring'),
+                                  ('people', 'pb_people_hub.item_people'),
+                                  ('payroll', 'pb_payhub.item_pay_run')]:
+            parent = self.env.ref(xmlid, raise_if_not_found=False)
+            if parent:
+                item = self.env.ref('biz_access.item_studio_' + workspace)
+                self.assertEqual(item.parent_id, parent)
+                item_id = item.id
+                self.env['pb.access']._studio_sync_navigation()
+                self.assertEqual(self.env.ref('biz_access.item_studio_' + workspace).id, item_id)
+
     def test_scope_filters_search_and_direct_read(self):
         self.grant(); self.policy()
         Employee = self.env['hr.employee'].with_user(self.person)
