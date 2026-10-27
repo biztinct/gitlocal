@@ -111,6 +111,11 @@ class TestAccessStudio(TransactionCase):
         with self.assertRaises(AccessError): scoped.studio_submit_profile('hiring', {}, 'Wrong module')
         self.access.studio_set_owner('people', self.other.id, self.role.ids, True, 'Approved ceiling')
         self.assertEqual(scoped.studio_role_policy('people', self.role.id)['id'], self.role.id)
+        # A platform-wide role stays in System even if it includes hiring.
+        from odoo.addons.biz_access.models.studio_catalogue import workspace_of
+        self.role.area = 'system'
+        self.ability.technical_key = 'hiring-test'
+        self.assertEqual(workspace_of(self.role), 'system')
 
     def test_nonowner_only_sees_self(self):
         data = self.env['pb.access'].with_user(self.person).studio_data('people')

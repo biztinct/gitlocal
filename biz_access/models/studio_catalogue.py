@@ -35,6 +35,8 @@ SCOPES = ('none', 'own', 'team', 'all')
 
 def workspace_of(role):
     # Ownership follows the catalogue's capability keys, not its display name.
+    if role.area == 'system':
+        return 'system'
     if any(key.startswith('hiring-') for key in role.ability_ids.mapped('technical_key') if key):
         return 'hiring'
     return role.area if role.area in dict(WORKSPACES) else 'system'

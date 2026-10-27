@@ -56,7 +56,7 @@ patch(PbAccessBoard.prototype, {
     get studioCanManage() { return Boolean(this.studio.can_manage); },
     get profiles() {
         const ids = this.studio.role_ids;
-        return super.profiles.filter(r => !ids || ids.includes(r.id));
+        return super.profiles.filter(r => !ids || ids.includes(r.id)).map(r => ({...r, area_label: this.studio.workspaces.find(w => w.key === this.state.workspace)?.label || r.area_label}));
     },
     get delegations() { return super.delegations.filter(d => !this.studio.delegation_ids || this.studio.delegation_ids.includes(d.id)); },
     get mine() { return super.mine.filter(r => !this.studio.role_ids || this.studio.role_ids.includes(r.id)); },
@@ -112,6 +112,12 @@ patch(PbAccessBoard.prototype, {
     get studioRequests() { return this.studio.requests.filter(r => this.state.studioRequestFilter === 'all' || r.state === this.state.studioRequestFilter); },
     get studioDue() { return this.studio.people.flatMap(p => p.assignments.filter(a => a.due).map(a => ({ ...a, user: p.name, user_id: p.id }))); },
     get studioRoles() { return this.studio.roles.filter(r => r.workspace === this.state.workspace); },
+    get studioPickerRoles() {
+        const d = this.state.studioDialog;
+        const needle = (d?.roleSearch || '').toLocaleLowerCase();
+        return this.studio.roles.filter(r => (d?.includeOtherModules || r.workspace === this.state.workspace || d?.form.role_ids.includes(r.id)) &&
+            (!needle || r.name.toLocaleLowerCase().includes(needle)));
+    },
     get studioAssignable() { return this.studio.profiles.filter(p => p.active); },
     get studioCurrentResource() { return this.studio.resources.find(r => r.key === this.state.studioResource); },
     get studioRule() { return this.state.studioPolicy?.policy[this.state.studioResource]; },
@@ -126,7 +132,7 @@ patch(PbAccessBoard.prototype, {
         const form = profile ? clone(profile) : { name: '', description: '', role_ids: [], owner_id: this.board.me?.id || 0,
             review_date: todayPlus(90), auto_department_id: 0 };
         if (duplicate) { delete form.id; delete form.revision; form.name += ' — copy'; form.auto_department_id = 0; }
-        this.state.studioDialog = { kind: 'profile', title: form.id ? _t('Edit profile') : _t('New profile'), form, reason: '', error: '' };
+        this.state.studioDialog = { kind: 'profile', title: form.id ? _t('Edit profile') : _t('New profile'), form, roleSearch: '', includeOtherModules: false, reason: '', error: '' };
     },
     studioToggleRole(id) {
         const form = this.state.studioDialog.form;
@@ -191,7 +197,7 @@ patch(PbAccessBoard.prototype, {
     },
     studioOwners() {
         this.state.studioDialog = { kind: 'owner', title: _t('Module access owners'),
-            form: { user_id: this.studio.people[0]?.id || 0, role_ids: [], active: true }, reason: '', error: '' };
+            form: { user_id: this.studio.people[0]?.id || 0, role_ids: [], active: true }, roleSearch: '', includeOtherModules: false, reason: '', error: '' };
     },
     studioOwnerSelect(ev) {
         const id = Number(ev.target.value);
