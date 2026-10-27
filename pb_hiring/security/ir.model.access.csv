@@ -190,3 +190,4 @@ access_board_review,Board publishing review,model_pb_hiring_board_review,pb_hiri
 access_board_event_admin,Board intake administration,model_pb_hiring_board_event,base.group_system,1,0,0,0
 access_payroll_calendar_officer,Payroll calendar officer,model_pb_payroll_calendar_date,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,1
 access_payroll_calendar_user,Payroll calendar user,model_pb_payroll_calendar_date,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_payroll_calendar_date_comp,Payroll dates pay team,model_pb_payroll_calendar_date,pb_comp_ben.group_comp_user,1,1,1,1

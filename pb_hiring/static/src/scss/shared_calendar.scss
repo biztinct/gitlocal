@@ -3,6 +3,7 @@
  button, input, select { font: inherit; } button { cursor: pointer; } button:disabled { opacity: .55; cursor: wait; }
  input[type=date],input[type=search],select { border: 1px solid #dce1ef; border-radius: 9px; background: white; padding: 9px 11px; max-width: 100%; }
  .pbcal-muted { color: #657797; } .pbcal-heading,.pbcal-toolbar { display: flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+ .pbcal-actions input,.pbcal-actions select { width:auto; }
  .pbcal-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
  .pbcal-search { flex:1; min-width:180px; }
  .pbcal-sources { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }

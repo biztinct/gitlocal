@@ -177,3 +177,27 @@ class TestSharedCalendar(InterviewCase):
         self.assertEqual(row['start'],str(self.start.date()))
         self.assertEqual(row['stop'],str((self.start+timedelta(days=3)).date()))
         self.assertTrue(row['allday'])
+
+    def test_saved_payroll_month_dates_are_permission_scoped(self):
+        month = self.env['pb.payroll.calendar'].create({
+            'month': self.start.date().replace(day=1), 'company_id': self.company.id,
+            'cutoff_date': self.start.date(), 'pay_date': self.start.date() + timedelta(days=2)})
+        prefix = 'paymonth:%s:' % month.id
+        rows = [e for e in self._events(self.payroll) if e['key'].startswith(prefix)]
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(all(e['allday'] for e in rows))
+        self.assertEqual(self._api(self.payroll).open_record(prefix + 'payday')['res_id'], month.id)
+        self.assertFalse(any(e['key'].startswith(prefix) for e in self._events(self.recruiter)))
+        with self.assertRaises(AccessError): month.with_user(self.recruiter).read(['pay_date'])
+        with self.assertRaises(AccessError): self._api(self.recruiter).open_record(prefix + 'payday')
+        other = self.env['res.company'].create({'name': 'Other payroll calendar company'})
+        month.company_id = other
+        self.assertFalse(any(e['key'].startswith(prefix) for e in self._events(self.payroll)))
+        with self.assertRaises(AccessError): self._api(self.payroll).open_record(prefix + 'payday')
+
+    def test_existing_pay_team_keeps_calendar_access(self):
+        user = self._person_user('comp', ['pb_comp_ben.group_comp_user'])
+        self.assertTrue(self._api(user).capabilities()['payroll'])
+        self.assertTrue(self._api(user).capabilities()['payroll_planning'])
+        self.deadline.company_wide = True
+        self.assertIn('deadline:%s' % self.deadline.id, [e['key'] for e in self._events(user)])

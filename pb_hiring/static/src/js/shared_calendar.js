@@ -9,6 +9,8 @@ import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_d
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
+import { COMP_GATE } from "@pb_comp_ben/js/comp_ben_palette";
+import { PbPaycalBoard } from "@pb_comp_ben/js/paycal_board";
 import { PbHiringBoard } from "./hiring_board";
 const { DateTime } = luxon;
 const SOURCES = { meetings: _t("Meetings"), interviews: _t("Interviews"), payroll: _t("Payroll"), google: _t("Google"), microsoft: _t("Microsoft"), leave: _t("Time off") };
@@ -139,7 +141,7 @@ export class CalendarHub extends Component {
     setup() { this.config = { key: "calendar", brand: { label: _t("Calendar"), icon: "calendar" }, defaultLens: "calendar", lenses: [
         { key: "calendar", label: _t("My calendar"), icon: "calendar", Component: SharedCalendar },
         { key: "availability", label: _t("Find a time"), icon: "clock", Component: FindInterviewTime, probe: { model: "pb.hiring", method: "can_open" } },
-        { key: "connections", label: _t("Connections"), icon: "link", Component: SharedCalendar, props: { connectionsOnly: true } },
+        { key: "connections", label: _t("Connect"), icon: "link", Component: SharedCalendar, props: { connectionsOnly: true } },
     ] }; }
 }
 registry.category("actions").add("pb_shared_calendar", CalendarHub);
@@ -153,9 +155,19 @@ registry.category(SETTINGS_CATEGORIES).add("calendars", { key: "calendars", grou
 PbHiringBoard.components = { ...(PbHiringBoard.components || {}), SharedCalendar };
 patch(PbHiringBoard.prototype, { setup() { super.setup(...arguments); this.state.interviewCalendar = false; } });
 
-registry.category("pb_payhub_lens").add("calendar", { key: "calendar", label: _t("Calendar"), icon: "calendar", Component: SharedCalendar,
-    groups: ["om_hr_payroll.group_hr_payroll_user", "pb_hr_payroll_base.group_payroll_base_officer"],
-    probe: { model: "pb.shared.calendar", method: "can_payroll" }, props: { payrollOnly: true } }, { sequence: 55 });
+class PayrollCalendar extends Component {
+    static template = "pb_hiring.PayrollCalendar";
+    static components = { SharedCalendar, PbPaycalBoard }; static props = { "*": true };
+    setup() {
+        this.state = useState({ planning: false, canPlan: false });
+        const orm = useService("orm");
+        onWillStart(async () => { this.state.canPlan = (await orm.call("pb.shared.calendar", "capabilities", [])).payroll_planning; });
+    }
+}
+// Keep the existing route and planning workflow; one Calendar entry per module.
+registry.category("pb_payhub_lens").add("paycal", { key: "paycal", label: _t("Calendar"), icon: "calendar", Component: PayrollCalendar,
+    groups: ["om_hr_payroll.group_hr_payroll_user", "pb_hr_payroll_base.group_payroll_base_officer", ...COMP_GATE],
+    probe: { model: "pb.shared.calendar", method: "can_payroll" } }, { sequence: 20, force: true });
 registry.category("pb_hub_palette").add("hiring_shared_calendar", { id: "hiring_shared_calendar", label: _t("Calendar"),
     sublabel: _t("Your meetings, interviews and permitted payroll dates"), icon: "calendar",
     requires: "pb_shared_calendar", action: { xmlid: "pb_hiring.action_shared_calendar" }, groups: ["base.group_user"] }, { sequence: 3525 });

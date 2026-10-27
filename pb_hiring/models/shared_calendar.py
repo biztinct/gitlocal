@@ -10,7 +10,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 PAYROLL_GROUPS = ('om_hr_payroll.group_hr_payroll_user',
-                  'pb_hr_payroll_base.group_payroll_base_officer')
+                  'pb_hr_payroll_base.group_payroll_base_officer',
+                  'pb_comp_ben.group_comp_user', 'pb_comp_ben.group_comp_head')
 
 
 class PayrollCalendarDate(models.Model):
@@ -69,6 +70,7 @@ class SharedCalendar(models.AbstractModel):
         self._require()
         return {'payroll': self._payroll(), 'admin': self.env.user.has_group('base.group_system'),
                 'timezone': self.env.user.tz or 'UTC',
+                'payroll_planning': self.env.user.has_group('pb_comp_ben.group_comp_user'),
                 'hiring': self.env['pb.hiring'].can_open(),
                 'connections': self.env.user.check_synchronization_status()}
 
@@ -129,6 +131,17 @@ class SharedCalendar(models.AbstractModel):
             for rec in deadlines[:1000]:
                 out.append(self._date_row('deadline:%s' % rec.id, rec.name, rec.date,
                     rec.company_id.name, rec.note or '', True))
+            months = self.env['pb.payroll.calendar'].search([
+                '|', '&', ('cutoff_date', '>=', date_first), ('cutoff_date', '<', date_last),
+                '&', ('pay_date', '>=', date_first), ('pay_date', '<', date_last)], limit=1001)
+            truncated |= len(months) > 1000
+            for rec in months[:1000]:
+                for key, label, day in [('cutoff', _('Payroll input cut-off'), rec.cutoff_date),
+                                        ('payday', _('Payday'), rec.pay_date)]:
+                    if date_first <= day < date_last:
+                        out.append(self._date_row('paymonth:%s:%s' % (rec.id, key), label, day,
+                            '%s · %s' % (rec.company_id.name or _('All companies'), rec.name),
+                            _('Saved in Payroll planning. Open the source to view this month.')))
             out.extend(self._payroll_rules(date_first, date_last))
         return {'events': out, 'truncated': truncated}
 
@@ -191,6 +204,10 @@ class SharedCalendar(models.AbstractModel):
             rec = self.env['calendar.event'].browse(record_id).exists()
         elif kind == 'leave':
             rec = self.env['hr.leave'].browse(record_id).exists()
+        elif kind == 'paymonth':
+            if not self._payroll():
+                raise AccessError(_('Payroll dates are available to payroll staff only.'))
+            rec = self.env['pb.payroll.calendar'].browse(record_id).exists()
         elif kind == 'scheme':
             if not self._payroll():
                 raise AccessError(_('Payroll dates are available to payroll staff only.'))
