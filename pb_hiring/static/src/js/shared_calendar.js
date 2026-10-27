@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useFullCalendar } from "@web/views/calendar/hooks/full_calendar_hook";
@@ -45,6 +45,7 @@ export class SharedCalendar extends Component {
         this.notification = useService("notification"); this.dialog = useService("dialog");
         this.state = useState({ busy: true, error: "", events: [], caps: {}, date: DateTime.now().toISODate(),
             zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "" });
+        useExternalListener(window, "keydown", ev => { if (ev.key === "Escape") this.state.selected = null; });
         this.zones = [...new Set([DateTime.local().zoneName, "UTC", "Australia/Sydney", "Asia/Ho_Chi_Minh", "Asia/Singapore", "Asia/Kolkata", "Europe/London", "America/New_York"])];
         this.views = [{ key: "day", label: _t("Day") }, { key: "week", label: _t("Week") }, { key: "month", label: _t("Month") }, { key: "agenda", label: _t("Agenda") }];
         this.hours = Array.from({ length: 24 }, (_, i) => ({ key: i, label: String(i).padStart(2,"0") + ":00" }));
@@ -157,4 +158,4 @@ registry.category("pb_payhub_lens").add("calendar", { key: "calendar", label: _t
     probe: { model: "pb.shared.calendar", method: "can_payroll" }, props: { payrollOnly: true } }, { sequence: 55 });
 registry.category("pb_hub_palette").add("hiring_shared_calendar", { id: "hiring_shared_calendar", label: _t("Calendar"),
     sublabel: _t("Your meetings, interviews and permitted payroll dates"), icon: "calendar",
-    xmlid: "pb_hiring.action_shared_calendar", groups: ["base.group_user"] }, { sequence: 3525 });
+    requires: "pb_shared_calendar", action: { xmlid: "pb_hiring.action_shared_calendar" }, groups: ["base.group_user"] }, { sequence: 3525 });

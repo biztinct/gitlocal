@@ -173,7 +173,7 @@ class SharedCalendar(models.AbstractModel):
     def open_record(self, key):
         self._require()
         try:
-            kind, raw_id, *_ = str(key).split(':')
+            kind, raw_id, *_suffix = str(key).split(':')
             record_id = int(raw_id)
         except (ValueError, TypeError):
             raise UserError(_('That calendar item is not valid.'))
