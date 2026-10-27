@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Access, in plain English',
+    'name': 'Access Studio',
     'summary': 'Who can do what, said in words people recognise — with '
                'hand-overs that take themselves back',
     'description': """
+Access Studio: profiles, scoped module ownership, reviewed assignments,
+record and field policy restrictions, independent decisions and access reviews.
+Existing role abilities, Screens, menu previews, delegation and audit remain.
+Policies refine the application's native permissions; they never replace them.
+
 One home for access management, and it belongs to no particular product.
 
 WHAT THIS MODULE IS
@@ -87,7 +92,7 @@ opinion whatsoever about what an application's roles should be.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.6.1',
+    'version': '19.0.1.7.0',
     'category': 'Administration',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -109,19 +114,23 @@ registry, flat fills, one accent. No emoji.
         'security/biz_access_security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron.xml',
+        'data/studio_data.xml',
         'data/mail_template_data.xml',
         'views/access_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'biz_access/static/src/scss/access.scss',
+            'biz_access/static/src/scss/access_studio.scss',
             # the leaf component first, then the file that names its doors
             'biz_access/static/src/js/mini_rail.js',
             'biz_access/static/src/js/access_board.js',
+            'biz_access/static/src/js/access_studio.js',
             'biz_access/static/src/js/access_refresh.js',
             'biz_access/static/src/js/access_palette.js',
             'biz_access/static/src/xml/mini_rail.xml',
             'biz_access/static/src/xml/access_board.xml',
+            'biz_access/static/src/xml/access_studio.xml',
         ],
     },
     # The re-homing of what this module was extracted from. It runs BEFORE the

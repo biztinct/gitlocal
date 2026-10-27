@@ -9,3 +9,9 @@ access_pb_access_request_user,pb.access.request the people it names,model_pb_acc
 access_pb_access_request_access_manager,pb.access.request access team,model_pb_access_request,group_access_manager,1,1,1,0
 access_pb_role_assignment_manager,pb.role.assignment access team,model_pb_role_assignment,group_access_manager,1,1,1,0
 access_pb_role_change_manager,pb.role.change access team,model_pb_role_change,group_access_manager,1,0,0,0
+access_pb_access_profile_read,pb_access_profile access team audit,model_pb_access_profile,group_access_manager,1,0,0,0
+access_pb_access_owner_read,pb_access_owner access team audit,model_pb_access_owner,group_access_manager,1,0,0,0
+access_pb_access_membership_read,pb_access_membership access team audit,model_pb_access_membership,group_access_manager,1,0,0,0
+access_pb_access_studio_request_read,pb_access_studio_request access team audit,model_pb_access_studio_request,group_access_manager,1,0,0,0
+access_pb_access_event_read,pb_access_event access team audit,model_pb_access_event,group_access_manager,1,0,0,0
+access_pb_access_extra_read,pb_access_extra access team audit,model_pb_access_extra,group_access_manager,1,0,0,0
