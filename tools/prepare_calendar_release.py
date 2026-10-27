@@ -16,7 +16,7 @@ with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
 plan={'commit':head,'all_custom':{},'replace':[]}
 for n in names:
  h=hashlib.sha256()
- for p,data in sorted(files.items()):
+ for p,data in sorted(files.items(), key=lambda item: Path(item[0])):
   if p.startswith(n+'/'):
    rel=p[len(n)+1:];h.update(rel.encode()+b'\0'+data+b'\0')
  version=ast.literal_eval(files[n+'/__manifest__.py'].decode())['version']
@@ -25,7 +25,7 @@ for n in names:
  if digest!=inv['modules'][n]['sha256']:plan['replace'].append(n)
 assert not set(plan['replace']) & set(inv['standard'])
 with tarfile.open(out/'addons-final.tar.gz','w:gz') as archive:
- for p,data in sorted(files.items()):
+ for p,data in sorted(files.items(), key=lambda item: Path(item[0])):
   if p.split('/')[0] in plan['replace']:
    entry=tarfile.TarInfo(p);entry.size=len(data);entry.mode=0o644
    archive.addfile(entry,io.BytesIO(data))
