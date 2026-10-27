@@ -1,3 +1,76 @@
+# Revision 3 verification — 27 October 2026 (Australia/Sydney)
+
+Implementation commits: `27f2ece52` and `3c411cad8`.
+The final documentation commit records the verified results below.
+
+## Expanded design
+
+Option 1 now includes module-filtered People & assignments and Requests &
+reviews, effective-access side panels, bulk assignment review, policy impact
+and independent approval, profile maintenance, business actions, masking and
+reasoned reveal, periodic reviews, lifecycle event previews and version restore.
+Screens remains directly accessible. Record rules and form fields are nested
+under Roles & permissions. Options 2 and 3 retain their independent examples.
+
+## Validation
+
+**54 assertions passed in Chrome against the deployed preview.** They cover:
+
+- Module-filtered people, required assignment reason and reviewed bulk updates.
+- Published access remaining unchanged by draft widening; company boundaries;
+  affected-member impact; independent approval and required decision reasons.
+- Approved policy becoming effective; restore-as-draft and a newly published
+  narrower revision.
+- Independent temporary access surviving profile-removal simulation and actual
+  periodic profile removal.
+- Assigned-profile retirement blocked; cloning with zero members; profile
+  comparison; unassigned retirement; retired profiles excluded from assignment.
+- Profile-package before/after review and approved shared-reference changes.
+- Join event attribution, transfer removal of automatic profiles, and leaver
+  suspension blocking independent grants too.
+- Hiring owner blocked outside its module; separate payroll preparation and
+  approval grants detected as a conflict; rejection and module-scoped queues.
+- Explicit business-action grants, locked workflow stages, masked field
+  rendering, reason-required reveal and its audit receipt.
+- Preserved Screens, selected-person preview and source-role selection.
+- Required revocation reason; extra-grant removal preserving the profile.
+- New package requests opening the Requests subtab; automatic-assignment
+  disclosure staying open; profile owner updates visible.
+- Phone-width People, explanation drawer, Requests and Screens; Escape closing
+  the drawer; Option 2 menu preview and Option 3 effective-access flows and
+  their mobile layouts.
+
+Desktop and 390 × 844 layouts were visually inspected. All tested mobile
+views had no page-wide horizontal overflow. Temporary viewport override was
+reset. The warning/error log was empty. Reload reset all fictional changes
+before handoff. No design preference was selected by the test.
+
+Testing found and fixed two interaction issues: submitting a package request
+could retain the Reviews subtab, and toggling automatic assignment collapsed
+its disclosure. Both corrections were verified on the deployed revision.
+
+JavaScript and Python syntax, inline bundle consistency and git whitespace
+checks passed. Nginx configuration validation and reload passed. Public HTML
+is compared byte-for-byte with the repository artifact after final deployment.
+
+## Deployment and cleanup
+
+Only the isolated static design preview is in scope:
+**https://payobook.com/preview/access-delegation/** on `Payobook19v2`.
+File: `/var/www/payobook-previews/access-delegation/index.html`.
+
+The deployer publishes the complete committed preview from the latest combined
+branch state and rejects uncommitted source or a stale inline bundle. Existing
+site configuration and concurrent commits are preserved. No Odoo code, database
+permissions or module upgrades are involved for `payobook`,
+`payobook_template`, `p0clone` or `rize`. Retired ABM is untouched.
+
+Screenshots were inspected in memory. No test screenshot or PNG files were
+written. The task-owned loopback server is stopped after final verification.
+Unrelated `outputs/komal-learning-2026-10-23/` content is excluded and preserved.
+
+---
+
 # Revision 2 verification — 27 October 2026 (Australia/Sydney)
 
 Implementation commit: `086768ce98089a9c9b9f072e8ceff2992a97be69`.
