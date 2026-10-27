@@ -131,12 +131,21 @@ class TestInsightsHubGates(TransactionCase):
                 extra,
                 "the hub offers %s to a lens whose facade would refuse it" % extra)
 
+    def _optional_demo_absent(self, xmlid):
+        # The demo addon is intentionally absent on customer/clone databases.
+        # Still catch misspelled groups whenever that addon is installed.
+        return (xmlid == 'pb_demo.group_payobook_demo' and not
+                self.env['ir.module.module'].search_count([
+                    ('name', '=', 'pb_demo'), ('state', '=', 'installed')]))
+
     def test_every_gate_group_exists_on_this_database(self):
         """Group resolution FAILS OPEN (an unresolvable xmlid means the module
         is absent), so a typo is invisible at runtime in both directions and
         needs a source gate — W95's second rule."""
         for name in ('ANALYTICS_GATE', 'PAYSLIP_RUN_GATE'):
             for xmlid in _js_list(self.SRC, name):
+                if self._optional_demo_absent(xmlid):
+                    continue
                 self.assertTrue(
                     self.env.ref(xmlid, raise_if_not_found=False),
                     "%s names a group that does not exist: %s" % (name, xmlid))
@@ -150,7 +159,8 @@ class TestInsightsHubGates(TransactionCase):
         model's own read access — a different set of groups from the analytics
         tier, which is exactly why W95 forbids reusing one gate for a hub.
         """
-        declared = set(_js_list(self.SRC, 'PAYSLIP_RUN_GATE'))
+        declared = {g for g in _js_list(self.SRC, 'PAYSLIP_RUN_GATE')
+                    if not self._optional_demo_absent(g)}
         acl = self._read_groups('hr.payslip.run')
         self.assertTrue(acl, "hr.payslip.run has no ACL rows to derive from")
         widened = declared - acl
