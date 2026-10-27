@@ -7,7 +7,7 @@ html = here.parent / "access-delegation-poc.html"
 text = html.read_text()
 before, rest = text.split("<script>", 1)
 _, after = rest.split("</script>", 1)
-script = (here / "app.js").read_text()
+script = "\n".join((here / name).read_text() for name in ("app.js", "studio.js"))
 if "</script" in script.lower():
     raise SystemExit("JavaScript contains an unsafe closing script tag")
 html.write_text(before + "<script>\n" + script + "</script>" + after)

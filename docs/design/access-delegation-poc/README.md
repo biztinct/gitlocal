@@ -1,4 +1,4 @@
-# Access and Delegation design review — revision 2
+# Access and Delegation design review — revision 3
 
 Open `../access-delegation-poc.html` in a browser. The self-contained document
 contains three interactive concepts, a review of the existing product,
@@ -42,11 +42,12 @@ masking and migrations are outside this artifact.
 
 ## Editing and publishing
 
-Edit `app.js`, and edit the static content/CSS directly in the HTML, then run:
+Edit `app.js` and `studio.js`, and edit the static content/CSS directly in the HTML, then run:
 
 ```sh
 python3 docs/design/access-delegation-poc/build.py
 node --check docs/design/access-delegation-poc/app.js
+node --check docs/design/access-delegation-poc/studio.js
 ```
 
 After committing the preview sources and hosting files, re-check the latest
@@ -71,3 +72,31 @@ for `payobook`, `payobook_template`, `p0clone` or `rize`. Retired ABM is untouch
 
 See `verification.md` for deployed Chrome checks. Screenshots are viewed in
 memory; no test PNGs are retained.
+
+
+## Revision 3 — expanded Option 1
+
+Studio adds People & assignments and Requests & reviews. Role actions,
+record rules and form fields are nested inside the role editor. Screens,
+Profiles, Delegation and History remain directly accessible.
+
+Interactive demonstrations include reviewed bulk profile assignment,
+published effective-access explanations with a profile-removal simulation,
+request/approval/rejection with self-approval protection, impact previews,
+combined payroll conflicts, published role versions and restore-as-draft,
+profile ownership/clone/compare/retirement, periodic profile reviews,
+business-action and workflow-stage previews, masking/reasoned reveal and
+manual join/move/leave event simulation.
+
+The fixed snapshot date is 2 November 2026. Dates are evaluated at date
+precision in the new assignment demonstration; no background expiration job
+runs. Extra roles remain independent when a profile is removed. Suspended
+sample people have no effective grants. Only Studio uses these expanded
+member workflows; Options 2 and 3 retain their independently reset examples.
+
+The role/menu editing preview can show draft policy. Studio's people
+explanation uses published snapshots. Policy expansion, record-rule changes
+and added profile references go to an independent demo approval. Existing
+sample profile assignments use preapproved packages. All real identities,
+grant ceilings, business-specific prerequisites and multi-company rules
+need authoritative server evaluation in a production implementation.
