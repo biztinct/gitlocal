@@ -151,7 +151,7 @@ class CalendarAdmin extends Component {
     async open() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "settings_action", [])); }
 }
 registry.category("actions").add("pb_calendar_admin", CalendarAdmin);
-registry.category(SETTINGS_CATEGORIES).add("calendars", { key: "calendars", group: "integrations", label: _t("Calendars"), icon: "calendar", groups: ["base.group_system"], blurb: _t("Google and Microsoft application setup. Each person connects their own account."), cards: [{ id: "calendars", tag: "pb_calendar_admin", title: _t("Calendar providers"), sub: _t("Configure Google and Microsoft OAuth. This does not grant access to payroll or private meetings.") }] });
+registry.category(SETTINGS_CATEGORIES).add("calendars", { key: "calendars", group: "integrations", label: _t("Calendars"), icon: "calendar", groups: ["base.group_system"], blurb: _t("Google and Microsoft application setup. Each person connects their own account."), cards: [{ id: "calendars", tag: "pb_calendar_admin", icon: "calendar", label: _t("Calendar providers"), sub: _t("Configure Google and Microsoft OAuth. This does not grant access to payroll or private meetings.") }] });
 PbHiringBoard.components = { ...(PbHiringBoard.components || {}), SharedCalendar };
 patch(PbHiringBoard.prototype, { setup() { super.setup(...arguments); this.state.interviewCalendar = false; } });
 
