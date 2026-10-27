@@ -15,7 +15,7 @@ const merged=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/a
 const extensionDoc=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/access_studio.xml'),'text/xml');
 for(const xp of extensionDoc.documentElement.children[0].children){
  const result=merged.evaluate(xp.getAttribute('expr'),merged,null,w.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
- assert(result.snapshotLength,'Extension XPath must match');
+ assert.equal(result.snapshotLength,1,'Extension XPath must target exactly one node: '+xp.getAttribute('expr'));
  for(let i=0;i<result.snapshotLength;i++){
   const target=result.snapshotItem(i),position=xp.getAttribute('position');
   if(position==='attributes'){for(const a of xp.children)target.setAttribute(a.getAttribute('name'),a.textContent);continue;}
@@ -34,11 +34,13 @@ button('Explain access').click();await tick();assert(w.document.querySelector('[
 button('Profiles').click();await tick();button('New profile').click();await tick();assert(button('Submit for review').disabled);assert(w.document.body.textContent.includes('Roles in this profile'));assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
 c.state.studioDialog.includeOtherModules=true;await tick();assert(w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
 c.state.studioDialog.roleSearch='Recruiter';await tick();assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));button('Close').click();await tick();
-await c.studioOpenPolicy({id:5});await tick();assert(w.document.querySelector('[aria-label="Candidates View scope"]'));assert(!button('Manage roles'));assert(button('Abilities & menu preview'));
-button('Form fields').click();await tick();button('Add a policy').click();await tick();assert(w.document.querySelector('[aria-label="Name permission"]'));
+await c.studioOpenPolicy({id:5});await tick();assert(w.document.querySelector('[aria-label="Candidates View scope"]'));assert(!button('Manage roles'));assert(button('Abilities & menu preview'));assert(!w.document.querySelector('[placeholder="Search a role, or what it lets someone do"]'));
+button('Form fields').click();await tick();button('Add a policy').click();await tick();assert.equal(w.document.querySelector('[aria-label="Name permission"]').value,'view');assert.equal(w.document.querySelector('[aria-label="Salary expected permission"]').value,'view');
+c.state.studioPolicy.policy['hr.applicant'].fields.salary_expected='edit';await tick();assert.equal(w.document.querySelector('[aria-label="Salary expected permission"]').value,'edit');
+const field=w.document.querySelector('[aria-label="Salary expected permission"]');field.value='masked';field.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(c.state.studioPolicy.policy['hr.applicant'].fields.salary_expected,'masked');
 button('Actions & records').click();await tick();assert.equal(w.document.querySelector('[aria-label="Candidates View scope"]').value,'all');assert.equal(w.document.querySelector('[aria-label="Candidates Edit scope"]').value,'none');
 const scope=w.document.querySelector('[aria-label="Candidates Edit scope"]');scope.value='own';scope.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(c.state.studioPolicy.policy['hr.applicant'].write,'own');
 c.state.studioRoleSearch='Missing';await tick();assert(w.document.body.textContent.includes('No roles match'));c.state.studioRoleSearch='';
 button('Review & submit').click();await tick();assert(w.document.body.textContent.includes('Review policy changes'));button('Close').click();await tick();
-c.setLens('reviews');await tick();assert(w.document.body.textContent.includes('No requests in this view'));c.setLens('studio_history');await tick();assert(w.document.body.textContent.includes('No Studio changes yet'));c.setLens('screens');await tick();assert(w.document.body.textContent.includes('See it as'));
+c.setLens('reviews');await tick();assert(w.document.body.textContent.includes('No requests in this view'));c.setLens('studio_history');await tick();assert(w.document.body.textContent.includes('No Studio changes yet'));c.setLens('screens');await tick();assert(w.document.body.textContent.includes('See it as'));c.toggleSim();await tick();assert(w.document.querySelector('[placeholder="Start typing a name"]'));c.toggleSim();await tick();
 app.destroy();w.close();console.log('PASS mounted full inherited Access Studio: people, explain drawer, profile editor, policy fields, review, history, preserved screens and preview control');})().catch(e=>{console.error(e);process.exitCode=1});
