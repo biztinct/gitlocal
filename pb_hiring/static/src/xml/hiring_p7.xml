@@ -150,6 +150,7 @@
   <t t-name="pb_hiring.P7Inline">
     <t t-if="state.canRecruit">
       <div class="pbhr-sec pbhr-p7-sec">Where it has gone
+        <button type="button" class="pbim-btn primary" t-on-click="() => this.action.doAction('pb_hiring.action_job_boards', {additionalContext: {pb_role_id: state.drawer.id}})">Job boards →</button>
         <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.p7OpenSheet()"><t t-out="ic('maximize',13)"/> Open Publish to…</button>
       </div>
       <t t-set="p7Sheet" t-value="false"/>

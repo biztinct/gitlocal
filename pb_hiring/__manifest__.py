@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.16.2',
+    'version': '19.0.2.17.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -275,6 +275,7 @@ WHAT THIS MODULE IS
         'web.assets_backend': [
             'pb_hiring/static/src/scss/hiring.scss',
             'pb_hiring/static/src/scss/hiring_connections.scss',
+            'pb_hiring/static/src/scss/job_boards.scss',
             # the leaf component first, then the rows that name its action
             'pb_hiring/static/src/scss/hiring_numbers.scss',
             'pb_hiring/static/src/scss/hiring_board_p1.scss',
@@ -298,6 +299,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/hiring_registers_p9.js',  # NAV P3a: after every board patch
             'pb_hiring/static/src/js/hiring_numbers.js',
             'pb_hiring/static/src/js/hiring_hub.js',
+            'pb_hiring/static/src/js/job_boards.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/js/hiring_connections.js',
             'pb_hiring/static/src/js/home_no_pulse.js',
@@ -315,6 +317,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/xml/hiring_numbers.xml',
             'pb_hiring/static/src/xml/hiring_hub.xml',
             'pb_hiring/static/src/xml/hiring_connections.xml',
+            'pb_hiring/static/src/xml/job_boards.xml',
         ],
         'web.assets_frontend': [
             'pb_hiring/static/src/js/interview_booking.js',

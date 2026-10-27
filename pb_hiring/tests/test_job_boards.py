@@ -88,6 +88,44 @@ class TestJobBoards(ChannelCase):
         self.rc._board_send(self.values, "CREATE")
         self.assertEqual(self.rc.board_state, "queued")
         self.assertNotEqual(self.rc.state, "posted")
+
+    def test_workspace_draft_keeps_provider_idle(self):
+        facade = self.env['pb.hiring'].with_user(self.recruiter)
+        values = dict(self.values, description='A plain advert\nSecond paragraph')
+        panel = facade.job_board_save(self.rc.id, values)
+        self.assertEqual(panel['id'], self.req.id)
+        self.assertFalse(self.rc.board_reference)
+        self.assertEqual(self.rc.board_state, 'draft')
+        self.assertIn('Second paragraph', self.rc.board_values['description'])
+        row = next(r for r in panel['rows'] if r['id'] == self.rc.id)
+        self.assertNotIn('client_secret', json.dumps(row))
+        self.assertNotIn('client_id', json.dumps(row))
+        with self.assertRaises(UserError):
+            facade.job_board_save(self.rc.id, values, 'publish')
+
+    def test_workspace_refuses_confidential_and_other_company(self):
+        facade = self.env['pb.hiring'].with_user(self.recruiter)
+        self.req.sudo().write({'is_confidential': True})
+        with self.assertRaises(UserError):
+            facade.job_board_save(self.rc.id, self.values)
+        other = self.env['res.company'].sudo().create({'name': 'DEMO workspace other company'})
+        self.env.user.sudo().write({'company_ids': [(4, other.id)]})
+        with self.assertRaises(AccessError):
+            self.env['pb.hiring'].with_company(other).job_board_detail(self.req.id)
+
+    def test_workspace_company_url_and_partner_readiness(self):
+        facade = self.env['pb.hiring'].with_user(self.lead)
+        card = facade.connection_save('linkedin', {'organization_id': 'https://www.linkedin.com/company/123/admin/dashboard/'})
+        self.assertEqual(self.conn._config()['organization_id'], 'urn:li:organization:123')
+        self.assertTrue(card['platform_ready'])
+        with self.assertRaises(UserError):
+            facade.connection_save('linkedin', {'organization_id': 'https://evil.example/company/123/'})
+        with patch('odoo.addons.pb_hiring.models.job_board_platform.read_platform', side_effect=ValueError('Partner approval pending')):
+            card = facade.connection_overview()
+            row = next(c for c in card['cards'] if c['key'] == 'linkedin')
+            self.assertFalse(row['platform_ready'])
+        with self.assertRaises(AccessError):
+            self.env['pb.hiring'].with_user(self.recruiter).connection_save('linkedin', {'organization_id': '123'})
         self.rc.write({"board_state": "pending"})
 
     def _event(self, external="application-1", **extra):

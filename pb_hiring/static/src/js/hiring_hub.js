@@ -34,6 +34,7 @@ import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 import { LIFECYCLE_GATE } from "@pb_lifecycle/js/lifecycle_hub";
 import { PbHiringBoard } from "@pb_hiring/js/hiring_board";
 import { PbHiringSetup } from "@pb_hiring/js/hiring_setup";
+import { HiringJobBoards } from "@pb_hiring/js/job_boards";
 
 /** Who is offered the board — unchanged from the old Lifecycle tab. */
 export const HIRING_HUB_GATE = LIFECYCLE_GATE.concat([
@@ -85,6 +86,9 @@ export class PbHiringHub extends Component {
                   title: _t("Applications across jobs"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "applicants", placeLens: "applicants" } },
+                { key: "jobboards", icon: "globe", label: _t("Job boards"),
+                  title: _t("Advertise your roles"), Component: HiringJobBoards,
+                  groups: HIRING_HUB_GATE, probe: { model: "pb.hiring", method: "can_open_job_boards" } },
                 { key: "offers", icon: "send", label: _t("Offers"),
                   title: _t("Offers and joining checks"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
@@ -144,6 +148,7 @@ registry.category(HUB_LENS_GATES).add("pb_hiring_hub", () => [
     { key: "offers", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "interviews", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "bank", groups: HIRING_BANK_GATE, probe: PROBE },
+    { key: "jobboards", groups: HIRING_HUB_GATE, probe: { model: "pb.hiring", method: "can_open_job_boards" } },
     { key: "setup", groups: HIRING_SETUP_GATE, probe: PROBE },
     ...registry.category(HIRING_LENSES).getAll(),
 ].map((l) => ({ ...l, hubFeature: "lifecycle" })));

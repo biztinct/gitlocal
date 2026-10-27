@@ -33,6 +33,9 @@
     .hc-help code { display: block; overflow-wrap: anywhere; margin-top: 10px; color: #265a61; }
     .hc-field { display: block; margin: 18px 0; } .hc-field span { display: block; font-weight: 600; margin-bottom: 7px; } .hc-field small { color: var(--hc-muted); }
     .hc-wizard footer { display: flex; gap: 12px; padding: 20px 28px; border-top: 1px solid var(--hc-line); align-items: center; } .hc-grow { flex: 1; }
+    .hc-ownership {display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:24px 0; section{padding:20px;background:#eff6f2;border-radius:12px;} h4{margin:10px 0;} p{margin:0;font-size:13px;}}
+    .hc-readiness {margin:20px 0; >div{display:flex;align-items:flex-start;gap:14px;padding:18px 0;border-bottom:1px solid var(--hc-line);} >div>span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e5f2ed;flex-shrink:0;} >div>div{flex:1;} p{font-size:13px;margin:6px 0 0;} strong{font-size:11px;color:#17695e;}}
+    .hc-advanced {font-size:12px;padding-left:0;}
     @media(max-width: 1000px) { .hc-grid { grid-template-columns: repeat(2, minmax(200px, 1fr)); } .hc-native { display: block; } }
     @media(max-width: 600px) { padding: 20px 14px; .hc-grid { grid-template-columns: 1fr; } .hc-header { align-items: flex-start; flex-direction: column; } .hc-steps { padding: 12px; gap: 6px; } .hc-steps li { flex-direction: column; } .hc-wizard footer { flex-wrap: wrap; padding: 14px; } }
 }
