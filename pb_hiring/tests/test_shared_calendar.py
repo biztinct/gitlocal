@@ -179,6 +179,8 @@ class TestSharedCalendar(InterviewCase):
         self.assertTrue(row['allday'])
 
     def test_saved_payroll_month_dates_are_permission_scoped(self):
+        self.company = self.env['res.company'].create({'name': 'Isolated calendar fixture'})
+        (self.payroll | self.recruiter).write({'company_ids': [(4, self.company.id)]})
         month = self.env['pb.payroll.calendar'].create({
             'month': self.start.date().replace(day=1), 'company_id': self.company.id,
             'cutoff_date': self.start.date(), 'pay_date': self.start.date() + timedelta(days=2)})
