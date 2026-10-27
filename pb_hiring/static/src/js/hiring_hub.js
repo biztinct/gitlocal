@@ -61,6 +61,8 @@ export class PbHiringHub extends Component {
         // A deep link may name the role to open on arrival (RECRUIT P1).
         const role = ctx.pb_role_id ? { roleId: ctx.pb_role_id } : {};
 
+        const extraLenses = this.extraLenses();
+
         this.config = {
             key: "hiring",                    // -> pbhub.hiring.lens.v1
             brand: { label: _t("Hiring"), icon: "userPlus" },
@@ -77,29 +79,29 @@ export class PbHiringHub extends Component {
                   title: _t("Open roles"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "roles", placeLens: "roles" } },
-                // NAV P3a: every application and every offer, across roles.
+                { key: "jobboards", icon: "globe", label: _t("Job boards"),
+                  title: _t("Advertise your roles"), Component: HiringJobBoards,
+                  groups: HIRING_HUB_GATE, probe: { model: "pb.hiring", method: "can_open_job_boards" } },
                 { key: "applicants", icon: "columns", label: _t("Applicants"),
                   title: _t("Applications across jobs"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "applicants", placeLens: "applicants" } },
-                { key: "jobboards", icon: "globe", label: _t("Job boards"),
-                  title: _t("Advertise your roles"), Component: HiringJobBoards,
-                  groups: HIRING_HUB_GATE, probe: { model: "pb.hiring", method: "can_open_job_boards" } },
+                { key: "interviews", icon: "calendarClock", label: _t("Interviews"),
+                  Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
+                  props: { startTab: "interviews", placeLens: "interviews" } },
                 { key: "offers", icon: "send", label: _t("Offers"),
                   title: _t("Offers and joining checks"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "offers", placeLens: "offers" } },
-                { key: "interviews", icon: "calendarClock", label: _t("Interviews"),
-                  Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
-                  props: { startTab: "interviews", placeLens: "interviews" } },
                 { key: "bank", icon: "bookOpen", label: _t("Resume bank"),
                   title: _t("Resume bank"),
                   Component: PbHiringBoard, groups: HIRING_BANK_GATE, probe: PROBE,
                   props: { startTab: "bank", placeLens: "bank" } },
+                ...extraLenses.filter((lens) => lens.key === "numbers"),
                 { key: "setup", icon: "sliders", label: _t("Set-up"),
                   title: _t("Hiring set-up"), Component: PbHiringSetup,
                   groups: HIRING_SETUP_GATE, probe: PROBE },
-                ...this.extraLenses(),
+                ...extraLenses.filter((lens) => lens.key !== "numbers"),
             ],
         };
     }
@@ -110,7 +112,8 @@ export class PbHiringHub extends Component {
         return registry.category(HIRING_LENSES).getAll().map((def) => {
             const props = typeof def.propsFromContext === "function"
                 ? def.propsFromContext(ctx) : (def.props || {});
-            return { ...def, props };
+            return { ...def, props,
+                label: def.key === "access" ? _t("Access & delegations") : def.label };
         });
     }
 

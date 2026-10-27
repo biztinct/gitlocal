@@ -72,11 +72,6 @@
           <span class="pbhub-search__kbd" t-esc="paletteHint"/>
         </button>
 
-        <button class="pbhub-cog" t-if="hasCog" t-on-click="() => this.openCog()"
-                title="Settings" aria-label="Settings">
-          <span t-out="ic('settings', 15)"/>
-        </button>
-
         <span class="pbhub-user" t-att-title="userName" t-esc="userInitials"/>
       </header>
 
