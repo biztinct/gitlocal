@@ -88,6 +88,7 @@ class TestJobBoards(ChannelCase):
         self.rc._board_send(self.values, "CREATE")
         self.assertEqual(self.rc.board_state, "queued")
         self.assertNotEqual(self.rc.state, "posted")
+        self.rc.write({"board_state": "pending"})
 
     def test_workspace_draft_keeps_provider_idle(self):
         facade = self.env['pb.hiring'].with_user(self.recruiter)
@@ -126,7 +127,6 @@ class TestJobBoards(ChannelCase):
             self.assertFalse(row['platform_ready'])
         with self.assertRaises(AccessError):
             self.env['pb.hiring'].with_user(self.recruiter).connection_save('linkedin', {'organization_id': '123'})
-        self.rc.write({"board_state": "pending"})
 
     def _event(self, external="application-1", **extra):
         self.rc.write({"board_reference": "job-1", "board_connection_id": self.conn.id})
