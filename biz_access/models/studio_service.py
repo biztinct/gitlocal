@@ -98,7 +98,8 @@ class AccessStudio(models.AbstractModel):
             extra = extra.filtered(lambda a: a.user_id.id == self.env.uid)
         users = visible_people(self.env['res.users'].sudo().search([
             ('share', '=', False), ('company_ids', 'in', self.env.company.id),
-            ('active', '=', True)] + ([('name', 'ilike', str(search)[:100])] if search else []), limit=201), self.env)
+            ('active', '=', True)] + ([] if manage else [('id', '=', self.env.uid)]) +
+            ([('name', 'ilike', str(search)[:100])] if search else []), limit=201), self.env)
         if not manage:
             users = users.filtered(lambda u: u.id == self.env.uid)
         sources = self.env['pb.role.assignment'].sudo().search([('active', '=', True), ('profile_id', 'in', local_roles.ids)])

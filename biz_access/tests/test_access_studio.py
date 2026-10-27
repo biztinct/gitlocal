@@ -122,6 +122,15 @@ class TestAccessStudio(TransactionCase):
         self.assertEqual([r['id'] for r in data['people']], self.person.ids)
         with self.assertRaises(AccessError): self.env['pb.access'].with_user(self.person).studio_explain('people', self.other.id, 'hr.employee')
 
+    def test_self_access_is_available_beyond_first_company_page(self):
+        self.env['res.users'].with_context(no_reset_password=True).create([
+            {'name': 'AAA Studio page %03d' % index, 'login': 'studio-page-%s' % index,
+             'company_id': self.company.id, 'company_ids': [(6, 0, self.company.ids)],
+             'group_ids': [(6, 0, self.env.ref('base.group_user').ids)]}
+            for index in range(201)])
+        data = self.env['pb.access'].with_user(self.person).studio_data('people')
+        self.assertEqual([person['id'] for person in data['people']], self.person.ids)
+
     def test_scope_filters_search_and_direct_read(self):
         self.grant(); self.policy()
         Employee = self.env['hr.employee'].with_user(self.person)
