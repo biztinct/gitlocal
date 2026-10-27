@@ -2,26 +2,9 @@
 /**
  * The doors into this module.
  *
- *   1. **The Budget lens on the Insights mission.** Registered into
- *      `pb_insights_hub`'s soft registry (`INSIGHTS_LENSES`) rather than
- *      imported into its config, because the dependency runs the other way:
- *      this module depends on the hub, so the hub cannot import this one back.
- *
- *      `pb_insights_hub` had no such registry — its four lenses were a literal
- *      array — so this change adds ONE, exactly as P7 added the same thing to
- *      `pb_payhub` (R73) and P8 to `pb_home_hub` (R83): the exported constant
- *      `INSIGHTS_LENSES` and an `extraLenses()` spread at the end of the list.
- *      That is the whole of the edit to pb_insights_hub, it is JS only, and it
- *      needs the asset cache purged rather than a `-u`.
- *
- *      The four shipped lenses carry no sequence, so bolted-on ones start at
- *      20. Budget takes **20** and lands after the Payroll Report — what
- *      happened first, and what it was supposed to cost after.
- *
- *      R63 — THE LENS RAIL'S LABEL BOX IS 60px and it wraps between words but
- *      never inside one. "Budget" is six characters and measures well inside
- *      it — and it is the same word the person reads at the top of the lens,
- *      in the spreadsheet it exports and on the tile in their own function.
+ *   1. Budget is registered in Payroll through the shared report-home helper.
+ *      The soft registry keeps the owning hub independent of this module.
+ *      Its own budget permission gate and arrival filters are preserved.
  *
  *   2. **⌘K palette rows, in the 3000 block.** `hub_palette_entries.js`
  *      auto-numbers its seeded deep links into the 2000s and grows (R41); P2
@@ -37,7 +20,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
+import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
 import { PbBudgetBoard } from "@pb_budget/js/budget_board";
 
 /**
@@ -53,7 +36,7 @@ export const BUDGET_GATE = [
     "base.group_system",
 ];
 
-registry.category(INSIGHTS_LENSES).add("budget", {
+registerModuleInsight("budget", {
     key: "budget",
     icon: "gauge",
     label: _t("Budget"),
@@ -72,25 +55,25 @@ const palette = registry.category("pb_hub_palette");
 palette.add("bdg_board", {
     id: "bdg_board",
     label: _t("Budget"),
-    sublabel: _t("Insights"),
+    sublabel: _t("Payroll"),
     icon: "gauge",
     groups: BUDGET_GATE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_budget_board",
-    action: { xmlid: "pb_insights_hub.action_pb_insights_hub", lens: "budget" },
+    action: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget" },
 }, { sequence: 3000 });
 
 palette.add("bdg_month", {
     id: "bdg_month",
     label: _t("Budget this month"),
-    sublabel: _t("Insights"),
+    sublabel: _t("Payroll"),
     icon: "calendar",
     groups: BUDGET_GATE,
     requires: "pb_budget_board",
     // `month:current` and not a date: a row that names a month would be wrong
     // from the first of the next one.
-    action: { xmlid: "pb_insights_hub.action_pb_insights_hub", lens: "budget",
+    action: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget",
               focus: "month:current" },
 }, { sequence: 3005 });
 

@@ -194,8 +194,7 @@ class TestInsightsHubStatic(TransactionCase):
                           _hub('static', 'src', 'js', 'insights_hub.js'))
         self.assertEqual(
             keys,
-            [('pulse', 'activity'), ('explorer', 'compass'),
-             ('workforce', 'users'), ('payroll', 'fileText')],
+            [('pulse', 'activity'), ('explorer', 'compass')],
             "the lens order and icons are the mockup's spec, not a preference")
 
     def test_the_lens_persistence_key_is_the_one_the_handover_names(self):
@@ -248,7 +247,7 @@ class TestInsightsHubStatic(TransactionCase):
         hub = _hub('static', 'src', 'js', 'insights_hub.js')
         lenses = set(re.findall(r'key:\s*"(\w+)",\s*icon:', hub))
         pal = _hub('static', 'src', 'js', 'insights_hub_palette.js')
-        for lens in re.findall(r'lens:\s*"(\w+)"', pal):
+        for lens in re.findall(r'tag: HUB_TAG, lens:\s*"(\w+)"', pal):
             self.assertIn(lens, lenses, "palette opens unknown lens %r" % lens)
         for lens in lenses:
             self.assertIn('lens: "%s"' % lens, pal,
@@ -528,15 +527,12 @@ class TestSoftLensRegistry(TransactionCase):
         self.assertNotIn('get extraLenses', src,
                          'a getter would rebuild the lens list on every render')
 
-    def test_the_four_shipped_lenses_are_still_the_first_four(self):
-        """A bolted-on lens lands AFTER what this hub ships, because the four
-        shipped ones carry no sequence and the registry orders the rest behind
-        them. If that ever stops being true, a later module could push the
-        Pulse off the front of the rail without editing this file."""
+    def test_cross_module_reports_have_one_operational_home(self):
         src = _code(_hub('static', 'src', 'js', 'insights_hub.js'))
-        order = [k for k in ('"pulse"', '"explorer"', '"workforce"', '"payroll"')
-                 if k in src]
-        self.assertEqual(order, ['"pulse"', '"explorer"', '"workforce"',
-                                 '"payroll"'])
-        self.assertLess(src.index('key: "payroll"'), src.index('extraLenses()'),
-                        'the spread must come last in the lens list')
+        self.assertLess(src.index('key: "explorer"'), src.index('extraLenses()'))
+        self.assertNotIn('key: "payroll", icon:', src)
+        self.assertNotIn('key: "workforce", icon:', src)
+        for owner in ('pb_people_hub_lens', 'pb_payhub_lens',
+                      'pb_hiring_hub_lens', 'pb_talent_hub_lens',
+                      'pb_learning_hub_lens'):
+            self.assertIn(owner, src)

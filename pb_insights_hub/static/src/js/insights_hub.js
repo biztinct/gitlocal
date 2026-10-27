@@ -2,15 +2,10 @@
 /**
  * `pb_insights_hub` — the Insights mission, on Cycle 1's HubShell.
  *
- * Four surfaces that used to be four rail items become four lenses of one
- * workspace, in the order the IA mockup specifies:
- *
- *     pulse · explorer · workforce · payroll
- *
- * That order is a sentence, not a preference: the Pulse is the briefing you
- * open with, the Explorer is where you go to ask it a question, Workforce is
- * the same question about people rather than money, and the Payroll Report is
- * the row-level evidence under both.
+ * Pulse and Explorer remain the cross-module analysis workspace. Workforce
+ * reports belong to People; payroll reports and Budget to Payroll; Hiring,
+ * goal and training reports live with Hiring, Talent and Learning. Existing
+ * Insights deep links redirect to those homes with their context intact.
  *
  * Every lens is the EXISTING cockpit, mounted with `embedded: true` (W17).
  * Nothing here holds data: the hub owns no model, no ACL and no RPC — each
@@ -47,7 +42,7 @@
  * prop must keep a stable identity or every render recreates every lens (the
  * refetch trap, W21).
  */
-import { Component } from "@odoo/owl";
+import { Component, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -96,6 +91,34 @@ export const PAYSLIP_RUN_GATE = [
  */
 export const INSIGHTS_LENSES = "pb_insights_hub_lens";
 
+// One home for each operational report. Keep explicit old Insights deep links
+// working while the visible rail and search results use the owning module.
+export const INSIGHT_DESTINATIONS = {
+    workforce: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "workforce", category: "pb_people_hub_lens" },
+    payroll: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "report", category: "pb_payhub_lens" },
+    budget: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget", category: "pb_payhub_lens" },
+    hiring: { xmlid: "pb_hiring.action_pb_hiring_hub", lens: "numbers", category: "pb_hiring_hub_lens" },
+    goals: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goal_numbers", category: "pb_talent_hub_lens" },
+    training: { xmlid: "pb_learning_hub.action_pb_learning_hub", lens: "numbers", category: "pb_learning_hub_lens" },
+};
+
+export function registerModuleInsight(key, definition, options) {
+    const destination = INSIGHT_DESTINATIONS[key];
+    registry.category(destination.category).add(destination.lens, {
+        ...definition, key: destination.lens, feature: "insights",
+    }, options);
+}
+
+registerModuleInsight("workforce", {
+    icon: "users", label: _t("Workforce"), title: _t("Workforce insights"),
+    Component: PbWorkforceInsights, groups: ANALYTICS_GATE,
+}, { sequence: 85 });
+registerModuleInsight("payroll", {
+    icon: "fileText", label: _t("Reports"), title: _t("Payroll report"),
+    Component: PayrollReport, groups: PAYSLIP_RUN_GATE,
+}, { sequence: 85 });
+
+
 export class PbInsightsHub extends Component {
     static template = "pb_insights_hub.PbInsightsHub";
     static components = { HubShell };
@@ -103,6 +126,16 @@ export class PbInsightsHub extends Component {
 
     setup() {
         this.actionService = useService("action");
+        const context = this.props.action?.context || {};
+        this.redirect = INSIGHT_DESTINATIONS[context.pb_lens];
+        onMounted(() => {
+            if (this.redirect) {
+                openHub(this.actionService, {
+                    ...this.redirect,
+                    context: { ...context, pb_lens: this.redirect.lens },
+                });
+            }
+        });
 
         this.config = {
             key: "insights",                 // -> pbhub.insights.lens.v1
@@ -124,14 +157,6 @@ export class PbInsightsHub extends Component {
                   Component: PbInsights, groups: ANALYTICS_GATE },
                 { key: "explorer", icon: "compass", label: _t("Explorer"),
                   Component: PbExplorer, groups: ANALYTICS_GATE },
-                { key: "workforce", icon: "users", label: _t("Workforce"),
-                  Component: PbWorkforceInsights, groups: ANALYTICS_GATE },
-                // NAV P2: one-word rail label; the full name is the tooltip.
-                { key: "payroll", icon: "fileText", label: _t("Payroll"),
-                  title: _t("Payroll report"),
-                  Component: PayrollReport, groups: PAYSLIP_RUN_GATE },
-                // Bolted-on lenses sit after the four this hub ships — what
-                // happened first, everything measured against it after.
                 ...this.extraLenses(),
             ],
         };

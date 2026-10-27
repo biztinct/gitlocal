@@ -44,7 +44,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
-import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
+import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
 import { PbHiringNumbers } from "@pb_hiring/js/hiring_numbers";
 
 // NAV P2 (2026-10-21): the board is no longer a tab of the Lifecycle hub. It
@@ -66,10 +66,10 @@ import { PbHiringNumbers } from "@pb_hiring/js/hiring_numbers";
  * "Hiring" measures 37px in the 60px rail label box (R63/R141) — comfortably
  * inside — and it is the same word the reader sees on the Lifecycle hub.
  */
-registry.category(INSIGHTS_LENSES).add("hiring", {
+registerModuleInsight("hiring", {
     key: "hiring",
     icon: "userPlus",
-    label: _t("Hiring"),
+    label: _t("Insights"),
     Component: PbHiringNumbers,
     groups: [
         "pb_hiring.group_hiring_user",
@@ -287,14 +287,14 @@ palette.add("hiring_feedback", {
 palette.add("hiring_analytics", {
     id: "hiring_analytics",
     label: _t("Hiring numbers"),
-    sublabel: _t("Insights"),
+    sublabel: _t("Hiring"),
     icon: "barChart",
     groups: HIRING_BOARD_GATE,
     // The presence probe is the lens's OWN action tag, not the board's: a
     // build that shipped the board and not the numbers must not offer a door
     // into a screen that is not there.
     requires: "pb_hiring_numbers",
-    action: { xmlid: "pb_hiring.action_pb_hiring_numbers" },
+    action: { xmlid: "pb_hiring.action_pb_hiring_hub", lens: "numbers" },
 }, { sequence: 3570 });
 
 palette.add("hiring_cover", {

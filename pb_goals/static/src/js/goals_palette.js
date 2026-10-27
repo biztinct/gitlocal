@@ -40,7 +40,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
-import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
+import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
 import { PbGoalsBoard } from "@pb_goals/js/goals_board";
 import { PbGoalsNumbers } from "@pb_goals/js/goals_numbers";
 
@@ -150,10 +150,10 @@ palette.add("goals_templates", {
  * its own gate and not the hub's, because the two sides cannot import each
  * other).
  */
-registry.category(INSIGHTS_LENSES).add("goals", {
+registerModuleInsight("goals", {
     key: "goals",
     icon: "target",
-    label: _t("Goals"),
+    label: _t("Goal insights"),
     Component: PbGoalsNumbers,
     groups: GOALS_GATE.concat(["base.group_system"]),
 }, { sequence: 50 });
@@ -186,9 +186,9 @@ palette.add("goals_changes", {
 palette.add("goals_numbers", {
     id: "goals_numbers",
     label: _t("Goal numbers"),
-    sublabel: _t("Insights"),
+    sublabel: _t("Talent"),
     icon: "barChart",
     groups: GOALS_GATE,
     requires: "pb_goals_numbers",
-    action: { xmlid: "pb_goals.action_pb_goals_numbers" },
+    action: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goal_numbers" },
 }, { sequence: 3660 });

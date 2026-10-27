@@ -899,10 +899,10 @@ class TestA3SourceGates(TransactionCase):
                       'pb_hiring.action_pb_hiring_doc_template'):
             self.assertTrue(self.env.ref(xmlid), xmlid)
 
-    def test_t12_the_insights_lens_is_registered_at_thirty(self):
+    def test_t12_hiring_insights_keep_their_order_in_the_owning_module(self):
         src = _src('static', 'src', 'js', 'hiring_palette.js')
-        self.assertIn('INSIGHTS_LENSES', src)
-        block = src[src.index('INSIGHTS_LENSES).add'):]
+        self.assertIn('registerModuleInsight', src)
+        block = src[src.index('registerModuleInsight("hiring"'):]
         self.assertIn('sequence: 30', block[:800])
 
     def test_every_icon_name_including_the_MAPS_is_in_the_registry(self):

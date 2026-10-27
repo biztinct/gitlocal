@@ -791,11 +791,12 @@ class TestDoorsAndDials(ClaimCase):
         self.assertTrue(all(3900 <= n < 4000 for n in block),
                         'E must stay inside its own 3900 block')
 
-    def test_t9_the_insights_lens_is_registered_at_forty(self):
+    def test_t9_training_numbers_have_one_home_in_learning(self):
         from .test_training import _src
         body = _src('static', 'src', 'js', 'training_palette.js')
-        self.assertIn('INSIGHTS_LENSES', body)
-        self.assertIn('{ sequence: 40 }', body)
+        self.assertNotIn('registry.category(INSIGHTS_LENSES)', body)
+        self.assertIn('lenses.add("numbers"', body)
+        self.assertIn('lens: "numbers"', body)
 
     def test_t9_every_facade_door_carries_views(self):
         """R125: a hand-built act_window dict MUST carry `views`, or the client

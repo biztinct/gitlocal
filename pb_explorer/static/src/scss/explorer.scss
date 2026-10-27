@@ -135,7 +135,7 @@
     // people do not think to make.
     .pbex-lenses {
         display: grid; gap: 10px;
-        grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(#{"min(258px, 100%)"}, 1fr));
         animation: pbex-rise .2s cubic-bezier(.22, .8, .3, 1);
     }
     .pbex-lens {
@@ -155,12 +155,12 @@
             background: var(--soft); color: var(--p);
         }
         &.active .ico { background: var(--p); color: #fff; }
-        .txt { display: flex; flex-direction: column; gap: 1px; min-width: 0;
-               flex: 1; }
+        .txt { display: flex; flex-direction: column; gap: 4px; min-width: 0;
+               flex: 1; text-align: start; overflow-wrap: anywhere; }
         b { font-size: 13px; font-weight: 650; color: var(--ink);
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            white-space: normal; line-height: 1.4; }
         i { font-style: normal; font-size: 11px; color: var(--muted);
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            white-space: normal; line-height: 1.4; }
         .ext { color: var(--p-light); flex-shrink: 0; transition: all .14s ease; }
         &:hover .ext { color: var(--p); transform: translateX(2px); }
         &.classic .ico { background: var(--line-2); color: var(--muted); }

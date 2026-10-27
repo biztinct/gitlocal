@@ -1,7 +1,7 @@
 // NAV P2 — Expenses › Claims: the native list inside the hub canvas. A
 // definite height so the list scrolls inside itself rather than growing the
 // canvas (the hub's W20 rule); the controller fills the box.
-.pbex-lens {
+.pbexpense-lens {
     display: flex;
     flex-direction: column;
     height: 100%;

@@ -115,15 +115,11 @@ class TestT4TheRail(TransactionCase):
         self.assertNotIn('pb_talent_hub', depends)
         self.assertNotIn('pb_learn', depends)
 
-    def test_t4_the_insights_lens_is_unchanged(self):
+    def test_t4_training_numbers_are_only_registered_in_learning(self):
         src = _src('static', 'src', 'js', 'training_palette.js')
-        m = re.search(r'registry\.category\(INSIGHTS_LENSES\)\.add\("training", '
-                      r'\{(.*?)\}, \{ sequence: (\d+) \}\);', src, re.S)
-        self.assertTrue(m)
-        self.assertEqual(int(m.group(2)), 40)
-        self.assertIn('label: _t("Training")', m.group(1))
-        self.assertIn('Component: PbTrainingNumbers', m.group(1))
-        self.assertIn('icon: "graduationCap"', m.group(1))
+        self.assertNotIn('registry.category(INSIGHTS_LENSES)', src)
+        block = src[src.index('lenses.add("numbers"'):src.index('/* ---------------------------------------- Settings')]
+        self.assertIn('Component: PbTrainingNumbers', block)
 
     def test_t4_every_new_asset_is_in_the_bundle(self):
         bundle = ast.literal_eval(_src('__manifest__.py'))['assets'][

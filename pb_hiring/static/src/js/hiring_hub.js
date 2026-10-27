@@ -2,17 +2,9 @@
 /**
  * `pb_hiring_hub` — Hiring as its own place on the left menu (NAV P2).
  *
- * Until NAV P2 the Hiring board was the first tab of the Lifecycle hub. The
- * owner's revised menu (design review §12.4) gives it its own entry under
- * OPERATE, with five tabs on the rail (NAV P3a added the two registers):
- *
- *     overview · applicants · offers · interviews · bank
- *
- * All five are the SAME board (`PbHiringBoard`) opened on a different inner
- * tab — the board already owns roles / applicants / offers / interviews / the
- * resume bank, so the rail is a quicker way to the tab you want, never a
- * second copy of it. Applicants and Offers are built-ins, not registry
- * lenses, because registry lenses come after the built-ins on the rail.
+ * Overview, Roles, Applicants, Offers, Interviews and Resume bank reuse the
+ * same board with a different initial tab. The resume-bank name matches its
+ * on-screen tab, and Roles has its own direct submenu entry.
  *
  * Gates (W95): the board's own question, exactly as the Lifecycle tab asked it.
  * The group list is advisory and fails open; `pb.hiring.can_open` is the probe
@@ -81,6 +73,10 @@ export class PbHiringHub extends Component {
                   title: _t("Who we are hiring"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { ...role, placeLens: "overview" } },
+                { key: "roles", icon: "briefcase", label: _t("Roles"),
+                  title: _t("Open roles"),
+                  Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
+                  props: { startTab: "roles", placeLens: "roles" } },
                 // NAV P3a: every application and every offer, across roles.
                 { key: "applicants", icon: "columns", label: _t("Applicants"),
                   title: _t("Applications across jobs"),
@@ -96,8 +92,8 @@ export class PbHiringHub extends Component {
                 { key: "interviews", icon: "calendarClock", label: _t("Interviews"),
                   Component: PbHiringBoard, groups: HIRING_HUB_GATE, probe: PROBE,
                   props: { startTab: "interviews", placeLens: "interviews" } },
-                { key: "bank", icon: "bookOpen", label: _t("Talent pool"),
-                  title: _t("Talent pool (resume bank)"),
+                { key: "bank", icon: "bookOpen", label: _t("Resume bank"),
+                  title: _t("Resume bank"),
                   Component: PbHiringBoard, groups: HIRING_BANK_GATE, probe: PROBE,
                   props: { startTab: "bank", placeLens: "bank" } },
                 { key: "setup", icon: "sliders", label: _t("Set-up"),
@@ -144,6 +140,7 @@ registry.category("actions").add("pb_hiring_setup", PbHiringSetupWorkspace);
 // Access board can say "not for you" before anybody opens the hub.
 registry.category(HUB_LENS_GATES).add("pb_hiring_hub", () => [
     { key: "overview", groups: HIRING_HUB_GATE, probe: PROBE },
+    { key: "roles", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "applicants", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "offers", groups: HIRING_HUB_GATE, probe: PROBE },
     { key: "interviews", groups: HIRING_HUB_GATE, probe: PROBE },

@@ -49,12 +49,12 @@ const ENTRIES = [
     { id: "inshub_explorer", label: _t("Analytics Explorer"), sublabel: SUB,
       icon: "compass", groups: ANALYTICS_GATE,
       action: { tag: HUB_TAG, lens: "explorer" } },
-    { id: "inshub_workforce", label: _t("Workforce Insights"), sublabel: SUB,
+    { id: "inshub_workforce", label: _t("Workforce Insights"), sublabel: _t("People"),
       icon: "users", groups: ANALYTICS_GATE,
-      action: { tag: HUB_TAG, lens: "workforce" } },
-    { id: "inshub_payroll", label: _t("Payroll Report"), sublabel: SUB,
+      action: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "workforce" } },
+    { id: "inshub_payroll", label: _t("Payroll Report"), sublabel: _t("Payroll"),
       icon: "fileText", groups: PAYSLIP_RUN_GATE,
-      action: { tag: HUB_TAG, lens: "payroll" }, keywords: ["payroll"] },
+      action: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "report" }, keywords: ["payroll"] },
 ];
 
 ENTRIES.forEach((entry, i) => {

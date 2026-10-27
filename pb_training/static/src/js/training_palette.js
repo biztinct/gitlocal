@@ -61,7 +61,6 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { LEARNING_LENSES, LEARNING_HUB_XMLID } from "@pb_learning_hub/js/learning_hub";
-import { INSIGHTS_LENSES } from "@pb_insights_hub/js/insights_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
 import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
 import { PbLearningOverview, TRAINING_TAB_KEY, CERT_FILTER_KEY } from "@pb_training/js/learning_overview";
@@ -453,13 +452,7 @@ palette.add("training_schedules", {
  * word the command bar uses for this module's Learning row, which is the
  * point: one thing, one name, wherever a reader meets it.
  */
-registry.category(INSIGHTS_LENSES).add("training", {
-    key: "training",
-    icon: "graduationCap",
-    label: _t("Training"),
-    Component: PbTrainingNumbers,
-    groups: TRAINING_GATE.concat(["base.group_system"]),
-}, { sequence: 40 });
+
 
 /* -------------------------------------------------------------- E3 rows ---
  * Still inside E's 3900 block; B1 starts at 3600 per the wave plan. Both are
@@ -483,9 +476,9 @@ palette.add("training_claims", {
 palette.add("training_numbers", {
     id: "training_numbers",
     label: _t("Training numbers"),
-    sublabel: _t("Insights"),
+    sublabel: _t("Learning"),
     icon: "barChart",
     groups: TRAINING_GATE.concat(["base.group_system"]),
     requires: "pb_training_numbers",
-    action: { xmlid: "pb_training.action_pb_training_numbers" },
+    action: { xmlid: "pb_learning_hub.action_pb_learning_hub", lens: "numbers" },
 }, { sequence: 3970 });

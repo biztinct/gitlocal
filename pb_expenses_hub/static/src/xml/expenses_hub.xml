@@ -12,7 +12,7 @@
        The native list inside the hub canvas; the wrapper is a definite-height
        flex column so the list scrolls inside itself (W20). -->
   <t t-name="pb_expenses_hub.PbClaimsLens">
-    <div class="pbex-lens o_action">
+    <div class="pbexpense-lens o_action">
       <View t-props="viewProps"/>
     </div>
   </t>
