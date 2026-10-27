@@ -219,12 +219,11 @@ patch(PbHiringBoard.prototype, {
     },
 
     // -------------------------------------------- the scheduling sheet
-    startSchedule(candidate) {
-        super.startSchedule(candidate);
-        const form = this.state.scheduling;
+    async startSchedule(candidate) {
+        const form = await super.startSchedule(candidate);
         if (!form) { return; }
         Object.assign(form, { scorecard_id: "", scorecards: [], google: null });
-        this.loadScheduleDefaults();
+        await this.loadScheduleDefaults();
     },
     async loadScheduleDefaults() {
         const form = this.state.scheduling;

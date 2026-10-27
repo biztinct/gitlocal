@@ -961,13 +961,32 @@ export class PbHiringBoard extends Component {
     }
 
     // --------------------------------------------------------- arranging one
-    startSchedule(candidate) {
-        const d = this.state.drawer;
+    async startSchedule(candidate) {
+        // Offers and Applicants can open a candidate without opening a role.
+        // Keep scheduling context on the form so a previously viewed role
+        // cannot supply another candidate's stages or panel.
+        const request = this._scheduleRequest = {};
+        let d;
+        try {
+            const cand = this.state.cand?.id === candidate.id ? this.state.cand
+                : await this.orm.call("pb.hiring", "get_candidate", [candidate.id]);
+            if (!cand.requisition_id) {
+                this.notif.add(_t("This candidate is not on a hiring request, so there is nothing to arrange an interview against."), { type: "warning" });
+                return;
+            }
+            d = await this.orm.call("pb.hiring", "get_requisition", [cand.requisition_id]);
+        } catch (e) {
+            this.fail(e);
+            return;
+        }
+        if (this._scheduleRequest !== request) { return; }
         this.state.panelQ = "";
         this.state.scheduling = {
             applicant_id: candidate.id,
             name: candidate.name,
-            requisition_id: d ? d.id : 0,
+            requisition_id: d.id,
+            steps: d.steps || [],
+            panel_people: d.panel_people || [],
             step_id: "",
             start: this.defaultStart(),
             duration_minutes: 45,
@@ -975,12 +994,13 @@ export class PbHiringBoard extends Component {
             location: "",
             panel: [],
         };
+        return this.state.scheduling;
     }
 
-    cancelSchedule() { this.state.scheduling = null; }
+    cancelSchedule() { this._scheduleRequest = null; this.state.scheduling = null; }
 
     get panelChoices() {
-        const d = this.state.drawer;
+        const d = this.state.scheduling || this.state.drawer;
         const people = (d && d.panel_people) || [];
         const q = (this.state.panelQ || "").trim().toLowerCase();
         if (!q) { return people.slice(0, 40); }
@@ -1002,7 +1022,7 @@ export class PbHiringBoard extends Component {
     }
 
     panelName(id) {
-        const d = this.state.drawer;
+        const d = this.state.scheduling || this.state.drawer;
         const hit = ((d && d.panel_people) || []).find((p) => p.id === id);
         return hit ? hit.name : "";
     }

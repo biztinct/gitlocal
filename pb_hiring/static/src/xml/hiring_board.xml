@@ -560,7 +560,7 @@
               <span>Which stage of this role</span>
               <select class="pbhr-in" t-model="state.scheduling.step_id">
                 <option value="">Not one of the agreed stages</option>
-                <option t-foreach="state.drawer.steps" t-as="sp" t-key="sp.id" t-att-value="sp.id">
+                <option t-foreach="state.scheduling.steps" t-as="sp" t-key="sp.id" t-att-value="sp.id">
                   <t t-esc="sp.name"/>
                   <t t-if="sp.stage"> → <t t-esc="sp.stage"/></t>
                 </option>
