@@ -190,7 +190,7 @@ class TestSharedCalendar(InterviewCase):
         self.assertTrue(all(e['allday'] for e in rows))
         self.assertEqual(self._api(self.payroll).open_record(prefix + 'payday')['res_id'], month.id)
         self.assertFalse(any(e['key'].startswith(prefix) for e in self._events(self.recruiter)))
-        with self.assertRaises(AccessError): month.with_user(self.recruiter).read(['pay_date'])
+        with self.assertRaises(AccessError): month.with_user(self.recruiter).with_context(allowed_company_ids=self.company.ids).read(['pay_date'])
         with self.assertRaises(AccessError): self._api(self.recruiter).open_record(prefix + 'payday')
         other = self.env['res.company'].create({'name': 'Other payroll calendar company'})
         month.company_id = other
