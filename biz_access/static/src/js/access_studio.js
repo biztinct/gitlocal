@@ -4,6 +4,7 @@ import { patch } from '@web/core/utils/patch';
 import { registry } from '@web/core/registry';
 import { _t } from '@web/core/l10n/translation';
 import { PbAccessBoard } from '@biz_access/js/access_board';
+import { PbSidebar } from '@pb_sidebar/js/pb_sidebar';
 
 const todayPlus = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -276,4 +277,19 @@ registry.category('pb_hiring_hub_lens').add('access_studio', {
     key: 'access', icon: 'shield', label: _t('Access & delegation'),
     title: _t('Hiring access'), Component: PbAccessBoard,
     groups: ['base.group_user'], props: { embedded: true, workspace: 'hiring' },
+});
+
+// Adding an access submenu must not turn an existing workspace door into an
+// expansion-only control. Keep the workspace action and reveal its local doors.
+patch(PbSidebar.prototype, {
+    onItemClick(item) {
+        if (!item.restricted && (item.action_xmlid || item.action_tag) &&
+            item.children?.some(child => child.action_xmlid?.startsWith('biz_access.action_studio_'))) {
+            this.state.expandedItems = {...this.state.expandedItems, [item.id]: true};
+            this.navigateTo(item);
+            this.state.calm = false;
+            return;
+        }
+        super.onItemClick(item);
+    },
 });
