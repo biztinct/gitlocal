@@ -1,0 +1,784 @@
+Payobook job-board onboarding — 28 October 2026
+
+Owner walkthrough
+1. Open Hiring > Job Boards > Connect & set up. Choose India, Vietnam or Indonesia.
+2. Open a provider guide. Payobook owns developer registration, hosting, connector development and certification. The customer owns its employer account and subscription.
+3. Copy the prepared request. Send it using your account manager or the official provider contact route. Requests are drafts; none have been sent by this release.
+4. Record progress and the location of documents. Do not store secrets in notes.
+5. When the provider responds, supply the technical specification and sandbox access through a secure channel. Payobook must complete the adapter and acceptance tests before activation.
+
+What is implemented
+- 28 destinations, country/search/method filters, per-company setup progress, manual tracked posting and closure.
+- Existing LinkedIn and SEEK APIs remain gated by server-owned partner config and tenant authorization.
+- Careerjet and Jooble XML feeds: opt-in per company and role; public advert only; expiry; company/website isolation; disable/re-enable rotates the feed URL.
+- Google guidance uses existing careers-page markup. Indexing API notifications are not configured.
+
+Feed walkthrough
+1. Confirm the provider accepts your feed, markets and application redirect. Do not buy a subscription without reviewing its terms.
+2. Set the correct HTTPS domain on the company website. Enable the feed in the guide and save.
+3. Under Publish jobs, choose a public open role, then Manage feed distribution. Choose an expiry date and Include in feed.
+4. Copy the feed URL from the provider guide and supply it to the agreed provider.
+5. Inclusion is not publication. Verify the external listing, its tracked apply link, and source attribution. Record a live posting only after verification.
+6. Removing/closing/expiring a role removes it from the feed; the provider must refresh before its listing disappears.
+
+Partner access still required
+There are no approved shared job-board apps configured on the server as inspected for this release. Closed provider contracts are not replaced with guessed endpoints. New partner-only destinations offer manual tracking until an approved API adapter is delivered.
+All accounts, contracts, production activation and commercial charges remain subject to owner/provider action.
+
+Provider-by-provider handover
+
+LinkedIn | All countries | api
+https://business.linkedin.com/hire/hiring-integrations
+Evidence: Publishing and native application connector implemented; partner approval and tenant activation required.
+Payobook: Payobook owns partner onboarding, customer-app provisioning and certification.
+Employer: Supply your LinkedIn company ID, eligible contract and employer authorization.
+
+Subject: Payobook ATS integration with LinkedIn
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate LinkedIn for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+JobStreet by SEEK | ID | api
+https://developer.seek.com/
+Evidence: SEEK publishing and application connector implemented; approved hirer binding required.
+Payobook: Payobook owns the shared SEEK partner app, tenant bindings and certification.
+Employer: Supply your SEEK hirer identifier, posting contact and eligible advertising products.
+
+Subject: Payobook ATS integration with JobStreet by SEEK
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate JobStreet by SEEK for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Naukri | IN | partner
+https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-jobs-on-naukri-through-zoho-recruit
+Evidence: Zoho documents Naukri publishing through Zwayam Amplify. Payobook connector awaits the approved contract.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Ask your Naukri account manager for Zwayam Amplify access for Payobook and confirm your subscription.
+
+Subject: Payobook ATS integration with Naukri
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Naukri for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+foundit India | IN | partner
+https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-your-jobs-on-foundit-india-from-zoho-recruit-4-6-2026
+Evidence: Zoho documents account identifiers and an API key. Payobook requires its own approved integration.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Request corporation/login identifiers and API entitlement from your foundit account manager.
+
+Subject: Payobook ATS integration with foundit India
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate foundit India for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Apna | IN | partner
+https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/post-and-manage-your-jobs-on-apna
+Evidence: Zoho documents client credentials, job management and applicant capture.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Apna
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Apna for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Shine | IN | partner
+https://help.zoho.com/portal/en/kb/recruit/talent-sourcing/job-boards/premium-job-boards/articles/integrate-shine-with-zoho-recruit
+Evidence: Zoho documents an account-based integration. Current Payobook partner access is unconfirmed.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Shine
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Shine for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+hirist | IN | partner
+https://www.hirist.tech/
+Evidence: An ATS integration is documented by Zoho; Payobook access must be agreed.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with hirist
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate hirist for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+iimjobs | IN | partner
+https://www.iimjobs.com/
+Evidence: An ATS integration is documented by Zoho; use a separate employer entitlement.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with iimjobs
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate iimjobs for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Instahyre | IN | partner
+https://help.instahyre.com/en/article/get-started-with-ats-integration-14s0ijg/
+Evidence: ATS partnerships and candidate export are documented. Ask the account manager to add Payobook.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Confirm ATS entitlement on your subscription and authorize Payobook once available.
+
+Subject: Payobook ATS integration with Instahyre
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Instahyre for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+TimesJobs | IN | partner
+https://hire.timesjobs.com/
+Evidence: Listed in Zoho’s catalogue; the current technical route needs confirmation.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with TimesJobs
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate TimesJobs for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Internshala | IN | partner
+https://internshala.com/
+Evidence: Employer posting is available; an external ATS posting/intake contract is unverified.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Internshala
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Internshala for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+VietnamWorks | VN | partner
+https://www.vietnamworks.com/
+Evidence: Existing Payobook setup awaits a current API contract and staging access.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Confirm employer API entitlement and the privacy information required for candidate delivery.
+
+Subject: Payobook ATS integration with VietnamWorks
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate VietnamWorks for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+TopCV | VN | partner
+https://tuyendung.topcv.vn/help/huong-dan-su-dung/ket-noi-he-thong/
+Evidence: Partner APIs, sandbox access and CV webhooks are documented. One employer account connects to one ATS at a time.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Confirm the API/CV-sync service and plan migration if another ATS is connected.
+
+Subject: Payobook ATS integration with TopCV
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate TopCV for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+ITviec | VN | partner
+https://itviec.com/blog/ket-noi-he-thong-quan-tri-tuyen-dung/
+Evidence: Officially supports ATS posting, editing, hiding/reopening jobs and CV delivery.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with ITviec
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate ITviec for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+CareerViet | VN | partner
+https://careerviet.vn/
+Evidence: Formerly CareerBuilder Vietnam; confirm the local contract rather than a global CareerBuilder API.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with CareerViet
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate CareerViet for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Vieclam24h | VN | partner
+https://promotion.vieclam24h.vn/
+Evidence: Confirm current CV delivery. MISA reported restrictions on its API retrieval in September 2026.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Vieclam24h
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Vieclam24h for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+TopDev | VN | partner
+https://topdev.vn/page/products
+Evidence: Employer services are documented; an external integration specification is unverified.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with TopDev
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate TopDev for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Glints | VN, ID | partner
+https://glints.com/
+Evidence: Local employer services are available; partner publishing and applicant delivery need confirmation.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Glints
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Glints for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Kalibrr | ID | partner
+https://kalibrr-support.zendesk.com/hc/en-us/articles/21664815834905-Do-Kalibrr-offer-integration-with-other-platforms
+Evidence: Public documentation describes exporting Kalibrr jobs to a careers site, not full ATS publishing and intake.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Kalibrr
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Kalibrr for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Dealls | ID | partner
+https://dealls.com/en/about
+Evidence: Employer posting is available; an external ATS integration contract is unverified.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Dealls
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Dealls for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+KitaLulus | ID | partner
+https://id.kitalulus.com/en
+Evidence: Confirm posting and applicant delivery, including messaging-based applications.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with KitaLulus
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate KitaLulus for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Karir.com | ID | partner
+https://karir.com/
+Evidence: Local employer coverage is available; current partner access needs confirmation.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Karir.com
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Karir.com for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Indeed | IN, VN, ID | partner
+https://docs.indeed.com/
+Evidence: Partner approval is required for Job Sync, Indeed Apply and disposition synchronization.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Indeed
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Indeed for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Careerjet | IN, VN, ID | feed
+https://www.careerjet.co.in/docs/feeds/xml
+Evidence: Documented XML feed implemented. Applicants use your tracked careers-page link.
+Payobook: Payobook provides the feed and tracked application links. Arrange feed acceptance and market coverage with the provider; a feed fetch does not confirm publication.
+Employer: Confirm feed acceptance, country coverage and any advertising charges with Careerjet.
+
+Subject: Payobook ATS integration with Careerjet
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Careerjet for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Jooble | IN, VN, ID | feed
+https://jooble.org/files/xml_feed_specifications.pdf
+Evidence: Documented XML feed implemented. Applicants use your tracked careers-page link.
+Payobook: Payobook provides the feed and tracked application links. Arrange feed acceptance and market coverage with the provider; a feed fetch does not confirm publication.
+Employer: Confirm feed acceptance, country coverage and any advertising charges with Jooble.
+
+Subject: Payobook ATS integration with Jooble
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Jooble for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Google job search | IN, VN, ID | discovery
+https://developers.google.com/search/docs/appearance/structured-data/job-posting
+Evidence: Career pages already carry JobPosting markup. Search visibility is decided by Google; no listing confirmation is implied.
+Payobook: Payobook maintains public job-page markup. Indexing API activation needs a verified project and service account.
+Employer: Verify the careers domain in Search Console and review individual job URLs.
+
+Subject: Payobook ATS integration with Google job search
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Google job search for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+LogicMelon | IN, VN, ID | partner
+https://logicmelon.com/
+Evidence: Distribution partner; confirm each target board and applicant return path before subscribing.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with LogicMelon
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate LogicMelon for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+Broadbean | IN, VN, ID | partner
+https://integrations.broadbean.com/
+Evidence: Distribution partner with integration documentation; target-board coverage and commercial access need confirmation.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: The employer supplies a verified employer account, any required subscription and authorization to connect. Do not put passwords or API keys in setup notes.
+
+Subject: Payobook ATS integration with Broadbean
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate Broadbean for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+

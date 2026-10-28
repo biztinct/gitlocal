@@ -11,17 +11,58 @@ export class HiringJobBoards extends Component {
     setup() {
         this.orm = useService('orm'); this.action = useService('action'); this.notification = useService('notification');
         this.state = useState({roles: [], company: '', can_setup: false, capped: false, query: '', roleId: '',
+            view: 'catalogue', catalogue: [], country: '', boardQuery: '', routeFilter: '', guide: null, expires: '',
             panel: null, channel: null, step: 0, values: {}, busy: false, error: '', saved: false,
             confirmed: false, manual: false, externalUrl: '', result: ''});
         onWillStart(() => this.run(async () => {
-            Object.assign(this.state, await this.orm.call('pb.hiring', 'job_board_home', []));
+            const [home, catalogue] = await Promise.all([
+                this.orm.call('pb.hiring', 'job_board_home', []),
+                this.orm.call('pb.hiring', 'job_board_catalogue', []),
+            ]);
+            Object.assign(this.state, home); this.state.catalogue = catalogue.boards;
             const id = this.props.action?.context?.pb_role_id;
-            if (id && this.state.roles.some(r => r.id === id)) { this.state.roleId = String(id); await this.loadRole(); }
+            if (id && this.state.roles.some(r => r.id === id)) { this.state.view='publish'; this.state.roleId = String(id); await this.loadRole(); }
         }));
     }
     ic(name, size=18) { return ic(name, size); }
     get roles() { const q = this.state.query.toLowerCase(); return this.state.roles.filter(r => `${r.title} ${r.location} ${r.country}`.toLowerCase().includes(q)); }
-    get boards() { return (this.state.panel?.rows || []).filter(r => ['board','social'].includes(r.kind)); }
+    get boards() { return (this.state.panel?.rows || []).filter(r => ['board','social'].includes(r.kind) && r.name.toLowerCase().includes(this.state.boardQuery.toLowerCase())); }
+    get catalogueBoards() {
+        const q=this.state.boardQuery.toLowerCase();
+        return this.state.catalogue.filter(b => (!this.state.country || !b.countries.length || b.countries.includes(this.state.country))
+            && (!this.state.routeFilter || b.route === this.state.routeFilter)
+            && `${b.name} ${b.audience} ${b.country_label}`.toLowerCase().includes(q));
+    }
+    routeLabel(route) { return {api:_t('Account connection'), partner:_t('Partner onboarding'), feed:_t('Job feed'), discovery:_t('Search discovery')}[route] || _t('Manual posting'); }
+    switchView(view) { this.state.view=view; this.state.guide=null; this.state.boardQuery=''; this.state.error=''; }
+    guide(key) { return this.run(async () => {
+        this.state.guide = await this.orm.call('pb.hiring','job_board_guide',[key]);
+    }); }
+    saveSetup() { return this.run(async () => {
+        const g=this.state.guide;
+        const values={enabled:g.enabled,onboarding_stage:g.onboarding_stage,onboarding_note:g.onboarding_note};
+        if(g.route === 'feed') values.feed_enabled=g.feed_enabled;
+        this.state.guide=await this.orm.call('pb.hiring','job_board_setup',[g.key,values]);
+        this.state.catalogue=(await this.orm.call('pb.hiring','job_board_catalogue',[])).boards;
+        if(this.state.roleId) this.state.panel=await this.orm.call('pb.hiring','job_board_detail',[Number(this.state.roleId)]);
+        this.notification.add(_t('Setup saved. This does not send a provider request or activate an API connection.'),{type:'success'});
+    }); }
+    chooseFeed(row) {
+        this.state.channel=row; this.state.step=4; this.state.result='';
+        const date=new Date(); date.setDate(date.getDate()+30);
+        this.state.expires=row.feed_expires || `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    }
+    selectFeed(selected) { return this.run(async () => {
+        const id=this.state.channel.id;
+        this.state.panel=await this.orm.call('pb.hiring','job_board_feed_select',[id,selected,this.state.expires]);
+        this.state.channel=this.state.panel.rows.find(r=>r.id===id);
+        this.state.result=selected ? _t('Included in the feed. The provider must accept and publish the job before it is live on the board.')
+            : _t('Removed from the feed. A previously published listing may remain until the provider refreshes its feed.');
+    }); }
+    closeManual() { return this.run(async () => {
+        await this.orm.call('pb.hiring','act',['p7_close',{role_channel_id:this.state.channel.id}]);
+        await this.loadRole();
+    }); }
     get careers() { return this.state.panel?.rows.find(r => r.kind === 'careers'); }
     get canPost() { return this.state.panel && !this.state.panel.confidential && ['setup','open'].includes(this.state.panel.state); }
     get automatic() { return !!this.state.channel?.connection.ready && !this.state.manual; }
