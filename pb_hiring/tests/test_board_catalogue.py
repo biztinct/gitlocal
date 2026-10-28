@@ -40,10 +40,11 @@ class TestBoardCatalogue(ChannelCase):
 
     def test_catalogue_country_coverage_and_idempotency(self):
         result = self.facade.job_board_catalogue()
-        self.assertEqual(len(result['boards']), 28)
+        self.assertEqual(len(result['boards']), 29)
         self.Channel._ensure_for(self.company)
-        self.assertEqual(len(self.Channel.search([('company_id', '=', self.company.id), ('key', 'in', list(CATALOGUE))])), 28)
+        self.assertEqual(len(self.Channel.search([('company_id', '=', self.company.id), ('key', 'in', list(CATALOGUE))])), 29)
         self.assertEqual(self._channel('naukri').country_ids.code, 'IN')
+        self.assertEqual(self._channel('foundit_id').country_ids.code, 'ID')
         self.assertEqual(set(self._channel('glints').country_ids.mapped('code')), {'VN', 'ID'})
         self.assertFalse(self._channel('naukri')._applies_to(self.req))
         self.assertTrue(self._channel('topcv')._applies_to(self.req))
@@ -162,6 +163,7 @@ class TestBoardCatalogue(ChannelCase):
         endpoint = HiringBoardFeeds().feed
         with patch('odoo.addons.pb_hiring.controllers.board_feeds.request', fake):
             self.assertEqual(endpoint(self.site.id, self.ch.id, 'wrong').status_code, 404)
+            self.assertEqual(endpoint(self.site.id, self.ch.id, 'tiếng').status_code, 404)
             self.assertEqual(endpoint(self.site.id + 9999, self.ch.id, self.ch.feed_token).status_code, 404)
             response = endpoint(self.site.id, self.ch.id, self.ch.feed_token)
             body, headers = response.get_data(), response.headers

@@ -17,7 +17,7 @@ class HiringBoardFeeds(http.Controller):
         channel = request.env['pb.hiring.channel'].sudo().browse(channel_id).exists()
         if (not channel or channel.company_id != site.company_id or not channel.active
                 or not channel.feed_enabled or channel.key not in FEED_KEYS or not channel.feed_token
-                or not hmac.compare_digest(channel.feed_token, token)):
+                or not hmac.compare_digest(channel.feed_token.encode('utf-8'), token.encode('utf-8'))):
             return request.not_found()
         try:
             body = render_feed(channel.key, channel._feed_items(site))

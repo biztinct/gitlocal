@@ -8,7 +8,7 @@ Owner walkthrough
 5. When the provider responds, supply the technical specification and sandbox access through a secure channel. Payobook must complete the adapter and acceptance tests before activation.
 
 What is implemented
-- 28 destinations, country/search/method filters, per-company setup progress, manual tracked posting and closure.
+- 29 destinations, country/search/method filters, per-company setup progress, manual tracked posting and closure.
 - Existing LinkedIn and SEEK APIs remain gated by server-owned partner config and tenant authorization.
 - Careerjet and Jooble XML feeds: opt-in per company and role; public advert only; expiry; company/website isolation; disable/re-enable rotates the feed URL.
 - Google guidance uses existing careers-page markup. Indexing API notifications are not configured.
@@ -767,6 +767,34 @@ Subject: Payobook ATS integration with Broadbean
 Hello,
 
 Payobook is an applicant tracking and hiring platform. We would like to integrate Broadbean for employer [employer company name].
+
+Please confirm:
+1. Your ATS partner onboarding process and supported countries.
+2. The current technical documentation and authentication requirements.
+3. Support for publishing, updating and closing jobs, receiving applications and CVs, screening answers and application-status feedback.
+4. Sandbox/test-employer access and certification requirements.
+5. Partner fees, employer subscriptions and advertising charges.
+6. Employer authorization, data-handling requirements and production activation steps.
+
+Payobook will build, host and maintain the connector. Employers will authorize their own accounts. Please advise the appropriate technical partner contact.
+
+Thank you.
+Payobook
+https://payobook.com
+
+
+
+foundit Indonesia | ID | partner
+https://recruiter.foundit.id/
+Evidence: Indonesia employer posting is available. API eligibility and market-specific partner terms must be confirmed with foundit.
+Payobook: Payobook must obtain the current integration specification, partner permission, test resources and production approval, then build and test the connector.
+Employer: Use your Indonesia employer account and ask foundit Indonesia to confirm ATS integration access.
+
+Subject: Payobook ATS integration with foundit Indonesia
+
+Hello,
+
+Payobook is an applicant tracking and hiring platform. We would like to integrate foundit Indonesia for employer [employer company name].
 
 Please confirm:
 1. Your ATS partner onboarding process and supported countries.
