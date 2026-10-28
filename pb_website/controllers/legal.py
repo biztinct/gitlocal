@@ -10,6 +10,6 @@ class PayobookLegal(http.Controller):
     def privacy(self, **kwargs):
         return request.render('pb_website.legal_page', {'document': PRIVACY})
 
-    @http.route('/terms', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/terms-of-service', type='http', auth='public', website=True, sitemap=True)
     def terms(self, **kwargs):
         return request.render('pb_website.legal_page', {'document': TERMS})

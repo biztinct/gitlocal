@@ -4,13 +4,13 @@
     <t t-call="website.layout">
       <t t-set="no_header" t-value="True"/>
       <t t-set="no_footer" t-value="True"/>
-      <t t-set="additional_title" t-value="document['title'] + ' | Payobook'"/>
+      <t t-set="additional_title" t-value="document['title']"/>
       <t t-call-assets="pb_website.assets_legal"/>
       <div id="wrap" class="pb-legal">
         <a class="pb-legal-skip" href="#legal-content">Skip to content</a>
         <header class="pb-legal-header">
           <a href="/" class="pb-legal-brand" aria-label="Payobook home">payobook<span>.</span></a>
-          <nav aria-label="Legal navigation"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/web/login">Sign in</a></nav>
+          <nav aria-label="Legal navigation"><a href="/privacy">Privacy</a><a href="/terms-of-service">Terms</a><a href="/web/login">Sign in</a></nav>
         </header>
         <main id="legal-content" class="pb-legal-main">
           <div class="pb-legal-intro"><p class="pb-legal-eyebrow">PAYOBOOK · TRUST &amp; TRANSPARENCY</p><h1 t-esc="document['title']"/><p class="pb-legal-date">Effective 28 October 2026</p><p t-esc="document['intro']"/></div>
@@ -26,7 +26,7 @@
             </article>
           </div>
         </main>
-        <footer class="pb-legal-footer"><span>Payobook · 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam</span><nav aria-label="Contact and policies"><a href="mailto:hello@payobook.com">Contact Payobook</a><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a></nav></footer>
+        <footer class="pb-legal-footer"><span>Payobook · 37 Ton Duc Thang, District 1, Ho Chi Minh City, Vietnam</span><nav aria-label="Contact and policies"><a href="mailto:hello@payobook.com">Contact Payobook</a><a href="/privacy">Privacy Policy</a><a href="/terms-of-service">Terms of Service</a></nav></footer>
       </div>
     </t>
   </template>
