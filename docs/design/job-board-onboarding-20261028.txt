@@ -1,5 +1,10 @@
 Payobook job-board onboarding — 28 October 2026
 
+For the reviewed application/contact route, specific request and employer steps for
+each of the 29 cards, use job-board-partner-applications-20261028.txt in this folder.
+That companion guide supersedes the generic outreach drafts below where more
+specific or corrected evidence is provided. Neither document records an approval.
+
 Owner walkthrough
 1. Open Hiring > Job Boards > Connect & set up. Choose India, Vietnam or Indonesia.
 2. Open a provider guide. Payobook owns developer registration, hosting, connector development and certification. The customer owns its employer account and subscription.
