@@ -27,6 +27,9 @@ class TestBoardCatalogue(ChannelCase):
         self.req.job_id.sudo().write({'website_id': self.site.id, 'is_published': True,
                                      'website_description': '<p>Public role &amp; responsibilities.</p>'})
         self.ch = self._channel('careerjet')
+        # Keep the disabled-feed baseline independent of real tenant setup.
+        # TransactionCase rolls this back, preserving enabled feeds after tests.
+        self.ch.write({'feed_enabled': False, 'feed_token': False})
         rows = self.facade.job_board_detail(self.req.id)['rows']
         self.rc = self.env['pb.hiring.role.channel'].sudo().browse(
             next(r['id'] for r in rows if r['key'] == 'careerjet'))
