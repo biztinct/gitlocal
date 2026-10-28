@@ -1,0 +1,33 @@
+.pb-legal {
+  --ink: #211c43; --muted: #61708a; --accent: #5948b3;
+  color: var(--ink); background: #f7f8fc; font-family: inherit;
+  overflow-wrap: anywhere;
+  a { color: var(--accent); text-underline-offset: 4px; }
+  a:focus-visible { outline: 3px solid #9e8ee8; outline-offset: 4px; border-radius: 3px; }
+  .pb-legal-skip { position: absolute; left: 16px; top: -100px; z-index: 100; background: white; padding: 12px; &:focus { top: 8px; } }
+  .pb-legal-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px max(5vw, 20px); border-bottom: 1px solid #e1e5ee; background: white; }
+  .pb-legal-brand { font-size: 27px; font-weight: 800; color: var(--ink); text-decoration: none; span { color: var(--accent); } }
+  .pb-legal-header nav, .pb-legal-footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+  .pb-legal-main { max-width: 1160px; margin: auto; padding: 56px 28px 72px; }
+  .pb-legal-intro { max-width: 800px; margin-bottom: 40px; }
+  .pb-legal-eyebrow { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+  h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 750; letter-spacing: -.03em; margin: 14px 0; line-height: 1.15; }
+  .pb-legal-date { color: var(--muted); font-size: 14px; }
+  .pb-legal-grid { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 48px; }
+  aside nav { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 24px; font-size: 14px; }
+  aside strong { margin-bottom: 6px; }
+  article { min-width: 0; padding: 32px 36px; border: 1px solid #e1e5ee; border-radius: 20px; background: white; }
+  section { scroll-margin-top: 24px; margin-bottom: 32px; &:last-child { margin-bottom: 0; } }
+  h2 { font-size: 22px; line-height: 1.3; font-weight: 700; margin-bottom: 15px; }
+  p, li { line-height: 1.75; font-size: 16px; }
+  li { margin-bottom: 8px; }
+  .pb-legal-footer { display: flex; justify-content: space-between; gap: 22px; flex-wrap: wrap; border-top: 1px solid #e1e5ee; padding: 28px max(5vw, 20px); background: white; font-size: 13px; }
+  @media (max-width: 760px) {
+    .pb-legal-main { padding: 32px 18px 48px; }
+    .pb-legal-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    aside nav { position: static; display: block; a { display: inline-block; margin: 5px 18px 5px 0; } strong { display: block; } }
+    article { padding: 25px 20px; }
+    .pb-legal-header { flex-wrap: wrap; }
+  }
+  @media print { aside, .pb-legal-header nav, .pb-legal-footer nav { display: none; } .pb-legal-grid { display: block; } article { border: 0; padding: 0; } }
+}

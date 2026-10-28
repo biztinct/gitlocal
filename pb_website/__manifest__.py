@@ -1,6 +1,6 @@
 {
     'name': 'Payobook Website',
-    'version': '19.0.1.11.0',
+    'version': '19.0.1.12.0',
     'category': 'Website',
     'summary': 'Intelligent global payroll marketing homepage (served at /)',
     'description': """
@@ -14,8 +14,12 @@ interactive formula examples, intelligent mappings and Payslip Studio illustrati
     'depends': ['website'],
     'data': [
         'views/homepage_templates.xml',
+        'views/legal_templates.xml',
     ],
     'assets': {
+        'pb_website.assets_legal': [
+            'pb_website/static/src/scss/legal.scss',
+        ],
         'pb_website.assets_homepage': [
             'pb_website/static/src/js/globe-land.js',
             'pb_website/static/src/scss/landing.scss',
