@@ -12,6 +12,11 @@
     <h1>Your calendar connections</h1><p class="pbcal-muted">Connect your primary Google or Microsoft calendar. Only meetings you organise or are invited to appear here. Payroll deadlines stay inside Payobook.</p>
     <div class="pbcal-connections"><article class="pbcal-provider" t-foreach="providers" t-as="p" t-key="p.key">
       <span class="pbcal-provider-icon" t-esc="p.key === 'google' ? 'G' : 'M'"/><h2 t-esc="p.label"/><p t-esc="providerStatus(p)"/>
+      <p t-if="p.key === 'google' &amp;&amp; p.status === 'sync_active' &amp;&amp; state.caps.google_notifications?.enabled" class="pbcal-muted">
+        <t t-if="state.caps.google_notifications.retrying">Automatic sync is retrying. You can also use Sync now.</t>
+        <t t-elif="state.caps.google_notifications.active">Change notifications active · hourly recovery check. Updates usually appear within two minutes.</t>
+        <t t-else="">Preparing automatic change notifications…</t>
+      </p>
       <p class="pbcal-muted">Your primary calendar · two-way sync</p>
       <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
       <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>

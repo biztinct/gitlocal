@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart, useExternalListener } from "@odoo/owl";
+import { Component, useState, onWillStart, onMounted, onWillUnmount, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useFullCalendar } from "@web/views/calendar/hooks/full_calendar_hook";
@@ -48,6 +48,12 @@ export class SharedCalendar extends Component {
         this.state = useState({ busy: true, error: "", events: [], caps: {}, date: DateTime.now().toISODate(),
             zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "" });
         useExternalListener(window, "keydown", ev => { if (ev.key === "Escape") this.state.selected = null; });
+        // Refresh the permission-filtered local feed, never poll Google from
+        // the browser. Leave open meeting details and background tabs alone.
+        onMounted(() => { this._refreshTimer = setInterval(() => {
+            if (!document.hidden && !this.state.busy && !this.state.selected && !this.state.syncing) this.refreshQuietly();
+        }, 60000); });
+        onWillUnmount(() => { clearInterval(this._refreshTimer); this._generation++; });
         this.zones = [...new Set([DateTime.local().zoneName, "UTC", "Australia/Sydney", "Asia/Ho_Chi_Minh", "Asia/Singapore", "Asia/Kolkata", "Europe/London", "America/New_York"])];
         this.views = [{ key: "day", label: _t("Day") }, { key: "week", label: _t("Week") }, { key: "month", label: _t("Month") }, { key: "agenda", label: _t("Agenda") }];
         this.hours = Array.from({ length: 24 }, (_, i) => ({ key: i, label: String(i).padStart(2,"0") + ":00" }));
@@ -80,6 +86,21 @@ export class SharedCalendar extends Component {
             this.state.events = payload.events; this.state.truncated = payload.truncated;
             this.state.busy = false;
         } catch (e) { if (generation === this._generation) this.fail(e); }
+    }
+    async refreshQuietly() {
+        const generation = this._generation;
+        try {
+            if (this.props.connectionsOnly) {
+                const caps = await this.orm.call("pb.shared.calendar", "capabilities", []);
+                if (generation === this._generation) this.state.caps = caps;
+                return;
+            }
+            const r = this.range;
+            const payload = await this.orm.call("pb.shared.calendar", "events", [r.start.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.end.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.start.toISODate(), r.end.toISODate()]);
+            if (generation === this._generation) {
+                this.state.events = payload.events; this.state.truncated = payload.truncated;
+            }
+        } catch { /* A background refresh must not interrupt an open calendar. */ }
     }
     async setView(v) { this.state.view = v; await this.load(); }
     async move(n) { this.state.date = this.anchor.plus(this.state.view === "month" ? { months: n } : { days: n * (this.state.view === "week" ? 7 : this.state.view === "agenda" ? 31 : 1) }).toISODate(); await this.load(); }

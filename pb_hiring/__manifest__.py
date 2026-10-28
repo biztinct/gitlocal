@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.18.1',
+    'version': '19.0.2.19.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -269,6 +269,7 @@ WHAT THIS MODULE IS
         'views/connections_views.xml',
         'views/booking_page.xml',
         'data/connections_cron.xml',
+        'data/calendar_notifications.xml',
         'views/job_boards.xml',
         'data/job_boards_cron.xml',
     ],

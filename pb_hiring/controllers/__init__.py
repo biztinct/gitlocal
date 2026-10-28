@@ -8,3 +8,4 @@ from . import agency_portal   # RECRUIT P7 — the agency's own portal
 from . import booking, connections, candidate_file
 
 from . import job_boards
+from . import calendar_notifications

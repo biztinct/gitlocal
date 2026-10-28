@@ -20,3 +20,4 @@ from . import test_docusign
 
 from . import test_job_boards
 from . import test_shared_calendar
+from . import test_calendar_notifications
