@@ -43,7 +43,7 @@ else:
         # Normal res.users.write also removes this direct baseline restriction,
         # so the next access reconciliation cannot silently restore it.
         changes['group_ids'] = [(3, restriction.id)]
-    if user.action_id != home:
+    if user.action_id.id != home.id:
         changes['action_id'] = home.id
     if changes:
         user.write(changes)
@@ -81,7 +81,11 @@ else:
     hiring = env['pb.hiring'].with_user(user).with_company(user.company_id)
     assert all(getattr(hiring, name)() for name in (
         'can_open', '_can_recruit', '_can_write', '_can_admin', 'can_open_job_boards'))
-    checks = []
+    # Probe directly: get_board intentionally catches subcomponent failures,
+    # so its success alone cannot prove interview panels loaded correctly.
+    interview_rows = hiring._interview_rows(user.company_ids.ids)
+    report['interview_rows_verified'] = len(interview_rows)
+    checks = ['interview_panels']
     for method in ('get_board', 'get_setup', 'get_forms', 'get_emails',
                    'get_automations', 'get_retention_preview', 'get_applicants',
                    'get_offers', 'job_board_home', 'job_board_catalogue',

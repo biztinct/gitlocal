@@ -398,7 +398,11 @@ class PbHiring(models.AbstractModel):
             'mode': rec.mode or '',
             'mode_label': dict(INTERVIEW_MODES).get(rec.mode, ''),
             'location': rec.location or '',
-            'panel': [p.name or '' for p in rec.panel_employee_ids.sudo()],
+            # Elevate before traversing the employee relation: Odoo filters
+            # inactive employees during traversal, which otherwise prefetches
+            # private HR fields before the old trailing sudo() can take effect.
+            # The interview was read with the caller's rights; expose names only.
+            'panel': [p.name or '' for p in rec.sudo().panel_employee_ids],
             'recruiter': rec.recruiter_id.name or '',
             'state': rec.state,
             'state_label': dict(INTERVIEW_STATES).get(rec.state, ''),
