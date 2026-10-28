@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.20.1',
+    'version': '19.0.2.20.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -304,6 +304,7 @@ WHAT THIS MODULE IS
             'pb_hiring/static/src/js/shared_calendar.js',
             'pb_hiring/static/src/xml/shared_calendar.xml',
             'pb_hiring/static/src/scss/shared_calendar.scss',
+            'pb_hiring/static/src/js/board_logos.js',
             'pb_hiring/static/src/js/job_boards.js',
             'pb_hiring/static/src/js/hiring_palette.js',
             'pb_hiring/static/src/js/hiring_connections.js',

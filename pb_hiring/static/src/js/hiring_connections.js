@@ -1,4 +1,5 @@
 /** @odoo-module **/
+import { boardLogo } from "@pb_hiring/js/board_logos";
 import { Component, useState, useRef, useEffect, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -6,6 +7,7 @@ import { useService } from "@web/core/utils/hooks";
 export class HiringConnections extends Component {
     static template = "pb_hiring.Connections";
     static props = ["*"];
+    boardLogo(key) { return boardLogo(key); }
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");

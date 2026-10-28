@@ -1,4 +1,5 @@
 /** @odoo-module **/
+import { boardLogo } from "@pb_hiring/js/board_logos";
 import { Component, useState, onWillStart } from '@odoo/owl';
 import { useService } from '@web/core/utils/hooks';
 import { registry } from '@web/core/registry';
@@ -8,6 +9,7 @@ import { ic } from '@pb_import_kit/js/import_icons';
 export class HiringJobBoards extends Component {
     static template = 'pb_hiring.JobBoards';
     static props = ['*'];
+    boardLogo(key) { return boardLogo(key); }
     setup() {
         this.orm = useService('orm'); this.action = useService('action'); this.notification = useService('notification');
         this.state = useState({roles: [], company: '', can_setup: false, capped: false, query: '', roleId: '',

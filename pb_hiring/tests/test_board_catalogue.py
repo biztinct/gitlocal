@@ -62,7 +62,7 @@ class TestBoardCatalogue(ChannelCase):
         self.assertIn('Payobook', guide['request_text'])
         row = next(b for b in self.facade.job_board_catalogue()['boards'] if b['key'] == 'topcv')
         self.assertFalse(row['ready'])
-        self.assertEqual(row['status'], 'Partner onboarding required')
+        self.assertEqual(row['status'], 'Payobook integration pending')
         with self.assertRaises(UserError):
             self.admin_facade.job_board_setup('topcv', {'ready': True})
         with self.assertRaises(UserError):

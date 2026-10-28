@@ -9,7 +9,7 @@
       <div t-if="state.error" class="alert alert-danger" role="alert" t-esc="state.error"/>
       <div class="hc-grid">
         <section t-foreach="cards" t-as="card" t-key="card.key" class="hc-card">
-          <div class="hc-card-top"><span class="hc-mark" t-esc="card.title.slice(0,1)"/><span class="hc-status" t-att-class="{'hc-on': card.enabled}" t-esc="card.status"/></div>
+          <div class="hc-card-top"><span class="hc-mark" t-att-class="{'has-logo':boardLogo(card.key)}"><img t-if="boardLogo(card.key)" t-att-src="boardLogo(card.key)" t-att-alt="card.title + ' logo'" width="34" height="34" decoding="async"/><t t-else="" t-esc="card.title.slice(0,1)"/></span><span class="hc-status" t-att-class="{'hc-on': card.enabled}" t-esc="card.status"/></div>
           <h2 t-esc="card.title"/><p t-esc="card.description"/>
           <small t-if="card.checked_at">Last checked <t t-esc="card.checked_at"/> UTC</small>
           <button class="btn btn-primary" t-on-click="() => this.select(card)"><t t-if="card.check_ok">Manage connection</t><t t-else="">Set up connection</t><span aria-hidden="true"> →</span></button>

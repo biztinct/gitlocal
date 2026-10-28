@@ -132,9 +132,9 @@ class CatalogueWorkspace(models.AbstractModel):
             ready = False
             if spec['route'] == 'api':
                 ready = self._workspace_connection(BOARD_PROVIDERS[spec['key']], self.env.company)['ready']
-            status = ('Connected' if ready else 'Account setup required') if spec['route'] == 'api' else (
+            status = ('Connected' if ready else 'Connection setup required') if spec['route'] == 'api' else (
                 ('Feed enabled' if ch.feed_enabled else 'Feed setup required') if spec['route'] == 'feed' else
-                'Careers-page discovery' if spec['route'] == 'discovery' else 'Partner onboarding required')
+                'Careers-page discovery' if spec['route'] == 'discovery' else 'Payobook integration pending')
             rows.append(dict(spec, enabled=ch.active, status=status, ready=ready,
                              country_label=', '.join(COUNTRIES[c] for c in spec['countries']) or 'All countries',
                              onboarding_stage=ch.onboarding_stage or 'not_started',
