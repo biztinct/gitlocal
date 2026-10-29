@@ -38,7 +38,7 @@ RAIL = [
     ('claims', 70, 'Claims', 'receipt', 'PbTrainingBoard'),
     # LEARNING L5: offered to the training team and to managers (probe)
     ('skills', 75, 'Skills', 'sparkles', 'PbSkillsLens'),
-    ('numbers', 80, 'Numbers', 'barChart', 'PbTrainingNumbers'),
+    ('numbers', 80, 'Insights', 'barChart', 'PbModuleInsights'),
 ]
 
 
@@ -119,7 +119,7 @@ class TestT4TheRail(TransactionCase):
         src = _src('static', 'src', 'js', 'training_palette.js')
         self.assertNotIn('registry.category(INSIGHTS_LENSES)', src)
         block = src[src.index('lenses.add("numbers"'):src.index('/* ---------------------------------------- Settings')]
-        self.assertIn('Component: PbTrainingNumbers', block)
+        self.assertIn('Component: PbModuleInsights', block)
 
     def test_t4_every_new_asset_is_in_the_bundle(self):
         bundle = ast.literal_eval(_src('__manifest__.py'))['assets'][
@@ -167,7 +167,7 @@ class TestT4TheRail(TransactionCase):
         for word, vi in (('Overview', 'Tổng quan'), ('My learning', 'Của tôi'),
                          ('Assigned', 'Đã giao'), ('Required', 'Bắt buộc'),
                          ('Tests', 'Kiểm tra'), ('Claims', 'Hoàn tiền'),
-                         ('Numbers', 'Số liệu'), ('Courses', 'Khóa học'),
+                         ('Insights', 'Phân tích'), ('Courses', 'Khóa học'),
                          ('Remind', 'Nhắc'), ('Next up', 'Việc tiếp theo'),
                          ('A reminder already went today.',
                           'Hôm nay đã gửi lời nhắc rồi.')):

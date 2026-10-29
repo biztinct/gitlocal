@@ -43,6 +43,8 @@ import { PbPayrunResults } from "@pb_payrun_results/js/payrun_results";
 import { PbImport } from "@pb_import/js/import";
 import { PbPayDelivery } from "@pb_pay_delivery/js/pb_pay_delivery";
 import { LedgerCockpit } from "@pb_payrun_ledgers/js/ledger";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
+import { PbExplorer } from "@pb_explorer/js/explorer";
 
 /**
  * Which lens the tracker's click should land on, per stage.
@@ -165,6 +167,12 @@ export class PbPayHub extends Component {
                     },
                 },
                 ...this.extraLenses(),
+                { key: "insights", icon: "barChart", label: _t("Insights"),
+                  Component: PbModuleInsights,
+                  groups: ["pb_hr_payroll_base.group_payroll_base_manager",
+                           "pb_hr_payroll_base.group_payroll_analytics_user",
+                           "pb_hr_payroll_base.group_payroll_super_admin", "base.group_system"],
+                  props: { area: "payroll", explorerComponent: PbExplorer } },
             ],
         };
 

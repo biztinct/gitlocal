@@ -42,7 +42,7 @@ What the hub adds that no single lens could:
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -58,6 +58,7 @@ one accent (W1/W2/W3).
         'pb_import',
         'pb_pay_delivery',      # also the source of the tracker's stage 5
         'pb_payrun_ledgers',
+        'pb_explorer',
     ],
     'data': [
         'views/pb_pay_hub_action.xml',

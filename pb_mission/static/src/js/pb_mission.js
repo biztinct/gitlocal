@@ -61,6 +61,7 @@ import { PbOtDesk } from "@pb_hr_workforce/js/pb_ot_desk";
 // Approval Matrix programme exists.
 import { PbInbox } from "@pb_approval_config/js/inbox";
 import { PbCloseLens } from "@pb_mission/js/pb_close_lens";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 
 const LENS_KEY = "pbms.lens.v1";
 /** The person drawer's data contract, documented in pb_time_hub/models. */
@@ -224,6 +225,15 @@ const LENS_KEYS = LENSES.map((l) => l.key);
  * nothing errors.
  */
 export const MISSION_LENSES = "pb_mission_lens";
+
+registry.category(MISSION_LENSES).add("insights", {
+    key: "insights", icon: "barChart", label: _t("Insights"),
+    Component: PbModuleInsights,
+    groups: ["pb_hr_payroll_base.group_payroll_base_manager",
+             "pb_hr_payroll_base.group_payroll_analytics_user",
+             "pb_hr_payroll_base.group_payroll_super_admin", "base.group_system"],
+    props: { area: "workforce", embedded: true },
+}, { sequence: 90 });
 
 /**
  * The context-bar map a bolted-on lens gets unless it says otherwise — one

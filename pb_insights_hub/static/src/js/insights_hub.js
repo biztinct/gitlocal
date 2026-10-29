@@ -53,6 +53,7 @@ import { PbInsights } from "@pb_insights/js/insights";
 import { PbExplorer } from "@pb_explorer/js/explorer";
 import { PbWorkforceInsights } from "@pb_workforce_insights/js/workforce_insights";
 import { PayrollReport } from "@pb_hr_workforce/js/payroll_report";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 
 /** The three analytics facades' own `_GATE_GROUPS`, plus their system escape. */
 export const ANALYTICS_GATE = [
@@ -157,6 +158,9 @@ export class PbInsightsHub extends Component {
                   Component: PbInsights, groups: ANALYTICS_GATE },
                 { key: "explorer", icon: "compass", label: _t("Explorer"),
                   Component: PbExplorer, groups: ANALYTICS_GATE },
+                { key: "reports", icon: "fileText", label: _t("Reports"),
+                  Component: PbModuleInsights, groups: ANALYTICS_GATE,
+                  props: { area: "all", startTab: "reports" } },
                 ...this.extraLenses(),
             ],
         };

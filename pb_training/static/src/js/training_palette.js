@@ -62,7 +62,7 @@ import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { LEARNING_LENSES, LEARNING_HUB_XMLID } from "@pb_learning_hub/js/learning_hub";
 import { PbTrainingBoard } from "@pb_training/js/training_board";
-import { PbTrainingNumbers } from "@pb_training/js/training_numbers";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 import { PbLearningOverview, TRAINING_TAB_KEY, CERT_FILTER_KEY } from "@pb_training/js/learning_overview";
 import { PbCertificatesLens } from "@pb_training/js/certificates_lens";
 import { PbMyLearningLens } from "@pb_training/js/my_learning_lens";
@@ -247,9 +247,10 @@ lenses.add("skills", {
 lenses.add("numbers", {
     key: "numbers",
     icon: "barChart",
-    label: _t("Numbers"),
-    title: _t("Training numbers"),
-    Component: PbTrainingNumbers,
+    label: _t("Insights"),
+    title: _t("Learning insights"),
+    Component: PbModuleInsights,
+    props: { area: "learning" },
     groups: TRAINING_GATE.concat(["base.group_system"]),
 }, { sequence: 80 });
 

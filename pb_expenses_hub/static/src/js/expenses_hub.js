@@ -22,6 +22,7 @@ import { openHub } from "@pb_hub/js/hub_nav";
 import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 import { PbTrips } from "@pb_business_trip/js/pb_trips";
 import { PbClaimsLens } from "@pb_expenses_hub/js/claims_lens";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 
 /** `pb.expense.claim`'s full ACL row (the list is an approver's screen). */
 export const CLAIMS_GATE = ["hr_expense.group_hr_expense_team_approver"];
@@ -51,6 +52,9 @@ export class PbExpensesHub extends Component {
                   title: _t("Expense claims"),
                   Component: PbClaimsLens, groups: CLAIMS_GATE },
                 ...this.extraLenses(),
+                { key: "insights", icon: "barChart", label: _t("Insights"),
+                  Component: PbModuleInsights, groups: CLAIMS_GATE.concat(["base.group_system"]),
+                  props: { area: "expenses" } },
             ],
         };
     }

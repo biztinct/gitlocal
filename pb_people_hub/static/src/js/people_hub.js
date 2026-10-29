@@ -60,6 +60,7 @@ import { openHub } from "@pb_hub/js/hub_nav";
 import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbPeople } from "@pb_people/js/people";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 import { PlanLauncher, PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_launcher";
 
 /** `hr.employee`'s READ access. */
@@ -127,6 +128,9 @@ export class PbPeopleHub extends Component {
                 // Plan launcher — after the records a person IS, before the
                 // plan for the people they will be.
                 ...this.extraLenses(),
+                { key: "insights", icon: "barChart", label: _t("Insights"),
+                  Component: PbModuleInsights, groups: EMPLOYEE_GATE,
+                  props: { area: "people" } },
                 // FLEET P4. Headcount planning is sold on its own; Employees
                 // (and the Contracts board inside it) never are.
                 // `wantsArrival` because a deep link can be more specific

@@ -19,11 +19,13 @@ const registry = { category(name) {
 let mounted = [], navigation = [];
 const symbols = {
     registry, Component: class {}, _t: s => s,
-    useService: () => ({}), onMounted: cb => mounted.push(cb),
+    useService: () => ({}), useState: value => value,
+    onWillStart: () => {}, onMounted: cb => mounted.push(cb),
     openHub: (_, target) => navigation.push(target),
     LIFECYCLE_GATE: ['hr.group_hr_user'], HUB_LENS_GATES: 'gates',
     SETTINGS_CATEGORIES: 'settings', TALENT_LENSES: 'pb_talent_hub_lens',
     LEARNING_LENSES: 'pb_learning_hub_lens',
+    PLAN_GATE: [], heroGroups: () => [],
 };
 function load(path) {
     let source = fs.readFileSync(path, 'utf8');
@@ -38,11 +40,15 @@ function load(path) {
     Object.assign(symbols, result);
     return result;
 }
+const moduleInsights = load('pb_insights/static/src/js/module_insights.js');
 const hub = load('pb_insights_hub/static/src/js/insights_hub.js');
 for (const name of ['hiring', 'goals', 'budget', 'training']) {
     load(`pb_${name}/static/src/js/${name}_palette.js`);
 }
 const hiring = load('pb_hiring/static/src/js/hiring_hub.js');
+const people = load('pb_people_hub/static/src/js/people_hub.js');
+const expenses = load('pb_expenses_hub/static/src/js/expenses_hub.js');
+const payroll = load('pb_payhub/static/src/js/pay_hub.js');
 load('pb_insights_hub/static/src/js/insights_hub_palette.js');
 function setup(Class, context = {}) {
     const instance = new Class(); instance.props = {action: {context}};
@@ -56,12 +62,25 @@ assert.equal(bank.props.startTab, 'bank');
 assert.equal(bank.label, 'Resume bank');
 assert.deepEqual([...bank.groups], ['pb_hiring.group_hiring_user']);
 assert.equal(roles.probe.method, 'can_open');
-assert.equal(workspace.config.lenses.filter(l => l.Component === symbols.PbHiringNumbers).length, 1);
-assert.deepEqual([...setup(hub.PbInsightsHub).config.lenses.map(l => l.key)], ['pulse', 'explorer']);
+assert.equal(workspace.config.lenses.filter(l => l.Component === moduleInsights.PbModuleInsights).length, 1);
+assert.equal(workspace.config.lenses.find(l => l.key === 'numbers').props.area, 'hiring');
+for (const [Class, area] of [
+    [people.PbPeopleHub, 'people'], [expenses.PbExpensesHub, 'expenses'],
+    [payroll.PbPayHub, 'payroll'],
+]) {
+    const lenses = setup(Class).config.lenses;
+    assert.equal(lenses.filter(l => l.key === 'insights').length, 1, area);
+    assert.equal(lenses.find(l => l.key === 'insights').props.area, area);
+}
+assert.deepEqual([...setup(hub.PbInsightsHub).config.lenses.map(l => l.key)], ['pulse', 'explorer', 'reports']);
 assert.equal(registry.category('pb_hiring_hub_lens').get('numbers').probe.method, 'can_open');
 assert.deepEqual([...registry.category('pb_payhub_lens').get('report').groups], [...hub.PAYSLIP_RUN_GATE]);
 assert.equal(registry.category('pb_people_hub_lens').get('workforce').feature, 'insights');
-assert.equal(registry.category('pb_learning_hub_lens').getAll().filter(l => l.Component === symbols.PbTrainingNumbers).length, 1);
+assert.equal(registry.category('pb_learning_hub_lens').getAll().filter(l => l.Component === moduleInsights.PbModuleInsights).length, 1);
+assert.equal(registry.category('pb_learning_hub_lens').get('numbers').props.area, 'learning');
+assert.equal(registry.category('pb_talent_hub_lens').get('goal_numbers').props.area, 'talent');
+assert(fs.readFileSync('pb_mission/static/src/js/pb_mission.js', 'utf8')
+    .includes('registry.category(MISSION_LENSES).add("insights"'));
 for (const [oldLens, destination] of Object.entries(hub.INSIGHT_DESTINATIONS)) {
     mounted = []; navigation = [];
     setup(hub.PbInsightsHub, {pb_lens: oldLens, pb_focus: 'month:current', company_id: 7});
@@ -79,4 +98,4 @@ for (const key of ['inshub_workforce', 'inshub_payroll', 'bdg_board', 'bdg_month
     assert.notEqual(entry.action.xmlid, 'pb_insights_hub.action_pb_insights_hub');
     assert(entry.action.lens, key);
 }
-console.log('PASS: module report homes, resume-bank gate, Roles tab, search destinations, six legacy deep links and context preservation');
+console.log('PASS: module insights lenses, report catalogue, legacy routes, search destinations and access gates');

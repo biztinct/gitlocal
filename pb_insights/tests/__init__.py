@@ -9,3 +9,4 @@ from . import test_sudo_drop
 # its scheme (rize: an India payroll inside a VND company was added into the
 # dong headline).
 from . import test_board_currency
+from . import test_module_insights

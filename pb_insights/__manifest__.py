@@ -39,7 +39,7 @@ tier. All assets are local — no CDN, no external chart library.
     # in the switcher answered "one currency" for a tenant running two
     # countries out of one company, and the headline then added the two
     # together (rize: INR 6,299,386 counted as dong).
-    'version': '19.0.5.3.1',
+    'version': '19.0.5.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -60,9 +60,12 @@ tier. All assets are local — no CDN, no external chart library.
     'assets': {
         'web.assets_backend': [
             'pb_insights/static/src/scss/insights.scss',
+            'pb_insights/static/src/scss/module_insights.scss',
             'pb_insights/static/src/js/pbin_icons.js',
             'pb_insights/static/src/js/insights.js',
+            'pb_insights/static/src/js/module_insights.js',
             'pb_insights/static/src/xml/insights.xml',
+            'pb_insights/static/src/xml/module_insights.xml',
         ],
     },
     'installable': True,

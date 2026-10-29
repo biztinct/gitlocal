@@ -42,7 +42,7 @@ import { _t } from "@web/core/l10n/translation";
 import { TALENT_LENSES } from "@pb_talent_hub/js/talent_hub";
 import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
 import { PbGoalsBoard } from "@pb_goals/js/goals_board";
-import { PbGoalsNumbers } from "@pb_goals/js/goals_numbers";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 
 /**
  * THE LENS IS OPEN TO EVERY MEMBER OF STAFF, AND THAT IS THE WHOLE POINT.
@@ -153,8 +153,9 @@ palette.add("goals_templates", {
 registerModuleInsight("goals", {
     key: "goals",
     icon: "target",
-    label: _t("Goal insights"),
-    Component: PbGoalsNumbers,
+    label: _t("Insights"),
+    Component: PbModuleInsights,
+    props: { area: "talent" },
     groups: GOALS_GATE.concat(["base.group_system"]),
 }, { sequence: 50 });
 

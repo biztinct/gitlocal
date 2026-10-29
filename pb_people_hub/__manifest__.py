@@ -29,7 +29,7 @@ the worst screen this product can show.
 pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent (W1/W2/W3).
 """,
-    'version': '19.0.2.1.0',
+    'version': '19.0.2.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -39,6 +39,7 @@ one accent (W1/W2/W3).
         'pb_settings',                  # the cog, and `pb.settings.resolve_actions`
         # the Employees lens, and the Contracts board it opens as a door
         'pb_people',
+        'pb_insights',
         'pb_contracts',
     ],
     'data': [

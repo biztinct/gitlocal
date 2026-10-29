@@ -45,7 +45,7 @@ import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
 import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
-import { PbHiringNumbers } from "@pb_hiring/js/hiring_numbers";
+import { PbModuleInsights } from "@pb_insights/js/module_insights";
 
 // NAV P2 (2026-10-21): the board is no longer a tab of the Lifecycle hub. It
 // is the Hiring hub's three rail items (`hiring_hub.js`), so nothing is
@@ -70,7 +70,8 @@ registerModuleInsight("hiring", {
     key: "hiring",
     icon: "userPlus",
     label: _t("Insights"),
-    Component: PbHiringNumbers,
+    Component: PbModuleInsights,
+    props: { area: "hiring" },
     groups: [
         "pb_hiring.group_hiring_user",
         "pb_hiring.group_hiring_manager",

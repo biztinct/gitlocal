@@ -16,7 +16,7 @@ to settlement). Claims is the existing list of expense claims, with its own
 search and filters. Nothing is re-built: each screen keeps its own access
 rules and its own approvals.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Expenses',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -28,6 +28,7 @@ rules and its own approvals.
         'pb_business_trip',         # the Trips board
         'pb_me_expense',            # expense claims (pb.expense.claim)
         'hr_expense',               # the approver group the Claims tab asks for
+        'pb_insights',
     ],
     'data': [
         'views/pb_expenses_hub_action.xml',
