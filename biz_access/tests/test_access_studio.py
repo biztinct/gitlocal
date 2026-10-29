@@ -72,6 +72,13 @@ class TestAccessStudio(TransactionCase):
         self.assertFalse(due['people'])
         membership.with_context(_pb_studio=STUDIO).write({'review_date': fields.Date.today()})
         self.assertEqual([p['id'] for p in self.access.studio_data('people', self.person.login, 'due')['people']], self.person.ids)
+        hidden = self.access.studio_data('people', 'no-matching-login', 'module')
+        self.assertFalse(hidden['people'])
+        self.assertIn(self.owner.id, [p['id'] for p in hidden['owner_people']])
+        self.assertIn(membership.id, [r['id'] for r in hidden['due_reviews']])
+        regular = self.env['pb.access'].with_user(self.other).studio_data('people', '', 'all')
+        self.assertFalse(regular['owner_people'])
+        self.assertFalse(regular['due_reviews'])
 
     def test_unified_passport_preserves_scoped_read_boundaries(self):
         self.assign(self.publish_profile())

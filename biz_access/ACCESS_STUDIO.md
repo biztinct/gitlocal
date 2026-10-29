@@ -44,6 +44,7 @@ an alias. Selecting a different filter does not silently change the open person.
 No assignment, policy or permission is changed by this rearrangement. Central
 owners retain full passports. Scoped owners can inspect local assignment details
 for company users without gaining the central full-account passport capability.
+Owner choices and periodic reviews remain independent of people-directory filters.
 The selected person's assignment read is independent of the directory's search
 and 200-person limit. Employee logins remain ineligible for staff profiles.
 

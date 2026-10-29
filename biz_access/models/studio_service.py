@@ -117,11 +117,27 @@ class AccessStudio(models.AbstractModel):
             user_domain += ['|', ('name', 'ilike', str(search)[:100]), ('login', 'ilike', str(search)[:100])]
         users = visible_people(self.env['res.users'].sudo().search(user_domain, order='name, id', limit=201), self.env)
         people = [self._studio_person_json(user, memberships, extra, involved) for user in users[:200]]
+        # Directory filters belong only to the directory. Owner choices and
+        # periodic reviews must not disappear when someone searches a name.
+        owner_users = self.env['res.users'].sudo().browse()
+        if manage:
+            owner_domain = [('company_ids', 'in', self.env.company.id), ('active', '=', True), ('share', '=', False)]
+            owner_users = self.env['res.users'].sudo().search(owner_domain, order='name, id', limit=200)
+            owner_users |= (profiles.owner_id | self.env.user).sudo().filtered(
+                lambda u: u.active and not u.share and self.env.company in u.company_ids)
+            owner_users = visible_people(owner_users, self.env)
+        due_memberships = memberships.filtered(lambda m: m.review_date <= fields.Date.today())
+        due_users = visible_people(due_memberships.user_id, self.env)
+        due_reviews = [dict(row, user=user.name, user_id=user.id)
+            for user in due_users
+            for row in self._studio_person_json(user, due_memberships, extra)['assignments']]
         requests = self.env['pb.access.studio.request'].sudo().search(domain + ([] if manage else [('requested_by', '=', self.env.uid)]), limit=100)
         history = self.env['pb.access.event'].sudo().search(domain + ([] if manage else [('user_id', '=', self.env.uid)]), limit=100)
         return {'workspace': workspace, 'workspaces': [{'key': k, 'label': v} for k, v in WORKSPACES],
             'can_manage': manage, 'central_owner': self.can_manage(), 'company': self.env.company.name,
             'profiles': [self._studio_profile_json(p) for p in profiles], 'people': people, 'people_more': len(users) > 200,
+            'owner_people': [{'id': u.id, 'name': u.name, 'kind': 'staff'} for u in owner_users],
+            'due_reviews': due_reviews,
             'role_ids': local_roles.ids, 'delegation_ids': self.env['pb.access.delegation'].search([('profile_ids', 'in', local_roles.ids)]).ids,
             'module_people_count': self.env['res.users'].sudo().search_count([('id', 'in', sorted(involved)), ('company_ids', 'in', self.env.company.id), ('active', '=', True)]),
             'roles': [{'id': r.id, 'name': r.name, 'workspace': workspace_of(r),

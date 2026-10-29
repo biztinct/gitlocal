@@ -227,7 +227,8 @@ patch(PbAccessBoard.prototype, {
             (!needle || `${p.name} ${p.description}`.toLocaleLowerCase().includes(needle)));
     },
     get studioRequests() { return this.studio.requests.filter(r => this.state.studioRequestFilter === 'all' || r.state === this.state.studioRequestFilter); },
-    get studioDue() { return this.studio.people.flatMap(p => p.assignments.filter(a => a.due).map(a => ({ ...a, user: p.name, user_id: p.id }))); },
+    get studioDue() { return this.studio.due_reviews || []; },
+    get studioOwnerPeople() { return this.studio.owner_people || []; },
     get studioRoles() { return this.studio.roles.filter(r => r.workspace === this.state.workspace); },
     get studioPickerRoles() {
         const d = this.state.studioDialog;
@@ -318,7 +319,8 @@ patch(PbAccessBoard.prototype, {
     },
     studioOwners() {
         this.state.studioDialog = { kind: 'owner', title: _t('Module access owners'),
-            form: { user_id: this.studio.people[0]?.id || 0, role_ids: [], active: true }, roleSearch: '', includeOtherModules: false, reason: '', error: '' };
+            form: { user_id: this.studioOwnerPeople[0]?.id || 0, role_ids: [], active: true }, roleSearch: '', includeOtherModules: false, reason: '', error: '' };
+        this.studioOwnerSelect({target: {value: this.state.studioDialog.form.user_id}});
     },
     studioOwnerSelect(ev) {
         const id = Number(ev.target.value);
@@ -343,7 +345,7 @@ patch(PbAccessBoard.prototype, {
             const prefix = '  '.repeat(depth) + label + ': ';
             if (key === 'department_ids') return prefix + (item.map(id => this.studio.departments.find(d => d.id === id)?.name || 'Department ' + id).join(', ') || 'All allowed departments');
             if (key === 'role_ids') return prefix + item.map(id => this.studio.roles.find(r => r.id === id)?.name || 'Role ' + id).join(', ');
-            if (key === 'owner_id') return prefix + (this.studio.people.find(p => p.id === item)?.name || 'User ' + item);
+            if (key === 'owner_id') return prefix + (this.studioOwnerPeople.find(p => p.id === item)?.name || 'User ' + item);
             if (key === 'auto_department_id') return prefix + (this.studio.departments.find(d => d.id === item)?.name || 'Manual assignment');
             if (Array.isArray(item)) return prefix + (item.map(x => fieldLabels[x] || words[x] || x).join(', ') || 'None');
             if (item && typeof item === 'object') return prefix + '\n' + pretty(item, depth+1);
@@ -353,7 +355,7 @@ patch(PbAccessBoard.prototype, {
     },
     studioNames(ids) { return ids.map(id => this.state.studioKnownPeople[id]?.name || '').filter(Boolean).join(', '); },
     get studioRequestPeople() {
-        const people = [...this.studio.people];
+        const people = [...this.studioOwnerPeople];
         for (const person of [this.studioSelectedPerson, this.board.me]) {
             if (person && !people.some(p => p.id === person.id)) people.push(person);
         }
