@@ -65,3 +65,4 @@ from . import job_board_workspace
 from . import board_catalogue
 from . import shared_calendar
 from . import calendar_notifications
+from . import google_calendar_scopes

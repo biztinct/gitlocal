@@ -1,0 +1,40 @@
+Payobook Calendar Production — permission correction
+
+Google Cloud project: payobook-calendar-production
+Account used for the verification form: ash@biztinct.com
+Branding was verified and published. Data-access review still needs a demo video.
+
+Requested scopes for new authorizations:
+https://www.googleapis.com/auth/calendar.events.owned
+https://www.googleapis.com/auth/calendar.events.freebusy
+
+Implementation: pb_hiring extends google.service._get_authorize_uri. Standard
+Odoo Calendar's full-calendar scope is replaced at that registry hook; standard
+addons are preserved. Read-only requests remain read-only. Other Google services
+and extra explicitly requested scopes are preserved. Existing tokens are neither
+revoked nor changed: previously granted broad permissions are not automatically
+reduced. A clean grant may require the user to remove the existing Payobook grant
+in their Google account and reconnect. Do this for a controlled test account,
+not for all production users automatically.
+
+The connector reads/inserts/patches/deletes primary-calendar events, watches
+primary event changes, and queries participant free/busy availability. It does
+not require calendar ACL management or deletion of whole calendars.
+
+Justification (under the Google form's 1000-character limit):
+Payobook provides meeting and interview scheduling with optional Google Calendar synchronisation. After a user connects their account, calendar.events.owned lets Payobook read, create, update and delete events on that user's primary calendar, keeping meeting times, attendees and cancellations synchronised. Read-only access cannot save scheduling changes, and app-created-calendar access cannot synchronise the user's existing primary calendar. calendar.events.freebusy lets the scheduling feature check available times for participants whose availability the connected user is permitted to view, without retrieving their event details. Availability alone cannot support event synchronisation. Payobook does not need permission to change calendar sharing or delete entire calendars.
+
+Demo: record English OAuth consent showing Payobook, requested permissions and
+the OAuth client ID (never its secret). Show a test meeting created in Payobook
+appearing in Google Calendar, a time change returning to Payobook, Find a time
+checking permitted test-account availability, and cancellation synchronising.
+Use only test data and controlled participants. Include every OAuth client in
+the verification project. Upload to YouTube as Unlisted; paste the real URL into
+Data Access, save, then complete Verification Center. Do not substitute a mock
+video or submit claims of live API success without testing the narrowed grant.
+
+Official references:
+https://developers.google.com/workspace/calendar/api/auth
+https://developers.google.com/workspace/calendar/api/v3/reference/events/watch
+https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query
+https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification
