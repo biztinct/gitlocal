@@ -1,9 +1,9 @@
 .pbmi {
-  min-height: 100%; overflow: auto; padding: 24px clamp(18px, 4vw, 64px) 64px;
+  min-height: 100%; overflow: auto; padding: 24px 4vw 64px;
   color: #201b3d; background: #f5f6fa;
   .pbmi-head { display: flex; align-items: start; justify-content: space-between; gap: 24px; max-width: 1500px; margin: auto auto 24px; }
   .pbmi-eyebrow { color: #5b51a9; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-  h1 { margin: 6px 0 6px; font-size: clamp(25px, 2vw, 34px); font-weight: 750; }
+  h1 { margin: 6px 0 6px; font-size: 30px; font-weight: 750; }
   h2 { margin: 0 0 4px; font-size: 18px; }
   p { margin: 0; color: #667695; }
   button { cursor: pointer; }
@@ -43,7 +43,7 @@
   .pbmi-table th { color: #667695; }
   .pbmi-table td:nth-last-child(-n+2) { font-variant-numeric: tabular-nums; }
   .pbmi-reporthead { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 4px 0 16px; }
-  .pbmi-reporthead input { width: min(300px, 100%); border: 1px solid #dce2ed; border-radius: 10px; padding: 10px 13px; background: white; }
+  .pbmi-reporthead input { width: 300px; max-width: 100%; border: 1px solid #dce2ed; border-radius: 10px; padding: 10px 13px; background: white; }
   .pbmi-report { display: flex; gap: 13px; align-items: center; padding: 15px; }
   .pbmi-report > span:nth-child(2) { flex: 1; }
   .pbmi-report b, .pbmi-report small { display: block; }
