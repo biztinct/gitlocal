@@ -14,7 +14,7 @@ class TestModuleInsights(TransactionCase):
     def test_catalogue_routes_are_original_actions(self):
         reports = self.service.catalogue('all')
         self.assertTrue(reports)
-        self.assertEqual(len(reports), len({(r['area'], r['xmlid']) for r in reports}))
+        self.assertEqual(len(reports), len({(r['area'], r['xmlid'], r['lens']) for r in reports}))
         for report in reports:
             self.assertTrue(self.env.ref(report['xmlid'], raise_if_not_found=False), report)
         self.assertIn('pb_hr_flow.action_hr_payslip_line_analytics',

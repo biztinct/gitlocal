@@ -400,7 +400,7 @@ class PbModuleInsights(models.AbstractModel):
             denominator = domain + spec['denominator']
             numerator = domain + spec['numerator']
             den_rows, dim_field, rollup = self._group_rows(model, spec, denominator, dimension, over)
-            num_rows, _, _ = self._group_rows(model, spec, numerator, dimension, over)
+            num_rows = self._group_rows(model, spec, numerator, dimension, over)[0]
             den = self._rollup(den_rows, dim_field, rollup, dimension, spec, over)
             num = self._rollup(num_rows, dim_field, rollup, dimension, spec, over)
             values = [(key, (100.0 * num.get(key, {}).get('count', 0) / val['count'])
@@ -413,15 +413,15 @@ class PbModuleInsights(models.AbstractModel):
             buckets = self._rollup(rows, dim_field, rollup, dimension, spec, over)
             if kind == 'sum':
                 values = [(key, val['sum'], val['count']) for key, val in buckets.items()]
-                total = sum(value for _, value, _ in values)
+                total = sum(item[1] for item in values)
             elif kind == 'avg':
                 values = [(key, val['weighted'] / val['count'] if val['count'] else 0.0,
                            val['count']) for key, val in buckets.items()]
                 count = sum(count for _, _, count in values)
-                total = sum(value * n for _, value, n in values) / count if count else 0.0
+                total = sum(item[1] * item[2] for item in values) / count if count else 0.0
             else:
                 values = [(key, val['count'], val['count']) for key, val in buckets.items()]
-                total = sum(value for _, value, _ in values)
+                total = sum(item[1] for item in values)
         result = [{'key': key[0], 'label': key[1], 'period': key[2],
                    'period_key': val.get('sort', ''),
                    'value': round(value, 2), 'records': count}
