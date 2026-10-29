@@ -58,6 +58,16 @@ class TestModuleInsights(TransactionCase):
             domain = self.service._domain(MEASURES[area][measure], 6)
             self.assertEqual(result['total'], self.env[source].sudo().search_count(domain))
 
+    def test_hiring_keeps_requisition_record_rules(self):
+        user = self.env['res.users'].create({
+            'name': 'Hiring scope reader',
+            'login': 'module.insights.hiring.scope@example.invalid',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])],
+        })
+        from odoo.addons.pb_insights.models.module_insights import MEASURES
+        source = self.service.with_user(user)._source('hiring', MEASURES['hiring']['agreed'])
+        self.assertFalse(source.env.su)
+
     def test_unknown_measure_and_bad_range_are_refused(self):
         with self.assertRaises(UserError):
             self.service.explore('people', 'payroll_people_paid', 'department', 'total', 6)

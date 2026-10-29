@@ -21,6 +21,8 @@ The precise XML IDs are the `REPORTS` entries in
 read time, so an optional module contributes no broken link. The receiving
 action retains its own permissions and export controls. The central catalogue
 only lists areas the caller may read.
+Hiring Explorer also retains requisition record rules, so a line manager's
+own-role view cannot become a company-wide count.
 
 ## Measure contract
 

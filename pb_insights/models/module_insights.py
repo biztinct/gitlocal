@@ -2,10 +2,12 @@
 
 Every measure names its source, cohort and date explicitly.  The caller's
 company selection and the source model's record rules are applied to every
-query where those rules grant the reporting audience access.  Workforce,
-Hiring, Goals and Learning already have reporting facades broader than their
-source ACL.  Those facades authorize the caller before the source is read with
-sudo and an explicit company domain, following the source board's contract.
+query where those rules grant the reporting audience access. Workforce,
+Goals and Learning already have reporting facades broader than their source
+ACL. Those facades authorize the caller before the source is read with sudo
+and an explicit company domain, following the source board's contract.
+Hiring retains its requisition record rules, including the line manager's
+own-role scope.
 """
 
 from collections import defaultdict
@@ -259,7 +261,7 @@ class PbModuleInsights(models.AbstractModel):
 
     def _source(self, area, spec):
         model = self.env[spec['model']]
-        if area in ('workforce', 'hiring', 'talent', 'learning'):
+        if area in ('workforce', 'talent', 'learning'):
             return model.sudo()
         model.check_access('read')
         return model
