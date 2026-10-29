@@ -58,6 +58,55 @@ class TestAccessStudio(TransactionCase):
     def grant(self):
         self.access.with_context(biz_access_engine_apply=True).grant(self.role.id, self.person.id, 'Test role assignment')
 
+    def test_unified_passport_assignments_survive_directory_filters(self):
+        profile = self.publish_profile()
+        membership = self.assign(profile)
+        filtered = self.access.studio_data('people', self.other.login, 'all')
+        self.assertNotIn(self.person.id, [p['id'] for p in filtered['people']])
+        selected = self.access.studio_person('people', self.person.id)
+        self.assertEqual([a['id'] for a in selected['assignments']], membership.ids)
+        self.assertEqual(selected['kind'], 'staff')
+        module = self.access.studio_data('people', self.person.login, 'module')
+        self.assertEqual([p['id'] for p in module['people']], self.person.ids)
+        due = self.access.studio_data('people', self.person.login, 'due')
+        self.assertFalse(due['people'])
+        membership.with_context(_pb_studio=STUDIO).write({'review_date': fields.Date.today()})
+        self.assertEqual([p['id'] for p in self.access.studio_data('people', self.person.login, 'due')['people']], self.person.ids)
+
+    def test_unified_passport_preserves_scoped_read_boundaries(self):
+        self.assign(self.publish_profile())
+        regular = self.env['pb.access'].with_user(self.person)
+        self.assertEqual(regular.studio_person('people', self.person.id)['id'], self.person.id)
+        with self.assertRaises(AccessError):
+            regular.studio_person('people', self.other.id)
+        self.env['pb.access.owner'].with_context(_pb_studio=STUDIO).create({
+            'user_id': self.other.id, 'company_id': self.company.id, 'workspace': 'people',
+            'role_ids': [(6, 0, self.role.ids)]})
+        scoped = self.env['pb.access'].with_user(self.other)
+        self.assertTrue(scoped.studio_person('people', self.person.id)['assignments'])
+        with self.assertRaises(AccessError):
+            scoped.passport(self.person.id)
+        company = self.env['res.company'].create({'name': 'Studio outside company'})
+        outsider = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Outside person', 'login': 'studio-outside-passport',
+            'company_id': company.id, 'company_ids': [(6, 0, company.ids)],
+            'group_ids': [(6, 0, self.env.ref('base.group_user').ids)]})
+        with self.assertRaises(AccessError):
+            scoped.studio_person('people', outsider.id)
+        self.assertFalse(self.access.studio_person('people', outsider.id)['in_company'])
+
+    def test_unified_directory_retains_employee_login_passports(self):
+        portal = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Studio employee passport', 'login': 'studio-employee-passport',
+            'company_id': self.company.id, 'company_ids': [(6, 0, self.company.ids)],
+            'group_ids': [(6, 0, self.env.ref('base.group_portal').ids)]})
+        self.env['hr.employee'].create({'name': portal.name, 'user_id': portal.id, 'company_id': self.company.id})
+        rows = self.access.studio_data('people', portal.login, 'all')['people']
+        self.assertEqual([r['id'] for r in rows], portal.ids)
+        self.assertEqual(rows[0]['kind'], 'employee')
+        self.assertFalse(self.access.studio_data('people', portal.login, 'module')['people'])
+        self.assertEqual(self.access.studio_person('people', portal.id)['kind'], 'employee')
+
     def test_self_approval_refused(self):
         result = self.access.studio_submit_profile('people', {'name': 'New', 'role_ids': self.role.ids,
             'owner_id': self.owner.id, 'review_date': str(fields.Date.today())}, 'Reason')

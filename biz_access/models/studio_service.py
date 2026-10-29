@@ -83,7 +83,7 @@ class AccessStudio(models.AbstractModel):
                 'members': self.env['pb.access.membership'].sudo().search_count([('profile_id', '=', record.id), ('active', '=', True)])}
 
     @api.model
-    def studio_data(self, workspace='hiring', search=''):
+    def studio_data(self, workspace='hiring', search='', people_filter='all'):
         owners = self._studio_scope(workspace, manage=False)
         manage = bool(self.can_manage() or owners)
         domain = [('company_id', '=', self.env.company.id), ('workspace', '=', workspace)]
@@ -96,23 +96,27 @@ class AccessStudio(models.AbstractModel):
             memberships = memberships.filtered(lambda a: a.user_id.id == self.env.uid)
             profiles = profiles.filtered(lambda p: p in memberships.profile_id)
             extra = extra.filtered(lambda a: a.user_id.id == self.env.uid)
-        users = visible_people(self.env['res.users'].sudo().search([
-            ('share', '=', False), ('company_ids', 'in', self.env.company.id),
-            ('active', '=', True)] + ([] if manage else [('id', '=', self.env.uid)]) +
-            (['|', ('name', 'ilike', str(search)[:100]), ('login', 'ilike', str(search)[:100])] if search else []), limit=201), self.env)
-        if not manage:
-            users = users.filtered(lambda u: u.id == self.env.uid)
         sources = self.env['pb.role.assignment'].sudo().search([('active', '=', True), ('profile_id', 'in', local_roles.ids)])
         involved = set(sources.user_id.ids) | set(memberships.user_id.ids) | set(extra.user_id.ids)
-        people = []
-        for user in users[:200]:
-            rows = memberships.filtered(lambda m: m.user_id == user)
-            grants = extra.filtered(lambda g: g.user_id == user)
-            people.append({'id': user.id, 'name': user.name, 'login': user.login, 'in_module': user.id in involved,
-                'assignments': [{'id': m.id, 'profile': m.profile_id.name, 'date_end': str(m.date_end or ''),
-                    'review_date': str(m.review_date), 'due': m.review_date <= fields.Date.today(), 'origin': m.origin,
-                    'revision': m.revision} for m in rows],
-                'extras': [{'id': g.id, 'role': g.role_id.name, 'date_end': str(g.date_end)} for g in grants]})
+        user_domain = [('company_ids', 'in', self.env.company.id), ('active', '=', True)]
+        # Keep employee/portal passports and account-type controls available to
+        # central owners, without exposing unrelated agency/vendor accounts.
+        if self.can_manage() and people_filter == 'all':
+            employed = self.env['hr.employee'].sudo().search([
+                ('company_id', '=', self.env.company.id), ('user_id.share', '=', True)]).user_id
+            user_domain += ['|', ('share', '=', False), ('id', 'in', employed.ids)]
+        else:
+            user_domain += [('share', '=', False)]
+        if not manage:
+            user_domain += [('id', '=', self.env.uid)]
+        elif people_filter == 'module':
+            user_domain += [('id', 'in', sorted(involved))]
+        elif people_filter == 'due':
+            user_domain += [('id', 'in', memberships.filtered(lambda m: m.review_date <= fields.Date.today()).user_id.ids)]
+        if search:
+            user_domain += ['|', ('name', 'ilike', str(search)[:100]), ('login', 'ilike', str(search)[:100])]
+        users = visible_people(self.env['res.users'].sudo().search(user_domain, order='name, id', limit=201), self.env)
+        people = [self._studio_person_json(user, memberships, extra, involved) for user in users[:200]]
         requests = self.env['pb.access.studio.request'].sudo().search(domain + ([] if manage else [('requested_by', '=', self.env.uid)]), limit=100)
         history = self.env['pb.access.event'].sudo().search(domain + ([] if manage else [('user_id', '=', self.env.uid)]), limit=100)
         return {'workspace': workspace, 'workspaces': [{'key': k, 'label': v} for k, v in WORKSPACES],
@@ -130,6 +134,39 @@ class AccessStudio(models.AbstractModel):
             'departments': self.env['hr.department'].sudo().search_read([('company_id', '=', self.env.company.id)], ['name']) if manage else [],
             'owners': [{'id': o.id, 'user_id': o.user_id.id, 'name': o.user_id.name, 'role_ids': o.role_ids.ids} for o in self.env['pb.access.owner'].sudo().search(domain)] if self.can_manage() else [],
             'resources': self._studio_resources(workspace)}
+
+    def _studio_person_json(self, user, memberships, extra, involved=()):
+        rows = memberships.filtered(lambda m: m.user_id == user)
+        grants = extra.filtered(lambda g: g.user_id == user)
+        return {'id': user.id, 'name': user.name, 'login': user.login,
+            'avatar': '/web/image/res.users/%s/avatar_128' % user.id,
+            'is_me': user.id == self.env.uid, 'kind': 'employee' if user.share else 'staff',
+            'in_company': self.env.company in user.company_ids,
+            'in_module': user.id in involved or bool(rows or grants),
+            'assignments': [{'id': m.id, 'profile': m.profile_id.name, 'date_end': str(m.date_end or ''),
+                'review_date': str(m.review_date), 'due': m.review_date <= fields.Date.today(),
+                'origin': m.origin, 'revision': m.revision} for m in rows],
+            'extras': [{'id': g.id, 'role': g.role_id.name, 'date_end': str(g.date_end)} for g in grants]}
+
+    @api.model
+    def studio_person(self, workspace, user_id):
+        """Module assignments for the selected passport, independent of search.
+
+        This does not widen the separate full-passport/menu read permissions.
+        A module owner can still manage local assignments without gaining a
+        central owner's ability to inspect another person's entire account.
+        """
+        owners = self._studio_scope(workspace, manage=False)
+        user = self._login_user(user_id, allow_share=True).sudo()
+        if not self.can_manage():
+            if user.id != self.env.uid and not owners:
+                raise AccessError(_('You may only inspect your own assignments.'))
+            if self.env.company not in user.company_ids:
+                raise AccessError(_('This person is outside the selected company.'))
+        domain = [('company_id', '=', self.env.company.id), ('workspace', '=', workspace), ('user_id', '=', user.id)]
+        memberships = self.env['pb.access.membership'].sudo().search(domain)
+        extra = self.env['pb.access.extra'].sudo().search(domain)
+        return self._studio_person_json(user, memberships, extra)
 
     def _studio_resources(self, workspace):
         result = []

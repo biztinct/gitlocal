@@ -22,36 +22,35 @@
     <xpath expr="//button[@data-coach='ac-handover']" position="replace"/>
     <xpath expr="//button[@t-on-click='runRevert']" position="replace"/>
     <xpath expr="//button[@t-on-click=&quot;() => this.exportFile('history')&quot;]" position="replace"/>
-    <xpath expr="//div[@class='pbva-comp-r']/p[@class='pbva-colhead']" position="replace"><p class="pbva-colhead">Menu preview · this role only</p><p class="pbva-hint">A read-only preview of this role’s contribution. Screens shows a person’s combined access and manages the menu.</p></xpath>
+    <xpath expr="//div[@class='pbva-comp-r']/p[@class='pbva-colhead']" position="replace"><p class="pbva-colhead">Menu preview · this role only</p><p class="pbva-hint">A read-only preview of this role’s contribution. People &amp; assignments shows each person’s combined access. Screens manages the shared menu.</p></xpath>
     <xpath expr="//div[contains(@class, 'pbva-access')]" position="inside"><t t-call="biz_access.StudioDialog"/></xpath>
+    <xpath expr="//aside[@class='pbva-plist']" position="replace"><t t-call="biz_access.StudioPeopleList"/></xpath>
+    <xpath expr="//div[@class='pbva-pass-actions']" position="inside">
+      <button t-if="studioSelectedPerson &amp;&amp; studio.resources.length &amp;&amp; studioSelectedPerson.kind !== 'employee' &amp;&amp; studioSelectedPerson.in_company" class="pbim-btn ghost" t-on-click="() => this.studioExplain(studioSelectedPerson)">Explain access</button>
+      <button t-if="studioCanAssignPerson" class="pbim-btn primary" t-on-click="() => this.studioAssign(studioSelectedPerson)">Assign profile</button>
+      <button class="pbim-btn ghost" t-if="studioSelectedPerson?.kind !== 'employee' &amp;&amp; studioSelectedPerson?.in_company &amp;&amp; (studioCanManage || ph.is_me)" t-on-click="() => this.studioRequestExtra(studioSelectedPerson)">Request access</button>
+    </xpath>
+    <xpath expr="//div[@class='pbva-pass-actions']/button[@t-on-click='() => this.openPersonHistory(ph)']" position="attributes"><attribute name="t-if">!passport.restricted_preview</attribute></xpath>
+    <xpath expr="//div[@class='pbva-pass-actions']/button[@t-on-click='() => this.openGiveRole(ph)']" position="attributes"><attribute name="class">pbim-btn ghost</attribute></xpath>
+    <xpath expr="//p[@class='pbva-pass-sees']" position="attributes"><attribute name="t-if">!passport.restricted_preview</attribute></xpath>
+    <xpath expr="//span[@t-esc='rolesLine(ph)']" position="attributes"><attribute name="t-if">!passport.restricted_preview</attribute></xpath>
+    <xpath expr="//div[@class='pbva-pass-roles']/p[@class='pbva-colhead']" position="before"><t t-call="biz_access.StudioPersonAssignments"/></xpath>
+    <xpath expr="//div[@class='pbva-pass-roles']/p[@class='pbva-colhead']" position="attributes"><attribute name="t-if">!passport.restricted_preview</attribute></xpath>
+    <xpath expr="//div[@class='pbva-pass-roles']/div[@t-elif='!passport.roles.length']" position="attributes"><attribute name="t-elif">!passport.roles.length &amp;&amp; !passport.restricted_preview</attribute></xpath>
+    <xpath expr="//details[@class='pbva-pass-roles']" position="replace"/>
+    <xpath expr="//div[@class='pbva-pass-roles']" position="inside"><details t-if="passport.equivalent_roles and passport.equivalent_roles.length" class="pbva-pass-roles"><summary>Equivalent permissions from other sources</summary><p class="pbva-col-note">These permissions already let them do the work. They are not assigned these roles and will not follow role edits automatically.</p><div t-foreach="passport.equivalent_roles" t-as="match" t-key="match.profile_id" class="pbva-verb"><span class="pbva-verb-tx"><b t-esc="match.name"/><small t-esc="match.description"/></span></div></details></xpath>
+    <xpath expr="//div[@class='pbva-pass-rail']/PbMiniRail" position="before">
+      <p class="pbva-hint">Read-only preview of this person's combined access. Expand a module to see the screens inside it.</p>
+      <p t-if="passport.restricted_preview" class="pbva-studio-info">You can manage assignments in this workspace. A central access owner can inspect this person's full menu and account controls.</p>
+    </xpath>
+    <xpath expr="//div[@class='pbva-pass-rail']/p[@t-else]" position="replace"><p t-elif="!passport.restricted_preview" class="pbva-col-empty">There is no left menu written down on this system, so there is nothing to draw here yet.</p></xpath>
+    <xpath expr="//div[@class='pbva-pass-rail']" position="inside">
+      <button t-if="canManage &amp;&amp; passport.rail.length" class="pbim-btn ghost pbva-studio-menu-link" t-on-click="studioManageMenu">Manage screen visibility</button>
+      <p t-if="canManage &amp;&amp; passport.rail.length" class="pbva-hint">Opens Screens to manage shared menu order and role gates.</p>
+    </xpath>
   </t>
 
   <t t-name="biz_access.StudioPanels">
-    <section t-if="state.lens === 'studio_people'" class="pbva-studio-panel">
-      <div class="pbva-studio-title"><div><h3>People &amp; assignments</h3><p>See who has access, how they received it, and when it should be reviewed.</p></div>
-        <div class="pbva-studio-actions"><button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.setLens('people')">People &amp; full menu passports</button><button class="pbim-btn ghost" t-on-click="() => this.studioRequestExtra()">Request access</button></div>
-      </div>
-      <div class="pbva-studio-toolbar">
-        <input class="pbva-in" type="search" placeholder="Search people" aria-label="Search people in Access Studio" t-att-value="state.studioSearch" t-on-input="studioSearch"/>
-        <select class="pbva-in" aria-label="People filter" t-model="state.studioPeopleFilter"><option value="module">Assigned in this module</option><option value="all">All company people</option><option value="due">Review due</option></select>
-        <button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="studioToggleAll">Select visible</button>
-        <button t-if="studioCanManage" class="pbim-btn primary" t-att-disabled="!state.studioSelected.length" t-on-click="() => this.studioAssign()">Assign profile <t t-esc="state.studioSelected.length || ''"/></button>
-      </div>
-      <div class="pbva-studio-grid">
-        <article t-foreach="studioPeople" t-as="person" t-key="person.id" class="pbva-studio-card">
-          <div class="pbva-studio-cardhead"><input t-if="studioCanManage" type="checkbox" t-att-aria-label="'Select ' + person.name" t-att-checked="state.studioSelected.includes(person.id)" t-on-change="() => this.studioTogglePerson(person.id)"/>
-            <img class="pbva-face" t-att-src="'/web/image/res.users/' + person.id + '/avatar_128'" alt=""/><div><h4 t-esc="person.name"/><small t-esc="person.login"/></div></div>
-          <p t-if="!person.assignments.length" class="pbva-hint">No profile assigned in this module. Existing roles may still provide access.</p>
-          <div t-foreach="person.assignments" t-as="assignment" t-key="assignment.id" class="pbva-studio-assignment"><strong t-esc="assignment.profile"/><span><t t-esc="assignment.origin === 'automatic' ? 'Department rule' : 'Owner assignment'"/> · <t t-esc="assignment.date_end ? 'Until ' + assignment.date_end : 'No expiry'"/></span><small t-att-class="assignment.due ? 'pbva-studio-warning' : ''">Review <t t-esc="assignment.review_date"/></small>
-            <button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.studioConfirm('review', 'Review ' + assignment.profile, {...assignment, retain: true})">Review assignment</button></div>
-          <div t-foreach="person.extras" t-as="extra" t-key="extra.id" class="pbva-studio-assignment"><strong t-esc="extra.role"/><small>Independent grant · until <t t-esc="extra.date_end"/></small><button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.studioConfirm('revoke_extra', 'Revoke temporary grant', extra)">Revoke grant</button></div>
-          <div class="pbva-studio-actions"><button t-if="studio.resources.length" class="pbim-btn ghost" t-on-click="() => this.studioExplain(person)">Explain access</button><button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.studioAssign(person)">Assign profile</button></div>
-        </article>
-      </div>
-      <div t-if="!studioPeople.length" class="pbim-empty"><h3>No people match this view</h3><p>Choose “All company people” to make a first assignment, or adjust the search.</p></div>
-      <p t-if="studio.people_more" class="pbva-hint">Showing up to 200 people. Search by name to find someone else.</p>
-    </section>
-
     <section t-if="state.lens === 'packages'" class="pbva-studio-panel">
       <div class="pbva-studio-title"><div><h3>Profiles</h3><p>Reusable packages of roles. Editing a role updates every profile that references it.</p></div><button t-if="studioCanManage" class="pbim-btn primary" t-on-click="() => this.studioOpenProfile()">New profile</button></div>
       <div class="pbva-studio-toolbar"><input class="pbva-in" aria-label="Search profiles" placeholder="Search profiles" t-model="state.studioProfileSearch"/><select class="pbva-in" aria-label="Profile status" t-model="state.studioStatus"><option value="active">Active profiles</option><option value="retired">Retired profiles</option><option value="all">All profiles</option></select></div>
@@ -65,7 +64,7 @@
       <div t-if="!studioProfiles.length" class="pbim-empty"><h3>No profiles yet</h3><p>Create a named package from existing roles. People’s current assignments stay in place until a reviewed change is approved.</p></div>
     </section>
 
-    <section t-if="state.lens === 'screens'" class="pbva-studio-info"><strong>Full menu · combined access</strong><br/>Use “See it as” to check what a person can open across all their profiles, roles and temporary grants. Menu visibility is managed here; record and field permissions are managed under Roles &amp; permissions.</section>
+    <section t-if="state.lens === 'screens'" class="pbva-studio-info"><div class="pbva-studio-title"><div><strong>Screen administration · shared menu</strong><br/>Manage menu order, visibility and the roles that open each entry. Changes here affect the shared menu. To inspect a person’s combined access, open their passport under People &amp; assignments.</div><button t-if="state.studioMenuReturn" class="pbim-btn ghost" t-on-click="() => this.studioOpenPassport(state.studioMenuReturn)">Back to <t t-esc="state.studioMenuReturn.name"/>’s access</button></div></section>
     <section t-if="state.lens === 'handovers' &amp;&amp; canManage" class="pbva-studio-actions"><button class="pbim-btn ghost" t-on-click="runRevert">Take back expired access now</button></section>
     <section t-if="state.lens === 'roles' &amp;&amp; studioCanManage" class="pbva-studio-role-layout">
       <aside class="pbva-studio-role-list">
@@ -131,7 +130,7 @@
             <details><summary>Automatic department assignment</summary><label>Assign on join or department change<select class="pbva-in" t-model.number="form.auto_department_id"><option value="0">Manual assignment only</option><option t-foreach="studio.departments" t-as="department" t-key="department.id" t-att-value="department.id" t-esc="department.name"/></select></label><p class="pbva-hint">After approval, future employee joins and moves into this department receive the profile. Moving out removes automatic assignments and flags manual assignments for review. Archiving an employee removes Studio grants; account deactivation remains part of offboarding.</p></details>
           </t>
           <t t-if="dialog.kind === 'assign'"><p>Assign to <strong t-esc="studioNames(form.users)"/>.</p><label>Profile<select class="pbva-in" t-model.number="form.profile_id"><option t-foreach="studioAssignable" t-as="profile" t-key="profile.id" t-att-value="profile.id" t-esc="profile.name"/></select></label><label>Expiry (optional)<input class="pbva-in" type="date" t-model="form.date_end"/></label><p class="pbva-studio-info">An independent owner reviews this assignment. Existing roles, other profiles and temporary grants are preserved.</p></t>
-          <t t-if="dialog.kind === 'extra'"><label>Person<select class="pbva-in" t-model.number="form.user_id"><option t-foreach="studio.people" t-as="person" t-key="person.id" t-att-value="person.id" t-esc="person.name"/></select></label><label>Temporary role<select class="pbva-in" t-model.number="form.role_id"><option t-foreach="studioRoles" t-as="role" t-key="role.id" t-att-value="role.id" t-esc="role.name"/></select></label><label>End date<input class="pbva-in" type="date" t-model="form.date_end" required="required"/></label><p class="pbva-hint">This is an independent grant. Removing a profile will not remove it. It ends after the selected day.</p></t>
+          <t t-if="dialog.kind === 'extra'"><label>Person<select class="pbva-in" t-model.number="form.user_id"><option t-foreach="studioRequestPeople" t-as="person" t-key="person.id" t-att-value="person.id" t-esc="person.name"/></select></label><label>Temporary role<select class="pbva-in" t-model.number="form.role_id"><option t-foreach="studioRoles" t-as="role" t-key="role.id" t-att-value="role.id" t-esc="role.name"/></select></label><label>End date<input class="pbva-in" type="date" t-model="form.date_end" required="required"/></label><p class="pbva-hint">This is an independent grant. Removing a profile will not remove it. It ends after the selected day.</p></t>
           <t t-if="dialog.kind === 'policy'"><p><strong t-esc="form.name"/> · Policy version <t t-esc="form.revision"/></p><p><strong t-esc="form.people.length"/> assigned people: <t t-esc="form.people.join(', ') || 'None'"/></p><p>Referenced by: <t t-esc="form.profiles.join(', ') || 'No profiles yet'"/></p><div class="pbva-studio-info">Changes remain a draft until an independent owner approves. A later role change will require a fresh review.</div><details><summary>Submitted policy</summary><pre t-esc="studioJson(form.policy)"/></details></t>
           <t t-if="dialog.kind === 'decide'"><h4 t-esc="form.name"/><p t-esc="form.reason"/><p t-if="form.impact.people">People: <t t-esc="form.impact.people.join(', ')"/></p><details open="open"><summary>Reviewed impact</summary><pre t-esc="studioJson(form.impact)"/></details><p class="pbva-hint">Your identity, current authority, conflicts and the submitted version are checked again when you decide.</p></t>
           <t t-if="dialog.kind === 'review'"><p>Profile: <strong t-esc="form.profile"/></p><label>Decision<select class="pbva-in" t-model="form.retain"><option t-att-value="true">Retain and review in 90 days</option><option t-att-value="false">Remove this profile assignment</option></select></label><p class="pbva-hint">Removing this assignment preserves independent roles, other profiles and temporary grants.</p></t>
@@ -147,7 +146,7 @@
             <label>Field (optional)<select class="pbva-in" t-model="form.field_name"><option value="">Whole record</option><option t-foreach="studioFieldOptions()" t-as="field" t-key="field.key" t-att-value="field.key" t-esc="field.label"/></select></label>
             <label><input type="checkbox" t-model="form.without_profile"/> What if all profiles were removed?</label><button class="pbim-btn primary" t-on-click="studioRunExplain">Check access</button>
             <div t-if="dialog.result" class="pbva-studio-explanation"><h4 t-att-class="dialog.result.allowed ? 'pbva-studio-allowed' : 'pbva-studio-warning'" t-esc="dialog.result.allowed ? 'Allowed within matching record rules' : 'Not allowed by current access'"/><p>Company: <t t-esc="dialog.result.company"/></p><article t-foreach="dialog.result.sources" t-as="source" t-key="source.source + ':' + source.role_id" class="pbva-studio-assignment"><strong t-esc="source.name"/><span><t t-esc="source.source.startsWith('package:') ? 'From a profile' : source.source.startsWith('extra:') ? 'Independent temporary grant' : source.source.startsWith('loan:') ? 'Delegated' : 'Assigned or existing permission'"/> · <t t-esc="source.scope"/></span><small t-esc="source.matches ? 'Matches this check' : 'Does not match this check'"/><small t-if="source.field">Field: <t t-esc="source.field"/></small></article><p class="pbva-hint" t-esc="dialog.result.note"/></div>
-            <button t-if="canManage" class="pbim-btn ghost" t-on-click="() => { this.seeAs({id: form.user_id, name: form.user}); this.closeStudio(); this.setLens('screens'); }">See their full menu</button>
+            <button t-if="canManage || form.user_id === board.me.id" class="pbim-btn ghost" t-on-click="() => this.studioOpenPassport({id: form.user_id, name: form.user})">See their full menu</button>
             <button t-if="form.user_id === board.me.id &amp;&amp; form.record_id &amp;&amp; form.field_name" class="pbim-btn ghost" t-on-click="() => this.studioConfirm('reveal', 'Reveal sensitive value', {...form})">Reveal with a reason</button>
           </t>
           <t t-if="dialog.kind === 'reveal'"><p>This reveals one value for your own signed-in account. Your reason is retained in the audit trail.</p><div t-if="dialog.result" class="pbva-studio-info"><strong t-esc="dialog.result.value"/><p>Audit receipt #<t t-esc="dialog.result.receipt"/></p></div></t>
@@ -156,5 +155,51 @@
         <footer><button class="pbim-btn ghost" t-on-click="closeStudio" t-att-disabled="state.studioBusy">Close</button><button t-if="!['compare','explain'].includes(dialog.kind) &amp;&amp; !dialog.result" class="pbim-btn primary" t-att-disabled="state.studioBusy || !dialog.reason.trim()" t-on-click="studioSubmit"><t t-esc="state.studioBusy ? 'Saving…' : ['profile','assign','extra','policy','restore'].includes(dialog.kind) ? 'Submit for review' : 'Confirm'"/></button></footer>
       </section>
     </div>
+  </t>
+
+  <t t-name="biz_access.StudioPeopleList">
+    <aside class="pbva-plist pbva-studio-directory">
+      <div class="pbva-plist-head"><div><b>People &amp; assignments</b><small>Choose a person to see their access and profiles.</small></div>
+        <button t-if="canManage" class="pbim-btn ghost pbim-btn-sm" t-on-click="openAddPerson"><t t-out="ic('plus',14)"/> Add a person</button>
+      </div>
+      <label class="pbva-field pbva-plist-search"><input class="pbva-in" type="search" placeholder="Search name or login" aria-label="Search people in Access Studio" t-att-value="state.studioSearch" t-on-input="studioSearch"/></label>
+      <select class="pbva-in" aria-label="People filter" t-att-value="state.studioPeopleFilter" t-on-change="studioFilterPeople">
+        <option value="module">Assigned in this module</option><option value="all">All company people</option><option value="due">Review due</option><option t-if="canManage" value="directory">All companies · full directory</option>
+      </select>
+      <div t-if="studioCanManage &amp;&amp; state.studioPeopleFilter !== 'directory'" class="pbva-studio-bulk">
+        <button class="pbva-linkbtn" t-on-click="studioToggleAll">Select visible</button>
+        <button class="pbim-btn primary pbim-btn-sm" t-att-disabled="!state.studioSelected.length" t-on-click="() => this.studioAssign()">Assign profile <t t-esc="state.studioSelected.length || ''"/></button>
+        <small t-if="state.studioSelected.length"><t t-esc="state.studioSelected.length"/> selected · up to 100 at once</small>
+      </div>
+      <div class="pbva-prows">
+        <div t-foreach="studioPeople" t-as="person" t-key="person.id" class="pbva-studio-personrow">
+          <input t-if="studioCanManage &amp;&amp; state.studioPeopleFilter !== 'directory' &amp;&amp; person.kind !== 'employee'" type="checkbox" t-att-aria-label="'Select ' + person.name" t-att-checked="state.studioSelected.includes(person.id)" t-on-change="() => this.studioTogglePerson(person.id)"/>
+          <button t-attf-class="pbva-personrow {{ state.personId === person.id ? 'is-on' : '' }}" t-att-aria-pressed="state.personId === person.id ? 'true' : 'false'" t-on-click="() => this.loadPassport(person.id)">
+            <img class="pbva-face" t-att-src="person.avatar" alt=""/>
+            <span class="pbva-personrow-tx"><b><t t-esc="person.name"/> <span t-if="person.is_me" class="pbva-badge pbva-badge--mine">You</span></b><small t-esc="person.login"/></span>
+            <span t-if="person.kind === 'employee'" class="pbva-badge pbva-badge--quiet">Employee</span>
+            <span t-elif="person.assignments?.length" class="pbva-personrow-n"><t t-esc="person.assignments.length"/> profiles</span>
+          </button>
+        </div>
+      </div>
+      <p t-if="!studioPeople.length" class="pbva-hint">No people match. Try another filter or search.</p>
+      <p t-if="studio.people_more" class="pbva-hint">Showing up to 200 people. Search by name or login to find someone else.</p>
+      <p t-if="studioSelectedPerson &amp;&amp; !studioPeople.some(p => p.id === state.personId)" class="pbva-hint">The open passport is outside this list's filter. Your selection is kept.</p>
+      <button t-if="!studioSelectedPerson" class="pbim-btn ghost" t-on-click="() => this.studioRequestExtra()">Request access</button>
+    </aside>
+  </t>
+  <t t-name="biz_access.StudioPersonAssignments">
+    <section t-if="studioSelectedPerson" class="pbva-studio-person-assignments" aria-label="Profile assignments">
+      <p class="pbva-colhead"><t t-out="ic('layers',13)"/> Profiles · <t t-esc="studio.workspaces.find(w => w.key === state.workspace)?.label"/></p>
+      <p t-if="!studioSelectedPerson.in_company" class="pbva-hint">Switch to this person's company to manage their profile assignments.</p>
+      <p t-elif="studioSelectedPerson.kind === 'employee'" class="pbva-hint">Employee logins use self-service access. Staff profiles cannot be assigned to this account type.</p>
+      <p t-elif="!studioSelectedPerson.assignments.length" class="pbva-hint">No profile assigned in this workspace. Existing roles and direct permissions may still provide access.</p>
+      <article t-foreach="studioSelectedPerson.assignments" t-as="assignment" t-key="assignment.id" class="pbva-studio-assignment">
+        <strong t-esc="assignment.profile"/><span><t t-esc="assignment.origin === 'automatic' ? 'Department rule' : 'Owner assignment'"/> · <t t-esc="assignment.date_end ? 'Until ' + assignment.date_end : 'No expiry'"/></span>
+        <small t-att-class="assignment.due ? 'pbva-studio-warning' : ''">Review <t t-esc="assignment.review_date"/><t t-if="assignment.due"> · Due</t></small>
+        <button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.studioConfirm('review', 'Review ' + assignment.profile, {...assignment, retain: true})">Review assignment</button>
+      </article>
+      <article t-foreach="studioSelectedPerson.extras" t-as="extra" t-key="extra.id" class="pbva-studio-assignment"><strong t-esc="extra.role"/><small>Independent grant · until <t t-esc="extra.date_end"/></small><button t-if="studioCanManage" class="pbim-btn ghost" t-on-click="() => this.studioConfirm('revoke_extra', 'Revoke temporary grant', extra)">Revoke grant</button></article>
+    </section>
   </t>
 </templates>

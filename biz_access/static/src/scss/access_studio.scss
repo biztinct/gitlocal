@@ -69,3 +69,27 @@
   input[type=checkbox] { accent-color:var(--pbim-accent,#3669c9); width:17px; height:17px; flex-shrink:0; }
   @media(max-width:650px) { .pbva-studio-grid { grid-template-columns:1fr; } .pbva-studio-scope { padding:12px; } .pbva-studio-scope label { width:100%; } .pbva-studio-backdrop { padding:0; } .pbva-studio-dialog { border-radius:0; height:100dvh; max-height:100dvh; width:100%; } .pbva-studio-dialogbody { padding:16px; } .pbva-studio-card { padding:18px; } .pbva-studio-matrix { grid-template-columns:1fr; } }
 }
+
+// One people directory and one passport, for standalone and embedded Studio.
+.pbva-access {
+  .pbva-studio-directory > select { width:100%; margin-bottom:12px; }
+  .pbva-studio-directory .pbva-plist-head { gap:12px; }
+  .pbva-studio-directory .pbva-plist-head small { line-height:1.5; }
+  .pbva-studio-directory .pbva-prows { max-height:62vh; overflow:auto; }
+  .pbva-studio-bulk { display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:0 0 14px; border-bottom:1px solid var(--pbim-line,#e3e7ed); margin-bottom:8px; }
+  .pbva-studio-bulk small { width:100%; color:var(--pbim-muted,#667085); }
+  .pbva-studio-personrow { display:flex; align-items:center; gap:6px; }
+  .pbva-studio-personrow .pbva-personrow { flex:1; min-width:0; }
+  .pbva-studio-personrow > input { margin:0; }
+  .pbva-studio-personrow .pbva-personrow-n { font-size:11px; }
+  .pbva-pass-actions .primary { order:-1; }
+  .pbva-studio-person-assignments { padding:0 0 20px; margin-bottom:20px; border-bottom:1px solid var(--pbim-line,#e3e7ed); }
+  .pbva-studio-person-assignments .pbva-studio-assignment { padding:14px 16px; margin:10px 0; background:var(--pbim-accent-soft,#f7f5fc); border:1px solid var(--pbim-line,#e3e7ed); border-radius:12px; gap:7px; }
+  .pbva-studio-person-assignments small { color:var(--pbim-muted,#667085); }
+  .pbva-pass-roles > details { margin-top:20px; padding-top:16px; border-top:1px solid var(--pbim-line,#e3e7ed); }
+  .pbva-pass-roles > details summary { cursor:pointer; font-weight:600; }
+  .pbva-studio-menu-link { margin-top:14px; }
+  .pbva-studio-info .pbva-studio-title { margin:0; }
+  .pbva-studio-info .pbva-studio-title > div { flex:1; min-width:200px; }
+  @media(max-width:900px) { .pbva-studio-directory .pbva-prows { max-height:260px; } }
+}
