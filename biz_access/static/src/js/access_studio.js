@@ -4,6 +4,7 @@ import { patch } from '@web/core/utils/patch';
 import { registry } from '@web/core/registry';
 import { _t } from '@web/core/l10n/translation';
 import { PbAccessBoard } from '@biz_access/js/access_board';
+import { openHub } from '@pb_hub/js/hub_nav';
 
 const todayPlus = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -18,6 +19,7 @@ patch(PbAccessBoard.prototype, {
         super.setup();
         this.studioSeq = 0;
         this.state.workspace = this.props.workspace || this.props.action?.context?.pb_access_workspace || 'hiring';
+        this.state.studioFocus = this.props.focus || '';
         this.state.studio = null;
         this.state.studioError = '';
         this.state.studioBusy = false;
@@ -56,18 +58,35 @@ patch(PbAccessBoard.prototype, {
             dialog.addEventListener('keydown', trap);
             return () => { dialog.removeEventListener('keydown', trap); prior?.focus(); };
         }, () => [this.state.studioDialog]);
-        if ((!this.props.action?.context?.pb_lens || this.state.lens === 'studio_people') && !this.props.action?.context?.pb_edit_role) {
-            this.state.lens = 'people';
+        if (!this.props.action?.context?.pb_edit_role) {
+            const asked = this.props.action?.context?.pb_lens;
+            this.state.lens = tabs.some(([key]) => key === asked) ? asked : 'people';
         }
     },
-    get lenses() { return tabs.map(([key, icon, label]) => ({ key, icon, label: _t(label) })); },
+    get studioLocal() { return Boolean(this.props.focus); },
+    get passport() {
+        const passport = super.passport;
+        // The local passport remains a combined read-only account preview.
+        // Account-wide role and login changes belong to the central studio.
+        return this.studioLocal && passport ? {...passport, can_manage: false,
+            roles: passport.roles.map(role => ({...role, can_take_back: false}))} : passport;
+    },
+    get studioFocus() { return this.studio.focuses?.find(f => f.key === this.state.studioFocus); },
+    get lenses() { return tabs.filter(([key]) => !this.studioLocal || ['people', 'packages', 'roles', 'handovers'].includes(key))
+        .map(([key, icon, label]) => ({ key, icon, label: _t(this.studioLocal && key === 'roles' ? 'Roles' : label) })); },
+    studioOpenCentral(lens = 'people', role = null) {
+        return openHub(this.action, { xmlid: 'biz_access.action_pb_access_board', lens,
+            context: { pb_access_workspace: role?.workspace || this.state.workspace, pb_studio_role: role?.id || false },
+            back: this.props.hub ? { ...this.props.hub, lens: 'access' } : undefined });
+    },
     get studio() { return this.state.studio || { profiles: [], roles: [], people: [], requests: [], history: [], resources: [], workspaces: [], departments: [], owners: [] }; },
     get studioCanManage() { return Boolean(this.studio.can_manage); },
     setLens(key) {
         key = key === 'studio_people' ? 'people' : key === 'policy' ? 'roles' : key;
+        if (this.studioLocal && ['screens', 'reviews', 'studio_history'].includes(key)) return this.studioOpenCentral(key);
         super.setLens(key);
-        if (key === 'roles' && this.studioCanManage && !this.state.studioPolicy && this.studioRoles.length) {
-            this.studioOpenPolicy(this.studioRoles[0]);
+        if (key === 'roles' && !this.studioLocal && this.studioCanManage && !this.state.studioPolicy && this.studioRoles.length) {
+            this.studioOpenPolicy(this.studioRoles.find(r => r.id === this.props.action?.context?.pb_studio_role) || this.studioRoles[0]);
         }
     },
     get studioRoleChoices() {
@@ -113,7 +132,7 @@ patch(PbAccessBoard.prototype, {
     async loadStudio() {
         const seq = ++this.studioSeq;
         try {
-            const data = await this.orm.call('pb.access', 'studio_data', [this.state.workspace, this.state.studioSearch, this.state.studioPeopleFilter]);
+            const data = await this.orm.call('pb.access', 'studio_data', [this.state.workspace, this.state.studioSearch, this.state.studioPeopleFilter, this.state.studioFocus || false]);
             if (seq !== this.studioSeq) return;
             let directory = [];
             if (this.state.studioPeopleFilter === 'directory' && this.canManage) {
@@ -136,6 +155,7 @@ patch(PbAccessBoard.prototype, {
     },
     async setWorkspace(ev) {
         this.studioPersonSeq++; this.passportSeq++;
+        this.state.studio = null;
         this.state.personId = 0; this.state.passport = null; this.state.studioPerson = null;
         this.state.studioKnownPeople = {};
         this.state.studioMenuReturn = null; this.state.studioPeopleFilter = 'module';
@@ -152,6 +172,12 @@ patch(PbAccessBoard.prototype, {
         this.state.open = 0;
         await this.reload();
         if (this.state.lens === 'roles') this.setLens('roles');
+    },
+    async studioChooseFocus(focus) {
+        if (focus.key === this.state.studioFocus || this.state.studioBusy) return;
+        this.state.studioFocus = focus.key;
+        this.state.studioDialog = null;
+        await this.setWorkspace({target: {value: focus.workspace}});
     },
     async studioSearch(ev) {
         this.state.studioSearch = ev.target.value;
@@ -190,7 +216,7 @@ patch(PbAccessBoard.prototype, {
         this.state.passportFailed = '';
         this.state.passportBusy = true;
         try {
-            const person = await this.orm.call('pb.access', 'studio_person', [this.state.workspace, id]);
+            const person = await this.orm.call('pb.access', 'studio_person', [this.state.workspace, id, this.state.studioFocus || false]);
             if (seq !== this.studioPersonSeq) return;
             this.state.studioPerson = person;
             this.state.studioKnownPeople[person.id] = person;
@@ -215,6 +241,7 @@ patch(PbAccessBoard.prototype, {
         await this.loadPassport(person.id);
     },
     async studioManageMenu() {
+        if (this.studioLocal) return this.studioOpenCentral('screens');
         const person = this.passport?.header;
         if (!person || !this.canManage) return;
         this.state.studioMenuReturn = {id: person.id, name: person.name};
@@ -229,7 +256,7 @@ patch(PbAccessBoard.prototype, {
     get studioRequests() { return this.studio.requests.filter(r => this.state.studioRequestFilter === 'all' || r.state === this.state.studioRequestFilter); },
     get studioDue() { return this.studio.due_reviews || []; },
     get studioOwnerPeople() { return this.studio.owner_people || []; },
-    get studioRoles() { return this.studio.roles.filter(r => r.workspace === this.state.workspace); },
+    get studioRoles() { return this.studio.roles.filter(r => this.studioLocal ? this.studio.role_ids?.includes(r.id) : r.workspace === this.state.workspace); },
     get studioPickerRoles() {
         const d = this.state.studioDialog;
         const needle = (d?.roleSearch || '').toLocaleLowerCase();
@@ -248,6 +275,7 @@ patch(PbAccessBoard.prototype, {
         this.state.studioSelected = eligible.every(id => this.state.studioSelected.includes(id)) ? [] : eligible;
     },
     studioOpenProfile(profile = null, duplicate = false) {
+        if (this.studioLocal) return this.studioOpenCentral('packages');
         const form = profile ? clone(profile) : { name: '', description: '', role_ids: [], owner_id: this.board.me?.id || 0,
             review_date: todayPlus(90), auto_department_id: 0 };
         if (duplicate) { delete form.id; delete form.revision; form.name += ' — copy'; form.auto_department_id = 0; }
@@ -292,6 +320,7 @@ patch(PbAccessBoard.prototype, {
         } catch (e) { d.error = this._msg(e, _t('Access could not be explained.')); }
     },
     async studioOpenPolicy(role) {
+        if (this.studioLocal) return this.studioOpenCentral('roles', role);
         const seq = ++this.studioPolicySeq;
         try {
             const policy = await this.orm.call('pb.access', 'studio_role_policy', [this.state.workspace, role.id]);
@@ -387,6 +416,7 @@ patch(PbAccessBoard.prototype, {
             this.notif.add(result.message || _t('Saved.'), { type: 'success' });
             this.state.studioDialog = null;
             if (['profile', 'assign', 'extra', 'policy', 'restore'].includes(d.kind)) {
+                if (this.studioLocal) { await this.studioOpenCentral('reviews'); return; }
                 this.state.lens = 'reviews'; this.state.studioReview = 'requests'; this.state.studioRequestFilter = 'pending';
             }
             this.state.studioSelected = [];
@@ -402,14 +432,14 @@ patch(PbAccessBoard.prototype, {
 });
 
 // The local hubs share the same catalogue, focused on their own workspace.
-for (const [category, workspace, title] of [
-    ['pb_hiring_hub_lens', 'hiring', 'Hiring access'],
-    ['pb_people_hub_lens', 'people', 'People access'],
-    ['pb_payhub_lens', 'payroll', 'Payroll access'],
+for (const [category, workspace, title, focus, hub] of [
+    ['pb_hiring_hub_lens', 'hiring', 'Hiring access', 'hiring.recruitment', {label:'Hiring', xmlid:'pb_hiring.action_pb_hiring_hub'}],
+    ['pb_people_hub_lens', 'people', 'People access', 'people.records', {label:'People', xmlid:'pb_people_hub.action_pb_people_hub'}],
+    ['pb_payhub_lens', 'payroll', 'Payroll access', 'payroll.operations', {label:'Payroll', xmlid:'pb_payhub.action_pb_pay_hub'}],
 ]) {
     registry.category(category).add('access_studio', {
         key: 'access', icon: 'shield', label: _t('Access & delegation'),
         title: _t(title), Component: PbAccessBoard,
-        groups: ['base.group_user'], props: { embedded: true, workspace },
+        groups: ['base.group_user'], props: { embedded: true, workspace, focus, hub },
     });
 }

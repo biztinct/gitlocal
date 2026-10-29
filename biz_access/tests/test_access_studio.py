@@ -80,6 +80,57 @@ class TestAccessStudio(TransactionCase):
         self.assertFalse(regular['owner_people'])
         self.assertFalse(regular['due_reviews'])
 
+    def test_business_focus_keeps_shared_profiles_whole(self):
+        def role(key):
+            ability = self.env['pb.role.ability'].create({'name': key, 'technical_key': key,
+                'area': 'money', 'group_ids': [(6, 0, self.group.ids)]})
+            return self.env['pb.role.profile'].create({'name': 'Renamed ' + key, 'area': 'money',
+                'ability_ids': [(6, 0, ability.ids)]})
+        budget = role('budget-studio-regression')
+        planning = role('decision-room-studio-regression')
+        mixed = self.env['pb.role.profile'].create({'name': 'Custom shared bundle', 'area': 'money',
+            'ability_ids': [(6, 0, (budget | planning).ability_ids.ids)]})
+        Profile = self.env['pb.access.profile'].with_context(_pb_studio=STUDIO)
+        shared = Profile.create({'name': 'Shared business package', 'workspace': 'money',
+            'company_id': self.company.id, 'owner_id': self.owner.id,
+            'review_date': fields.Date.today(),
+            'role_ids': [(6, 0, (budget | planning).ids)]})
+        unrelated = Profile.create({'name': 'Planning only', 'workspace': 'money',
+            'company_id': self.company.id, 'owner_id': self.owner.id, 'review_date': fields.Date.today(),
+            'role_ids': [(6, 0, planning.ids)]})
+        members = self.env['pb.access.membership'].with_context(_pb_studio=STUDIO).create([
+            {'profile_id': p.id, 'user_id': self.person.id, 'review_date': fields.Date.today(),
+             'reason': 'Focus regression fixture'} for p in (shared, unrelated)])
+        focused = self.access.studio_data('money', '', 'module', 'payroll.budget')
+        self.assertIn(budget.id, focused['role_ids'])
+        self.assertIn(mixed.id, focused['role_ids'])
+        self.assertNotIn(planning.id, focused['role_ids'])
+        package = next(p for p in focused['profiles'] if p['id'] == shared.id)
+        self.assertEqual(set(package['role_ids']), set((budget | planning).ids))
+        self.assertNotIn(unrelated.id, [p['id'] for p in focused['profiles']])
+        person = self.access.studio_person('money', self.person.id, 'payroll.budget')
+        self.assertEqual([p['id'] for p in person['assignments']], members.filtered(lambda m: m.profile_id == shared).ids)
+        central = self.access.studio_data('money')
+        self.assertIn(planning.id, central['role_ids'])
+        self.assertIn(unrelated.id, [p['id'] for p in central['profiles']])
+        self.assertIn(mixed.id, self.access.studio_data('money', '', 'all', 'people.planning')['role_ids'])
+        self.assertFalse(central['focuses'])
+        with self.assertRaises(UserError): self.access.studio_data('payroll', '', 'all', 'payroll.budget')
+        with self.assertRaises(UserError): self.access.studio_person('money', self.person.id, 'invented.focus')
+
+    def test_business_focus_does_not_expand_category_ownership(self):
+        self.env['pb.access.owner'].with_context(_pb_studio=STUDIO).create({
+            'user_id': self.other.id, 'company_id': self.company.id, 'workspace': 'payroll',
+            'role_ids': [(6, 0, self.role.ids)]})
+        scoped = self.env['pb.access'].with_user(self.other)
+        self.assertTrue(scoped.studio_data('payroll', '', 'all', 'payroll.operations')['can_manage'])
+        budget = scoped.studio_data('money', '', 'all', 'payroll.budget')
+        self.assertFalse(budget['can_manage'])
+        self.assertEqual([p['id'] for p in budget['people']], self.other.ids)
+        self.assertFalse(budget['owners'])
+        with self.assertRaises(AccessError): scoped.studio_person('money', self.person.id, 'payroll.budget')
+        with self.assertRaises(AccessError): scoped.studio_submit_profile('money', {}, 'Payroll ownership is not budget ownership')
+
     def test_unified_passport_preserves_scoped_read_boundaries(self):
         self.assign(self.publish_profile())
         regular = self.env['pb.access'].with_user(self.person)

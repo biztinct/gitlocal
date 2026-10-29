@@ -7,6 +7,33 @@ WORKSPACES = [
     ('hiring', 'Hiring'), ('people', 'People'), ('payroll', 'Payroll'),
     ('lifecycle', 'Lifecycle'), ('money', 'Money & budgets'), ('system', 'System'),
 ]
+# Navigation filters, never permission grants. Roles retain their canonical
+# category and full ability set even when a business screen references them.
+FOCUSES = {
+    'hiring.recruitment': ('hiring', 'hiring', 'Recruitment', (), 'Candidates, hiring requests, interviews and offers.'),
+    'people.records': ('people', 'people', 'Employees & records',
+                       ('records-', 'studio-hr-', 'studio-employee', 'equipment-', 'where-they-work'),
+                       'Employee records, contracts, equipment and work locations.'),
+    'people.lifecycle': ('people', 'lifecycle', 'Joiners & leavers', (),
+                         'Joining, probation, leaving and contract-renewal workflows.'),
+    'people.planning': ('people', 'money', 'Pay & planning',
+                        ('decision-room', 'pay-bands-', 'pay-review-',),
+                        'Workforce planning, pay bands and pay-review decisions.'),
+    'payroll.operations': ('payroll', 'payroll', 'Payroll operations', (),
+                           'Pay runs, payslips, payments, formulas and payroll reporting.'),
+    'payroll.budget': ('payroll', 'money', 'Budget', ('budget-',),
+                       'Budget holders, budget preparation and finance review.'),
+    'payroll.awards': ('payroll', 'people', 'Packages & awards', ('packages-and-awards',),
+                       'Pay packages, benefits and one-off awards.'),
+}
+
+
+def focus_roles(roles, workspace, focus=False):
+    rows = roles.filtered(lambda r: workspace_of(r) == workspace)
+    prefixes = FOCUSES[focus][3] if focus else ()
+    return rows.filtered(lambda r: any(k and k.startswith(prefixes)
+        for k in r.ability_ids.mapped('technical_key'))) if prefixes else rows
+
 RESOURCES = {
     'hr.applicant': {'workspace': 'hiring', 'label': 'Candidates', 'owner': 'user_id',
                      'fields': ['partner_name', 'email_from', 'partner_phone', 'salary_expected', 'salary_proposed', 'description'],

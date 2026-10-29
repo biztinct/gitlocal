@@ -3,7 +3,7 @@ from datetime import timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from .access_common import implied_closure, visible_people, forbidden_in_closure
-from .studio_catalogue import WORKSPACES, RESOURCES, ACTIONS, SCOPES, workspace_of
+from .studio_catalogue import WORKSPACES, RESOURCES, ACTIONS, SCOPES, FOCUSES, focus_roles, workspace_of
 from .studio_models import STUDIO
 from .role_assignments import INTERNAL
 
@@ -83,15 +83,26 @@ class AccessStudio(models.AbstractModel):
                 'members': self.env['pb.access.membership'].sudo().search_count([('profile_id', '=', record.id), ('active', '=', True)])}
 
     @api.model
-    def studio_data(self, workspace='hiring', search='', people_filter='all'):
+    def _studio_focus(self, workspace, focus):
+        if focus and (focus not in FOCUSES or FOCUSES[focus][1] != workspace):
+            raise UserError(_('Choose a valid access area.'))
+        return focus
+
+    @api.model
+    def studio_data(self, workspace='hiring', search='', people_filter='all', focus=False):
         owners = self._studio_scope(workspace, manage=False)
+        self._studio_focus(workspace, focus)
         manage = bool(self.can_manage() or owners)
         domain = [('company_id', '=', self.env.company.id), ('workspace', '=', workspace)]
         roles = self.env['pb.role.profile'].search([])
-        local_roles = roles.filtered(lambda r: workspace_of(r) == workspace)
+        local_roles = focus_roles(roles, workspace, focus)
         profiles = self.env['pb.access.profile'].sudo().with_context(active_test=False).search(domain)
         memberships = self.env['pb.access.membership'].sudo().search(domain)
         extra = self.env['pb.access.extra'].sudo().search(domain)
+        if focus:
+            profiles = profiles.filtered(lambda p: bool(p.role_ids & local_roles))
+            memberships = memberships.filtered(lambda m: m.profile_id in profiles)
+            extra = extra.filtered(lambda g: g.role_id in local_roles)
         if not manage:
             memberships = memberships.filtered(lambda a: a.user_id.id == self.env.uid)
             profiles = profiles.filtered(lambda p: p in memberships.profile_id)
@@ -134,13 +145,15 @@ class AccessStudio(models.AbstractModel):
         requests = self.env['pb.access.studio.request'].sudo().search(domain + ([] if manage else [('requested_by', '=', self.env.uid)]), limit=100)
         history = self.env['pb.access.event'].sudo().search(domain + ([] if manage else [('user_id', '=', self.env.uid)]), limit=100)
         return {'workspace': workspace, 'workspaces': [{'key': k, 'label': v} for k, v in WORKSPACES],
+            'focuses': [{'key': key, 'workspace': spec[1], 'label': spec[2], 'description': spec[4]}
+                        for key, spec in FOCUSES.items() if focus and spec[0] == FOCUSES[focus][0]],
             'can_manage': manage, 'central_owner': self.can_manage(), 'company': self.env.company.name,
             'profiles': [self._studio_profile_json(p) for p in profiles], 'people': people, 'people_more': len(users) > 200,
             'owner_people': [{'id': u.id, 'name': u.name, 'kind': 'staff'} for u in owner_users],
             'due_reviews': due_reviews,
             'role_ids': local_roles.ids, 'delegation_ids': self.env['pb.access.delegation'].search([('profile_ids', 'in', local_roles.ids)]).ids,
             'module_people_count': self.env['res.users'].sudo().search_count([('id', 'in', sorted(involved)), ('company_ids', 'in', self.env.company.id), ('active', '=', True)]),
-            'roles': [{'id': r.id, 'name': r.name, 'workspace': workspace_of(r),
+            'roles': [{'id': r.id, 'name': r.name, 'description': r.description or '', 'workspace': workspace_of(r),
                 'allowed': self.can_manage() or r in owners.role_ids, 'revision': r.studio_policy_revision} for r in roles],
             'requests': [{'id': r.id, 'name': r.name, 'kind': r.kind, 'state': r.state,
                 'reason': r.reason, 'requester': r.requested_by.name, 'mine': r.requested_by.id == self.env.uid,
@@ -165,7 +178,7 @@ class AccessStudio(models.AbstractModel):
             'extras': [{'id': g.id, 'role': g.role_id.name, 'date_end': str(g.date_end)} for g in grants]}
 
     @api.model
-    def studio_person(self, workspace, user_id):
+    def studio_person(self, workspace, user_id, focus=False):
         """Module assignments for the selected passport, independent of search.
 
         This does not widen the separate full-passport/menu read permissions.
@@ -173,6 +186,7 @@ class AccessStudio(models.AbstractModel):
         central owner's ability to inspect another person's entire account.
         """
         owners = self._studio_scope(workspace, manage=False)
+        self._studio_focus(workspace, focus)
         user = self._login_user(user_id, allow_share=True).sudo()
         if not self.can_manage():
             if user.id != self.env.uid and not owners:
@@ -182,6 +196,10 @@ class AccessStudio(models.AbstractModel):
         domain = [('company_id', '=', self.env.company.id), ('workspace', '=', workspace), ('user_id', '=', user.id)]
         memberships = self.env['pb.access.membership'].sudo().search(domain)
         extra = self.env['pb.access.extra'].sudo().search(domain)
+        if focus:
+            roles = focus_roles(self.env['pb.role.profile'].search([]), workspace, focus)
+            memberships = memberships.filtered(lambda m: bool(m.profile_id.role_ids & roles))
+            extra = extra.filtered(lambda g: g.role_id in roles)
         return self._studio_person_json(user, memberships, extra)
 
     def _studio_resources(self, workspace):

@@ -4,6 +4,9 @@
   .pbva-studio-scope label { display:flex; align-items:center; gap:12px; margin:0; font-weight:600; }
   .pbva-studio-scope > span { flex:1; color:var(--pbim-muted,#667085); }
   .pbva-studio-scope select { width:200px; }
+  .pbva-focus-areas { display:flex; gap:8px; flex-wrap:wrap; }
+  .pbva-focus-areas .pbva-chip { min-height:38px; }
+  .pbva-focus-areas .pbva-chip:focus-visible { outline:2px solid var(--pbim-accent,#6550b9); outline-offset:3px; }
   .pbva-tabs { flex-wrap:wrap; }
   .pbva-studio-panel { padding:24px 0; }
   .pbva-studio-title { justify-content:space-between; margin-bottom:22px; align-items:flex-start; }

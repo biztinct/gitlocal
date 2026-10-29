@@ -7,6 +7,30 @@ Hiring, People and Payroll use their standard inner hub rail. The duplicate
 global-sidebar child links are retired, including any copies with the same
 Studio action. Settings remains the central administration entry.
 
+## Focused module access (30 October 2026)
+
+The existing Hiring, People and Payroll access entries now use business areas.
+Hiring offers Recruitment. People offers Employees & records, Joiners & leavers,
+and Pay & planning. Payroll offers Payroll operations, Budget, and Packages &
+awards. These are navigation filters over the same role/profile records; no
+roles, grants or ownership are copied or migrated. Capability keys select roles,
+so renamed roles and custom bundles of existing abilities remain discoverable.
+Custom abilities outside these mappings remain in the complete central catalogue.
+
+Settings retains the six-category selector, labelled Access category, and the
+complete policy, ownership, screen administration, review and audit workflows.
+Local pages offer focused people, profiles, role summaries and delegation. Role
+definitions and profile edits open the central studio in the correct category,
+with a return link to the originating module. Requests submitted locally open
+the central review queue. Shared profiles display all their roles before an
+assignment; filtering never silently creates a smaller permission package.
+
+Each focus is checked against its canonical category on the server. Existing
+category ownership, role ceilings, independent approval and company boundaries
+still govern every read and mutation. Opening Budget from Payroll does not give
+a Payroll owner authority over Money & budgets. The full account passport is a
+read-only preview locally; account-wide role/login changes remain central.
+
 Roles & permissions uses one searchable role list, an actions/records matrix,
 record rules and form-field controls. The abilities editor's menu drawing is a
 read-only preview of that role. People & assignments shows the combined person
