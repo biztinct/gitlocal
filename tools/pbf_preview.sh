@@ -73,6 +73,20 @@ case "$CMD" in
     echo "pid=$(pid) port=$PORT holder=$(cat "$HOLDER" 2>/dev/null || echo none) http=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:$PORT/web/login)"
     ls "$P/addons" 2>/dev/null | tr '\n' ' '; echo
     ;;
+  passwd)
+    # (re)apply the admin password: line 1 of .login = the admin's login, line 2 = password.
+    # A new password is generated when the file is missing. Hash set straight in the DB
+    # (no odoo shell: it would collide with the serving process on ir_ui_view).
+    if [ ! -s "$P/.login" ]; then
+      L="$(sudo -u odoo psql -d "$DB" -Atc "select login from res_users where id=2")"
+      PW="$(openssl rand -base64 15 | tr -d '/+=' | cut -c1-16)"
+      printf '%s\n%s\n' "$L" "$PW" > "$P/.login"; chmod 644 "$P/.login"
+    fi
+    L="$(sed -n 1p "$P/.login")"; PW="$(sed -n 2p "$P/.login")"
+    H="$(PW="$PW" python3 -c 'import os; from passlib.context import CryptContext; print(CryptContext(["pbkdf2_sha512"]).hash(os.environ["PW"]))')"
+    sudo -u odoo psql -d "$DB" -qAt -c "update res_users set password='$H', active=true where login='$L'"
+    echo "password applied for $L"
+    ;;
   reset)
     stop
     sudo -u postgres dropdb --force --if-exists "$DB"
@@ -82,6 +96,7 @@ case "$CMD" in
     sudo -u odoo psql -d "$DB" -qAt -c "update ir_cron set active=false; update ir_mail_server set active=false; update ir_config_parameter set value='http://127.0.0.1:$PORT' where key='web.base.url';"
     rm -rf "/odoo/.local/share/Odoo/filestore/$DB"; cp -a /odoo/.local/share/Odoo/filestore/payobook "/odoo/.local/share/Odoo/filestore/$DB" 2>/dev/null || true
     chown -R odoo:odoo "/odoo/.local/share/Odoo/filestore/$DB" 2>/dev/null || true
+    rm -f "$P/.login"; "$0" passwd
     echo "database reset from payobook"
     ;;
   *) echo "usage: hold|release|sync|upgrade|restart|start|stop|status|reset"; exit 1 ;;
