@@ -31,6 +31,8 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 /** The four stops the rail shows, in order. */
 const STAGES = ["asked", "coaching", "plan", "decided"];
@@ -68,9 +70,29 @@ const OBJ_STATUS = [
     { key: "not_met", label: _t("Not met"), cls: "err" },
 ];
 
+const PAGE = 60;
+const OPEN_STATES = ["requested", "coaching", "active", "evaluation"];
+const CLOSED_STATES = ["passed", "failed", "terminated"];
+/** Each numbered step IS a stage of the plan (its state). */
+const STEP_STATE = { asked: "requested", coaching: "coaching", plan: "active", decided: "evaluation" };
+// What each figure on the numbers line means as a filter: the same filters as
+// the built-in views where one exists, so pressing a figure lights its tab.
+const GLANCE_FILTERS = {
+    open: { stage: OPEN_STATES },
+    coaching: { stage: ["requested", "coaching"] },
+    running: { stage: ["active"] },
+    deciding: { stage: ["evaluation"] },
+    risk: { risk: ["yes"] },
+};
+
 export class PbPipBoard extends Component {
     static template = "pb_pip.PbPipBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
+
+    // A literal inside a template expression is never extracted for
+    // translation, so the panel's placeholder comes through _t here.
+    get searchLabel() { return _t("Search by name, template or reason…"); }
 
     setup() {
         this.orm = useService("orm");
@@ -85,24 +107,19 @@ export class PbPipBoard extends Component {
             why: "",
             canWrite: false,
             isHead: false,
-            closedView: false,
             employeeView: true,
             managerSeesOwn: true,
             kpis: {},
-            rows: [],
-            states: [],
-            owners: [],
-            companies: [],
+            total: 0,
             templates: [],
-            capped: false,
 
-            // filters
-            q: "",
-            stateFilter: "all",
-            owner: "all",
-            driftingOnly: false,
-            focus: "",      // the figure on the numbers line now filtering
-            step: "",       // the step now filtering
+            // the board, one page at a time for the filter panel's state
+            rows: [],
+            listTotal: 0,
+            listLoaded: false,
+            listError: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // the open plan
             drawer: null,
@@ -115,16 +132,26 @@ export class PbPipBoard extends Component {
             settings: false,
         });
 
+        // The shared filter panel (pb_filter_kit, FILTER W1): it owns the
+        // filters, the counts and the views ("Open plans" and "Closed plans"
+        // are its first two views — they were a toggle). This screen loads
+        // one page of plans for kit.query. A reader `_can_read` refuses is
+        // refused by the server too, and the panel stays out of the way.
+        this.kit = useFilterKit({
+            model: "pb.pip",
+            noun: _t("plans"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
     // ------------------------------------------------------------------ read
+    /** The head: access, the switches, the numbers line, the templates. */
     async load() {
         try {
-            const d = await this.orm.call("pb.pip", "get_board",
-                                          [this.state.closedView]);
+            const d = await this.orm.call("pb.pip", "get_board", []);
             Object.assign(this.state, {
                 allowed: d.allowed,
                 why: d.why || "",
@@ -133,12 +160,8 @@ export class PbPipBoard extends Component {
                 employeeView: !!d.employee_view,
                 managerSeesOwn: !!d.manager_sees_own,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
-                states: d.states || [],
-                owners: d.owners || [],
-                companies: d.companies || [],
+                total: d.total || 0,
                 templates: d.templates || [],
-                capped: !!d.capped,
                 loaded: true,
             });
         } catch (e) {
@@ -149,103 +172,101 @@ export class PbPipBoard extends Component {
         }
     }
 
+    /** One page of plans for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.pip", "get_plans_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.listTotal = d.total;
+            if (d.steps) { this.state.stepCounts = d.steps; }
+            this.state.listLoaded = true;
+            this.state.listError = false;
+        } catch (e) {
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            console.error("pb_pip: the plans could not load", e);
+            if (!more) {
+                this.state.listError = true;
+                this.state.listLoaded = true;
+            }
+            this.notif.add(_t("The plans could not load. Check your connection, then press Try again."),
+                           { type: "warning" });
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    retry() {
+        this.state.listError = false;
+        this.state.listLoaded = false;
+        this.kit.refresh();
+    }
+    get hasMore() { return this.state.rows.length < this.state.listTotal; }
+    get nextPage() { return Math.min(PAGE, this.state.listTotal - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** Read the board again in place: the numbers, the page, the counts, and
+     * the open plan. The filters stay as they are. */
     async refresh() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.drawer) {
             await this.openCase(this.state.drawer.row.id);
         }
     }
 
-    async toggleClosed() {
-        this.state.closedView = !this.state.closedView;
-        this.state.drawer = null;
-        this.state.step = "";   // closed plans are at no step
-        await this.refresh();
+    /** Only closed plans are listed (the "Closed plans" view, or a stage
+     * filter holding closed stages only): a closed plan has left the steps,
+     * so the strip steps aside, as the old Closed toggle did. */
+    get closedView() {
+        if (!this.kit.loaded) { return false; }
+        const stages = this.kit.values("stage");
+        return stages.length > 0 && stages.every((s) => CLOSED_STATES.includes(s));
     }
-
-    // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.stateFilter !== "all"
-                && r.state_label !== this.state.stateFilter) {
-                return false;
-            }
-            if (this.state.owner !== "all" && r.owner !== this.state.owner) {
-                return false;
-            }
-            if (this.state.driftingOnly && !this.needsAttention(r)) {
-                return false;
-            }
-            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
-                return false;
-            }
-            if (this.state.step && this.stepOf(r) !== this.state.step) {
-                return false;
-            }
-            if (!q) { return true; }
-            return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
-                .toLowerCase().includes(q);
-        });
-    }
-
-    /** "Somebody has to do something about this one today." */
-    needsAttention(row) {
-        return !!(row.drifting || row.overdue || row.at_risk
-            || row.state === "evaluation"
-            || (row.state === "active" && !row.ack));
-    }
-
-    get hasFilters() {
-        return this.state.q || this.state.stateFilter !== "all"
-            || this.state.owner !== "all" || this.state.driftingOnly
-            || this.state.focus || this.state.step;
-    }
-
-    clearFilters() {
-        Object.assign(this.state, {
-            q: "", stateFilter: "all", owner: "all", driftingOnly: false,
-            focus: "", step: "",
-        });
+    /** The start view: every open plan, nothing else ticked or searched. */
+    get isStartView() {
+        return this.kit.loaded && this.kit.isExactly(GLANCE_FILTERS.open);
     }
 
     // ----------------------------------------------------- the quiet board
     //
     // One slim line of numbers instead of a row of tiles, and the same four
     // stops as the card rail as numbered steps. A plan is at EXACTLY ONE
-    // step (stepOf reads its state), so the counts add up to the open
-    // board. Pressing a lit figure or step again clears it.
-    matchesFocus(r, key) {
-        if (key === "coaching") { return ["requested", "coaching"].includes(r.state); }
-        if (key === "running") { return r.state === "active"; }
-        if (key === "deciding") { return r.state === "evaluation"; }
-        if (key === "risk") { return !!(r.at_risk || r.drifting); }
-        return true;
-    }
-
-    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
-
+    // step (its state), so the counts add up. The figures and the steps set
+    // the filter panel; pressing a lit one again clears it.
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
-            { key: "open", n: k.open || 0, label: _t("Open"), tone: "", run: null },
+            { key: "open", n: k.open || 0, label: _t("Open"), tone: "", run: pick("open") },
             { key: "coaching", n: k.coaching || 0, label: _t("Still a conversation"), tone: "",
-              run: () => this.toggleFocus("coaching") },
+              run: pick("coaching") },
             { key: "running", n: k.running || 0, label: _t("Plans running"), tone: "",
-              run: () => this.toggleFocus("running") },
+              run: pick("running") },
             { key: "deciding", n: k.deciding || 0, label: _t("Waiting on a decision"), tone: tone(k.deciding, "amber"),
-              run: () => this.toggleFocus("deciding") },
+              run: pick("deciding") },
             { key: "risk", n: k.at_risk || 0, label: _t("Drifting or at risk"), tone: tone(k.at_risk, "rose"),
-              run: () => this.toggleFocus("risk") },
+              run: pick("risk") },
         ];
     }
-
-    /** requested → asked, coaching → coaching, active → plan,
-     *  evaluation → decided. Closed plans are at no step. */
-    stepOf(r) {
-        return { requested: "asked", coaching: "coaching", active: "plan", evaluation: "decided" }[r.state] || "";
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     get stepDefs() {
@@ -257,50 +278,41 @@ export class PbPipBoard extends Component {
         ];
     }
 
+    /** Counted by the server for the panel's state (each step against every
+     * filter except the stage, the panel's own rule), with how many of each
+     * are drifting or at risk. A step is lit when its stage is the only one
+     * ticked. */
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
+        const stages = this.kit.loaded ? this.kit.values("stage") : [];
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
-            const risk = at.filter((r) => r.at_risk || r.drifting).length;
+            const c = counts[st.key] || {};
+            const count = c.n || 0;
+            const risk = c.risk || 0;
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
-                count: at.length,
-                countLabel: at.length === 1 ? _t("1 plan") : _t("%s plans", at.length),
+                count,
+                countLabel: count === 1 ? _t("1 plan") : _t("%s plans", this.fmtInt(count)),
                 flag: !risk ? "" : risk === 1 ? _t("1 drifting or at risk") : _t("%s drifting or at risk", risk),
                 flagTone: "rose",
-                on: this.state.step === st.key,
+                on: stages.length === 1 && stages[0] === STEP_STATE[st.key],
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
-
-    get showingLine() {
-        const all = this.state.rows.length;
-        const closed = this.state.closedView;
-        if (!this.hasFilters) {
-            if (closed) {
-                return { all: true, text: !all ? _t("Showing no closed plans yet")
-                    : all === 1 ? _t("Showing all 1 closed plan") : _t("Showing all %s closed plans", all) };
-            }
-            return { all: true, text: !all ? _t("Showing no plans yet")
-                : all === 1 ? _t("Showing all 1 plan · press a step or a number to narrow it")
-                    : _t("Showing all %s plans · press a step or a number to narrow it", all) };
+    /** A step pressed: list that stage. Pressed again: back to the start
+     * view when it was the only filter, otherwise the stage filter comes off. */
+    pickStep(key) {
+        const kit = this.kit;
+        const stage = STEP_STATE[key];
+        const vals = kit.values("stage");
+        if (vals.length === 1 && vals[0] === stage && !kit.isExactly({ stage: [stage] })) {
+            kit.clear("stage");
+            return;
         }
-        const shown = this.visibleRows.length;
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        return { all: false, text: st
-            ? _t("Showing %s of %s plans at %s", shown, all, st.title)
-            : _t("Showing %s of %s plans", shown, all) };
+        kit.toggleFilters({ stage: [stage] });
     }
-
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setState(id) {
-        this.state.stateFilter = this.state.stateFilter === id ? "all" : id;
-    }
-    setOwner(id) { this.state.owner = this.state.owner === id ? "all" : id; }
-    toggleDrifting() { this.state.driftingOnly = !this.state.driftingOnly; }
 
     // ------------------------------------------------------------ the rail
     stageLabel(stage) { return STAGE_LABEL[stage] || stage; }

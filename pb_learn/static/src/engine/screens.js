@@ -2911,6 +2911,14 @@ export const SCREENS = {
         return `
             ${quietNums(g.numbers, ATTR_GW_NUMS)}
             <div class="lrn-steps" data-coach="gw-steps">${stepButtons(g.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 2 })), B("", ""))}</div>
+            <!-- FILTER W1 (2026-10-31): the shared filter panel. The old
+                 Open / Closed button is now the first two view tabs. -->
+            <div class="lrn-strip" data-coach="gw-filters">
+                <span class="lrn-chip b">${esc(tx(B("Open plans", "Kế hoạch đang mở")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Closed plans", "Kế hoạch đã đóng")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, template or reason…", "Tìm theo tên, mẫu kế hoạch hoặc lý do…")))}</span>
+            </div>
             <div class="lrn-yroles" data-coach="gw-list">${cards}</div>
             <div class="lrn-panel" data-coach="gw-objectives">
                 <h3>${ic("sprout")}${esc(tx(B("What has to change", "Điều cần thay đổi")))}</h3>

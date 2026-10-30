@@ -1575,6 +1575,12 @@
       "file": "pb_pip/static/src/xml/pip_board.xml",
       "desc": "Asked → Coaching → Plan running → Decision."
     },
+    "gw-filters": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "The shared filter panel: view tabs (Open plans, Closed plans, Waiting on a decision, Ending within 7 days, Not yet seen) where the Open / Closed button used to be, the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
+      "reserved": true
+    },
     "gw-list": {
       "screen": "growth",
       "file": "pb_pip/static/src/xml/pip_board.xml",

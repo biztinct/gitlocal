@@ -36,7 +36,7 @@ VERDICT FAIL NEVER AUTO-OPENS AN EXIT, and neither does anything else here. A
 resignation that is approved CLOSES a running plan (P4's extension point), which
 is the opposite direction and the only automatic ending there is.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -53,6 +53,7 @@ is the opposite direction and the only automatic ending there is.
         'pb_probation',         # the verdict-wizard shapes this clones
         'pb_offboarding',       # the resignation hook, and the exit button
         'pb_me_portal',         # the .pbme portal kit the growth page reuses
+        'pb_filter_kit',        # FILTER W1: the board sits in the shared filter panel
     ],
     'data': [
         'security/pb_pip_security.xml',
