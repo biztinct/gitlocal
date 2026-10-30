@@ -144,6 +144,87 @@ async loadPage({ more = false } = {}) {
   Vietnamese into `<module>/i18n/vi_VN.po` keeping old entries, run the PO
   gate (§5), deploy (code translations need only rsync + restart).
 
+### 3a. Kit options added 2026-10-31 (pb_filter_kit 19.0.1.1.0)
+
+- **`choice` options may carry `domain_method`** instead of `domain`: the
+  name of a method on the screen model returning a domain at request time
+  (`[('id', 'in', ids)]` for facts only Python knows: pay-feed status,
+  "waiting on me", settlement found by employee). Must answer in well under
+  300 ms on payobook (4,575 people); otherwise keep the fact as a glance
+  figure and say so in the report.
+- **Literal `domain`s may use one2many/many2many paths and `any`**
+  (`[('task_ids', 'any', [('state','=','open'), ('due_date','<', today)])]`)
+  — only `requires` and `path` go through `_pbf_resolve`, which walks
+  many2one hops. The LAST hop of a `path` may be a many2many (listed as
+  `type: 'many2one'`); intermediate hops must be many2one.
+- **"Mine" = a choice whose domain is built in `_pbf_spec` with
+  `self.env.uid`** (the spec is computed per request).
+- **Counts under sudo:** override `_pbf_records()` to return
+  `self.env['x'].sudo()` ONLY where the screen already reads under sudo, and
+  carry the same company/scope restriction in `_pbf_base_domain`.
+- **Several record types under one action:** one facade model; the JS passes
+  `useFilterKit({ model, ctx: { kind } })`; every call then carries
+  `context.pbf_ctx`; hooks read `self._pbf_ctx().get('kind')` to pick the
+  model, spec and `_pbf_screen()` (`'<screen>:<kind>'` so saved views stay
+  apart). On a tab switch call `await kit.reconfigure({ ctx: { kind } })`.
+- **Filters from a door:** `useFilterKit({ ..., initial: { filters, search, viewKey } })`
+  wins over the URL and the tab memory on first load; later
+  `kit.setFilters(filters, { search })`. Figures on a numbers line still use
+  `kit.toggleFilters(f)` / `kit.isExactly(f)`.
+- **Refusal screens:** override `pbf_layout` to return `{'refused': msg}`
+  when the screen's own gate refuses; the kit renders nothing
+  (`kit.failed`, `kit.refusal`) and the screen shows its usual refusal.
+- **Search folding:** the kit search is `ilike`; a screen with a folded
+  Python search (Vendors "Bùi") may override `_pbf_search_domain` to add
+  `unaccent`-style alternatives; otherwise note the regression.
+
+### 3b. Rulings for the rollout (coordinator, 2026-10-31)
+
+- **R1** Lane / step / tab counts FOLLOW the filters (the kit's counts). This
+  supersedes the Pay Run ruling W82 ("lane counts stay un-narrowed").
+- **R2** No new stored fields and no migrations in this programme; a fact
+  that is only Python goes through `domain_method`, or stays a glance figure
+  with a debt note in the report.
+- **R3** Catalogues under ~30 rows still convert for consistency and saved
+  views (Structures, Connectors), pure settings pages do not.
+- **R4** Where other code reads a screen's old `get_board` payload (Pay Run
+  "Right now", composer connectors, Learn facades), the old method keeps
+  returning it; the list the panel shows comes from the new paged method.
+- **R5** Rows that are not records (attendance exceptions engine, workbook
+  grids, the statutory tax union) are out of scope: convert the record-backed
+  half, leave the rest as it is, and name it as debt.
+- **R6** A screen's bulk actions act on the kit's filtered set: the page the
+  user sees, or "everything matching" through one server call that takes
+  the kit's `filters`/`search` and runs `pbf_domain` — never a stale array.
+- **R7** Default pinned sections = the three questions asked most on that
+  screen; everything else under "More filters".
+- **R8** Access › People (INVENTORY #34) is NOT in any Opus wave
+  (security-sensitive visibility rule); the coordinator decides later.
+
+### 3c. Preview workflow (builders never deploy to live)
+
+A second Odoo on the box serves a throwaway copy of payobook from a
+staging addons dir: `/odoo/ops/pbf_preview.sh` (source `tools/pbf_preview.sh`).
+Builders take turns on it:
+
+```
+ssh Payobook19v2 'sudo /odoo/ops/pbf_preview.sh hold w3'          # waits for the previous holder
+rsync -az --delete --exclude=__pycache__ --exclude='*.pyc' --exclude=.DS_Store <modules> Payobook19v2:/tmp/pbf_stage_w3/
+ssh Payobook19v2 'chmod -R a+rX /tmp/pbf_stage_w3; sudo /odoo/ops/pbf_preview.sh sync /tmp/pbf_stage_w3 pb_hiring,pb_learn; sudo /odoo/ops/pbf_preview.sh upgrade pb_hiring,pb_learn'
+ssh -f -N -L 8170:127.0.0.1:8170 Payobook19v2 2>/dev/null || true   # tunnel (ok if already up)
+# Chrome MCP → http://localhost:8170/web/login ; user + password are the two lines of
+#   ssh Payobook19v2 'cat /tmp/pbf_preview/.login'   (a throwaway copy on localhost — never paste them in a report)
+# then /bizapp/action-<tag> ; after a JS/XML change: sync + `pbf_preview.sh restart`
+ssh Payobook19v2 'sudo /odoo/ops/pbf_preview.sh release w3'
+```
+`pbf_preview.sh upgrade` is the rehearsal (EXIT code + error count in its
+output; full log `/tmp/pbf_preview/upgrade.log`). Hold the preview once per
+wave for the whole test-and-fix pass; build everything first. Export
+translations from it while you hold it:
+`odoo-bin i18n export -c /etc/odoo-server.conf --addons-path=/tmp/pbf_preview/addons,/odoo/odoo-server/addons -d pbf_preview -l vi_VN -o /tmp/<wave>.po <modules>`
+(run as odoo, service may stay up). The live deploy of a merged batch is the
+coordinator's (`filter_deploy.sh full`).
+
 ## 4. Gotchas (F-ledger)
 
 - **F1** A model field named `search` hides `Model.search()` → `'bool' object

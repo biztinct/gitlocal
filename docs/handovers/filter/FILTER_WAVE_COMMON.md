@@ -83,29 +83,29 @@ T22 Vietnamese: `fetch('/web/dataset/call_kw')` for `pbf_layout` with
 Finally: clear `pbf:*` keys from localStorage and sessionStorage, delete any
 view you saved, close the tab.
 
-## D. Deploy (per wave, once all its screens pass locally)
+## D. Test and hand over (per wave) — builders do NOT deploy to live
 
 1. Local gates: `python3 -m py_compile` on every touched `.py`; `node --check`
-   on every touched `.js`; `xml.dom.minidom.parse` on every touched `.xml`;
-   `npx --yes sass@1.77.8` on every touched `.scss`.
-2. Rehearse on a throwaway copy of `rize` (ledger §2): install/upgrade the
-   wave's modules with `--addons-path=/tmp/pbf_stage,/odoo/odoo-server/addons`,
-   `EXIT=0`, no ERROR lines; call each screen's `pbf_layout` and `pbf_counts`
-   from `odoo-bin shell` with the stage addons path; `dropdb --force` after.
-3. Read `/opt/deploy-notes.md`; announce to peer sessions (`ListAgents` →
-   `SendMessage`); append the START line.
-4. Stage: `rsync -az --delete --exclude=__pycache__ --exclude='*.pyc' --exclude=.DS_Store <modules> Payobook19v2:/tmp/pbf_stage/`
-   then `chmod -R a+rX /tmp/pbf_stage`.
-5. Run `/odoo/ops/filter_deploy.sh full /tmp/pbf_stage <sync_csv> <upgrade_csv> /tmp/pbf-<wave>-<ts>`
-   detached with `sudo systemd-run --collect --unit=…`; poll `<run>/done`;
-   read `<run>/result` (must be `OK`) and `<run>/run.log`.
-6. Append the DONE line. Then the Chrome test list (§C) on payobook.com for
-   every screen in the wave; log check:
-   `sudo grep -E " (ERROR|CRITICAL) " /var/log/odoo/odoo-server.log | tail`.
-7. Translations: export (`odoo-bin i18n export -d p0clone -l vi_VN …`),
-   merge, PO gate, then `filter_deploy.sh looks` is NOT enough for `.po`
-   (code translations load at registry start): rsync + `service odoo-server restart`
-   under the lock, with START/DONE lines.
+   on every touched `.js` (copy to a `.mjs` first); `xml.dom.minidom.parse` on
+   every touched `.xml`; `npx --yes sass@1.77.8 --no-source-map` on every
+   touched `.scss`.
+2. Build EVERY screen of the wave first. Then take the preview once
+   (ledger §3c): `hold`, stage to `/tmp/pbf_stage_<wave>`, `sync`, `upgrade`
+   (this is the rehearsal: `EXIT=0`, `errors=0`), tunnel, Chrome test list
+   §C on `http://localhost:8170` for every screen, fix → `sync` + `restart`
+   (JS/XML/SCSS) or `upgrade` (Python/XML data) → retest, export the
+   wave's Vietnamese, `release`. Do not hold the preview while you write code
+   for a screen you have not started.
+3. Translations: merge the export into each module's `i18n/vi_VN.po`
+   (keep old entries; ledger §5 PO gate on the box with the preview addons
+   path) — part of the wave's commits.
+4. The coordinator merges the wave's branch into `19.1` and deploys the
+   batch to the four live databases with `filter_deploy.sh full`, then the
+   wave's screens get a post-deploy smoke on payobook.com. Nothing in a wave
+   touches `/odoo/odoo-server/addons`, the live databases or
+   `/opt/deploy-notes.md`.
+5. Log check while you hold the preview:
+   `sudo grep -E " (ERROR|CRITICAL) " /tmp/pbf_preview/server.log | tail`.
 
 ## E. Report back (one file per wave: `docs/handovers/filter/FILTER_W<n>_REPORT.md`)
 
