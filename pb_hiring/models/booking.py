@@ -102,10 +102,17 @@ class HiringBooking(models.Model):
         if not conn:
             raise UserError(_('Enable this calendar in Hiring connections first.'))
         conn._ready()
-        emails = list(set(self.panel_ids.mapped('work_email') + [self.organiser_id.email]))
-        if len(self.panel_ids.filtered(lambda p: not p.work_email)):
+        # The OAuth account need not match the organiser's Payobook email.
+        # Google resolves 'primary' against the connected account. Only map
+        # the organiser's own employee by user identity, never by email equality.
+        panel = self.panel_ids
+        if self.provider == 'google':
+            panel = panel.filtered(lambda p: p.user_id != self.organiser_id)
+        if panel.filtered(lambda p: not (p.work_email or '').strip()):
             raise UserError(_('Add a work email address for every panellist.'))
-        busy = self._provider_busy(self.provider, self.organiser_id, emails, start, stop)
+        organiser_calendar = 'primary' if self.provider == 'google' else self.organiser_id.email
+        calendar_ids = list(dict.fromkeys([organiser_calendar] + [p.work_email.strip() for p in panel]))
+        busy = self._provider_busy(self.provider, self.organiser_id, calendar_ids, start, stop)
         people = self.panel_ids.user_id | self.organiser_id
         interviews = self.env['pb.hiring.interview'].sudo().search([
             ('company_id', '=', self.company_id.id), ('state', '=', 'scheduled'),

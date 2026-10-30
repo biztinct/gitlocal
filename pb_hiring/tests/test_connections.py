@@ -179,6 +179,70 @@ class TestConnections(OfferCase):
 
 @tagged('post_install', '-at_install', 'recruit_connect')
 class TestPanelBooking(InterviewCase):
+    def _identity_booking(self, provider='google'):
+        conn = self.env['pb.hiring.connection']._for_company(provider, self.company)
+        if not conn:
+            conn = self.env['pb.hiring.connection'].create({'provider': provider, 'company_id': self.company.id})
+        conn.write({'enabled': True, 'check_ok': True})
+        return self.env['pb.hiring.booking'].create({'applicant_id': self.applicant.id,
+            'organiser_id': self.panel_user.id, 'provider': provider,
+            'panel_ids': [(6, 0, (self.panel_one | self.panel_two).ids)]})
+
+    def test_google_organiser_uses_connected_primary_not_payobook_email(self):
+        booking = self._identity_booking()
+        self.panel_one.work_email = 'different-work-address@example.com'
+        start = self._tomorrow()
+        busy = [(start, start + timedelta(minutes=30))]
+        with patch.object(type(booking), '_provider_busy', return_value=busy) as query:
+            self.assertEqual(booking._busy(start, start + timedelta(hours=1)), busy)
+        provider, user, calendars, *_ = query.call_args.args
+        self.assertEqual(provider, 'google')
+        self.assertEqual(user, self.panel_user)
+        self.assertEqual(calendars, ['primary', self.panel_two.work_email])
+        self.assertNotIn(self.panel_user.email, calendars)
+        self.assertNotIn(self.panel_one.work_email, calendars)
+
+    def test_google_own_panel_needs_no_work_email_but_other_panel_still_does(self):
+        booking = self._identity_booking()
+        self.panel_one.work_email = False
+        with patch.object(type(booking), '_provider_busy', return_value=[]) as query:
+            booking._busy(self._tomorrow(), self._tomorrow() + timedelta(hours=1))
+        self.assertEqual(query.call_args.args[2], ['primary', self.panel_two.work_email])
+        self.panel_two.work_email = False
+        with self.assertRaises(UserError):
+            booking._busy(self._tomorrow(), self._tomorrow() + timedelta(hours=1))
+
+    def test_same_email_does_not_turn_another_panellist_into_organiser(self):
+        booking = self._identity_booking()
+        self.panel_two.work_email = self.panel_user.email
+        with patch.object(type(booking), '_provider_busy', return_value=[]) as query:
+            booking._busy(self._tomorrow(), self._tomorrow() + timedelta(hours=1))
+        self.assertEqual(query.call_args.args[2], ['primary', self.panel_user.email])
+
+    def test_microsoft_calendar_identifiers_are_unchanged(self):
+        booking = self._identity_booking('microsoft')
+        self.panel_one.work_email = 'separate-address@example.com'
+        with patch.object(type(booking), '_provider_busy', return_value=[]) as query:
+            booking._busy(self._tomorrow(), self._tomorrow() + timedelta(hours=1))
+        self.assertEqual(set(query.call_args.args[2]),
+                         {self.panel_user.email, self.panel_one.work_email, self.panel_two.work_email})
+
+    def test_connection_check_uses_google_primary_and_keeps_microsoft_email(self):
+        Booking = self.env['pb.hiring.booking']
+        for provider, expected in [('google', 'primary'), ('microsoft', self.env.user.email)]:
+            booking = self._identity_booking(provider)
+            conn = self.env['pb.hiring.connection']._for_company(provider, self.company)
+            with patch.object(type(Booking), '_provider_busy', return_value=[]) as query:
+                conn._check()
+            self.assertEqual(query.call_args.args[2], [expected])
+
+    def test_inaccessible_panel_calendar_never_becomes_free_slots(self):
+        booking = self._identity_booking()
+        with patch.object(type(booking), '_provider_busy', side_effect=UserError('Calendar access denied')):
+            with self.assertRaises(UserError): booking.action_find_slots()
+        self.assertFalse(booking.slot_ids)
+        self.assertEqual(booking.state, 'draft')
+
     def test_booking_preserves_existing_user_timezone_alias(self):
         # Odoo accepts aliases such as Asia/Calcutta; the booking form must
         # include that default in its selection instead of displaying blank.

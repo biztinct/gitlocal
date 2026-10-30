@@ -121,7 +121,8 @@ class HiringConnection(models.Model):
             return _('Docling and spaCy are ready. Test a representative CV from a candidate record.')
         if self.provider in ('google', 'microsoft'):
             self.env['pb.hiring.booking']._provider_busy(self.provider, self.env.user,
-                [self.env.user.email], fields.Datetime.now(), fields.Datetime.now() + timedelta(hours=1))
+                ['primary' if self.provider == 'google' else self.env.user.email],
+                fields.Datetime.now(), fields.Datetime.now() + timedelta(hours=1))
             return _('Your calendar availability was read successfully. Other organisers connect their own accounts.')
         if self.provider == 'whatsapp':
             return self._check_whatsapp()
