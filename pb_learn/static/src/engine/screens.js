@@ -2856,6 +2856,15 @@ export const SCREENS = {
                 <button class="lrn-btn sm" data-coach="nj-run">${ic("play")}${esc(tx(B("Run today's steps", "Chạy các bước hôm nay")))}</button></div>
             ${quietNums(j.numbers, ATTR_NJ_NUMS)}
             <div class="lrn-steps" data-coach="nj-steps">${stepButtons(j.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 0 })), B("", ""))}</div>
+            <!-- FILTER W1 (2026-10-31): the shared filter panel. View tabs, a
+                 Filters button that opens the left panel, the search. The
+                 month, department and country chips moved into the panel. -->
+            <div class="lrn-strip" data-coach="nj-filters">
+                <span class="lrn-chip b">${esc(tx(B("All new joiners", "Tất cả nhân viên mới")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Still without a buddy", "Chưa có người đồng hành")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, team, buddy or HR contact…", "Tìm theo tên, nhóm, người đồng hành hoặc liên hệ nhân sự…")))}</span>
+            </div>
             <div class="lrn-ywf">
                 <div class="lrn-yroles lrn-ywfmain" data-coach="nj-list">${cards}</div>
                 <aside class="lrn-panel lrn-ydock" data-coach="nj-drawer">

@@ -1424,6 +1424,12 @@
       "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
       "desc": "Getting ready → Settling in → Checklist done."
     },
+    "nj-filters": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "The shared filter panel: view tabs (All new joiners, Joining this week, Still without a buddy, Steps overdue, Started, checklist open), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
+      "reserved": true
+    },
     "nj-list": {
       "screen": "joiners",
       "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
