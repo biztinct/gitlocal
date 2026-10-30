@@ -73,6 +73,7 @@ class SharedCalendar(models.AbstractModel):
                 'payroll_planning': self.env.user.has_group('pb_comp_ben.group_comp_user'),
                 'hiring': self.env['pb.hiring'].can_open(),
                 'connections': self.env.user.check_synchronization_status(),
+                'google_connection_saved': bool(self.env.user.sudo().google_calendar_rtoken),
                 'google_notifications': self.env['pb.calendar.google.channel']._own_status()}
 
     @api.model

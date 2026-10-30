@@ -66,3 +66,4 @@ from . import board_catalogue
 from . import shared_calendar
 from . import calendar_notifications
 from . import google_calendar_scopes
+from . import calendar_connection

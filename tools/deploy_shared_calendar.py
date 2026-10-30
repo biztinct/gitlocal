@@ -80,7 +80,7 @@ try:
   if push_cron and int(push_cron) not in receipt['databases'][db]['crons']:receipt['databases'][db]['crons'].append(int(push_cron));receipt['databases'][db]['crons'].sort()
   receipt['databases'][db]['upgraded']=True;print('UPGRADED',db,flush=True)
   if db=='p0clone' and 'pb_hiring' in plan['replace']:
-   tags='/pb_hiring:TestSharedCalendar,/pb_hiring:TestCalendarNotifications,/pb_hiring:TestGoogleCalendarScopes,/pb_hiring:TestArrangingOne,/pb_hiring:TestMovingOne,/pb_hiring:TestPanelBooking'
+   tags='/pb_hiring:TestSharedCalendar,/pb_hiring:TestCalendarNotifications,/pb_hiring:TestGoogleCalendarScopes,/pb_hiring:TestCalendarConnection,/pb_hiring:TestArrangingOne,/pb_hiring:TestMovingOne,/pb_hiring:TestPanelBooking'
    with (stage/'run_suite.py').open() as source,(logs/'p0clone-tests-output.txt').open('w') as f:
     run(['sudo','-u','odoo','env','CALENDAR_TEST_TAGS='+tags,'python3','/odoo/odoo-server/odoo-bin','shell','-c','/etc/odoo-server.conf','-d',db,'--workers=0','--max-cron-threads=0','--http-interface=127.0.0.1','--http-port=18399','--gevent-port=18398','--db-filter=p0clone','--logfile='+str(logs/'p0clone-tests.log')],stdin=source,stdout=f,stderr=subprocess.STDOUT)
    line=next(x for x in (logs/'p0clone-tests-output.txt').read_text().splitlines() if x.startswith('CALENDAR_TEST_RESULT='))

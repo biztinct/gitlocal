@@ -23,3 +23,4 @@ from . import test_board_catalogue
 from . import test_shared_calendar
 from . import test_calendar_notifications
 from . import test_google_calendar_scopes
+from . import test_calendar_connection

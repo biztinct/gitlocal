@@ -46,7 +46,7 @@ export class SharedCalendar extends Component {
         this.orm = useService("orm"); this.actions = useService("action");
         this.notification = useService("notification"); this.dialog = useService("dialog");
         this.state = useState({ busy: true, error: "", events: [], caps: {}, date: DateTime.now().toISODate(),
-            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "" });
+            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "", googleConnection: null });
         useExternalListener(window, "keydown", ev => { if (ev.key === "Escape") this.state.selected = null; });
         // Refresh the permission-filtered local feed, never poll Google from
         // the browser. Leave open meeting details and background tabs alone.
@@ -133,9 +133,61 @@ export class SharedCalendar extends Component {
     async settings() { await this.actions.doAction(await this.orm.call("pb.shared.calendar", "settings_action", [])); }
     get providers() { return ["google", "microsoft"].map(key => ({ key, label: key === "google" ? "Google Calendar" : "Microsoft 365", status: this.state.caps.connections?.[key + "_calendar"] || "missing_credentials" })); }
     providerStatus(p) { return { sync_active: _t("Connected"), sync_stopped: _t("Not syncing"), sync_paused: _t("Paused by administrator"), missing_credentials: _t("Administrator setup required") }[p.status] || p.status; }
-    async providerChange(p, op) { try { this.state.caps = await this.orm.call("pb.shared.calendar", "provider_action", [p.key,op]); } catch(e) { this.notification.add(e.data?.message || e.message, { type: "warning" }); } }
-    connect(p) {
+    async providerChange(p, op) {
+        try {
+            if (p.key === "google" && op === "resume") {
+                const connection = await this.checkGoogleConnection();
+                if (connection?.status !== "connected") { this.offerGoogleConnection(connection); return; }
+            }
+            this.state.caps = await this.orm.call("pb.shared.calendar", "provider_action", [p.key,op]);
+        } catch(e) { this.notification.add(e.data?.message || e.message, { type: "warning" }); }
+    }
+    async checkGoogleConnection() {
+        this.state.syncing = "google";
+        try {
+            const connection = await this.orm.call("pb.shared.calendar", "google_connection_check", []);
+            this.state.googleConnection = connection;
+            return connection;
+        } catch (e) {
+            this.notification.add(_t("Could not check your Google connection. Please try again."), { type: "warning" });
+        } finally { this.state.syncing = ""; }
+    }
+    offerGoogleConnection(connection) {
+        if (connection?.status !== "needs_auth") return;
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Connect Google Calendar"),
+            body: _t("Choose your Google account and approve calendar access. This enables two-way meeting synchronisation. You only need to sign in when connecting or repairing access."),
+            confirmLabel: _t("Continue to Google"), confirm: () => this.authorizeGoogle(),
+        });
+    }
+    async authorizeGoogle() {
+        this.state.syncing = "google";
+        try {
+            const result = await this.orm.call("pb.shared.calendar", "google_connection_authorize", [window.location.pathname + window.location.search]);
+            window.location.assign(result.url);
+        } catch (e) {
+            this.notification.add(e.data?.message || _t("Could not open Google sign-in. Please try again."), { type: "danger" });
+        } finally { this.state.syncing = ""; }
+    }
+    removeGoogleConnection() {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Remove Google Calendar connection?"),
+            body: _t("This stops synchronisation and removes your saved Google connection from Payobook. Existing meetings stay in both calendars. You can then connect again; no other person's connection is affected."),
+            confirmLabel: _t("Remove connection"), confirm: async () => {
+                this.state.syncing = "google";
+                try {
+                    this.state.caps = await this.orm.call("pb.shared.calendar", "google_connection_remove", []);
+                    this.state.googleConnection = { status: "needs_auth" };
+                    this.notification.add(_t("Connection removed. Choose Connect / reconnect when you are ready."), { type: "success" });
+                } catch (e) {
+                    this.notification.add(_t("Could not remove your connection. Please try again."), { type: "danger" });
+                } finally { this.state.syncing = ""; }
+            },
+        });
+    }
+    async connect(p) {
         if (this.providers.some(x => x.key !== p.key && x.status === "sync_active")) { this.notification.add(_t("Pause your other calendar connection first to avoid copying meetings between accounts."), { type: "warning" }); return; }
+        if (p.key === "google") { this.offerGoogleConnection(await this.checkGoogleConnection()); return; }
         this.dialog.add(ConfirmationDialog, { title: _t("Connect your calendar"), body: _t("This connects your primary calendar with two-way synchronisation. Meeting changes can update your connected calendar and invitations. Payroll deadlines stay inside Payobook. Continue to your provider to consent?"), confirmLabel: _t("Continue"), confirm: () => this.sync(p) });
     }
     async sync(p) {

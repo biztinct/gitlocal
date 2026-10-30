@@ -20,9 +20,26 @@
       <p class="pbcal-muted">Your primary calendar · two-way sync</p>
       <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
       <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>
-      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button t-if="p.key !== 'google' or state.caps.google_connection_saved" class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+      <t t-if="p.key === 'google'">
+        <div class="pbcal-actions mt-3" t-if="state.caps.google_connection_saved">
+          <button class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="checkGoogleConnection">Check connection</button>
+          <button class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="removeGoogleConnection">Remove connection</button>
+        </div>
+        <div t-if="state.googleConnection" class="pbcal-note mt-3" role="status">
+          <t t-if="state.googleConnection.status === 'connected'">
+            <strong>Google connection verified.</strong>
+            <p t-if="state.googleConnection.calendar_name">Primary calendar: <t t-esc="state.googleConnection.calendar_name"/></p>
+            <p t-else="">Your primary Google calendar is connected. Google did not return a calendar name.</p>
+            <p>You can keep using this connection. To start fresh, choose Remove connection first.</p>
+          </t>
+          <p t-elif="state.googleConnection.status === 'needs_auth'">Google sign-in is needed. Choose Connect / reconnect to restore access.</p>
+          <p t-elif="state.googleConnection.status === 'missing_credentials' or state.googleConnection.status === 'configuration_error'">Ask your administrator to check the Google Calendar application settings.</p>
+          <p t-else="">We could not verify access to Google right now. Your saved connection has been kept. Try again, or remove the connection to start fresh.</p>
+        </div>
+      </t>
     </article></div>
-    <p class="pbcal-note">One active synchronisation per person prevents meetings being copied between Google and Microsoft. Shared or secondary external calendars are not imported by this connector. Pause stops new synchronisation; existing meetings remain. Revoke access in your provider account to disconnect completely.</p>
+    <p class="pbcal-note">One active synchronisation per person prevents meetings being copied between Google and Microsoft. Shared or secondary external calendars are not imported by this connector. Pause keeps your saved connection. Remove connection stops Google synchronisation and forgets your connection in Payobook; existing meetings remain. You can also revoke the app's permission in your Google account.</p>
   </t>
   <t t-else="">
     <div class="pbcal-heading"><div><h1 t-esc="props.interviewsOnly ? 'Interview calendar' : props.payrollOnly ? 'Payroll calendar' : 'Your calendar'"/><p class="pbcal-muted">Your work, in one place. Only events you are permitted to see.</p></div><div class="pbcal-actions"><button t-if="state.caps.payroll and !props.interviewsOnly" class="pbim-btn" t-on-click="payrollDates">Manage payroll dates</button><button t-if="!props.interviewsOnly and !props.payrollOnly" class="pbim-btn primary" t-on-click="newEvent">+ New meeting</button></div></div>
