@@ -141,13 +141,20 @@ export function fmtCount(n) {
 
 // ================================================================= model
 export class FilterKit {
-    constructor({ orm, notification, model, onChange, noun }) {
+    constructor({ orm, notification, model, onChange, noun, ctx, initial }) {
         // services stay raw: the model is reactive, they must not become so
         this.orm = markRaw(orm);
         this.notification = markRaw(notification);
         this.model = model;
         this.onChange = onChange;
         this.noun = noun || _t("records");
+        // `ctx` rides on every call as context.pbf_ctx: a screen showing
+        // several record types under one action picks its model/spec from it
+        this.ctx = ctx || null;
+        // `initial` = filters a door handed in (a link, "open this person's
+        // row", a figure pressed elsewhere); it beats the URL and the tab memory
+        this.initial = initial || null;
+        this.refusal = "";
 
         this.loaded = false;
         this.failed = false;
@@ -194,13 +201,32 @@ export class FilterKit {
         return `pbf:state:${this.screen}:${user.userId}`;
     }
 
+    /** kwargs for a kit call, with the screen's ctx when it has one */
+    _kw(extra = {}) {
+        const kw = { ...extra };
+        if (this.ctx) {
+            kw.context = { pbf_ctx: this.ctx };
+        }
+        return kw;
+    }
+
     // ----------------------------------------------------------- load
     async load() {
         let layout;
         try {
-            layout = await this.orm.call(this.model, "pbf_layout", []);
+            layout = await this.orm.call(this.model, "pbf_layout", [], this._kw());
         } catch (e) {
             console.error("pb_filter_kit: the filter panel could not load", e);
+            this.failed = true;
+            this.loaded = true;
+            if (this.onChange) {
+                await this.onChange(this);
+            }
+            return;
+        }
+        if (layout && layout.refused) {
+            // the screen shows its own refusal; the panel stays out of the way
+            this.refusal = String(layout.refused);
             this.failed = true;
             this.loaded = true;
             if (this.onChange) {
@@ -224,7 +250,8 @@ export class FilterKit {
         this.ui.closed = prefs.closed && typeof prefs.closed === "object" ? prefs.closed : {};
         this.sort = this.sorts.some((s) => s.key === prefs.sort) ? prefs.sort : (this.sorts[0] || {}).key || "";
 
-        const start = this._readUrl() || readJSON("session", this._sessKey);
+        const start = this.initial || this._readUrl() || readJSON("session", this._sessKey);
+        this.initial = null;
         if (start && typeof start === "object") {
             this.filters = normFilters(start.filters || {});
             this.search = typeof start.search === "string" ? start.search : "";
@@ -296,11 +323,11 @@ export class FilterKit {
         const tasks = [
             this.failed
                 ? Promise.resolve(null)
-                : this.orm.call(this.model, "pbf_counts", [], {
+                : this.orm.call(this.model, "pbf_counts", [], this._kw({
                       filters: this.filters,
                       search: this.search,
                       keys,
-                  }),
+                  })),
         ];
         if (!countsOnly && this.onChange) {
             tasks.push(this.onChange(this));
@@ -343,11 +370,11 @@ export class FilterKit {
         this.loadingKeys[key] = true;
         const seq = this.seq;
         try {
-            const res = await this.orm.call(this.model, "pbf_counts", [], {
+            const res = await this.orm.call(this.model, "pbf_counts", [], this._kw({
                 filters: this.filters,
                 search: this.search,
                 keys: [key],
-            });
+            }));
             if (seq === this.seq && res.sections && res.sections[key]) {
                 this.counts = { ...this.counts, [key]: res.sections[key] };
                 this._remember(key, res.sections[key]);
@@ -512,6 +539,38 @@ export class FilterKit {
         this._changed();
     }
 
+    /** Set the filters outright (a door, a link, a figure pressed elsewhere). */
+    setFilters(filters, { search = "", viewKey = "" } = {}) {
+        this.filters = normFilters(clone(filters || {}));
+        this.search = search || "";
+        this.viewKey = this.views.some((v) => v.key === viewKey) ? viewKey : "";
+        this.ui.custom = {};
+        this._changed();
+    }
+    /** Point the same panel at another record type (a tab switch on a screen
+     * with several): everything resets and loads again. */
+    async reconfigure({ model, ctx, noun, initial } = {}) {
+        if (model) {
+            this.model = model;
+        }
+        this.ctx = ctx === undefined ? this.ctx : ctx || null;
+        if (noun) {
+            this.noun = noun;
+        }
+        this.initial = initial || null;
+        this.seq++;
+        Object.assign(this, {
+            loaded: false, failed: false, refusal: "", sections: [], views: [], sorts: [],
+            filters: {}, search: "", viewKey: "", counts: {}, labels: {}, matched: null,
+        });
+        this.ui.find = "";
+        this.ui.findHits = {};
+        this.ui.showAll = {};
+        this.ui.mini = {};
+        this.ui.custom = {};
+        await this.load();
+    }
+
     // ------------------------------------------------------------ panel
     togglePanel(force) {
         this.ui.panel = typeof force === "boolean" ? force : !this.ui.panel;
@@ -589,10 +648,10 @@ export class FilterKit {
         await Promise.all(
             long.map(async (s) => {
                 try {
-                    hits[s.key] = await this.orm.call(this.model, "pbf_find_values", [s.key, term], {
+                    hits[s.key] = await this.orm.call(this.model, "pbf_find_values", [s.key, term], this._kw({
                         filters: this.filters,
                         search: this.search,
-                    });
+                    }));
                     this._remember(s.key, { values: hits[s.key] });
                 } catch {
                     hits[s.key] = [];

@@ -114,6 +114,18 @@ class PbFilterMixin(models.AbstractModel):
         return Model, field
 
     @api.model
+    def _pbf_opt_domain(self, option):
+        """A choice option's domain. Either a literal `domain` (any domain the
+        records model accepts, one2many/many2many paths and `any` included,
+        `self.env.uid` baked in at spec time for "mine") or a `domain_method`:
+        the name of a method on this screen model that returns a domain at
+        request time — the door for facts that are Python, not fields
+        (e.g. `[('id', 'in', ids_found_by_the_pay_feed)]`)."""
+        if option.get('domain_method'):
+            return getattr(self, option['domain_method'])() or []
+        return option.get('domain') if option.get('domain') is not None else []
+
+    @api.model
     def _pbf_clean_spec(self):
         """The screen's spec, minus sections this database cannot serve."""
         out = []
@@ -122,7 +134,8 @@ class PbFilterMixin(models.AbstractModel):
             t = s.get('type')
             try:
                 if t == 'choice':
-                    opts = [o for o in s.get('options') or [] if o.get('domain') is not None]
+                    opts = [o for o in s.get('options') or []
+                            if o.get('domain') is not None or o.get('domain_method')]
                     if s.get('requires'):
                         if not all(self._pbf_resolve(p)[1] for p in s['requires']):
                             continue
@@ -225,7 +238,7 @@ class PbFilterMixin(models.AbstractModel):
         if t == 'choice':
             vals = val if isinstance(val, list) else []
             opts = {o['value']: o for o in s.get('options') or []}
-            parts = [Domain(opts[v]['domain']) for v in vals if v in opts]
+            parts = [Domain(self._pbf_opt_domain(opts[v])) for v in vals if v in opts]
             return Domain.OR(parts) if parts else None
         if t == 'date' and isinstance(val, dict):
             if val.get('preset'):
@@ -299,7 +312,7 @@ class PbFilterMixin(models.AbstractModel):
         rows = []
         if t == 'choice':
             for o in s.get('options') or []:
-                n = Rec.search_count(Domain.AND([domain, Domain(o['domain'])]))
+                n = Rec.search_count(Domain.AND([domain, Domain(self._pbf_opt_domain(o))]))
                 rows.append({'v': o['value'], 'label': o['label'], 'n': n,
                              'tone': o.get('tone') or ''})
             return rows, False
@@ -405,7 +418,7 @@ class PbFilterMixin(models.AbstractModel):
         if t == 'choice':
             total = Rec.search_count(base)
             for o in s.get('options') or []:
-                n = Rec.search_count(Domain.AND([base, Domain(o['domain'])]))
+                n = Rec.search_count(Domain.AND([base, Domain(self._pbf_opt_domain(o))]))
                 if 0 < n < total:
                     return True
             return False
@@ -453,6 +466,18 @@ class PbFilterMixin(models.AbstractModel):
         return builtin + saved
 
     # ============================================================ the API
+    # Every call may carry `context={'pbf_ctx': {...}}` from the browser (the
+    # kit's `ctx` option): a screen that shows several record types under one
+    # action reads `self.env.context.get('pbf_ctx')` in its hooks to pick the
+    # model, screen key and spec. A screen that must refuse some readers
+    # overrides `pbf_layout` to return `{'refused': <message>}` — the kit then
+    # shows nothing and the screen shows its own refusal.
+
+    @api.model
+    def _pbf_ctx(self):
+        ctx = self.env.context.get('pbf_ctx')
+        return ctx if isinstance(ctx, dict) else {}
+
     @api.model
     def pbf_layout(self):
         """Once per load: the sections worth showing, views, sorts."""
