@@ -441,8 +441,27 @@
     "invitations_sent": 0
   },
   "chrome_ui": {
-    "status": "PENDING",
-    "blocker": "Native Chrome control reports cgWindowNotFound; asked owner to bring Chrome and Payobook to foreground."
+    "status": "PASS",
+    "host": "payobook.com",
+    "user_id": 2,
+    "page": "Calendar > Find a time > My Google calendar",
+    "date": "2026-11-02",
+    "timezone": "Australia/Sydney",
+    "window": "09:00-17:00",
+    "duration_minutes": 30,
+    "available_slots": 31,
+    "busy_periods": 0,
+    "checked_at_displayed": "13:34 Australia/Sydney",
+    "checks": [
+      "Personal availability form loads directly without selecting a candidate or panellist.",
+      "Check my availability calls Google and renders 31 available slots from 09:00\u201309:30 through 16:30\u201317:00.",
+      "Busy times panel reports no busy time in this window.",
+      "No event titles, attendees or descriptions are displayed.",
+      "Visual layout reviewed in Chrome; purple styling matches the application.",
+      "Screen left open with recording inputs filled in."
+    ],
+    "test_screenshot_files_created": [],
+    "screenshot_note": "One in-memory screenshot viewed; no screenshot or PNG file saved."
   },
   "test_screenshot_files_created": []
 }
