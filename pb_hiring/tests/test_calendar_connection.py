@@ -249,3 +249,11 @@ class TestCalendarConnection(TransactionCase):
         self.assertFalse(self.settings.pb_google_last_sync)
         self.assertFalse(channel.last_sync)
         self.assertFalse(self.api.capabilities()['last_sync']['google'])
+
+    def test_success_timestamps_do_not_break_webclient_startup_settings(self):
+        self.settings.write({'pb_google_last_sync': fields.Datetime.now(),
+                             'pb_microsoft_last_sync': fields.Datetime.now()})
+        payload = self.settings._res_users_settings_format()
+        self.assertNotIn('pb_google_last_sync', payload)
+        self.assertNotIn('pb_microsoft_last_sync', payload)
+        json.dumps(payload)

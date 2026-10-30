@@ -26,8 +26,14 @@ CALLBACK_PATH = '/pb/calendar/google/notify'
 class CalendarNotificationSettings(models.Model):
     _inherit = 'res.users.settings'
 
-    pb_google_last_sync = fields.Datetime(copy=False)
-    pb_microsoft_last_sync = fields.Datetime(copy=False)
+    pb_google_last_sync = fields.Datetime(copy=False, groups='base.group_system')
+    pb_microsoft_last_sync = fields.Datetime(copy=False, groups='base.group_system')
+
+    @api.model
+    def _get_fields_blacklist(self):
+        # Startup settings use plain JSON, which cannot serialize datetimes.
+        # Expose only formatted own-user values through calendar capabilities.
+        return super()._get_fields_blacklist() + ['pb_google_last_sync', 'pb_microsoft_last_sync']
 
     def write(self, vals):
         vals = dict(vals)
