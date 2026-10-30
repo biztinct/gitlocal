@@ -49,7 +49,7 @@ pbim tokens only, Lucide icons through the shared `ic()` registry, flat fills,
 one accent.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.5.4',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -68,6 +68,7 @@ one accent.
         'pb_employee_vault',        # where a finished letter is filed
         'pb_me_portal',             # the .pbme portal kit this page reuses
         'pb_payhub',                # the two lenses, through its soft registry
+        'pb_filter_kit',            # FILTER W1: the Awards table sits in the shared filter panel
         'pb_payruns',               # the run chain the finance pack hooks
         'pb_pay_delivery',          # the bank-file builder the pack calls
         'pb_hr_payroll_formula',    # the one-time import batch the feed builds

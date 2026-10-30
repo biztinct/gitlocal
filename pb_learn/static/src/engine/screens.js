@@ -3119,6 +3119,15 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri">${ic("plus")}${esc(tx(B("New award", "Khoản thưởng mới")))}</button></div>
             ${quietNums(a.counts, "")}
             <div data-coach="aw-steps"><div class="lrn-steps">${stepButtons(a.steps.map(([l, n]) => ({ label: l, count: n })), B("", ""))}</div></div>
+            <!-- FILTER W1 (2026-10-31): the shared filter panel, as on
+                 Employees. View tabs, a Filters button that opens the left
+                 panel, the search. The kind chips moved into the panel. -->
+            <div class="lrn-strip" data-coach="aw-filters">
+                <span class="lrn-chip b">${esc(tx(B("All awards", "Tất cả khoản thưởng")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Waiting for approval", "Chờ phê duyệt")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a person or a reason…", "Tìm một người hoặc một lý do…")))}</span>
+            </div>
             <div class="lrn-panel lrn-rtwrap" data-coach="aw-table">
                 <table class="lrn-rtable"><thead><tr>${cols}</tr></thead><tbody>${rows}</tbody></table>
             </div>`;

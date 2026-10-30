@@ -1909,6 +1909,12 @@
       "desc": "The awards table: Who, Kind, Amount, Paid in, Approval, Where it has got to, Pay run.",
       "reserved": true
     },
+    "aw-filters": {
+      "screen": "awards",
+      "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "desc": "The shared filter panel: view tabs (All awards, Waiting for approval, Agreed, not in a run, In a pay run, Paid this month), the Filters button that opens the left panel with a count beside every value, the search (a person or a reason), and the applied filters as chips. The steps and numbers above still filter.",
+      "reserved": true
+    },
     "pe-contracts": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",

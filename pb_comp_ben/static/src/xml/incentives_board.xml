@@ -63,9 +63,11 @@
           </t>
 
           <!-- ======================= the steps =======================
-               An award is at EXACTLY one step (stepOf), so the counts add up;
-               one that was not approved is at no step (the numbers line
-               reaches it). Pressing the lit step again shows every award. -->
+               An award is at EXACTLY one step, so the counts add up; one that
+               was not approved is at no step (the numbers line and the
+               panel's "Where it is" reach it). The counts follow the
+               filters; pressing a step ticks it in the panel, pressing it
+               again clears it. -->
           <div data-coach="aw-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
@@ -73,46 +75,22 @@
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
           </div>
-          <div class="pbim-showing">
-            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
-            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
-              <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
-          </div>
 
-          <!-- ======================= the filters ======================= -->
-          <div class="inc-filters">
-            <div class="inc-search">
-              <t t-out="ic('search',15)"/>
-              <input type="text" placeholder="Find a person or a reason"
-                     t-att-value="state.q" t-on-input="onSearch"/>
-            </div>
-            <div class="pbim-chips">
-              <button class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.kindFilter === 'all' }"
-                      t-on-click="() => this.setKindFilter('all')">Any kind</button>
-              <button t-foreach="state.kinds" t-as="kd" t-key="kd.key"
-                      class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.kindFilter === kd.key }"
-                      t-on-click="() => this.setKindFilter(kd.key)"
-                      t-esc="kd.label"/>
-            </div>
+          <!-- ================ the shared filter panel ================
+               pb_filter_kit (FILTER W1): views, search, the left panel with
+               counts, chips. The kit draws data-coach="aw-filters" on its
+               toolbar (the coach prop). The table is its slot. -->
+          <PbFilterLayout kit="kit" coach="'aw-filters'" searchPlaceholder="searchLabel">
+
+          <div t-if="state.listError" class="pbim-empty inc-empty">
+            <div class="inc-empty-ic"><t t-out="ic('alert',30)"/></div>
+            <h3>The awards could not load</h3>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn" t-on-click="retry"><t t-out="ic('refresh',14)"/> Try again</button>
           </div>
 
           <!-- ======================== the board ======================== -->
-          <div t-if="!visibleRows.length" class="pbim-empty inc-empty">
-            <div class="inc-empty-ic"><t t-out="ic('award',30)"/></div>
-            <h3 t-if="!state.rows.length">Nothing has been awarded yet</h3>
-            <h3 t-else="">Nothing matches what you are looking for</h3>
-            <p t-if="!state.rows.length">
-              Raise an award for somebody, get it agreed, and it is paid with the
-              next salary — with a letter they can keep.
-            </p>
-            <p t-else="">Clear the search or pick a different status.</p>
-            <button t-if="state.canWrite and !state.rows.length"
-                    class="pbim-btn" t-on-click="openCreate">New award</button>
-          </div>
-
-          <div t-else="" class="pbim-tablewrap inc-tablewrap" data-coach="aw-table">
+          <div t-elif="state.rows.length" class="pbim-tablewrap inc-tablewrap" data-coach="aw-table">
             <table class="pbim-table inc-table">
               <thead>
                 <tr>
@@ -127,7 +105,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr t-foreach="visibleRows" t-as="aw" t-key="aw.id">
+                <tr t-foreach="state.rows" t-as="aw" t-key="aw.id">
                   <td>
                     <span class="inc-who">
                       <span class="inc-av" t-esc="aw.initials"/>
@@ -181,11 +159,38 @@
                 </tr>
               </tbody>
             </table>
-            <p t-if="state.capped" class="pbim-note">
-              Only the most recent awards are shown. Open “All awards” for the
-              whole list.
-            </p>
           </div>
+
+          <div t-elif="!state.listLoaded" class="inc-skeleton" aria-label="Loading awards">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="inc-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total" class="pbim-empty inc-empty">
+            <div class="inc-empty-ic"><t t-out="ic('award',30)"/></div>
+            <h3>Nothing has been awarded yet</h3>
+            <p>
+              Raise an award for somebody, get it agreed, and it is paid with the
+              next salary — with a letter they can keep.
+            </p>
+            <button t-if="state.canWrite" class="pbim-btn" t-on-click="openCreate">New award</button>
+          </div>
+
+          <div t-else="" class="pbim-empty inc-empty">
+            <div class="inc-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h3>No awards match these filters</h3>
+            <p t-if="!kit.search">Remove a filter above, or start again from every award.</p>
+            <p t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by a person or a reason.</p>
+            <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show all awards</button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="inc-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+            <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
 
           <!-- ===================== the new award dialog ===================== -->
           <div t-if="state.creating" class="pbim-modal-scrim"
