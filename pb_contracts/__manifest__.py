@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Contracts Cockpit',
     'summary': 'Bespoke contracts landing + detail cockpit (light-teal People identity)',
-    'version': '19.0.1.9.3',
+    'version': '19.0.1.10.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -13,7 +13,9 @@
                 'biz_approval_workflow',
                 # the return door when the Employees lens opens this board as
                 # its own page (hub_nav.js)
-                'pb_hub'],
+                'pb_hub',
+                # FILTER W1: the roster sits in the shared filter panel
+                'pb_filter_kit'],
     'data': [
         'security/ir.model.access.csv',
         'security/contract_approval_rules.xml',

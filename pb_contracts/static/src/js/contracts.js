@@ -1,44 +1,64 @@
 /** @odoo-module **/
-import { Component, useState, useRef, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
-// The contract's journey. A contract sits at exactly one step (stepOf);
-// cancelled contracts are at no step and "Show all" still lists them.
+// The contract's journey. A contract sits at exactly one step (the server's
+// `_step_domains`); cancelled contracts are at no step and "All contracts"
+// still lists them.
 const STEPS = [
     { key: "draft", title: _t("Draft"), sub: _t("Being prepared") },
     { key: "running", title: _t("Running"), sub: _t("In force") },
     { key: "ending", title: _t("Ending soon"), sub: _t("Ends within 30 days") },
     { key: "ended", title: _t("Ended"), sub: _t("Past its end date") },
 ];
-const DATE_CHIPS = [
-    { id: "all", label: _t("All time") }, { id: "month", label: _t("Started this month") },
-    { id: "year", label: _t("Started this year") }, { id: "custom", label: _t("Custom") },
-];
+const PAGE = 60;
+// What each figure on the numbers line means as a filter: the same filters as
+// the built-in views, so pressing a figure lights the matching tab.
+const GLANCE_FILTERS = {
+    open: { status: ["open"] },
+    expiring: { step: ["ending"] },
+    draft: { status: ["draft"] },
+    close: { status: ["close"] },
+};
 
 export class PbContracts extends Component {
     static template = "pb_contracts.PbContracts";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbFilterLayout };
     static props = ["*"];
+
+    // A literal inside a template expression is never extracted for
+    // translation, so the panel's placeholder comes through _t here.
+    get searchLabel() { return _t("Search person, reference, structure, job…"); }
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notif = useService("notification");
         // The return door (hub_nav.js). The People hub no longer mounts this
         // board as a lens — the Employees lens opens it as its own page — so
         // the way back is read ONCE, from props, like every plain cockpit.
         this.back = hubBack(this.props);
         this.state = useState({
-            loaded: false, currency: "", kpis: {}, structures: [],
-            contracts: [], total: 0, stepCounts: {}, listedTotal: 0,
-            search: "", step: "", structure: "", dateFilter: "all", from: "", to: "",
+            loaded: false, currency: "", kpis: {}, total: 0,
+            contracts: [], listTotal: 0, listLoaded: false, listError: false,
+            loadingMore: false, stepCounts: {},
             drawerContractId: null,
         });
-        this.searchRef = useRef("search");
+        // The shared filter panel (pb_filter_kit, FILTER W1): it owns the
+        // filters, the counts and the views; this screen loads one page of
+        // contracts for kit.query, with the step strip's counts beside it.
+        this.kit = useFilterKit({
+            model: "pb.contracts",
+            noun: _t("contracts"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
         // deep link: ?contract=<id>, or an action param, opens the drawer when
         // it is registered — otherwise it is simply ignored and the roster
@@ -66,19 +86,55 @@ export class PbContracts extends Component {
     }
     closeDrawer() { this.state.drawerContractId = null; }
 
+    /** The numbers line, counted over every contract whatever is filtered. */
     async load() {
-        // A step lists that step's own newest contracts (the roster is
-        // capped), so pressing one asks the server again.
-        const d = await this.orm.call("pb.contracts", "get_board", [], { step: this.state.step || null });
+        const d = await this.orm.call("pb.contracts", "get_board", []);
         Object.assign(this.state, {
-            currency: d.currency, kpis: d.kpis, structures: d.structures,
-            contracts: d.contracts, total: d.total, loaded: true,
-            stepCounts: d.step_counts || {}, listedTotal: d.listed_total || 0,
+            currency: d.currency, kpis: d.kpis, total: d.total, loaded: true,
         });
     }
 
+    /** One page of contracts for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.contracts.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.contracts", "get_contracts_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.contracts = more ? [...this.state.contracts, ...d.rows] : d.rows;
+            this.state.listTotal = d.total;
+            if (d.steps) { this.state.stepCounts = d.steps; }
+            this.state.listLoaded = true;
+            this.state.listError = false;
+        } catch (e) {
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            console.error("pb_contracts: the contract list could not load", e);
+            if (!more) {
+                this.state.listError = true;
+                this.state.listLoaded = true;
+            }
+            this.notif.add(_t("The contract list could not load. Check your connection, then press Try again."),
+                           { type: "warning" });
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    retry() {
+        this.state.listError = false;
+        this.state.listLoaded = false;
+        this.kit.refresh();
+    }
+    get hasMore() { return this.state.contracts.length < this.state.listTotal; }
+    get nextPage() { return Math.min(PAGE, this.state.listTotal - this.state.contracts.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
     ic(n, s = 16) { return ic(n, s); }
-    get dateChips() { return DATE_CHIPS; }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
     money(n) {
         if (n === null || n === undefined) return "—";
@@ -90,110 +146,57 @@ export class PbContracts extends Component {
         return cur + Math.round(n);
     }
 
-    setStructure(s) { this.state.structure = this.state.structure === s ? "" : s; }
-    setDate(d) { this.state.dateFilter = d; }
-    onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
-    onFrom(ev) { this.state.from = ev.target.value; }
-    onTo(ev) { this.state.to = ev.target.value; }
-
-    _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
-    _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
-
-    _inDate(c) {
-        const f = this.state.dateFilter;
-        if (f === "all") return true;
-        if (!c.date_start) return false;
-        if (f === "month") return c.date_start >= this._monthStart();
-        if (f === "year") return c.date_start >= this._yearStart();
-        if (f === "custom") {
-            if (this.state.from && c.date_start < this.state.from) return false;
-            if (this.state.to && c.date_start > this.state.to) return false;
-            return true;
-        }
-        return true;
-    }
-    get filtered() {
-        const q = this.state.search, str = this.state.structure;
-        return this.state.contracts.filter(c => {
-            if (str && c.structure !== str) return false;
-            const step = this.state.step;
-            if (step === "open" ? c.state !== "open" : (step && this.stepOf(c) !== step)) return false;
-            if (!this._inDate(c)) return false;
-            if (q && !((c.employee || "").toLowerCase().includes(q) || (c.name || "").toLowerCase().includes(q) || (c.structure || "").toLowerCase().includes(q))) return false;
-            return true;
-        });
-    }
     // ---- the numbers (quiet line) ----
+    // The figures that filter set the panel: pressing one ticks exactly its
+    // filters (and lights the matching view tab); pressing it again shows
+    // every contract.
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
-        // each figure is a step (Running = steps 02 + 03 together)
-        const pick = (step) => () => this.pickStep(step);
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
             { key: "open", n: k.running || 0, label: _t("Running"), tone: "", run: pick("open") },
-            { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("ending") },
+            { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("expiring") },
             { key: "draft", n: k.draft || 0, label: _t("Draft"), tone: "", run: pick("draft") },
-            { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("ended") },
+            { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("close") },
             { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
             { key: "avg", n: this.money(k.avg_wage || 0), label: _t("Average wage"), tone: "", run: null },
         ];
     }
-
-    // ---- the steps ----
-    stepOf(c) {
-        if (c.state === "draft") return "draft";
-        if (c.state === "open") {
-            return (c.days_to_expiry !== null && c.days_to_expiry !== undefined && c.days_to_expiry >= 0 && c.days_to_expiry <= 30) ? "ending" : "running";
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
         }
-        if (c.state === "close") return "ended";
         return "";
     }
-    // which figure in the numbers line is lit
-    get glanceOn() {
-        return { open: "open", ending: "expiring", draft: "draft", ended: "close" }[this.state.step] || "";
-    }
+
+    // ---- the steps ----
+    // Counted by the server for the panel's state (each step against every
+    // OTHER filter, the panel's own rule), so the strip and the panel's
+    // "Where it is" section always agree.
     get steps() {
-        // counted over every contract by the server, not the listed ones
         const counts = this.state.stepCounts || {};
         return STEPS.map((st, i) => {
             const count = counts[st.key] || 0;
             return {
                 ...st, n: String(i + 1).padStart(2, "0"), count,
-                countLabel: count === 1 ? _t("1 contract") : _t("%s contracts", count),
-                flag: "", on: this.state.step === st.key,
+                countLabel: count === 1 ? _t("1 contract") : _t("%s contracts", this.fmtInt(count)),
+                flag: "", on: this.kit.loaded && this.kit.isOn("step", st.key),
             };
         });
     }
-    async pickStep(key) {
-        this.state.step = this.state.step === key ? "" : key;
-        await this.load();
-    }
-    get anyFilter() {
-        const s = this.state;
-        return s.step || s.structure || s.dateFilter !== "all" || s.search;
-    }
-    get showingLine() {
-        const all = this.state.total || 0;
-        const st = STEPS.find((x) => x.key === this.state.step);
-        if (!this.anyFilter) {
-            return { all: true, text: !all ? _t("no contracts yet") : all === 1 ? _t("all 1 contract") : _t("all %s contracts", all) };
+    /** A step pressed: list that step. Pressed again: back to the start view
+     * when it was the only filter, otherwise only that step comes off. */
+    pickStep(key) {
+        const kit = this.kit;
+        if (kit.isOn("step", key) && !kit.isExactly({ step: [key] })) {
+            kit.toggle("step", key);
+            return;
         }
-        const s = this.state;
-        const onlyStep = s.step && !s.structure && s.dateFilter === "all" && !s.search;
-        const shown = onlyStep ? (s.stepCounts[s.step] || 0) : this.filtered.length;
-        return { all: false, text: _t("%s of %s contracts", shown, all), where: st ? st.title : "" };
+        kit.toggleFilters({ step: [key] });
     }
-    get listedNote() {
-        const shown = this.state.contracts.length, total = this.state.listedTotal || this.state.total || 0;
-        return total > shown ? _t("The newest %s of %s contracts are listed here", shown, total) : "";
-    }
-    showAll() {
-        const hadStep = this.state.step;
-        Object.assign(this.state, { step: "", structure: "", dateFilter: "all", from: "", to: "", search: "" });
-        if (this.searchRef.el) this.searchRef.el.value = "";
-        if (hadStep) this.load();
-    }
-
 
     openContract(id) {
         if (!id) return;

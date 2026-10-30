@@ -703,8 +703,14 @@ export const SCREENS = {
             <div class="lrn-steps">${stepButtons([
                 { label: B("Draft", "Nháp"), count: k.draft }, { label: B("Running", "Đang hiệu lực"), count: k.running, on: true },
                 { label: B("Ending soon", "Sắp kết thúc"), count: k.expiring }, { label: B("Ended", "Đã kết thúc"), count: k.expired }], B("", ""))}</div>
+            <!-- FILTER W1 (2026-10-31): the shared filter panel, as on
+                 Employees. View tabs, a Filters button that opens the left
+                 panel, the search. The steps and numbers above still filter. -->
             <div class="lrn-strip" data-coach="ct-filters">
-                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a person or a contract…", "Tìm một người hoặc một hợp đồng…")))}</span>
+                <span class="lrn-chip b">${esc(tx(B("All contracts", "Tất cả hợp đồng")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Ending within 30 days", "Kết thúc trong 30 ngày")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search person, reference, structure, job…", "Tìm người, mã hợp đồng, cơ cấu lương, công việc…")))}</span>
             </div>
             <div class="lrn-panel">
                 <h3>${ic("file-text")}${esc(tx(B("Contracts", "Hợp đồng")))}</h3>

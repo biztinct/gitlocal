@@ -27,53 +27,28 @@
           </t>
         </div>
 
-        <!-- where every contract is: a contract is at exactly ONE step
-             (stepOf), so the counts add up. Pressing a lit step clears it. -->
+        <!-- where every contract is: a contract is at exactly ONE step, so
+             the counts add up. The counts follow the filters (ruling R1);
+             pressing a step ticks it in the panel, pressing it again clears it. -->
         <t t-call="pb_import_kit.QuietSteps">
           <t t-set="qSteps" t-value="steps"/>
           <t t-set="qStepsLabel" t-value="'Where every contract is'"/>
           <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
         </t>
-        <div class="pbim-showing">
-          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
-          <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
-            <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
-        </div>
 
-        <!-- filters -->
-        <div class="pbim-panel ppl-filters" data-coach="ct-filters">
-          <div class="ppl-filter-row">
-            <!-- the status buttons went with the quiet numbers: the figures
-                 and steps above filter, counted over every contract -->
-            <div class="ppl-search">
-              <span class="ic"><t t-out="ic('search',15)"/></span>
-              <input t-ref="search" placeholder="Search employee, reference, structure…" t-on-input="onSearch"/>
-            </div>
-          </div>
-          <div class="ppl-filter-row">
-            <div class="pbim-chips ppl-dates">
-              <button t-foreach="dateChips" t-as="d" t-key="d.id"
-                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
-                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
-              </button>
-              <t t-if="state.dateFilter === 'custom'">
-                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
-                <span class="ppl-dash">→</span>
-                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
-              </t>
-            </div>
-            <div t-if="state.structures.length" class="pbim-chips ppl-depts">
-              <button t-foreach="state.structures" t-as="s" t-key="s_index"
-                      t-attf-class="pbim-fchip {{ state.structure === s.name ? 'on' : '' }}" t-on-click="() => this.setStructure(s.name)">
-                <t t-esc="s.name"/> <span class="c" t-esc="s.count"/>
-              </button>
-            </div>
-          </div>
+        <!-- The shared filter panel (pb_filter_kit, FILTER W1): views, search,
+             the left panel with counts, chips. The kit draws
+             data-coach="ct-filters" on its toolbar (the coach prop below).
+             The roster is its slot. -->
+        <PbFilterLayout kit="kit" coach="'ct-filters'" searchPlaceholder="searchLabel">
+        <div t-if="state.listError" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('alert',22)"/></div>
+          <b>The contract list could not load</b>
+          <span>The connection may have dropped. Your filters are kept.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="retry"><t t-out="ic('refresh',14)"/> Try again</button>
         </div>
-
-        <!-- roster -->
-        <div t-if="filtered.length" class="ppl-roster" data-coach="ct-roster">
-          <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
+        <div t-elif="state.contracts.length" class="ppl-roster" data-coach="ct-roster">
+          <div t-foreach="state.contracts" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
             <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
             <div class="ppl-id">
               <div class="nm" t-esc="c.employee"/>
@@ -94,12 +69,33 @@
             </div>
           </div>
         </div>
-        <div t-else="" class="pbim-panel"><div class="pbim-empty">No contracts match these filters.</div></div>
+        <div t-elif="!state.listLoaded" class="ppl-roster ppl-skeleton" aria-label="Loading contracts">
+          <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="ppl-card ppl-card--ghost"/>
+        </div>
+        <div t-elif="!state.total" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('fileText',22)"/></div>
+          <b>No contracts yet</b>
+          <span>A contract is the agreement payroll is worked out from. Add the first one.</span>
+          <button class="pbim-btn primary pbim-btn-sm" t-on-click="newContract"><t t-out="ic('plus',14)"/> New contract</button>
+        </div>
+        <div t-else="" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('search',22)"/></div>
+          <b>No contracts match these filters</b>
+          <span t-if="!kit.search">Remove a filter above, or start again from every contract.</span>
+          <span t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by person, reference or structure.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => kit.toggleFilters({})">Show all contracts</button>
+        </div>
 
-        <div class="ppl-foot">
-          <t t-if="listedNote"><t t-esc="listedNote"/> ·</t>
+        <div t-if="state.contracts.length" class="ppl-foot">
+          Showing <b t-esc="fmtInt(state.contracts.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+          <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm ppl-more" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+            <t t-if="state.loadingMore">Loading…</t>
+            <t t-else="">Show <t t-esc="nextPage"/> more</t>
+          </button>
+          <span class="ppl-foot-sep">·</span>
           <button class="ppl-link" t-on-click="openAll">Open full contract list →</button>
         </div>
+        </PbFilterLayout>
       </div>
 
       <!-- The contract drawer, mounted only when it registered itself into the

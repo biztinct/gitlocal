@@ -595,7 +595,7 @@
     "ct-filters": {
       "screen": "contracts",
       "file": "pb_contracts/static/src/xml/contracts.xml",
-      "desc": "Search and the date range over the contract roster (the status chips are gone, 446560e70).",
+      "desc": "The shared filter panel: view tabs (All contracts, Running, Ending within 30 days, Draft, Started this month), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
       "reserved": true
     },
     "ct-roster": {

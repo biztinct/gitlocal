@@ -18,8 +18,8 @@ msgstr ""
 #: code:addons/pb_contracts/static/src/xml/contracts.xml:0
 msgid "Active, expiring and historical contracts across your workforce."
 msgstr ""
-"Các hợp đồng đang hoạt động, sắp hết hạn và có lịch sử trên lực lượng lao động của "
-"bạn."
+"Các hợp đồng đang hoạt động, sắp hết hạn và có lịch sử trên lực lượng lao "
+"động của bạn."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -42,11 +42,11 @@ msgstr "Quay lại Hợp đồng"
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: model:ir.actions.client,name:pb_contracts.action_pb_contract_detail
 #: code:addons/pb_contracts/models/contract_approval.py:0
-#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
-#: code:addons/pb_contracts/static/src/js/contracts.js:0
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+#: model:ir.actions.client,name:pb_contracts.action_pb_contract_detail
 msgid "Contract"
 msgstr "Hợp đồng"
 
@@ -59,23 +59,24 @@ msgid "Contracts"
 msgstr "Hợp đồng"
 
 #. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contract_proposal__display_name
 #: model:ir.model.fields,field_description:pb_contracts.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_contracts.field_res_company__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
-#: code:addons/pb_contracts/static/src/js/contracts.js:10
-#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Draft"
 msgstr "Nháp"
 
 #. module: pb_contracts
 #. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 #: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
 msgid "Employee"
 msgstr "Nhân viên"
@@ -83,10 +84,8 @@ msgstr "Nhân viên"
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
-#: code:addons/pb_contracts/static/src/js/contracts.js:12
-#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Expired"
 msgstr "Đã hết hạn"
@@ -98,7 +97,9 @@ msgid "Expiring ≤30d"
 msgstr "Hết hạn 30d"
 
 #. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contract_proposal__id
 #: model:ir.model.fields,field_description:pb_contracts.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_contracts.field_res_company__id
 msgid "ID"
 msgstr "ID"
 
@@ -123,17 +124,17 @@ msgstr "Đang tải hợp đồng…"
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
-#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 #: code:addons/pb_contracts/static/src/js/contracts.js:0
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
 msgid "Monthly wage"
 msgstr "Lương hàng tháng"
 
 #. module: pb_contracts
 #. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
 #: code:addons/pb_contracts/static/src/xml/contracts.xml:0
 msgid "New contract"
 msgstr "Hợp đồng mới"
@@ -158,10 +159,8 @@ msgstr "Dữ liệu buồng lái hợp đồng Payobook"
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
-#: code:addons/pb_contracts/static/src/js/contracts.js:11
-#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Running"
 msgstr "Đang hiệu lực"
@@ -180,7 +179,7 @@ msgstr "Đang hiển thị"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
+#: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 msgid "Tenure"
 msgstr "nhiệm kỳ"
 
@@ -193,7 +192,6 @@ msgstr "Để kết thúc hợp đồng"
 #. module: pb_contracts
 #. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/xml/contract_detail.xml:0
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
 #: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 msgid "Trial ends"
@@ -219,13 +217,13 @@ msgstr "của"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contract_detail.js:48
+#: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 msgid "Done."
 msgstr "Xong."
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contract_detail.js:50
+#: code:addons/pb_contracts/static/src/js/contract_detail.js:0
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -242,43 +240,40 @@ msgid "Expiring soon"
 msgstr "Sắp hết hạn"
 
 #. module: pb_contracts
-#. odoo-javascript
 #. odoo-python
-#: code:addons/pb_contracts/static/src/js/contracts.js:12
 #: code:addons/pb_contracts/models/pb_contracts.py:0
-#: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Cancelled"
 msgstr "Đã hủy"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contracts.js:15
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "All time"
 msgstr "Mọi lúc"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contracts.js:15
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Started this month"
 msgstr "Bắt đầu vào tháng này"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contracts.js:16
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Started this year"
 msgstr "Bắt đầu vào năm nay"
 
 #. module: pb_contracts
 #. odoo-javascript
-#: code:addons/pb_contracts/static/src/js/contracts.js:16
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Custom"
 msgstr "Tùy chỉnh"
-
 
 # ===================================================================
 #  Approval Matrix phase 7 — what the browser walk found.
 # ===================================================================
-
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
@@ -323,7 +318,7 @@ msgstr "Người duyệt tài chính"
 
 #. module: pb_contracts
 #. odoo-python
-#: code:addons/pb_contracts/tests/test_cd4_approval.py:0
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "HR lead"
 msgstr "Trưởng nhân sự"
 
@@ -347,13 +342,13 @@ msgstr "Lương tháng mới"
 
 #. module: pb_contracts
 #. odoo-python
-#: code:addons/pb_contracts/tests/test_cd2_fills_from.py:0
+#: code:addons/pb_contracts/models/contract_approval.py:0
 msgid "Person"
 msgstr "Nhân sự"
 
 #. module: pb_contracts
 #. odoo-python
-#: code:addons/pb_contracts/models/contract_approval.py:0
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
 msgid "Salary structure"
 msgstr "Cấu trúc lương"
 
@@ -462,26 +457,38 @@ msgstr "đọc kỳ của chính nó"
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "The next pay run will replace this with the answer from its own period."
-msgstr "Đợt trả lương tiếp theo sẽ thay giá trị này bằng đáp án từ kỳ của chính nó."
+msgid ""
+"The next pay run will replace this with the answer from its own period."
+msgstr ""
+"Đợt trả lương tiếp theo sẽ thay giá trị này bằng đáp án từ kỳ của chính nó."
 
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "The next pay run will replace this with the value from the pay data file."
-msgstr "Đợt trả lương tiếp theo sẽ thay giá trị này bằng giá trị trong tệp dữ liệu lương."
+msgid ""
+"The next pay run will replace this with the value from the pay data file."
+msgstr ""
+"Đợt trả lương tiếp theo sẽ thay giá trị này bằng giá trị trong tệp dữ liệu "
+"lương."
 
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "The next pay run will replace this with the value from the connected system."
-msgstr "Đợt trả lương tiếp theo sẽ thay giá trị này bằng giá trị từ hệ thống được kết nối."
+msgid ""
+"The next pay run will replace this with the value from the connected system."
+msgstr ""
+"Đợt trả lương tiếp theo sẽ thay giá trị này bằng giá trị từ hệ thống được "
+"kết nối."
 
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "The next pay run will work this value out with a formula and replace what you type."
-msgstr "Đợt trả lương tiếp theo sẽ tính giá trị này bằng công thức và thay cho những gì bạn nhập."
+msgid ""
+"The next pay run will work this value out with a formula and replace what "
+"you type."
+msgstr ""
+"Đợt trả lương tiếp theo sẽ tính giá trị này bằng công thức và thay cho những"
+" gì bạn nhập."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -499,7 +506,9 @@ msgstr "Tạm ứng"
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Who is paid by what is not switched on for this company."
-msgstr "Chức năng \"Ai được trả theo chương trình nào\" chưa được bật cho công ty này."
+msgstr ""
+"Chức năng \"Ai được trả theo chương trình nào\" chưa được bật cho công ty "
+"này."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -527,6 +536,8 @@ msgstr "Sắp kết thúc"
 
 #. module: pb_contracts
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 #: code:addons/pb_contracts/static/src/js/contracts.js:0
 msgid "Ended"
 msgstr "Đã kết thúc"
@@ -728,6 +739,7 @@ msgstr "Hợp đồng bắt đầu"
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 msgid "Contract ends"
 msgstr "Hợp đồng kết thúc"
 
@@ -746,12 +758,14 @@ msgstr "Lịch làm việc"
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 msgid "Department"
 msgstr "Phòng ban"
 
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
+#: code:addons/pb_contracts/models/pb_contracts.py:0
 msgid "Job position"
 msgstr "Vị trí công việc"
 
@@ -806,8 +820,12 @@ msgstr "Mã số thuế"
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "You do not have access to contracts. Ask an administrator for the HR or Payroll Officer role."
-msgstr "Bạn không có quyền xem hợp đồng. Hãy nhờ quản trị viên giao vai trò Nhân sự hoặc Nhân viên tính lương."
+msgid ""
+"You do not have access to contracts. Ask an administrator for the HR or "
+"Payroll Officer role."
+msgstr ""
+"Bạn không có quyền xem hợp đồng. Hãy nhờ quản trị viên giao vai trò Nhân sự "
+"hoặc Nhân viên tính lương."
 
 #. module: pb_contracts
 #. odoo-python
@@ -818,20 +836,32 @@ msgstr "Hợp đồng này không còn nữa."
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "Nothing is stored on the contract itself, and nothing is feeding these components yet."
-msgstr "Hợp đồng không lưu giá trị nào, và chưa có nguồn nào cấp dữ liệu cho các thành phần này."
+msgid ""
+"Nothing is stored on the contract itself, and nothing is feeding these "
+"components yet."
+msgstr ""
+"Hợp đồng không lưu giá trị nào, và chưa có nguồn nào cấp dữ liệu cho các "
+"thành phần này."
 
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "Nothing is stored on the contract itself. Most of the components below are filled when a pay run %s."
-msgstr "Hợp đồng không lưu giá trị nào. Hầu hết các thành phần bên dưới được điền khi đợt lương %s."
+msgid ""
+"Nothing is stored on the contract itself. Most of the components below are "
+"filled when a pay run %s."
+msgstr ""
+"Hợp đồng không lưu giá trị nào. Hầu hết các thành phần bên dưới được điền "
+"khi đợt lương %s."
 
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "Nothing is stored on the contract itself. Every component below is filled when a pay run %s."
-msgstr "Hợp đồng không lưu giá trị nào. Mọi thành phần bên dưới được điền khi đợt lương %s."
+msgid ""
+"Nothing is stored on the contract itself. Every component below is filled "
+"when a pay run %s."
+msgstr ""
+"Hợp đồng không lưu giá trị nào. Mọi thành phần bên dưới được điền khi đợt "
+"lương %s."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -904,14 +934,18 @@ msgstr "Từ %(low)s đến %(high)s."
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "A contract must always have a working schedule — pick one before saving."
-msgstr "Hợp đồng luôn phải có lịch làm việc — hãy chọn một lịch trước khi lưu."
+msgid ""
+"A contract must always have a working schedule — pick one before saving."
+msgstr ""
+"Hợp đồng luôn phải có lịch làm việc — hãy chọn một lịch trước khi lưu."
 
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "A contract must always have an employee category — pick one before saving."
-msgstr "Hợp đồng luôn phải có loại nhân viên — hãy chọn một loại trước khi lưu."
+msgid ""
+"A contract must always have an employee category — pick one before saving."
+msgstr ""
+"Hợp đồng luôn phải có loại nhân viên — hãy chọn một loại trước khi lưu."
 
 #. module: pb_contracts
 #. odoo-python
@@ -923,7 +957,8 @@ msgstr "Hợp đồng luôn phải có ngày bắt đầu — hãy chọn ngày 
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
 msgid "A contract must always have a monthly wage — type one before saving."
-msgstr "Hợp đồng luôn phải có lương hàng tháng — hãy nhập số tiền trước khi lưu."
+msgstr ""
+"Hợp đồng luôn phải có lương hàng tháng — hãy nhập số tiền trước khi lưu."
 
 #. module: pb_contracts
 #. odoo-python
@@ -1054,7 +1089,8 @@ msgstr "Hợp đồng này đã có %s."
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "%s is filled automatically from a mapping, so it cannot be removed here."
+msgid ""
+"%s is filled automatically from a mapping, so it cannot be removed here."
 msgstr "%s được điền tự động từ ánh xạ, nên không thể xóa ở đây."
 
 #. module: pb_contracts
@@ -1066,8 +1102,12 @@ msgstr "%(name)s phải nằm trong khoảng từ %(low)s đến %(high)s."
 #. module: pb_contracts
 #. odoo-python
 #: code:addons/pb_contracts/models/pb_contract_360.py:0
-msgid "You can look at contracts but not change them. Ask an HR manager to make this change."
-msgstr "Bạn được xem hợp đồng nhưng không được sửa. Hãy nhờ quản lý nhân sự thực hiện thay đổi này."
+msgid ""
+"You can look at contracts but not change them. Ask an HR manager to make "
+"this change."
+msgstr ""
+"Bạn được xem hợp đồng nhưng không được sửa. Hãy nhờ quản lý nhân sự thực "
+"hiện thay đổi này."
 
 #. module: pb_contracts
 #. odoo-python
@@ -1216,8 +1256,12 @@ msgstr "Chưa có chương trình lương nào trả lương cho người này."
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
-msgid "Components follow the scheme that pays somebody, so until\n                  one does there is nothing here to show."
-msgstr "Thành phần đi theo chương trình lương trả lương cho người đó, nên khi chưa\n                  có chương trình nào thì ở đây chưa có gì để hiển thị."
+msgid ""
+"Components follow the scheme that pays somebody, so until\n"
+"                  one does there is nothing here to show."
+msgstr ""
+"Thành phần đi theo chương trình lương trả lương cho người đó, nên khi chưa\n"
+"                  có chương trình nào thì ở đây chưa có gì để hiển thị."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -1246,8 +1290,12 @@ msgstr "Các giá trị khác trên hợp đồng này"
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
-msgid "Held on this contract, but not used by\n                    the scheme that pays this person."
-msgstr "Lưu trên hợp đồng này, nhưng không được dùng bởi\n                    chương trình lương trả lương cho người này."
+msgid ""
+"Held on this contract, but not used by\n"
+"                    the scheme that pays this person."
+msgstr ""
+"Lưu trên hợp đồng này, nhưng không được dùng bởi\n"
+"                    chương trình lương trả lương cho người này."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -1486,8 +1534,12 @@ msgstr "Trống"
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "A change like this usually starts a new contract. This one is saved onto the contract you are looking at."
-msgstr "Thay đổi như thế này thường cần lập hợp đồng mới. Thay đổi này được lưu vào hợp đồng bạn đang xem."
+msgid ""
+"A change like this usually starts a new contract. This one is saved onto the"
+" contract you are looking at."
+msgstr ""
+"Thay đổi như thế này thường cần lập hợp đồng mới. Thay đổi này được lưu vào "
+"hợp đồng bạn đang xem."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -1553,7 +1605,8 @@ msgstr "Mở màn hình hợp đồng đầy đủ, nơi thực hiện việc n�
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "You can see this contract but not change it. An HR manager can."
-msgstr "Bạn được xem hợp đồng này nhưng không được sửa. Quản lý nhân sự có thể sửa."
+msgstr ""
+"Bạn được xem hợp đồng này nhưng không được sửa. Quản lý nhân sự có thể sửa."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -1570,14 +1623,22 @@ msgstr "người này"
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "Terminate %s's contract? It will be marked as ended today and will stop feeding pay runs."
-msgstr "Chấm dứt hợp đồng của %s? Hợp đồng sẽ được đánh dấu kết thúc hôm nay và không còn cấp dữ liệu cho đợt lương."
+msgid ""
+"Terminate %s's contract? It will be marked as ended today and will stop "
+"feeding pay runs."
+msgstr ""
+"Chấm dứt hợp đồng của %s? Hợp đồng sẽ được đánh dấu kết thúc hôm nay và "
+"không còn cấp dữ liệu cho đợt lương."
 
 #. module: pb_contracts
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
-msgid "Cancel %s's contract? It will be marked as cancelled and will stop feeding pay runs."
-msgstr "Hủy hợp đồng của %s? Hợp đồng sẽ được đánh dấu đã hủy và không còn cấp dữ liệu cho đợt lương."
+msgid ""
+"Cancel %s's contract? It will be marked as cancelled and will stop feeding "
+"pay runs."
+msgstr ""
+"Hủy hợp đồng của %s? Hợp đồng sẽ được đánh dấu đã hủy và không còn cấp dữ "
+"liệu cho đợt lương."
 
 #. module: pb_contracts
 #. odoo-javascript
@@ -1638,3 +1699,244 @@ msgstr "Chỉ quản lý lương mới xem được"
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Showing %(shown)s of %(total)s"
 msgstr "Đang hiển thị %(shown)s / %(total)s"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid ""
+"A contract is the agreement payroll is worked out from. Add the first one."
+msgstr ""
+"Hợp đồng là thoả thuận mà hệ thống dựa vào để tính lương. Hãy thêm hợp đồng "
+"đầu tiên."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "All contracts"
+msgstr "Tất cả hợp đồng"
+
+#. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contract_proposal__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_contracts
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contract_proposal__user_id
+msgid "Asked by"
+msgstr "Người đề nghị"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+#: model:ir.model.fields,field_description:pb_contracts.field_pb_contract_proposal__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Contract category"
+msgstr "Loại hợp đồng"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Contract status"
+msgstr "Trạng thái hợp đồng"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Ending soonest first"
+msgstr "Sắp kết thúc trước"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Ending within 30 days"
+msgstr "Kết thúc trong 30 ngày"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Highest wage first"
+msgstr "Lương cao nhất trước"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Loading contracts"
+msgstr "Đang tải hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Newest start first"
+msgstr "Bắt đầu gần nhất trước"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No category"
+msgstr "Chưa có loại"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "No contracts match these filters"
+msgstr "Không có hợp đồng nào khớp với các bộ lọc này"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "No contracts yet"
+msgstr "Chưa có hợp đồng nào"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No pay structure"
+msgstr "Chưa có cơ cấu lương"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No start date"
+msgstr "Chưa có ngày bắt đầu"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "No trial period"
+msgstr "Không có thử việc"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả nào khớp với “"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Oldest start first"
+msgstr "Bắt đầu sớm nhất trước"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Pay structure"
+msgstr "Cơ cấu lương"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Person, A to Z"
+msgstr "Người, A đến Z"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Remove a filter above, or start again from every contract."
+msgstr "Bỏ bớt một bộ lọc phía trên, hoặc bắt đầu lại từ tất cả hợp đồng."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "Search person, reference, structure, job…"
+msgstr "Tìm người, mã hợp đồng, cơ cấu lương, công việc…"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "Show all contracts"
+msgstr "Hiện tất cả hợp đồng"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Started"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối đã bị gián đoạn. Bộ lọc của bạn vẫn được giữ nguyên."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "The contract list could not load"
+msgstr "Không tải được danh sách hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid ""
+"The contract list could not load. Check your connection, then press Try "
+"again."
+msgstr ""
+"Không tải được danh sách hợp đồng. Hãy kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Trial period ends"
+msgstr "Kết thúc thử việc"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Where it is"
+msgstr "Đang ở bước nào"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contracts.js:0
+msgid "contracts"
+msgstr "hợp đồng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contracts.xml:0
+msgid "”. Check the spelling, or search by person, reference or structure."
+msgstr ""
+"”. Hãy kiểm tra chính tả, hoặc tìm theo người, mã hợp đồng hoặc cơ cấu "
+"lương."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contracts.py:0
+msgid "Earliest end date first"
+msgstr "Ngày kết thúc sớm nhất trước"
