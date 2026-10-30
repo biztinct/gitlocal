@@ -17,6 +17,25 @@ reduced. A clean grant may require the user to remove the existing Payobook gran
 in their Google account and reconnect. Do this for a controlled test account,
 not for all production users automatically.
 
+Connection management (2026-10-30 follow-up): Calendar > Connect checks the
+saved Google connection when Connect / reconnect or Check connection is pressed.
+A valid connection shows the primary calendar title returned by Google and does
+not open OAuth. This title is not asserted to be a verified account email.
+Expired access tokens refresh silently; revoked access offers a new consent
+flow. Temporary Google/network failures keep the saved connection and report
+that it could not be checked. Remove connection explicitly forgets only the
+current user's saved credentials in Payobook and stops sync; it does not revoke
+the project-wide grant, remove another user's connection, or delete meetings.
+Normal sync is unchanged. Only an explicit new/repair connection asks Google
+for account selection and consent, with the same two narrow Calendar scopes.
+
+For a demo with an already connected test account: choose Remove connection in
+Payobook and confirm before recording. Start recording, click Connect /
+reconnect, then Continue to Google. Do not reset production users' connections
+to prepare the demo. Removing the local connection does not itself remove old
+broader grants on Google's side; the controlled pilot grants were separately
+revoked by the owner. Use the same controlled test account for the recording.
+
 The connector reads/inserts/patches/deletes primary-calendar events, watches
 primary event changes, and queries participant free/busy availability. It does
 not require calendar ACL management or deletion of whole calendars.
