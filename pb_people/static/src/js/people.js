@@ -5,17 +5,23 @@ import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted", none: "muted" };
-const DATE_CHIPS = [
-    { id: "all", label: _t("All time") },
-    { id: "month", label: _t("Joined this month") },
-    { id: "year", label: _t("Joined this year") },
-    { id: "custom", label: _t("Custom") },
-];
+const PAGE = 60;
+// What each figure on the numbers line means as a filter. The same filters
+// as the built-in views, so pressing a figure lights the matching tab.
+const GLANCE_FILTERS = {
+    running: { status: ["open"] },
+    expiring: { status: ["open"], ends: { preset: "next_30" } },
+    new: { joined: { preset: "this_month" } },
+    notready: { ready: ["no"] },
+};
 
 export class PbPeople extends Component {
     static template = "pb_people.PbPeople";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -24,14 +30,19 @@ export class PbPeople extends Component {
         this.notif = useService("notification");
         this.state = useState({
             loaded: false, currency: "", kpis: {}, departments: [],
-            people: [], peopleTotal: 0, shown: 0,
-            search: "", dept: "", status: "all",
-            dateFilter: "all", from: "", to: "",
+            people: [], peopleTotal: 0, listLoaded: false, loadingMore: false,
             selectMode: false, selected: [], bulkDept: "",
             drawerEmpId: null,
             // The Contracts door (see `contractsDoor` below) and the contract
             // drawer it opens in place, one person at a time.
             canContracts: false, drawerContractId: null,
+        });
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this screen only loads a page for kit.query.
+        this.kit = useFilterKit({
+            model: "pb.people",
+            noun: _t("employees"),
+            onChange: () => this.loadPage(),
         });
         onWillStart(async () => {
             await Promise.all([this.load(), this._resolveContractsDoor()]);
@@ -112,19 +123,49 @@ export class PbPeople extends Component {
                                name: _t("Contract"), params: { contract_id: p.contract_id } });
     }
 
+    /** The numbers line (counted over everyone, whatever is filtered). */
     async load() {
-        // The roster is capped, so a pressed figure asks the server for
-        // everybody it counts rather than narrowing the first 240.
-        const st = this.state.status;
-        const d = await this.orm.call("pb.people", "get_roster_data", [], { status: st && st !== "all" ? st : null });
+        const d = await this.orm.call("pb.people", "get_roster_head", []);
         Object.assign(this.state, {
-            currency: d.currency, kpis: d.kpis, departments: d.departments,
-            people: d.people, peopleTotal: d.people_total, shown: d.shown, loaded: true,
+            currency: d.currency, kpis: d.kpis, departments: d.departments, loaded: true,
         });
     }
 
+    /** One page of the roster for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.people.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.people", "get_roster_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.people = more ? [...this.state.people, ...d.rows] : d.rows;
+            this.state.peopleTotal = d.total;
+            this.state.listLoaded = true;
+            if (!more) {
+                // somebody the new filters no longer list is unticked, so a
+                // bulk action never reaches a person nobody can see
+                const ids = new Set(d.rows.map((p) => p.id));
+                this.state.selected = this.state.selected.filter((id) => ids.has(id));
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() {
+        return this.state.people.length < this.state.peopleTotal;
+    }
+    get nextPage() {
+        return Math.min(PAGE, this.state.peopleTotal - this.state.people.length);
+    }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
     ic(n, s = 16) { return ic(n, s); }
-    get dateChips() { return DATE_CHIPS; }
 
     // ---- formatting ----
     money(n) {
@@ -143,15 +184,15 @@ export class PbPeople extends Component {
     stateCls(s) { return STATE_CLS[s] || "muted"; }
 
     // ---- the numbers (quiet line) ----
-    // One slim line instead of six tiles. Headcount, Running and New this
-    // month filter the roster exactly like the status chips below; money and
-    // the readiness share are read-only figures.
+    // One slim line instead of six tiles. The figures that filter now set
+    // the filter panel: pressing one ticks exactly its filters (and lights
+    // the matching view tab); pressing it again shows everyone.
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
-        const pick = (id) => () => this.setStatus(this.state.status === id ? "all" : id);
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
-            { key: "all", n: k.headcount || 0, label: _t("Headcount"), tone: "", run: () => this.setStatus("all") },
+            { key: "all", n: k.headcount || 0, label: _t("Headcount"), tone: "", run: () => this.kit.toggleFilters({}) },
             { key: "running", n: k.running || 0, label: _t("Running contracts"), tone: "", run: pick("running") },
             { key: "expiring", n: k.expiring_soon || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring_soon, "amber"), run: pick("expiring") },
             { key: "new", n: k.new_hires || 0, label: _t("New this month"), tone: tone(k.new_hires, "green"), run: pick("new") },
@@ -161,53 +202,17 @@ export class PbPeople extends Component {
         ];
     }
 
-    // ---- filtering ----
-    setStatus(s) {
-        if (this.state.status === s) return;
-        this.state.status = s;
-        this.load();
-    }
-    setDept(d) { this.state.dept = this.state.dept === d ? "" : d; }
-    setDate(d) { this.state.dateFilter = d; }
-    onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
-    onFrom(ev) { this.state.from = ev.target.value; }
-    onTo(ev) { this.state.to = ev.target.value; }
-
-    _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
-    _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
-
-    _matchStatus(p, st) {
-        if (st === "all") return true;
-        if (st === "running") return p.state === "open";
-        if (st === "expiring") return p.days_to_expiry !== null && p.days_to_expiry >= 0 && p.days_to_expiry <= 30;
-        if (st === "new") return p.join_date && p.join_date >= this._monthStart();
-        if (st === "notready") return !p.ready;
-        return true;
-    }
-    _inStatus(p) { return this._matchStatus(p, this.state.status); }
-    _inDate(p) {
-        const f = this.state.dateFilter;
-        if (f === "all") return true;
-        if (!p.join_date) return false;
-        if (f === "month") return p.join_date >= this._monthStart();
-        if (f === "year") return p.join_date >= this._yearStart();
-        if (f === "custom") {
-            if (this.state.from && p.join_date < this.state.from) return false;
-            if (this.state.to && p.join_date > this.state.to) return false;
-            return true;
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
         }
-        return true;
+        return "";
     }
-    get filteredPeople() {
-        const q = this.state.search, dept = this.state.dept;
-        return this.state.people.filter(p => {
-            if (dept && p.dept !== dept) return false;
-            if (!this._inStatus(p)) return false;
-            if (!this._inDate(p)) return false;
-            if (q && !(p.name.toLowerCase().includes(q) || (p.job || "").toLowerCase().includes(q) || (p.dept || "").toLowerCase().includes(q))) return false;
-            return true;
-        });
-    }
+
+    // ---- the list the filter panel produced ----
+    get filteredPeople() { return this.state.people; }
 
     // ---- bulk selection ----
     toggleSelectMode() { this.state.selectMode = !this.state.selectMode; if (!this.state.selectMode) { this.state.selected = []; } }
@@ -226,7 +231,8 @@ export class PbPeople extends Component {
         const res = await this.orm.call("pb.people", "bulk_apply", [this.state.selected, "set_department", deptId]);
         if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
             this.notif.add(_t("%(count)s employees moved.", { count: res.count }), { type: "success" });
-        this.state.selected = []; this.state.bulkDept = ""; await this.load();
+        this.state.selected = []; this.state.bulkDept = "";
+        await Promise.all([this.load(), this.kit.refresh()]);
     }
     /**
      * The Records Desk, opened on the people currently ticked.

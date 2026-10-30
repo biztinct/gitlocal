@@ -615,12 +615,14 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri" data-coach="rep-newemp-open">${ic("plus")}${esc(tx(B("Add employee", "Thêm nhân viên")))}</button>
             </div>
             <div class="lrn-ynums" data-coach="pe-kpis">${nums}</div>
-            <!-- LEARN REFRESH 2: the status buttons are gone from the product
-                 (446560e70); the numbers above are the filters. The panel
-                 holds the search and the date chips. -->
+            <!-- FILTER program (2026-10-30): the shared filter panel. View tabs,
+                 a Filters button that opens the left panel, the search, and the
+                 applied filters as chips. The numbers above still filter. -->
             <div class="lrn-strip" data-coach="pe-filters">
-                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search name, job, department…", "Tìm tên, công việc, phòng ban…")))}</span>
-                <span class="lrn-chip">${esc(tx(B("This month", "Tháng này")))}</span>
+                <span class="lrn-chip b">${esc(tx(B("All employees", "Tất cả nhân viên")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Not payroll-ready", "Chưa sẵn sàng tính lương")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search name, job, department, email…", "Tìm tên, công việc, phòng ban, email…")))}</span>
             </div>
             <div class="lrn-ywf">
                 <div class="lrn-ywfmain">

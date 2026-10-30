@@ -3,15 +3,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-27 06:55+0000\n"
-"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"POT-Creation-Date: 2026-10-30 12:30+0000\n"
+"PO-Revision-Date: 2026-10-30 12:30+0000\n"
 "Last-Translator: Payobook Translation Automation\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "%(count)s employees moved."
+msgstr "Nhân viên %(count)s đã di chuyển."
 
 #. module: pb_people
 #. odoo-javascript
@@ -26,6 +32,12 @@ msgid "Advanced form"
 msgstr "Biểu mẫu nâng cao"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "All employees"
+msgstr "Tất cả nhân viên"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Back to Employees"
@@ -33,15 +45,28 @@ msgstr "Quay lại Nhân viên"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/employee_detail.js:0 code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Bank details"
 msgstr "Chi tiết ngân hàng"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
-msgid "Bank on file"
-msgstr "Ngân hàng trong hồ sơ"
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Bulk update"
+msgstr "Cập nhật hàng loạt"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Change the employee, contract and bank details your pay scheme reads"
+msgstr "Thay đổi thông tin nhân viên, hợp đồng và ngân hàng mà chính sách lương của bạn sử dụng"
 
 #. module: pb_people
 #. odoo-javascript
@@ -50,17 +75,59 @@ msgid "Clear"
 msgstr "Làm sạch"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/static/src/js/people.js:0 code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Contract ends"
+msgstr "Hợp đồng kết thúc"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Contract lifecycle"
 msgstr "Vòng đời hợp đồng"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Contract status"
+msgstr "Trạng thái hợp đồng"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Contract type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
-#: code:addons/pb_people/static/src/xml/people.xml:0
+#: code:addons/pb_people/static/src/xml/employee_detail.xml:0 code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Contracts"
 msgstr "Hợp đồng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "Days to contract end"
+msgstr "Số ngày đến hết hợp đồng"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Department"
+msgstr "Phòng ban"
 
 #. module: pb_people
 #: model:ir.model.fields,field_description:pb_people.field_pb_people__display_name
@@ -68,23 +135,51 @@ msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_people
 #: model:ir.actions.client,name:pb_people.action_pb_employee_detail
 msgid "Employee"
 msgstr "Nhân viên"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Employee type"
+msgstr "Loại nhân viên"
+
+#. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
-#: code:addons/pb_people/static/src/xml/people.xml:0
-#: model:ir.actions.client,name:pb_people.action_pb_people
+#: code:addons/pb_people/static/src/xml/employee_detail.xml:0 code:addons/pb_people/static/src/xml/people.xml:0 model:ir.actions.client,name:pb_people.action_pb_people
 msgid "Employees"
 msgstr "Nhân viên"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Ending within 30 days"
+msgstr "Kết thúc trong 30 ngày"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Expiring ≤30d"
-msgstr "Hết hạn 30d"
+msgid "Every contract, on its own board"
+msgstr "Tất cả hợp đồng, trên một bảng riêng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "Expiring within 30 days"
+msgstr "Hết hạn trong 30 ngày"
 
 #. module: pb_people
 #. odoo-javascript
@@ -93,8 +188,20 @@ msgid "Export CSV"
 msgstr "Xuất CSV"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Grade"
+msgstr "Bậc"
+
+#. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
+#: code:addons/pb_people/static/src/js/people.js:0
 msgid "Headcount"
 msgstr "Số lượng nhân sự"
 
@@ -110,10 +217,29 @@ msgid "Income tax (PIT)"
 msgstr "Thuế thu nhập (PIT)"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Job position"
+msgstr "Chức danh"
+
+#. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Joined"
 msgstr "Đã tham gia"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Joined this month"
+msgstr "Đã tham gia tháng này"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Loading employees"
+msgstr "Đang tải nhân viên"
 
 #. module: pb_people
 #. odoo-javascript
@@ -129,8 +255,39 @@ msgstr "Đang tải người…"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 #: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Longest serving first"
+msgstr "Thâm niên lâu nhất trước"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "Missing"
+msgstr "Thiếu"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Missing something"
+msgstr "Còn thiếu thông tin"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/employee_detail.js:0 code:addons/pb_people/static/src/js/people.js:0
 msgid "Monthly wage"
 msgstr "Lương hàng tháng"
 
@@ -141,6 +298,24 @@ msgid "Move to department…"
 msgstr "Chuyển đến khoa…"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Name, Z to A"
+msgstr "Tên, Z đến A"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Nationality"
+msgstr "Quốc tịch"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "New contract"
@@ -148,22 +323,144 @@ msgstr "Hợp đồng mới"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
-#: code:addons/pb_people/static/src/js/people.js:13
+#: code:addons/pb_people/static/src/js/people.js:0
 msgid "New this month"
 msgstr "Mới trong tháng này"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Newest joiners first"
+msgstr "Người mới vào làm trước"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No contract"
+msgstr "Không có hợp đồng"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No division"
+msgstr "Chưa có khối"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "No employees match these filters."
-msgstr "Không có nhân viên nào phù hợp với các bộ lọc này."
+msgid "No employees match these filters"
+msgstr "Không có nhân viên nào khớp với các bộ lọc này"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No grade"
+msgstr "Chưa có bậc"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No pay structure"
+msgstr "Chưa có cơ cấu lương"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No start date"
+msgstr "Chưa có ngày vào làm"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "No work location"
+msgstr "Chưa có nơi làm việc"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Nobody matches “"
+msgstr "Không ai khớp với “"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/people.js:0
+msgid "Not payroll-ready"
+msgstr "Chưa sẵn sàng tính lương"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Not started yet"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_people
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/employee_detail.js:0
+msgid "On file"
+msgstr "Đã có"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "On trial period"
+msgstr "Đang thử việc"
 
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "Open full employee list →"
 msgstr "Mở danh sách nhân viên đầy đủ →"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Open their contract"
+msgstr "Mở hợp đồng của nhân viên"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Pay structure"
+msgstr "Cơ cấu lương"
 
 #. module: pb_people
 #: model:ir.model,name:pb_people.model_pb_people
@@ -178,7 +475,8 @@ msgstr "Bảng lương đã sẵn sàng"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0 code:addons/pb_people/static/src/js/people.js:0
 msgid "Payroll-ready"
 msgstr "Sẵn sàng tính lương"
 
@@ -189,6 +487,18 @@ msgid "Payslips"
 msgstr "Phiếu lương"
 
 #. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Ready means a running contract and bank details on file."
+msgstr "Sẵn sàng nghĩa là có hợp đồng đang hiệu lực và đã có thông tin ngân hàng."
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Ready to be paid"
+msgstr "Sẵn sàng trả lương"
+
+#. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "Records"
@@ -197,20 +507,38 @@ msgstr "Bản ghi"
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Remove a filter above, or start again from everyone."
+msgstr "Bỏ một bộ lọc phía trên, hoặc bắt đầu lại từ tất cả mọi người."
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/js/people.js:0
 msgid "Running contracts"
 msgstr "Hợp đồng đang hiệu lực"
 
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Search name, job, department…"
-msgstr "Tìm kiếm tên, công việc, bộ phận…"
+msgid "Select all"
+msgstr "Chọn tất cả"
 
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Select all"
-msgstr "Chọn tất cả"
+msgid "Show"
+msgstr "Xem thêm"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "Show all employees"
+msgstr "Xem tất cả nhân viên"
 
 #. module: pb_people
 #. odoo-javascript
@@ -232,15 +560,33 @@ msgstr "Sẵn sàng theo luật định"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
+#: code:addons/pb_people/static/src/js/employee_detail.js:0
 msgid "Tenure"
 msgstr "Thâm niên"
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/employee_detail.xml:0
-msgid "To contract end"
-msgstr "Để kết thúc hợp đồng"
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "The Records Desk is not available on this database."
+msgstr "Bàn hồ sơ không có trên cơ sở dữ liệu này."
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Trial period"
+msgstr "Thử việc"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Work country"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_people
+#. odoo-python
+#: code:addons/pb_people/models/pb_people.py:0
+msgid "Work location"
+msgstr "Nơi làm việc"
 
 #. module: pb_people
 #. odoo-javascript
@@ -250,15 +596,21 @@ msgstr "Sơ lược về con người, tình trạng hợp đồng và mức lư
 
 #. module: pb_people
 #. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "d"
-msgstr "d"
+#: code:addons/pb_people/static/src/js/people.js:0
+msgid "employees"
+msgstr "nhân viên"
 
 #. module: pb_people
 #. odoo-javascript
 #: code:addons/pb_people/static/src/xml/people.xml:0
 msgid "monthly"
 msgstr "hàng tháng"
+
+#. module: pb_people
+#. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "more"
+msgstr "người"
 
 #. module: pb_people
 #. odoo-javascript
@@ -274,113 +626,12 @@ msgstr "đã chọn"
 
 #. module: pb_people
 #. odoo-javascript
+#: code:addons/pb_people/static/src/xml/people.xml:0
+msgid "”. Check the spelling, or search by job or department."
+msgstr "”. Kiểm tra lại chính tả, hoặc tìm theo công việc hay phòng ban."
+
+#. module: pb_people
+#. odoo-javascript
 #: code:addons/pb_people/static/src/xml/employee_detail.xml:0
 msgid "→ indefinite"
 msgstr "→ không xác định"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:10
-msgid "All"
-msgstr "Tất cả"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:11
-msgid "Running"
-msgstr "Đang chạy"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:12
-msgid "Expiring soon"
-msgstr "Sắp hết hạn"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:14
-msgid "No contract"
-msgstr "Không có hợp đồng"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:17
-msgid "All time"
-msgstr "Mọi lúc"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:18
-msgid "Joined this month"
-msgstr "Đã tham gia tháng này"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:19
-msgid "Joined this year"
-msgstr "Đã tham gia năm nay"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:20
-msgid "Custom"
-msgstr "Tùy chỉnh"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:151
-msgid "%(count)s employees moved."
-msgstr "Nhân viên %(count)s đã di chuyển."
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:0
-msgid "Expiring within 30 days"
-msgstr "Hết hạn trong 30 ngày"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/employee_detail.js:0
-msgid "Days to contract end"
-msgstr "Số ngày đến hết hợp đồng"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/employee_detail.js:0
-msgid "On file"
-msgstr "Đã có"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/employee_detail.js:0
-msgid "Missing"
-msgstr "Thiếu"
-
-# ===================================================================
-#  Contracts door inside Employees (2026-09-24).
-# ===================================================================
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:0
-#: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Contract"
-msgstr "Hợp đồng"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Open their contract"
-msgstr "Mở hợp đồng của nhân viên"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/xml/people.xml:0
-msgid "Every contract, on its own board"
-msgstr "Tất cả hợp đồng, trên một bảng riêng"
-
-#. module: pb_people
-#. odoo-javascript
-#: code:addons/pb_people/static/src/js/people.js:0
-msgid "Not payroll-ready"
-msgstr "Chưa sẵn sàng tính lương"

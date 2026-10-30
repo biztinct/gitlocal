@@ -567,7 +567,7 @@
     "pe-filters": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
-      "desc": "Search and the date range. The status chips left with the quiet numbers (446560e70): every figure above is the filter, counted over everyone.",
+      "desc": "The shared filter panel: view tabs (All employees, Not payroll-ready, Ending within 30 days…), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers above still filter.",
       "reserved": true
     },
     "pe-roster": {

@@ -2,12 +2,13 @@
 {
     'name': 'Payobook People Cockpit',
     'summary': 'Employee roster + contracts cockpit (headcount, payroll readiness)',
-    'version': '19.0.1.2.7',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_people_advanced'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit', 'pb_people_advanced',
+                'pb_filter_kit'],
     'data': [
         'views/pb_people_action.xml',
     ],
