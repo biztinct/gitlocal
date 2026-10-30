@@ -36,6 +36,23 @@ to prepare the demo. Removing the local connection does not itself remove old
 broader grants on Google's side; the controlled pilot grants were separately
 revoked by the owner. Use the same controlled test account for the recording.
 
+Availability identity correction (2026-10-30): Google Hiring connection checks
+and panel availability query the connected organiser's primary calendar, not
+the organiser's Payobook login/work email. If the organiser is also selected
+on the panel, that employee is recognised by user_id and is not queried again
+using their work email. Other panellists still require calendar addresses and
+availability sharing; missing/inaccessible calendars must never count as free.
+Microsoft identifiers are unchanged. No additional OAuth scope is required.
+
+Availability demo route: Calendar > Find a time > Choose a candidate opens
+Hiring's applicant board. Open a controlled DEMO candidate, then Find panel
+availability in the candidate profile. Choose Google Calendar and a panel whose
+calendars the connected account can read, choose dates, duration and timezone,
+then Find shared availability. This lists slots and prepares a private booking
+link; it does not send an invitation. Do not share that link in a demonstration.
+Hiring connections must first pass its real Google check and be enabled for
+the pilot company. Each organiser still needs their own Google consent.
+
 The connector reads/inserts/patches/deletes primary-calendar events, watches
 primary event changes, and queries participant free/busy availability. It does
 not require calendar ACL management or deletion of whole calendars.
