@@ -44,7 +44,19 @@ using their work email. Other panellists still require calendar addresses and
 availability sharing; missing/inaccessible calendars must never count as free.
 Microsoft identifiers are unchanged. No additional OAuth scope is required.
 
-Availability demo route: Calendar > Find a time > Choose a candidate opens
+Preferred personal-availability demo (2026-10-30): Calendar > Find a time >
+My Google calendar > Check my availability. Choose a date, time window, meeting
+length and timezone. The app queries only the signed-in user's connected Google
+primary calendar through freeBusy, then shows merged busy intervals and future
+available slots. It retrieves no event titles, attendees or descriptions in this
+check. No candidate, employee record, panel sharing or Hiring connection flag is
+needed. No event is created, changed or sent. Existing Google consent is reused.
+Suggested narration: "Payobook checks my connected Google calendar for free and
+busy times without retrieving event details. These are the available times for
+my selected meeting length." This demonstrates calendar.events.freebusy using
+only the owner's calendar, as requested for the recording.
+
+Optional panel-interview route: Calendar > Find a time > Choose a candidate opens
 Hiring's applicant board. Open a controlled DEMO candidate, then Find panel
 availability in the candidate profile. Choose Google Calendar and a panel whose
 calendars the connected account can read, choose dates, duration and timezone,
