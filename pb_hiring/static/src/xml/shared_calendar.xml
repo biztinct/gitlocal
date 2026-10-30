@@ -37,6 +37,7 @@
 <t t-name="pb_hiring.SharedCalendar">
 <div class="pbcal">
   <div t-if="state.error" class="alert alert-danger" role="alert"><t t-esc="state.error"/> <button class="pbim-btn" t-on-click="load">Retry</button></div>
+  <p t-if="state.syncError" class="alert alert-warning" role="alert" t-esc="state.syncError"/>
   <t t-if="props.connectionsOnly">
     <h1>Your calendar connections</h1><p class="pbcal-muted">Connect your primary Google or Microsoft calendar. Only meetings you organise or are invited to appear here. Payroll deadlines stay inside Payobook.</p>
     <div class="pbcal-connections"><article class="pbcal-provider" t-foreach="providers" t-as="p" t-key="p.key">
@@ -47,6 +48,7 @@
         <t t-else="">Preparing automatic change notifications…</t>
       </p>
       <p class="pbcal-muted">Your primary calendar · two-way sync</p>
+      <p t-if="syncTime(p.key)" class="pbcal-muted" role="status">Last synced: <t t-esc="syncTime(p.key)"/></p>
       <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
       <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>
       <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button t-if="p.key !== 'google' or state.caps.google_connection_saved" class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
@@ -74,7 +76,10 @@
     <div class="pbcal-heading"><div><h1 t-esc="props.interviewsOnly ? 'Interview calendar' : props.payrollOnly ? 'Payroll calendar' : 'Your calendar'"/><p class="pbcal-muted">Your work, in one place. Only events you are permitted to see.</p></div><div class="pbcal-actions"><button t-if="state.caps.payroll and !props.interviewsOnly" class="pbim-btn" t-on-click="payrollDates">Manage payroll dates</button><button t-if="!props.interviewsOnly and !props.payrollOnly" class="pbim-btn primary" t-on-click="newEvent">+ New meeting</button></div></div>
     <div class="pbcal-toolbar">
       <div class="pbcal-actions"><button class="pbim-btn" t-on-click="today">Today</button><button class="pbim-btn" aria-label="Previous period" t-on-click="() => this.move(-1)">‹</button><button class="pbim-btn" aria-label="Next period" t-on-click="() => this.move(1)">›</button><strong t-esc="heading"/></div>
-      <div class="pbcal-actions"><input type="date" aria-label="Calendar date" t-model="state.date" t-on-change="load"/><select aria-label="Calendar timezone" t-model="state.zone" t-on-change="load"><option t-foreach="zones" t-as="zone" t-key="zone" t-att-value="zone" t-esc="zone"/></select><button class="pbim-btn" t-att-disabled="state.busy" t-on-click="load">Refresh</button></div>
+      <div class="pbcal-actions"><input type="date" aria-label="Calendar date" t-model="state.date" t-on-change="load"/><select aria-label="Calendar timezone" t-model="state.zone" t-on-change="load"><option t-foreach="zones" t-as="zone" t-key="zone" t-att-value="zone" t-esc="zone"/></select><button class="pbim-btn" t-att-disabled="state.busy || state.refreshing || !!state.syncing" t-on-click="refresh"><t t-if="state.refreshing || state.syncing">Refreshing…</t><t t-else="">Refresh</t></button></div>
+    </div>
+    <div t-if="!props.payrollOnly &amp;&amp; !props.interviewsOnly" aria-live="polite">
+      <t t-foreach="providers" t-as="p" t-key="p.key"><p t-if="p.status === 'sync_active'" class="pbcal-muted"><t t-esc="p.label"/> · <t t-if="syncTime(p.key)">Last synced: <t t-esc="syncTime(p.key)"/></t><t t-else="">Not synced yet. Choose Refresh to fetch your latest events.</t></p></t>
     </div>
     <div class="pbcal-toolbar"><input class="pbcal-search" type="search" aria-label="Search calendar" placeholder="Search your visible events…" t-model="state.query"/><div class="pbcal-views" role="tablist" aria-label="Calendar view"><button t-foreach="views" t-as="view" t-key="view.key" role="tab" t-att-aria-selected="state.view === view.key ? 'true' : 'false'" t-att-class="state.view === view.key ? 'on' : ''" t-on-click="() => this.setView(view.key)" t-esc="view.label"/></div></div>
     <div class="pbcal-sources"><label t-foreach="sources" t-as="s" t-key="s.key" t-att-class="'pbcal-source ' + s.key"><input type="checkbox" t-att-checked="s.on" t-on-change="() => this.toggle(s.key)"/><span t-esc="s.label"/><small t-esc="s.count"/></label></div>

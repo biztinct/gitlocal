@@ -26,14 +26,21 @@ CALLBACK_PATH = '/pb/calendar/google/notify'
 class CalendarNotificationSettings(models.Model):
     _inherit = 'res.users.settings'
 
+    pb_google_last_sync = fields.Datetime(copy=False)
+    pb_microsoft_last_sync = fields.Datetime(copy=False)
+
     def write(self, vals):
+        vals = dict(vals)
+        for provider in ('google', 'microsoft'):
+            if provider + '_calendar_rtoken' in vals:
+                vals['pb_' + provider + '_last_sync'] = False
         result = super().write(vals)
         if 'google_calendar_rtoken' in vals:
             # Reconnection can select a different account or OAuth application.
             # Do not accept old-account hints or reuse its watch subscription.
             self.env['pb.calendar.google.channel'].sudo().search([
                 ('user_id', 'in', self.user_id.ids)]).write({
-                    'channel': False, 'token_hash': False, 'resource': False, 'expires': False,
+                    'channel': False, 'token_hash': False, 'resource': False, 'expires': False, 'last_sync': False,
                     'next_watch': fields.Datetime.now(), 'next_sync': fields.Datetime.now(),
                     'failures': 0, 'watch_failures': 0})
         return result

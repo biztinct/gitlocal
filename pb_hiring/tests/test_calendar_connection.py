@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlsplit
 import requests
 
 from odoo import fields
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError, LockError, UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -184,3 +184,68 @@ class TestCalendarConnection(TransactionCase):
         with patch.object(type(self.env['pb.hiring.booking']), '_provider_busy', side_effect=UserError('No access')):
             with self.assertRaises(UserError):
                 self.api.own_google_availability(str(first), str(first + timedelta(hours=2)))
+
+    def test_refresh_success_records_only_own_time_even_without_new_events(self):
+        self.settings.google_synchronization_stopped = False
+        with patch.object(type(self.user), '_sync_google_calendar', autospec=True, return_value=False) as sync:
+            result = self.api.sync_connected_calendar('google')
+        self.assertEqual(result['status'], 'success')
+        self.assertEqual(sync.call_args.args[0].id, self.user.id)
+        self.assertEqual(result['last_sync'], str(self.settings.pb_google_last_sync))
+        self.assertFalse(self.other_settings.pb_google_last_sync)
+        self.assertEqual(self.api.capabilities()['last_sync']['google'], result['last_sync'])
+
+    def test_refresh_error_keeps_previous_success_time(self):
+        self.settings.google_synchronization_stopped = False
+        before = fields.Datetime.now() - timedelta(hours=2)
+        self.settings.pb_google_last_sync = before
+        with patch.object(type(self.user), '_sync_google_calendar', side_effect=requests.Timeout()):
+            with self.assertRaises(requests.Timeout): self.api.sync_connected_calendar('google')
+        self.assertEqual(self.settings.pb_google_last_sync, before)
+
+    def test_refresh_skips_paused_disconnected_and_locked_connections(self):
+        with patch.object(type(self.user), '_sync_google_calendar') as sync:
+            self.assertEqual(self.api.sync_connected_calendar('google')['status'], 'sync_stopped')
+            sync.assert_not_called()
+        self.settings.google_synchronization_stopped = False
+        with patch.object(type(self.user), 'lock_for_update', side_effect=LockError('busy')), \
+             patch.object(type(self.user), '_sync_google_calendar') as sync:
+            self.assertEqual(self.api.sync_connected_calendar('google')['status'], 'sync_busy')
+            sync.assert_not_called()
+        self.assertFalse(self.settings.pb_google_last_sync)
+
+    def test_refresh_rejects_invalid_provider_portal_and_dual_connection(self):
+        with self.assertRaises(UserError): self.api.sync_connected_calendar('unknown')
+        with self.assertRaises(AccessError):
+            self.api.with_user(self.env.ref('base.public_user')).sync_connected_calendar('google')
+        with patch.object(type(self.user), 'check_synchronization_status', return_value={
+                'google_calendar': 'sync_active', 'microsoft_calendar': 'sync_active'}):
+            with self.assertRaises(UserError): self.api.sync_connected_calendar('google')
+
+    def test_refresh_does_not_claim_success_if_connection_stops_during_sync(self):
+        self.settings.google_synchronization_stopped = False
+        def stop(service):
+            self.settings.google_synchronization_stopped = True
+        with patch.object(type(self.user), '_sync_google_calendar', side_effect=stop):
+            self.assertEqual(self.api.sync_connected_calendar('google')['status'], 'sync_stopped')
+        self.assertFalse(self.settings.pb_google_last_sync)
+
+    def test_refresh_microsoft_records_own_success_without_google_sync(self):
+        with patch.object(type(self.user), 'check_synchronization_status', return_value={
+                'google_calendar': 'sync_stopped', 'microsoft_calendar': 'sync_active'}), \
+             patch.object(type(self.user), '_sync_microsoft_calendar', return_value=False) as sync, \
+             patch.object(type(self.user), '_sync_google_calendar') as google:
+            self.assertEqual(self.api.sync_connected_calendar('microsoft')['status'], 'success')
+            sync.assert_called_once()
+            google.assert_not_called()
+        self.assertTrue(self.settings.pb_microsoft_last_sync)
+        self.assertFalse(self.other_settings.pb_microsoft_last_sync)
+
+    def test_reconnection_clears_old_account_sync_time(self):
+        self.settings.pb_google_last_sync = fields.Datetime.now()
+        channel = self.env['pb.calendar.google.channel'].sudo().create({
+            'user_id': self.user.id, 'last_sync': fields.Datetime.now()})
+        self.settings.google_calendar_rtoken = 'different-account-refresh'
+        self.assertFalse(self.settings.pb_google_last_sync)
+        self.assertFalse(channel.last_sync)
+        self.assertFalse(self.api.capabilities()['last_sync']['google'])

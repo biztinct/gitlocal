@@ -46,12 +46,12 @@ export class SharedCalendar extends Component {
         this.orm = useService("orm"); this.actions = useService("action");
         this.notification = useService("notification"); this.dialog = useService("dialog");
         this.state = useState({ busy: true, error: "", events: [], caps: {}, date: DateTime.now().toISODate(),
-            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "", googleConnection: null });
+            zone: "UTC", view: window.innerWidth < 700 ? "agenda" : "week", query: "", hidden: [], selected: null, truncated: false, syncing: "", refreshing: false, syncError: "", googleConnection: null });
         useExternalListener(window, "keydown", ev => { if (ev.key === "Escape") this.state.selected = null; });
-        // Refresh the permission-filtered local feed, never poll Google from
-        // the browser. Leave open meeting details and background tabs alone.
+        // Automatic refresh reads the local feed; only the explicit Refresh
+        // button contacts the provider. Leave open details and background tabs alone.
         onMounted(() => { this._refreshTimer = setInterval(() => {
-            if (!document.hidden && !this.state.busy && !this.state.selected && !this.state.syncing) this.refreshQuietly();
+            if (!document.hidden && !this.state.busy && !this.state.selected && !this.state.syncing && !this.state.refreshing) this.refreshQuietly();
         }, 60000); });
         onWillUnmount(() => { clearInterval(this._refreshTimer); this._generation++; });
         this.zones = [...new Set([DateTime.local().zoneName, "UTC", "Australia/Sydney", "Asia/Ho_Chi_Minh", "Asia/Singapore", "Asia/Kolkata", "Europe/London", "America/New_York"])];
@@ -96,9 +96,12 @@ export class SharedCalendar extends Component {
                 return;
             }
             const r = this.range;
-            const payload = await this.orm.call("pb.shared.calendar", "events", [r.start.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.end.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.start.toISODate(), r.end.toISODate()]);
-            if (generation === this._generation) {
-                this.state.events = payload.events; this.state.truncated = payload.truncated;
+            const [payload, caps] = await Promise.all([
+                this.orm.call("pb.shared.calendar", "events", [r.start.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.end.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), r.start.toISODate(), r.end.toISODate()]),
+                this.orm.call("pb.shared.calendar", "capabilities", []),
+            ]);
+            if (generation === this._generation && !this.state.syncing && !this.state.refreshing) {
+                this.state.events = payload.events; this.state.truncated = payload.truncated; this.state.caps = caps;
             }
         } catch { /* A background refresh must not interrupt an open calendar. */ }
     }
@@ -190,18 +193,55 @@ export class SharedCalendar extends Component {
         if (p.key === "google") { this.offerGoogleConnection(await this.checkGoogleConnection()); return; }
         this.dialog.add(ConfirmationDialog, { title: _t("Connect your calendar"), body: _t("This connects your primary calendar with two-way synchronisation. Meeting changes can update your connected calendar and invitations. Payroll deadlines stay inside Payobook. Continue to your provider to consent?"), confirmLabel: _t("Continue"), confirm: () => this.sync(p) });
     }
-    async sync(p) {
-        this.state.syncing = p.key;
+    syncTime(provider) {
+        const value = this.state.caps.last_sync?.[provider];
+        return value ? DateTime.fromSQL(value, { zone: "UTC" }).setZone(this.state.zone).toFormat("d LLL yyyy, HH:mm:ss") + " · " + this.state.zone : "";
+    }
+    async refresh() {
+        if (this.state.refreshing || this.state.syncing) return;
+        this.state.refreshing = true; this.state.syncError = "";
+        this._generation = (this._generation || 0) + 1;
         try {
-            const result = await rpc(`/${p.key}_calendar/sync_data`, { model: "calendar.event", fromurl: window.location.href });
-            if (result.status === "need_auth" && result.url) { window.location.assign(result.url); return; }
-            if (result.status === "need_config_from_admin") this.notification.add(_t("Ask an administrator to configure this provider in Settings → Connect → Calendars."), { type: "warning" });
-            else if (result.status === "sync_stopped") this.notification.add(_t("Resume the connection, then synchronise again."), { type: "info" });
-            else if (result.status === "sync_paused") this.notification.add(_t("Your administrator has paused synchronisation."), { type: "warning" });
-            else this.notification.add(_t("Calendar synchronisation completed."), { type: "success" });
-            this.state.caps = await this.orm.call("pb.shared.calendar", "capabilities", []); await this.load();
-        } catch(e) { this.notification.add(_t("Could not synchronise. Reconnect your account or ask your administrator to check provider access."), { type: "danger", sticky: true }); }
-        finally { this.state.syncing = ""; }
+            this.state.caps = await this.orm.call("pb.shared.calendar", "capabilities", []);
+            const active = this.providers.filter(p => p.status === "sync_active");
+            if (!this.props.payrollOnly && !this.props.interviewsOnly && active.length === 1) {
+                await this.sync(active[0], { existingOnly: true });
+            } else {
+                if (active.length > 1) this.state.syncError = _t("Pause one calendar connection under Calendar → Connect before synchronising.");
+                await this.load();
+            }
+        } catch (e) { this.fail(e); }
+        finally { this.state.refreshing = false; }
+    }
+    async sync(p, { existingOnly = false } = {}) {
+        if (this.state.syncing) return;
+        this.state.syncing = p.key; this.state.syncError = "";
+        this._generation = (this._generation || 0) + 1;
+        try {
+            const result = existingOnly || p.status === "sync_active"
+                ? await this.orm.call("pb.shared.calendar", "sync_connected_calendar", [p.key])
+                : await rpc(`/${p.key}_calendar/sync_data`, { model: "calendar.event", fromurl: window.location.href });
+            if (result.status === "need_auth" && result.url && !existingOnly) { window.location.assign(result.url); return; }
+            const messages = {
+                need_auth: _t("Reconnect your calendar under Calendar → Connect to fetch the latest changes."),
+                need_config_from_admin: _t("Ask an administrator to configure this provider in Settings → Connect → Calendars."),
+                missing_credentials: _t("Ask an administrator to configure this provider in Settings → Connect → Calendars."),
+                sync_stopped: _t("Your calendar connection needs attention. Open Calendar → Connect to resume or reconnect."),
+                sync_paused: _t("Your administrator has paused synchronisation."),
+                sync_busy: _t("A calendar sync is already running. Please try Refresh again shortly."),
+            };
+            if (["success", "need_refresh", "no_new_event_from_google", "no_new_event_from_microsoft"].includes(result.status)) {
+                this.notification.add(_t("Calendar synchronisation completed."), { type: "success" });
+            } else {
+                this.state.syncError = messages[result.status] || _t("Calendar sync did not complete. Please check your connection.");
+            }
+            this.state.caps = await this.orm.call("pb.shared.calendar", "capabilities", []);
+        } catch(e) {
+            this.state.syncError = _t("Could not synchronise. Showing saved events. Check your connection under Calendar → Connect and try again.");
+        } finally {
+            await this.load();
+            this.state.syncing = "";
+        }
     }
 }
 class FindInterviewTime extends Component {

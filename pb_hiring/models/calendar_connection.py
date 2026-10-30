@@ -5,12 +5,42 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import requests
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import LockError, UserError
 from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
 
 class CalendarConnection(models.AbstractModel):
     _inherit = 'pb.shared.calendar'
+
+    @api.model
+    def sync_connected_calendar(self, provider):
+        """Explicit refresh of this user's existing connection; never start OAuth."""
+        self._require()
+        if provider not in ('google', 'microsoft'):
+            raise UserError(_('Unknown calendar provider.'))
+        user = self.env.user
+        statuses = user.check_synchronization_status()
+        status = statuses.get(provider + '_calendar')
+        if status != 'sync_active':
+            return {'status': status or 'missing_credentials'}
+        if all(statuses.get(p + '_calendar') == 'sync_active' for p in ('google', 'microsoft')):
+            raise UserError(_('Pause one calendar connection before synchronising.'))
+        # Native Google sync otherwise silently skips a locked user. Do not
+        # report a successful refresh or advance its timestamp in that case.
+        try:
+            user.lock_for_update(allow_referencing=True)
+        except LockError:
+            return {'status': 'sync_busy'}
+        if provider == 'google':
+            user.sudo()._sync_google_calendar(GoogleCalendarService(self.env['google.service']))
+        else:
+            user.sudo().with_context(dont_notify=True)._sync_microsoft_calendar()
+        status = user.check_synchronization_status().get(provider + '_calendar')
+        if status != 'sync_active':
+            return {'status': status or 'missing_credentials'}
+        checked = fields.Datetime.now()
+        user.res_users_settings_id.sudo().write({'pb_' + provider + '_last_sync': checked})
+        return {'status': 'success', 'last_sync': fields.Datetime.to_string(checked)}
 
     @api.model
     def own_google_availability(self, start, stop, duration=30):

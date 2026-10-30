@@ -68,13 +68,18 @@ class SharedCalendar(models.AbstractModel):
     @api.model
     def capabilities(self):
         self._require()
+        settings = self.env.user.res_users_settings_id.sudo()
+        notifications = self.env['pb.calendar.google.channel']._own_status()
+        google_times = [str(t) for t in (settings.pb_google_last_sync, notifications['last_sync']) if t]
         return {'payroll': self._payroll(), 'admin': self.env.user.has_group('base.group_system'),
                 'timezone': self.env.user.tz or 'UTC',
                 'payroll_planning': self.env.user.has_group('pb_comp_ben.group_comp_user'),
                 'hiring': self.env['pb.hiring'].can_open(),
                 'connections': self.env.user.check_synchronization_status(),
                 'google_connection_saved': bool(self.env.user.sudo().google_calendar_rtoken),
-                'google_notifications': self.env['pb.calendar.google.channel']._own_status()}
+                'google_notifications': notifications,
+                'last_sync': {'google': max(google_times) if google_times else False,
+                              'microsoft': str(settings.pb_microsoft_last_sync) if settings.pb_microsoft_last_sync else False}}
 
     @api.model
     def events(self, start, stop, local_start=None, local_stop=None):
