@@ -36,3 +36,11 @@
 .pbcal-fullcalendar .fc-event-time { font-size:10px; flex-shrink:0; }
 .pbcal-fullcalendar .fc-daygrid-event { white-space:normal; align-items:flex-start; }
 .pbcal-fullcalendar .fc-daygrid-event-dot { margin-top:7px; flex-shrink:0; }
+.pbcal-availability-form { display:flex; flex-wrap:wrap; gap:16px; margin:24px 0; }
+.pbcal-availability-form label { display:flex; flex-direction:column; gap:6px; color:#4e436c; font-weight:600; }
+.pbcal-availability-form input,.pbcal-availability-form select { padding:9px 12px; border:1px solid #dce1ef; border-radius:8px; background:white; color:#29213f; }
+.pbcal-availability-results { display:grid; grid-template-columns:2fr 1fr; gap:24px; margin-top:20px; }
+.pbcal-availability-results section { padding:20px; background:white; border:1px solid #dce1ef; border-radius:12px; }
+.pbcal-time-list { display:flex; flex-wrap:wrap; gap:8px; padding:0; list-style:none; margin:16px 0 0; }
+.pbcal-time-list li { padding:8px 12px; border-radius:8px; background:#f1edfb; color:#4d3c85; font-variant-numeric:tabular-nums; }
+@media(max-width:750px) { .pbcal-availability-results { grid-template-columns:1fr; } .pbcal-availability-form label { flex:1 1 140px; } }

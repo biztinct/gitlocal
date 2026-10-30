@@ -137,3 +137,50 @@ class TestCalendarConnection(TransactionCase):
             with self.assertRaises(UserError): self.api.google_connection_authorize()
         self.env['ir.config_parameter'].sudo().set_param('google_calendar_sync_paused', 'True')
         with self.assertRaises(UserError): self.api.google_connection_authorize()
+
+    def test_own_availability_pins_account_and_merges_busy_without_hiring_setup(self):
+        first = (fields.Datetime.now() + timedelta(days=2)).replace(hour=9, minute=0, second=0)
+        last = first + timedelta(hours=2)
+        periods = [(first - timedelta(hours=1), first + timedelta(minutes=30)),
+                   (first + timedelta(minutes=15), first + timedelta(hours=1)),
+                   (last, last + timedelta(hours=1))]
+        with patch.object(type(self.env['pb.hiring.booking']), '_provider_busy', return_value=periods) as query:
+            result = self.api.own_google_availability(str(first), str(last), 30)
+        self.assertEqual(query.call_args.args[:3], ('google', self.user, ['primary']))
+        self.assertEqual(result['busy'], [{'start': str(first), 'stop': str(first + timedelta(hours=1))}])
+        self.assertEqual([s['start'] for s in result['slots']],
+                         [str(first + timedelta(minutes=n)) for n in (60, 75, 90)])
+        self.assertEqual(set(result), {'busy', 'slots', 'duration', 'checked_at'})
+        self.assertNotIn('test-only', json.dumps(result))
+
+    def test_own_availability_does_not_offer_past_slots(self):
+        now = fields.Datetime.now()
+        with patch.object(type(self.env['pb.hiring.booking']), '_provider_busy', return_value=[]):
+            result = self.api.own_google_availability(str(now - timedelta(hours=1)), str(now + timedelta(hours=1)), 15)
+        self.assertTrue(result['slots'])
+        self.assertTrue(all(fields.Datetime.to_datetime(s['start']) >= now for s in result['slots']))
+
+    def test_own_availability_requires_own_consent_and_rejects_portal(self):
+        first = fields.Datetime.now() + timedelta(days=2)
+        args = (str(first), str(first + timedelta(hours=2)))
+        with self.assertRaises(AccessError):
+            self.api.with_user(self.env.ref('base.public_user')).own_google_availability(*args)
+        self.settings.google_calendar_rtoken = False
+        with self.assertRaises(UserError): self.api.own_google_availability(*args)
+
+    def test_own_availability_rejects_bad_ranges_and_admin_pause(self):
+        first = fields.Datetime.now() + timedelta(days=2)
+        for start, stop, minutes in [(first, first, 30), (first, first + timedelta(days=2), 30),
+                                      (first, first + timedelta(hours=2), 0),
+                                      (first, first + timedelta(hours=2), '30')]:
+            with self.assertRaises(UserError):
+                self.api.own_google_availability(str(start), str(stop), minutes)
+        self.env['ir.config_parameter'].sudo().set_param('google_calendar_sync_paused', 'True')
+        with self.assertRaises(UserError):
+            self.api.own_google_availability(str(first), str(first + timedelta(hours=2)))
+
+    def test_own_availability_fails_closed_on_google_error(self):
+        first = fields.Datetime.now() + timedelta(days=2)
+        with patch.object(type(self.env['pb.hiring.booking']), '_provider_busy', side_effect=UserError('No access')):
+            with self.assertRaises(UserError):
+                self.api.own_google_availability(str(first), str(first + timedelta(hours=2)))

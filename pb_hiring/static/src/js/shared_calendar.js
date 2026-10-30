@@ -206,14 +206,43 @@ export class SharedCalendar extends Component {
 }
 class FindInterviewTime extends Component {
     static template = "pb_hiring.FindInterviewTime"; static props = { "*": true };
-    setup() { this.actions = useService("action"); }
+    setup() {
+        this.actions = useService("action"); this.orm = useService("orm");
+        this.state = useState({ date: DateTime.local().toISODate(), start: "09:00", end: "17:00",
+            zone: DateTime.local().zoneName, duration: "30", busy: false, error: "", result: null, canHire: false });
+        this.zones = [...new Set([DateTime.local().zoneName, "UTC", "Australia/Sydney", "Asia/Ho_Chi_Minh", "Asia/Singapore", "Asia/Kolkata", "Asia/Jakarta"])];
+        onWillStart(async () => {
+            const caps = await this.orm.call("pb.shared.calendar", "capabilities", []);
+            this.state.zone = caps.timezone || this.state.zone;
+            this.state.date = DateTime.now().setZone(this.state.zone).toISODate();
+            this.state.canHire = caps.hiring;
+            this.zones = [...new Set([this.state.zone, ...this.zones])];
+        });
+    }
+    invalidate() { this.state.result = null; this.state.error = ""; }
+    time(value) { return DateTime.fromSQL(value, { zone: "UTC" }).setZone(this.state.zone).toFormat("HH:mm"); }
+    async check() {
+        this.invalidate();
+        const first = DateTime.fromISO(`${this.state.date}T${this.state.start}`, { zone: this.state.zone });
+        const last = DateTime.fromISO(`${this.state.date}T${this.state.end}`, { zone: this.state.zone });
+        if (!first.isValid || !last.isValid || last <= first || first.toFormat("HH:mm") !== this.state.start || last.toFormat("HH:mm") !== this.state.end) {
+            this.state.error = _t("Choose valid start and end times for this date and timezone."); return;
+        }
+        this.state.busy = true;
+        try {
+            this.state.result = await this.orm.call("pb.shared.calendar", "own_google_availability", [
+                first.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), last.toUTC().toFormat("yyyy-MM-dd HH:mm:ss"), Number(this.state.duration)]);
+        } catch (e) {
+            this.state.error = e.data?.message || _t("Could not check your Google calendar. Check your connection and try again.");
+        } finally { this.state.busy = false; }
+    }
     open() { return this.actions.doAction("pb_hiring.action_pb_hiring_hub", { additionalContext: { pb_lens: "applicants" } }); }
 }
 export class CalendarHub extends Component {
     static template = "pb_hiring.CalendarHub"; static components = { HubShell }; static props = { "*": true };
     setup() { this.config = { key: "calendar", brand: { label: _t("Calendar"), icon: "calendar" }, defaultLens: "calendar", lenses: [
         { key: "calendar", label: _t("My calendar"), icon: "calendar", Component: SharedCalendar },
-        { key: "availability", label: _t("Find a time"), icon: "clock", Component: FindInterviewTime, probe: { model: "pb.hiring", method: "can_open" } },
+        { key: "availability", label: _t("Find a time"), icon: "clock", Component: FindInterviewTime },
         { key: "connections", label: _t("Connect"), icon: "link", Component: SharedCalendar, props: { connectionsOnly: true } },
     ] }; }
 }

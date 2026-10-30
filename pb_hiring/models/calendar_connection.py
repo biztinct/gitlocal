@@ -12,6 +12,42 @@ from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarServ
 class CalendarConnection(models.AbstractModel):
     _inherit = 'pb.shared.calendar'
 
+    @api.model
+    def own_google_availability(self, start, stop, duration=30):
+        """Read only the session user's Google free/busy, without Hiring setup."""
+        self._require()
+        first, last = self._range(start, stop)
+        if last - first > timedelta(hours=26):
+            raise UserError(_('Choose a time window of no more than one day.'))
+        if type(duration) is not int or not 15 <= duration <= 180:
+            raise UserError(_('Choose a meeting length between 15 and 180 minutes.'))
+        if self.env.user._get_google_sync_status() == 'sync_paused':
+            raise UserError(_('Your administrator has paused Google Calendar access.'))
+        if not self.env.user.sudo().google_calendar_rtoken:
+            raise UserError(_('Connect your Google calendar under Calendar → Connect first.'))
+        periods = self.env['pb.hiring.booking']._provider_busy(
+            'google', self.env.user, ['primary'], first, last)
+        # Clip and merge overlaps; retain no event titles, guests or locations.
+        busy = []
+        for left, right in sorted((max(first, a), min(last, b)) for a, b in periods):
+            if left >= right:
+                continue
+            if busy and left <= busy[-1][1]:
+                busy[-1] = (busy[-1][0], max(busy[-1][1], right))
+            else:
+                busy.append((left, right))
+        now = fields.Datetime.now()
+        point, length, slots = first, timedelta(minutes=duration), []
+        while point + length <= last:
+            end = point + length
+            if point >= now and not any(a < end and b > point for a, b in busy):
+                slots.append({'start': fields.Datetime.to_string(point),
+                              'stop': fields.Datetime.to_string(end)})
+            point += timedelta(minutes=15)
+        return {'busy': [{'start': fields.Datetime.to_string(a), 'stop': fields.Datetime.to_string(b)}
+                         for a, b in busy], 'slots': slots, 'duration': duration,
+                'checked_at': fields.Datetime.to_string(now)}
+
     def _google_settings(self):
         self._require()
         return self.env.user.res_users_settings_id.sudo()
