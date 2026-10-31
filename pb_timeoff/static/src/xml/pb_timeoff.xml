@@ -39,7 +39,7 @@
         <!-- the quiet numbers (the Hiring look) -->
         <t t-call="pb_import_kit.QuietGlance">
           <t t-set="qGlance" t-value="glance"/>
-          <t t-set="qGlanceOn" t-value="''"/>
+          <t t-set="qGlanceOn" t-value="glanceOn"/>
         </t>
         <div t-if="(kpis.out_today or []).length" class="pbto-outtoday" data-coach="wf-outtoday">
           <span class="l">Out today</span>
@@ -57,10 +57,42 @@
           <section class="pbto-panel queue" data-coach="wf-leave-queue">
             <div class="panel-h"><div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div></div>
 
-            <div t-if="!queue.length" class="pbto-empty">
+            <!-- FILTER wave 7: the shared filter panel over the queue — view
+                 tabs (Waiting for approval first, the queue as it always
+                 was), search, the left panel with counts, the chips. The
+                 Learn anchor rides on the layout's bar:
+                 data-coach="wf-leave-filters" -->
+            <div class="q-filter">
+            <PbFilterLayout kit="kit" coach="'wf-leave-filters'" searchPlaceholder="'Find a name, a leave type or a note'">
+
+            <div t-if="!state.queueLoaded" class="q-skel" aria-busy="true" aria-label="Loading leave requests">
+              <span/><span/><span/>
+            </div>
+
+            <div t-elif="kit.failed and !kit.refusal" class="pbto-empty">
+              <span class="i" t-out="kic('alert',30)"/>
+              <div class="t">The queue could not be loaded</div>
+              <div class="s">Reload the page to try again.</div>
+            </div>
+
+            <div t-elif="queueEmpty === 'clear'" class="pbto-empty">
               <span class="i" t-out="ic('checkCircle',30)"/>
               <div class="t">Queue clear</div>
               <div class="s">No leave requests are waiting for approval.</div>
+            </div>
+
+            <div t-elif="queueEmpty === 'search'" class="pbto-empty">
+              <span class="i" t-out="kic('search',30)"/>
+              <div class="t">Nothing matches “<t t-esc="kit.search"/>”</div>
+              <div class="s">Try a person’s name, a leave type or a word from the note.</div>
+              <button class="pbto-btn ghost" t-on-click="() => kit.setSearch('', true)">Clear the search</button>
+            </div>
+
+            <div t-elif="queueEmpty === 'filters'" class="pbto-empty">
+              <span class="i" t-out="kic('filter',30)"/>
+              <div class="t">No request matches these filters</div>
+              <div class="s">Remove a filter above, or go back to the requests waiting for approval.</div>
+              <button class="pbto-btn ghost" t-on-click="queueStartAgain">Start again</button>
             </div>
 
             <div t-else="" class="q-list">
@@ -74,7 +106,7 @@
                   <div class="r2">
                     <span class="span"><t t-esc="q.date_from"/> → <t t-esc="q.date_to"/></span>
                     <span class="dur"><t t-esc="fmtDays(q.duration)"/> d</span>
-                    <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }}" t-esc="q.state_label"/>
+                    <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }} {{ q.state === 'validate' ? 'ok' : '' }} {{ q.state === 'refuse' ? 'no' : '' }}" t-esc="q.state_label"/>
                     <!-- D1: asked for after the days had gone. Worth seeing
                          before approving — the pay for that period may
                          already have been worked out. -->
@@ -91,15 +123,26 @@
                   </div>
                   <div t-if="q.note" class="note" t-esc="q.note"/>
                 </div>
-                <div class="acts">
-                  <button class="pbto-btn tiny primary" t-on-click="() => this.approve(q.id)" title="Approve">
+                <div class="acts" t-if="q.in_queue">
+                  <button class="pbto-btn tiny primary" t-att-disabled="state.busy" t-on-click="() => this.approve(q.id)" title="Approve">
                     <span t-out="ic('check',14)"/>
                   </button>
-                  <button class="pbto-btn tiny bad ghost" t-on-click="() => this.openRefuse(q.id)" title="Refuse">
+                  <button class="pbto-btn tiny bad ghost" t-att-disabled="state.busy" t-on-click="() => this.openRefuse(q.id)" title="Refuse">
                     <span t-out="ic('x',14)"/>
                   </button>
                 </div>
               </div>
+            </div>
+
+            <div t-if="queue.length" class="q-foot">
+              Showing <b t-esc="queue.length"/> of <b t-esc="state.queueTotal"/>
+              <button t-if="queueHasMore" class="pbto-btn tiny ghost" t-att-disabled="state.queueMore"
+                      t-on-click="loadMoreQueue">
+                <t t-if="state.queueMore">Loading…</t>
+                <t t-else="">Show <t t-esc="queueNext"/> more</t>
+              </button>
+            </div>
+            </PbFilterLayout>
             </div>
           </section>
 

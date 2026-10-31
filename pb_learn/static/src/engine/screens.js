@@ -2295,6 +2295,16 @@ export const SCREENS = {
                         <button class="lrn-btn sm ghost">${ic("user-plus")}${esc(tx(B("Apply on behalf", "Đăng ký thay")))}</button>
                     </div>
                     <span class="lrn-sub2">${esc(tx(B("Approval queue", "Hàng chờ phê duyệt")))}</span>
+                    <!-- FILTER wave 7 (2026-10-31): the queue sits on the
+                         shared filter panel. View tabs (Waiting for approval
+                         first, the queue as it always was), the Filters
+                         button and the search. -->
+                    <div class="lrn-strip" data-coach="wf-leave-filters">
+                        <span class="lrn-chip b">${esc(tx(B("Waiting for approval", "Chờ phê duyệt")))}</span>
+                        <span class="lrn-chip">${esc(tx(B("Backdated requests", "Đơn nộp muộn")))}</span>
+                        <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                        <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a name, a leave type or a note", "Tìm tên, loại nghỉ phép hoặc ghi chú")))}</span>
+                    </div>
                     <div class="lrn-rows">${leave}</div>
                 </div>
                 <div class="lrn-panel" data-coach="wf-overtime">
