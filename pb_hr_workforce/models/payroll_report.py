@@ -522,6 +522,8 @@ class PbPayrollReport(models.AbstractModel):
         prev_ids = [facts['prev_of'].get(s.id) for s in slips]
         prevs = Slip.browse([p for p in prev_ids if p])
         prev_map = {p.id: p for p in prevs}
+        # read every line of the page's payslips (and their matches) at once
+        (slips | prevs).mapped('line_ids').mapped('category_id')
         rows = []
         for slip, pid in zip(slips, prev_ids):
             row = api_._slip_row(slip, prev_map.get(pid, Slip))
@@ -549,22 +551,25 @@ class PbPayrollReport(models.AbstractModel):
         dept_totals = {}
         n = changes = 0
         gross = net = deductions = 0.0
-        matched = Slip.search(domain)
-        for slip in matched:
-            m = money.get(slip.id) or {'gross': 0.0, 'net': 0.0, 'deductions': 0.0}
-            emp = slip.employee_id
-            dept = emp.department_id.name if emp.department_id else _('Unassigned')
+        zero = {'gross': 0.0, 'net': 0.0, 'deductions': 0.0}
+        # one grouped query: the matching payslips' ids per department (the
+        # person's department, as the rows show it); the money comes from the
+        # facts already worked out for this request
+        for dept_rec, ids in Slip._read_group(domain, ['employee_id.department_id'], ['id:array_agg']):
+            dept = dept_rec.name if dept_rec else _('Unassigned')
             d = dept_totals.setdefault(dept, {'gross': 0, 'net': 0, 'deductions': 0, 'count': 0})
-            d['gross'] += m['gross']
-            d['net'] += m['net']
-            d['deductions'] += m['deductions']
-            d['count'] += 1
-            gross += m['gross']
-            net += m['net']
-            deductions += m['deductions']
-            n += 1
-            if slip.id in facts['changed']:
-                changes += 1
+            for sid in ids:
+                m = money.get(sid) or zero
+                d['gross'] += m['gross']
+                d['net'] += m['net']
+                d['deductions'] += m['deductions']
+                d['count'] += 1
+                gross += m['gross']
+                net += m['net']
+                deductions += m['deductions']
+                n += 1
+                if sid in facts['changed']:
+                    changes += 1
         return {
             'summary': {'total_employees': n, 'total_gross': gross, 'total_net': net,
                         'total_deductions': deductions, 'changes': changes},
