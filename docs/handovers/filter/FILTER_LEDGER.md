@@ -334,6 +334,36 @@ coordinator's (`filter_deploy.sh full`).
   (`domain_method`, a folded search) are re-evaluated once per count (~12 per
   `pbf_counts`). Memoise them on `self.env.cr.cache[(key, uid, …)]` — one
   request, one cursor.
+- (F26–F30 are on 19.1 from wave 1; wave 6 continues at F31.)
+- **F31** (w6) The kit's `ctx` rides only on the KIT's calls (`pbf_layout`,
+  `pbf_counts`, `pbf_find_values`). A screen's own page / select-all / export
+  call that runs `pbf_domain` must send `context: { pbf_ctx: kit.ctx }` too,
+  or any section the spec builds from ctx (Records Desk "Hand-picked") does
+  not exist on that call and its filter is silently ignored: the panel says
+  "5 of 4,575", the list shows everybody.
+- **F32** (w6) `i18n export` writes a msgid used by several modules ONCE with
+  `#. modules: a, b, c,` — and the list wraps onto a second `#. d` comment
+  line. A merge that looks only for `#. module: <m>` drops every shared term
+  (all the common words: Status, Company, Name A to Z). Write each module's
+  PO entry with its own `#. module: <m>` line (F11) and only its own
+  `#: code:addons/<m>/…` references (F21).
+- **F33** (w6) Seeding Vietnamese from other modules' msgstr gives wrong
+  senses ("Department" → "Phòng cấm", "Delta" → "Đồng bằng", "Output key" →
+  "Phím đầu ra"). Keep a module's own existing entries; write new ones fresh.
+- **F34** (w6) During a long pause the ssh tunnel to 8170 dies; the screens
+  then fail with ConnectionLost toasts that look like a screen bug. Reopen it
+  with `ssh -f -N -o ServerAliveInterval=30 -L 8170:…`. Also: after a reload
+  the tab restores its last filters from sessionStorage — read the chips
+  before calling a 0-result list a bug.
+- **F35** (w6) A full-height surface whose grid scrolls inside itself (Records
+  Desk) needs the layout stretched: `.pbf` flex column with `flex: 1;
+  min-height: 0`, `.pbf-body { grid-template-rows: minmax(0, 1fr) }`, the
+  panel `position: relative` (its box scrolls), `.pbf-list` flex 1 — and put
+  `position: fixed` back under `.pbf--narrow`, or the phone drawer breaks.
+- **F36** (w6) `pb_learn/static/content/learn_content.json` is GENERATED from
+  `docs/tutorial_poc/author/data.js`: edit lesson text there and run
+  `python3 docs/tutorial_poc/author/tools/gen_learn_data.py` (`--check`
+  verifies). A hand edit of the JSON is overwritten by the next generation.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python
