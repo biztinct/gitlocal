@@ -121,6 +121,11 @@ function b64decode(str) {
 }
 
 const DATE_LABELS = () => ({
+    today: _t("Today"),
+    this_week: _t("This week"),
+    this_quarter: _t("This quarter"),
+    next_7: _t("Next 7 days"),
+    next_60: _t("Next 60 days"),
     this_month: _t("This month"),
     last_month: _t("Last month"),
     last_90: _t("Last 90 days"),
@@ -141,7 +146,7 @@ export function fmtCount(n) {
 
 // ================================================================= model
 export class FilterKit {
-    constructor({ orm, notification, model, onChange, noun, ctx, initial }) {
+    constructor({ orm, notification, model, onChange, noun, ctx, initial, always }) {
         // services stay raw: the model is reactive, they must not become so
         this.orm = markRaw(orm);
         this.notification = markRaw(notification);
@@ -155,6 +160,9 @@ export class FilterKit {
         // row", a figure pressed elsewhere); it beats the URL and the tab memory
         this.initial = initial || null;
         this.refusal = "";
+        // sections counted on EVERY refresh even while folded (a step strip
+        // or lane header that reads kit.counts[key])
+        this.always = Array.isArray(always) ? always : [];
 
         this.loaded = false;
         this.failed = false;
@@ -307,7 +315,7 @@ export class FilterKit {
     }
 
     _countKeys() {
-        const keys = new Set(Object.keys(this.filters));
+        const keys = new Set([...Object.keys(this.filters), ...this.always]);
         for (const s of this.sections) {
             if (this.isOpen(s.key) && (s.shown || this.isActive(s.key))) {
                 keys.add(s.key);
@@ -526,12 +534,18 @@ export class FilterKit {
     isExactly(filters) {
         return !this.search && sameFilters(this.filters, filters);
     }
+    /** Back to the start: the first view, or nothing on at all. */
+    home() {
+        if (this.views.length) {
+            this.useView(this.views[0].key);
+        } else {
+            this.clearAll();
+        }
+    }
     toggleFilters(filters) {
-        if (this.isExactly(filters) && Object.keys(normFilters(filters)).length) {
-            this.useView(this.views.length ? this.views[0].key : "");
-            if (!this.views.length) {
-                this.clearAll();
-            }
+        const empty = !Object.keys(normFilters(filters)).length;
+        if (empty || this.isExactly(filters)) {
+            this.home();
             return;
         }
         this.filters = normFilters(clone(filters));
@@ -698,12 +712,19 @@ export class FilterKit {
         }
         return false;
     }
-    /** Enter in the find box ticks the first value it found. */
+    /** Enter in the find box ticks the first value found by value; failing
+     * that, the first value of the first section found by name. */
     pickFirstFound() {
-        for (const s of this.panelSections) {
-            if (!LIST_TYPES.has(s.type) || s.label.toLowerCase().includes(this.ui.find.trim().toLowerCase())) {
-                continue;
+        const term = this.ui.find.trim().toLowerCase();
+        const lists = this.panelSections.filter((s) => LIST_TYPES.has(s.type));
+        for (const s of lists.filter((s) => !s.label.toLowerCase().includes(term))) {
+            const row = this.rowsFor(s.key)[0];
+            if (row) {
+                this.toggle(s.key, row.v);
+                return true;
             }
+        }
+        for (const s of lists.filter((s) => s.label.toLowerCase().includes(term))) {
             const row = this.rowsFor(s.key)[0];
             if (row) {
                 this.toggle(s.key, row.v);
@@ -932,7 +953,11 @@ export function useFilterKit(opts) {
     const orm = useService("orm");
     const notification = useService("notification");
     const kit = useState(new FilterKit({ orm, notification, ...opts }));
-    onWillStart(() => kit.load());
+    // `defer: true` = the screen calls `await kit.load()` itself (a door
+    // that must be resolved first decides the initial filters)
+    if (!opts.defer) {
+        onWillStart(() => kit.load());
+    }
     useExternalListener(window, "resize", () => kit.onResize());
     onWillUnmount(() => kit.destroy());
     return kit;

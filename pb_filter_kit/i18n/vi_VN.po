@@ -784,3 +784,63 @@ msgstr "“%s” đã trở lại chế độ riêng tư."
 #: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
 msgid "” here"
 msgstr "” ở đây"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Next 7 days"
+msgstr "7 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 7 days"
+msgstr "7 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Next 60 days"
+msgstr "60 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 60 days"
+msgstr "60 ngày tới"

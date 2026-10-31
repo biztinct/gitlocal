@@ -4,7 +4,7 @@
   <!-- ============================================================ layout -->
   <t t-name="pb_filter_kit.Layout">
     <div class="pbf" t-att-class="{ 'pbf--open': kit.ui.panel, 'pbf--busy': kit.busy, 'pbf--narrow': kit.ui.narrow }">
-      <PbFilterViews t-if="kit.loaded and !kit.failed" kit="kit"/>
+      <PbFilterViews t-if="kit.loaded and !kit.failed" kit="kit" coach="props.viewsCoach"/>
 
       <div class="pbf-bar" t-att-data-coach="props.coach or undefined">
         <button type="button" class="pbf-toggle" t-att-class="{ on: kit.ui.panel }"
@@ -48,7 +48,7 @@
 
   <!-- ============================================================= views -->
   <t t-name="pb_filter_kit.Views">
-    <div t-if="showRow" class="pbf-views" t-ref="root">
+    <div t-if="showRow" class="pbf-views" t-ref="root" t-att-data-coach="props.coach or undefined">
       <div class="pbf-tabs" role="tablist" aria-label="Views">
         <button t-foreach="kit.views" t-as="vw" t-key="vw.key" type="button" role="tab"
                 class="pbf-tab" t-att-class="{ on: vw.key === kit.viewKey, dirty: isDirtyTab(vw) }"

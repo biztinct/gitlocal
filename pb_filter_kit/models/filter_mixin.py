@@ -38,8 +38,12 @@ VALUE_CAP = 300
 #: Saved views counted per load (each is one count query).
 VIEW_CAP = 40
 LIST_TYPES = ('many2one', 'selection', 'char', 'choice')
-PAST_PRESETS = ('this_month', 'last_month', 'last_90', 'this_year', 'last_year', 'none')
-FUTURE_PRESETS = ('passed', 'next_30', 'next_90', 'later', 'none')
+PAST_PRESETS = ('this_week', 'this_month', 'last_month', 'last_90', 'this_quarter',
+                'this_year', 'last_year', 'none')
+FUTURE_PRESETS = ('passed', 'today', 'next_7', 'next_30', 'next_60', 'next_90', 'later', 'none')
+ALL_PRESETS = ('today', 'this_week', 'this_month', 'last_month', 'last_90', 'this_quarter',
+               'this_year', 'last_year', 'passed', 'next_7', 'next_30', 'next_60', 'next_90',
+               'later', 'none')
 
 
 class PbFilterMixin(models.AbstractModel):
@@ -163,6 +167,19 @@ class PbFilterMixin(models.AbstractModel):
         """(start, end_exclusive) for a date preset; None bounds are open."""
         t = self._pbf_today()
         month = t.replace(day=1)
+        if preset == 'today':
+            return t, t + timedelta(days=1)
+        if preset == 'this_week':
+            start = t - timedelta(days=t.weekday())
+            return start, start + timedelta(days=7)
+        if preset == 'this_quarter':
+            qm = 3 * ((t.month - 1) // 3) + 1
+            start = date(t.year, qm, 1)
+            return start, start + relativedelta(months=3)
+        if preset == 'next_7':
+            return t, t + timedelta(days=8)
+        if preset == 'next_60':
+            return t, t + timedelta(days=61)
         if preset == 'this_month':
             return month, month + relativedelta(months=1)
         if preset == 'last_month':
@@ -186,6 +203,11 @@ class PbFilterMixin(models.AbstractModel):
     @api.model
     def _pbf_preset_labels(self):
         return {
+            'today': _('Today'),
+            'this_week': _('This week'),
+            'this_quarter': _('This quarter'),
+            'next_7': _('Next 7 days'),
+            'next_60': _('Next 60 days'),
             'this_month': _('This month'),
             'last_month': _('Last month'),
             'last_90': _('Last 90 days'),
@@ -199,7 +221,11 @@ class PbFilterMixin(models.AbstractModel):
 
     @api.model
     def _pbf_presets(self, s):
-        return FUTURE_PRESETS if s.get('presets') == 'future' else PAST_PRESETS
+        """'past' | 'future' | an explicit list of preset keys (any order)."""
+        p = s.get('presets')
+        if isinstance(p, (list, tuple)):
+            return tuple(k for k in p if k in ALL_PRESETS)
+        return FUTURE_PRESETS if p == 'future' else PAST_PRESETS
 
     @api.model
     def _pbf_date_domain(self, path, preset=None, start=None, end=None):
@@ -320,6 +346,8 @@ class PbFilterMixin(models.AbstractModel):
         for value, count in groups:
             if t == 'many2one':
                 v = value.id if value else False
+                if s.get('label_sudo') and value:
+                    value = value.sudo()
                 label = (value.display_name if value else none_label) or none_label
             elif t == 'selection':
                 v = value if value else False
@@ -328,18 +356,22 @@ class PbFilterMixin(models.AbstractModel):
                 v = value if value not in (None, '') else False
                 label = self._pbf_pretty(value) if v else none_label
             rows.append({'v': v, 'label': label, 'n': count})
-        if t == 'selection':
-            order = list(s.get('selection', {}).keys())
-            rows.sort(key=lambda r: (r['v'] is False, order.index(r['v']) if r['v'] in order else 999))
-        else:
-            rows.sort(key=lambda r: (r['v'] is False, -r['n'], (r['label'] or '').lower()))
+        def sort_rows(rs):
+            if t == 'selection':
+                order = list(s.get('selection', {}).keys())
+                rs.sort(key=lambda r: (r['v'] is False, order.index(r['v']) if r['v'] in order else 999))
+            else:
+                rs.sort(key=lambda r: (r['v'] is False, -r['n'], (r['label'] or '').lower()))
+        sort_rows(rows)
         more = len(rows) > VALUE_CAP
         rows = rows[:VALUE_CAP]
-        # A ticked value always shows, even when nothing matches it any more.
+        # A ticked value always shows, even when nothing matches it any more —
+        # in its usual place, not tacked on at the end.
         have = {r['v'] for r in rows}
         missing = [v for v in (selected or []) if v not in have]
         if missing:
             rows.extend(self._pbf_label_values(s, missing))
+            sort_rows(rows)
         return rows, more
 
     @api.model
@@ -354,6 +386,8 @@ class PbFilterMixin(models.AbstractModel):
                 try:
                     if s['type'] == 'many2one' and field is not None:
                         rec = self.env[field.comodel_name].browse(int(v)).exists()
+                        if s.get('label_sudo') and rec:
+                            rec = rec.sudo()
                         label = rec.display_name if rec else _('Removed')
                     elif s['type'] == 'selection':
                         label = s.get('selection', {}).get(v, str(v))
@@ -497,7 +531,7 @@ class PbFilterMixin(models.AbstractModel):
             out['shown'] = bool(shown)
             out['group'] = out.get('group') or 'other'
             if s['type'] == 'date':
-                out['presets'] = 'future' if s.get('presets') == 'future' else 'past'
+                out['presets'] = list(self._pbf_presets(s))
             sections.append(out)
         Rec = self._pbf_records()
         return {

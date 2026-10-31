@@ -178,6 +178,24 @@ async loadPage({ more = false } = {}) {
   Python search (Vendors "Bùi") may override `_pbf_search_domain` to add
   `unaccent`-style alternatives; otherwise note the regression.
 
+### 3a-bis. Kit 1.2.0 (after waves 2 and 4 reported, 2026-10-31 14:10 AEDT)
+
+- `useFilterKit({ always: ['step'] })` — sections counted on EVERY refresh
+  even while folded (step strips / lane headers read `kit.counts[key]`).
+- `useFilterKit({ defer: true })` — the screen calls `await kit.load()`
+  itself after resolving a door (`initial`).
+- `kit.home()` — back to the first view (or nothing on); `toggleFilters({})`
+  and pressing the lit figure again call it.
+- `<PbFilterLayout viewsCoach="'ai-tabs'">` puts a data-coach on the view row.
+- Section `label_sudo: True` — value labels read under sudo (readers who may
+  not read `hr.employee` still see department/manager names).
+- Date `presets` may be an explicit list, e.g. `['today','this_week','next_7','next_60','none']`;
+  presets now: today, this_week, this_month, last_month, last_90, this_quarter,
+  this_year, last_year, passed, next_7, next_30, next_60, next_90, later, none.
+- A ticked value with 0 matches keeps its place in the list.
+- Enter in the find box: first value found by value, else the first value of
+  the section found by name.
+
 ### 3b. Rulings for the rollout (coordinator, 2026-10-31)
 
 - **R1** Lane / step / tab counts FOLLOW the filters (the kit's counts). This
