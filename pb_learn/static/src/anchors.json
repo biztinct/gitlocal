@@ -1985,6 +1985,12 @@
       "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
       "desc": "Payroll Report tabs: Earnings, Deductions, Dept Summary."
     },
+    "rp-filters": {
+      "screen": "reports",
+      "file": "pb_hr_workforce/static/src/xml/payroll_report.xml",
+      "desc": "Payroll Report, the shared filter panel under the totals: view tabs (Everyone in this run, Pay changed, New joiners this run), the Filters button that opens the left panel (department, against the last run, job position, pay structure, payslip status, manager, company, joined) with a count beside every value, the search and the order. The totals, the tabs and the department summary follow the filters; pressing Changes is the Pay changed view.",
+      "reserved": true
+    },
     "bg-kpis": {
       "screen": "reports",
       "file": "pb_budget/static/src/xml/budget_board.xml",

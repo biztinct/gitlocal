@@ -912,6 +912,15 @@ export const SCREENS = {
                         (t, i) => `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(t))}</button>`).join("")}</span>
                 </div>
                 <div class="lrn-grid g5" data-coach="rp-kpis">${kpis}</div>
+                <!-- FILTER wave 8 (2026-10-31): the tables sit on the shared
+                     filter panel; the totals above follow its filters. -->
+                <div class="lrn-strip" data-coach="rp-filters">
+                    <span class="lrn-chip b">${esc(tx(B("Everyone in this run", "Mọi người trong đợt này")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("Pay changed", "Lương thay đổi")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("New joiners this run", "Người mới vào trong đợt này")))}</span>
+                    <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                    <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a name, a job or a department", "Tìm theo tên, chức danh hoặc phòng ban")))}</span>
+                </div>
             </div>
             <div class="lrn-panel">
                 <h3>${ic("landmark")}${esc(tx(B("Budget", "Ngân sách")))}${SP}${bg.year}</h3>
