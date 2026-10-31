@@ -31,7 +31,7 @@ Read with the caller's own rights throughout; the ledgers `check_access` each
 row they open. pbim tokens, `.itg-*` / `.itgw-*` class names, Lucide icons
 through the shared `ic()` registry.
 """,
-    'version': '19.0.1.14.7',
+    'version': '19.0.1.15.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -43,6 +43,7 @@ through the shared `ic()` registry.
         'pb_import_kit',           # pbim tokens, the shared wizard shell, ic()
         'pb_hub',                  # openHub + the back chip (the one-door law)
         'pb_wf_kit',               # the 320px drawer — imported, never forked (W6)
+        'pb_filter_kit',           # FILTER W6: connectors + Data on the shared filter panel
     ],
     'data': [
         'views/pb_integrations_action.xml',

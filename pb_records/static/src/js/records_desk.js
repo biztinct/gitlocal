@@ -39,6 +39,8 @@ import {
     isNarrow, readingLine,
 } from "@pb_records/js/records_import";
 import { RdReviewList, grouped, measureReserve } from "@pb_records/js/records_review";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const FIELDS_KEY = (configId) => `pb_records.fields.${configId}`;
 const ORDER_KEY = (configId) => `pb_records.column_order.${configId}`;
@@ -46,7 +48,7 @@ const ORDER_KEY = (configId) => `pb_records.column_order.${configId}`;
 export class PbRecordsDesk extends Component {
     static template = "pb_records.PbRecordsDesk";
     static components = {
-        RecordsGrid, RdCellEditor, RdFileMenu, RdFileReview, RdReviewList,
+        RecordsGrid, RdCellEditor, RdFileMenu, RdFileReview, RdReviewList, PbFilterLayout,
     };
     static props = { "*": true };
 
@@ -66,12 +68,6 @@ export class PbRecordsDesk extends Component {
             canWrite: { employee: true, contract: true },
             canExport: false,
             picked: [],                 // card ids, in pick order
-            filters: {
-                q: "", department_ids: [], job_ids: [],
-                contract_states: [], statuses: [], employee_ids: [],
-            },
-            handPicked: 0,              // arrived with a selection from People
-            facets: { departments: [], jobs: [], contract_states: [], statuses: [] },
             rowsLoading: false,
             review: false,
             history: false,
@@ -82,7 +78,6 @@ export class PbRecordsDesk extends Component {
             previewing: false,
             setFor: null,               // { fieldId, scope }
             toast: null,                // { text, applyId }
-            railOpen: true,
             // The field board is a PICKER, not a permanent header. On a scheme
             // that maps 42 destinations it is taller than the grid, so it
             // collapses to the picked set the moment there is one — the
@@ -110,8 +105,24 @@ export class PbRecordsDesk extends Component {
 
         this.grid = useState(createGridState());
         this._pages = new Set();
-        this._searchTimer = null;
         this._previewTimer = null;
+
+        // FILTER W6 — WHO is the shared filter panel: it owns the filters,
+        // the counts and the views; the grid asks the server for windows of
+        // the panel's match set. Arriving from People with a selection puts
+        // the ids on every call (`ctx.picked`) and opens on "Hand-picked".
+        // Deferred: the scheme and the picked fields are resolved in boot()
+        // before the first page is asked for.
+        const arrivedWith = this.arrivalParams.employee_ids;
+        const picked = Array.isArray(arrivedWith) && arrivedWith.length ? arrivedWith.map(Number) : null;
+        this.kit = useFilterKit({
+            model: "pb.records.desk",
+            noun: _t("people"),
+            defer: true,
+            ctx: picked ? { picked } : null,
+            initial: picked ? { filters: { picked: ["yes"] }, viewKey: "picked" } : null,
+            onChange: () => this.reload(),
+        });
 
         useExternalListener(window, "click", () => {
             this.state.schemeOpen = false;
@@ -188,12 +199,10 @@ export class PbRecordsDesk extends Component {
             this.state.loading = false;
             return;
         }
-        if (Array.isArray(arrival.employee_ids) && arrival.employee_ids.length) {
-            this.state.filters.employee_ids = arrival.employee_ids.map(Number);
-            this.state.handPicked = arrival.employee_ids.length;
-        }
         await this.loadFields(arrival.field_ids);
-        await this.reload();
+        // the panel loads its layout and counts, then asks for the first
+        // window (onChange → reload)
+        await this.kit.load();
         this.state.loading = false;
     }
 
@@ -326,17 +335,23 @@ export class PbRecordsDesk extends Component {
         if (this._pages.has(offset)) { return; }
         this._pages.add(offset);
         this.state.rowsLoading = true;
+        const q = this.kit.query;
+        const pages = this._pages;
         try {
-            const data = await this.orm.call("pb.records.desk", "search_people", [], {
+            // One window of the panel's match set; the panel counts its own
+            // sections, so nothing here counts facets (RD11).
+            const data = await this.orm.call("pb.records.desk", "search_page", [], {
                 config_id: this.state.configId,
-                filters: this.plainFilters(),
+                filters: q.filters,
+                search: q.search,
+                sort: q.sort,
                 field_ids: this.state.picked,
                 offset,
                 limit: PAGE,
-                // The chips are the same for every page of one match set, and
-                // counting them is the expensive half of the call (RD11).
-                with_facets: first,
+                context: this.pbfContext,
             });
+            // a reply for an older filter state (or an older reload) is dropped
+            if (!this.kit.isCurrent(q.seq) || pages !== this._pages) { return; }
             if (first || this.grid.total !== data.total) {
                 const rows = new Array(data.total).fill(null);
                 for (let i = 0; i < this.grid.rows.length; i++) {
@@ -346,7 +361,6 @@ export class PbRecordsDesk extends Component {
                 this.grid.total = data.total;
             }
             data.rows.forEach((row, i) => { this.grid.rows[offset + i] = row; });
-            if (data.facets) { this.state.facets = data.facets; }
         } catch (e) {
             this._pages.delete(offset);
             this.state.error = e.message?.data?.message || String(e);
@@ -355,56 +369,31 @@ export class PbRecordsDesk extends Component {
         }
     }
 
+    /**
+     * The panel's state, as the desk's bulk doors send it — "select all
+     * matching" and the export run the same `pbf_domain` on the server, so
+     * they act on exactly the people the panel counts, never a stale array.
+     */
     plainFilters() {
-        const f = this.state.filters;
-        return {
-            q: f.q, department_ids: [...f.department_ids], job_ids: [...f.job_ids],
-            contract_states: [...f.contract_states], statuses: [...f.statuses],
-            employee_ids: [...f.employee_ids],
-        };
+        const q = this.kit.query;
+        return { pbf: q.filters, search: q.search, sort: q.sort };
+    }
+
+    /**
+     * The panel's own context (`pbf_ctx`: the hand-picked ids an arrival
+     * from People carries). The kit sends it on its own calls; every call of
+     * the desk that runs `pbf_domain` must send it too, or the server builds
+     * the sections without "Hand-picked" and quietly ignores that filter.
+     */
+    get pbfContext() {
+        return this.kit.ctx ? { pbf_ctx: this.kit.ctx } : {};
     }
 
     onNeedPage(offset) { this.fetchPage(offset); }
 
     // ------------------------------------------------------------- filters
-    onSearch(ev) {
-        this.state.filters.q = ev.target.value;
-        clearTimeout(this._searchTimer);
-        this._searchTimer = setTimeout(() => this.reload(), 250);
-    }
-
-    toggleFacet(kind, id) {
-        const list = this.state.filters[kind];
-        const i = list.indexOf(id);
-        if (i >= 0) { list.splice(i, 1); } else { list.push(id); }
-        this.reload();
-    }
-
-    isFacetOn(kind, id) { return this.state.filters[kind].includes(id); }
-
-    clearHandPicked() {
-        this.state.filters.employee_ids = [];
-        this.state.handPicked = 0;
-        this.reload();
-    }
-
-    clearFilters() {
-        this.state.filters = {
-            q: "", department_ids: [], job_ids: [],
-            contract_states: [], statuses: [], employee_ids: [],
-        };
-        this.state.handPicked = 0;
-        this.reload();
-    }
-
-    get anyFilter() {
-        const f = this.state.filters;
-        return !!(f.q || f.department_ids.length || f.job_ids.length
-                  || f.contract_states.length || f.statuses.length
-                  || f.employee_ids.length);
-    }
-
-    toggleRail() { this.state.railOpen = !this.state.railOpen; }
+    /** The grid's empty state: back to everybody (the panel's first view). */
+    clearFilters() { this.kit.home(); }
 
     // ------------------------------------------------------------ staging
     get counts() { return dirtyCount(this.grid); }
@@ -425,12 +414,6 @@ export class PbRecordsDesk extends Component {
         const c = this.counts;
         if (!c.values) { return _t("Nothing to review yet"); }
         return this.n(c.values, "Review 1 change", "Review %s changes");
-    }
-
-    get matchLine() {
-        const n = this.grid.total;
-        if (n === 1) { return _t("1 person matches"); }
-        return _t("%s people match", grouped(n));
     }
 
     /**
@@ -495,6 +478,7 @@ export class PbRecordsDesk extends Component {
     async onSelectAllMatching() {
         const ids = await this.orm.call("pb.records.desk", "matching_ids", [], {
             filters: this.plainFilters(),
+            context: this.pbfContext,
         });
         this.grid.selected = ids;
         this.grid.allMatching = true;
@@ -758,6 +742,7 @@ export class PbRecordsDesk extends Component {
                 filters: this.plainFilters(),
                 field_ids: this.state.picked,
                 mode,
+                context: this.pbfContext,
             });
         } catch (e) {
             this.state.exporting = "";

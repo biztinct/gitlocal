@@ -40,7 +40,6 @@ msgstr "Chỉ hoạt động"
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:46
 msgid "Adjustments"
 msgstr "Điều chỉnh"
 
@@ -64,6 +63,8 @@ msgstr "Quay lại"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Brackets"
 msgstr "Dấu ngoặc đơn"
@@ -100,21 +101,19 @@ msgstr "Tỷ lệ đóng góp, mức trần, khung thuế và số liệu thực
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
 msgid "Contributions"
 msgstr "Khoản đóng"
 
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:223
 msgid "Could not load this row's detail."
 msgstr "Không thể tải chi tiết của hàng này."
 
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:145
 msgid "Could not load this table."
 msgstr "Không thể tải bảng này."
 
@@ -156,13 +155,25 @@ msgstr "Các khoản khấu trừ ("
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:47
 msgid "Dependents"
 msgstr "Người phụ thuộc"
 
 #. module: pb_statutory
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__display_name
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__display_name
+#: model:ir.model.fields,field_description:pb_records.field_res_company__display_name
 #: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__display_name
 #: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__display_name
 msgid "Display Name"
@@ -176,12 +187,15 @@ msgstr "EE"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_statutory/static/src/xml/statutory_wizards.xml:0
 msgid "Effective date"
 msgstr "Ngày có hiệu lực"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Employee"
@@ -189,7 +203,7 @@ msgstr "Nhân viên"
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
 msgid "Employee leg"
 msgstr "Phần người lao động"
 
@@ -208,7 +222,7 @@ msgstr "Doanh nghiệp"
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
 msgid "Employer leg"
 msgstr "Phần doanh nghiệp"
 
@@ -220,6 +234,8 @@ msgstr "Tổng phần doanh nghiệp"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "From"
@@ -238,6 +254,18 @@ msgid "Health Insurance (BHYT)"
 msgstr "Bảo hiểm Y tế (BHYT)"
 
 #. module: pb_statutory
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__id
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__id
+#: model:ir.model.fields,field_description:pb_records.field_res_company__id
 #: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__id
 #: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__id
 msgid "ID"
@@ -256,9 +284,10 @@ msgstr "Chính sách bảo hiểm"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:44
 msgid "Insurance policies"
 msgstr "Hợp đồng bảo hiểm"
 
@@ -400,7 +429,7 @@ msgstr "Cứu trợ cá nhân"
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
 msgid "Policies"
 msgstr "Chính sách"
 
@@ -455,7 +484,6 @@ msgstr "Tỷ lệ và trần chương trình"
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:197
 msgid "Showing %(shown)s of %(total)s"
 msgstr "Đang hiển thị %(shown)s của %(total)s"
 
@@ -477,6 +505,8 @@ msgstr "Bảo hiểm xã hội (BHXH)"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Status"
 msgstr "Trạng thái"
@@ -484,7 +514,6 @@ msgstr "Trạng thái"
 #. module: pb_statutory
 #. odoo-javascript
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
-#: model:ir.actions.client,name:pb_statutory.action_pb_statutory
 msgid "Statutory"
 msgstr "Bảo hiểm & Thuế"
 
@@ -519,14 +548,17 @@ msgstr "Đã tạo bảng thuế"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/js/statutory.js:0
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
-#: code:addons/pb_statutory/static/src/js/statutory.js:45
 msgid "Tax tables"
 msgstr "Bảng thuế"
 
 #. module: pb_statutory
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "Tax year"
 msgstr "Năm tính thuế"
@@ -545,7 +577,6 @@ msgstr "Không thể tải bảng này."
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 #: code:addons/pb_statutory/static/src/xml/statutory_details.xml:0
 msgid "To"
 msgstr "Để"
@@ -594,11 +625,9 @@ msgstr "Hiển thị %(shown)s của %(total)s · %(loaded)s mới nhất là"
 
 #. module: pb_statutory
 #. odoo-javascript
-#: code:addons/pb_statutory/static/src/js/statutory_wizards.js:41
-#: code:addons/pb_statutory/static/src/js/statutory_wizards.js:75
+#: code:addons/pb_statutory/static/src/js/statutory_wizards.js:0
 msgid "Failed."
 msgstr "Không thành công."
-
 
 # ===================================================================
 #  Approval Matrix phase 7 — the doors whose press IS the change.
@@ -698,7 +727,6 @@ msgstr "người phê duyệt của nó"
 msgid "your approver"
 msgstr "người phê duyệt của bạn"
 
-
 # ===================================================================
 #  Approval Matrix phase 7 — what the browser walk found.
 # ===================================================================
@@ -780,3 +808,474 @@ msgstr "Mức thuế suất được chọn áp dụng cho toàn bộ thu nhập
 #: code:addons/pb_statutory/static/src/xml/statutory.xml:0
 msgid "Progressive marginal bands"
 msgstr "Biểu lũy tiến từng phần"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Active or archived"
+msgstr "Đang dùng hay đã lưu trữ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Adjusted on"
+msgstr "Ngày điều chỉnh"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "All adjustments"
+msgstr "Tất cả điều chỉnh"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "All dependents"
+msgstr "Tất cả người phụ thuộc"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "All policies"
+msgstr "Tất cả chính sách"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "All tax tables"
+msgstr "Tất cả bảng thuế"
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Backdated corrections, refunds and additional collections."
+msgstr "Các khoản điều chỉnh truy thu, hoàn trả và đóng bổ sung."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Biggest difference first"
+msgstr "Chênh lệch lớn nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "By employee"
+msgstr "Theo nhân viên"
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Code"
+msgstr "Mã"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Contribution rates, ceilings and the dates they apply from."
+msgstr "Tỷ lệ đóng, mức trần và ngày bắt đầu áp dụng."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Dependent"
+msgstr "Người phụ thuộc"
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "EE / ER total"
+msgstr "Tổng NLĐ / DN"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Earliest tax year first"
+msgstr "Năm thuế sớm nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Effective"
+msgstr "Ngày hiệu lực"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Effective from"
+msgstr "Áp dụng từ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Effective to"
+msgstr "Áp dụng đến"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Eligible"
+msgstr "Đủ điều kiện"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Every company"
+msgstr "Mọi công ty"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Insurance"
+msgstr "Bảo hiểm"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Insurance adjustments"
+msgstr "Điều chỉnh bảo hiểm"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Kind of adjustment"
+msgstr "Loại điều chỉnh"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Latest tax year first"
+msgstr "Năm thuế gần nhất trước"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Newest effective date first"
+msgstr "Ngày áp dụng mới nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Newest registered first"
+msgstr "Đăng ký mới nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No date"
+msgstr "Không có ngày"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No dependents registered on this database."
+msgstr "Chưa có người phụ thuộc nào được đăng ký."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No insurance adjustments on this database."
+msgstr "Chưa có điều chỉnh bảo hiểm nào."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No insurance policies on this database."
+msgstr "Chưa có chính sách bảo hiểm nào."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No relief today"
+msgstr "Hôm nay không được giảm trừ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No tax tables on this database."
+msgstr "Chưa có bảng thuế nào."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "No year"
+msgstr "Không có năm"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Nothing here yet."
+msgstr "Chưa có gì ở đây."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid ""
+"Nothing in this table fits every filter you have set. Remove a filter above,"
+" or show the whole table."
+msgstr "Không có dòng nào trong bảng này khớp mọi bộ lọc bạn đã đặt. Hãy bỏ bớt một bộ lọc ở trên, hoặc hiện toàn bộ bảng."
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "Nothing matches “%s”. Check the spelling, or search by name or code."
+msgstr "Không có gì khớp “%s”. Hãy kiểm tra chính tả, hoặc tìm theo tên hay mã."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Oldest effective date first"
+msgstr "Ngày áp dụng cũ nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Oldest first"
+msgstr "Cũ nhất trước"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Policy"
+msgstr "Chính sách"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Progressive brackets, personal relief and dependent relief."
+msgstr "Bậc thuế lũy tiến, giảm trừ bản thân và giảm trừ người phụ thuộc."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Registered dependents and the personal relief they carry."
+msgstr "Người phụ thuộc đã đăng ký và mức giảm trừ đi kèm."
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Relationship"
+msgstr "Quan hệ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Relief applies today"
+msgstr "Hôm nay được giảm trừ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Relief from"
+msgstr "Giảm trừ từ"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Relief right now"
+msgstr "Giảm trừ hiện tại"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Search dependent, employee or ID number…"
+msgstr "Tìm người phụ thuộc, nhân viên hoặc số giấy tờ…"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Search policy name or code…"
+msgstr "Tìm tên hoặc mã chính sách…"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Search reference or employee…"
+msgstr "Tìm số tham chiếu hoặc nhân viên…"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Search table name or code…"
+msgstr "Tìm tên hoặc mã bảng…"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "Show the whole table"
+msgstr "Hiện toàn bộ bảng"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Table"
+msgstr "Bảng"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "The rows could not be loaded. Try again in a moment."
+msgstr "Không tải được các dòng. Hãy thử lại sau giây lát."
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "This table does not exist on this database."
+msgstr "Bảng này không có trên hệ thống này."
+
+#. module: pb_statutory
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Waiting to be checked"
+msgstr "Đang chờ kiểm tra"
+
+#. module: pb_statutory
+#. odoo-python
+#: code:addons/pb_statutory/models/pb_statutory.py:0
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "adjustments"
+msgstr "điều chỉnh"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "dependents"
+msgstr "người phụ thuộc"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/xml/statutory.xml:0
+msgid "more"
+msgstr "thêm"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "policies"
+msgstr "chính sách"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "rows"
+msgstr "dòng"
+
+#. module: pb_statutory
+#. odoo-javascript
+#: code:addons/pb_statutory/static/src/js/statutory.js:0
+msgid "tax tables"
+msgstr "bảng thuế"

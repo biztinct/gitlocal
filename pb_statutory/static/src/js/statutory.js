@@ -35,21 +35,24 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 /**
  * The four ledgers, in the order an operator meets them: what you contribute,
  * what you tax, what you corrected, and who is relieved.
  */
 const LEDGER_TABS = [
-    { id: "policy", icon: "checkCircle", label: _t("Insurance policies") },
-    { id: "tax", icon: "sigma", label: _t("Tax tables") },
-    { id: "adjustment", icon: "settings", label: _t("Adjustments") },
-    { id: "dependent", icon: "users", label: _t("Dependents") },
+    { id: "policy", icon: "checkCircle", label: _t("Insurance policies"), noun: () => _t("policies") },
+    { id: "tax", icon: "sigma", label: _t("Tax tables"), noun: () => _t("tax tables") },
+    { id: "adjustment", icon: "settings", label: _t("Adjustments"), noun: () => _t("adjustments") },
+    { id: "dependent", icon: "users", label: _t("Dependents"), noun: () => _t("dependents") },
 ];
+const PAGE = 60;
 
 export class PbStatutory extends Component {
     static template = "pb_statutory.PbStatutory";
-    static components = { HubBackChip, WfDrawer };
+    static components = { HubBackChip, WfDrawer, PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -74,10 +77,23 @@ export class PbStatutory extends Component {
             // ---- the Data view ----
             kind: askedKind || "policy",
             ledger: null, ledgerLoading: false,
-            lsearch: "", f: {},
+            // the rows: one page at a time for the filter panel's state
+            lrows: [], ltotal: 0, llistLoaded: false, lloadingMore: false,
             drawer: null, drawerLoading: false,
         });
         this._opening = false;
+        // FILTER W6 — the Data view's four tables are on the shared filter
+        // panel, one record type at a time (`ctx.kind`): each table keeps its
+        // own sections, views and remembered filters (screen keys
+        // statutory:<kind>). Deferred: it loads the first time the Data view
+        // opens, and a tab switch points it at the next table.
+        this.kit = useFilterKit({
+            model: "pb.statutory",
+            noun: this.kindNoun(this.state.kind),
+            ctx: { kind: this.state.kind },
+            defer: true,
+            onChange: () => this.loadLedgerPage(),
+        });
         onWillStart(async () => {
             await this.load();
             if (this.state.view === "data") { await this.loadLedger(); }
@@ -154,24 +170,30 @@ export class PbStatutory extends Component {
         if (v === "data" && !this.state.ledger) { await this.loadLedger(); }
     }
 
+    kindNoun(kind) {
+        const t = LEDGER_TABS.find((x) => x.id === kind);
+        return t ? t.noun() : _t("rows");
+    }
+
     async setKind(kind) {
         if (this.state.kind === kind) { return; }
         this.state.kind = kind;
         this.state.drawer = null;
-        this.state.lsearch = "";
-        this.state.f = {};
         await this.loadLedger();
     }
 
+    /** The table's words and columns, and the panel pointed at it. */
     async loadLedger() {
+        const kind = this.state.kind;
         this.state.ledgerLoading = true;
+        this.state.llistLoaded = false;
+        this.state.lrows = [];
+        // the first time this is the panel's first load; afterwards it is
+        // pointed at the other table (reconfigure resets and loads again)
+        const panel = this.kit.reconfigure({ ctx: { kind }, noun: this.kindNoun(kind) });
         try {
-            const d = await this.orm.call("pb.statutory", "get_ledger",
-                                          [this.state.kind]);
-            this.state.ledger = d;
-            const f = {};
-            for (const fac of (d.facets || [])) { f[fac.key] = ""; }
-            this.state.f = f;
+            const d = await this.orm.call("pb.statutory", "get_ledger_head", [kind]);
+            if (kind === this.state.kind) { this.state.ledger = d; }
         } catch (e) {
             // Reported, never swallowed into an empty table (W40): an empty
             // grid and a failed read look identical and mean opposite things.
@@ -181,37 +203,47 @@ export class PbStatutory extends Component {
         } finally {
             this.state.ledgerLoading = false;
         }
+        await panel;
     }
 
-    // ------------------------------------------------------------ ledger filters
-    onLedgerSearch(ev) { this.state.lsearch = (ev.target.value || "").toLowerCase(); }
-    setFacet(key, val) { this.state.f[key] = this.state.f[key] === val ? "" : val; }
-    onFacetSelect(key, ev) { this.state.f[key] = ev.target.value || ""; }
-
-    _matchRow(r) {
-        for (const [k, v] of Object.entries(this.state.f)) {
-            if (v && String((r._f || {})[k]) !== String(v)) { return false; }
+    /** One page of the table for the panel's current filters; a reply for an
+     *  older filter state (or another table) is dropped. */
+    async loadLedgerPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const kind = this.state.kind;
+        const offset = more ? this.state.lrows.length : 0;
+        if (more) { this.state.lloadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.statutory", "get_ledger_page", [kind], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq) || kind !== this.state.kind) { return; }
+            this.state.lrows = more ? [...this.state.lrows, ...d.rows] : d.rows;
+            this.state.ltotal = d.total;
+            this.state.llistLoaded = true;
+        } catch (e) {
+            console.warn("pb_statutory: could not load the rows", e);
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The rows could not be loaded. Try again in a moment."), { type: "warning" });
+                this.state.llistLoaded = true;
+            }
+        } finally {
+            this.state.lloadingMore = false;
         }
-        const q = this.state.lsearch;
-        if (q && !(r._s || "").toLowerCase().includes(q)) { return false; }
-        return true;
     }
-    get ledgerRows() {
-        return ((this.state.ledger && this.state.ledger.rows) || [])
-            .filter((r) => this._matchRow(r));
-    }
-    chipCount(key, val) {
-        return ((this.state.ledger && this.state.ledger.rows) || [])
-            .filter((r) => String((r._f || {})[key]) === String(val)).length;
-    }
-    get ledgerDirty() {
-        return !!(this.state.lsearch || Object.values(this.state.f).some((v) => v));
-    }
-    clearLedgerFilters() {
-        const f = {};
-        for (const k of Object.keys(this.state.f)) { f[k] = ""; }
-        this.state.f = f;
-        this.state.lsearch = "";
+    loadMoreLedger() { if (!this.state.lloadingMore) { this.loadLedgerPage({ more: true }); } }
+    get ledgerHasMore() { return this.state.lrows.length < this.state.ltotal; }
+    get ledgerNextPage() { return Math.min(PAGE, this.state.ltotal - this.state.lrows.length); }
+    /** Back to the whole table (its first view). */
+    showAllLedger() { this.kit.home(); }
+
+    /** Why the table is empty — one translatable sentence each (R34). */
+    get ledgerEmptyText() {
+        if (!this.kit.total) { return (this.state.ledger && this.state.ledger.empty) || _t("Nothing here yet."); }
+        if (this.kit.search && !this.kit.chips.length) {
+            return _t("Nothing matches “%s”. Check the spelling, or search by name or code.", this.kit.search);
+        }
+        return _t("Nothing in this table fits every filter you have set. Remove a filter above, or show the whole table.");
     }
 
     /**
@@ -221,14 +253,9 @@ export class PbStatutory extends Component {
      * view that carries numbers.
      */
     get footLabel() {
-        const d = this.state.ledger || {};
-        const shown = this.ledgerRows.length;
-        if ((d.total || 0) > (d.shown || 0)) {
-            return _t("Showing %(shown)s of %(total)s · the newest %(loaded)s are "
-                      + "loaded, so narrow the search to reach the rest.",
-                      { shown, total: d.total, loaded: d.shown });
-        }
-        return _t("Showing %(shown)s of %(total)s", { shown, total: d.total || 0 });
+        return _t("Showing %(shown)s of %(total)s",
+                  { shown: this.state.lrows.length.toLocaleString("en-US"),
+                    total: (this.state.ltotal || 0).toLocaleString("en-US") });
     }
 
     // ==================================================================== drawer

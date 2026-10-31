@@ -25,6 +25,7 @@ msgstr ""
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Batch"
 msgstr "Đợt"
@@ -41,7 +42,7 @@ msgstr ""
 
 #. module: pb_import
 #. odoo-javascript
-#: code:addons/pb_import/static/src/xml/import.xml:0
+#: code:addons/pb_import/static/src/js/import.js:0
 msgid "Completed"
 msgstr "Hoàn tất"
 
@@ -53,43 +54,69 @@ msgstr "Trình kết nối trực tiếp trong Cài đặt · Tích hợp"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Date"
 msgstr "Ngày"
 
 #. module: pb_import
 #: model:ir.model.fields,field_description:pb_import.field_pb_import__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__display_name
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__display_name
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__display_name
+#: model:ir.model.fields,field_description:pb_records.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__display_name
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Errors"
 msgstr "Lỗi"
 
 #. module: pb_import
 #: model:ir.model.fields,field_description:pb_import.field_pb_import__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__id
+#: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__id
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__id
+#: model:ir.model.fields,field_description:pb_records.field_res_company__id
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__id
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__id
 msgid "ID"
 msgstr "ID"
 
 #. module: pb_import
 #. odoo-javascript
 #: code:addons/pb_import/static/src/js/import.js:0
-#: code:addons/pb_import/static/src/js/import.js:28
 msgid "Import"
 msgstr "Nhập"
 
 #. module: pb_import
 #. odoo-javascript
 #: code:addons/pb_import/static/src/xml/import.xml:0
-#: model:ir.actions.client,name:pb_import.action_pb_import
 msgid "Import Data"
 msgstr "Nhập Dữ liệu"
 
 #. module: pb_import
 #. odoo-javascript
-#: code:addons/pb_import/static/src/xml/import.xml:0
+#: code:addons/pb_import/static/src/js/import.js:0
 msgid "Import batches"
 msgstr "Đợt nhập liệu"
 
@@ -101,7 +128,9 @@ msgstr "Đường ống nhập khẩu"
 
 #. module: pb_import
 #. odoo-javascript
-#: code:addons/pb_import/static/src/xml/import.xml:0
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+#: code:addons/pb_import/static/src/js/import.js:0
 msgid "In progress"
 msgstr "Đang xử lý"
 
@@ -137,6 +166,9 @@ msgstr "Quản lý trình kết nối"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+#: code:addons/pb_import/static/src/js/import.js:0
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Matched"
 msgstr "Đã khớp"
@@ -160,19 +192,21 @@ msgstr "Lô gần đây"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Source"
 msgstr "Nguồn"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_import/static/src/xml/import.xml:0
 msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_import
 #. odoo-javascript
-#: code:addons/pb_import/static/src/xml/import.xml:0
+#: code:addons/pb_import/static/src/js/import.js:0
 msgid "With errors"
 msgstr "Có lỗi"
 
@@ -208,30 +242,40 @@ msgstr "Hiện tất cả"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "Draft"
 msgstr "Nháp"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "Loaded"
 msgstr "Đã tải"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "Validated"
 msgstr "Đã kiểm tra"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "Processing"
 msgstr "Đang xử lý"
 
 #. module: pb_import
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "Done"
 msgstr "Hoàn tất"
@@ -313,3 +357,321 @@ msgstr "cả %s lô"
 #: code:addons/pb_import/static/src/js/import.js:0
 msgid "%s of %s batches"
 msgstr "%s trên %s lô"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "A file (Excel or CSV)"
+msgstr "Một tệp (Excel hoặc CSV)"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid ""
+"A file used once feeds that pay run only; nothing is saved to the employee "
+"records."
+msgstr "Tệp chỉ dùng một lần chỉ cấp dữ liệu cho kỳ lương đó; không có gì được lưu vào hồ sơ nhân viên."
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "All batches"
+msgstr "Tất cả các đợt"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid ""
+"Check the spelling, or search by batch name, file name, pay scheme or "
+"connected system."
+msgstr "Hãy kiểm tra chính tả, hoặc tìm theo tên đợt, tên tệp, chương trình lương hay hệ thống đã kết nối."
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Connected system"
+msgstr "Hệ thống đã kết nối"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Done this month"
+msgstr "Hoàn tất tháng này"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Drafts"
+msgstr "Bản nháp"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Latest pay period first"
+msgstr "Kỳ lương gần nhất trước"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid ""
+"Load this period's pay data above. Every file or connected-system load you "
+"start appears here."
+msgstr "Hãy tải dữ liệu lương của kỳ này ở phía trên. Mọi lần tải từ tệp hay từ hệ thống đã kết nối mà bạn bắt đầu đều hiện ở đây."
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Loading the batches"
+msgstr "Đang tải các đợt"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Most problem lines first"
+msgstr "Nhiều dòng lỗi nhất trước"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Needs attention"
+msgstr "Cần xử lý"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid ""
+"Needs attention means it stopped with an error, or some lines could not be "
+"read."
+msgstr "Cần xử lý nghĩa là đợt dừng vì lỗi, hoặc có dòng không đọc được."
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "No batch matches these filters"
+msgstr "Không có đợt nào khớp các bộ lọc này"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "No batch matches “%s”"
+msgstr "Không có đợt nào khớp “%s”"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "No import batches yet"
+msgstr "Chưa có đợt nhập liệu nào"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "No pay run yet"
+msgstr "Chưa có kỳ lương"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "No pay scheme"
+msgstr "Chưa có chương trình lương"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "No period set"
+msgstr "Chưa đặt kỳ"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "No problems"
+msgstr "Không có vấn đề"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "None (a file or typed in)"
+msgstr "Không có (tệp hoặc gõ tay)"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Oldest first"
+msgstr "Cũ nhất trước"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Pay period starts"
+msgstr "Kỳ lương bắt đầu"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Pay run made"
+msgstr "Đã tạo kỳ lương"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Pay scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Problems"
+msgstr "Vấn đề"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Saved to the records"
+msgstr "Đã lưu vào hồ sơ"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "Show every batch"
+msgstr "Hiện mọi đợt"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Started"
+msgstr "Bắt đầu"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Stopped with an error"
+msgstr "Dừng vì lỗi"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "The batches could not be loaded. Try again in a moment."
+msgstr "Không tải được các đợt. Hãy thử lại sau giây lát."
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "The connected system"
+msgstr "Hệ thống đã kết nối"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid ""
+"There are %s batches, but none fits every filter you have set. Remove a "
+"filter above, or show every batch."
+msgstr "Có %s đợt, nhưng không có đợt nào khớp mọi bộ lọc bạn đã đặt. Hãy bỏ bớt một bộ lọc ở trên, hoặc hiện mọi đợt."
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid ""
+"There is 1 batch, but it does not fit every filter you have set. Remove a "
+"filter above, or show every batch."
+msgstr "Có 1 đợt, nhưng đợt đó không khớp mọi bộ lọc bạn đã đặt. Hãy bỏ bớt một bộ lọc ở trên, hoặc hiện mọi đợt."
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Typed in"
+msgstr "Gõ tay"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Use once"
+msgstr "Dùng một lần"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Used once, nothing saved"
+msgstr "Dùng một lần, không lưu gì"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_import
+#. odoo-python
+#: code:addons/pb_import/models/pb_import.py:0
+msgid "Where the data came from"
+msgstr "Dữ liệu đến từ đâu"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/js/import.js:0
+msgid "batches"
+msgstr "đợt"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "more"
+msgstr "thêm"
+
+#. module: pb_import
+#. odoo-javascript
+#: code:addons/pb_import/static/src/xml/import.xml:0
+msgid "of"
+msgstr "trên"

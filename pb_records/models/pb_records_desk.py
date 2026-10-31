@@ -68,6 +68,11 @@ BANK_ROLE_ORDER = ('acc_number', 'bank_name', 'bank_bic', 'acc_holder_name')
 
 class PbRecordsDesk(models.AbstractModel):
     _name = 'pb.records.desk'
+    # FILTER W6 (2026-10-31): the WHO rail is the shared filter panel. Its
+    # sections are the Employees list's own (the same words, so a person who
+    # learnt one knows the other), plus the pay feed's employment status and
+    # the hand-picked arrival from People.
+    _inherit = ['pb.filter.mixin']
     _description = 'Records Desk'
 
     # =================================================================
@@ -435,6 +440,171 @@ class PbRecordsDesk(models.AbstractModel):
             return []
         return ['|', ('company_id', '=', False), ('company_id', 'in', ids)]
 
+    # =================================================================
+    # The filter panel (pb_filter_kit, FILTER W6)
+    #
+    # The desk reads people under sudo behind its own gate (`_check_read`),
+    # so the panel counts under sudo too, inside the same company scope —
+    # and every kit door runs the same gate first.
+    # =================================================================
+    def _pbf_model(self):
+        return EMP
+
+    def _pbf_screen(self):
+        return 'records'
+
+    def _pbf_records(self):
+        return self.env[EMP].sudo()
+
+    def _pbf_base_domain(self):
+        return list(self._company_domain()) + [('active', '=', True)]
+
+    def _pbf_search_fields(self):
+        return ['name', 'barcode', 'work_email', 'employee_id', 'job_title']
+
+    def _pbf_layout_extra(self):
+        return {'currency': self.env.company.currency_id.symbol or ''}
+
+    def _pbf_people(self):
+        People = self.env.get('pb.people')
+        return People if People is not None and hasattr(People, '_pbf_spec') else None
+
+    def _pbf_sorts(self):
+        People = self._pbf_people()
+        if People is not None:
+            return People._pbf_sorts()
+        return [{'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'}]
+
+    @api.model
+    def _pbf_feed(self):
+        """The pay feed's employment status for everyone — asked ONCE per
+        request and kept on the cursor (RD11: never one question per person;
+        F18/F25: every count in one panel load asks the same thing).
+
+        `{'signals': {emp_id: {status, hours}}, 'by_status': {status: [ids]},
+          'left': {status, …}}`
+        """
+        key = ('pb_records_feed', self.env.uid, tuple(self.env.companies.ids))
+        cache = self.env.cr.cache
+        if key in cache:
+            return cache[key]
+        signals = self._signals() or {}
+        by_status = {}
+        for emp_id, info in signals.items():
+            status = str((info or {}).get('status') or '').strip()
+            if status:
+                by_status.setdefault(status, []).append(emp_id)
+        left = set()
+        try:
+            from odoo.addons.pb_hr_payroll_formula.models import value_kind_classifier as vkc
+            left = {s for s in by_status if vkc.is_left_status(s)}
+        except Exception:       # noqa: BLE001 — a tone, never a blocker
+            _logger.debug("Records Desk: left-status classifier unavailable", exc_info=True)
+        cache[key] = {'signals': signals, 'by_status': by_status, 'left': left}
+        return cache[key]
+
+    def _pbf_employment_section(self):
+        """Employment status as the pay feed reports it — one value per status
+        the feed delivers (its own words: "Resigned", "Nghỉ việc"…), and the
+        people it says nothing about. Ids come from `_pbf_feed`."""
+        feed = self._pbf_feed()
+        by_status = feed['by_status']
+        if not by_status:
+            return None
+        stated = sorted({i for ids in by_status.values() for i in ids})
+        options = [{
+            'value': status, 'label': status,
+            'tone': 'rose' if status in feed['left'] else 'green',
+            'domain': [('id', 'in', ids)],
+        } for status, ids in sorted(by_status.items(), key=lambda kv: -len(kv[1]))]
+        options.append({'value': '__none', 'label': _('Not stated in the feed'), 'tone': 'slate',
+                        'domain': [('id', 'not in', stated)]})
+        return {'key': 'employment', 'label': _('Employment status'), 'icon': 'activity',
+                'group': 'people', 'type': 'choice', 'pinned': True,
+                'help': _('What the pay feed says, which can differ from the employee record.'),
+                'options': options}
+
+    def _pbf_picked_ids(self):
+        ids = self._pbf_ctx().get('picked') or []
+        try:
+            return [int(i) for i in ids][:5000]
+        except (TypeError, ValueError):
+            return []
+
+    def _pbf_spec(self):
+        People = self._pbf_people()
+        spec = [dict(s) for s in People._pbf_spec()] if People is not None else []
+        # The Employees list pins Contract status, Payroll-ready, Department;
+        # here the third question is the feed's employment status.
+        for s in spec:
+            if s.get('key') == 'ready':
+                s['pinned'] = False
+        employment = self._pbf_employment_section()
+        if employment:
+            at = next((i for i, s in enumerate(spec) if s.get('key') == 'department'), len(spec) - 1) + 1
+            spec.insert(at, employment)
+        picked = self._pbf_picked_ids()
+        if picked:
+            # Arrived from People with a selection: a section of its own, so
+            # the chip says so and its x lets everybody back in.
+            spec.insert(0, {
+                'key': 'picked', 'label': _('Hand-picked'), 'icon': 'users',
+                'group': 'people', 'type': 'choice',
+                'options': [
+                    {'value': 'yes', 'label': _('The people you picked'), 'tone': 'blue',
+                     'domain': [('id', 'in', picked)]},
+                    {'value': 'no', 'label': _('Everybody else'), 'tone': 'slate',
+                     'domain': [('id', 'not in', picked)]},
+                ]})
+        return spec
+
+    def _pbf_builtin_views(self):
+        views = [
+            {'key': 'all', 'label': _('All people'), 'icon': 'users', 'filters': {}},
+            {'key': 'running', 'label': _('Running contracts'), 'filters': {'status': ['open']}},
+            {'key': 'nocontract', 'label': _('No contract'), 'filters': {'status': ['none']}},
+        ]
+        left = sorted(self._pbf_feed()['left'])
+        if left:
+            views.append({'key': 'left', 'label': _('Resigned per feed'),
+                          'filters': {'employment': left}})
+        if self._pbf_picked_ids():
+            views.append({'key': 'picked', 'label': _('Hand-picked'), 'icon': 'users',
+                          'filters': {'picked': ['yes']}})
+        return views
+
+    @api.model
+    def _pbf_worth_showing(self, s, base):
+        # the arrival section is never offered as a filter of its own: it is
+        # on (a chip) when somebody arrives with a selection, and gone once
+        # they let everybody back in
+        if s.get('key') == 'picked':
+            return False
+        return super()._pbf_worth_showing(s, base)
+
+    @api.model
+    def pbf_layout(self):
+        if not self._may_read():
+            return {'refused': _("You do not have access to employee records. Ask an "
+                                 "administrator for the HR or Payroll Officer role.")}
+        return super().pbf_layout()
+
+    @api.model
+    def pbf_counts(self, filters=None, search=None, keys=None):
+        self._check_read()
+        return super().pbf_counts(filters=filters, search=search, keys=keys)
+
+    @api.model
+    def pbf_find_values(self, key, query, filters=None, search=None):
+        self._check_read()
+        return super().pbf_find_values(key, query, filters=filters, search=search)
+
+    @api.model
+    def _kit_payload(self, filters):
+        """`{'pbf': {...}, 'search': '…'}` is the panel's state, as the
+        desk's bulk doors (select all matching, export) now send it."""
+        return isinstance(filters, dict) and isinstance(filters.get('pbf'), dict)
+
     @api.model
     def _people_domain(self, filters, skip=None):
         """The employee domain, with one facet optionally left out.
@@ -538,9 +708,59 @@ class PbRecordsDesk(models.AbstractModel):
     @api.model
     def _matching(self, filters, skip=None, ctx=None):
         Employee = self.env[EMP].sudo()
+        if self._kit_payload(filters):
+            # FILTER W6: the panel's state — one domain, the same one the
+            # grid's pages and the panel's counts are built from.
+            domain = self.pbf_domain(filters['pbf'], filters.get('search') or '')
+            return Employee.search(domain, order=self.pbf_order(filters.get('sort')) or 'name, id')
         employees = Employee.search(self._people_domain(filters, skip=skip),
                                     order='name, id')
         return self._apply_post_filters(employees, filters, skip=skip, ctx=ctx)
+
+    @api.model
+    def _person_row(self, probe, picked, emp, signals):
+        contract = probe._get_latest_contract(emp) or self.env[CON]
+        values = {}
+        for card in picked:
+            values[card['id']] = self._read_cell(probe, card, emp, contract)
+        return {
+            'id': emp.id,
+            'name': emp.display_name or emp.name or '',
+            'code': emp.barcode or emp.employee_id or '',
+            'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
+            'department': emp.department_id.display_name or '',
+            'job': emp.job_id.display_name or emp.job_title or '',
+            'contract_id': contract.id or False,
+            'contract_state': contract.state if contract else 'none',
+            'status': (signals.get(emp.id) or {}).get('status') or '',
+            'values': values,
+        }
+
+    @api.model
+    def search_page(self, config_id=0, filters=None, search=None, sort=None,
+                    field_ids=None, offset=0, limit=100):
+        """One window of the grid for the filter panel's state (FILTER W6).
+
+        One domain, one indexed search and one count; the feed status is the
+        cursor-cached `_pbf_feed` (asked once per request, RD11). No facets:
+        the panel counts its own sections."""
+        self._check_read()
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or 100), 500))
+        except (TypeError, ValueError):
+            offset, limit = 0, 100
+        Employee = self.env[EMP].sudo()
+        domain = self.pbf_domain(filters or {}, search)
+        total = Employee.search_count(domain)
+        page = Employee.search(domain, order=self.pbf_order(sort) or 'name, id',
+                               offset=offset, limit=limit)
+        cards = self._cards(config_id)
+        picked = [cards[fid] for fid in (field_ids or []) if fid in cards]
+        probe = self._probe(config_id)
+        signals = self._pbf_feed()['signals']
+        rows = [self._person_row(probe, picked, emp, signals) for emp in page]
+        return {'total': total, 'offset': offset, 'rows': rows}
 
     @api.model
     def search_people(self, config_id=0, filters=None, field_ids=None,
@@ -557,24 +777,7 @@ class PbRecordsDesk(models.AbstractModel):
         # The row's own status chip needs the signals; the facets need them too,
         # and both read the one copy in `ctx`.
         signals = self._ctx_signals(ctx) if self._ctx_statuses(ctx) else {}
-        rows = []
-        for emp in page:
-            contract = probe._get_latest_contract(emp) or self.env[CON]
-            values = {}
-            for card in picked:
-                values[card['id']] = self._read_cell(probe, card, emp, contract)
-            rows.append({
-                'id': emp.id,
-                'name': emp.display_name or emp.name or '',
-                'code': emp.barcode or emp.employee_id or '',
-                'avatar': '/web/image/hr.employee/%s/avatar_128' % emp.id,
-                'department': emp.department_id.display_name or '',
-                'job': emp.job_id.display_name or emp.job_title or '',
-                'contract_id': contract.id or False,
-                'contract_state': contract.state if contract else 'none',
-                'status': (signals.get(emp.id) or {}).get('status') or '',
-                'values': values,
-            })
+        rows = [self._person_row(probe, picked, emp, signals) for emp in page]
         wants_facets = (int(offset) == 0) if with_facets is None else bool(with_facets)
         return {'total': total, 'offset': int(offset), 'rows': rows,
                 'facets': self._facets(filters, ctx) if wants_facets else None}
@@ -643,6 +846,10 @@ class PbRecordsDesk(models.AbstractModel):
         "Select all 4,500 matching" has to mean the whole match set, not the
         pages that happen to be loaded — and a person who asked for all of them
         does not want to wait for 4,500 rows of values to come back first.
+
+        FILTER W6: the desk sends the filter panel's state as
+        `{'pbf': filters, 'search': text}` and this runs `pbf_domain` — the
+        ids are exactly the panel's matched count.
         """
         self._check_read()
         return self._matching(filters or {}).ids

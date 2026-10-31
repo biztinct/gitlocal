@@ -60,13 +60,115 @@ def _m2o(rec):
     return rec.display_name if rec else ''
 
 
+#: Rows per page on the filter panel's list (FILTER W6; the old cap was 400).
+PAGE_SIZE = 60
+#: Date presets for a date every record has (no "not set" row).
+PAST_DATES = ['this_week', 'this_month', 'last_month', 'last_90', 'this_quarter',
+              'this_year', 'last_year']
+
+
 class LedgerMixin(models.AbstractModel):
     _name = 'pb.ledger.mixin'
+    # FILTER W6 (2026-10-31): the three ledgers are on the shared filter
+    # panel. They used to load the newest 400 rows and filter those in the
+    # browser, with chips counted from the loaded rows. Each data model now
+    # declares its sections; the list is paged from the server.
+    _inherit = ['pb.filter.mixin']
     _description = 'Pay-run ledger cockpit shared helpers'
+
+    #: saved-views key — one per ledger, so a Full & Final view never shows on Retro
+    _ledger_key = None
 
     @api.model
     def _co_dom(self):
         return [('company_id', 'in', self.env.companies.ids or [self.env.company.id])]
+
+    # ============================================================ filter panel
+    def _pbf_model(self):
+        return self._detail_model
+
+    def _pbf_screen(self):
+        return self._ledger_key or self._name
+
+    def _pbf_base_domain(self):
+        return self._co_dom()
+
+    def _pbf_layout_extra(self):
+        Model = self.env[self._detail_model]
+        return {'currency': self._grid_symbol(Model, self._co_dom())}
+
+    @api.model
+    def _sec_department(self, path, pinned=False):
+        return {'key': 'department', 'label': _('Department'), 'icon': 'building',
+                'group': 'people', 'type': 'many2one', 'path': path, 'pinned': pinned,
+                'none_label': _('No department'), 'label_sudo': True}
+
+    @api.model
+    def _sec_scheme(self, pinned=False):
+        return {'key': 'scheme', 'label': _('Pay scheme'), 'icon': 'sigma',
+                'group': 'pay', 'type': 'many2one', 'path': 'formula_config_id',
+                'pinned': pinned, 'none_label': _('No pay scheme')}
+
+    @api.model
+    def _sec_component(self, pinned=False):
+        return {'key': 'component', 'label': _('Component'), 'icon': 'layers',
+                'group': 'pay', 'type': 'many2one', 'path': 'component_id',
+                'pinned': pinned, 'none_label': _('No component')}
+
+    @api.model
+    def _sec_company(self):
+        return {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+                'group': 'other', 'type': 'many2one', 'path': 'company_id'}
+
+    @api.model
+    def _sec_status(self, options, pinned=True):
+        return {'key': 'status', 'label': _('Where it is'), 'icon': 'gitBranch',
+                'group': 'other', 'type': 'choice', 'pinned': pinned, 'requires': ['state'],
+                'options': [{'value': v, 'label': l, 'tone': t, 'domain': [('state', '=', v)]}
+                            for v, l, t in options]}
+
+    def _ledger_head(self, Model, dom):
+        """The descriptor without its rows: title, numbers, steps, money sign."""
+        raise NotImplementedError
+
+    def _ledger_row_ctx(self, Model):
+        """Facts every row of one page shares (labels, which fields exist)."""
+        return {}
+
+    def _ledger_row(self, r, ctx):
+        raise NotImplementedError
+
+    @api.model
+    def get_head(self):
+        """The numbers line, the steps and the words — over the whole scope,
+        whatever is filtered. The rows come from `get_page`."""
+        Model = self.env[self._detail_model]
+        dom = self._co_dom()
+        head = self._ledger_head(Model, dom)
+        head['currency'] = self._grid_symbol(Model, dom)
+        head['total'] = Model.search_count(dom)
+        return head
+
+    @api.model
+    def get_page(self, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of rows for the filter panel's current state."""
+        Model = self.env[self._detail_model]
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        domain = self.pbf_domain(filters or {}, search)
+        recs = Model.search(domain, order=self.pbf_order(sort) or 'id desc',
+                            offset=offset, limit=limit)
+        ctx = self._ledger_row_ctx(Model)
+        rows = []
+        for r in recs:
+            try:
+                rows.append(self._ledger_row(r, ctx))
+            except Exception as e:  # noqa: BLE001 — one bad row never blanks the list
+                _logger.debug("Ledger row %s failed: %s", r.id, e)
+        return {'rows': rows, 'total': Model.search_count(domain), 'offset': offset}
 
     @api.model
     def _distinct(self, Model, dom, field):
@@ -262,16 +364,92 @@ class PbFullFinal(models.AbstractModel):
             ] if s],
         }
 
-    @api.model
-    def get_data(self):
-        FF = self.env['hr.full.final.settlement']
-        dom = self._co_dom()
-        cur = self._grid_symbol(FF, dom)
-        total = FF.search_count(dom)
-        recs = FF.search(dom, order='settlement_date desc, id desc', limit=LIMIT)
+    _ledger_key = 'fullfinal'
 
+    # ------------------------------------------------------------ filter panel
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'employee_code', 'department_id.name', 'name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Newest settlement first'),
+             'order': 'settlement_date desc, id desc'},
+            {'key': 'oldest', 'label': _('Oldest settlement first'),
+             'order': 'settlement_date asc, id asc'},
+            {'key': 'net', 'label': _('Biggest net payable first'),
+             'order': 'net_payable desc, id desc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+        ]
+
+    def _pbf_spec(self):
+        uid = self.env.uid
+        return [
+            # ---- pinned: where it is, where it came from, whose team
+            self._sec_status([
+                ('draft', _('Being prepared'), 'slate'),
+                ('returned', _('Sent back to be fixed'), 'amber'),
+                ('pending', _('Waiting for approval'), 'blue'),
+                ('approved', _('Approved'), 'green'),
+                ('rejected', _('Turned down'), 'rose'),
+            ]),
+            {'key': 'source', 'label': _('Source'), 'icon': 'upload',
+             'group': 'other', 'type': 'selection', 'path': 'source', 'pinned': True},
+            self._sec_department('department_id', pinned=True),
+            # ---- more filters
+            {'key': 'check', 'label': _('Checks'), 'icon': 'checkCheck',
+             'group': 'pay', 'type': 'choice', 'requires': ['pb_to_check', 'pb_compute_issue'],
+             'options': [
+                 {'value': 'yes', 'label': _('Ready to check'), 'tone': 'amber',
+                  'domain': [('pb_to_check', '=', True)]},
+                 {'value': 'issue', 'label': _('Could not be worked out'), 'tone': 'rose',
+                  'domain': [('pb_compute_issue', '!=', False),
+                             ('state', 'in', ('draft', 'returned'))]},
+                 {'value': 'no', 'label': _('Nothing to check'), 'tone': 'slate',
+                  'domain': [('pb_to_check', '=', False), '|',
+                             ('pb_compute_issue', '=', False),
+                             ('state', 'not in', ('draft', 'returned'))]},
+             ]},
+            # "Mine" is the reader's own seat on the approval (a stored
+            # many2many, so a literal domain does it — no Python fact)
+            {'key': 'mine', 'label': _('Waiting on me'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'choice', 'requires': ['seat_user_ids', 'state'],
+             'options': [
+                 {'value': 'mine', 'label': _('Waiting on me'), 'tone': 'amber',
+                  'domain': [('state', '=', 'pending'), ('seat_user_ids', 'in', [uid])]},
+                 {'value': 'others', 'label': _('Waiting on someone else'), 'tone': 'slate',
+                  'domain': [('state', '=', 'pending'), ('seat_user_ids', 'not in', [uid])]},
+             ]},
+            self._sec_scheme(),
+            {'key': 'job', 'label': _('Job position'), 'icon': 'briefcase',
+             'group': 'people', 'type': 'many2one', 'path': 'job_id',
+             'none_label': _('No job position'), 'label_sudo': True},
+            {'key': 'batch', 'label': _('Batch'), 'icon': 'database',
+             'group': 'pay', 'type': 'many2one', 'path': 'import_batch_id',
+             'none_label': _('Not from a batch')},
+            {'key': 'money', 'label': _('Net payable'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'net_payable', 'unit': 'money'},
+            {'key': 'when', 'label': _('Settled on'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'settlement_date', 'presets': PAST_DATES},
+            {'key': 'approved_on', 'label': _('Approved on'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'approved_at', 'presets': 'past',
+             'none_label': _('Not approved yet')},
+            self._sec_company(),
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All settlements'), 'icon': 'layoutList', 'filters': {}},
+            {'key': 'check', 'label': _('Ready to check'), 'filters': {'check': ['yes']}},
+            {'key': 'mine', 'label': _('Waiting on me'), 'filters': {'mine': ['mine']}},
+            {'key': 'approved_month', 'label': _('Approved this month'),
+             'filters': {'approved_on': {'preset': 'this_month'}}},
+            {'key': 'manual', 'label': _('Manual'), 'filters': {'source': ['manual']}},
+        ]
+
+    def _ledger_kpis(self, FF, dom):
         agg = FF.read_group(dom, ['net_payable:sum', 'total_earnings:sum', 'total_deductions:sum'], [])
         a = agg[0] if agg else {}
+        total = FF.search_count(dom)
         kpis = [
             {'icon': 'fileText', 'value': total, 'label': _('Settlements')},
             {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': a.get('net_payable') or 0.0, 'label': _('Net payable')},
@@ -297,51 +475,79 @@ class PbFullFinal(models.AbstractModel):
                 kpis.insert(2, {'icon': 'alert', 'value': issues,
                                 'label': _('Could not be worked out'),
                                 'tone': 'err', 'facet': ['check', 'issue']})
+        return kpis
+
+    def _ledger_head(self, FF, dom):
+        return {
+            'title': _('Full & Final'),
+            'subtitle': _('Every settlement, its components and net payable at a glance.'),
+            'search_ph': _('Search employee, ID, department…'),
+            'kpis': self._ledger_kpis(FF, dom),
+            'steps': self._fnf_step_defs(FF),
+            'list_action': 'pb_hr_fullandfinal.action_full_and_final_employees',
+        }
+
+    def _ledger_row_ctx(self, FF):
+        return {'has_check': 'pb_to_check' in FF._fields, 'src_lbl': _sel(FF, 'source')}
+
+    def _ledger_row(self, r, ctx):
+        has_check, src_lbl = ctx['has_check'], ctx['src_lbl']
+        e = r.employee_id
+        sub = ' · '.join([x for x in [r.department_id.name if r.department_id else '',
+                                      r.job_id.name if r.job_id else ''] if x]) or '—'
+        issue = r.pb_compute_issue if has_check else ''
+        check = ('issue' if issue and r.state in ('draft', 'returned')
+                 else 'yes' if has_check and r.pb_to_check else 'no')
+        badges = [{'label': src_lbl.get(r.source, r.source or '—'),
+                   'tone': 'info' if r.source == 'auto' else 'muted'}]
+        # What the row can do is what its state allows: a settlement is
+        # printed once approved, sent in once checked, and one that could
+        # not be worked out says so instead of offering a door that refuses.
+        if check == 'issue':
+            badges.append({'label': _('Could not be worked out'), 'tone': 'err'})
+            action = False
+        elif check == 'yes':
+            badges.append({'label': _('Ready to check'), 'tone': 'warn'})
+            action = {'label': _('Send for approval'), 'icon': 'send',
+                      'method': 'action_pb_send_for_approval',
+                      'done': _('Sent for approval')}
+        elif r.state == 'approved' or 'state' not in r._fields:
+            action = {'label': _('Download'), 'icon': 'download',
+                      'method': 'action_download_full_and_final'}
+        else:
+            action = False
+        return {
+            'id': r.id, 'res_model': 'hr.full.final.settlement',
+            'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else r.name),
+            'title': (e.name if e else r.name) or '—', 'subtitle': sub,
+            'badges': badges,
+            'note': issue or '',
+            'metrics': [{'label': _('Net payable'), 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
+            'action': action,
+            '_f': {'source': r.source or '',
+                   'check': check,
+                   'state': r.state or '',
+                   'dept': r.department_id.name if r.department_id else '',
+                   'config': r.formula_config_id.name if r.formula_config_id else ''},
+            '_s': ' '.join([x for x in [e.name if e else '', r.employee_code or '',
+                                        r.department_id.name if r.department_id else ''] if x]),
+            '_d': str(r.settlement_date) if r.settlement_date else '',
+        }
+
+    @api.model
+    def get_data(self):
+        """The old one-shot descriptor (newest 400 rows, facets from them).
+        The screen reads `get_head` + `get_page` now; this stays for the
+        callers that still read it (tests, ruling R4)."""
+        FF = self.env['hr.full.final.settlement']
+        dom = self._co_dom()
+        cur = self._grid_symbol(FF, dom)
+        total = FF.search_count(dom)
+        recs = FF.search(dom, order='settlement_date desc, id desc', limit=LIMIT)
+        kpis = self._ledger_kpis(FF, dom)
         steps = self._fnf_steps(FF, dom)
-        src_lbl = _sel(FF, 'source')
-        rows = []
-        for r in recs:
-            e = r.employee_id
-            sub = ' · '.join([x for x in [r.department_id.name if r.department_id else '',
-                                          r.job_id.name if r.job_id else ''] if x]) or '—'
-            issue = r.pb_compute_issue if has_check else ''
-            check = ('issue' if issue and r.state in ('draft', 'returned')
-                     else 'yes' if has_check and r.pb_to_check else 'no')
-            badges = [{'label': src_lbl.get(r.source, r.source or '—'),
-                       'tone': 'info' if r.source == 'auto' else 'muted'}]
-            # What the row can do is what its state allows: a settlement is
-            # printed once approved, sent in once checked, and one that could
-            # not be worked out says so instead of offering a door that refuses.
-            if check == 'issue':
-                badges.append({'label': _('Could not be worked out'), 'tone': 'err'})
-                action = False
-            elif check == 'yes':
-                badges.append({'label': _('Ready to check'), 'tone': 'warn'})
-                action = {'label': _('Send for approval'), 'icon': 'send',
-                          'method': 'action_pb_send_for_approval',
-                          'done': _('Sent for approval')}
-            elif r.state == 'approved' or 'state' not in r._fields:
-                action = {'label': _('Download'), 'icon': 'download',
-                          'method': 'action_download_full_and_final'}
-            else:
-                action = False
-            rows.append({
-                'id': r.id, 'res_model': 'hr.full.final.settlement',
-                'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else r.name),
-                'title': (e.name if e else r.name) or '—', 'subtitle': sub,
-                'badges': badges,
-                'note': issue or '',
-                'metrics': [{'label': _('Net payable'), 'value': r.net_payable, 'money': True, 'strong': True, 'tone': 'ok'}],
-                'action': action,
-                '_f': {'source': r.source or '',
-                       'check': check,
-                       'state': r.state or '',
-                       'dept': r.department_id.name if r.department_id else '',
-                       'config': r.formula_config_id.name if r.formula_config_id else ''},
-                '_s': ' '.join([x for x in [e.name if e else '', r.employee_code or '',
-                                            r.department_id.name if r.department_id else ''] if x]),
-                '_d': str(r.settlement_date) if r.settlement_date else '',
-            })
+        ctx = self._ledger_row_ctx(FF)
+        rows = [self._ledger_row(r, ctx) for r in recs]
         facets = [
             _sel_facet(FF, 'source', _('Source'), 'source'),
             _rows_facet(rows, 'dept', _('Department')),
@@ -365,6 +571,19 @@ class PbFullFinal(models.AbstractModel):
         ('pending', ('pending',)),
         ('approved', ('approved',)),
     )
+
+    @api.model
+    def _fnf_step_defs(self, FF):
+        """The three steps without counts: the filter panel counts them for
+        whatever else is filtered (ruling R1), from its "Where it is" section."""
+        if 'state' not in FF._fields:
+            return {}
+        titles = {'prepare': _('Being prepared'),
+                  'pending': _('Waiting for approval'),
+                  'approved': _('Approved')}
+        return {'unit': 'settlement',
+                'items': [{'key': key, 'title': titles[key], 'states': list(states)}
+                          for key, states in self.FNF_STEPS]}
 
     @api.model
     def _fnf_steps(self, FF, dom):
@@ -453,45 +672,108 @@ class PbProration(models.AbstractModel):
             ] if s],
         }
 
-    @api.model
-    def get_data(self):
-        PL = self.env['hr.payroll.proration.line']
-        dom = self._co_dom()
-        cur = self._grid_symbol(PL, dom)
+    _ledger_key = 'proration'
+
+    # ------------------------------------------------------------ filter panel
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'component_id.name', 'component_code']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Latest period first'), 'order': 'date_from desc, id desc'},
+            {'key': 'oldest', 'label': _('Earliest period first'), 'order': 'date_from asc, id asc'},
+            {'key': 'amount', 'label': _('Biggest prorated amount first'),
+             'order': 'prorated_amount desc, id desc'},
+        ]
+
+    def _pbf_spec(self):
+        return [
+            # ---- pinned: the questions "answer one person" asks (Learn)
+            self._sec_component(pinned=True),
+            {'key': 'batch', 'label': _('Batch'), 'icon': 'database',
+             'group': 'pay', 'type': 'many2one', 'path': 'import_batch_id', 'pinned': True,
+             'none_label': _('Not from a batch')},
+            self._sec_status([('draft', _('Still draft'), 'slate'),
+                              ('posted', _('Posted'), 'green')]),
+            # ---- more filters
+            self._sec_department('employee_id.department_id'),
+            self._sec_scheme(),
+            {'key': 'basis', 'label': _('Counted by'), 'icon': 'calculator',
+             'group': 'pay', 'type': 'selection', 'path': 'proration_basis'},
+            {'key': 'money', 'label': _('Prorated amount'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'prorated_amount', 'unit': 'money'},
+            {'key': 'when', 'label': _('Effective'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'effective_date', 'presets': 'past',
+             'none_label': _('No date')},
+            self._sec_company(),
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All lines'), 'icon': 'layoutList', 'filters': {}},
+            {'key': 'posted_month', 'label': _('Posted this month'),
+             'filters': {'status': ['posted'], 'when': {'preset': 'this_month'}}},
+            {'key': 'draft', 'label': _('Still draft'), 'filters': {'status': ['draft']}},
+        ]
+
+    def _ledger_kpis(self, PL, dom):
         total = PL.search_count(dom)
-        recs = PL.search(dom, order='date_from desc, id desc', limit=LIMIT)
         agg = PL.read_group(dom, ['prorated_amount:sum'], [])
         pro = (agg[0].get('prorated_amount') if agg else 0.0) or 0.0
-        kpis = [
+        return [
             {'icon': 'sigma', 'value': total, 'label': _('Proration lines')},
             {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(PL, dom, 'employee_id'), 'label': _('Employees')},
             {'icon': 'receipt', 'ic_tone': 'green', 'money': True, 'value': pro, 'label': _('Total prorated')},
             {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(PL, dom, 'import_batch_id'), 'label': _('Batches')},
         ]
-        st_lbl = _sel(PL, 'state')
-        rows = []
-        for r in recs:
-            e = r.employee_id
-            rows.append({
-                'id': r.id, 'res_model': 'hr.payroll.proration.line',
-                'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else ''),
-                'title': e.name if e else '—',
-                'subtitle': r.component_id.name if r.component_id else '—',
-                'code': r.component_code or (r.component_id.code if r.component_id else ''),
-                'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(), 'tone': 'ok' if r.state == 'posted' else 'muted'}],
-                'metrics': [
-                    {'label': _('Old'), 'value': r.old_amount, 'money': True},
-                    {'label': _('New'), 'value': r.new_amount, 'money': True},
-                    {'label': _('Prorated'), 'value': r.prorated_amount, 'money': True, 'strong': True, 'tone': 'ok'},
-                ],
-                '_f': {'state': r.state or '',
-                       'component': r.component_id.name if r.component_id else '',
-                       'config': r.formula_config_id.name if r.formula_config_id else '',
-                       'batch': r.import_batch_id.name if r.import_batch_id else ''},
-                '_s': ' '.join([x for x in [e.name if e else '', r.component_id.name if r.component_id else '',
-                                            r.component_code or ''] if x]),
-                '_d': str(r.effective_date) if r.effective_date else '',
-            })
+
+    def _ledger_head(self, PL, dom):
+        return {
+            'title': _('Proration Audit'),
+            'subtitle': _('Every prorated component, old → new → prorated, per employee.'),
+            'search_ph': _('Search employee or component…'),
+            'kpis': self._ledger_kpis(PL, dom),
+            'list_action': 'pb_hr_payroll_formula.action_payroll_proration_line',
+        }
+
+    def _ledger_row_ctx(self, PL):
+        return {'st_lbl': _sel(PL, 'state')}
+
+    def _ledger_row(self, r, ctx):
+        st_lbl = ctx['st_lbl']
+        e = r.employee_id
+        return {
+            'id': r.id, 'res_model': 'hr.payroll.proration.line',
+            'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else ''),
+            'title': e.name if e else '—',
+            'subtitle': r.component_id.name if r.component_id else '—',
+            'code': r.component_code or (r.component_id.code if r.component_id else ''),
+            'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(), 'tone': 'ok' if r.state == 'posted' else 'muted'}],
+            'metrics': [
+                {'label': _('Old'), 'value': r.old_amount, 'money': True},
+                {'label': _('New'), 'value': r.new_amount, 'money': True},
+                {'label': _('Prorated'), 'value': r.prorated_amount, 'money': True, 'strong': True, 'tone': 'ok'},
+            ],
+            '_f': {'state': r.state or '',
+                   'component': r.component_id.name if r.component_id else '',
+                   'config': r.formula_config_id.name if r.formula_config_id else '',
+                   'batch': r.import_batch_id.name if r.import_batch_id else ''},
+            '_s': ' '.join([x for x in [e.name if e else '', r.component_id.name if r.component_id else '',
+                                        r.component_code or ''] if x]),
+            '_d': str(r.effective_date) if r.effective_date else '',
+        }
+
+    @api.model
+    def get_data(self):
+        """The old one-shot descriptor; the screen reads get_head + get_page (R4)."""
+        PL = self.env['hr.payroll.proration.line']
+        dom = self._co_dom()
+        cur = self._grid_symbol(PL, dom)
+        total = PL.search_count(dom)
+        recs = PL.search(dom, order='date_from desc, id desc', limit=LIMIT)
+        kpis = self._ledger_kpis(PL, dom)
+        ctx = self._ledger_row_ctx(PL)
+        rows = [self._ledger_row(r, ctx) for r in recs]
         facets = [
             _sel_facet(PL, 'state', _('Status'), 'state'),
             _rows_facet(rows, 'component', _('Component')),
@@ -551,47 +833,119 @@ class PbRetro(models.AbstractModel):
             ] if s],
         }
 
-    @api.model
-    def get_data(self):
-        RA = self.env['hr.payroll.retro.adjustment']
-        dom = self._co_dom()
-        cur = self._grid_symbol(RA, dom)
+    _ledger_key = 'retro'
+
+    # ------------------------------------------------------------ filter panel
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'component_id.name', 'component_code']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Latest period first'), 'order': 'period_from desc, id desc'},
+            {'key': 'oldest', 'label': _('Earliest period first'), 'order': 'period_from asc, id asc'},
+            {'key': 'delta', 'label': _('Biggest change first'), 'order': 'delta_amount desc, id desc'},
+            {'key': 'delta_low', 'label': _('Biggest cut first'), 'order': 'delta_amount asc, id desc'},
+        ]
+
+    def _pbf_spec(self):
+        return [
+            # ---- pinned: the same three questions as the Proration Audit
+            self._sec_component(pinned=True),
+            {'key': 'batch', 'label': _('Applied in batch'), 'icon': 'database',
+             'group': 'pay', 'type': 'many2one', 'path': 'applied_in_batch_id', 'pinned': True,
+             'none_label': _('Not applied yet')},
+            self._sec_status([('draft', _('Still draft'), 'slate'),
+                              ('posted', _('Posted'), 'green'),
+                              ('cancelled', _('Cancelled'), 'rose')]),
+            # ---- more filters
+            self._sec_department('employee_id.department_id'),
+            self._sec_scheme(),
+            {'key': 'direction', 'label': _('Up or down'), 'icon': 'arrowUpDown',
+             'group': 'pay', 'type': 'choice', 'requires': ['delta_amount'],
+             'options': [
+                 {'value': 'up', 'label': _('Pay goes up'), 'tone': 'green',
+                  'domain': [('delta_amount', '>', 0)]},
+                 {'value': 'down', 'label': _('Pay goes down'), 'tone': 'amber',
+                  'domain': [('delta_amount', '<', 0)]},
+                 {'value': 'zero', 'label': _('No change'), 'tone': 'slate',
+                  'domain': [('delta_amount', '=', 0)]},
+             ]},
+            {'key': 'money', 'label': _('Delta'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'delta_amount', 'unit': 'money'},
+            {'key': 'when', 'label': _('Period start'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'period_from', 'presets': PAST_DATES},
+            self._sec_company(),
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All adjustments'), 'icon': 'layoutList', 'filters': {}},
+            {'key': 'posted_month', 'label': _('Posted this month'),
+             'filters': {'status': ['posted'], 'when': {'preset': 'this_month'}}},
+            {'key': 'draft', 'label': _('Still draft'), 'filters': {'status': ['draft']}},
+            {'key': 'cancelled', 'label': _('Cancelled'), 'filters': {'status': ['cancelled']}},
+        ]
+
+    def _ledger_kpis(self, RA, dom):
         total = RA.search_count(dom)
-        recs = RA.search(dom, order='period_from desc, id desc', limit=LIMIT)
         agg = RA.read_group(dom, ['delta_amount:sum'], [])
         delta = (agg[0].get('delta_amount') if agg else 0.0) or 0.0
-        kpis = [
+        return [
             {'icon': 'sigma', 'value': total, 'label': _('Retro lines')},
             {'icon': 'users', 'ic_tone': 'blue', 'value': self._distinct(RA, dom, 'employee_id'), 'label': _('Employees')},
             {'icon': 'receipt', 'ic_tone': 'green' if delta >= 0 else 'amber', 'money': True, 'value': delta, 'label': _('Total delta')},
             {'icon': 'layers', 'ic_tone': 'amber', 'value': self._distinct(RA, dom, 'applied_in_batch_id'), 'label': _('Batches')},
         ]
-        st_lbl = _sel(RA, 'state')
-        rows = []
-        for r in recs:
-            e = r.employee_id
-            rows.append({
-                'id': r.id, 'res_model': 'hr.payroll.retro.adjustment',
-                'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else ''),
-                'title': e.name if e else '—',
-                'subtitle': r.component_id.name if r.component_id else '—',
-                'code': r.component_code or (r.component_id.code if r.component_id else ''),
-                'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(),
-                            'tone': 'ok' if r.state == 'posted' else ('warn' if r.state == 'cancelled' else 'muted')}],
-                'metrics': [
-                    {'label': _('Old'), 'value': r.old_amount, 'money': True},
-                    {'label': _('New'), 'value': r.new_amount, 'money': True},
-                    {'label': _('Delta'), 'value': r.delta_amount, 'money': True, 'strong': True,
-                     'tone': 'ok' if (r.delta_amount or 0) >= 0 else 'warn'},
-                ],
-                '_f': {'state': r.state or '',
-                       'component': r.component_id.name if r.component_id else '',
-                       'config': r.formula_config_id.name if r.formula_config_id else '',
-                       'batch': r.applied_in_batch_id.name if r.applied_in_batch_id else ''},
-                '_s': ' '.join([x for x in [e.name if e else '', r.component_id.name if r.component_id else '',
-                                            r.component_code or ''] if x]),
-                '_d': str(r.period_from) if r.period_from else '',
-            })
+
+    def _ledger_head(self, RA, dom):
+        return {
+            'title': _('Retro Adjustments'),
+            'subtitle': _('Retroactive deltas, old → new → delta, per employee.'),
+            'search_ph': _('Search employee or component…'),
+            'kpis': self._ledger_kpis(RA, dom),
+            'list_action': 'pb_hr_payroll_formula.action_payroll_retro_adjustment',
+        }
+
+    def _ledger_row_ctx(self, RA):
+        return {'st_lbl': _sel(RA, 'state')}
+
+    def _ledger_row(self, r, ctx):
+        st_lbl = ctx['st_lbl']
+        e = r.employee_id
+        return {
+            'id': r.id, 'res_model': 'hr.payroll.retro.adjustment',
+            'avatar': _emp_avatar(e), 'initials': _initials(e.name if e else ''),
+            'title': e.name if e else '—',
+            'subtitle': r.component_id.name if r.component_id else '—',
+            'code': r.component_code or (r.component_id.code if r.component_id else ''),
+            'badges': [{'label': st_lbl.get(r.state) or (r.state or '').title(),
+                        'tone': 'ok' if r.state == 'posted' else ('warn' if r.state == 'cancelled' else 'muted')}],
+            'metrics': [
+                {'label': _('Old'), 'value': r.old_amount, 'money': True},
+                {'label': _('New'), 'value': r.new_amount, 'money': True},
+                {'label': _('Delta'), 'value': r.delta_amount, 'money': True, 'strong': True,
+                 'tone': 'ok' if (r.delta_amount or 0) >= 0 else 'warn'},
+            ],
+            '_f': {'state': r.state or '',
+                   'component': r.component_id.name if r.component_id else '',
+                   'config': r.formula_config_id.name if r.formula_config_id else '',
+                   'batch': r.applied_in_batch_id.name if r.applied_in_batch_id else ''},
+            '_s': ' '.join([x for x in [e.name if e else '', r.component_id.name if r.component_id else '',
+                                        r.component_code or ''] if x]),
+            '_d': str(r.period_from) if r.period_from else '',
+        }
+
+    @api.model
+    def get_data(self):
+        """The old one-shot descriptor; the screen reads get_head + get_page (R4)."""
+        RA = self.env['hr.payroll.retro.adjustment']
+        dom = self._co_dom()
+        cur = self._grid_symbol(RA, dom)
+        total = RA.search_count(dom)
+        recs = RA.search(dom, order='period_from desc, id desc', limit=LIMIT)
+        kpis = self._ledger_kpis(RA, dom)
+        ctx = self._ledger_row_ctx(RA)
+        rows = [self._ledger_row(r, ctx) for r in recs]
         facets = [
             _sel_facet(RA, 'state', _('Status'), 'state'),
             _rows_facet(rows, 'component', _('Component')),

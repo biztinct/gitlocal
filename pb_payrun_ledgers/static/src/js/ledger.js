@@ -26,32 +26,30 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
+import { useFilterKit, sameFilters } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 // The unit a step's count pill names, per descriptor `steps.unit`. Whole
 // sentences, one msgid each, so a translator can reorder them.
 const STEP_UNIT = {
     settlement: (n) => (n === 1 ? _t("1 settlement") : _t("%s settlements", n)),
 };
-const SHOWING_ALL = {
-    settlement: (n) => (!n ? _t("no settlements yet") : n === 1 ? _t("all 1 settlement") : _t("all %s settlements", n)),
+// What the filter panel calls the rows of each ledger ("12 of 86 settlements").
+const NOUN = {
+    "pb.fullfinal": () => _t("settlements"),
+    "pb.proration": () => _t("proration lines"),
+    "pb.retro": () => _t("retro lines"),
 };
-const SHOWING_SOME = {
-    settlement: (a, b) => _t("%s of %s settlements", a, b),
-};
-
-const DATE_CHIPS = [
-    { id: "all", label: _t("All time") },
-    { id: "month", label: _t("This month") },
-    { id: "year", label: _t("This year") },
-    { id: "custom", label: _t("Custom") },
-];
+const PAGE = 60;
 
 // One generic ledger cockpit rendered from a backend descriptor. Each screen is
-// a thin subclass that only sets the RPC model; the descriptor supplies KPIs,
-// facets and rows. Filtering/search/date are all client-side (à la pb.people).
+// a thin subclass that only sets the RPC model; the descriptor supplies the
+// numbers and the steps. FILTER W6: the rows are paged from the server for
+// the shared filter panel's state (they used to be the newest 400, filtered
+// here); each data model declares its own sections and views.
 export class LedgerCockpit extends Component {
     static template = "pb_payrun_ledgers.Ledger";
-    static components = { WfDrawer };
+    static components = { WfDrawer, PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -60,13 +58,24 @@ export class LedgerCockpit extends Component {
         this.notif = useService("notification");
         this.state = useState({
             acting: 0,          // the row whose action is running
-            loaded: false, data: {}, search: "", f: {},
-            step: "",              // quiet board: the step pressed ('' = all)
-            dateFilter: "all", from: "", to: "",
+            loaded: false, data: {},
+            // the list: one page at a time for the filter panel's state
+            rows: [], rowsTotal: 0, listLoaded: false, loadingMore: false,
             // hub mode only
             tab: this.tabs.length ? this.tabs[0].key : "",
             drawer: null,          // { title, subtitle, sections, currency }
             drawerLoading: false,
+        });
+        // The kit is pointed at this tab's data model; a tab switch points it
+        // at the other one (`reconfigure`). Each ledger keeps its own filters
+        // and saved views (screen keys fullfinal / proration / retro).
+        // `status`, `check` and `mine` are counted on every refresh: the
+        // steps and their flags read them, so they follow the filters (R1).
+        this.kit = useFilterKit({
+            model: this.MODEL,
+            noun: this.noun,
+            always: ["status", "check", "mine"],
+            onChange: () => this.loadPage(),
         });
         onWillStart(async () => { await this.load(); });
         // LEARN REFRESH step 1. A host that wants to know which inner tab is
@@ -93,7 +102,7 @@ export class LedgerCockpit extends Component {
     // step strip's heading lives here as a real msgid (LEARN REFRESH step 6).
     get stepsLabel() { return _t("Where every settlement is"); }
     get searchPh() { return this.state.data.search_ph || _t("Search…"); }
-    get emptyText() { return this.state.data.empty || _t("Nothing matches these filters."); }
+    get noun() { return (NOUN[this.MODEL] || (() => _t("lines")))(); }
     get tabs() { return this.props.tabs || []; }
     get tabDef() {
         return this.tabs.find((t) => t.key === this.state.tab) || this.tabs[0] || null;
@@ -110,37 +119,64 @@ export class LedgerCockpit extends Component {
         return (t && t.model) || this.constructor.MODEL;
     }
 
+    /** The words, the numbers line and the steps — over the whole scope. */
     async load() {
         let d = {};
         try {
-            d = await this.orm.call(this.MODEL, "get_data", []);
+            d = await this.orm.call(this.MODEL, "get_head", []);
         } catch (e) {
-            this.notif.add(_t("Could not load data"), { type: "danger" });
+            console.warn("pb_payrun_ledgers: get_head failed", e);
+            this.notif.add(_t("This ledger could not be loaded. Try again in a moment."), { type: "danger" });
         }
         this.state.data = d || {};
-        const f = {};
-        for (const fac of (d.facets || [])) f[fac.key] = "";
-        this.state.f = f;
-        this.state.step = "";
         this.state.loaded = true;
     }
 
-    /** A CLICK handler — the tab switch reloads, and mounts never write (W21). */
+    /** One page of rows for the panel's current filters; a reply for an
+     *  older filter state (or the other tab) is dropped. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const model = this.MODEL;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call(model, "get_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq) || model !== this.MODEL) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.rowsTotal = d.total;
+            this.state.listLoaded = true;
+        } catch (e) {
+            console.warn("pb_payrun_ledgers: get_page failed", e);
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The rows could not be loaded. Try again in a moment."), { type: "warning" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() { if (!this.state.loadingMore) { this.loadPage({ more: true }); } }
+    get hasMore() { return this.state.rows.length < this.state.rowsTotal; }
+    get nextPage() { return Math.min(PAGE, this.state.rowsTotal - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** A CLICK handler — the tab switch reloads, and mounts never write (W21).
+     *  The panel is pointed at the other ledger: its own sections, views and
+     *  remembered filters come back. */
     async setTab(key) {
         if (this.state.tab === key) { return; }
         this.state.tab = key;
         this._tellTab();
         this.state.drawer = null;
         this.state.loaded = false;
-        this.state.search = "";
-        this.state.dateFilter = "all";
-        this.state.from = "";
-        this.state.to = "";
-        await this.load();
+        this.state.listLoaded = false;
+        this.state.rows = [];
+        await Promise.all([this.load(), this.kit.reconfigure({ model: this.MODEL, noun: this.noun })]);
     }
 
     ic(n, s = 16) { return ic(n, s); }
-    get dateChips() { return DATE_CHIPS; }
 
     // ---- formatting ----
     // SCHEMECTX: the sign comes from the payload, which asks the scheme that
@@ -178,57 +214,30 @@ export class LedgerCockpit extends Component {
         return (f.value === 0 || f.value) ? String(f.value) : "—";
     }
 
-    // ---- filters (client-side) ----
-    setFacet(key, val) { this.state.f[key] = this.state.f[key] === val ? "" : val; }
-    onFacetSelect(key, ev) { this.state.f[key] = ev.target.value || ""; }
-    setDate(d) { this.state.dateFilter = d; }
-    onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
-    onFrom(ev) { this.state.from = ev.target.value; }
-    onTo(ev) { this.state.to = ev.target.value; }
+    // ---- the panel's counts (they follow every other filter, R1) ----
+    _count(key, value) {
+        const c = this.kit.counts[key] || {};
+        const row = (c.values || []).find((r) => String(r.v) === String(value));
+        return row ? row.n || 0 : 0;
+    }
+    /** Back to the whole ledger (its first view). */
+    showAll() { this.kit.home(); }
 
-    _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
-    _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
-    _inDate(r) {
-        const f = this.state.dateFilter;
-        if (f === "all") return true;
-        const d = r._d;
-        if (!d) return false;
-        if (f === "month") return d >= this._monthStart();
-        if (f === "year") return d >= this._yearStart();
-        if (f === "custom") {
-            if (this.state.from && d < this.state.from) return false;
-            if (this.state.to && d > this.state.to) return false;
-            return true;
+    /** Why the list is empty — one translatable sentence each (R34). */
+    get emptyTitle() {
+        if (!this.kit.total) { return _t("Nothing here yet"); }
+        if (this.kit.search && !this.kit.chips.length) { return _t("Nothing matches “%s”", this.kit.search); }
+        return _t("Nothing matches these filters");
+    }
+    get emptyText() {
+        if (!this.kit.total) {
+            return _t("Rows appear here once a pay data load or a settlement creates them.");
         }
-        return true;
-    }
-    _match(r) {
-        if (this.state.step) {
-            const st = this.stepItems.find((x) => x.key === this.state.step);
-            if (st && !st.states.includes((r._f || {}).state)) return false;
+        if (this.kit.search && !this.kit.chips.length) {
+            return _t("Check the spelling, or search by a person's name or a component.");
         }
-        for (const [k, v] of Object.entries(this.state.f)) {
-            if (v && String((r._f || {})[k]) !== String(v)) return false;
-        }
-        if (!this._inDate(r)) return false;
-        const q = this.state.search;
-        if (q && !(r._s || "").toLowerCase().includes(q)) return false;
-        return true;
-    }
-    get rows() { return (this.state.data.rows || []).filter(r => this._match(r)); }
-    chipCount(key, val) {
-        return (this.state.data.rows || []).filter(r => String((r._f || {})[key]) === String(val)).length;
-    }
-    get dirty() {
-        return !!(this.state.search || this.state.dateFilter !== "all" || this.state.step
-            || Object.values(this.state.f).some(v => v));
-    }
-    clearFilters() {
-        const f = {};
-        for (const k of Object.keys(this.state.f)) f[k] = "";
-        this.state.f = f;
-        this.state.step = "";
-        this.state.search = ""; this.state.dateFilter = "all"; this.state.from = ""; this.state.to = "";
+        return _t("There are %(n)s %(noun)s, but none fits every filter you have set. Remove a filter above, or show them all.",
+                  { n: this.fmtInt(this.kit.total), noun: this.noun });
     }
 
     // ================================================ quiet board
@@ -240,15 +249,20 @@ export class LedgerCockpit extends Component {
     get quietKpis() { return (this.state.data.kpis || []).filter((k) => !k.money); }
     get moneyKpis() { return (this.state.data.kpis || []).filter((k) => k.money); }
 
+    /** A figure with a `facet` [section, value] is a filter: pressing it
+     *  ticks exactly that in the panel; pressing it again shows everything. */
+    _kpiFilters(k) {
+        return k.facet ? { [k.facet[0]]: [k.facet[1]] } : null;
+    }
     get glance() {
         return this.quietKpis.map((k, i) => {
-            const fac = k.facet;
+            const f = this._kpiFilters(k);
             const tone = !k.value ? "" : k.tone === "err" ? "rose" : k.tone === "warn" ? "amber" : "";
             return {
                 // a real 0 (not the string "0") so the kit greys it
                 key: "k" + i, n: k.value ? this.kpiVal(k) : 0, label: k.label, tone,
-                run: fac ? () => this.setFacet(fac[0], fac[1]) : null,
-                _on: fac ? this.state.f[fac[0]] === fac[1] : false,
+                run: f ? () => this.kit.toggleFilters(f) : null,
+                _on: f && this.kit.loaded ? this.kit.isExactly(f) : false,
             };
         });
     }
@@ -259,38 +273,46 @@ export class LedgerCockpit extends Component {
 
     get stepItems() { return ((this.state.data.steps || {}).items) || []; }
     get stepUnit() { return (this.state.data.steps || {}).unit || ""; }
+    /** The steps, counted by the panel for every OTHER filter that is on,
+     *  so they follow the filters (R1). A step = its states in "Where it is". */
     get steps() {
         const unit = STEP_UNIT[this.stepUnit] || ((n) => String(n));
         return this.stepItems.map((st, i) => {
+            const count = st.states.reduce((n, s) => n + this._count("status", s), 0);
+            const mine = st.key === "pending" ? this._count("mine", "mine") : 0;
+            const waiting = st.key === "pending" ? count : 0;
+            const ready = st.key === "prepare" ? this._count("check", "yes") : 0;
+            const returned = st.key === "prepare" ? this._count("status", "returned") : 0;
             let flag = "";
-            if (st.mine) {
-                flag = st.mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", st.mine);
-            } else if (st.waiting) {
-                flag = st.waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", st.waiting);
-            } else if (st.ready) {
-                flag = st.ready === 1 ? _t("1 ready to check") : _t("%s ready to check", st.ready);
-            } else if (st.returned) {
-                flag = st.returned === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", st.returned);
+            if (mine) {
+                flag = mine === 1 ? _t("1 waiting on you") : _t("%s waiting on you", mine);
+            } else if (waiting) {
+                flag = waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", waiting);
+            } else if (ready) {
+                flag = ready === 1 ? _t("1 ready to check") : _t("%s ready to check", ready);
+            } else if (returned) {
+                flag = returned === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", returned);
             }
             return {
                 key: st.key, n: String(i + 1).padStart(2, "0"), title: st.title,
-                count: st.count, countLabel: unit(st.count), sub: "",
-                flag, flagTone: "", on: this.state.step === st.key,
+                count, countLabel: unit(count), sub: "",
+                flag, flagTone: "", on: this.stepIsOn(st),
             };
         });
     }
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
-
-    get showingLine() {
-        const total = this.state.data.total || 0;
-        const all = SHOWING_ALL[this.stepUnit];
-        const some = SHOWING_SOME[this.stepUnit];
-        if (!this.dirty) {
-            return { all: true, text: all ? all(total) : String(total) };
+    stepIsOn(st) {
+        return sameFilters({ status: this.kit.values("status") }, { status: st.states });
+    }
+    /** A step ticks its states in "Where it is", keeping every other filter;
+     *  pressing the lit step again lifts it. */
+    pickStep(key) {
+        const st = this.stepItems.find((x) => x.key === key);
+        if (!st) { return; }
+        if (this.stepIsOn(st)) {
+            this.kit.clear("status");
+        } else {
+            this.kit.setFilters({ ...this.kit.filters, status: [...st.states] }, { search: this.kit.search });
         }
-        const st = this.stepItems.find((x) => x.key === this.state.step);
-        return { all: false, text: some ? some(this.rows.length, total) : String(this.rows.length),
-                 where: st ? st.title : "" };
     }
 
     // ---- navigation / actions ----
@@ -347,10 +369,12 @@ export class LedgerCockpit extends Component {
                 await this.action.doAction(act);
             } else if (r.action.done) {
                 // LEARN REFRESH step 6: a row action that CHANGES the record
-                // (Send for approval) says so and re-reads the board, so the
-                // row moves to its new step in front of the reader.
+                // (Send for approval) says so and re-reads the numbers, the
+                // counts and the page (not the whole board — the filters and
+                // the page stay), so the row moves to its new step in front
+                // of the reader.
                 this.notif.add(r.action.done, { type: "success" });
-                await this.load();
+                await Promise.all([this.load(), this.kit.refresh()]);
             }
         } catch (e) {
             // the server's own words, never a bare "failed" (W40)

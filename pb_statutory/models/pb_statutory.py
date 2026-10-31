@@ -89,6 +89,8 @@ LEDGERS = {
 # table is not a report: past a few hundred rows the answer is the search box,
 # not a longer scroll.
 LIMIT = 400
+#: Rows per page on the filter panel's Data view (FILTER W6).
+PAGE_SIZE = 60
 
 
 def _sel(Model, field, value):
@@ -102,6 +104,11 @@ def _s(v):
 
 class PbStatutory(models.AbstractModel):
     _name = 'pb.statutory'
+    # FILTER W6 (2026-10-31): the Data view's four tables are on the shared
+    # filter panel, one record type at a time (`pbf_ctx.kind`). The policy and
+    # tax ROSTERS of the board stay as they are (ruling R5: the tax roster is
+    # a union of two models).
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Statutory cockpit data'
 
     @api.model
@@ -325,6 +332,245 @@ class PbStatutory(models.AbstractModel):
         return ['|', ('employee_id', '=', False),
                 ('employee_id', 'in', Emp._search([]))]
 
+    # ------------------------------------------------------------ filter panel
+    # One record type per call: the browser's kit sends `pbf_ctx.kind`, and
+    # every hook below reads it. A kind that is not in LEDGERS (or whose
+    # table this database lacks) falls back to the first table it has — a
+    # forged kind can never point the panel at another table.
+    @api.model
+    def _pbf_kind(self):
+        kind = self._pbf_ctx().get('kind')
+        spec = LEDGERS.get(kind)
+        if spec and spec['model'] in self.env:
+            return kind
+        return next((k for k, s in LEDGERS.items() if s['model'] in self.env), 'policy')
+
+    def _pbf_model(self):
+        return LEDGERS[self._pbf_kind()]['model']
+
+    def _pbf_screen(self):
+        return 'statutory:%s' % self._pbf_kind()
+
+    def _pbf_records(self):
+        Rec = self.env[self._pbf_model()]
+        # archived policies and tax tables are listed too (a superseded
+        # policy is exactly what somebody comes looking for)
+        return Rec.with_context(active_test=False) if 'active' in Rec._fields else Rec
+
+    def _pbf_base_domain(self):
+        # the two tables that reach a person carry the W97 scope
+        if self._pbf_kind() in ('adjustment', 'dependent'):
+            return self._employee_scope()
+        return []
+
+    def _pbf_layout_extra(self):
+        return {'currency': self.env.company.currency_id.symbol or ''}
+
+    def _pbf_search_fields(self):
+        return {
+            'policy': ['name', 'code'],
+            'tax': ['name', 'code'],
+            'adjustment': ['name', 'employee_id.name'],
+            'dependent': ['name', 'employee_id.name', 'identification_number'],
+        }[self._pbf_kind()]
+
+    def _pbf_sorts(self):
+        kind = self._pbf_kind()
+        name = {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'}
+        if kind == 'policy':
+            return [{'key': 'newest', 'label': _('Newest effective date first'),
+                     'order': 'effective_date desc nulls last, id desc'},
+                    {'key': 'oldest', 'label': _('Oldest effective date first'),
+                     'order': 'effective_date asc nulls last, id asc'}, name]
+        if kind == 'tax':
+            return [{'key': 'year', 'label': _('Latest tax year first'), 'order': 'tax_year desc, id desc'},
+                    {'key': 'year_old', 'label': _('Earliest tax year first'), 'order': 'tax_year asc, id asc'},
+                    name]
+        if kind == 'adjustment':
+            return [{'key': 'newest', 'label': _('Newest first'), 'order': 'adjustment_date desc, id desc'},
+                    {'key': 'oldest', 'label': _('Oldest first'), 'order': 'adjustment_date asc, id asc'},
+                    {'key': 'diff', 'label': _('Biggest difference first'), 'order': 'difference desc, id desc'}]
+        return [{'key': 'employee', 'label': _('By employee'), 'order': 'employee_id, id desc'},
+                {'key': 'newest', 'label': _('Newest registered first'),
+                 'order': 'registration_date desc nulls last, id desc'}, name]
+
+    @api.model
+    def _pbf_sec_active(self):
+        return {'key': 'status', 'label': _('Active or archived'), 'icon': 'archive',
+                'group': 'other', 'type': 'choice', 'pinned': True, 'requires': ['active'],
+                'options': [
+                    {'value': 'active', 'label': _('Active'), 'tone': 'green',
+                     'domain': [('active', '=', True)]},
+                    {'value': 'archived', 'label': _('Archived'), 'tone': 'slate',
+                     'domain': [('active', '=', False)]},
+                ]}
+
+    def _pbf_spec(self):
+        kind = self._pbf_kind()
+        company = {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+                   'group': 'other', 'type': 'many2one', 'path': 'company_id', 'pinned': True,
+                   'none_label': _('Every company')}
+        department = {'key': 'department', 'label': _('Department'), 'icon': 'building',
+                      'group': 'people', 'type': 'many2one', 'path': 'employee_id.department_id',
+                      'none_label': _('No department')}
+        employee = {'key': 'employee', 'label': _('Employee'), 'icon': 'user',
+                    'group': 'people', 'type': 'many2one', 'path': 'employee_id'}
+        if kind == 'policy':
+            return [
+                self._pbf_sec_active(),
+                {'key': 'effective', 'label': _('Effective from'), 'icon': 'calendar',
+                 'group': 'dates', 'type': 'date', 'path': 'effective_date', 'pinned': True,
+                 'presets': 'past', 'none_label': _('No date')},
+                company,
+                {'key': 'ends', 'label': _('Effective to'), 'icon': 'calendarClock',
+                 'group': 'dates', 'type': 'date', 'path': 'end_date', 'presets': 'future',
+                 'none_label': _('No end date')},
+            ]
+        if kind == 'tax':
+            return [
+                self._pbf_sec_active(),
+                {'key': 'year', 'label': _('Tax year'), 'icon': 'calendar',
+                 'group': 'dates', 'type': 'char', 'path': 'tax_year', 'pinned': True,
+                 'none_label': _('No year')},
+                company,
+                {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+                 'group': 'other', 'type': 'char', 'path': 'country_code', 'none_label': _('Not set')},
+            ]
+        if kind == 'adjustment':
+            return [
+                {'key': 'state', 'label': _('Status'), 'icon': 'gitBranch',
+                 'group': 'other', 'type': 'selection', 'path': 'state', 'pinned': True},
+                {'key': 'insurance', 'label': _('Insurance'), 'icon': 'shield',
+                 'group': 'pay', 'type': 'selection', 'path': 'insurance_type', 'pinned': True},
+                {'key': 'kind', 'label': _('Kind of adjustment'), 'icon': 'layers',
+                 'group': 'pay', 'type': 'selection', 'path': 'adjustment_type', 'pinned': True},
+                {'key': 'when', 'label': _('Adjusted on'), 'icon': 'calendar',
+                 'group': 'dates', 'type': 'date', 'path': 'adjustment_date',
+                 'presets': ['this_week', 'this_month', 'last_month', 'last_90', 'this_quarter',
+                             'this_year', 'last_year']},
+                {'key': 'reason', 'label': _('Reason'), 'icon': 'helpCircle',
+                 'group': 'other', 'type': 'selection', 'path': 'reason'},
+                department, employee,
+                dict(company, pinned=False),
+            ]
+        return [
+            {'key': 'status', 'label': _('Status'), 'icon': 'gitBranch',
+             'group': 'other', 'type': 'selection', 'path': 'status', 'pinned': True},
+            {'key': 'relationship', 'label': _('Relationship'), 'icon': 'users',
+             'group': 'people', 'type': 'selection', 'path': 'relationship', 'pinned': True},
+            dict(department, pinned=True),
+            {'key': 'relief', 'label': _('Relief right now'), 'icon': 'shieldCheck',
+             'group': 'pay', 'type': 'choice', 'requires': ['is_currently_eligible'],
+             'options': [
+                 {'value': 'yes', 'label': _('Relief applies today'), 'tone': 'green',
+                  'domain': [('is_currently_eligible', '=', True)]},
+                 {'value': 'no', 'label': _('No relief today'), 'tone': 'slate',
+                  'domain': [('is_currently_eligible', '=', False)]},
+             ]},
+            {'key': 'from', 'label': _('Relief from'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'effective_from', 'presets': 'past',
+             'none_label': _('No date')},
+            employee,
+        ]
+
+    def _pbf_builtin_views(self):
+        kind = self._pbf_kind()
+        if kind == 'policy':
+            return [
+                {'key': 'all', 'label': _('All policies'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'active', 'label': _('Active'), 'filters': {'status': ['active']}},
+                {'key': 'archived', 'label': _('Archived'), 'filters': {'status': ['archived']}},
+            ]
+        if kind == 'tax':
+            return [
+                {'key': 'all', 'label': _('All tax tables'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'active', 'label': _('Active'), 'filters': {'status': ['active']}},
+                {'key': 'year', 'label': _('This year'),
+                 'filters': {'year': [fields.Date.context_today(self).year]}},
+            ]
+        if kind == 'adjustment':
+            return [
+                {'key': 'all', 'label': _('All adjustments'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'draft', 'label': _('Draft'), 'filters': {'state': ['draft']}},
+                {'key': 'month', 'label': _('This month'), 'filters': {'when': {'preset': 'this_month'}}},
+            ]
+        return [
+            {'key': 'all', 'label': _('All dependents'), 'icon': 'layoutList', 'filters': {}},
+            {'key': 'pending', 'label': _('Waiting to be checked'), 'filters': {'status': ['pending']}},
+            {'key': 'eligible', 'label': _('Eligible'), 'filters': {'status': ['eligible']}},
+        ]
+
+    @api.model
+    def _ledger_words(self, kind):
+        """Each table's title, words and columns — translatable (they were
+        English literals until FILTER W6)."""
+        if kind == 'policy':
+            return {
+                'title': _('Insurance policies'),
+                'subtitle': _('Contribution rates, ceilings and the dates they apply from.'),
+                'search_ph': _('Search policy name or code…'),
+                'empty': _('No insurance policies on this database.'),
+                'columns': [{'label': _('Policy'), 'wide': True}, {'label': _('Code')},
+                            {'label': _('Effective')}, {'label': _('EE / ER total')}],
+            }
+        if kind == 'tax':
+            return {
+                'title': _('Tax tables'),
+                'subtitle': _('Progressive brackets, personal relief and dependent relief.'),
+                'search_ph': _('Search table name or code…'),
+                'empty': _('No tax tables on this database.'),
+                'columns': [{'label': _('Table'), 'wide': True}, {'label': _('Code')},
+                            {'label': _('Year')}, {'label': _('Brackets')}],
+            }
+        if kind == 'adjustment':
+            return {
+                'title': _('Insurance adjustments'),
+                'subtitle': _('Backdated corrections, refunds and additional collections.'),
+                'search_ph': _('Search reference or employee…'),
+                'empty': _('No insurance adjustments on this database.'),
+                'columns': [{'label': _('Employee'), 'wide': True},
+                            {'label': _('Insurance')}, {'label': _('Kind')}, {'label': _('Date')}],
+            }
+        return {
+            'title': _('Dependents'),
+            'subtitle': _('Registered dependents and the personal relief they carry.'),
+            'search_ph': _('Search dependent, employee or ID number…'),
+            'empty': _('No dependents registered on this database.'),
+            'columns': [{'label': _('Dependent'), 'wide': True},
+                        {'label': _('Employee')}, {'label': _('Relationship')},
+                        {'label': _('From')}],
+        }
+
+    @api.model
+    def get_ledger_head(self, kind):
+        """The Data view's words and columns for one table, without its rows:
+        the rows come from `get_ledger_page` for the filter panel's state."""
+        spec = LEDGERS.get(kind)
+        if not spec or spec['model'] not in self.env:
+            return {'columns': [], 'total': 0, 'empty': _('This table does not exist on this database.')}
+        head = self._ledger_words(kind)
+        M = self.with_context(pbf_ctx={'kind': kind})
+        head['total'] = M._pbf_records().search_count(M._pbf_base_domain())
+        return head
+
+    @api.model
+    def get_ledger_page(self, kind, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of one table for the filter panel's current state."""
+        spec = LEDGERS.get(kind)
+        if not spec or spec['model'] not in self.env:
+            return {'rows': [], 'total': 0, 'offset': 0}
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        M = self.with_context(pbf_ctx={'kind': kind})
+        Rec = M._pbf_records()
+        domain = M.pbf_domain(filters or {}, search)
+        recs = Rec.search(domain, order=M.pbf_order(sort) or 'id desc', offset=offset, limit=limit)
+        build = getattr(self, '_row_%s' % kind)
+        return {'rows': [build(r) for r in recs], 'total': Rec.search_count(domain), 'offset': offset}
+
     @api.model
     def get_ledger(self, kind):
         """One VN statutory table as a grid descriptor.
@@ -416,23 +662,7 @@ class PbStatutory(models.AbstractModel):
         recs = P.with_context(active_test=False).search(
             [], order='effective_date desc, id desc', limit=LIMIT)
         total = P.with_context(active_test=False).search_count([])
-        rows = []
-        for r in recs:
-            rows.append({
-                'id': r.id,
-                'cells': [
-                    r.name or '—',
-                    r.code or '—',
-                    _s(r.effective_date) or '—',
-                    '%s%% / %s%%' % (round(r.total_employee_rate or 0, 2),
-                                     round(r.total_employer_rate or 0, 2)),
-                ],
-                'badge': {'label': 'Active' if r.active else 'Archived',
-                          'tone': 'ok' if r.active else 'muted'},
-                '_f': {'state': 'active' if r.active else 'archived',
-                       'company': r.company_id.name or ''},
-                '_s': ' '.join(x for x in [r.name or '', r.code or ''] if x),
-            })
+        rows = [self._row_policy(r) for r in recs]
         return {
             'title': 'Insurance policies',
             'subtitle': 'Contribution rates, ceilings and the dates they apply from.',
@@ -442,6 +672,24 @@ class PbStatutory(models.AbstractModel):
                         {'label': 'Effective'}, {'label': 'EE / ER total'}],
             'facets': self._facets(rows, [('state', 'State'), ('company', 'Company')]),
             'rows': rows, 'total': total, 'shown': len(rows),
+        }
+
+    @api.model
+    def _row_policy(self, r):
+        return {
+            'id': r.id,
+            'cells': [
+                r.name or '—',
+                r.code or '—',
+                _s(r.effective_date) or '—',
+                '%s%% / %s%%' % (round(r.total_employee_rate or 0, 2),
+                                 round(r.total_employer_rate or 0, 2)),
+            ],
+            'badge': {'label': _('Active') if r.active else _('Archived'),
+                      'tone': 'ok' if r.active else 'muted'},
+            '_f': {'state': 'active' if r.active else 'archived',
+                   'company': r.company_id.name or ''},
+            '_s': ' '.join(x for x in [r.name or '', r.code or ''] if x),
         }
 
     @api.model
@@ -502,18 +750,7 @@ class PbStatutory(models.AbstractModel):
         recs = T.with_context(active_test=False).search(
             [], order='tax_year desc, id desc', limit=LIMIT)
         total = T.with_context(active_test=False).search_count([])
-        rows = []
-        for r in recs:
-            rows.append({
-                'id': r.id,
-                'cells': [r.name or '—', r.code or '—', str(r.tax_year or ''),
-                          str(len(r.slab_ids))],
-                'badge': {'label': 'Active' if r.active else 'Archived',
-                          'tone': 'ok' if r.active else 'muted'},
-                '_f': {'state': 'active' if r.active else 'archived',
-                       'year': str(r.tax_year or '')},
-                '_s': ' '.join(x for x in [r.name or '', r.code or ''] if x),
-            })
+        rows = [self._row_tax(r) for r in recs]
         return {
             'title': 'Tax tables',
             'subtitle': 'Progressive brackets, personal relief and dependent relief.',
@@ -523,6 +760,19 @@ class PbStatutory(models.AbstractModel):
                         {'label': 'Year'}, {'label': 'Brackets'}],
             'facets': self._facets(rows, [('state', 'State'), ('year', 'Year')]),
             'rows': rows, 'total': total, 'shown': len(rows),
+        }
+
+    @api.model
+    def _row_tax(self, r):
+        return {
+            'id': r.id,
+            'cells': [r.name or '—', r.code or '—', str(r.tax_year or ''),
+                      str(len(r.slab_ids))],
+            'badge': {'label': _('Active') if r.active else _('Archived'),
+                      'tone': 'ok' if r.active else 'muted'},
+            '_f': {'state': 'active' if r.active else 'archived',
+                   'year': str(r.tax_year or '')},
+            '_s': ' '.join(x for x in [r.name or '', r.code or ''] if x),
         }
 
     @api.model
@@ -571,25 +821,7 @@ class PbStatutory(models.AbstractModel):
         dom = self._employee_scope()
         recs = A.search(dom, order='adjustment_date desc, id desc', limit=LIMIT)
         total = A.search_count(dom)
-        rows = []
-        for r in recs:
-            state = r.state or 'draft'
-            tone = {'applied': 'ok', 'confirmed': 'info', 'cancelled': 'muted',
-                    'draft': 'warn'}.get(state, 'muted')
-            rows.append({
-                'id': r.id,
-                'cells': [
-                    r.employee_id.name or '—',
-                    _sel(A, 'insurance_type', r.insurance_type),
-                    _sel(A, 'adjustment_type', r.adjustment_type),
-                    _s(r.adjustment_date) or '—',
-                ],
-                'badge': {'label': _sel(A, 'state', state), 'tone': tone},
-                '_f': {'state': state,
-                       'insurance': _sel(A, 'insurance_type', r.insurance_type)},
-                '_s': ' '.join(x for x in [r.name or '',
-                                           r.employee_id.name or ''] if x),
-            })
+        rows = [self._row_adjustment(r) for r in recs]
         return {
             'title': 'Insurance adjustments',
             'subtitle': 'Backdated corrections, refunds and additional collections.',
@@ -600,6 +832,27 @@ class PbStatutory(models.AbstractModel):
             'facets': self._facets(rows, [('state', 'State'),
                                           ('insurance', 'Scheme')]),
             'rows': rows, 'total': total, 'shown': len(rows),
+        }
+
+    @api.model
+    def _row_adjustment(self, r):
+        A = self.env['vietnam.insurance.adjustment']
+        state = r.state or 'draft'
+        tone = {'applied': 'ok', 'confirmed': 'info', 'cancelled': 'muted',
+                'draft': 'warn'}.get(state, 'muted')
+        return {
+            'id': r.id,
+            'cells': [
+                r.employee_id.name or '—',
+                _sel(A, 'insurance_type', r.insurance_type),
+                _sel(A, 'adjustment_type', r.adjustment_type),
+                _s(r.adjustment_date) or '—',
+            ],
+            'badge': {'label': _sel(A, 'state', state), 'tone': tone},
+            '_f': {'state': state,
+                   'insurance': _sel(A, 'insurance_type', r.insurance_type)},
+            '_s': ' '.join(x for x in [r.name or '',
+                                       r.employee_id.name or ''] if x),
         }
 
     @api.model
@@ -657,25 +910,7 @@ class PbStatutory(models.AbstractModel):
         dom = self._employee_scope()
         recs = D.search(dom, order='employee_id, id desc', limit=LIMIT)
         total = D.search_count(dom)
-        rows = []
-        for r in recs:
-            status = r.status or 'draft'
-            tone = {'approved': 'ok', 'pending': 'warn', 'expired': 'muted',
-                    'rejected': 'err'}.get(status, 'muted')
-            rows.append({
-                'id': r.id,
-                'cells': [
-                    r.name or '—',
-                    r.employee_id.name or '—',
-                    _sel(D, 'relationship', r.relationship),
-                    _s(r.effective_from) or '—',
-                ],
-                'badge': {'label': _sel(D, 'status', status), 'tone': tone},
-                '_f': {'status': _sel(D, 'status', status),
-                       'relationship': _sel(D, 'relationship', r.relationship)},
-                '_s': ' '.join(x for x in [r.name or '', r.employee_id.name or '',
-                                           r.identification_number or ''] if x),
-            })
+        rows = [self._row_dependent(r) for r in recs]
         return {
             'title': 'Dependents',
             'subtitle': 'Registered dependents and the personal relief they carry.',
@@ -687,6 +922,28 @@ class PbStatutory(models.AbstractModel):
             'facets': self._facets(rows, [('status', 'Status'),
                                           ('relationship', 'Relationship')]),
             'rows': rows, 'total': total, 'shown': len(rows),
+        }
+
+    @api.model
+    def _row_dependent(self, r):
+        D = self.env['vietnam.employee.dependent']
+        status = r.status or 'draft'
+        # the statuses this table has: eligible / ineligible / pending
+        tone = {'eligible': 'ok', 'approved': 'ok', 'pending': 'warn', 'expired': 'muted',
+                'ineligible': 'muted', 'rejected': 'err'}.get(status, 'muted')
+        return {
+            'id': r.id,
+            'cells': [
+                r.name or '—',
+                r.employee_id.name or '—',
+                _sel(D, 'relationship', r.relationship),
+                _s(r.effective_from) or '—',
+            ],
+            'badge': {'label': _sel(D, 'status', status), 'tone': tone},
+            '_f': {'status': _sel(D, 'status', status),
+                   'relationship': _sel(D, 'relationship', r.relationship)},
+            '_s': ' '.join(x for x in [r.name or '', r.employee_id.name or '',
+                                       r.identification_number or ''] if x),
         }
 
     @api.model

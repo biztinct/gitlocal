@@ -337,6 +337,12 @@
       "file": "pb_import/static/src/xml/import.xml",
       "desc": "Recent batches and their state. Where you go back to a file that stalled."
     },
+    "im-filters": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "Import, the shared filter panel over the batches: view tabs (All batches, Needs attention, In progress, Done this month, Drafts), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers and the steps above still filter.",
+      "reserved": true
+    },
     "iw-steps": {
       "screen": "importwizard",
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
@@ -386,7 +392,7 @@
       ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
-      "desc": "The facet chips and the date row. Same control, different facets per ledger."
+      "desc": "The shared filter panel of the ledger: view tabs (Full & Final: All settlements, Ready to check, Waiting on me, Approved this month, Manual; Proration: All lines, Posted this month, Still draft; Retro: All adjustments, Posted this month, Still draft, Cancelled), the Filters button that opens the left panel with a count beside every value (Source, Department, Component, Batch, dates…), the search, and the applied filters as chips. Same control, different sections per ledger."
     },
     "lg-rows": {
       "screen": [
@@ -476,6 +482,12 @@
       "desc": "Insurance policies / tax tables, and the active-only chip. Every count in the roster below is scoped by these.",
       "reserved": true
     },
+    "st-data-filters": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "Statutory › Data, the shared filter panel over the table that is open (Insurance policies, Tax tables, Adjustments, Dependents): view tabs per table (for example All adjustments, Draft, This month), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. Each table keeps its own filters.",
+      "reserved": true
+    },
     "st-roster": {
       "screen": "statutory",
       "file": "pb_statutory/static/src/xml/statutory.xml",
@@ -521,7 +533,19 @@
     "ig-filters": {
       "screen": "integrations",
       "file": "pb_integrations/static/src/xml/integrations.xml",
-      "desc": "Status, search, recency and type chips over the connector roster.",
+      "desc": "Integrations › Connectors, the shared filter panel: view tabs (All connectors, Needs attention, Never synced, Synced today, Spreadsheet feeds), the Filters button that opens the left panel (Connection, System, Last synced, and more under More filters) with a count beside every value, the search, and the applied filters as chips. Connected and Errors on the numbers line still filter.",
+      "reserved": true
+    },
+    "ig-data": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Integrations › Data: the three tables the connectors produce (Field mappings, Data store, Transformation rules) behind a tab strip, a page at a time; a row opens the drawer, a rule opens the Rule Composer.",
+      "reserved": true
+    },
+    "ig-data-filters": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Integrations › Data, the shared filter panel over the open table: view tabs per table (mappings: Active, Severed, With a transform error; data store: Pulled today, Failed pulls, Not matched to anyone, Changed since last pull; rules: Active, Failing), the Filters button, the search, and the applied filters as chips — a connector or feed you arrived with is one of those chips.",
       "reserved": true
     },
     "ig-roster": {
@@ -981,7 +1005,7 @@
     "rd-who": {
       "screen": "records",
       "file": "pb_records/static/src/xml/records_desk.xml",
-      "desc": "Records Desk Who rail: search and facets.",
+      "desc": "Records Desk WHO: the shared filter panel — view tabs (All people, Running contracts, No contract, Resigned per feed when the pay feed reports leavers, Hand-picked when arriving from People with a selection), the Filters button that opens the left panel with the Employees list's own sections plus the pay feed's employment status, each with a count, the search, and the applied filters as chips.",
       "reserved": true
     },
     "rd-fields": {
@@ -2099,7 +2123,6 @@
   },
   "foreign": {
     "im-connectors": "pb_import — the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",
-    "ig-data": "pb_integrations — the in-cockpit Data section (field mappings, data store, transformation rules) that replaced three raw list views in Cycle 3. Same shape as im-connectors: a new sibling in a family pb_learn owns, laid by somebody else.",
     "st-data": "pb_statutory — the in-cockpit Data section that replaced four legacy VN list tiles in Cycle 4. Same shape again.",
     "payai-pill": "pb_payroll_ai_insights — the PayAI launcher. Named by scenario sc_welcome's last step.",
     "find-panel": "pb_formula_studio command layer",

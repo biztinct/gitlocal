@@ -171,40 +171,16 @@
               <span class="sta-tabsub" t-if="state.ledger" t-esc="state.ledger.subtitle"/>
             </div>
 
-            <div t-if="state.ledgerLoading" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+            <div t-if="state.ledgerLoading and !state.ledger" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
+            <!-- ==== the shared filter panel (FILTER W6) ====
+                 One table at a time: views, search, the left panel with a
+                 count beside every value, the applied filters as chips. The
+                 rows are its slot, a page at a time from the server.
+                 data-coach="st-data-filters" is drawn on the panel's bar. -->
             <t t-elif="state.ledger">
-              <div class="sta-lfilters">
-                <div class="pbim-chips sta-facets">
-                  <t t-foreach="state.ledger.facets or []" t-as="fac" t-key="fac.key">
-                    <t t-if="fac.chips.length > 1">
-                      <t t-if="fac.kind === 'chips'">
-                        <button t-foreach="fac.chips" t-as="c" t-key="c.id"
-                                t-attf-class="pbim-fchip {{ state.f[fac.key] === c.id ? 'on' : '' }}"
-                                t-on-click="() => this.setFacet(fac.key, c.id)">
-                          <t t-esc="c.label"/> <span class="c" t-esc="chipCount(fac.key, c.id)"/>
-                        </button>
-                      </t>
-                      <t t-else="">
-                        <select class="sta-select" t-on-change="(ev) => this.onFacetSelect(fac.key, ev)">
-                          <option value="">All</option>
-                          <option t-foreach="fac.chips" t-as="c" t-key="c.id" t-att-value="c.id"
-                                  t-att-selected="state.f[fac.key] === c.id" t-esc="c.label"/>
-                        </select>
-                      </t>
-                    </t>
-                  </t>
-                  <button t-if="ledgerDirty" class="pbim-fchip sta-clear" t-on-click="clearLedgerFilters">
-                    <t t-out="ic('x',13)"/> Clear
-                  </button>
-                </div>
-                <div class="ppl-search">
-                  <span class="ic"><t t-out="ic('search',15)"/></span>
-                  <input t-att-placeholder="state.ledger.search_ph" t-on-input="onLedgerSearch"/>
-                </div>
-              </div>
-
-              <div t-if="ledgerRows.length" class="pbim-tablewrap sta-tw">
+              <PbFilterLayout kit="kit" coach="'st-data-filters'" searchPlaceholder="state.ledger.search_ph">
+              <div t-if="state.lrows.length" class="pbim-tablewrap sta-tw">
                 <table class="pbim-table">
                   <thead>
                     <tr>
@@ -214,7 +190,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr t-foreach="ledgerRows" t-as="r" t-key="r.id" class="click"
+                    <tr t-foreach="state.lrows" t-as="r" t-key="r.id" class="click"
                         t-on-click="() => this.openRow(r)">
                       <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
                       <td class="sta-td-badge">
@@ -224,11 +200,31 @@
                   </tbody>
                 </table>
               </div>
-              <div t-else="" class="pbim-empty" t-esc="state.ledger.empty"/>
 
-              <!-- Honest in both directions: what is on screen, and what exists
-                   behind the row cap. A paged table can lie two ways (W45). -->
-              <div class="sta-foot" t-esc="footLabel"/>
+              <!-- still loading the first page -->
+              <div t-elif="!state.llistLoaded" class="sta-skel" aria-label="Loading">
+                <span t-foreach="[1,2,3,4,5]" t-as="i" t-key="i"/>
+              </div>
+
+              <!-- nothing to list: say why, and the way back -->
+              <div t-else="" class="sta-empty">
+                <span class="sta-empty-ic"><t t-out="ic(kit.total ? 'search' : 'inbox', 24)"/></span>
+                <p t-esc="ledgerEmptyText"/>
+                <button t-if="kit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAllLedger">
+                  <t t-out="ic('x', 14)"/> Show the whole table
+                </button>
+              </div>
+
+              <!-- what is on screen, out of what matches, and the next page -->
+              <div t-if="state.lrows.length" class="sta-foot">
+                <span t-esc="footLabel"/>
+                <button t-if="ledgerHasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.lloadingMore" t-on-click="loadMoreLedger">
+                  <t t-if="state.lloadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="ledgerNextPage"/> more</t>
+                </button>
+              </div>
+              </PbFilterLayout>
             </t>
 
             <div t-else="" class="pbim-empty">This table could not be loaded.</div>

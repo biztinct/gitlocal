@@ -94,29 +94,24 @@
     .sta-tab__ic { display: inline-flex; flex: none; }
     .sta-tabsub { margin-left: auto; font-size: 12px; color: var(--pbim-muted, #64748B); }
 
-    .sta-lfilters {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-bottom: 12px;
+    // FILTER W6: the facet chips and the search moved into the shared filter
+    // panel. What is left: the list's own states.
+    .sta-skel {
+        display: grid; gap: 10px; padding: 8px 0;
+        span { height: 14px; border-radius: 7px; background: var(--pbim-line, #E2E8F0); opacity: .55;
+               animation: sta-pulse 1.2s ease-in-out infinite; }
     }
-    .sta-facets { flex: 0 1 auto; min-width: 0; }
-    // Capped: a facet dropdown stretched across the whole filter row reads as a
-    // search box, and the row already has one.
-    .sta-select {
-        max-width: 260px;
-        border: 1px solid var(--pbim-line, #E2E8F0);
-        border-radius: 999px;
-        padding: 5px 12px;
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: 700;
-        color: #475569;
-        background: #fff;
+    @keyframes sta-pulse { 50% { opacity: .25; } }
+    @media (prefers-reduced-motion: reduce) { .sta-skel span { animation: none; } }
+    .sta-empty {
+        display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+        padding: 32px 20px; color: var(--pbim-muted, #64748B); font-size: 13.5px;
+        p { margin: 0 0 6px; max-width: 460px; }
     }
-    .sta-clear { border-style: dashed; }
+    .sta-empty-ic {
+        width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
 
     // The wrapper is bounded and scrolls, so the kit's sticky `thead` actually
     // sticks: a sticky header resolves against its nearest SCROLLPORT, and a
@@ -132,6 +127,7 @@
         color: var(--pbim-muted, #64748B);
         text-align: center;
         font-variant-numeric: tabular-nums;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
     }
 
     // ======================================================== drawer body

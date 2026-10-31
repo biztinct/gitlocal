@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Import Cockpit',
     'summary': 'Data import cockpit (batches, connectors, map → validate → commit)',
-    'version': '19.0.1.6.2',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -13,7 +13,9 @@
                 # `pb_integrations` itself is NOT a dependency — it depends on
                 # pb_import_advanced, so naming it here would invert the graph;
                 # the actions registry is the probe instead.
-                'pb_hub'],
+                'pb_hub',
+                # FILTER W6: the batch list is on the shared filter panel.
+                'pb_filter_kit'],
     'data': [
         'views/pb_import_action.xml',
     ],

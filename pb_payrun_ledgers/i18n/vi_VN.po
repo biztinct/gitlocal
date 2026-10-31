@@ -16,7 +16,6 @@ msgstr ""
 #. module: pb_payrun_ledgers
 #. odoo-javascript
 #: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:234
 msgid "Action failed"
 msgstr "Hành động không thành công"
 
@@ -35,28 +34,35 @@ msgstr "Làm sạch"
 #. module: pb_payrun_ledgers
 #. odoo-javascript
 #: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:88
 msgid "Could not load data"
 msgstr "Không thể tải dữ liệu"
 
 #. module: pb_payrun_ledgers
 #. odoo-javascript
 #: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:219
 msgid "Could not load this line's detail."
 msgstr "Không thể tải chi tiết của dòng này."
 
 #. module: pb_payrun_ledgers
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__display_name
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__display_name
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__display_name
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__display_name
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__display_name
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__display_name
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__display_name
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__display_name
+#: model:ir.model.fields,field_description:pb_records.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__display_name
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_payrun_ledgers
 #. odoo-python
-#: model:ir.actions.client,name:pb_payrun_ledgers.action_pb_fullfinal
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Full & Final"
 msgstr "Quyết toán thôi việc"
@@ -67,10 +73,20 @@ msgid "Full & Final cockpit data"
 msgstr "Dữ liệu buồng lái đầy đủ và cuối cùng"
 
 #. module: pb_payrun_ledgers
+#: model:ir.model.fields,field_description:pb_import.field_pb_import__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integration_onboarding__id
+#: model:ir.model.fields,field_description:pb_integrations.field_pb_integrations__id
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_fullfinal__id
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_ledger_mixin__id
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_proration__id
 #: model:ir.model.fields,field_description:pb_payrun_ledgers.field_pb_retro__id
+#: model:ir.model.fields,field_description:pb_records.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__id
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_desk__id
+#: model:ir.model.fields,field_description:pb_records.field_res_company__id
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory__id
+#: model:ir.model.fields,field_description:pb_statutory.field_pb_statutory_wizard__id
 msgid "ID"
 msgstr "ID"
 
@@ -93,7 +109,6 @@ msgstr "Người trợ giúp chia sẻ buồng lái sổ cái thanh toán"
 
 #. module: pb_payrun_ledgers
 #. odoo-python
-#: model:ir.actions.client,name:pb_payrun_ledgers.action_pb_proration
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Proration Audit"
 msgstr "Kiểm tra phân bổ"
@@ -105,7 +120,6 @@ msgstr "Kiểm tra dữ liệu buồng lái theo tỷ lệ"
 
 #. module: pb_payrun_ledgers
 #. odoo-python
-#: model:ir.actions.client,name:pb_payrun_ledgers.action_pb_retro
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Retro Adjustments"
 msgstr "Điều chỉnh hồi tố"
@@ -129,25 +143,27 @@ msgstr "của"
 
 #. module: pb_payrun_ledgers
 #. odoo-javascript
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:31
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
 msgid "All time"
 msgstr "Mọi lúc"
 
 #. module: pb_payrun_ledgers
 #. odoo-javascript
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:32
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
 msgid "This month"
 msgstr "Tháng này"
 
 #. module: pb_payrun_ledgers
 #. odoo-javascript
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:33
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
 msgid "This year"
 msgstr "Năm nay"
 
 #. module: pb_payrun_ledgers
 #. odoo-javascript
-#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:34
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
 msgid "Custom"
 msgstr "Tùy chỉnh"
 
@@ -296,12 +312,14 @@ msgid "%s ready to check"
 msgstr "%s khoản cần kiểm tra"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Who"
 msgstr "Người lao động"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Employee"
@@ -314,6 +332,7 @@ msgid "Employee ID"
 msgstr "Mã nhân viên"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Department"
@@ -356,6 +375,7 @@ msgid "Period"
 msgstr "Kỳ"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Source"
@@ -536,6 +556,7 @@ msgid "Approved"
 msgstr "Đã phê duyệt"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Status"
@@ -548,6 +569,7 @@ msgid "Component"
 msgstr "Thành phần"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Code"
@@ -560,6 +582,7 @@ msgid "Configuration"
 msgstr "Cấu hình"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Effective date"
@@ -662,6 +685,7 @@ msgid "New"
 msgstr "Mới"
 
 #. module: pb_payrun_ledgers
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
 msgid "Batch"
@@ -768,3 +792,359 @@ msgstr "Tìm…"
 #: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
 msgid "Nothing matches these filters."
 msgstr "Không có gì khớp với bộ lọc."
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "All adjustments"
+msgstr "Tất cả điều chỉnh"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "All lines"
+msgstr "Tất cả các dòng"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "All settlements"
+msgstr "Tất cả quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Approved on"
+msgstr "Ngày duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Approved this month"
+msgstr "Đã duyệt tháng này"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Biggest change first"
+msgstr "Mức tăng lớn nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Biggest cut first"
+msgstr "Mức giảm lớn nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Biggest net payable first"
+msgstr "Thực trả lớn nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Biggest prorated amount first"
+msgstr "Số tiền theo tỷ lệ lớn nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "Check the spelling, or search by a person's name or a component."
+msgstr "Hãy kiểm tra chính tả, hoặc tìm theo tên người hay tên thành phần."
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Checks"
+msgstr "Kiểm tra"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Counted by"
+msgstr "Tính theo"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Earliest period first"
+msgstr "Kỳ sớm nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Effective"
+msgstr "Ngày hiệu lực"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Latest period first"
+msgstr "Kỳ gần nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Newest settlement first"
+msgstr "Quyết toán mới nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No change"
+msgstr "Không thay đổi"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No component"
+msgstr "Không có thành phần"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No date"
+msgstr "Không có ngày"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No job position"
+msgstr "Chưa có vị trí công việc"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "No pay scheme"
+msgstr "Chưa có chương trình lương"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Not applied yet"
+msgstr "Chưa áp dụng"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Not approved yet"
+msgstr "Chưa duyệt"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Not from a batch"
+msgstr "Không thuộc đợt nào"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "Nothing here yet"
+msgstr "Chưa có gì ở đây"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "Nothing matches these filters"
+msgstr "Không có gì khớp các bộ lọc này"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "Nothing matches “%s”"
+msgstr "Không có gì khớp “%s”"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Nothing to check"
+msgstr "Không cần kiểm tra"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Oldest settlement first"
+msgstr "Quyết toán cũ nhất trước"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Pay goes down"
+msgstr "Lương giảm"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Pay goes up"
+msgstr "Lương tăng"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Pay scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Period start"
+msgstr "Đầu kỳ"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Posted"
+msgstr "Đã ghi sổ"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Posted this month"
+msgstr "Đã ghi sổ tháng này"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Prorated amount"
+msgstr "Số tiền theo tỷ lệ"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "Rows appear here once a pay data load or a settlement creates them."
+msgstr "Các dòng sẽ hiện ở đây khi một lần tải dữ liệu lương hoặc một khoản quyết toán tạo ra chúng."
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Sent back to be fixed"
+msgstr "Bị trả lại để sửa"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Settled on"
+msgstr "Ngày quyết toán"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "Show them all"
+msgstr "Hiện tất cả"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Still draft"
+msgstr "Còn nháp"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "The rows could not be loaded. Try again in a moment."
+msgstr "Không tải được các dòng. Hãy thử lại sau giây lát."
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid ""
+"There are %(n)s %(noun)s, but none fits every filter you have set. Remove a "
+"filter above, or show them all."
+msgstr "Có %(n)s %(noun)s, nhưng không có mục nào khớp mọi bộ lọc bạn đã đặt. Hãy bỏ bớt một bộ lọc ở trên, hoặc hiện tất cả."
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "This ledger could not be loaded. Try again in a moment."
+msgstr "Không tải được sổ này. Hãy thử lại sau giây lát."
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Up or down"
+msgstr "Tăng hay giảm"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Waiting on me"
+msgstr "Đang chờ tôi"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Waiting on someone else"
+msgstr "Đang chờ người khác"
+
+#. module: pb_payrun_ledgers
+#. odoo-python
+#: code:addons/pb_payrun_ledgers/models/ledger_cockpits.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "lines"
+msgstr "dòng"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/xml/ledger.xml:0
+msgid "more"
+msgstr "thêm"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "proration lines"
+msgstr "dòng tính theo tỷ lệ"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "retro lines"
+msgstr "dòng hồi tố"
+
+#. module: pb_payrun_ledgers
+#. odoo-javascript
+#: code:addons/pb_payrun_ledgers/static/src/js/ledger.js:0
+msgid "settlements"
+msgstr "quyết toán"
