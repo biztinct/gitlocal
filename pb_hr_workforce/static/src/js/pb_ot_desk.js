@@ -165,6 +165,8 @@ export class PbOtDesk extends Component {
     }
     get searchEmptyTitle() { return _t("Nothing matches “%s”", this.kit.search); }
     startAgain() { this.kit.home(); }
+    /** A getter, so the words are translated (F29). */
+    get queueSearchPlaceholder() { return _t("Search a name, a department or a reason"); }
 
     /**
      * The four tiles as one quiet line. The month's hours by overtime type,

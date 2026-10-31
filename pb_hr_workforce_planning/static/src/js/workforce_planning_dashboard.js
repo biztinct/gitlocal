@@ -285,6 +285,8 @@ class WfpDashboard extends Component {
             : _t("Nobody matches these filters");
     }
     fcStartAgain() { this.kit.home(); }
+    /** A getter, so the words are translated (F29). */
+    get fcSearchPlaceholder() { return _t("Search a name, a department, a job or a rule"); }
 
     // ==========================================
     // CHART RENDERING (Chart.js)

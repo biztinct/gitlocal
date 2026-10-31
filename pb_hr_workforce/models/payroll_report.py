@@ -337,8 +337,18 @@ class PbPayrollReport(models.AbstractModel):
             {'key': 'structure', 'label': _('Pay structure'), 'icon': 'sigma',
              'group': 'pay', 'type': 'many2one', 'path': 'struct_id',
              'none_label': _('No pay structure')},
+            # a choice with plain words (the stored labels say "Waiting" and
+            # "Rejected"; F27/F28)
             {'key': 'status', 'label': _('Payslip status'), 'icon': 'fileText',
-             'group': 'pay', 'type': 'selection', 'path': 'state'},
+             'group': 'pay', 'type': 'choice',
+             'options': [
+                 {'value': 'draft', 'label': _('Being prepared'), 'tone': 'slate',
+                  'domain': [('state', '=', 'draft')]},
+                 {'value': 'waiting', 'label': _('Waiting for approval'), 'tone': 'amber',
+                  'domain': [('state', 'in', ('verify', 'level1', 'level2'))]},
+                 {'value': 'done', 'label': _('Done'), 'tone': 'green',
+                  'domain': [('state', '=', 'done')]},
+             ]},
             {'key': 'manager', 'label': _('Manager'), 'icon': 'userCheck',
              'group': 'people', 'type': 'many2one', 'path': 'employee_id.parent_id',
              'none_label': _('No manager')},

@@ -181,7 +181,15 @@ class PbPayReviewSheet(models.AbstractModel):
             {'key': 'rise', 'label': _('Proposed rise (%)'), 'icon': 'percent',
              'group': 'pay', 'type': 'number', 'path': 'proposal_pct'},
             {'key': 'state', 'label': _('Where the row is'), 'icon': 'workflow',
-             'group': 'other', 'type': 'selection', 'path': 'state'},
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'open', 'label': _('Open'), 'tone': 'slate',
+                  'domain': ['|', ('state', '=', 'open'), ('state', '=', False)]},
+                 {'value': 'submitted', 'label': _('Sent on'), 'tone': 'green',
+                  'domain': [('state', '=', 'submitted')]},
+                 {'value': 'returned', 'label': _('Sent back'), 'tone': 'amber',
+                  'domain': [('state', '=', 'returned')]},
+             ]},
         ]
 
     def _pbf_builtin_views(self):

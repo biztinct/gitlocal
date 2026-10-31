@@ -56,7 +56,7 @@
                bar (views, Filters, search, sort, Select all). -->
           <div t-else="" class="pbot-filterwrap">
           <PbFilterLayout kit="kit" coach="'wf-ot-filters'"
-                          searchPlaceholder="'Search a name, a department or a reason'">
+                          searchPlaceholder="queueSearchPlaceholder">
             <t t-set-slot="toolbar">
               <button t-if="actable.length" class="pbot-btn tiny ghost" t-on-click="selectAll"
                       title="Ticks every card on this page that is still waiting">

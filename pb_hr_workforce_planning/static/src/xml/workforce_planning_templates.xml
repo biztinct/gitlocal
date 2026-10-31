@@ -244,7 +244,7 @@
                     </div>
                     <div class="wfp-fc-body">
                     <PbFilterLayout kit="kit"
-                                    searchPlaceholder="'Search a name, a department, a job or a rule'">
+                                    searchPlaceholder="fcSearchPlaceholder">
                     <div t-if="!state.fcLoaded" class="wfp-fc-skel" aria-label="Loading the forecast table">
                         <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="wfp-fc-skel-row"/>
                     </div>

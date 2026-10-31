@@ -107,7 +107,7 @@
              coach= renders data-coach="rp-filters" on the layout's bar
              (views, Filters, search, order). -->
         <div class="prd-content prd-filters">
-          <PbFilterLayout kit="kit" coach="'rp-filters'" searchPlaceholder="'Search a name, a job or a department'">
+          <PbFilterLayout kit="kit" coach="'rp-filters'" searchPlaceholder="searchPlaceholder">
 
             <!-- loading: the shape of the table, never a blank -->
             <div t-if="!state.listLoaded" class="prd-tablewrap prd-skel" aria-label="Loading payroll data">

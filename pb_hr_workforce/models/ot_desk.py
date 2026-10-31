@@ -215,8 +215,16 @@ class PbOtDesk(models.AbstractModel):
             {'key': 'department', 'label': _('Department'), 'icon': 'building',
              'group': 'people', 'type': 'many2one', 'path': 'department_id', 'pinned': True,
              'none_label': _('No department')},
+            # a choice, not the field's selection: the card's own words, and
+            # translated by _() rather than by stored selection rows (F27/F28)
             {'key': 'type', 'label': _('Kind of overtime'), 'icon': 'clock',
-             'group': 'work', 'type': 'selection', 'path': 'overtime_type', 'pinned': True},
+             'group': 'work', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'weekday', 'label': _('Weekday'), 'domain': [('overtime_type', '=', 'weekday')]},
+                 {'value': 'weekend', 'label': _('Weekend'), 'domain': [('overtime_type', '=', 'weekend')]},
+                 {'value': 'holiday', 'label': _('Public Holiday'), 'domain': [('overtime_type', '=', 'holiday')]},
+                 {'value': 'night', 'label': _('Night'), 'domain': [('overtime_type', '=', 'night')]},
+             ]},
             {'key': 'day', 'label': _('Day worked'), 'icon': 'calendar',
              'group': 'dates', 'type': 'date', 'path': 'date', 'pinned': True,
              'presets': ['today', 'this_week', 'this_month', 'last_month', 'last_90',

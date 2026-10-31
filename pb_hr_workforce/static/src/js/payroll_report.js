@@ -215,6 +215,8 @@ export class PayrollReport extends Component {
         if (this.kit.loaded && !this.kit.failed) { this.kit.toggleFilters({ changed: ["changed"] }); }
     }
     showEveryone() { this.kit.home(); }
+    /** A getter, so the words are translated (F29). */
+    get searchPlaceholder() { return _t("Search a name, a job or a department"); }
 
     onBatchChange(ev) {
         const id = parseInt(ev.target.value);
