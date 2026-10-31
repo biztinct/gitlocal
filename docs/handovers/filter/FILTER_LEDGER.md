@@ -355,6 +355,32 @@ coordinator's (`filter_deploy.sh full`).
 - **F30** (w1) Claude-in-Chrome answers `[BLOCKED: Cookie/query string data]`
   when a `javascript_tool` result looks like `key=value` text; return JSON
   (arrays/objects) instead.
+- **F31** (w3) `hold` is not first-come-first-served: `flock` wakes any
+  waiter. w3 queued at 06:51 UTC and was passed by w5 (07:00), w7 (07:27) and
+  w8 (07:50) before its turn at 08:10. Keep test passes short; release the
+  moment you are done.
+- **F32** (w3) Two upgrades on the preview at the same second (the old
+  double-grant race, 02:48 UTC) both die with `could not serialize access due
+  to concurrent update` and roll back — nothing half-applies. Before an
+  `upgrade`, `ps -eo args | grep -c "[s]top-after-init"` must be 0; rerun alone.
+- **F33** (w3) One kit pointed at several lists (`reconfigure` per tab): until
+  the new layout arrives the kit still has the OLD `screen`, so a
+  `toggleFilters`/`setFilters` pressed in that window is saved under the old
+  list's tab memory; and `load()` has no sequence guard, so two overlapping
+  `reconfigure`s can apply the older layout last (Roles panel on the
+  Interviews tab). Queue switches on the screen side and route any press made
+  while `!kit.loaded` through the queue (`hiring_board.js` `_switchKit`).
+- **F34** (w3) Filters that arrive by a `?pbf=` link are not written to the
+  tab memory until something changes; switching to another list and back
+  drops them.
+- **F35** (w3) Chrome DevTools MCP `take_screenshot` / `evaluate_script
+  sourcePath` refuse paths outside the workspace roots (the session
+  scratchpad included); save screenshots under the worktree, and inline
+  scripts.
+- **F36** (w3) Running a module's tests beside the serving preview:
+  `odoo-bin … -d pbf_preview --stop-after-init --test-tags=/<m>:<Class>` still
+  starts HTTP even with `--no-http`; pass `--http-port=8179 --gevent-port=8178`
+  and log to `/tmp/pbf_preview/<w>tests.log` (odoo can write there).
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python
