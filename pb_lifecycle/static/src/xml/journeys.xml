@@ -68,91 +68,37 @@
                journeys on it, so they are plain figures. -->
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.focus"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
 
           <!-- ====================== the three steps ======================
-               A journey is at exactly ONE step (stepOf), so the counts add
-               up to the board. -->
+               A journey is at exactly ONE step, so the counts add up. The
+               counts follow the filters; pressing a step ticks it in the
+               panel, pressing it again clears it. -->
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every journey is'"/>
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
-          <div class="pbim-showing">
-            <span t-esc="showingLine.text"/>
-            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
-          </div>
 
-          <!-- ======================== filters ======================== -->
-          <div class="pbim-panel lcj-filters" t-if="state.rows.length">
-            <div class="lcj-filter-row">
-              <div class="lcj-search">
-                <t t-out="ic('search',15)"/>
-                <input type="text" t-att-value="state.q" t-on-input="onSearch"
-                       placeholder="Search by name, team or journey…"/>
-              </div>
-              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
-                      t-on-click="clearFilters">
-                <t t-out="ic('x',14)"/> Clear
-              </button>
-            </div>
-            <div class="lcj-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.types" t-as="tp" t-key="tp.id"
-                        t-if="state.typeCounts[tp.id]"
-                        t-attf-class="pbim-fchip {{ state.type === tp.id ? 'on' : '' }}"
-                        t-on-click="() => this.setType(tp.id)">
-                  <t t-out="typeIcon(tp.id)"/>
-                  <span t-esc="tp.label"/>
-                  <span class="c" t-esc="state.typeCounts[tp.id]"/>
-                </button>
-              </div>
-              <div class="pbim-chips">
-                <button t-foreach="state.states" t-as="st" t-key="st.id"
-                        t-attf-class="pbim-fchip {{ state.lifeState === st.id ? 'on' : '' }}"
-                        t-on-click="() => this.setState(st.id)">
-                  <span t-esc="st.label"/>
-                </button>
-                <button t-attf-class="pbim-fchip {{ state.lateOnly ? 'on' : '' }}"
-                        t-on-click="toggleLate">
-                  <t t-out="ic('clock',13)"/> Running late
-                </button>
-              </div>
-            </div>
-          </div>
+          <!-- ================ the shared filter panel ================
+               pb_filter_kit (FILTER W1): views, search, the left panel with
+               counts, chips. The board is its slot. -->
+          <PbFilterLayout kit="kit" searchPlaceholder="searchLabel">
 
-          <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.rows.length" class="pbim-panel lcj-empty">
-            <div class="lcj-empty-ic"><t t-out="ic('sunrise',30)"/></div>
-            <h2>No journeys yet</h2>
-            <p>A journey is the checklist around one person — the laptop before
-               day one, the clearances before the last day, the check-in at
-               thirty days. Start one here, or let them open by themselves when
-               the connected system announces a joiner.</p>
-            <button t-if="state.canWrite" class="pbim-btn primary"
-                    t-on-click="startAsk">
-              <t t-out="ic('plus',16)"/> Start a journey
-            </button>
-            <p t-if="!state.canWrite" class="pbim-sub">
-              Ask the HR team to start one for you.
-            </p>
-          </div>
-
-          <!-- ============ everything filtered away ============ -->
-          <div t-elif="!visibleRows.length" class="pbim-panel lcj-empty">
-            <div class="lcj-empty-ic"><t t-out="ic('search',30)"/></div>
-            <h2>Nothing matches</h2>
-            <p>There are <t t-esc="state.rows.length"/> journeys running, but
-               none of them fits what you asked for.</p>
-            <button class="pbim-btn outline" t-on-click="clearFilters">
-              <t t-out="ic('x',15)"/> Clear the filters
+          <!-- ================ the board could not load ================ -->
+          <div t-if="state.listError" class="pbim-panel lcj-empty">
+            <div class="lcj-empty-ic"><t t-out="ic('alert',30)"/></div>
+            <h2>The journeys could not load</h2>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn outline" t-on-click="retry">
+              <t t-out="ic('refresh',15)"/> Try again
             </button>
           </div>
 
           <!-- ======================= the board ======================= -->
-          <div t-else="" class="lcj-board">
-            <button t-foreach="visibleRows" t-as="row" t-key="row.id"
+          <div t-elif="state.rows.length" class="lcj-board">
+            <button t-foreach="state.rows" t-as="row" t-key="row.id"
                     type="button"
                     t-attf-class="pbim-card lcj-card {{ row.late ? 'is-late' : '' }}"
                     t-on-click="() => this.openCase(row.id)">
@@ -199,10 +145,50 @@
             </button>
           </div>
 
-          <p t-if="state.capped" class="pbim-sub" style="margin-top: 12px;">
-            Showing the most recent <t t-esc="state.rows.length"/> journeys.
-            Narrow the search to see older ones.
-          </p>
+          <!-- ======================== loading ======================== -->
+          <div t-elif="!state.listLoaded" class="lcj-board lcj-skeleton" aria-label="Loading journeys">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbim-card lcj-card lcj-card--ghost"/>
+          </div>
+
+          <!-- ================== nothing here yet ================== -->
+          <div t-elif="!state.total" class="pbim-panel lcj-empty">
+            <div class="lcj-empty-ic"><t t-out="ic('sunrise',30)"/></div>
+            <h2>No journeys yet</h2>
+            <p>A journey is the checklist around one person — the laptop before
+               day one, the clearances before the last day, the check-in at
+               thirty days. Start one here, or let them open by themselves when
+               the connected system announces a joiner.</p>
+            <button t-if="state.canWrite" class="pbim-btn primary"
+                    t-on-click="startAsk">
+              <t t-out="ic('plus',16)"/> Start a journey
+            </button>
+            <p t-if="!state.canWrite" class="pbim-sub">
+              Ask the HR team to start one for you.
+            </p>
+          </div>
+
+          <!-- ============ everything filtered away ============ -->
+          <div t-else="" class="pbim-panel lcj-empty">
+            <div class="lcj-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>No journeys match these filters</h2>
+            <p t-if="!kit.search">There are <t t-esc="fmtInt(state.total)"/> journeys
+               running, but none fits these filters. Remove one above, or start
+               again from every journey.</p>
+            <p t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the
+               spelling, or search by team, job or checklist.</p>
+            <button class="pbim-btn outline" t-on-click="() => kit.toggleFilters({})">
+              <t t-out="ic('x',15)"/> Show all journeys
+            </button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="lcj-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
 
         </t>
       </div>

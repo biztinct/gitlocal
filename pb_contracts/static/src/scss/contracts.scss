@@ -1,2 +1,30 @@
 // Contracts landing + detail. Shared .ppl-people / .ppl-detail layout + the
 // light-teal theme come from pb_import_kit/static/src/scss/theme_people.scss.
+
+// ---- the roster inside the shared filter panel (pb_filter_kit, FILTER W1) ----
+// The same loading / empty treatment as Employees (pb_people/people.scss),
+// carried here because this module does not depend on pb_people.
+.ppl-contracts {
+    .ppl-skeleton .ppl-card--ghost {
+        height: 66px; cursor: default; box-shadow: none; border-color: #EEF1F6;
+        background: #F4F5FA; animation: ct-pulse 1.2s ease-in-out infinite;
+        &:hover { transform: none; border-color: #EEF1F6; box-shadow: none; }
+    }
+    .ppl-empty {
+        display: grid; justify-items: center; gap: 8px; padding: 44px 24px; text-align: center;
+        color: var(--pbim-muted, #64748B); font-size: 13px;
+        b { color: var(--pbim-text, #1B1733); font-size: 15px; }
+        .pbim-btn { margin-top: 6px; }
+    }
+    .ppl-empty-ic {
+        width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
+    .ppl-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        b { color: var(--pbim-text, #1B1733); font-weight: 600; }
+    }
+    .ppl-foot-sep { opacity: .5; }
+    .pbim-steps { margin-bottom: 14px; }
+}
+@keyframes ct-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }

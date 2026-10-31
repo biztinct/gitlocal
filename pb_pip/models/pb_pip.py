@@ -24,8 +24,9 @@ held, and whether the person has even seen it.
 import logging
 from datetime import date
 
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .pip_common import (
     CHECKIN_FREQ_LABEL, GROUP_HEAD, GROUP_USER, is_pip_admin, OBJECTIVE_STATE_LABEL,
@@ -35,10 +36,18 @@ from .pip_common import (
 
 _logger = logging.getLogger(__name__)
 
-BOARD_LIMIT = 300
+#: One page of the board (the filter panel pages it; "Show N more" appends).
+PAGE_SIZE = 60
 
 #: A plan is "nearly done" inside this many days of its end date.
 SOON_DAYS = 7
+
+#: The states a plan is closed in (the "Closed plans" view).
+PIP_CLOSED = ('passed', 'failed', 'terminated')
+
+#: The four steps on the strip, as the plan's state.
+STEP_STATE = {'asked': 'requested', 'coaching': 'coaching', 'plan': 'active',
+              'decided': 'evaluation'}
 
 #: The refusal payload. One shape, used by every read, so a client that gets it
 #: never has to guess which keys are missing.
@@ -67,6 +76,7 @@ def _refusal():
 
 class PbPip(models.AbstractModel):
     _name = 'pb.pip'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Growth Plan cockpit data'
 
     # ------------------------------------------------------------------ gates
@@ -134,43 +144,29 @@ class PbPip(models.AbstractModel):
         if not self._can_read():
             return _refusal()
         Case = self.env['pb.pip.case']
-        co_ids = self.env.companies.ids or [self.env.company.id]
-        today = date.today()
-        domain = [('company_id', 'in', co_ids)]
-        domain += ([('state', 'not in', list(PIP_OPEN))] if closed
-                   else [('state', 'in', list(PIP_OPEN))])
-        cases = self._safe(
-            lambda: Case.search(domain, order='end_date, id desc',
-                                limit=BOARD_LIMIT),
-            default=Case.browse())
+        scope = self._scope()
+        # The numbers line, counted over every OPEN plan whatever is filtered
+        # (FILTER W1: no longer over the 300 rows the board used to hold).
+        # `closed` is accepted for old callers and ignored: the board itself
+        # is paged by the filter panel through `get_plans_page`.
 
-        rows = []
-        for case in cases:
-            try:
-                rows.append(self._row(case, today))
-            except Exception:
-                _logger.exception('PIP row for plan %s', case.id)
+        def count(states):
+            return self._safe(lambda: Case.search_count(
+                scope + [('state', 'in', list(states))]))
 
         kpis = {
-            'open': len([r for r in rows if r['state'] in PIP_OPEN]),
-            'coaching': len([r for r in rows
-                             if r['state'] in ('requested', 'coaching')]),
-            'running': len([r for r in rows if r['state'] == 'active']),
-            'deciding': len([r for r in rows if r['state'] == 'evaluation']),
-            'at_risk': len([r for r in rows if r['at_risk'] or r['drifting']]),
+            'open': count(PIP_OPEN),
+            'coaching': count(('requested', 'coaching')),
+            'running': count(('active',)),
+            'deciding': count(('evaluation',)),
+            'at_risk': self._safe(lambda: len(self._risk_ids())),
         }
         return {
             'allowed': True,
             'can_write': self._can_write(),
             'is_head': self._is_head(),
-            'closed_view': bool(closed),
             'kpis': kpis,
-            'rows': rows,
-            'total': len(rows),
-            'capped': len(rows) >= BOARD_LIMIT,
-            'states': _facet(rows, 'state_label'),
-            'owners': _facet(rows, 'owner'),
-            'companies': _facet(rows, 'company'),
+            'total': self._safe(lambda: Case.search_count(scope)),
             'templates': self._templates(),
             'employee_view': flag(self.env, P_EMPLOYEE_VIEW),
             'manager_sees_own': flag(self.env, P_MANAGER_SEES_OWN),
@@ -240,14 +236,7 @@ class PbPip(models.AbstractModel):
             elapsed = max(0, min(100, int(round(gone * 100.0 / span))))
         planned = case.checkins_planned or 0
         held = case.checkins_done or 0
-        # Adherence is measured against what should have happened BY NOW, not
-        # against the whole plan — a plan in week one has held one of six and
-        # is not 17% adherent, it is on track.
-        due_by_now = self._safe(
-            lambda: len(case.checkin_ids.filtered(
-                lambda c: c.state != 'cancelled' and c.scheduled_date
-                and c.scheduled_date <= today)), default=0)
-        adherence = int(round(held * 100.0 / due_by_now)) if due_by_now else None
+        due_by_now, adherence, drifting = self._drift(case, today)
         return {
             'id': case.id,
             'employee_id': emp.id,
@@ -298,12 +287,233 @@ class PbPip(models.AbstractModel):
             'soon': bool(left is not None and 0 <= left <= SOON_DAYS),
             'overdue': bool(left is not None and left < 0
                             and case.state == 'active'),
-            # "Drifting" is the one derived word on this board, and it is the
-            # one an HR lead actually acts on: a running plan where more than
-            # a third of the conversations that should have happened have not.
-            'drifting': bool(case.state == 'active' and due_by_now >= 2
-                             and adherence is not None and adherence < 67),
+            'drifting': drifting,
         }
+
+    @api.model
+    def _drift(self, case, today=None):
+        """(conversations due by now, adherence %, drifting) for one plan.
+
+        Adherence is measured against what should have happened BY NOW, not
+        against the whole plan — a plan in week one has held one of six and is
+        not 17% adherent, it is on track. "Drifting" is the one derived word on
+        this board, and it is the one an HR lead actually acts on: a running
+        plan where more than a third of the conversations that should have
+        happened have not.
+        """
+        today = today or date.today()
+        held = case.checkins_done or 0
+        due_by_now = self._safe(
+            lambda: len(case.checkin_ids.filtered(
+                lambda c: c.state != 'cancelled' and c.scheduled_date
+                and c.scheduled_date <= today)), default=0)
+        adherence = int(round(held * 100.0 / due_by_now)) if due_by_now else None
+        drifting = bool(case.state == 'active' and due_by_now >= 2
+                        and adherence is not None and adherence < 67)
+        return due_by_now, adherence, drifting
+
+    # ============================================================ filter panel
+    # FILTER W1 (2026-10-31): the board used to hold 300 plans, open OR
+    # closed behind a toggle, and filter them in the browser. Everything is
+    # now counted and paged on the server for the panel's state
+    # (pb_filter_kit); the Open/Closed toggle became the first two views. The
+    # gate is the screen's own: a reader `_can_read` refuses gets the
+    # explained refusal and the panel stays out of the way.
+
+    @api.model
+    def _scope(self):
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        return [('company_id', 'in', co_ids)]
+
+    @api.model
+    def _risk_ids(self):
+        """Open plans that are drifting or have an objective at risk.
+
+        Both are Python, not fields (`at_risk_count` and the check-in
+        adherence are computed on read), so the panel reaches them through
+        `domain_method` (ledger §3a) rather than a stored field (ruling R2).
+        Counted once per request: the panel asks several times per refresh.
+        """
+        cache = self.env.cr.cache.setdefault('pb_pip_risk_ids', {})
+        key = (self.env.uid, tuple(self.env.companies.ids))
+        if key not in cache:
+            today = date.today()
+            cases = self.env['pb.pip.case'].search(
+                self._scope() + [('state', 'in', list(PIP_OPEN))])
+            cache[key] = [c.id for c in cases
+                          if c.at_risk_count or self._drift(c, today)[2]]
+        return cache[key]
+
+    def _pbf_risk_yes(self):
+        return [('id', 'in', self._risk_ids())]
+
+    def _pbf_risk_no(self):
+        return [('id', 'not in', self._risk_ids())]
+
+    def _pbf_model(self):
+        return 'pb.pip.case'
+
+    def _pbf_screen(self):
+        return 'growth'
+
+    def _pbf_base_domain(self):
+        return self._scope()
+
+    def _pbf_search_domain(self, search):
+        """A person (name or code, found as the system — `_emp` explains why
+        an employee is never read as the reader here), a template or a
+        reason."""
+        q = (search or '').strip()
+        if not q:
+            return None
+        parts = [Domain('reason_text', 'ilike', q), Domain('template_id.name', 'ilike', q)]
+        try:
+            emp_ids = self.env['hr.employee'].sudo().with_context(active_test=False).search(
+                ['|', ('name', 'ilike', q), ('barcode', 'ilike', q)]).ids
+        except Exception as e:  # noqa: BLE001
+            _logger.info('growth plan search by person failed: %s', e)
+            emp_ids = []
+        if emp_ids:
+            parts.append(Domain('employee_id', 'in', emp_ids))
+        return Domain.OR(parts)
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'ends', 'label': _('Ending soonest first'),
+             'order': 'end_date asc nulls last, id desc'},
+            {'key': 'starts', 'label': _('Started most recently'),
+             'order': 'start_date desc nulls last, id desc'},
+            {'key': 'recent', 'label': _('Asked most recently'), 'order': 'id desc'},
+        ]
+
+    def _pbf_spec(self):
+        today = fields.Date.context_today(self)
+        return [
+            # ---- pinned: where it is, who looks after it, when it ends
+            {'key': 'stage', 'label': _('Stage'), 'icon': 'route',
+             'group': 'other', 'type': 'selection', 'path': 'state', 'pinned': True},
+            {'key': 'owner', 'label': _('HR owner'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'hr_owner_user_id',
+             'pinned': True, 'none_label': _('Nobody yet')},
+            {'key': 'ends', 'label': _('Plan ends'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'end_date', 'presets': 'future',
+             'pinned': True, 'none_label': _('No end date yet')},
+            # ---- more filters
+            {'key': 'risk', 'label': _('Drifting or at risk'), 'icon': 'triangleAlert',
+             'group': 'other', 'type': 'choice',
+             'help': _('Open plans where conversations are not happening, or an '
+                       'objective is at risk.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Needs attention'), 'tone': 'rose',
+                  'domain_method': '_pbf_risk_yes'},
+                 {'value': 'no', 'label': _('On track or closed'), 'tone': 'green',
+                  'domain_method': '_pbf_risk_no'},
+             ]},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.department_id',
+             'none_label': _('No department'), 'label_sudo': True},
+            {'key': 'asked_by', 'label': _('Asked by'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'requested_by_user_id',
+             'none_label': _('HR')},
+            {'key': 'template', 'label': _('Plan template'), 'icon': 'layers',
+             'group': 'other', 'type': 'many2one', 'path': 'template_id',
+             'none_label': _('No template')},
+            {'key': 'starts', 'label': _('Plan starts'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'start_date', 'presets': 'past',
+             'none_label': _('Not started yet')},
+            {'key': 'rhythm', 'label': _('Check-in rhythm'), 'icon': 'repeat',
+             'group': 'other', 'type': 'selection', 'path': 'checkin_freq'},
+            {'key': 'seen', 'label': _('Seen by the person'), 'icon': 'eye',
+             'group': 'people', 'type': 'choice', 'requires': ['employee_ack'],
+             'options': [
+                 {'value': 'yes', 'label': _('They have read it'), 'tone': 'green',
+                  'domain': [('employee_ack', '=', True)]},
+                 {'value': 'no', 'label': _('Not opened yet'), 'tone': 'amber',
+                  'domain': [('employee_ack', '=', False)]},
+             ]},
+            {'key': 'outcome', 'label': _('Outcome'), 'icon': 'stamp',
+             'group': 'other', 'type': 'selection', 'path': 'verdict',
+             'none_label': _('Not decided yet')},
+            {'key': 'overdue', 'label': _('Past its end date'), 'icon': 'clock',
+             'group': 'dates', 'type': 'choice', 'requires': ['end_date', 'state'],
+             'help': _('A running plan whose end date has passed.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Past its end date, still running'), 'tone': 'rose',
+                  'domain': [('state', '=', 'active'), ('end_date', '<', today)]},
+                 {'value': 'no', 'label': _('Within its dates'), 'tone': 'green',
+                  'domain': ['!', '&', ('state', '=', 'active'), ('end_date', '<', today)]},
+             ]},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id'},
+        ]
+
+    def _pbf_builtin_views(self):
+        # "Ending within 7 days" is the kit's `next_7` preset (kit 1.2.0), not
+        # a date range frozen when the views were built: a tab left open over
+        # midnight would otherwise show as "changed".
+        return [
+            {'key': 'open', 'label': _('Open plans'), 'icon': 'sprout',
+             'filters': {'stage': list(PIP_OPEN)}},
+            {'key': 'closed', 'label': _('Closed plans'), 'icon': 'history',
+             'filters': {'stage': list(PIP_CLOSED)}},
+            {'key': 'deciding', 'label': _('Waiting on a decision'),
+             'filters': {'stage': ['evaluation']}},
+            {'key': 'ending', 'label': _('Ending within 7 days'),
+             'filters': {'stage': list(PIP_OPEN), 'ends': {'preset': 'next_7'}}},
+            {'key': 'unseen', 'label': _('Not yet seen'),
+             'filters': {'seen': ['no'], 'stage': ['active']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._can_read():
+            return {'refused': _refusal()['why']}
+        return super().pbf_layout()
+
+    @api.model
+    def _pbf_step_counts(self, filters, search):
+        """The strip's counts for the panel's state — each step is a stage, so
+        it is counted against every filter EXCEPT the stage (the kit's rule) —
+        and, per step, how many of those are drifting or at risk."""
+        spec = self._pbf_clean_spec()
+        if not any(s['key'] == 'stage' for s in spec):
+            return {}
+        Case = self.env['pb.pip.case']
+        base = self.pbf_domain(filters or {}, search, skip='stage', spec=spec)
+        risk = Domain(self._pbf_risk_yes())
+        out = {}
+        for step, state in STEP_STATE.items():
+            d = Domain.AND([base, Domain('state', '=', state)])
+            out[step] = {'n': Case.search_count(d),
+                         'risk': Case.search_count(Domain.AND([d, risk]))}
+        return out
+
+    @api.model
+    def get_plans_page(self, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of plans for the filter panel's current state, with the
+        step strip's counts for the same state."""
+        if not self._can_read():
+            return {'rows': [], 'total': 0, 'offset': 0, 'steps': {}}
+        Case = self.env['pb.pip.case']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        filters = filters if isinstance(filters, dict) else {}
+        domain = self.pbf_domain(filters, search)
+        order = self.pbf_order(sort) or 'end_date, id desc'
+        today = date.today()
+        rows = []
+        for case in Case.search(domain, order=order, offset=offset, limit=limit):
+            try:
+                rows.append(self._row(case, today))
+            except Exception:  # noqa: BLE001 — one bad card never blanks the board
+                _logger.exception('PIP row for plan %s', case.id)
+        out = {'rows': rows, 'total': Case.search_count(domain), 'offset': offset}
+        if not offset:
+            out['steps'] = self._safe(lambda: self._pbf_step_counts(filters, search), default={})
+        return out
 
     # ------------------------------------------------------------ one plan
     @api.model
@@ -670,13 +880,3 @@ def _when(days, state):
     if days == -1:
         return _('ended yesterday')
     return _('ended %s days ago', -days)
-
-
-def _facet(rows, key):
-    counts = {}
-    for row in rows:
-        value = row.get(key) or ''
-        if value:
-            counts[value] = counts.get(value, 0) + 1
-    return [{'id': k, 'label': k, 'count': v}
-            for k, v in sorted(counts.items(), key=lambda kv: -kv[1])]

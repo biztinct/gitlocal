@@ -334,6 +334,27 @@ coordinator's (`filter_deploy.sh full`).
   (`domain_method`, a folded search) are re-evaluated once per count (~12 per
   `pbf_counts`). Memoise them on `self.env.cr.cache[(key, uid, …)]` — one
   request, one cursor.
+- **F26** (w1) `pbf_preview.sh hold` can race when two builders wait: the
+  first waiter takes the lock, prints `HELD by <you>`, writes the holder file
+  and exits; its keeper process then queues for the lock behind the OTHER
+  waiter, who wins and overwrites the holder file. After `hold` returns, check
+  `cat /tmp/pbf_preview/holder` names you before syncing; if not, `hold` again.
+- **F27** (w1) A `selection` section shows the field's stored option labels.
+  Their Vietnamese lives in `model:ir.model.fields.selection` entries and is
+  loaded into the database only by `-u` (a restart is not enough, unlike `_()`
+  and `_t`). Several modules never had them (pb_lifecycle journey type/status,
+  pb_pip stage/rhythm): when a panel exposes a selection, translate those
+  entries and upgrade the preview before T22.
+- **F28** (w1) A stock option label can contradict the board's own words
+  (`hr.contract` draft is "New"; the board's tab, step and figure say "Draft").
+  Use a `choice` section with the board's labels whenever a view, step or
+  figure names the same value.
+- **F29** (w1) `searchPlaceholder="'…'"` (a literal inside an expression) is
+  never extracted for translation; pass a component getter that returns
+  `_t("…")`. Employees still ships an English-only placeholder.
+- **F30** (w1) Claude-in-Chrome answers `[BLOCKED: Cookie/query string data]`
+  when a `javascript_tool` result looks like `key=value` text; return JSON
+  (arrays/objects) instead.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python

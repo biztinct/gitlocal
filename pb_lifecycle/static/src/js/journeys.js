@@ -24,6 +24,16 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
+// What each figure on the numbers line means as a filter: the same filters as
+// the built-in views, so pressing a figure lights the matching tab.
+const GLANCE_FILTERS = {
+    active: { status: ["active"] },
+    overdue: { late: ["yes"] },
+};
 
 const STATE_CLS = {
     done: "ok", pending: "info", in_progress: "warn", blocked: "err",
@@ -47,8 +57,12 @@ const TYPE_IC = {
 
 export class PbJourneys extends Component {
     static template = "pb_lifecycle.PbJourneys";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbFilterLayout };
     static props = ["*"];
+
+    // A literal inside a template expression is never extracted for
+    // translation, so the panel's placeholder comes through _t here.
+    get searchLabel() { return _t("Search by name, team, job or checklist…"); }
 
     setup() {
         // NAV P2: Journeys opens on its own (from Settings › HR, or an old
@@ -64,20 +78,18 @@ export class PbJourneys extends Component {
             canWrite: false,
             canAdmin: false,
             kpis: {},
-            rows: [],
+            total: 0,
             types: [],
             templates: [],
             states: [],
-            typeCounts: {},
-            capped: false,
 
-            // filters
-            q: "",
-            type: "all",
-            lifeState: "all",
-            lateOnly: false,
-            focus: "",      // the figure on the numbers line now filtering
-            step: "",       // the step now filtering
+            // the board, one page at a time for the filter panel's state
+            rows: [],
+            listTotal: 0,
+            listLoaded: false,
+            listError: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // the open journey
             drawer: null,
@@ -90,12 +102,22 @@ export class PbJourneys extends Component {
             addStep: null,
         });
 
+        // The shared filter panel (pb_filter_kit, FILTER W1): it owns the
+        // filters, the counts and the views; this screen loads one page of
+        // journeys for kit.query. A reader without lifecycle access is
+        // refused by the server and the panel stays out of the way.
+        this.kit = useFilterKit({
+            model: "pb.journeys",
+            noun: _t("journeys"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
     // ------------------------------------------------------------------ read
+    /** The head: access, the numbers line, the start dialog's lists. */
     async load() {
         try {
             const d = await this.orm.call("pb.journeys", "get_board", []);
@@ -104,12 +126,10 @@ export class PbJourneys extends Component {
                 canWrite: d.can_write,
                 canAdmin: d.can_admin,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
+                total: d.total || 0,
                 types: d.types || [],
                 templates: d.templates || [],
                 states: d.states || [],
-                typeCounts: d.type_counts || {},
-                capped: !!d.capped,
                 loaded: true,
             });
         } catch (e) {
@@ -120,73 +140,84 @@ export class PbJourneys extends Component {
         }
     }
 
+    /** One page of journeys for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.journeys", "get_journeys_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.listTotal = d.total;
+            if (d.steps) { this.state.stepCounts = d.steps; }
+            this.state.listLoaded = true;
+            this.state.listError = false;
+        } catch (e) {
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            console.error("pb_journeys: the board could not load", e);
+            if (!more) {
+                this.state.listError = true;
+                this.state.listLoaded = true;
+            }
+            this.notif.add(_t("The journeys could not load. Check your connection, then press Try again."),
+                           { type: "warning" });
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    retry() {
+        this.state.listError = false;
+        this.state.listLoaded = false;
+        this.kit.refresh();
+    }
+    get hasMore() { return this.state.rows.length < this.state.listTotal; }
+    get nextPage() { return Math.min(PAGE, this.state.listTotal - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** Read the board again in place: the numbers, the page, the counts, and
+     * the open journey. The filters stay as they are. */
     async refresh() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.drawer) { await this.openCase(this.state.drawer.case.id); }
-    }
-
-    // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.type !== "all" && r.type !== this.state.type) {
-                return false;
-            }
-            if (this.state.lifeState !== "all"
-                && r.state !== this.state.lifeState) {
-                return false;
-            }
-            if (this.state.lateOnly && !r.late && !r.overdue) { return false; }
-            if (this.state.focus === "active" && r.state !== "active") { return false; }
-            if (this.state.focus === "overdue" && !r.overdue) { return false; }
-            if (this.state.step && this.stepOf(r) !== this.state.step) { return false; }
-            if (!q) { return true; }
-            return (r.employee + " " + r.type_label + " " + (r.dept || "")
-                + " " + (r.job || "")).toLowerCase().includes(q);
-        });
-    }
-
-    get hasFilters() {
-        return this.state.q || this.state.type !== "all"
-            || this.state.lifeState !== "all" || this.state.lateOnly
-            || this.state.focus || this.state.step;
-    }
-
-    clearFilters() {
-        Object.assign(this.state,
-            { q: "", type: "all", lifeState: "all", lateOnly: false,
-              focus: "", step: "" });
     }
 
     // ----------------------------------------------------- the quiet board
     //
     // One slim line of numbers instead of a row of tiles, and the three steps
-    // a journey moves through. A journey is at EXACTLY ONE step (stepOf), so
-    // the step counts add up to the board. Pressing a lit figure or step
-    // again clears it.
-    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
-
+    // a journey moves through. A journey is at EXACTLY ONE step (the server's
+    // `_step_domains`), so the step counts add up. The figures and the steps
+    // set the filter panel; pressing a lit one again clears it.
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
             { key: "active", n: k.active || 0, label: _t("Running now"), tone: "",
-              run: () => this.toggleFocus("active") },
+              run: pick("active") },
             { key: "overdue", n: k.overdue || 0, label: _t("Steps overdue"), tone: tone(k.overdue, "rose"),
-              run: () => this.toggleFocus("overdue") },
+              run: pick("overdue") },
             { key: "due", n: k.due_week || 0, label: _t("Due in 7 days"), tone: "", run: null },
             { key: "red", n: k.red_flags || 0, label: _t("Need attention"), tone: tone(k.red_flags, "rose"), run: null },
             { key: "letters", n: k.letters_month || 0, label: _t("Letters this month"), tone: "", run: null },
         ];
     }
-
-    /** Not started (draft) → under way (running or on hold, steps still
-     *  open) → nothing left to do (running, every step settled). */
-    stepOf(r) {
-        if (r.state === "draft") { return "start"; }
-        if (r.state === "active" && !r.open_tasks) { return "wrap"; }
-        return "running";
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     get stepDefs() {
@@ -197,43 +228,36 @@ export class PbJourneys extends Component {
         ];
     }
 
+    /** Counted by the server for the panel's state (each step against every
+     * OTHER filter, the panel's own rule), with how many of each run late. */
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
-            const late = at.filter((r) => r.overdue).length;
+            const c = counts[st.key] || {};
+            const count = c.n || 0;
+            const late = c.late || 0;
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
-                count: at.length,
-                countLabel: at.length === 1 ? _t("1 journey") : _t("%s journeys", at.length),
+                count,
+                countLabel: count === 1 ? _t("1 journey") : _t("%s journeys", this.fmtInt(count)),
                 flag: !late ? "" : late === 1 ? _t("1 with steps overdue") : _t("%s with steps overdue", late),
                 flagTone: "rose",
-                on: this.state.step === st.key,
+                on: this.kit.loaded && this.kit.isOn("step", st.key),
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
-
-    get showingLine() {
-        const all = this.state.rows.length;
-        if (!this.hasFilters) {
-            return { all: true, text: !all ? _t("Showing no journeys yet")
-                : all === 1 ? _t("Showing all 1 journey · press a step or a number to narrow it")
-                    : _t("Showing all %s journeys · press a step or a number to narrow it", all) };
+    /** A step pressed: list that step. Pressed again: back to the start view
+     * when it was the only filter, otherwise only that step comes off. */
+    pickStep(key) {
+        const kit = this.kit;
+        if (kit.isOn("step", key) && !kit.isExactly({ step: [key] })) {
+            kit.toggle("step", key);
+            return;
         }
-        const shown = this.visibleRows.length;
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        return { all: false, text: st
-            ? _t("Showing %s of %s journeys at %s", shown, all, st.title)
-            : _t("Showing %s of %s journeys", shown, all) };
+        kit.toggleFilters({ step: [key] });
     }
-
-    setType(id) { this.state.type = this.state.type === id ? "all" : id; }
-    setState(id) { this.state.lifeState = this.state.lifeState === id ? "all" : id; }
-    toggleLate() { this.state.lateOnly = !this.state.lateOnly; }
-    onSearch(ev) { this.state.q = ev.target.value; }
 
     // ------------------------------------------------------------ formatting
     typeIcon(type) { return ic(TYPE_IC[type] || "briefcase", 15); }
@@ -495,7 +519,7 @@ export class PbJourneys extends Component {
                     : _t("Journey started. There is no checklist for this type"
                          + " yet, so add the steps you need."),
                 { type: "success" });
-            await this.load();
+            await Promise.all([this.load(), this.kit.refresh()]);
             await this.openCase(res.case_id);
         } catch (e) {
             this.fail(e);

@@ -20,11 +20,21 @@
     .obb-head-id { flex: 1 1 320px; min-width: 0; }
     .obb-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    // --------------------------------------------------------- filters
-    .obb-filters { padding: 14px 16px; margin-bottom: 18px; }
-    .obb-filter-row {
-        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-        & + .obb-filter-row { margin-top: 10px; }
+    // ------------------------------------------ inside the filter panel
+    // FILTER W1: the board's search and its month / department / country
+    // chips moved into the shared filter panel (pb_filter_kit). What is left
+    // here is the loading cards and the "Showing N of M" line. `.obb-search`
+    // stays: the buddy pickers use it.
+    .pbim-steps { margin-bottom: 14px; }
+    .obb-skeleton .obb-card--ghost {
+        height: 300px; box-shadow: none;
+        background: var(--pbim-line-2); animation: obb-pulse 1.2s ease-in-out infinite;
+        &:hover { transform: none; box-shadow: none; }
+    }
+    .obb-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
+        b { color: var(--pbim-text); font-weight: 600; }
     }
     .obb-search {
         display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
@@ -308,3 +318,5 @@
         .obb-drawer { width: 100%; }
     }
 }
+
+@keyframes obb-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }

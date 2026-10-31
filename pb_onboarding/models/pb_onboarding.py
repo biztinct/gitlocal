@@ -21,8 +21,9 @@ fourth ladder would be a group nobody knew to grant.
 import logging
 from datetime import date, timedelta
 
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .newhire_pulse import SCORE_WORD
 from .onboarding_common import (
@@ -31,7 +32,10 @@ from .onboarding_common import (
 
 _logger = logging.getLogger(__name__)
 
-BOARD_LIMIT = 300
+#: One page of the board (the filter panel pages it; "Show N more" appends).
+PAGE_SIZE = 60
+#: A step that still has to be done.
+OPEN_TASK_STATES = ('pending', 'in_progress', 'blocked')
 
 #: A joiner is "new" for this long after their first day. Past it the journey
 #: may still be running (a stray step nobody ticked) but the person is a
@@ -41,6 +45,7 @@ NEW_FOR_DAYS = 120
 
 class PbOnboarding(models.AbstractModel):
     _name = 'pb.onboarding'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook New Joiners cockpit data'
 
     # ------------------------------------------------------------------ gates
@@ -74,52 +79,247 @@ class PbOnboarding(models.AbstractModel):
 
     # ------------------------------------------------------------- the board
     @api.model
+    def _scope(self):
+        """Every live joining checklist in the reader's companies whose first
+        day is at most NEW_FOR_DAYS behind us (or not set yet)."""
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        floor = date.today() - timedelta(days=NEW_FOR_DAYS)
+        return [
+            ('company_id', 'in', co_ids),
+            ('case_type', '=', 'onboarding'),
+            ('state', 'in', ('draft', 'active', 'on_hold')),
+            '|', ('anchor_date', '=', False), ('anchor_date', '>=', floor),
+        ]
+
+    @api.model
     def get_board(self):
+        """The head of the board: access and the numbers line, counted over
+        every joiner on the board (no longer over the 300 rows it held). The
+        cards are paged by the filter panel through `get_joiners_page`
+        (FILTER W1)."""
         if not self._can_read():
             return {'allowed': False, 'can_write': False, 'kpis': {},
                     'rows': [], 'countries': [], 'departments': [],
                     'months': []}
         Case = self.env['pb.journey.case']
-        co_ids = self.env.companies.ids or [self.env.company.id]
+        scope = self._scope()
         today = date.today()
-        floor = today - timedelta(days=NEW_FOR_DAYS)
-
-        cases = self._safe(lambda: Case.search([
-            ('company_id', 'in', co_ids),
-            ('case_type', '=', 'onboarding'),
-            ('state', 'in', ('draft', 'active', 'on_hold')),
-            '|', ('anchor_date', '=', False), ('anchor_date', '>=', floor),
-        ], order='anchor_date desc, id desc', limit=BOARD_LIMIT),
-            default=Case.browse())
-
-        rows = []
-        for case in cases:
-            try:
-                rows.append(self._row(case, today))
-            except Exception:
-                _logger.exception('New joiners row for case %s', case.id)
-
         week_end = today + timedelta(days=7)
+
+        def count(extra):
+            return self._safe(lambda: Case.search_count(scope + extra))
+
         kpis = {
-            'joining': len([r for r in rows if r['doj']
-                            and today <= _d(r['doj']) <= week_end]),
-            'started': len([r for r in rows if r['doj']
-                            and _d(r['doj']) <= today]),
-            'no_buddy': len([r for r in rows if not r['buddy']]),
-            'overdue': sum(r['overdue'] for r in rows),
-            'red': len([r for r in rows if r['pulse_red']]),
+            'joining': count([('anchor_date', '>=', today), ('anchor_date', '<=', week_end)]),
+            'started': count([('anchor_date', '<=', today)]),
+            'no_buddy': count([('employee_id.buddy_id', '=', False)]),
+            # steps, not people: how many checklist steps are late
+            'overdue': self._safe(lambda: self.env['pb.journey.task'].search_count([
+                ('case_id', 'in', Case.search(scope).ids),
+                ('state', 'in', OPEN_TASK_STATES), ('due_date', '<', today)])),
+            'red': count(self._pbf_red_yes()),
         }
         return {
             'allowed': True,
             'can_write': self._can_write(),
             'kpis': kpis,
-            'rows': rows,
-            'total': len(rows),
-            'capped': len(rows) >= BOARD_LIMIT,
-            'countries': _facet(rows, 'country'),
-            'departments': _facet(rows, 'dept'),
-            'months': _facet(rows, 'month'),
+            'total': self._safe(lambda: Case.search_count(scope)),
         }
+
+    # ============================================================ filter panel
+    # FILTER W1 (2026-10-31): the board used to hold 300 joiners and filter
+    # them in the browser (search, month / department / country chips,
+    # "Needs something"). Everything is now counted and paged on the server
+    # for the panel's state (pb_filter_kit). The gate is the board's own: a
+    # reader without lifecycle access gets the screen's explanation and the
+    # panel stays out of the way.
+
+    def _pbf_model(self):
+        return 'pb.journey.case'
+
+    def _pbf_screen(self):
+        return 'joiners'
+
+    def _pbf_base_domain(self):
+        return self._scope()
+
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'employee_id.job_title', 'employee_id.job_id.name',
+                'employee_id.department_id.name', 'employee_id.buddy_id.name',
+                'employee_id.hrbp_user_id.name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'first_day', 'label': _('Latest first day first'),
+             'order': 'anchor_date desc nulls first, id desc'},
+            {'key': 'first_day_asc', 'label': _('Earliest first day first'),
+             'order': 'anchor_date asc nulls last, id desc'},
+            {'key': 'progress', 'label': _('Least done first'), 'order': 'progress asc, id desc'},
+            {'key': 'person', 'label': _('Person, A to Z'), 'order': 'employee_id, id desc'},
+        ]
+
+    @api.model
+    def _overdue_domain(self):
+        return [('task_ids', 'any', [('state', 'in', OPEN_TASK_STATES),
+                                     ('due_date', '<', fields.Date.context_today(self))])]
+
+    @api.model
+    def _red_case_ids(self):
+        """Joiners who said they are struggling on a check-in — a fact on
+        `pb.newhire.pulse`, which has no link back from the case, so the panel
+        reaches it through `domain_method` (ledger §3a)."""
+        try:
+            return self.env['pb.newhire.pulse'].search(
+                [('red_flag', '=', True), ('case_id', '!=', False)]).mapped('case_id').ids
+        except Exception as e:  # noqa: BLE001
+            _logger.info('New joiners pulse probe failed: %s', e)
+            return []
+
+    def _pbf_red_yes(self):
+        return [('id', 'in', self._red_case_ids())]
+
+    def _pbf_red_no(self):
+        return [('id', 'not in', self._red_case_ids())]
+
+    @api.model
+    def _step_domains(self):
+        """Before the first day (or no first day yet) → settling in (started,
+        checklist still open) → checklist done. Every joiner is at one."""
+        today = fields.Date.context_today(self)
+        return {
+            'ready': ['|', ('anchor_date', '=', False), ('anchor_date', '>', today)],
+            'settling': [('anchor_date', '<=', today), ('progress', '<', 100)],
+            'done': [('anchor_date', '<=', today), ('progress', '>=', 100)],
+        }
+
+    def _pbf_spec(self):
+        steps = self._step_domains()
+        return [
+            # ---- pinned: when, how far along, which team
+            {'key': 'first_day', 'label': _('First day'), 'icon': 'calendar',
+             # first days still to come matter as much as the ones behind
+             # us: an explicit preset list (kit 1.2.0)
+             'group': 'dates', 'type': 'date', 'path': 'anchor_date',
+             'presets': ['next_7', 'next_30', 'this_week', 'this_month', 'last_month',
+                         'last_90', 'none'],
+             'pinned': True, 'none_label': _('No first day yet')},
+            {'key': 'step', 'label': _('Where they are'), 'icon': 'route',
+             'group': 'other', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'ready', 'label': _('Getting ready'), 'tone': 'blue',
+                  'domain': steps['ready']},
+                 {'value': 'settling', 'label': _('Settling in'), 'tone': 'amber',
+                  'domain': steps['settling']},
+                 {'value': 'done', 'label': _('Checklist done'), 'tone': 'green',
+                  'domain': steps['done']},
+             ]},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.department_id',
+             'pinned': True, 'none_label': _('No department')},
+            # ---- more filters
+            {'key': 'buddy', 'label': _('Buddy'), 'icon': 'smilePlus',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.buddy_id',
+             'none_label': _('No buddy yet'),
+             'help': _('The main buddy only: somebody standing in for a buddy '
+                       'who is away is not counted here.')},
+            {'key': 'hrbp', 'label': _('HR partner'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.hrbp_user_id',
+             'none_label': _('Nobody yet')},
+            {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.country_id',
+             'none_label': _('Not recorded')},
+            {'key': 'checklist', 'label': _('Checklist used'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'many2one', 'path': 'template_id',
+             'none_label': _('No checklist')},
+            {'key': 'status', 'label': _('Status'), 'icon': 'activity',
+             'group': 'other', 'type': 'selection', 'path': 'state'},
+            {'key': 'source', 'label': _('Started by'), 'icon': 'plug',
+             'group': 'other', 'type': 'selection', 'path': 'source'},
+            {'key': 'manager', 'label': _('Manager'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.parent_id',
+             'none_label': _('No manager')},
+            {'key': 'overdue', 'label': _('Running late'), 'icon': 'clock',
+             'group': 'other', 'type': 'choice',
+             'help': _('A joiner is late when one of their open checklist steps is '
+                       'past its due date.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Steps overdue'), 'tone': 'rose',
+                  'domain': self._overdue_domain()},
+                 {'value': 'no', 'label': _('On time'), 'tone': 'green',
+                  'domain': ['!'] + self._overdue_domain()},
+             ]},
+            {'key': 'pulse', 'label': _('How they say it is going'), 'icon': 'messageSquare',
+             'group': 'people', 'type': 'choice',
+             'options': [
+                 {'value': 'red', 'label': _('Said they are struggling'), 'tone': 'rose',
+                  'domain_method': '_pbf_red_yes'},
+                 {'value': 'fine', 'label': _('No warning sign'), 'tone': 'green',
+                  'domain_method': '_pbf_red_no'},
+             ]},
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All new joiners'), 'icon': 'userPlus', 'filters': {}},
+            {'key': 'week', 'label': _('Joining this week'),
+             'filters': {'first_day': {'preset': 'next_7'}}},
+            {'key': 'nobuddy', 'label': _('Still without a buddy'), 'filters': {'buddy': [False]}},
+            {'key': 'late', 'label': _('Steps overdue'), 'filters': {'overdue': ['yes']}},
+            {'key': 'settling', 'label': _('Started, checklist open'),
+             'filters': {'step': ['settling']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._can_read():
+            return {'refused': _("New joiners are looked after by the HR team.")}
+        return super().pbf_layout()
+
+    @api.model
+    def _pbf_step_counts(self, filters, search):
+        """The strip's counts for the panel's state — each step counted against
+        every OTHER filter (the kit's rule) — and, per step, how many of those
+        have a step overdue (the strip's rose flag)."""
+        spec = self._pbf_clean_spec()
+        s = next((x for x in spec if x['key'] == 'step'), None)
+        if not s:
+            return {}
+        Case = self.env['pb.journey.case']
+        base = self.pbf_domain(filters or {}, search, skip='step', spec=spec)
+        late = Domain(self._overdue_domain())
+        out = {}
+        for o in s['options']:
+            d = Domain.AND([base, Domain(o['domain'])])
+            out[o['value']] = {'n': Case.search_count(d),
+                               'late': Case.search_count(Domain.AND([d, late]))}
+        return out
+
+    @api.model
+    def get_joiners_page(self, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of joiners for the filter panel's current state, with the
+        step strip's counts for the same state."""
+        if not self._can_read():
+            return {'rows': [], 'total': 0, 'offset': 0, 'steps': {}}
+        Case = self.env['pb.journey.case']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        filters = filters if isinstance(filters, dict) else {}
+        domain = self.pbf_domain(filters, search)
+        order = self.pbf_order(sort) or 'anchor_date desc, id desc'
+        today = date.today()
+        rows = []
+        for case in Case.search(domain, order=order, offset=offset, limit=limit):
+            try:
+                rows.append(self._row(case, today))
+            except Exception:  # noqa: BLE001 — one bad card never blanks the board
+                _logger.exception('New joiners row for case %s', case.id)
+        out = {'rows': rows, 'total': Case.search_count(domain), 'offset': offset}
+        if not offset:
+            out['steps'] = self._safe(lambda: self._pbf_step_counts(filters, search), default={})
+        return out
 
     @api.model
     def _row(self, case, today=None):
@@ -299,11 +499,6 @@ class PbOnboarding(models.AbstractModel):
         }
 
 
-def _d(value):
-    from datetime import datetime
-    return datetime.strptime(value, '%Y-%m-%d').date()
-
-
 def _when(days):
     """"in 3 days" / "today" / "12 days in" — words, not arithmetic."""
     if days is None:
@@ -317,13 +512,3 @@ def _when(days):
     if days == -1:
         return _('1 day in')
     return _('%s days in', -days)
-
-
-def _facet(rows, key):
-    counts = {}
-    for row in rows:
-        value = row.get(key) or ''
-        if value:
-            counts[value] = counts.get(value, 0) + 1
-    return [{'id': k, 'label': k, 'count': v}
-            for k, v in sorted(counts.items(), key=lambda kv: -kv[1])]

@@ -595,7 +595,7 @@
     "ct-filters": {
       "screen": "contracts",
       "file": "pb_contracts/static/src/xml/contracts.xml",
-      "desc": "Search and the date range over the contract roster (the status chips are gone, 446560e70).",
+      "desc": "The shared filter panel: view tabs (All contracts, Running, Ending within 30 days, Draft, Started this month), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
       "reserved": true
     },
     "ct-roster": {
@@ -1424,6 +1424,12 @@
       "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
       "desc": "Getting ready → Settling in → Checklist done."
     },
+    "nj-filters": {
+      "screen": "joiners",
+      "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
+      "desc": "The shared filter panel: view tabs (All new joiners, Joining this week, Still without a buddy, Steps overdue, Started, checklist open), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
+      "reserved": true
+    },
     "nj-list": {
       "screen": "joiners",
       "file": "pb_onboarding/static/src/xml/onboarding_board.xml",
@@ -1574,6 +1580,12 @@
       "screen": "growth",
       "file": "pb_pip/static/src/xml/pip_board.xml",
       "desc": "Asked → Coaching → Plan running → Decision."
+    },
+    "gw-filters": {
+      "screen": "growth",
+      "file": "pb_pip/static/src/xml/pip_board.xml",
+      "desc": "The shared filter panel: view tabs (Open plans, Closed plans, Waiting on a decision, Ending within 7 days, Not yet seen) where the Open / Closed button used to be, the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and numbers above still filter.",
+      "reserved": true
     },
     "gw-list": {
       "screen": "growth",
@@ -1907,6 +1919,12 @@
       "screen": "awards",
       "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
       "desc": "The awards table: Who, Kind, Amount, Paid in, Approval, Where it has got to, Pay run.",
+      "reserved": true
+    },
+    "aw-filters": {
+      "screen": "awards",
+      "file": "pb_comp_ben/static/src/xml/incentives_board.xml",
+      "desc": "The shared filter panel: view tabs (All awards, Waiting for approval, Agreed, not in a run, In a pay run, Paid this month), the Filters button that opens the left panel with a count beside every value, the search (a person or a reason), and the applied filters as chips. The steps and numbers above still filter.",
       "reserved": true
     },
     "pe-contracts": {

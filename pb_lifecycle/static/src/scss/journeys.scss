@@ -29,37 +29,24 @@
     .lcj-head-id .pbim-sub { max-width: 620px; }
     .lcj-head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
 
-    // ------------------------------------------------------------ filters
-    .lcj-filters { margin-bottom: 14px; padding: 13px 16px; }
-    .lcj-filter-row {
-        display: flex; align-items: center; justify-content: space-between;
-        gap: 12px; flex-wrap: wrap;
-    }
-    .lcj-filter-row + .lcj-filter-row {
-        margin-top: 10px; padding-top: 10px;
-        border-top: 1px solid var(--pbim-line-2);
-    }
-    .lcj-search {
-        display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;
-        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill);
-        padding: 6px 14px; background: #fff; color: var(--pbim-muted);
-        transition: border-color .14s, box-shadow .14s;
-        &:focus-within {
-            border-color: var(--pbim-primary);
-            box-shadow: 0 0 0 3px var(--pbim-ring);
-        }
-        input {
-            flex: 1; border: 0; outline: 0; font: inherit; font-size: 13px;
-            color: var(--pbim-text); background: transparent;
-        }
-    }
-
     // -------------------------------------------------------------- board
+    // Inside the shared filter panel (FILTER W1) the board's width depends on
+    // whether the panel is open, so the columns follow the space they get,
+    // not the window.
+    .pbim-steps { margin-bottom: 14px; }
     .lcj-board {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px;
     }
-    @media (max-width: 1180px) { .lcj-board { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 760px)  { .lcj-board { grid-template-columns: 1fr; } }
+    .lcj-skeleton .lcj-card--ghost {
+        height: 132px; cursor: default; box-shadow: none;
+        background: var(--pbim-line-2); animation: lcj-pulse 1.2s ease-in-out infinite;
+        &:hover { transform: none; box-shadow: none; border-color: var(--pbim-line); }
+    }
+    .lcj-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        margin-top: 14px; font-size: 12.5px; color: var(--pbim-muted);
+        b { color: var(--pbim-text); font-weight: 600; }
+    }
 
     .lcj-card {
         padding: 15px 16px 13px; cursor: pointer; text-align: left;
@@ -278,3 +265,5 @@
     --pbim-scrim: rgba(27, 23, 51, .46);
     --pbim-z-modal: 1400;
 }
+
+@keyframes lcj-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }

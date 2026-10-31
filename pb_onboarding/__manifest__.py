@@ -61,7 +61,7 @@ additive `_inherit` extensions declared inside this module, and the lens
 arrives through P0's soft registry, which is what lets the dependency run one
 way only.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -78,6 +78,7 @@ way only.
         'pb_zoho_bridge',       # the arrival hook + send_credentials
         'pb_assets',            # the laptop request a joining step raises
         'pb_me_portal',         # the .pbme portal kit the pages reuse
+        'pb_filter_kit',        # FILTER W1: the board sits in the shared filter panel
     ],
     'data': [
         'security/pb_onboarding_security.xml',

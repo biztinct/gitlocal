@@ -304,38 +304,38 @@
 // ===========================================================================
 .pbim.inc {
 
-    // ---------------------------------------------------------- the filters
-    .inc-filters {
+    // ------------------------------------------- inside the filter panel
+    // FILTER W1: the search and the kind chips moved into the shared filter
+    // panel (pb_filter_kit). What is left here is the table's own loading
+    // rows and the "Showing N of M" line under it.
+    .pbim-steps { margin-bottom: 14px; }
+
+    .inc-skeleton {
+        display: grid;
+        gap: 8px;
+    }
+
+    .inc-skel-row {
+        height: 44px;
+        border-radius: 10px;
+        background: var(--pbim-line-2, #EEF1F6);
+        animation: inc-pulse 1.2s ease-in-out infinite;
+    }
+
+    .inc-foot {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
         flex-wrap: wrap;
-        margin-bottom: 14px;
-    }
-
-    .inc-search {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 6px 11px;
-        border: 1px solid var(--pbim-line, #E2E8F0);
-        border-radius: 9px;
-        background: var(--pbim-surface, #ffffff);
+        margin-top: 14px;
+        font-size: 12.5px;
         color: var(--pbim-muted, #64748B);
 
-        // R26 — equal specificity is decided by SOURCE ORDER, so the narrow
-        // rule is qualified rather than relying on where the block sits.
-        input.inc-in,
-        input {
-            border: 0;
-            outline: 0;
-            font: inherit;
-            width: 200px;
-            max-width: 40vw;
-            background: transparent;
-            color: var(--pbim-ink, #1B1733);
-        }
+        b { color: var(--pbim-ink, #1B1733); font-weight: 600; }
     }
+
+    .inc-tablewrap { overflow-x: auto; }
 
     // ------------------------------------------------------------ the table
     .inc-table {
@@ -491,3 +491,5 @@
         color: var(--pbim-muted, #64748B);
     }
 }
+
+@keyframes inc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }

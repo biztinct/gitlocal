@@ -21,6 +21,8 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 /** What each stage of an award is called on this board. */
 const FULFIL_LABEL = {
@@ -30,12 +32,25 @@ const FULFIL_LABEL = {
     paid: _t("Paid"),
 };
 
+const PAGE = 60;
+// What each figure on the numbers line means as a filter: the same filters as
+// the built-in views where one exists, so pressing a figure lights its tab.
+const GLANCE_FILTERS = {
+    submitted: { where: ["submitted"] },
+    to_queue: { where: ["agreed"], month: { preset: "this_month" } },
+    queued: { where: ["queued"] },
+    paid_mtd: { where: ["paid"], month: { preset: "this_month" } },
+    refused: { where: ["refused"] },
+};
+
 export class PbIncentivesBoard extends Component {
     static template = "pb_comp_ben.PbIncentivesBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     // A literal in a template expression is never extracted (step 6).
     get stepsLabel() { return _t("Where every award is"); }
+    get searchLabel() { return _t("Find a person or a reason…"); }
 
     setup() {
         this.orm = useService("orm");
@@ -49,21 +64,21 @@ export class PbIncentivesBoard extends Component {
             why: "",
             canWrite: false,
             canApprove: false,
-            rows: [],
             kpis: {},
+            total: 0,
             runs: [],
             kinds: [],
             states: [],
             code: "",
             lettersOn: false,
-            capped: false,
 
-            // filters
-            q: "",
-            // quiet board: the step pressed ('' = every step), or the one
-            // figure that is not a step ("refused")
-            step: "",
-            kindFilter: "all",
+            // the table, one page at a time for the filter panel's state
+            rows: [],
+            listTotal: 0,
+            listLoaded: false,
+            listError: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // dialogs
             creating: false,
@@ -78,11 +93,21 @@ export class PbIncentivesBoard extends Component {
             busy: false,
         });
 
+        // The shared filter panel (pb_filter_kit, FILTER W1): it owns the
+        // filters, the counts and the views; this screen loads one page of
+        // awards for kit.query. A reader this board refuses is refused by the
+        // server too, and the panel stays out of the way.
+        this.kit = useFilterKit({
+            model: "pb.incentives",
+            noun: _t("awards"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
+    /** The head: access, the numbers line, the runs and kinds. */
     async load() {
         try {
             const data = await this.orm.call("pb.incentives", "get_board", []);
@@ -91,14 +116,13 @@ export class PbIncentivesBoard extends Component {
                 why: data.why || "",
                 canWrite: data.can_write,
                 canApprove: data.can_approve,
-                rows: data.rows || [],
                 kpis: data.kpis || {},
+                total: data.total || 0,
                 runs: data.runs || [],
                 kinds: data.kinds || [],
                 states: data.states || [],
                 code: data.code || "",
                 lettersOn: data.letters_on,
-                capped: data.capped,
             });
             if (!this.state.queueRun && this.state.runs.length) {
                 this.state.queueRun = this.state.runs[0].id;
@@ -112,44 +136,60 @@ export class PbIncentivesBoard extends Component {
         }
     }
 
-    async refresh() { await this.load(); }
-
-    // ------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.step === "refused") {
-                if (r.state !== "refused") { return false; }
-            } else if (this.state.step && this.stepOf(r) !== this.state.step) {
-                return false;
+    /** One page of awards for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.incentives", "get_awards_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.listTotal = d.total;
+            if (d.steps) { this.state.stepCounts = d.steps; }
+            this.state.listLoaded = true;
+            this.state.listError = false;
+        } catch (e) {
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            console.error("pb_comp_ben: the awards could not load", e);
+            if (!more) {
+                this.state.listError = true;
+                this.state.listLoaded = true;
             }
-            if (this.state.kindFilter !== "all"
-                && r.kind !== this.state.kindFilter) { return false; }
-            if (!q) { return true; }
-            return (r.employee || "").toLowerCase().includes(q)
-                || (r.reason || "").toLowerCase().includes(q);
-        });
+            this.notif.add(_t("The awards could not load. Check your connection, then press Try again."),
+                           { type: "warning" });
+        } finally {
+            this.state.loadingMore = false;
+        }
     }
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    retry() {
+        this.state.listError = false;
+        this.state.listLoaded = false;
+        this.kit.refresh();
+    }
+    get hasMore() { return this.state.rows.length < this.state.listTotal; }
+    get nextPage() { return Math.min(PAGE, this.state.listTotal - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
 
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setKindFilter(key) { this.state.kindFilter = key; }
+    /** Read the board again in place: the numbers, the page and the counts.
+     * The filters stay as they are. */
+    async refresh() { await Promise.all([this.load(), this.kit.refresh()]); }
 
     // ------------------------------------------------------ the quiet board
     //
     // Five steps, one per place an award can be. An award is at EXACTLY one
-    // step, so the counts add up to every live award; one that was not
-    // approved is an outcome at no step.
-    stepOf(r) {
-        if (r.state === "draft") { return "draft"; }
-        if (r.state === "submitted") { return "submitted"; }
-        if (r.state === "approved") {
-            if (r.fulfilment === "queued") { return "queued"; }
-            if (r.fulfilment === "paid") { return "paid"; }
-            return "agreed";
-        }
-        return "";
-    }
-
+    // step (the server's WHERE_DOMAINS), so the counts add up to every live
+    // award; one that was not approved is an outcome at no step. The counts
+    // follow the filters (each step against every OTHER filter).
     get stepDefs() {
         return [
             { key: "draft", title: _t("Being prepared") },
@@ -160,63 +200,58 @@ export class PbIncentivesBoard extends Component {
         ];
     }
 
-    _awardsLabel(n) { return n === 1 ? _t("1 award") : _t("%s awards", n); }
+    _awardsLabel(n) { return n === 1 ? _t("1 award") : _t("%s awards", this.fmtInt(n)); }
 
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
+            const count = counts[st.key] || 0;
             let flag = "";
-            if (st.key === "submitted" && at.length) {
-                flag = at.length === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", at.length);
+            if (st.key === "submitted" && count) {
+                flag = count === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", count);
             }
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
-                count: at.length,
-                countLabel: this._awardsLabel(at.length),
+                count,
+                countLabel: this._awardsLabel(count),
                 sub: "", flag, flagTone: "",
-                on: this.state.step === st.key,
+                on: this.kit.loaded && this.kit.isOn("where", st.key),
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+    /** A step pressed: list that step. Pressed again: back to the start view
+     * when it was the only filter, otherwise only that step comes off. */
+    pickStep(key) {
+        const kit = this.kit;
+        if (kit.isOn("where", key) && !kit.isExactly({ where: [key] })) {
+            kit.toggle("where", key);
+            return;
+        }
+        kit.toggleFilters({ where: [key] });
+    }
 
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
-        const refused = this.state.rows.filter((r) => r.state === "refused").length;
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
-            { key: "submitted", n: k.waiting || 0, label: _t("waiting for a decision"), tone: tone(k.waiting, "amber"), run: () => this.pickStep("submitted") },
-            { key: "to_queue", n: k.to_queue || 0, label: _t("agreed, not in a run"), tone: tone(k.to_queue, "amber"), run: null },
-            { key: "queued", n: k.queued || 0, label: _t("in a pay run"), tone: "", run: () => this.pickStep("queued") },
-            { key: "paid_mtd", n: k.paid_mtd || 0, label: _t("paid this month"), tone: tone(k.paid_mtd, "green"), run: null },
-            { key: "refused", n: refused, label: _t("not approved"), tone: "", run: () => this.pickStep("refused") },
+            { key: "submitted", n: k.waiting || 0, label: _t("waiting for a decision"), tone: tone(k.waiting, "amber"), run: pick("submitted") },
+            { key: "to_queue", n: k.to_queue || 0, label: _t("agreed, not in a run"), tone: tone(k.to_queue, "amber"), run: pick("to_queue") },
+            { key: "queued", n: k.queued || 0, label: _t("in a pay run"), tone: "", run: pick("queued") },
+            { key: "paid_mtd", n: k.paid_mtd || 0, label: _t("paid this month"), tone: tone(k.paid_mtd, "green"), run: pick("paid_mtd") },
+            { key: "refused", n: k.refused || 0, label: _t("not approved"), tone: "", run: pick("refused") },
         ];
     }
 
+    /** Which figure is lit: the one whose filters are exactly what is on. */
     get glanceOn() {
-        return ["submitted", "queued", "refused"].includes(this.state.step) ? this.state.step : "";
-    }
-
-    /** ONE expression per sentence, so a translator can reorder it (R34). */
-    get showingLine() {
-        const all = this.state.rows.length;
-        const shown = this.visibleRows.length;
-        const narrowed = this.state.step || this.state.kindFilter !== "all" || (this.state.q || "").trim();
-        if (!narrowed) {
-            return { all: true, text: !all ? _t("no awards yet") : all === 1 ? _t("all 1 award") : _t("all %s awards", all) };
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
         }
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        const where = st ? st.title : (this.state.step === "refused" ? _t("Not approved") : "");
-        return { all: false, text: _t("%s of %s awards", shown, all), where };
-    }
-
-    showAll() {
-        this.state.step = "";
-        this.state.kindFilter = "all";
-        this.state.q = "";
+        return "";
     }
 
     // -------------------------------------------------------- the new award
@@ -278,7 +313,7 @@ export class PbIncentivesBoard extends Component {
                 reason: d.reason,
             }]);
             this.state.creating = false;
-            await this.load();
+            await this.refresh();
             this.notif.add(_t("Award raised. Send it for approval when you are ready."),
                            { type: "success" });
         } catch (e) {
@@ -294,7 +329,7 @@ export class PbIncentivesBoard extends Component {
         this.state.busy = true;
         try {
             await this.orm.call("pb.incentives", method, [row.id]);
-            await this.load();
+            await this.refresh();
             this.notif.add(ok, { type: "success" });
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be done.")),
@@ -357,7 +392,7 @@ export class PbIncentivesBoard extends Component {
             const res = await this.orm.call(
                 "pb.incentives", "confirm_queue", [this.state.queueRun]);
             this.state.queueing = false;
-            await this.load();
+            await this.refresh();
             this.notif.add(res.msg || _t("Done."), { type: "success" });
         } catch (e) {
             this.notif.add(this._msg(e, _t("Nothing was put into the pay run.")),
