@@ -99,13 +99,14 @@
           <div data-coach="cl-numbers">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.focus"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
           </div>
 
           <!-- ====================== the four steps ======================
-               A contract is at exactly ONE step (stepOf reads its decision
-               state), so the counts add up. -->
+               A contract is at exactly ONE step, so the counts add up to
+               what the panel lists. Counted on the server for the panel's
+               filters (ruling R1); pressing one narrows to that step. -->
           <div data-coach="cl-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
@@ -113,70 +114,9 @@
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
           </div>
-          <div class="pbim-showing">
-            <span t-esc="showingLine.text"/>
-            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
-          </div>
-
-          <!-- ======================== filters ======================== -->
-          <div class="pbim-panel ctl-filters" t-if="state.rows.length">
-            <div class="ctl-filter-row">
-              <div class="ctl-search">
-                <t t-out="ic('search',15)"/>
-                <input type="text" t-att-value="state.q" t-on-input="onSearch"
-                       placeholder="Search by name, job, team or contract…"/>
-              </div>
-              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
-                      t-on-click="clearFilters">
-                <t t-out="ic('x',14)"/> Clear
-              </button>
-            </div>
-            <div class="ctl-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.kinds" t-as="kd" t-key="kd.id"
-                        t-attf-class="pbim-fchip {{ state.kind === kd.id ? 'on' : '' }}"
-                        t-on-click="() => this.setKind(kd.id)">
-                  <span t-esc="kd.label"/>
-                  <span class="c" t-esc="kd.count"/>
-                </button>
-                <button t-attf-class="pbim-fchip {{ state.attentionOnly ? 'on' : '' }}"
-                        t-on-click="toggleAttention">
-                  <t t-out="ic('alert',13)"/> Needs somebody
-                </button>
-              </div>
-            </div>
-            <div class="ctl-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.months" t-as="mo" t-key="mo.id"
-                        t-attf-class="pbim-fchip {{ state.month === mo.id ? 'on' : '' }}"
-                        t-on-click="() => this.setMonth(mo.id)">
-                  <span t-esc="monthLabel(mo.label)"/>
-                  <span class="c" t-esc="mo.count"/>
-                </button>
-              </div>
-            </div>
-            <div class="ctl-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.states" t-as="sv" t-key="sv.id"
-                        t-attf-class="pbim-fchip {{ state.reviewState === sv.id ? 'on' : '' }}"
-                        t-on-click="() => this.setReviewState(sv.id)">
-                  <span t-esc="sv.label"/>
-                  <span class="c" t-esc="sv.count"/>
-                </button>
-              </div>
-              <div class="pbim-chips">
-                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
-                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
-                        t-on-click="() => this.setDept(dp.id)">
-                  <span t-esc="dp.label"/>
-                  <span class="c" t-esc="dp.count"/>
-                </button>
-              </div>
-            </div>
-          </div>
 
           <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.rows.length" class="pbim-panel ctl-empty" data-coach="cl-list">
+          <div t-if="!state.total" class="pbim-panel ctl-empty" data-coach="cl-list">
             <div class="ctl-empty-ic"><t t-out="ic('scrollText',30)"/></div>
             <h2>No contract has an end date on it</h2>
             <p>Everybody here is on an open-ended agreement, so there is nothing
@@ -187,28 +127,16 @@
                permanent.</p>
           </div>
 
-          <!-- ============ the filters match nobody ============
-               A board that answers a filter with a blank page is a dead end:
-               the reader cannot tell "nobody matches" from "it is still
-               loading" from "it broke". The whole sentence is ONE expression,
-               because OWL collapses the newline between two t-esc nodes and
-               the page then reads "There are2 contracts" (R34). -->
-          <div t-elif="!visibleRows.length" class="pbim-panel ctl-empty">
-            <div class="ctl-empty-ic"><t t-out="ic('search',30)"/></div>
-            <h2>Nothing matches that</h2>
-            <p>
-              <t t-esc="state.rows.length === 1
-                        ? 'There is 1 contract on this board, but it does not fit the filters you have set.'
-                        : 'There are ' + state.rows.length + ' contracts on this board, but none of them fits the filters you have set.'"/>
-            </p>
-            <button class="pbim-btn primary" t-on-click="clearFilters">
-              <t t-out="ic('x',15)"/> Clear the filters
-            </button>
-          </div>
+          <!-- ============ the shared filter panel (FILTER wave 2) ============
+               Views, search, the left panel with a count beside every value,
+               the applied filters as chips. The cards are its slot, a page at
+               a time from the server. -->
+          <PbFilterLayout t-else="" kit="kit" coach="'cl-filters'"
+                          searchPlaceholder="'Search by name, job, team or contract…'">
 
           <!-- ======================= the contracts ======================= -->
-          <div t-else="" class="ctl-grid" data-coach="cl-list">
-            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+          <div t-if="state.rows.length" class="ctl-grid" data-coach="cl-list">
+            <div t-foreach="state.rows" t-as="row" t-key="row.id"
                  class="pbim-panel ctl-card"
                  t-att-class="{ 'is-urgent': row.urgent,
                                 'is-lapsed': row.review_state === 'lapsed' }">
@@ -302,10 +230,34 @@
             </div>
           </div>
 
-          <p t-if="state.capped" class="ctl-capped">
-            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
-            a filter to see the rest.
-          </p>
+          <!-- ============ still loading the first page ============ -->
+          <div t-elif="!state.listLoaded" class="ctl-grid ctl-skeleton" aria-label="Loading the contracts">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbim-panel ctl-card ctl-card--ghost"/>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Each sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes (R34). -->
+          <div t-else="" class="pbim-panel ctl-empty ctl-empty--filter">
+            <div class="ctl-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>No contract matches these filters</h2>
+            <p t-esc="emptyText"/>
+            <button class="pbim-btn primary" t-on-click="showAll">
+              <t t-out="ic('x',15)"/> Show all contracts
+            </button>
+          </div>
+
+          <!-- ============ how many, and the next page ============ -->
+          <div t-if="state.rows.length" class="ctl-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.rowsTotal)"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
 
         </t>
       </div>
