@@ -5,8 +5,9 @@
  * NAV P2 mounted the native kanban here; P3d replaces it with the quiet board
  * every other queue has: one slim line of numbers, the four steps a question
  * moves through (New · With HR · Answered · Closed, each question at exactly
- * one), cards with the person, the category, the age and who has it, filters
- * that are words, and an empty state that says what is true.
+ * one), cards with the person, the category, the age and who has it, the shared
+ * filter panel (FILTER wave 4: the steps are a filter in it, counted on the
+ * server and paged), and an empty state that says what is true.
  *
  * THE HERO MOMENT is "Nobody has it yet" turning into your face with one key:
  * focus a card, press T, it is yours and on its way to With HR.
@@ -26,15 +27,16 @@
 import { Component, onWillStart, useEffect, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { railKeydown } from "@pb_hub/js/hub_nav";
 import { HOME_LENSES } from "@pb_home_hub/js/home_hub";
 
 const MODEL = "pb.ask.hr.ticket";
-const FILTERS_KEY = "pbhub.askhr.filters.v1";
 const OPEN = ["new", "with_hr", "answered"];
+const PAGE = 60;
 
 /** Lucide icon per category (the kit's names). */
 const CATEGORY_ICON = {
@@ -42,29 +44,13 @@ const CATEGORY_ICON = {
     benefits: "shieldCheck", equipment: "laptop", other: "helpCircle",
 };
 
-/** The filters are remembered per person: one browser may be shared, and an
- *  HR officer's "Mine" must not narrow a colleague's board. */
-function readAll() {
-    try {
-        const raw = window.localStorage.getItem(FILTERS_KEY);
-        const v = raw ? JSON.parse(raw) : {};
-        return v && typeof v === "object" ? v : {};
-    } catch {
-        return {};
-    }
-}
-
-function readFilters() {
-    const v = readAll()[String(user.userId)] || {};
-    return {
-        mine: !!v.mine, nobody: !!v.nobody,
-        cat: typeof v.cat === "string" ? v.cat : "",
-        q: typeof v.q === "string" ? v.q : "",
-    };
-}
+// The filters used to be remembered per person in this browser
+// ("pbhub.askhr.filters.v1"); the filter panel remembers them now (per
+// browser tab, plus saved views), so that memory is gone on purpose.
 
 export class PbAskHrLens extends Component {
     static template = "pb_ask_hr.PbAskHrLens";
+    static components = { PbFilterLayout };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {
@@ -72,20 +58,29 @@ export class PbAskHrLens extends Component {
         this.action = useService("action");
         this.notif = useService("notification");
         this.ic = ic;
-        this.searchRef = useRef("search");
         this.pickSearchRef = useRef("pickSearch");
         this.noteRef = useRef("closeNote");
         this.state = useState({
             loading: true,
             failed: false,
             d: null,
-            step: "",          // the step whose cards are shown
-            week: false,       // the "answered this week" figure is pressed
-            ...readFilters(),
+            // the cards the filter panel produced, one page at a time
+            cards: [],
+            total: 0,
+            stepCounts: {},
+            listLoaded: false,
+            loadingMore: false,
             sel: {},           // id -> true
             busy: false,
             picker: null,      // { ids, users, q }
             closing: null,     // { ids, note, tell }
+        });
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; the step strip and the numbers set it.
+        this.kit = useFilterKit({
+            model: "pb.ask.hr",
+            noun: _t("questions"),
+            onChange: () => this.loadPage(),
         });
         onWillStart(() => this.load());
         // A sheet that opens puts the cursor where the typing goes.
@@ -96,23 +91,13 @@ export class PbAskHrLens extends Component {
     }
 
     // ================================================================ read
+    /** The numbers and the strip's notes (counted over every question the
+     *  reader may see, whatever is filtered). */
     async load() {
         this.state.loading = true;
         this.state.failed = false;
         try {
-            const d = await this.orm.call("pb.ask.hr", "get_board", []);
-            this.state.d = d;
-            if (!this.state.step && !this.state.week) {
-                const c = d.counts || {};
-                this.state.step = OPEN.find((k) => c[k]) || "new";
-            }
-            // a card that has gone (closed elsewhere, rules changed) is not selected
-            const here = new Set((d.cards || []).map((c) => c.id));
-            const sel = {};
-            for (const id of Object.keys(this.state.sel)) {
-                if (here.has(Number(id))) { sel[id] = true; }
-            }
-            this.state.sel = sel;
+            this.state.d = await this.orm.call("pb.ask.hr", "get_head", []);
         } catch (e) {
             console.warn("pb_ask_hr: the board could not be read", e);
             this.state.failed = true;
@@ -121,11 +106,83 @@ export class PbAskHrLens extends Component {
         }
     }
 
-    get d() { return this.state.d || { cards: [], counts: {}, categories: [] }; }
+    /** One page of cards for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.failed = true;
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.cards.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.ask.hr", "get_ticket_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.cards = more ? [...this.state.cards, ...d.cards] : d.cards;
+            this.state.total = d.total;
+            if (!more) {
+                this.state.stepCounts = d.steps || {};
+                // a card the new filters no longer show is not selected (R6)
+                const here = new Set(d.cards.map((c) => c.id));
+                const sel = {};
+                for (const id of Object.keys(this.state.sel)) {
+                    if (here.has(Number(id))) { sel[id] = true; }
+                }
+                this.state.sel = sel;
+            }
+            this.state.listLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                console.warn("pb_ask_hr: the questions could not be listed", e);
+                this.notif.add(_t("The questions could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.cards.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.cards.length); }
+
+    /** The numbers, the counts and the cards, in place. */
+    async reload() {
+        await Promise.all([this.load(), this.kit.refresh()]);
+    }
+
+    get d() { return this.state.d || { counts: {}, categories: [] }; }
     get counts() { return this.d.counts || {}; }
     get canAct() { return !!this.d.can_act; }
 
     // ============================================================ numbers
+    /** What each figure means as a filter: the same filters as its view. */
+    get glanceFilters() {
+        if (this.canAct) {
+            return {
+                new: { step: ["new"] },
+                with_hr: { step: ["with_hr"] },
+                answered: { step: ["answered"] },
+                week: this.d.week_start ? { answered: { from: this.d.week_start } } : null,
+            };
+        }
+        return {
+            new: { step: ["new", "with_hr"] },
+            answered: { step: ["answered"] },
+            closed: { step: ["closed"] },
+        };
+    }
+
+    glancePick(key) {
+        const f = this.glanceFilters[key];
+        return f ? () => this.kit.toggleFilters(f) : null;
+    }
+
     get glance() {
         const c = this.counts;
         const d = this.d;
@@ -133,13 +190,13 @@ export class PbAskHrLens extends Component {
             const med = d.median || {};
             return [
                 { key: "new", n: c.new || 0, label: _t("new"),
-                  tone: d.new_late ? "amber" : "", run: () => this.pickStep("new") },
+                  tone: d.new_late ? "amber" : "", run: this.glancePick("new") },
                 { key: "with_hr", n: c.with_hr || 0, label: _t("with HR"),
-                  tone: "", run: () => this.pickStep("with_hr") },
+                  tone: "", run: this.glancePick("with_hr") },
                 { key: "answered", n: c.answered || 0, label: _t("waiting on the person"),
-                  tone: "", run: () => this.pickStep("answered") },
+                  tone: "", run: this.glancePick("answered") },
                 { key: "week", n: d.answered_week || 0, label: _t("answered this week"),
-                  tone: "", run: () => this.pickWeek() },
+                  tone: "", run: this.glancePick("week") },
                 { key: "median", n: med.words || "–",
                   label: _t("median first reply (last 30 days)"),
                   tone: "", run: null, zero: !med.words },
@@ -147,17 +204,21 @@ export class PbAskHrLens extends Component {
         }
         return [
             { key: "new", n: (c.new || 0) + (c.with_hr || 0), label: _t("waiting for HR"),
-              tone: "", run: () => this.pickStep((c.new || 0) ? "new" : "with_hr") },
+              tone: "", run: this.glancePick("new") },
             { key: "answered", n: c.answered || 0, label: _t("answered, your turn"),
-              tone: c.answered ? "amber" : "", run: () => this.pickStep("answered") },
+              tone: c.answered ? "amber" : "", run: this.glancePick("answered") },
             { key: "closed", n: c.closed || 0, label: _t("closed"),
-              tone: "", run: () => this.pickStep("closed") },
+              tone: "", run: this.glancePick("closed") },
         ];
     }
 
+    /** Which figure is lit: the one whose filters are exactly what is on. */
     get glanceOn() {
-        if (this.state.week) { return "week"; }
-        return this.state.step;
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.glanceFilters)) {
+            if (f && this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     get stepsLabel() { return _t("Where every question is"); }
@@ -181,9 +242,12 @@ export class PbAskHrLens extends Component {
         ];
     }
 
+    /** The strip: counts follow the panel's other filters (from the server);
+     *  a step is lit while it is the only step ticked in "Where it is". */
     get steps() {
-        const c = this.counts;
+        const c = this.state.stepCounts || {};
         const d = this.d;
+        const ticked = this.kit.values("step");
         return this.stepDefs.map((st, i) => {
             const n = c[st.key] || 0;
             let flag = "";
@@ -202,121 +266,36 @@ export class PbAskHrLens extends Component {
                 countLabel: n === 1 ? _t("1 question") : _t("%s questions", n),
                 sub, flag, flagTone: "",
                 mine: st.key === "with_hr" && !!d.mine_with_hr,
-                on: !this.state.week && this.state.step === st.key,
+                on: ticked.length === 1 && ticked[0] === st.key,
             };
         });
     }
 
+    /** Press a step: that step only, the other filters kept; press the lit
+     *  step again: every open step, as the board starts. */
     pickStep(key) {
-        this.state.week = false;
-        this.state.step = key;
-        this.state.sel = {};
-    }
-
-    pickWeek() {
-        this.state.week = !this.state.week;
-        if (!this.state.week && !this.state.step) { this.state.step = "answered"; }
+        const lit = this.kit.values("step");
+        const next = { ...this.kit.filters };
+        next.step = lit.length === 1 && lit[0] === key ? [...OPEN] : [key];
+        this.kit.setFilters(next, { search: this.kit.search });
         this.state.sel = {};
     }
 
     // ============================================================ filters
     get filtered() {
-        // Mine / Nobody has it yet are HR words: never applied where not drawn.
-        const owner = this.canAct && (this.state.mine || this.state.nobody);
-        return !!(owner || this.state.cat || (this.state.q || "").trim());
+        return !!(this.kit.activeCount || this.kit.search);
     }
 
-    saveFilters() {
-        try {
-            const all = readAll();
-            all[String(user.userId)] = {
-                mine: this.state.mine, nobody: this.state.nobody,
-                cat: this.state.cat, q: this.state.q,
-            };
-            window.localStorage.setItem(FILTERS_KEY, JSON.stringify(all));
-        } catch { /* private mode: the filters simply are not remembered */ }
-    }
-
-    toggleMine() {
-        this.state.mine = !this.state.mine;
-        if (this.state.mine) { this.state.nobody = false; }
-        this.saveFilters();
-    }
-
-    toggleNobody() {
-        this.state.nobody = !this.state.nobody;
-        if (this.state.nobody) { this.state.mine = false; }
-        this.saveFilters();
-    }
-
-    pickCat(key) {
-        this.state.cat = this.state.cat === key ? "" : key;
-        this.saveFilters();
-    }
-
-    onSearch(ev) {
-        this.state.q = ev.target.value;
-        this.saveFilters();
-    }
-
-    clearFilters() {
-        Object.assign(this.state, { mine: false, nobody: false, cat: "", q: "" });
-        this.saveFilters();
-    }
-
-    /** The category chips: only the categories the questions on the board use. */
-    get categoryChips() {
-        const used = new Set(this.d.cards.map((c) => c.category));
-        return (this.d.categories || []).filter((c) => used.has(c.key));
-    }
+    clearFilters() { this.kit.toggleFilters({}); }
 
     catIcon(key) { return ic(CATEGORY_ICON[key] || "helpCircle", 13); }
 
-    matches(c) {
-        if (this.canAct && this.state.mine && !c.mine) { return false; }
-        if (this.canAct && this.state.nobody && (c.owner_id || c.state === "closed")) { return false; }
-        if (this.state.cat && c.category !== this.state.cat) { return false; }
-        const q = (this.state.q || "").trim().toLowerCase();
-        if (!q) { return true; }
-        return [c.number, c.subject, c.line, c.person, c.department]
-            .some((s) => (s || "").toLowerCase().includes(q));
-    }
+    /** The cards the panel produced (one page or several). */
+    get cards() { return this.state.cards; }
 
-    /** The step's cards (or this week's answers), newest first, filtered. */
-    get cards() {
-        const all = this.d.cards || [];
-        const here = this.state.week
-            ? all.filter((c) => c.answered_week)
-            : all.filter((c) => c.state === this.state.step);
-        return here.filter((c) => this.matches(c));
-    }
-
-    get stepCount() {
-        const all = this.d.cards || [];
-        return this.state.week ? all.filter((c) => c.answered_week).length
-            : (this.counts[this.state.step] || 0);
-    }
-
-    get where() {
-        if (this.state.week) { return _t("answered this week"); }
-        const st = this.stepDefs.find((s) => s.key === this.state.step);
-        return st ? st.title : "";
-    }
-
-    get showingLine() {
-        const shown = this.cards.length;
-        const all = this.stepCount;
-        if (!this.filtered) {
-            return all === 1 ? _t("1 question at %s", this.where)
-                : _t("%(n)s questions at %(where)s", { n: all, where: this.where });
-        }
-        return _t("Showing %(shown)s of %(all)s at %(where)s",
-                  { shown, all, where: this.where });
-    }
-
-    /** A key that changes with the step, so the list slides in once. */
+    /** A key that changes with the filters, so the list slides in once. */
     get listKey() {
-        return (this.state.week ? "week" : this.state.step) + ":" + (this.d.cards || []).length;
+        return JSON.stringify(this.kit.filters) + ":" + this.kit.search;
     }
 
     // ======================================================== empty states
@@ -324,17 +303,21 @@ export class PbAskHrLens extends Component {
      *  employee who has asked nothing), "nomatch" (filters), "step". */
     get emptyKind() {
         if (this.cards.length) { return ""; }
-        if (this.filtered && this.stepCount) { return "nomatch"; }
         if (!this.canAct && !this.d.total) { return "never"; }
-        if (this.filtered) { return "nomatch"; }
-        if (!this.state.week && OPEN.includes(this.state.step) && !this.d.open_total) {
+        const steps = this.kit.values("step");
+        const onlyOpen = steps.length && steps.every((s) => OPEN.includes(s));
+        const others = Object.keys(this.kit.filters).filter((k) => k !== "step" && this.kit.isActive(k));
+        if (onlyOpen && !others.length && !this.kit.search && !this.d.open_total) {
             return "calm";
         }
+        if (others.length || this.kit.search) { return "nomatch"; }
         return "step";
     }
 
     get stepEmptyWords() {
-        return _t("Nothing at %s right now.", this.where);
+        const steps = this.kit.values("step");
+        const st = steps.length === 1 ? this.stepDefs.find((s) => s.key === steps[0]) : null;
+        return st ? _t("Nothing at %s right now.", st.title) : _t("Nothing here right now.");
     }
 
     // ========================================================== selection
@@ -353,6 +336,7 @@ export class PbAskHrLens extends Component {
         return this.cards.length > 0 && this.cards.every((c) => this.state.sel[c.id]);
     }
 
+    /** Every card shown (the pages loaded), never one the filters hide (R6). */
     toggleAll() {
         if (this.allSel) { this.state.sel = {}; return; }
         const sel = {};
@@ -372,7 +356,7 @@ export class PbAskHrLens extends Component {
         if (railKeydown(ev, ".pbah-c")) { return; }
         const el = ev.target && ev.target.closest && ev.target.closest(".pbah-c");
         if (!el || ev.target !== el) { return; }
-        const card = (this.d.cards || []).find((c) => String(c.id) === el.dataset.id);
+        const card = this.cards.find((c) => String(c.id) === el.dataset.id);
         if (!card) { return; }
         const key = ev.key;
         if (key === "Enter") {
@@ -396,13 +380,9 @@ export class PbAskHrLens extends Component {
         if (ev.key === "Escape") {
             if (this.state.picker) { this.state.picker = null; return; }
             if (this.state.closing) { this.state.closing = null; return; }
-            if (this.selCount) { this.clearSel(); }
-            return;
+            if (this.selCount && !typing) { this.clearSel(); }
         }
-        if (ev.key === "/" && !typing && this.searchRef.el) {
-            ev.preventDefault();
-            this.searchRef.el.focus();
-        }
+        // "/" is the filter panel's now: it focuses the list's search box
     }
 
     // ============================================================== doors
@@ -467,7 +447,7 @@ export class PbAskHrLens extends Component {
             const res = await this.orm.call("pb.ask.hr", "act", [verb, payload]);
             this.notif.add(res.message, { type: "success" });
             this.state.sel = {};
-            await this.load();
+            await this.reload();
             return true;
         } catch (e) {
             const msg = (e && e.data && e.data.message) || _t("That could not be done. Nothing has changed.");
@@ -496,7 +476,7 @@ export class PbAskHrLens extends Component {
         const p = this.state.picker;
         if (!p) { return ""; }
         if (p.ids.length === 1) {
-            const c = (this.d.cards || []).find((x) => x.id === p.ids[0]);
+            const c = this.cards.find((x) => x.id === p.ids[0]);
             return _t("Hand %s to…", c ? c.number : "");
         }
         return _t("Hand %s questions to…", p.ids.length);

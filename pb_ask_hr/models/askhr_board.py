@@ -55,9 +55,21 @@ def _working_days_between(start, end):
     return days
 
 
+#: Cards per page on the filtered list ("Show N more" brings the next).
+PAGE_SIZE = 60
+#: Sections whose values are employees: counted as the reader, NAMED through
+#: the public employee model (the private one is the HR team's).
+PUBLIC_LABELS = ('asker',)
+
+
 class PbAskHr(models.AbstractModel):
     _name = 'pb.ask.hr'
     _description = 'Ask HR board'
+    # The shared filter panel (pb_filter_kit, FILTER wave 4). The searches are
+    # never sudoed: the record rules split the HR team (every question) from
+    # everybody else (their own), so every count beside a value is the
+    # reader's own and no wider.
+    _inherit = ['pb.filter.mixin']
 
     # ------------------------------------------------------------ who reads
     @api.model
@@ -269,6 +281,293 @@ class PbAskHr(models.AbstractModel):
         if can_act:
             board['median'] = self._median_first_reply(now)
         return board
+
+    # ------------------------------------------------------- the filter panel
+    # The board used to load up to 500 open and 60 closed questions and filter
+    # them in the browser (one step at a time). The panel now counts on the
+    # server over every question the reader may see, the step strip is a
+    # filter in it, and the cards come one page at a time. `get_board` stays
+    # as it was for anything else that reads it (R4).
+
+    def _pbf_model(self):
+        return 'pb.ask.hr.ticket'
+
+    def _pbf_screen(self):
+        return 'askhr'
+
+    def _pbf_base_domain(self):
+        return []
+
+    def _pbf_search_fields(self):
+        return ['number', 'name', 'employee_name', 'description',
+                'employee_id.department_id.name']
+
+    def _pbf_sorts(self):
+        _ = self.env._
+        return [
+            {'key': 'newest', 'label': _('Newest first'),
+             'order': 'create_date desc, id desc'},
+            {'key': 'oldest', 'label': _('Waiting longest first'),
+             'order': 'create_date asc, id asc'},
+            {'key': 'active', 'label': _('Latest activity first'),
+             'order': 'last_activity_on desc nulls last, id desc'},
+            {'key': 'closed', 'label': _('Recently closed first'),
+             'order': 'closed_on desc nulls last, id desc'},
+        ]
+
+    @api.model
+    def _late_new_ids(self):
+        """New questions nobody has moved for more than LATE_WORKING_DAYS
+        working days — the same rule the amber card uses, in ONE read of the
+        new questions the reader may see."""
+        key = ('pb_ask_hr.late_new', self.env.uid)
+        cache = self.env.cr.cache
+        if key in cache:
+            return cache[key]
+        today = fields.Datetime.context_timestamp(self, fields.Datetime.now()).date()
+        found = self.env['pb.ask.hr.ticket'].search_read(
+            [('state', '=', 'new')], ['create_date'])
+        out = []
+        for row in found:
+            asked = row['create_date']
+            if asked and _working_days_between(
+                    fields.Datetime.context_timestamp(self, asked).date(),
+                    today) > LATE_WORKING_DAYS:
+                out.append(row['id'])
+        cache[key] = out
+        return out
+
+    @api.model
+    def _pbf_late(self):
+        return [('id', 'in', self._late_new_ids())]
+
+    @api.model
+    def _pbf_not_late(self):
+        return [('state', '=', 'new'), ('id', 'not in', self._late_new_ids())]
+
+    @api.model
+    def _week_start_date(self):
+        today = fields.Datetime.context_timestamp(self, fields.Datetime.now()).date()
+        return today - timedelta(days=today.weekday())
+
+    def _pbf_spec(self):
+        _ = self.env._
+        hr = self._can_act()
+        spec = [
+            # ---- pinned: where it is, what it is about, who has it
+            {'key': 'step', 'label': _('Where it is'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'selection', 'path': 'state', 'pinned': True},
+            {'key': 'category', 'label': _('Category'), 'icon': 'layers',
+             'group': 'other', 'type': 'selection', 'path': 'category', 'pinned': True},
+            {'key': 'owner', 'label': _('Who in HR has it'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'user_id', 'pinned': True,
+             'none_label': _('Nobody has it yet')},
+        ]
+        if hr:
+            spec += [
+                {'key': 'mine', 'label': _('Mine'), 'icon': 'user',
+                 'group': 'people', 'type': 'choice',
+                 'options': [
+                     {'value': 'yes', 'label': _('I have it'), 'tone': 'blue',
+                      'domain': [('user_id', '=', self.env.uid)]},
+                     {'value': 'no', 'label': _('Somebody else, or nobody'), 'tone': 'slate',
+                      'domain': ['|', ('user_id', '=', False), ('user_id', '!=', self.env.uid)]},
+                 ]},
+                {'key': 'late', 'label': _('Waiting'), 'icon': 'clock',
+                 'group': 'other', 'type': 'choice',
+                 'help': _('New questions nobody has moved for more than 2 working days.'),
+                 'options': [
+                     {'value': 'yes', 'label': _('New, over 2 working days'), 'tone': 'amber',
+                      'domain_method': '_pbf_late'},
+                     {'value': 'no', 'label': _('New, within 2 working days'), 'tone': 'green',
+                      'domain_method': '_pbf_not_late'},
+                 ]},
+            ]
+        spec += [
+            {'key': 'asker', 'label': _('Who asked'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id'},
+            {'key': 'department', 'label': _('Their department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.department_id',
+             'none_label': _('No department')},
+            {'key': 'asked', 'label': _('Asked'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'create_date', 'presets': 'past',
+             'none_label': _('Not recorded')},
+            {'key': 'answered', 'label': _('Answered'), 'icon': 'messageSquare',
+             'group': 'dates', 'type': 'date', 'path': 'answered_on', 'presets': 'past',
+             'none_label': _('Not answered yet')},
+            {'key': 'closed', 'label': _('Closed'), 'icon': 'checkCircle',
+             'group': 'dates', 'type': 'date', 'path': 'closed_on', 'presets': 'past',
+             'none_label': _('Still open')},
+            {'key': 'closed_by', 'label': _('Closed by'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'selection', 'path': 'closed_by',
+             'none_label': _('Still open')},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id'},
+        ]
+        return spec
+
+    def _pbf_builtin_views(self):
+        _ = self.env._
+        open_steps = list(OPEN_STATES)
+        week = fields.Date.to_string(self._week_start_date())
+        if not self._can_act():
+            return [
+                {'key': 'open', 'label': _('Open questions'), 'icon': 'messageSquare',
+                 'filters': {'step': open_steps}},
+                {'key': 'yourturn', 'label': _('Answered, your turn'),
+                 'filters': {'step': ['answered']}},
+                {'key': 'closed', 'label': _('Closed'), 'filters': {'step': ['closed']}},
+                {'key': 'all', 'label': _('Everything you asked'), 'filters': {}},
+            ]
+        return [
+            {'key': 'open', 'label': _('Open questions'), 'icon': 'messageSquare',
+             'filters': {'step': open_steps}},
+            {'key': 'nobody', 'label': _('Nobody has it yet'),
+             'filters': {'step': open_steps, 'owner': [False]}},
+            {'key': 'mine', 'label': _('Mine'), 'filters': {'mine': ['yes']}},
+            {'key': 'week', 'label': _('Answered this week'),
+             'filters': {'answered': {'from': week}}},
+            {'key': 'late', 'label': _('New, waiting'), 'filters': {'late': ['yes']}},
+            {'key': 'closed', 'label': _('Closed'), 'filters': {'step': ['closed']}},
+        ]
+
+    @api.model
+    def _pbf_list_values(self, s, domain, selected=None):
+        """Askers: counted as the reader, named through the public employee
+        model, the way the cards name them."""
+        if s.get('key') not in PUBLIC_LABELS:
+            return super()._pbf_list_values(s, domain, selected)
+        rows = []
+        groups = self._pbf_records()._read_group(domain, [s['path']], ['__count'])
+        names = {}
+        try:
+            ids = [v.id for v, _n in groups if v]
+            names = {p.id: p.display_name for p in
+                     self.env['hr.employee.public'].browse(ids).exists()}
+        except AccessError:
+            names = {}
+        for value, count in groups:
+            if not value:
+                continue
+            rows.append({'v': value.id, 'label': names.get(value.id) or str(value.id), 'n': count})
+        rows.sort(key=lambda r: (-r['n'], (r['label'] or '').lower()))
+        more = len(rows) > 300
+        rows = rows[:300]
+        have = {r['v'] for r in rows}
+        missing = [v for v in (selected or []) if v not in have]
+        if missing:
+            rows.extend(self._pbf_label_values(s, missing))
+        return rows, more
+
+    @api.model
+    def _pbf_label_values(self, s, values):
+        if s.get('key') not in PUBLIC_LABELS:
+            return super()._pbf_label_values(s, values)
+        out = []
+        for v in values:
+            label = str(v)
+            try:
+                pub = self.env['hr.employee.public'].browse(int(v)).exists()
+                label = pub.display_name if pub else self.env._('Removed')
+            except Exception:  # noqa: BLE001
+                pass
+            out.append({'v': v, 'label': label, 'n': 0})
+        return out
+
+    @api.model
+    def _check_read(self):
+        self.env['pb.ask.hr.ticket'].check_access('read')
+
+    @api.model
+    def pbf_layout(self):
+        try:
+            self._check_read()
+        except AccessError as e:
+            return {'refused': str(e.args[0] if e.args else e)}
+        return super().pbf_layout()
+
+    @api.model
+    def get_head(self):
+        """Everything the board draws except the cards: who reads, the
+        numbers line and the strip's notes, counted over every question the
+        reader may see (whatever is filtered)."""
+        _ = self.env._
+        Ticket = self.env['pb.ask.hr.ticket']
+        Ticket.check_access('read')
+        can_act = self._can_act()
+        now = fields.Datetime.now()
+        local = lambda dt: fields.Datetime.context_timestamp(self, dt).date()  # noqa: E731
+        today = local(now)
+        counts = dict.fromkeys(STEP_KEYS, 0)
+        for state, count in Ticket._read_group([], ['state'], ['__count']):
+            if state in counts:
+                counts[state] = count
+        week_start = self._week_start(today)
+        categories = dict(Ticket._fields['category']._description_selection(self.env))
+        last = Ticket.search([('answered_on', '!=', False)], order='answered_on desc', limit=1)
+        last_words = ''
+        if last:
+            last_words = _('Last question answered %s ago.',
+                           self._span_words((now - last.answered_on).total_seconds()))
+        head = {
+            'can_act': can_act,
+            'can_ask': self._can_ask(),
+            'me': self.env.uid,
+            'counts': counts,
+            'total': sum(counts.values()),
+            'open_total': sum(counts[k] for k in OPEN_STATES),
+            'new_late': len(self._late_new_ids()),
+            'mine_with_hr': Ticket.search_count([('state', '=', 'with_hr'),
+                                                 ('user_id', '=', self.env.uid)]),
+            'unowned': Ticket.search_count([('state', 'in', OPEN_STATES),
+                                            ('user_id', '=', False)]),
+            'answered_week': Ticket.search_count([('answered_on', '>=', week_start)]),
+            'week_start': fields.Date.to_string(self._week_start_date()),
+            'last_answered_words': last_words,
+            'categories': [{'key': k, 'label': v} for k, v in categories.items()],
+        }
+        if can_act:
+            head['median'] = self._median_first_reply(now)
+        return head
+
+    @api.model
+    def get_ticket_page(self, filters=None, search=None, sort=None, offset=0,
+                        limit=PAGE_SIZE):
+        """One page of cards for the panel's state, and the strip's four step
+        counts said about the same filters (every filter but the step one)."""
+        Ticket = self.env['pb.ask.hr.ticket']
+        Ticket.check_access('read')
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        filters = filters if isinstance(filters, dict) else {}
+        domain = self.pbf_domain(filters, search)
+        tickets = Ticket.search(domain, order=self.pbf_order(sort) or 'create_date desc, id desc',
+                                offset=offset, limit=limit)
+        now = fields.Datetime.now()
+        local = lambda dt: fields.Datetime.context_timestamp(self, dt).date()  # noqa: E731
+        today = local(now)
+        ctx = {
+            'now': now, 'local': local, 'today': today, 'can_act': self._can_act(),
+            'week_start': self._week_start(today),
+            'categories': dict(Ticket._fields['category']._description_selection(self.env)),
+            'people': self._person_rows(tickets.employee_id),
+        }
+        cards = [self._card(t, ctx) for t in tickets]
+        out = {'cards': cards, 'total': Ticket.search_count(domain), 'offset': offset}
+        if not offset:
+            steps = dict.fromkeys(STEP_KEYS, 0)
+            try:
+                for state, count in Ticket._read_group(
+                        self.pbf_domain(filters, search, skip='step'), ['state'], ['__count']):
+                    if state in steps:
+                        steps[state] = count
+            except Exception:  # noqa: BLE001 — the strip shows zeros, never breaks
+                pass
+            out['steps'] = steps
+        return out
 
     @api.model
     def get_owners(self):

@@ -97,7 +97,13 @@
 .pbah-showing { margin-bottom: 10px; }
 .pbah-all {
     margin: 0 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12px; color: var(--pbah-muted); cursor: pointer;
+    font-size: 12px; color: var(--pbah-muted); cursor: pointer; white-space: nowrap;
+}
+// FILTER wave 4: "Showing N of M · Show more" under the cards
+.pbah-foot {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 2px 2px; font-size: 13px; color: var(--pbah-muted);
+    b { color: var(--pbah-ink); font-variant-numeric: tabular-nums; }
 }
 
 // ---------------------------------------------------------------- cards
