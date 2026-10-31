@@ -87,6 +87,8 @@ export class PbClaimsLens extends Component {
         return "filters";
     }
     startAgain() { this.kit.home(); }
+    /** The search hint (a template literal is never translated, F29). */
+    get searchHint() { return _t("Find a reference, a name or a note"); }
     showEverything() { this.kit.clearAll(); }
 
     /** A CLICK handler: the native form, in the main breadcrumb. */

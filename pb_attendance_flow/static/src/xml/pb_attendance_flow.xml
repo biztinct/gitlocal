@@ -121,7 +121,7 @@
                  Embedded, the Time hub's week, department and pinned person
                  arrive as chips the officer can remove. -->
             <div class="pbaf-corr-filter">
-            <PbFilterLayout kit="kit" searchPlaceholder="'Find a reference, a name or a reason'">
+            <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
 
             <div t-if="!state.corrLoaded" class="pbaf-skel" aria-busy="true" aria-label="Loading corrections">
               <span/><span/><span/>

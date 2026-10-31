@@ -228,6 +228,8 @@ export class PbAttendanceFlow extends Component {
         return "filters";
     }
     corrStartAgain() { this.kit.home(); }
+    /** The corrections' search hint (a template literal is never translated, F29). */
+    get searchHint() { return _t("Find a reference, a name or a reason"); }
     corrShowAll() {
         if (this.kit.views.some((v) => v.key === "all")) { this.kit.useView("all"); } else { this.kit.clearAll(); }
     }

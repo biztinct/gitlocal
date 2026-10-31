@@ -376,6 +376,11 @@ export class PbTrips extends Component {
     startAgain() { this.kit.home(); }
     clearAll() { this.kit.clearAll(); }
 
+    // translated words handed to templates (a literal inside a template
+    // expression is never extracted, ledger F29)
+    get searchHint() { return _t("Find a trip, a person or a place"); }
+    get stepsLabel() { return _t("Where every trip is"); }
+
     /** A key that changes with the filters, so the board slides in once. */
     get boardKey() {
         return JSON.stringify(this.kit.filters) + ":" + this.kit.search + ":" + this.kit.sort;

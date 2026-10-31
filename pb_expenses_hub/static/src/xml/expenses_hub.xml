@@ -14,7 +14,7 @@
        (W20), so the panel stays in view while the rows scroll. -->
   <t t-name="pb_expenses_hub.PbClaimsLens">
     <div class="pbexpense-lens pbim pbcl">
-      <PbFilterLayout kit="kit" searchPlaceholder="'Find a reference, a name or a note'">
+      <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
         <t t-set-slot="toolbar">
           <button type="button" class="pbcl-btn" t-on-click="() => this.openClaim(false)">
             <span t-out="ic('plus', 14)"/> New claim

@@ -63,16 +63,17 @@
                  Learn anchor rides on the layout's bar:
                  data-coach="wf-leave-filters" -->
             <div class="q-filter">
-            <PbFilterLayout kit="kit" coach="'wf-leave-filters'" searchPlaceholder="'Find a name, a leave type or a note'">
+            <PbFilterLayout kit="kit" coach="'wf-leave-filters'" searchPlaceholder="searchHint">
 
             <div t-if="!state.queueLoaded" class="q-skel" aria-busy="true" aria-label="Loading leave requests">
               <span/><span/><span/>
             </div>
 
-            <div t-elif="kit.failed and !kit.refusal" class="pbto-empty">
+            <div t-elif="kit.failed" class="pbto-empty">
               <span class="i" t-out="kic('alert',30)"/>
               <div class="t">The queue could not be loaded</div>
-              <div class="s">Reload the page to try again.</div>
+              <div class="s" t-if="kit.refusal" t-esc="kit.refusal"/>
+              <div class="s" t-else="">Reload the page to try again.</div>
             </div>
 
             <div t-elif="queueEmpty === 'clear'" class="pbto-empty">

@@ -40,13 +40,13 @@
              the counts are the panel's, so they follow the other filters -->
         <t t-call="pb_import_kit.QuietSteps">
           <t t-set="qSteps" t-value="steps"/>
-          <t t-set="qStepsLabel" t-value="'Where every trip is'"/>
+          <t t-set="qStepsLabel" t-value="stepsLabel"/>
           <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
         </t>
 
         <!-- the shared filter panel: views, search, the left panel with a
              count beside every value, the chips. The board is its slot. -->
-        <PbFilterLayout kit="kit" searchPlaceholder="'Find a trip, a person or a place'">
+        <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
           <t t-set="ek" t-value="emptyKind"/>
 
           <div t-if="!state.listLoaded" class="pbtr-skel pbtr-skel--board" aria-busy="true" aria-label="Loading trips">

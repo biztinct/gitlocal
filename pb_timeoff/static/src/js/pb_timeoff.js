@@ -167,6 +167,8 @@ export class PbTimeoff extends Component {
         return "filters";
     }
     queueStartAgain() { this.kit.home(); }
+    /** The queue's search hint (a template literal is never translated, F29). */
+    get searchHint() { return _t("Find a name, a leave type or a note"); }
     get heatmap() { return this.d.heatmap || { days: [], rows: [], max: 0 }; }
     get balances() { return this.d.balances || { rows: [], types: [] }; }
 
