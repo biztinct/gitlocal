@@ -5,101 +5,116 @@ import { useService } from "@web/core/utils/hooks";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { _t } from "@web/core/l10n/translation";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const STATE_CLS = { active: "ok", draft: "info", deprecated: "warn", archived: "muted" };
-const DATE_CHIPS = [
-    { id: "all", label: _t("All time") }, { id: "month", label: _t("Updated this month") },
-    { id: "year", label: _t("Updated this year") }, { id: "custom", label: _t("Custom") },
-];
+const PAGE = 60;
+// The figures on the numbers line that filter: pressing one ticks exactly
+// these filters in the panel (and lights the matching view tab).
+const GLANCE_FILTERS = {
+    active: { status: ["active"] },
+    draft: { status: ["draft"] },
+    deprecated: { status: ["deprecated"] },
+};
 
 export class PbStructures extends Component {
     static template = "pb_structures.PbStructures";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbFilterLayout };
     static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
         // The return door a caller passed (Settings, a hub, another cockpit).
         // Read ONCE, from props, never written back — the arrival protocol's
         // rule since Cycle 1. Null when nobody sent us, and the chip is then
         // ABSENT rather than inert (W5/W29).
         this.back = hubBack(this.props);
         this.state = useState({
-            loaded: false, kpis: {}, countries: [], structures: [], total: 0,
-            search: "", status: "all", country: "", schedule: "", dateFilter: "all", from: "", to: "",
+            loaded: false, kpis: {},
+            rows: [], total: 0, listLoaded: false, loadingMore: false,
+        });
+        // FILTER wave 5: the shared filter panel owns the filters, the counts
+        // and the views; this screen only loads a page for kit.query.
+        this.kit = useFilterKit({
+            model: "pb.structures",
+            noun: _t("structures"),
+            onChange: () => this.loadPage(),
         });
         onWillStart(async () => { await this.load(); });
     }
 
+    /** The numbers line, counted over the whole catalogue. */
     async load() {
-        const d = await this.orm.call("pb.structures", "get_board", []);
-        Object.assign(this.state, { kpis: d.kpis, countries: d.countries, structures: d.structures, total: d.total, loaded: true });
+        const d = await this.orm.call("pb.structures", "get_board_head", []);
+        Object.assign(this.state, { kpis: d.kpis || {}, loaded: true });
     }
+
+    /** One page of the catalogue for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.structures", "get_structure_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.total = d.total;
+            this.state.listLoaded = true;
+        } catch (e) {
+            console.error("pb_structures: the list could not load", e);
+            this.notification.add(_t("The structures could not be loaded. Try again in a moment."), { type: "warning" });
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() { if (!this.state.loadingMore) { this.loadPage({ more: true }); } }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.rows.length); }
 
     ic(n, s = 16) { return ic(n, s); }
-    get dateChips() { return DATE_CHIPS; }
-    get schedules() {
-        const set = new Set(this.state.structures.map(s => s.schedule).filter(x => x && x !== "—"));
-        return [...set];
-    }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
 
-    /** The counts as one quiet line. The three states filter the list (they
-     *  replaced the status buttons); press the lit one again to show all. */
+    /** The counts as one quiet line, over the whole catalogue. The three
+     *  states tick the filter panel; press the lit one again to show all. */
     get glance() {
         const k = this.state.kpis || {};
-        const pick = (st) => () => this.setStatus(this.state.status === st ? "all" : st);
-        const n = (st) => this.state.structures.filter((x) => x.state === st).length;
+        const pick = (key) => () => this.kit.toggleFilters(GLANCE_FILTERS[key]);
         return [
-            { key: "all", n: k.structures || 0, label: _t("Structures"), tone: "", run: () => this.setStatus("all") },
-            { key: "active", n: n("active"), label: _t("Active"), tone: "", run: pick("active") },
-            { key: "draft", n: n("draft"), label: _t("Draft"), tone: "", run: pick("draft") },
-            { key: "deprecated", n: n("deprecated"), label: _t("Deprecated"), tone: n("deprecated") ? "amber" : "", run: pick("deprecated") },
+            { key: "all", n: k.structures || 0, label: _t("Structures"), tone: "", run: () => this.kit.toggleFilters({}) },
+            { key: "active", n: k.active || 0, label: _t("Active"), tone: "", run: pick("active") },
+            { key: "draft", n: k.draft || 0, label: _t("Draft"), tone: "", run: pick("draft") },
+            { key: "deprecated", n: k.deprecated || 0, label: _t("Deprecated"), tone: k.deprecated ? "amber" : "", run: pick("deprecated") },
             { key: "rules", n: k.rules || 0, label: _t("Salary rules"), tone: "", run: null },
             { key: "categories", n: k.categories || 0, label: _t("Categories"), tone: "", run: null },
             { key: "employees", n: k.employees || 0, label: _t("Employees covered"), tone: "", run: null },
             { key: "countries", n: k.countries || 0, label: _t("Countries"), tone: "", run: null },
         ];
     }
-
-    setStatus(s) { this.state.status = s; }
-    setCountry(c) { this.state.country = this.state.country === c ? "" : c; }
-    setSchedule(s) { this.state.schedule = this.state.schedule === s ? "" : s; }
-    setDate(d) { this.state.dateFilter = d; }
-    onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
-    onFrom(ev) { this.state.from = ev.target.value; }
-    onTo(ev) { this.state.to = ev.target.value; }
-
-    _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
-    _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
-    _matchStatus(s, st) { return st === "all" ? true : s.state === st; }
-    _inDate(s) {
-        const f = this.state.dateFilter;
-        if (f === "all") return true;
-        if (!s.updated) return false;
-        if (f === "month") return s.updated >= this._monthStart();
-        if (f === "year") return s.updated >= this._yearStart();
-        if (f === "custom") { if (this.state.from && s.updated < this.state.from) return false; if (this.state.to && s.updated > this.state.to) return false; return true; }
-        return true;
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
-    get filtered() {
-        const q = this.state.search, c = this.state.country, sc = this.state.schedule;
-        return this.state.structures.filter(s => {
-            if (c && s.country !== c) return false;
-            if (sc && s.schedule !== sc) return false;
-            if (!this._matchStatus(s, this.state.status)) return false;
-            if (!this._inDate(s)) return false;
-            if (q && !((s.name || "").toLowerCase().includes(q) || (s.code || "").toLowerCase().includes(q))) return false;
-            return true;
-        });
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+    get emptyHint() {
+        return this.kit.search && !this.kit.chips.length
+            ? _t("No structure is called “%s” and no code matches it. Check the spelling, or search by code.", this.kit.search)
+            : _t("Remove a filter above, or start again from every structure.");
     }
 
     openStructure(id) {
         if (!id) return;
-        this.action.doAction({ type: "ir.actions.client", tag: "pb_structure_detail", name: "Structure", params: { structure_id: id } });
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_structure_detail", name: _t("Structure"), params: { structure_id: id } });
     }
-    newStructure() { this.action.doAction({ type: "ir.actions.client", tag: "pb_structure_wizard", name: "New structure" }); }
+    newStructure() { this.action.doAction({ type: "ir.actions.client", tag: "pb_structure_wizard", name: _t("New structure") }); }
     openAll() { this.action.doAction("pb_hr_payroll_base.action_hr_payroll_structure_base", { clearBreadcrumbs: true }); }
 }
 

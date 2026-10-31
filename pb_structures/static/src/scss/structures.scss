@@ -8,3 +8,33 @@
     .sal-rate { font-size: 11px; color: var(--pbim-muted); }
 }
 .sal-detail .ppl-d-wrap > .sal-group { margin-top: 14px; }
+
+// ---- the catalogue inside the shared filter panel (pb_filter_kit, FILTER wave 5)
+.sal-board {
+    .sal-skeleton .sal-card--ghost {
+        height: 66px; cursor: default; box-shadow: none; border-color: #EEF1F6;
+        background: linear-gradient(90deg, #F4F5FA 0, #FAFAFD 50%, #F4F5FA 100%);
+        background-size: 600px 100%; animation: sal-shimmer 1.2s linear infinite;
+        &:hover { transform: none; border-color: #EEF1F6; box-shadow: none; }
+    }
+    .sal-empty {
+        display: grid; justify-items: center; gap: 8px; padding: 44px 24px; text-align: center;
+        color: var(--pbim-muted, #64748B); font-size: 13px;
+        b { color: var(--pbim-text, #1B1733); font-size: 15px; }
+        span { max-width: 460px; }
+        .pbim-btn { margin-top: 6px; }
+    }
+    .sal-empty-ic {
+        width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+    }
+    .sal-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        b { color: var(--pbim-text, #1B1733); font-weight: 600; }
+    }
+    .sal-foot-sep { opacity: .5; }
+}
+@keyframes sal-shimmer { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
+@media (prefers-reduced-motion: reduce) {
+    .sal-board .sal-skeleton .sal-card--ghost { animation: none; }
+}
