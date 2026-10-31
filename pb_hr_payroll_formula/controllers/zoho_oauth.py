@@ -15,7 +15,10 @@ def _result_page(ok, message):
     tone = '#16794a' if ok else '#b4234d'
     title = 'Zoho connected' if ok else 'Zoho connection failed'
     event = 'success' if ok else 'error'
-    safe_message = escape(message or '')
+    # Both sentences through the white-label seam before they are escaped,
+    # so a tenant reads its own product's name (WHITELABEL 2026-10-31).
+    safe_message = escape(request.env._(message or ''))
+    back_label = escape(request.env._('Return to Payobook'))
     nonce = secrets.token_urlsafe(18)
     html = """<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
@@ -25,7 +28,7 @@ def _result_page(ok, message):
 <div style="width:52px;height:52px;border-radius:16px;background:%(tone)s18;color:%(tone)s;display:grid;place-items:center;margin:0 auto 16px;font-size:26px">%(mark)s</div>
 <h1 style="font-size:21px;margin:0 0 8px">%(title)s</h1>
 <p style="color:#6b7085;line-height:1.55;margin:0 0 20px">%(message)s</p>
-<button id="pb-close" style="border:0;border-radius:10px;background:#5b4fc7;color:white;padding:10px 18px;font-weight:700;cursor:pointer">Return to Payobook</button>
+<button id="pb-close" style="border:0;border-radius:10px;background:#5b4fc7;color:white;padding:10px 18px;font-weight:700;cursor:pointer">%(back)s</button>
 </main>
 <script nonce="%(nonce)s">
 document.getElementById('pb-close').addEventListener('click', function(){ window.close(); });
@@ -36,6 +39,7 @@ if (window.opener) {
 </script></body></html>""" % {
         'title': title, 'tone': tone, 'mark': '✓' if ok else '!',
         'message': safe_message, 'event': event, 'nonce': nonce,
+        'back': back_label,
     }
     return request.make_response(html, headers=[
         ('Content-Type', 'text/html; charset=utf-8'),

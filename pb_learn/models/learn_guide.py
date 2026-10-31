@@ -44,6 +44,7 @@ from odoo import api, models
 from odoo.exceptions import AccessError, UserError
 
 from .learn_content import text
+from ._brand import rebrand_payload
 
 _logger = logging.getLogger(__name__)
 
@@ -296,7 +297,8 @@ class LearnGuide(models.AbstractModel):
             'lang': lang,
             'missing': missing,
         }
-        return out
+        # WHITELABEL 2026-10-31: the product named as this tenant knows it.
+        return rebrand_payload(self.env, out)
 
     @api.model
     def _scheme_country(self, args):

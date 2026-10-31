@@ -36,11 +36,14 @@
 
           <div class="oe_website_login_container" t-out="0"/>
 
-          <!-- A deliberate statement about who built the platform, not a
-               name that leaked onto a tenant screen. data-biz-brand="keep"
-               stops the white-label layer rewriting it (biz_debrand,
-               ERRORS E3-2). -->
-          <p class="rz-login__foot" data-biz-brand="keep">Powered by Payobook</p>
+          <!-- The platform credit follows the customer's brand LEVEL
+               (pb_tenants brand_rules.py): `biz_debrand.powered_by` is the
+               builder's name on the "powered by" level and EMPTY on the paid
+               white-label level, where the owner ruled (2026-10-31) that no
+               credit is shown at all. data-biz-brand="keep" stops the
+               white-label layer rewriting the name that IS shown. -->
+          <t t-set="rz_powered" t-value="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.powered_by') or ''"/>
+          <p t-if="rz_powered" class="rz-login__foot" data-biz-brand="keep">Powered by <t t-out="rz_powered"/></p>
         </div>
       </div>
     </xpath>

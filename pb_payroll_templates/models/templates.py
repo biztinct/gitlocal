@@ -17,6 +17,12 @@ from datetime import date, datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
 from odoo.addons.pb_hr_payroll_formula.models.pay_period import default_standard_work_days
 
 LIMIT = 10000
@@ -587,7 +593,7 @@ class PayrollTemplates(models.AbstractModel):
                 ws['A1'].comment = Comment(
                     'Read-only master records. This entire worksheet is ignored during monthly upload. '
                     'Colours: blue = Employee; green = Contract; purple = Contract component; gold = Bank. '
-                    'Use Download records for a separate reviewed master-data update.', 'Payobook')
+                    'Use Download records for a separate reviewed master-data update.', product_label(self.env))
             ws.protection.autoFilter = False
             ws.protection.sort = False
         exchange = self._exchange(cfg, 'export', snapshot)
@@ -598,7 +604,12 @@ class PayrollTemplates(models.AbstractModel):
         meta.sheet_state = 'veryHidden'
         out = io.BytesIO()
         wb.save(out)
-        filename = 'Payobook_%s_monthly_template.xlsx' % cfg.country_code if reusable else 'Payobook_%s_%s_%s.xlsx' % (cfg.country_code, mode, period)
+        # The file is named after the product as THIS tenant knows it
+        # (WHITELABEL 2026-10-31). The hidden `_Payobook` meta sheet keeps its
+        # name on purpose: the upload path looks it up, and files already
+        # downloaded must still come back.
+        label = product_label(self.env)
+        filename = '%s_%s_monthly_template.xlsx' % (label, cfg.country_code) if reusable else '%s_%s_%s_%s.xlsx' % (label, cfg.country_code, mode, period)
         return {'ok': True, 'filename': filename, 'file_b64': base64.b64encode(out.getvalue()).decode(), 'rows': len(people)}
 
     def _read(self, file_b64):
@@ -902,7 +913,7 @@ class PayrollTemplates(models.AbstractModel):
                            for c in identity_cols] + [c['code'] for c in cols]
         for cell, code in zip(ws[1], component_codes):
             if code:
-                cell.comment = Comment('component: ' + code, 'Payobook')
+                cell.comment = Comment('component: ' + code, product_label(self.env))
         for e in people:
             vals = [self._identity_value(e, c) for c in identity_cols]
             for c in cols:
@@ -957,7 +968,7 @@ class TemplatePayrun(models.AbstractModel):
         cfg = facade._config(config_id, write=True)
         raw, ids = facade._engine_file(cfg, period)
         # Used only by the pay-run server adapter, not exposed as an upload.
-        return {'file_b64': base64.b64encode(raw).decode(), 'filename': 'Payobook-month-%s.xlsx' % period, 'people': len(ids)}
+        return {'file_b64': base64.b64encode(raw).decode(), 'filename': '%s-month-%s.xlsx' % (product_label(self.env), period), 'people': len(ids)}
 
     @api.model
     def attach_spreadsheet(self, run_id, config_id, file_b64, filename,

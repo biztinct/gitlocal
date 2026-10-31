@@ -161,8 +161,12 @@ class PbTenancyStanding(models.AbstractModel):
         if access != 'suspended':
             access = 'open'
         text = (icp.get_param(P_ACCESS_TEXT, '') or '').strip()
+        # `env._()` on the sentence (never on anything a person typed) so the
+        # white-label seam names the product as this tenant knows it
+        # (WHITELABEL 2026-10-31); the platform's own words pass through the
+        # same seam, because the platform writes "Payobook" and means it.
         return {'access': access,
-                'access_text': text or DEFAULT_PAUSED_TEXT}
+                'access_text': self.env._(text or DEFAULT_PAUSED_TEXT)}
 
     @api.model
     def recovery_login(self):
@@ -218,7 +222,7 @@ class PbTenancyStanding(models.AbstractModel):
             return {'phase': 'none', 'days_left': 0, 'ends': '', 'text': ''}
         phase = trial_phase(ends, fields.Date.context_today(self))
         return dict(phase, ends=ends.isoformat(),
-                    text=trial_sentence(phase['days_left'])
+                    text=self.env._(trial_sentence(phase['days_left']))
                     if phase['phase'] in ('ending', 'ended') else '')
 
     @api.model

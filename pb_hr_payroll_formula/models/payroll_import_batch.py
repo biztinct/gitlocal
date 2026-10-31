@@ -1608,7 +1608,9 @@ class HrPayrollImportBatch(models.Model):
                                 # never quietly created.
                                 HrPayrollImportBatch._one_time_branch_entered += 1
                                 line.state = 'error'
-                                line.error_message = ONE_TIME_NO_EMPLOYEE
+                                # Through the seam, so a white-label tenant
+                                # reads its own product name (2026-10-31).
+                                line.error_message = self.env._(ONE_TIME_NO_EMPLOYEE)
                                 continue
                             elif self.auto_create_employees:
                                 employee = self._create_employee(line)

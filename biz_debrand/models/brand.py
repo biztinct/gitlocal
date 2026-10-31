@@ -305,6 +305,81 @@ def source_brand(env):
     return brand, website, product_for_env(env)
 
 
+# ---------------------------------------------------------------------------
+# WHITELABEL 2026-10-31 — the product rule for strings Python builds itself
+# ---------------------------------------------------------------------------
+# Three helpers for the sites the seams cannot reach: prose assembled in Python
+# outside ``_()`` (a dict returned to the browser, a page rendered from a raw
+# string, Learn content read from JSON) and the *names* of things — file names,
+# a phone app's title, a comment author — where the product rule's own guards
+# (``Payobook_…``, ``Payobook-…``) rightly refuse to touch an identifier.
+#
+# They are imported SOFTLY by other modules (``try: … except ImportError``),
+# which is why they take an ``env`` and never a request: nothing here may
+# assume the caller is inside biz_debrand. All three fail open — a database
+# without a product name gets its text back unchanged.
+def rebrand_prose(env, text):
+    """``text`` with the vendor AND product rules applied, as a seam would.
+
+    For a sentence Python composed itself and is about to hand to a user.
+    Returns the same object when there is nothing to do.
+    """
+    if not text or not isinstance(text, str):
+        return text
+    try:
+        brand, website, product = source_brand(env)
+    except Exception:  # noqa: BLE001 — a branding flourish never breaks a page
+        return text
+    return debrand_text(text, brand, website, product)
+
+
+def rebrand_payload(env, value):
+    """:func:`rebrand_prose` over every string inside a JSON-shaped value.
+
+    Dicts, lists and tuples are walked; dict KEYS are left alone (they are
+    identifiers, not prose). Anything else is returned as is.
+    """
+    try:
+        brand, website, product = source_brand(env)
+    except Exception:  # noqa: BLE001
+        return value
+    if not product_rules(product, brand):
+        # The product rule is off on this database (master, template, or the
+        # "powered by" level). The payload is customer-facing DATA, not
+        # source, so the vendor rule alone has no business scanning it.
+        return value
+
+    def walk(v):
+        if isinstance(v, str):
+            return debrand_text(v, brand, website, product)
+        if isinstance(v, dict):
+            return {k: walk(x) for k, x in v.items()}
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, tuple):
+            return tuple(walk(x) for x in v)
+        return v
+
+    return walk(value)
+
+
+def product_label(env, default="Payobook"):
+    """What to CALL the product in a name: the brand when the product rule is
+    on for this database, else ``default``.
+
+    For file names (``Rize_VN_monthly_template.xlsx``), a PWA title, an Excel
+    comment author — places where the text rule's identifier guards would
+    leave the master name in, and rightly so for a path, wrongly for a label.
+    """
+    try:
+        brand, _website, product = source_brand(env)
+    except Exception:  # noqa: BLE001
+        return default
+    if product_rules(product, brand):
+        return brand
+    return default
+
+
 def cache_brand(env):
     """Refresh the process cache for this env's database."""
     try:

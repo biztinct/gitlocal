@@ -37,8 +37,9 @@
       <a class="rz-foot__social" href="https://www.linkedin.com/company/rizefarm/" target="_blank" rel="noopener" aria-label="Rize on LinkedIn">
         <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'linkedin'"/></t>
       </a>
-      <!-- Deliberate platform credit — see login_templates.xml. -->
-      <span class="rz-foot__meta" data-biz-brand="keep">© Rize · Powered by Payobook</span>
+      <!-- Platform credit only on the "powered by" level — see login_templates.xml. -->
+      <t t-set="rz_powered" t-value="request and request.env['ir.config_parameter'].sudo().get_param('biz_debrand.powered_by') or ''"/>
+      <span class="rz-foot__meta">© Rize<t t-if="rz_powered"> · <span data-biz-brand="keep">Powered by <t t-out="rz_powered"/></span></t></span>
     </footer>
   </template>
 

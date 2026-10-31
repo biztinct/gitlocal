@@ -237,4 +237,4 @@ class DocuSignOffer(models.Model):
         if self.pb_sign_status == 'draft':
             return conn._ds_http('PUT', '/folders/recyclebin', json={'envelopeIds': [self.pb_envelope_id]})
         return conn._ds_http('PUT', '/envelopes/' + quote(self.pb_envelope_id, safe=''),
-                            json={'status': 'voided', 'voidedReason': 'Cancelled by the hiring team in Payobook.'})
+                            json={'status': 'voided', 'voidedReason': _('Cancelled by the hiring team in Payobook.')})

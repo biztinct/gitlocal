@@ -171,7 +171,7 @@ class PbSupportAccess(models.Model):
         return self.sudo().create({
             'token_hash': token_hash,
             'reason': reason,
-            'support_name': (support_name or 'Payobook support').strip(),
+            'support_name': self.env._((support_name or 'Payobook support').strip()),
             'duration_minutes': minutes,
             'issued_at': now,
             'token_expires_at': now + timedelta(seconds=TOKEN_SECONDS),
@@ -373,7 +373,7 @@ class PbTenancySupport(models.AbstractModel):
             return {
                 'may_manage': False,
                 'allowed': self.support_allowed(),
-                'company': self.env.company.name or 'Payobook',
+                'company': self.env.company.name or self.env._('Payobook'),
                 'rows': [], 'ever': False, 'live': False,
             }
         Row = self.env['pb.support.access'].sudo()
@@ -381,7 +381,7 @@ class PbTenancySupport(models.AbstractModel):
         return {
             'may_manage': True,
             'allowed': self.support_allowed(),
-            'company': self.env.company.name or 'Payobook',
+            'company': self.env.company.name or self.env._('Payobook'),
             'rows': [r.brief() for r in rows],
             'ever': bool(rows),
             'live': bool(rows.filtered(lambda r: r.state == 'active')),
@@ -405,7 +405,9 @@ class PbTenancySupport(models.AbstractModel):
         return {
             'id': row.id,
             'ends_at': _stamp(row.session_expires_at),
-            'company': self.env.company.name or 'Payobook',
+            'company': self.env.company.name or self.env._('Payobook'),
             'reason': row.reason or '',
-            'who': row.support_name or _("Payobook support"),
+            # Through the seam even when stored: the platform wrote the name
+            # (WHITELABEL 2026-10-31).
+            'who': self.env._(row.support_name or "Payobook support"),
         }

@@ -38,6 +38,12 @@ from collections import defaultdict
 from odoo import _, api, models
 from odoo.exceptions import AccessError, UserError
 
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import rebrand_payload
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def rebrand_payload(env, value):
+        return value
+
 from odoo.addons.pb_hr_payroll_formula.models import input_provenance
 from odoo.addons.pb_hr_payroll_formula.models.formula_net_role import (
     looks_like_a_quantity,
@@ -486,7 +492,9 @@ class PbSourceAtlas(models.AbstractModel):
             payload['notes'].append(_(
                 "Some components have no pay role yet, so they are left out of "
                 "the money totals. Classify the scheme to include them."))
-        return payload
+        # Lane labels name the product ("Payobook records"); a white-label
+        # tenant reads its own (WHITELABEL 2026-10-31).
+        return rebrand_payload(self.env, payload)
 
     @staticmethod
     def _atlas_entry_lane(entry):

@@ -184,7 +184,9 @@ class PbTenancy(models.AbstractModel):
             # deep for a boolean.
             'features': {k: v['on'] for k, v in feats.items()},
             'feature_mode': {k: v['mode'] for k, v in feats.items()},
-            'feature_lock_text': {k: v['lock_text'] for k, v in feats.items()},
+            # `env._()` on every sentence the platform wrote: the seam then
+            # names the product as THIS tenant knows it (WHITELABEL 2026-10-31).
+            'feature_lock_text': {k: self.env._(v['lock_text']) for k, v in feats.items()},
             # Has this database ever been told anything about features? Used
             # only to word a sentence for the platform owner; nothing is hidden
             # or shown on the strength of it, because "never told" already
@@ -193,7 +195,7 @@ class PbTenancy(models.AbstractModel):
             'release': icp.get_param(P_RELEASE, '') or '',
             'release_date': icp.get_param(P_RELEASE_DATE, '') or '',
             'releases': releases,
-            'notice': live_notice(icp.get_param(P_NOTICE, '')),
+            'notice': self._tenant_words(live_notice(icp.get_param(P_NOTICE, ''))),
             'pushed_at': icp.get_param(P_PUSHED_AT, '') or '',
             # The master is the database nobody provisioned, so it is the one
             # without a subdomain of its own. Used only to word a sentence:
@@ -224,4 +226,16 @@ class PbTenancy(models.AbstractModel):
         row = self.features().get(key)
         if not row:
             return True, 'hide', ''
-        return row['on'], row['mode'], row['lock_text']
+        return row['on'], row['mode'], self.env._(row['lock_text'])
+
+    @api.model
+    def _tenant_words(self, notice):
+        """The platform's banner, with the product named as THIS tenant knows
+        it. The platform writes "Payobook will be updated" and means it; a
+        white-label tenant reads it as their own product's name. Only the
+        prose keys go through the seam — `kind` and `ends_at` are machinery.
+        (WHITELABEL 2026-10-31)"""
+        if not isinstance(notice, dict):
+            return notice
+        return {k: (self.env._(v) if isinstance(v, str) and k not in ('kind', 'ends_at') and v else v)
+                for k, v in notice.items()}

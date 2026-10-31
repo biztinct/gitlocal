@@ -20,6 +20,12 @@ except ImportError:
 
 from .base_connector import BaseHRConnector
 
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
+
 _logger = logging.getLogger(__name__)
 
 # The cell note on a generated template's first column. Not translated here on
@@ -704,7 +710,8 @@ class ExcelConnector(BaseHRConnector):
                         else '\n'.join(str(x) for x in
                                        [rule.name, rule.code, rule.column_letter] if x))
                 if note:
-                    cell.comment = openpyxl.comments.Comment(text=note, author='Payobook')
+                    cell.comment = openpyxl.comments.Comment(
+                        text=note, author=product_label(self.env) if self.env is not None else 'Payobook')
                 ws.column_dimensions[get_column_letter(col_idx)].width = \
                     max(12, min(38, len(header) + 4))
             ws.freeze_panes = 'A2'

@@ -81,9 +81,11 @@ class PayobookZohoSsoController(http.Controller):
         return request.env["pb.zoho.sso.audit"].sudo().create(safe)
 
     def _error(self, title, message, status=400):
+        # `env._()` so the white-label seam names the product as this tenant
+        # knows it on the public error page (WHITELABEL 2026-10-31).
         response = request.render(
             "pb_zoho_sso.sso_error_page",
-            {"title": title, "message": message},
+            {"title": request.env._(title), "message": request.env._(message)},
         )
         response.status_code = status
         return response

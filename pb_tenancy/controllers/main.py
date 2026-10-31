@@ -44,7 +44,7 @@ class PbTenancyController(http.Controller):
         return request.render('pb_tenancy.paused_page', {
             'paused': state['access'] == 'suspended',
             'text': state['access_text'],
-            'company': request.env.company.name or 'Payobook',
+            'company': request.env.company.name or request.env._('Payobook'),
         })
 
     # ---------------------------------------------------------- invoice bytes

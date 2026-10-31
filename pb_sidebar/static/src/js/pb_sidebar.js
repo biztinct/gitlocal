@@ -3,6 +3,7 @@
 import { Component, useState, onMounted, onWillUnmount, markup } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
+import { session } from "@web/session";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { _t } from "@web/core/l10n/translation";
 import {
@@ -106,7 +107,11 @@ export class PbSidebar extends Component {
         // explicit app name, else the debrand brand name, else the company).
         // The badge is its first letter, so a tenant never sees the master
         // product's mark in the corner.
-        const brand = String(window.odoo?.session_info?.biz_app_name || "Payobook").trim() || "Payobook";
+        // WHITELABEL 2026-10-31: read it from `@web/session`, the object the
+        // web client actually fills. `window.odoo.session_info` does not
+        // exist on this build, so the old lookup fell to the fallback on
+        // EVERY database and a white-label tenant saw the master's name.
+        const brand = String(session.biz_app_name || "Payobook").trim() || "Payobook";
         this.brandName = brand;
         this.brandInitial = brand[0].toUpperCase();
         this.userInitials = name.split(" ").filter(Boolean).map(p => p[0]).join("")

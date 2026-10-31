@@ -8,6 +8,12 @@ from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.biz_geo_tracking.controllers.pwa_shell import GeoPwaShell
 
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
+
 _logger = logging.getLogger(__name__)
 
 _SCOPE = '/driver'
@@ -114,8 +120,10 @@ class DriverApp(http.Controller, GeoPwaShell):
             {'src': '/pb_driver_checkin/static/description/icon-512.png',
              'sizes': '512x512', 'type': 'image/png', 'purpose': 'any maskable'},
         ]
+        # The installed app's title on a driver's phone carries the product
+        # name as THIS tenant knows it (WHITELABEL 2026-10-31).
         return self._make_manifest(
-            'Payobook Field check-in', 'Field', _SCOPE, _SCOPE,
+            product_label(request.env) + ' Field check-in', 'Field', _SCOPE, _SCOPE,
             theme_color=_THEME, bg_color=_THEME, icons=icons)
 
     @http.route('/driver/service-worker.js', type='http', auth='public',

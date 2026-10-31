@@ -33,6 +33,12 @@ from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
+
 _logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------- access
@@ -2144,7 +2150,8 @@ class PbExplorer(models.AbstractModel):
         return {
             'ok': True,
             'csv_b64': base64.b64encode(data).decode('ascii'),
-            'filename': 'payobook_%s_by_%s_%s.csv' % (
+            'filename': '%s_%s_by_%s_%s.csv' % (
+                product_label(self.env).lower(),
                 payload['spec']['measure'], payload['spec']['dimension'],
                 (payload.get('period') or {}).get('key')
                 or date.today().isoformat()),

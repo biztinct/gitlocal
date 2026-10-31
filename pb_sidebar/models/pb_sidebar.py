@@ -115,7 +115,7 @@ class PbSidebarItem(models.Model):
         """
         locked = bool(section.restricted) and not is_admin
         return True, locked, (
-            (section.restriction_reason or self._DEFAULT_UPSELL) if locked else '')
+            (section.restriction_reason or self.env._(self._DEFAULT_UPSELL)) if locked else '')
 
     @api.model
     def visibility_for(self, user):
@@ -175,7 +175,9 @@ class PbSidebarItem(models.Model):
                 'match_action_tags': _split(item.match_action_tags),
                 'match_models': _split(item.match_models),
                 'restricted': locked,
-                'restriction_reason': (item.restriction_reason or self._DEFAULT_UPSELL) if locked else False,
+                # `env._()` so the white-label seam rewrites the product's
+                # name for a tenant (WHITELABEL 2026-10-31).
+                'restriction_reason': (item.restriction_reason or self.env._(self._DEFAULT_UPSELL)) if locked else False,
                 'children': [],
             }
 

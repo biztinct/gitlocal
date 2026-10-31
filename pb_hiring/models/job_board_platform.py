@@ -6,6 +6,12 @@ from urllib.parse import urlsplit
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
 from ..services.board_platform import read_platform
 from ..services.connection_crypto import encrypt, decrypt
 from ..services.job_boards import LINKEDIN_VERSION
@@ -189,8 +195,10 @@ class BoardPlatformConnection(models.Model):
             },
             json={
                 "uniqueForeignId": foreign,
-                "name": ("Payobook - " + self.company_id.name)[:50],
-                "description": "Payobook customer recruitment integration",
+                # The tenant's own product name on what LinkedIn shows its
+                # admins (WHITELABEL 2026-10-31).
+                "name": (product_label(self.env) + " - " + self.company_id.name)[:50],
+                "description": _("Payobook customer recruitment integration"),
                 "validJsSdkDomains": [domain.rstrip("/")],
             },
         )

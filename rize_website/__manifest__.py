@@ -1,6 +1,6 @@
 {
     'name': 'Rize Website',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Website',
     'summary': 'Rize-branded public site: landing, sign-in and careers pages (tenant: rize)',
     'description': """

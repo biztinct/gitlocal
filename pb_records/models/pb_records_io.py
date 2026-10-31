@@ -41,6 +41,12 @@ from datetime import date, datetime
 from odoo import _, api, models
 from odoo.exceptions import UserError
 
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import product_label
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def product_label(env, default='Payobook'):
+        return default
+
 from odoo.addons.pb_hr_payroll_formula.models.column_role_classifier import (
     EMPLOYEE_CODE_HEADER_CANDIDATES, EMPLOYEE_NAME_HEADER_CANDIDATES)
 
@@ -301,7 +307,7 @@ class PbRecordsDeskIo(models.AbstractModel):
             cell.alignment = wrap
             cell.comment = Comment(
                 text=_("Identity — used to match the row to a person. It is "
-                       "never imported."), author='Payobook')
+                       "never imported."), author=product_label(self.env))
             ws.column_dimensions[get_column_letter(idx)].width = \
                 max(16, min(38, len(label) + 6))
 
@@ -314,7 +320,7 @@ class PbRecordsDeskIo(models.AbstractModel):
             cell.alignment = wrap
             cell.comment = Comment(
                 text='%s\n%s' % (ID_COMMENT % card['id'], self._io_hint(card)),
-                author='Payobook')
+                author=product_label(self.env))
             ws.column_dimensions[get_column_letter(col)].width = \
                 max(14, min(40, len(card['label'] or '') + 6))
             choices = self._io_choices(card)

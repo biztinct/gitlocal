@@ -172,7 +172,7 @@ class HiringConnectionsFacade(models.AbstractModel):
             if row:
                 cards.append(row._card())
             else:
-                cards.append(dict(key=key, title=title, description=SPECS[key]['description'], help=SPECS[key]['help'],
+                cards.append(dict(key=key, title=title, description=self.env._(SPECS[key]['description']), help=self.env._(SPECS[key]['help']),
                     fields=[dict(key=k, label=l, secret=s, value='', stored=False) for k,l,s in SPECS[key]['fields']],
                     enabled=False, status='Setup needed', note='', check_ok=False, checked_at='', callback='Save setup to generate the callback address.'))
         return dict(company=self.env.company.name, cards=cards)

@@ -43,6 +43,7 @@ import unicodedata
 from odoo import api, models
 
 from .learn_runtime import gate_steps
+from ._brand import rebrand_payload
 
 _logger = logging.getLogger(__name__)
 
@@ -1045,7 +1046,7 @@ class LearnIntent(models.AbstractModel):
                 answer = None
         if not answer:
             return self._miss_payload(screen_key)
-        return self._access_filter(answer, screen_key)
+        return rebrand_payload(self.env, self._access_filter(answer, screen_key))
 
     # ---------------------------------------------- the Access boundary
     @api.model
@@ -1343,6 +1344,13 @@ class LearnIntent(models.AbstractModel):
 
     @api.model
     def ask(self, question, screen_key=None, lang=None):
+        """`_ask_raw`, with the product named as THIS tenant knows it
+        (WHITELABEL 2026-10-31). The body keeps its several returns; the
+        rewrite is one wrapper over all of them."""
+        return rebrand_payload(self.env, self._ask_raw(question, screen_key, lang))
+
+    @api.model
+    def _ask_raw(self, question, screen_key=None, lang=None):
         """The Coach's one entry point.
 
         Order matters, and each fallback is strictly less certain than the one
@@ -1743,7 +1751,8 @@ class LearnIntent(models.AbstractModel):
             return floor
         if not self._compose_enabled():
             return floor
-        return self._explain_composed(floor, screen_key, lang) or floor
+        return rebrand_payload(
+            self.env, self._explain_composed(floor, screen_key, lang) or floor)
 
     # ------------------------------------------------------ column glossary
     @api.model

@@ -33,40 +33,78 @@ from psycopg2.extras import Json
 
 from odoo import models
 
-from .brand import HAS_ODOO_RE, brand_for_env, debrand_text
+from .brand import (
+    HAS_ODOO_RE, brand_for_env, debrand_text, product_for_env, product_rules,
+)
 
 _logger = logging.getLogger(__name__)
 
 # (table, [plain text/varchar columns]) — scrubbed row by row in Python so the
 # rewrite rules are identical to every other seam (PostgreSQL regexes have no
 # lookahead, so an equivalent SQL expression is not possible).
+#
+# WHITELABEL 2026-10-31: the PRODUCT rule now runs here too, on a database
+# whose ``biz_debrand.product_name`` is set (a white-label tenant). The owner's
+# ruling: "rewrite everything" — a tenant on the paid level must not find the
+# master product's name in an old email, a lesson, a journey step or a rule
+# note. On the master and on the template ``product_name`` is empty and this
+# whole family of rows is left exactly as it was.
 TEXT_TARGETS = [
     ("mail_message", ["body", "subject"]),
+    ("mail_mail", ["body_html"]),
     ("mail_activity", ["note"]),
     ("discuss_channel", ["name", "description"]),
     ("ir_ui_view", ["name"]),
     ("ir_asset", ["name"]),
+    ("ir_cron", ["cron_name"]),
+    ("ir_model", ["info"]),
     ("hr_job", ["requirements"]),
+    # Product-only rows (never carried the vendor's name): seeded notes and
+    # step descriptions that talk about the product in the third person.
+    ("pb_zoho_event_rule", ["name", "note"]),
+    ("pb_journey_task", ["name", "description", "note"]),
+    ("pb_journey_template_step", ["description"]),
+    ("hr_formula_rule", ["application_source_note", "validation_message"]),
+    ("hr_integration_mapping_template", ["note"]),
+    ("pb_asset", ["notes", "supplier_note", "movable_note"]),
 ]
 
 # (table, [jsonb translated columns])
 JSONB_TARGETS = [
     ("ir_actions", ["name", "help"]),
     ("ir_act_window", ["help"]),
+    ("ir_act_server", ["name"]),
     ("ir_act_report_xml", ["name"]),
+    ("ir_model", ["name"]),
+    ("ir_model_constraint", ["message"]),
     ("res_groups", ["name", "comment"]),
     ("digest_tip", ["name", "tip_description"]),
     ("mail_template", ["name", "subject", "body_html"]),
     ("hr_skill", ["name"]),
     ("hr_resume_line", ["name"]),
     ("hr_job", ["description"]),
+    ("pb_journey_template_step", ["name"]),
     # pb_learn deliberately described the legacy salary structures by the
     # vendor's name. Ruled out by the brand owner: no vendor mention anywhere,
     # legacy or not. The module's source XML is fixed too, so a reinstall does
     # not bring it back — this only catches already-loaded rows.
-    ("learn_station", ["outline_what"]),
-    ("learn_column", ["body"]),
-    ("learn_screen", ["blurb"]),
+    #
+    # WHITELABEL: every translated Learn column, because a lesson that says
+    # "do this in Payobook" is read by the tenant's people verbatim — the
+    # Learn runtime renders these rows without a seam.
+    ("learn_station", ["name", "summary", "outline_what", "outline_why",
+                       "outline_when", "outline_prereq"]),
+    ("learn_station_mistake", ["name"]),
+    ("learn_column", ["body", "label"]),
+    ("learn_screen", ["blurb", "name", "next_step", "live_fallback"]),
+    ("learn_lesson", ["name", "goal"]),
+    ("learn_string", ["value"]),
+    ("learn_step", ["title", "body", "kicker", "tip", "consequence"]),
+    ("learn_mission", ["name", "summary", "outline_note", "anomaly_title",
+                       "anomaly_body", "consequence_title", "consequence_scope",
+                       "consequence_reversible", "consequence_verify"]),
+    ("learn_mission_step", ["instruction", "detail", "hint"]),
+    ("learn_glossary_term", ["term", "definition"]),
 ]
 
 # Vendor-owned social accounts seeded into every website record.
@@ -104,18 +142,33 @@ class ResConfigSettings(models.TransientModel):
         )
         return [row[0] for row in self.env.cr.fetchall()]
 
-    def _biz_scrub_text(self, table, columns, brand, website):
+    def _biz_sql_prefilter(self, product):
+        """The SQL word pattern that decides which rows Python even looks at.
+
+        ``\\modoo`` alone on an ordinary database; ``\\m(odoo|payobook)`` on a
+        white-label tenant, so the product rule's rows are fetched too. The
+        product name is only put into the pattern when it is a plain word —
+        anything else would need regex escaping and is not a product name
+        anybody has configured.
+        """
+        product = (product or "").strip()
+        if product and re.fullmatch(r"\w+", product):
+            return "\\m(odoo|%s)" % product.lower()
+        return "\\modoo"
+
+    def _biz_scrub_text(self, table, columns, brand, website, product=None):
         columns = self._biz_columns(table, columns)
         if not columns:
             return 0
+        word = self._biz_sql_prefilter(product)
         cols = ", ".join('"%s"' % c for c in columns)
-        where = " OR ".join("""%s ~* '\\modoo'""" % ('"%s"' % c) for c in columns)
+        where = " OR ".join("""%s ~* '%s'""" % ('"%s"' % c, word) for c in columns)
         self.env.cr.execute('SELECT id, %s FROM "%s" WHERE %s' % (cols, table, where))
         rows = self.env.cr.fetchall()
         updates = []
         for row in rows:
             record_id, values = row[0], row[1:]
-            new_values = [debrand_text(v, brand, website) if isinstance(v, str) else v for v in values]
+            new_values = [debrand_text(v, brand, website, product) if isinstance(v, str) else v for v in values]
             if any(new is not old for new, old in zip(new_values, values)):
                 updates.append(tuple(new_values) + (record_id,))
         if not updates:
@@ -126,22 +179,23 @@ class ResConfigSettings(models.TransientModel):
             self.env.cr.executemany(sql, updates[start:start + BATCH])
         return len(updates)
 
-    def _biz_scrub_jsonb(self, table, columns, brand, website):
+    def _biz_scrub_jsonb(self, table, columns, brand, website, product=None):
         columns = self._biz_columns(table, columns)
         if not columns:
             return 0
+        word = self._biz_sql_prefilter(product)
         touched = 0
         for column in columns:
             self.env.cr.execute(
-                """SELECT id, "%s" FROM "%s" WHERE "%s"::text ~* '\\modoo'"""
-                % (column, table, column)
+                """SELECT id, "%s" FROM "%s" WHERE "%s"::text ~* '%s'"""
+                % (column, table, column, word)
             )
             updates = []
             for record_id, value in self.env.cr.fetchall():
                 if not isinstance(value, dict):
                     continue
                 new_value = {
-                    lang: debrand_text(text, brand, website) if isinstance(text, str) else text
+                    lang: debrand_text(text, brand, website, product) if isinstance(text, str) else text
                     for lang, text in value.items()
                 }
                 if new_value != value:
@@ -303,16 +357,27 @@ class ResConfigSettings(models.TransientModel):
         if not brand or HAS_ODOO_RE.search(brand):
             _logger.warning("biz_debrand: refusing to scrub with brand %r", brand)
             return False
+        # WHITELABEL: the product rule, exactly as the seams apply it, and off
+        # (``None``) wherever product_rules() says so — master, template, the
+        # "powered by" level, or a product that IS the brand.
+        product = product_for_env(self.env)
+        if not product_rules(product, brand):
+            product = None
 
         total = 0
         for table, columns in TEXT_TARGETS:
             try:
-                total += self._biz_scrub_text(table, columns, brand, website)
+                # Each target in its own savepoint: a column that turns out to
+                # be the wrong type on this build must not poison the cursor
+                # for every target after it.
+                with self.env.cr.savepoint():
+                    total += self._biz_scrub_text(table, columns, brand, website, product)
             except Exception:
                 _logger.warning("biz_debrand: scrub of %s failed", table, exc_info=True)
         for table, columns in JSONB_TARGETS:
             try:
-                total += self._biz_scrub_jsonb(table, columns, brand, website)
+                with self.env.cr.savepoint():
+                    total += self._biz_scrub_jsonb(table, columns, brand, website, product)
             except Exception:
                 _logger.warning("biz_debrand: jsonb scrub of %s failed", table, exc_info=True)
         for step in (

@@ -5,6 +5,12 @@ from urllib.parse import urlencode, urlsplit
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+
+try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
+    from odoo.addons.biz_debrand.models.brand import rebrand_payload
+except Exception:  # pragma: no cover — biz_debrand absent on this build
+    def rebrand_payload(env, value):
+        return value
 from odoo.tools import html2plaintext
 
 from .channels_p7 import utm_record
@@ -139,11 +145,24 @@ class CatalogueWorkspace(models.AbstractModel):
                              country_label=', '.join(COUNTRIES[c] for c in spec['countries']) or 'All countries',
                              onboarding_stage=ch.onboarding_stage or 'not_started',
                              onboarding_label=dict(STAGES)[ch.onboarding_stage or 'not_started']))
-        return dict(boards=rows, countries=[dict(code=k, name=v) for k, v in COUNTRIES.items()],
-                    company=self.env.company.name, can_setup=self._can_write())
+        # The catalogue's guidance talks about the platform by name; a
+        # white-label tenant reads its own (WHITELABEL 2026-10-31). The
+        # company name is the tenant's own data and is added AFTER the walk.
+        out = rebrand_payload(self.env, dict(
+            boards=rows, countries=[dict(code=k, name=v) for k, v in COUNTRIES.items()],
+            can_setup=self._can_write()))
+        out['company'] = self.env.company.name
+        return out
 
     @api.model
     def job_board_guide(self, key):
+        """`_job_board_guide_raw` with the product named as THIS tenant knows
+        it: the board guidance and the provider letter talk about the
+        platform by name (WHITELABEL 2026-10-31)."""
+        return rebrand_payload(self.env, self._job_board_guide_raw(key))
+
+    @api.model
+    def _job_board_guide_raw(self, key):
         ch = self._catalogue_channel(key)
         spec = CATALOGUE[key]
         result = dict(spec, onboarding_stage=ch.onboarding_stage or 'not_started',
@@ -188,6 +207,11 @@ class CatalogueWorkspace(models.AbstractModel):
 
     @api.model
     def job_board_detail(self, role_id):
+        """`_job_board_detail_raw`, product named as this tenant knows it."""
+        return rebrand_payload(self.env, self._job_board_detail_raw(role_id))
+
+    @api.model
+    def _job_board_detail_raw(self, role_id):
         panel = super().job_board_detail(role_id)
         req = self._workspace_role(role_id)
         panel['feed_description'] = html2plaintext(req.job_id.website_description or '')
